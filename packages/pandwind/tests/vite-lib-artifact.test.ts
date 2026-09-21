@@ -108,6 +108,23 @@ describe("Pandwind lib Vite consumption", () => {
 		);
 	});
 
+	test("accepts a library artifact with the configured named cascade layer", () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-lib-vite-"));
+		temporaryDirectories.push(root);
+		const cascade = { mode: "layers", layer: "app.utilities" } as const;
+		const base = makeArtifact();
+		const artifact = createPandwindLibArtifact({
+			compatibility: createPandwindLibCompatibility(examplePreset, { cascade }),
+			sources: base.sources,
+			tokens: base.tokens,
+			atomic: base.rules.atomic,
+			vars: base.rules.vars,
+		});
+
+		const core = createCssExtractorPluginCore(examplePreset, { root, cascade }, [artifact]);
+		expect(core.load(core.resolveId("pandwind:css")!)).toContain("color:#3182ce");
+	});
+
 	test("rejects a malformed package artifact", async () => {
 		const root = mkdtempSync(join(tmpdir(), "pandwind-lib-vite-"));
 		temporaryDirectories.push(root);

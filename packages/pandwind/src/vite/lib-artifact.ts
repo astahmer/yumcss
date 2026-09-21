@@ -1,9 +1,14 @@
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
-import type { CssCascadeMode } from "../css/cascade.ts";
+import {
+	isValidCascadeLayerName,
+	resolveCssCascade,
+	type CssCascade,
+	type CssCascadeMode,
+} from "../css/cascade.ts";
 import murmurHash from "../lib/murmur-hash2.ts";
 import type { CssConfigReturn, TokenDeclaration } from "../types/typings.ts";
 
-export const PANDWIND_LIB_SCHEMA = "pandwind.lib/1" as const;
+export const PANDWIND_LIB_SCHEMA = "pandwind.lib/2" as const;
 export const PANDWIND_LIB_COMPILER = "pandwind-css/1" as const;
 export const PANDWIND_LIB_GENERATOR = "pandwind-codemod lib build" as const;
 
@@ -19,6 +24,7 @@ export interface PandwindLibCompatibility {
 	readonly className: "default";
 	readonly namespace: string;
 	readonly cascade: CssCascadeMode | null;
+	readonly cascadeLayer: string | null;
 }
 
 export interface PandwindLibSource {
@@ -49,7 +55,7 @@ export interface PandwindLibArtifactInput {
 
 export interface PandwindLibCompatibilityOptions {
 	readonly namespace?: string;
-	readonly cascade?: CssCascadeMode;
+	readonly cascade?: CssCascade;
 	readonly className?: ClassNameStrategy;
 }
 
@@ -108,6 +114,7 @@ export const createPandwindLibCompatibility = (
 				"external compiler strategies need their own compatibility contract",
 		);
 	}
+	const cascade = resolveCssCascade(options.cascade);
 	return {
 		compiler: PANDWIND_LIB_COMPILER,
 		preset: hashValue({
@@ -119,7 +126,8 @@ export const createPandwindLibCompatibility = (
 		}),
 		className: "default",
 		namespace: options.namespace ?? "pw",
-		cascade: options.cascade ?? null,
+		cascade: cascade.mode ?? null,
+		cascadeLayer: cascade.layer ?? null,
 	};
 };
 
@@ -184,6 +192,14 @@ const validateCompatibility = (value: unknown): string[] => {
 		errors.push("compatibility.namespace must be a non-empty string");
 	if (value.cascade !== null && value.cascade !== "specificity" && value.cascade !== "layers")
 		errors.push("compatibility.cascade must be null, specificity, or layers");
+	if (value.cascade === "layers") {
+		if (typeof value.cascadeLayer !== "string" || !isValidCascadeLayerName(value.cascadeLayer))
+			errors.push(
+				"compatibility.cascadeLayer must be a valid dotted CSS identifier path for layers",
+			);
+	} else if (value.cascadeLayer !== null) {
+		errors.push("compatibility.cascadeLayer must be null unless cascade is layers");
+	}
 	return errors;
 };
 

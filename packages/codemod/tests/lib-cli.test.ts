@@ -53,6 +53,19 @@ describe("pandwind-codemod lib", () => {
 		});
 	});
 
+	test("parses a named cascade layer for library artifacts", () => {
+		const command = parseLibCommand([
+			"build",
+			".",
+			"--cascade",
+			"layers",
+			"--cascade-layer",
+			"app.utilities",
+		]);
+
+		expect(command.cascade).toEqual({ mode: "layers", layer: "app.utilities" });
+	});
+
 	test("builds a valid artifact from actual css source", () => {
 		const root = makeSourceProject();
 		const result = buildPandwindLib({
@@ -106,7 +119,7 @@ describe("pandwind-codemod lib", () => {
 		writeFileSync(
 			output,
 			JSON.stringify({
-				schema: "pandwind.lib/1",
+				schema: "pandwind.lib/2",
 				generator: "pandwind-codemod lib build",
 				hash: "stale",
 			}),

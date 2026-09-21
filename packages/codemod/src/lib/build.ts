@@ -1,5 +1,6 @@
 import { relative, resolve } from "node:path";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
+import type { CssCascade } from "pandwind/css";
 import type { CssConfigReturn } from "pandwind/types/typings";
 import {
 	createPandwindLibArtifact,
@@ -20,7 +21,7 @@ export interface BuildPandwindLibOptions {
 	readonly sourcePatterns?: readonly string[];
 	readonly cssSources?: readonly string[];
 	readonly namespace?: string;
-	readonly cascade?: "specificity" | "layers";
+	readonly cascade?: CssCascade;
 	readonly sourceWorkspace?: SourceWorkspace;
 }
 

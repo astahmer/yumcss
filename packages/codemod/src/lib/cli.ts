@@ -2,6 +2,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { cac, type CAC, type Command } from "cac";
+import type { CssCascade } from "pandwind/css";
 import { type CssConfigReturn } from "pandwind/types/typings";
 import {
 	PANDWIND_LIB_GENERATOR,
@@ -30,7 +31,7 @@ export interface LibBuildCommand {
 	readonly presetImport: string;
 	readonly presetExport: string;
 	readonly namespace?: string;
-	readonly cascade?: "specificity" | "layers";
+	readonly cascade?: CssCascade;
 	readonly check: boolean;
 }
 
@@ -71,10 +72,18 @@ const optionStrings = (
 const actionPositionals = (args: readonly unknown[]): string[] =>
 	args.filter((value): value is string => typeof value === "string");
 
-const parseCascade = (value: string | undefined): "specificity" | "layers" | undefined => {
-	if (value === undefined) return undefined;
-	if (value === "specificity" || value === "layers") return value;
-	throw new Error(`pandwind-codemod lib: unsupported cascade '${value}'`);
+const parseCascade = (
+	mode: string | undefined,
+	layer: string | undefined,
+): CssCascade | undefined => {
+	if (mode === undefined && layer === undefined) return undefined;
+	if (mode === "specificity" && layer !== undefined)
+		throw new Error("pandwind-codemod lib: --cascade-layer requires --cascade layers");
+	if (mode !== "layers" && layer !== undefined)
+		throw new Error("pandwind-codemod lib: --cascade-layer requires --cascade layers");
+	if (mode === undefined || (mode !== "specificity" && mode !== "layers"))
+		throw new Error(`pandwind-codemod lib: unsupported cascade '${mode}'`);
+	return layer === undefined ? mode : { mode: "layers", layer };
 };
 
 const generateCommand = (
@@ -83,7 +92,10 @@ const generateCommand = (
 	options: CliOptions,
 ): LibBuildCommand => {
 	const root = resolve(cwd, positionals[0] ?? ".");
-	const cascade = parseCascade(optionString(options, "cascade"));
+	const cascade = parseCascade(
+		optionString(options, "cascade"),
+		optionString(options, "cascadeLayer"),
+	);
 	return {
 		command: LibCommand.Build,
 		root,
@@ -108,6 +120,7 @@ const configureBuild = (command: Command): void => {
 		.option("--preset-export <name>", "Preset export name")
 		.option("--namespace <name>", "Dynamic-value namespace; defaults to pw")
 		.option("--cascade <mode>", "Compatibility mode: specificity or layers")
+		.option("--cascade-layer <name>", "Named layer when --cascade is layers")
 		.option("--check", "Fail if the generated artifact is missing or stale");
 };
 

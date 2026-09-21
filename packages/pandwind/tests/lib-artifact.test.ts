@@ -55,4 +55,27 @@ describe("Pandwind lib artifact contract", () => {
 			differences: ["namespace differs (artifact=pw, consumer=other)"],
 		});
 	});
+
+	test("records and checks a named cascade layer", () => {
+		const artifact = createPandwindLibArtifact({
+			...artifactInput(),
+			compatibility: createPandwindLibCompatibility(examplePreset, {
+				cascade: { mode: "layers", layer: "app.utilities" },
+			}),
+		});
+
+		expect(artifact.compatibility).toMatchObject({
+			cascade: "layers",
+			cascadeLayer: "app.utilities",
+		});
+		expect(
+			checkPandwindLibCompatibility(artifact, examplePreset, {
+				cascade: { mode: "layers", layer: "app.utilities" },
+			}),
+		).toEqual({ compatible: true, differences: [] });
+		expect(checkPandwindLibCompatibility(artifact, examplePreset, { cascade: "layers" })).toEqual({
+			compatible: false,
+			differences: ["cascadeLayer differs (artifact=app.utilities, consumer=pandwind)"],
+		});
+	});
 });
