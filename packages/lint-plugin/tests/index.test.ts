@@ -265,7 +265,7 @@ merge(
 			      "bad": "template interpolation",
 			      "name": "merge",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
+			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "TemplateLiteral",
 			  },
 			  {
@@ -273,7 +273,7 @@ merge(
 			      "bad": "member expression value",
 			      "name": "merge",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
+			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "MemberExpression",
 			  },
 			  {
@@ -281,7 +281,7 @@ merge(
 			      "bad": "function argument",
 			      "name": "merge",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
+			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "ArrowFunctionExpression",
 			  },
 			]
@@ -313,6 +313,162 @@ utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" :
 });
 
 describe("Pandwind Oxlint static safety rules", () => {
+	test("shares the Vite carrier analysis and accepts inlineable nested conditions", () => {
+		const reports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+const shade = getShade();
+const Nested = () => <div {...css({ _hover: { backgroundColor: shade } })} />;`,
+		);
+
+		expect(reports).toEqual([]);
+	});
+
+	test("reports dynamic spreads and ancestor/descendant collisions", () => {
+		const spreadReports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+const styles = getStyles();
+const shade = getShade();
+const Spread = () => <div {...css({ ...styles, color: shade })} />;`,
+		);
+		const collisionReports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+const shade = getShade();
+const Collision = () => <div {...css({ _hover: { color: shade }, _hover: "red" })} />;`,
+		);
+
+		expect(spreadReports).toHaveLength(1);
+		expect(spreadReports[0]?.data).toEqual({
+			reason: "dynamic spread",
+			name: "css",
+		});
+		expect(collisionReports).toHaveLength(1);
+		expect(collisionReports[0]?.data).toEqual({
+			reason: "ancestor/descendant style collision",
+			name: "css",
+		});
+	});
+
+	test("accepts statically provable spreads", () => {
+		const reports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		const base = { padding: 4 };
+		const shade = getShade();
+		const Card = () => <div {...css({ ...base, color: shade })} />;`,
+		);
+
+		expect(reports).toEqual([]);
+	});
+
+	test("reports unsupported function-valued carrier entries", () => {
+		const reports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		const Card = () => <div {...css({ color: () => "red" })} />;`,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.data).toEqual({
+			reason: "function-valued style entry",
+			name: "css",
+		});
+	});
+
+	test("does not report a statically provable fallback alias", () => {
+		const reports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+import { firstThatWorks } from "pandwind/css";
+const css = createUnsafeCss();
+const displayFallback = firstThatWorks("flex", "block");
+const shade = getShade();
+const Card = () => <div {...css({ display: displayFallback, color: shade })} />;`,
+		);
+
+		expect(reports).toEqual([]);
+	});
+
+	test("reports non-static additional props on an explicit carrier", () => {
+		const reports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		const shade = getShade();
+		const className = getClassName();
+		const Card = () => <div {...css.props(css.vars({ color: shade }), className)} />;`,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.data).toEqual({ name: "css.vars" });
+	});
+
+	test("reports a dynamic fallback alias", () => {
+		const reports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+import { firstThatWorks } from "pandwind/css";
+const css = createUnsafeCss();
+const displayFallback = firstThatWorks(getDisplay(), "block");
+const shade = getShade();
+const Card = () => <div {...css({ display: displayFallback, color: shade })} />;`,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.data).toEqual({
+			reason: "dynamic firstThatWorks fallback",
+			name: "css",
+		});
+	});
+
+	test("requires statically extractable keyframe bodies", () => {
+		const reports = runRule(
+			"no-dynamic-keyframes",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+	const css = createUnsafeCss();
+	const moduleBody = { from: { opacity: 0 }, to: { opacity: 1 } };
+	css.keyframes(moduleBody);
+	function Card() {
+	  const localBody = { from: { opacity: 0 } };
+	  css.keyframes(localBody);
+	  const dynamicBody = getBody();
+	  css.keyframes(dynamicBody);
+	  css.keyframes({ from: { opacity: getOpacity() } });
+	}`,
+		);
+
+		expect(reports).toHaveLength(2);
+		expect(reports.map(({ data, nodeType }) => ({ data, nodeType }))).toEqual([
+			{ data: { name: "css.keyframes" }, nodeType: "Identifier" },
+			{ data: { name: "css.keyframes" }, nodeType: "ObjectExpression" },
+		]);
+		expect(reports).toMatchInlineSnapshot(`
+			[
+			  {
+			    "data": {
+			      "name": "css.keyframes",
+			    },
+			    "message": "pandwind: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
+			    "nodeType": "Identifier",
+			  },
+			  {
+			    "data": {
+			      "name": "css.keyframes",
+			    },
+			    "message": "pandwind: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
+			    "nodeType": "ObjectExpression",
+			  },
+			]
+		`);
+	});
+
 	test("requires the owned AST identity table for parser node comparisons", () => {
 		const reports = runRule(
 			"no-raw-ast-identities",
@@ -501,6 +657,29 @@ css.raw({ color: theme.color });`,
 		expect(reports).toMatchInlineSnapshot(`[]`);
 	});
 
+	test("uses call-specific lexical scopes for static values", () => {
+		const reports = runRule(
+			"no-dynamic-values",
+			`import { tw } from "pandwind";
+	const color = "red";
+	tw({ color });
+	function Card() {
+	  const color = getColor();
+	  tw({ color });
+	  {
+	    const padding = 2;
+	    tw({ padding });
+	  }
+	}`,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]).toMatchObject({
+			data: { bad: "unresolved identifier", name: "tw" },
+			nodeType: "Identifier",
+		});
+	});
+
 	test("reports nested dynamic values while allowing one conditional", () => {
 		const dynamicReports = runRule(
 			"no-dynamic-values",
@@ -521,7 +700,7 @@ tw({ color: active ? "red" : "blue" }, disabled ? "opacity-50" : "opacity-100");
 			      "bad": "member expression value",
 			      "name": "tw",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
+			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "MemberExpression",
 			  },
 			]
@@ -550,7 +729,7 @@ css.vars(theme.value);`,
 			      "bad": "member expression value",
 			      "name": "css.class",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
+			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "MemberExpression",
 			  },
 			]

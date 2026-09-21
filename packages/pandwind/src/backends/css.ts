@@ -4,6 +4,9 @@ import type { CssCascade } from "../css/cascade.ts";
 import { createHashFn } from "../css/hash.ts";
 import type { StyleBackend } from "./types.ts";
 import { isEncodedFirstThatWorks, normalizeFirstThatWorks } from "../css/first-that-works.ts";
+import { canonicalStyleKey, cssPropertyFromKey } from "../css/style-key.ts";
+
+export { canonicalStyleKey, cssPropertyFromKey, isEmptyCondition } from "../css/style-key.ts";
 
 type CssBackend = Omit<StyleBackend, "declare"> & {
 	/** Atom registry shared with the stylesheet generator and cx. */
@@ -32,12 +35,6 @@ export interface CssBackendOptions {
 	conditions?: Record<string, string | string[]>;
 }
 
-const isConditionPathPart = (
-	part: string,
-	conditions: Record<string, string | string[]>,
-): boolean =>
-	part.startsWith("_") || Object.hasOwn(conditions, part) || /[&>+~:[\],.#*\s]/.test(part);
-
 const colorProperties = new Set([
 	"color",
 	"background",
@@ -55,59 +52,6 @@ const colorProperties = new Set([
 ]);
 
 export const isColorProperty = (property: string): boolean => colorProperties.has(property);
-
-export const isEmptyCondition = (
-	part: string,
-	conditions: Record<string, string | string[]>,
-): boolean => {
-	const value = conditions[part];
-	return value === "" || (Array.isArray(value) && value.every((item) => item === ""));
-};
-
-/** Find the CSS property in a canonical condition/property path. */
-export const cssPropertyFromKey = (
-	key: string,
-	conditions: Record<string, string | string[]> = {},
-): string => {
-	const parts = key.includes("__") ? key.split("__") : [key];
-	for (let index = parts.length - 1; index >= 0; index--) {
-		const part = parts[index]!;
-		if (!isConditionPathPart(part, conditions)) return part;
-	}
-	const fallback = parts.at(-1) ?? "";
-	return fallback;
-};
-
-const rawCssPropertyFromKey = (
-	key: string,
-	conditions: Record<string, string | string[]> = {},
-): string => {
-	const parts = key.includes("__") ? key.split("__") : [key];
-	for (let index = parts.length - 1; index >= 0; index--) {
-		const part = parts[index]!;
-		if (!isConditionPathPart(part, conditions)) return part;
-	}
-	return parts.at(-1) ?? "";
-};
-
-/** Canonicalize a flattened path with condition segments before its property. */
-export const canonicalStyleKey = (
-	key: string,
-	conditions: Record<string, string | string[]> = {},
-): string => {
-	if (!key.includes("__")) return key;
-	const parts = key.split("__").filter((part) => part !== "");
-	if (parts.length < 2) return parts[0] ?? "";
-	const property = rawCssPropertyFromKey(key, conditions);
-	const propertyIndex = parts.lastIndexOf(property);
-	if (propertyIndex < 0) return parts.toSorted().join("__");
-	const conditionParts = parts
-		.filter((_part, index) => index !== propertyIndex)
-		.filter((part) => !isEmptyCondition(part, conditions))
-		.sort();
-	conditionParts.push(property);
-	return conditionParts.join("__");
-};
 
 /**
  * The web backend (plans/021 reference implementation): lowers flattened
@@ -141,15 +85,20 @@ export function createCssBackend(options: CssBackendOptions = {}): CssBackend {
 		}
 		const cached = values.get(rawValue);
 		if (cached !== undefined) return cached;
-		// The stylesheet canonicalizes flattened condition paths before it
-		// hashes them. Do the same at declaration time so inverted nesting
-		// (`{ color: { _hover: value } }`) cannot produce an atom with no rule.
+		// The stylesheet canonicalizes flattened condition paths before it hashes them.
+		// Do the same at declaration time so inverted nesting
+		// (`{ color: { _hover: ... } }`) cannot produce an atom with no rule.
 		if (strategy !== undefined) {
 			const custom = strategy.toClassName(orderedKey, rawValue);
-			if (typeof custom === "string" && custom.length > 0 && !/[\s\u0000]/.test(custom)) {
-				// Sheet-backed strategies compile through this engine's own
-				// stylesheet, so their classes join the atom registry — that is
-				// what keeps cx() merging and the generated rules working.
+			if (
+				typeof custom === "string" &&
+				custom.length > 0 &&
+				!/\s/.test(custom) &&
+				!custom.includes("\u0000")
+			) {
+				// Sheet-backed strategies compile through this engine's own stylesheet,
+				// so their classes join the atom registry — that is what keeps cx()
+				// merging and the generated rules working.
 				if (sheetBacked && !atoms.has(custom)) atoms.set(custom, orderedKey);
 				values.set(rawValue, custom);
 				return custom;

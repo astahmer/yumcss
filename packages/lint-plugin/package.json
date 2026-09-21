@@ -27,13 +27,13 @@
 		"provenance": true,
 		"registry": "https://registry.npmjs.org/"
 	},
-	"dependencies": {
-		"pandwind": "workspace:*"
-	},
 	"scripts": {
 		"build": "pnpm exec tsdown",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run"
+	},
+	"dependencies": {
+		"pandwind": "workspace:*"
 	},
 	"devDependencies": {
 		"oxc-parser": "0.148.0",

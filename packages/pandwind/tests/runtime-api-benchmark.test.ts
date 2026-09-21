@@ -565,7 +565,7 @@ const SCENARIOS: readonly RuntimeScenarioDefinition[] = [
 		category: "composition",
 		description: "configured CSS atom conflict composition",
 		iterations: 30_000,
-			run: () => void cssCx(mergedMap, cssDefault({ $raw: { color: "blue.600" } })),
+		run: () => void cssCx(mergedMap, cssDefault({ $raw: { color: "blue.600" } })),
 	},
 	{
 		name: "cx.vars",

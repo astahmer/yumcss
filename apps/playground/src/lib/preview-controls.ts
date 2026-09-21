@@ -8,6 +8,13 @@ interface PreviewAstNode {
 	[key: string]: unknown;
 }
 
+const PREVIEW_NODE_KIND = Object.freeze({
+	exportDefaultDeclaration: "ExportDefaultDeclaration",
+	jsxAttribute: "JSXAttribute",
+	jsxElement: "JSXElement",
+	jsxExpressionContainer: "JSXExpressionContainer",
+} as const);
+
 const asNode = (value: unknown): PreviewAstNode | undefined =>
 	value !== null && typeof value === "object" ? (value as PreviewAstNode) : undefined;
 
@@ -35,10 +42,10 @@ export const applyPreviewControls = (
 		});
 		const program = asNode(parsed.program);
 		const defaultExport = nodes(program?.body).find(
-			(statement) => statement.type === "ExportDefaultDeclaration",
+			(statement) => statement.type === PREVIEW_NODE_KIND.exportDefaultDeclaration,
 		);
 		const declaration = asNode(defaultExport?.declaration);
-		if (declaration?.type !== "JSXElement") return source;
+		if (declaration?.type !== PREVIEW_NODE_KIND.jsxElement) return source;
 
 		const attributes = nodes(asNode(declaration.openingElement)?.attributes);
 		const replacements: Array<[number, number, string]> = [];
@@ -48,7 +55,8 @@ export const applyPreviewControls = (
 			if (option === undefined) continue;
 			const attribute = attributes.find(
 				(candidate) =>
-					candidate.type === "JSXAttribute" && asNode(candidate.name)?.name === control.prop,
+					candidate.type === PREVIEW_NODE_KIND.jsxAttribute &&
+					asNode(candidate.name)?.name === control.prop,
 			);
 			const value = asNode(attribute?.value);
 			if (value?.start === undefined || value.end === undefined) continue;
@@ -56,7 +64,7 @@ export const applyPreviewControls = (
 			replacements.push([
 				value.start,
 				value.end,
-				value.type === "JSXExpressionContainer" ? `{${literal}}` : literal,
+				value.type === PREVIEW_NODE_KIND.jsxExpressionContainer ? `{${literal}}` : literal,
 			]);
 		}
 

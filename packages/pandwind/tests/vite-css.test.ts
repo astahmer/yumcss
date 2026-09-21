@@ -70,8 +70,8 @@ test("findCssCallSites reports extraction coverage with provenance", () => {
 	expect(sites[1]).toMatchObject({
 		callKind: "css",
 		line: 5,
-		staticArguments: 0,
-		dynamicArguments: 1,
+		staticArguments: 1,
+		dynamicArguments: 0,
 	});
 	expect(sites).toMatchInlineSnapshot(`
 		[
@@ -88,12 +88,12 @@ test("findCssCallSites reports extraction coverage with provenance", () => {
 		  {
 		    "callKind": "css",
 		    "column": 13,
-		    "dynamicArguments": 1,
+		    "dynamicArguments": 0,
 		    "end": 159,
 		    "file": "src/card.tsx",
 		    "line": 5,
 		    "start": 134,
-		    "staticArguments": 0,
+		    "staticArguments": 1,
 		  },
 		]
 	`);
@@ -112,8 +112,8 @@ test("findCssImports discovers same-module CSS factory carriers", () => {
 test("diagnoseCssSources reports unsupported constructs and missed extraction", () => {
 	const code = `
 		import { css } from "./design";
-		const color = "$blue-500";
-		const spin = { from: { opacity: 0 } };
+		const color = getColor();
+		const spin = getSpin();
 		css.keyframes({ from: { opacity: 0 } });
 		css.keyframes(spin);
 		css.class({ $text: { color } });
@@ -137,22 +137,22 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 		[
 		  {
 		    "column": 3,
-		    "end": 169,
+		    "end": 153,
 		    "file": "src/card.tsx",
 		    "kind": "unsupported-construct",
 		    "line": 6,
 		    "message": "css.keyframes needs one static object literal body.",
-		    "start": 150,
+		    "start": 134,
 		    "suggestion": "Keep every step and declaration literal, or keep the @keyframes rule in authored CSS.",
 		  },
 		  {
 		    "column": 3,
-		    "end": 204,
+		    "end": 188,
 		    "file": "src/card.tsx",
 		    "kind": "missing-extraction",
 		    "line": 7,
 		    "message": "css.class has dynamic argument(s); only literal style objects enter the generated stylesheet.",
-		    "start": 173,
+		    "start": 157,
 		    "suggestion": "Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
 		  },
 		]
@@ -504,7 +504,7 @@ test("inlineCssCalls rewrites literal css() calls to Tailwind classes", () => {
 	`);
 });
 
-test("inlineCssCalls leaves raw/props/group and dynamic calls untouched", () => {
+test("inlineCssCalls leaves raw/props and unsupported calls untouched", () => {
 	const code = `
 		import { css } from "./design";
 		const color = "$blue-500";
@@ -514,8 +514,8 @@ test("inlineCssCalls leaves raw/props/group and dynamic calls untouched", () => 
 		const d = css.class({ $text: { color: "$blue-500" } }, { $frame: { fill: "$red-500" } });
 	`;
 	const result = inline().inline(code, "app.ts", new Set(["css"]));
-	expect(result.inlined).toBe(1);
-	expect(result.code).toContain("const a = css.class({ $text: { color } });");
+	expect(result.inlined).toBe(2);
+	expect(result.code).toContain('const a = "text-blue-500";');
 	expect(result.code).toContain('const b = css.raw({ $text: { color: "$blue-500" } });');
 	expect(result.code).toContain("const c = css.props({});");
 	// Multi-arg class calls are still inlined (merged).
@@ -525,12 +525,12 @@ test("inlineCssCalls leaves raw/props/group and dynamic calls untouched", () => 
 		  "code": "
 				import { css } from "./design";
 				const color = "$blue-500";
-				const a = css.class({ $text: { color } });
+				const a = "text-blue-500";
 				const b = css.raw({ $text: { color: "$blue-500" } });
 				const c = css.props({});
 				const d = "text-blue-500 bg-red-500";
 			",
-		  "inlined": 1,
+		  "inlined": 2,
 		  "varKeys": [],
 		}
 	`);
@@ -1058,7 +1058,7 @@ test("extractCssFile records literal keyframe bodies with their provenance", () 
 	const names = scan(["css"]).findImports(code, "app.ts");
 	const combined = extract(["css"]).extractFile(code, "app.ts");
 
-	expect(combined.keyframes).toHaveLength(2);
+	expect(combined.keyframes).toHaveLength(3);
 	expect(combined.keyframes[0]).toMatchObject({
 		body: { from: { transform: "rotate(0deg)" }, to: { transform: "rotate(360deg)" } },
 		provenance: { file: "app.ts", callKind: "css.keyframes", line: 4 },
@@ -1066,6 +1066,10 @@ test("extractCssFile records literal keyframe bodies with their provenance", () 
 	expect(combined.keyframes[1]).toMatchObject({
 		body: { from: { opacity: 0 } },
 		provenance: { callKind: "css.keyframes", line: 5 },
+	});
+	expect(combined.keyframes[2]).toMatchObject({
+		body: { from: { opacity: 0 } },
+		provenance: { callKind: "css.keyframes", line: 7 },
 	});
 	expect(combined.sources).toEqual(extract().extract(code, "app.ts", names));
 	expect(combined.varKeys).toEqual(scan().findVarKeys(code, "app.ts", names));
@@ -1274,6 +1278,139 @@ test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers",
 	expect(result.varKeys).toEqual(["backgroundColor", "_hover__bg", "margin"]);
 	expect(result.code).toContain("const shade = getShade();");
 	expect(result.code).toContain("<>");
+});
+
+test("inlines local constants in JSX carriers and extracts their CSS", () => {
+	const code = `
+		import { css } from "./design";
+		export const App = () => {
+			const color = "red";
+			const shade = getShade();
+			return <div {...css({ color, padding: 4, backgroundColor: shade })} />;
+		};
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain("[color:red]");
+	expect(result.code).toContain("[padding:4px]");
+	expect(result.code).toContain('style["--pw-c-background-color"]');
+	expect(result.code).not.toContain('style["--pw-c-color"]');
+	expect(result.code).not.toContain('style["--pw-c-padding"]');
+
+	expect(extract().extractStyles(code, "app.tsx", new Set(["css"]))).toEqual(
+		expect.arrayContaining([{ color: "red", padding: 4 }]),
+	);
+});
+
+test("inlines local constants in explicit vars carriers", () => {
+	const code = `
+		import { css } from "./design";
+		export const render = (color: string) => {
+			const staticClass = "card";
+			return css.props(css.vars({ color }), staticClass);
+		};
+	`;
+	const result = inline().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain('classNames.push("card")');
+	expect(result.code).toContain('style["--pw-c-color"]');
+	expect(result.code).not.toContain("css.props");
+	expect(result.code).not.toContain("css.vars");
+});
+
+test("JSX pattern extraction resolves local constants in function scope", () => {
+	const code = `
+		import { Box } from "@acme/pandwind/jsx";
+		export const App = () => {
+			const padding = 4;
+			return <Box p={padding} />;
+		};
+	`;
+
+	expect(extract().extractStyles(code, "app.tsx", new Set())).toContainEqual({ padding: 4 });
+});
+
+test("scope-aware CSS inlining respects module constants, shadowing, and TDZ", () => {
+	const code = `
+		import { css } from "./design";
+		const color = "red";
+		const moduleStatic = css.class({ color });
+		const beforeDeclaration = css.class({ color: later });
+		const later = "green";
+		try {
+			throw new Error();
+		} catch (color) {
+			const catchDynamic = css.class({ color });
+		}
+		export const render = () => {
+			const localColor = "blue";
+			return css.class({ color: localColor });
+		};
+		class Card {
+			render() {
+				const methodColor = "green";
+				return css.class({ color: methodColor });
+			}
+		}
+		export const App = (color: string) => <div {...css({ color, padding: "2" })} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.code).toContain('const moduleStatic = "[color:red]"');
+	expect(result.code).toContain("css.class({ color: later })");
+	expect(result.code).toContain("css.class({ color })");
+	expect(result.code).toContain('return "[color:blue]"');
+	expect(result.code).toContain('return "[color:green]"');
+	expect(result.code).toContain('style["--pw-c-color"]');
+	expect(result.code).not.toContain('classNames.push("[color:red]")');
+});
+
+test("direct carriers fold proven spreads and literal computed keys", () => {
+	const code = `
+		import { css } from "./design";
+		const base = { padding: 4 };
+		const shade = getShade();
+		export const App = () => <div {...css({ ...base, ["backgroundColor"]: shade })} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain('style["--pw-c-background-color"]');
+	expect(result.code).toContain('classNames.push("[padding:4px]")');
+	expect(result.code).not.toContain("css.props(css.vars");
+	expect(result.varKeys).toEqual(["backgroundColor"]);
+});
+
+test("ancestor and descendant collisions keep the conservative carrier", () => {
+	const code = `
+		import { css } from "./design";
+		const shade = getShade();
+		export const App = () => <div {...css({ _hover: { color: shade }, _hover: "red" })} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain("css.props(css.vars");
+	expect(result.code).not.toContain("((values) => {");
+	expect(result.varKeys).toEqual(["_hover__color", "_hover"]);
+});
+
+test("static firstThatWorks aliases use the direct carrier with the atomic strategy", () => {
+	const code = `
+		import { firstThatWorks } from "pandwind/css";
+		import { css } from "./design";
+		const displayFallback = firstThatWorks("flex", "block");
+		const color = getColor();
+		export const App = () => <div {...css({ display: displayFallback, color })} />;
+	`;
+	const result = extract().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain('style["--pw-c-color"]');
+	expect(result.code).toContain("classNames.push(");
+	expect(result.code).not.toContain("css.props(css.vars");
 });
 
 test("same-path collisions preserve last-write semantics in a direct carrier", () => {

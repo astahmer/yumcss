@@ -1,6 +1,6 @@
 import { SOURCE_SCANNER_SERVICE, type SourceScannerService } from "../source-scanner.ts";
 import { isLiteralKeyframeBody } from "../css/keyframes.ts";
-import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
+import { evalLiteral, type OxcNode, walk, walkWithParent } from "../tw/literal.ts";
 import { memberName } from "./ast-walk.ts";
 import type {
 	AuthoredCssImport,
@@ -18,6 +18,7 @@ import {
 } from "./css-react-strict-dom.ts";
 import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
 import { findCssFactoryBindingsInProgram } from "./css-factory-source.ts";
+import { createCssLiteralScopeResolver } from "./css-literal-scope.ts";
 
 /**
  * Language-aware source observations for the CSS extraction façade.
@@ -141,9 +142,10 @@ const callKind = (
 
 const isObjectLiteral = (
 	argument: unknown,
+	literalConstants: ReadonlyMap<string, unknown>,
 	evaluateCall: ReturnType<typeof createFirstThatWorksEvaluator>,
 ): boolean => {
-	const literal = evalLiteral(argument as never, undefined, evaluateCall);
+	const literal = evalLiteral(argument as never, literalConstants, evaluateCall);
 	return typeof literal === "object" && literal !== null;
 };
 
@@ -232,13 +234,15 @@ const findCallSites = (
 	const sites: CssCallSite[] = [];
 	const reactStrictDom = findReactStrictDomBindings(program);
 	const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(program));
-	walk(program, (node) => {
+	const resolveLiteralScope = createCssLiteralScopeResolver(program, evaluateCall);
+	walkWithParent(program, (node, _parent, ancestors) => {
 		if (node.type !== NodeKind.CallExpression) return;
 		const call = node as CallNode;
 		const kind = callKind(call.callee, names, reactStrictDom);
 		if (kind === undefined) return;
+		const literalConstants = resolveLiteralScope(call, ancestors);
 		const staticArguments = call.arguments.filter((argument) =>
-			isObjectLiteral(argument, evaluateCall),
+			isObjectLiteral(argument, literalConstants, evaluateCall),
 		).length;
 		sites.push({
 			file: id,
@@ -448,7 +452,8 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			}).program as unknown as OxcNode);
 		const reactStrictDom = findReactStrictDomBindings(parsed);
 		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
-		walk(parsed, (node) => {
+		const resolveLiteralScope = createCssLiteralScopeResolver(parsed, evaluateCall);
+		walkWithParent(parsed, (node, _parent, ancestors) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
 			if (call.callee?.type !== NodeKind.MemberExpression) return;
@@ -462,7 +467,8 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			const start = call.start;
 			const position = location(code, start);
 			if (member === "keyframes") {
-				const body = evalLiteral(call.arguments[0] as never, undefined, evaluateCall);
+				const literalConstants = resolveLiteralScope(call, ancestors);
+				const body = evalLiteral(call.arguments[0] as never, literalConstants, evaluateCall);
 				if (call.arguments.length !== 1 || !isLiteralKeyframeBody(body)) {
 					diagnostics.push({
 						kind: "unsupported-construct",
@@ -492,8 +498,9 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			}
 			const kind = callKind(call.callee, names, reactStrictDom);
 			if (kind === undefined) return;
+			const literalConstants = resolveLiteralScope(call, ancestors);
 			const staticArguments = call.arguments.filter((argument) =>
-				isObjectLiteral(argument, evaluateCall),
+				isObjectLiteral(argument, literalConstants, evaluateCall),
 			).length;
 			if (call.arguments.length === 0 || staticArguments !== call.arguments.length) {
 				diagnostics.push({

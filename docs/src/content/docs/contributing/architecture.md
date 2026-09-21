@@ -1248,8 +1248,8 @@ shadowing. The rules consume that resolver rather than matching names such as
 `cx` or `tw` in isolation, so an unrelated local helper is not treated as a
 Pandwind call.
 
-Static-value checks use an iterative evaluator for literals, local module
-constants, object/array composition, and one conditional branch. The explicit
+Static-value checks use an iterative evaluator for literals, lexically visible
+`const` bindings, object/array composition, and one conditional branch. The explicit
 runtime carriers (`vars`, `props`, `group`, `input`, and `raw`) stay outside
 that check because they are intentional Pandwind runtime/escape-hatch APIs;
 the compiler and linter therefore agree about where runtime values are valid.
@@ -1267,8 +1267,13 @@ their repair requires target-aware merging. These rules require source ranges
 when checking marker-to-call adjacency and fail open when a host does not
 provide them. The package tests keep inline snapshots for diagnostic shape and
 ordinary assertions for safety, including deep ASTs, aliases, shadowing,
-custom token policy, nested dynamics, runtime carriers, JSX prop conflicts,
-and both valid and invalid residual markers.
+custom token policy, nested dynamics, runtime carriers, keyframe extraction,
+JSX prop conflicts, and both valid and invalid residual markers. The
+`no-dynamic-keyframes` rule shares the Vite literal evaluator and lexical
+scope resolver, so local constants are accepted while shadowed or otherwise
+unprovable bodies are reported at the authoring site. Static-value and
+carrier checks use that same call-specific scope rather than a module-wide
+binding approximation.
 
 ## Package surface boundary
 

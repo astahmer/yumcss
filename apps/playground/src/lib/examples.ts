@@ -351,7 +351,7 @@ export default <Alert tone="danger" color="#fef08a" />`,
 		title: "Runtime pruning",
 		blurb: "static atoms inline while dynamic values keep a tiny carrier",
 		group: "core",
-		note: "This example shows the lowered host shape for a mixed call: background, padding, and radius are one static class, while color travels through css.vars() and css.props(). The authored mixed css.class() form and its Vite rewrite are documented in the Vite guide; run runtime explain to inspect the bundle projection.",
+		note: "This example shows the lowered host shape for a mixed call: background, padding, and radius are one static class, while color travels through css.vars() and css.props(). Vite can inline that carrier, plus literal nested conditions, proven object spreads, and exact last-write collisions; unknown spreads, ancestor/descendant collisions, and dynamic firstThatWorks fall back to the same runtime path. The Vite guide and runtime explain command show the full boundary.",
 		preview: makePreview(
 			"card",
 			"Pruned card",

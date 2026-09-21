@@ -171,8 +171,8 @@ describe("direct inline carrier benchmark", () => {
 				},
 			};
 			expect(measurements[currentCase.name]!.direct.bundle.gz).toBeLessThan(
-			measurements[currentCase.name]!.current.bundle.gz,
-		);
+				measurements[currentCase.name]!.current.bundle.gz,
+			);
 		}
 
 		const css = createUnsafeCss();

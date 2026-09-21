@@ -1,4 +1,4 @@
-import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
+import { evalLiteral, type OxcNode, walk, walkWithParent } from "../tw/literal.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import type {
 	CssPatternAdapter,
@@ -7,6 +7,9 @@ import type {
 	ExtractedCssStyle,
 } from "./css-extraction-contracts.ts";
 import { NodeKind } from "../ast-node-kind.ts";
+import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
+import { findFirstThatWorksBindings } from "./css-source-scanner.ts";
+import { createCssLiteralScopeResolver } from "./css-literal-scope.ts";
 
 type JsxAttribute = { name?: { name?: string }; value?: OxcNode | null };
 type JsxElement = {
@@ -103,15 +106,18 @@ const ALIASES: Record<string, string> = {
 	insetEnd: "insetInlineEnd",
 };
 
-const attributeValue = (value: OxcNode | null | undefined): unknown | null => {
+const attributeValue = (
+	value: OxcNode | null | undefined,
+	literalConstants: ReadonlyMap<string, unknown>,
+): unknown | null => {
 	if (value === null || value === undefined) return true;
 	if (value.type === NodeKind.JSXExpressionContainer) {
 		const expression = (value as { expression?: OxcNode }).expression;
 		return expression?.type === NodeKind.JSXEmptyExpression || expression === undefined
 			? null
-			: evalLiteral(expression as never);
+			: evalLiteral(expression as never, literalConstants);
 	}
-	return evalLiteral(value as never);
+	return evalLiteral(value as never, literalConstants);
 };
 
 export class PandwindPatternAdapter implements CssPatternAdapter {
@@ -128,6 +134,8 @@ export class PandwindPatternAdapter implements CssPatternAdapter {
 
 	extract(code: string, id: string, preset: CssPreset): readonly ExtractedCssStyle[] {
 		const parsed = this.scanner.parse(code, id);
+		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
+		const resolveLiteralScope = createCssLiteralScopeResolver(parsed, evaluateCall);
 		const imported = new Map<string, string>();
 		walk(parsed, (node) => {
 			if (node.type !== NodeKind.ImportDeclaration) return;
@@ -153,7 +161,7 @@ export class PandwindPatternAdapter implements CssPatternAdapter {
 			}
 		});
 		const sources: ExtractedCssStyle[] = [];
-		walk(parsed, (node) => {
+		walkWithParent(parsed, (node, _parent, ancestors) => {
 			if (node.type !== NodeKind.JSXElement) return;
 			const element = node as unknown as JsxElement;
 			const local = element.openingElement?.name?.name;
@@ -171,7 +179,7 @@ export class PandwindPatternAdapter implements CssPatternAdapter {
 					prop.startsWith("on")
 				)
 					continue;
-				const value = attributeValue(attribute.value);
+				const value = attributeValue(attribute.value, resolveLiteralScope(node, ancestors));
 				if (value === null) return;
 				const special = SPECIAL[pattern]?.[prop];
 				if (special !== undefined) style[special] = value;

@@ -184,8 +184,8 @@ The report keeps the `color` token group conservatively, projects only
 literal `color: "blue.100"` would project only that color entry. Bounded
 expressions are narrowed too: `color: tone === "primary" ? "$blue-500" :
 "$red-500"` keeps exactly those two candidates, including when the expression
-is assigned to a top-level `const`. Calls, unbounded identifiers, dynamic
-spreads, and opaque `$raw` objects remain conservative; the latter reports
+is assigned to a top-level `const`. Calls, unbounded identifiers, unknown
+dynamic spreads, and opaque `$raw` objects remain conservative; the latter reports
 `fallback-dynamic-shape` and retains the full preset path. The command explains
 one source module at a time; the Vite plugin is the authority that applies the
 same analysis during a real bundle.

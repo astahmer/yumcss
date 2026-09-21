@@ -185,8 +185,7 @@ export function evalLiteral(
 					property.type !== NodeKind.Property ||
 					property.kind !== PropertyKindTag.Init ||
 					property.computed ||
-					property.method ||
-					property.shorthand
+					property.method
 				) {
 					return undefined;
 				}

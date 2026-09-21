@@ -35,6 +35,7 @@ export default defineConfig({
 		"src/tw/literal.ts",
 		"src/vite/index.ts",
 		"src/vite/css-extract.ts",
+		"src/vite/css-inline-analysis.ts",
 		"src/vite/cross-module-consts.ts",
 		"src/vite/cx-inline.ts",
 		"src/vite/inline.ts",

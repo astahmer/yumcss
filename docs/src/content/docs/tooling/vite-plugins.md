@@ -312,16 +312,50 @@ becomes a direct host carrier conceptually:
 ```
 
 The actual emitted expression is specialized so values are evaluated once and
-invalid values are omitted exactly like `css.vars()`. Nested conditions,
-spreads, unsupported value expressions, and static/dynamic collisions keep the
-conservative `css.props(css.vars(...))` carrier instead of being partially
-reordered or dropped.
+invalid values are omitted exactly like `css.vars()`. Literal nested condition
+objects are flattened into the same structural variable keys as the stylesheet
+extractor. Literal or statically provable `const` values from module, function,
+and block scope are expanded, including object spreads, and same-path
+collisions use the JavaScript last-write winner while still evaluating
+overwritten dynamic expressions for side effects.
+
+The same lexical scope resolver is used by the rewriter, stylesheet extractor,
+call-site scanner, diagnostics, and JSX pattern lane. This means a constant
+declared inside a component or class method can feed a JSX carrier, a plain
+`css()`/`css.class()` call, `css.keyframes()`, `css.group()`, or explicit
+`css.props(css.vars(...))` composition without making the generated CSS and
+JavaScript disagree. Parameters, `let`/`var`, shadowed names, and reads before
+a `const` declaration stay dynamic to preserve JavaScript binding and TDZ
+semantics.
+
+The compiler keeps the conservative `css.props(css.vars(...))` carrier only
+when the direct representation would change semantics: an unknown/dynamic
+spread, an ancestor/descendant path collision, an unsupported array or
+function-valued entry, a dynamic computed key, or a dynamic `firstThatWorks`
+fallback. A statically known `firstThatWorks` alias can use the direct class
+lane when the configured class strategy can emit its fallback declarations;
+strategies that cannot represent those declarations keep the valid runtime
+call.
 
 The same lowering recognizes an explicit flat
 `css.props(css.vars({...}), "static-class")` composition, even outside JSX.
-It keeps the public composition untouched for nested conditions, non-string
-additional props, fallback declarations, or any other shape whose merge
-semantics cannot be proven equivalent.
+It keeps the public composition untouched for non-string additional props,
+fallback declarations, or any other shape whose merge semantics cannot be
+proven equivalent. The same structural analyzer is available to
+`@pandwind/lint-plugin`; enable
+`pandwind-extraction/no-dynamic-carrier-fallback` at `error` severity to make
+these remaining fallback shapes visible in the IDE. The Vite transform keeps
+the runtime carrier because it is semantically valid; the lint rule is the
+fail-fast authoring boundary and therefore does not require a build-breaking
+exception for ordinary valid fallback code.
+
+Enable `pandwind-extraction/no-dynamic-keyframes` as well. A
+`css.keyframes()` body is a build-time-only contract: the extractor must prove
+one static step object per call before it can emit the matching deterministic
+`@keyframes` rule and replace the call with its name. The rule shares the Vite
+literal evaluator and lexical scope resolver, so module, function, block, and
+class-method `const` bodies remain valid while shadowed, dynamic, or malformed
+bodies are reported at the source call site.
 
 ## Per-route CSS splitting (opt-in)
 

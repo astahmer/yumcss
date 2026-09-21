@@ -26,8 +26,10 @@ const defineNodeKinds = <T extends Readonly<Record<string, string>>>(kinds: T): 
 /** Node `type` discriminators compared in pandwind control flow. */
 export const NodeKind = defineNodeKinds({
 	ArrayExpression: "ArrayExpression",
+	ArrayPattern: "ArrayPattern",
 	ArrowFunctionExpression: "ArrowFunctionExpression",
 	AssignmentExpression: "AssignmentExpression",
+	AssignmentPattern: "AssignmentPattern",
 	BinaryExpression: "BinaryExpression",
 	BlockStatement: "BlockStatement",
 	CallExpression: "CallExpression",
@@ -37,6 +39,9 @@ export const NodeKind = defineNodeKinds({
 	ExportAllDeclaration: "ExportAllDeclaration",
 	ExportDefaultDeclaration: "ExportDefaultDeclaration",
 	ExportNamedDeclaration: "ExportNamedDeclaration",
+	ForInStatement: "ForInStatement",
+	ForOfStatement: "ForOfStatement",
+	ForStatement: "ForStatement",
 	ExpressionStatement: "ExpressionStatement",
 	FunctionDeclaration: "FunctionDeclaration",
 	FunctionExpression: "FunctionExpression",

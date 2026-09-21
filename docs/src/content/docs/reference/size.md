@@ -23,23 +23,23 @@ The compact snapshot-derived typecheck and size summary is in
 
 | entry                                      |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `createCss(defaultPreset)` runtime         | 26.12 KB |  9.38 KB |
-| `createCss(tailwindPreset)` runtime        | 42.34 KB | 13.87 KB |
-| `createCss(chakraPreset)` runtime          | 53.19 KB | 14.53 KB |
-| `createCss(pandaPreset)` runtime           | 46.45 KB | 13.49 KB |
-| `createCss(shadcnPreset)` runtime          | 87.32 KB | 16.70 KB |
-| `createCss(csstypePreset)` runtime         | 19.61 KB |  7.19 KB |
-| `createCss(minimal preset)` runtime        | 15.12 KB |  5.86 KB |
-| `createUnsafeCss()` fallback runtime       | 11.85 KB |  4.70 KB |
-| `createCssRuntime()` core (**internal**)   |  6.42 KB |  2.70 KB |
-| `createRuntimeCss()` + runtime sheet       | 37.56 KB | 13.75 KB |
+| `createCss(defaultPreset)` runtime         | 26.01 KB |  9.35 KB |
+| `createCss(tailwindPreset)` runtime        | 42.22 KB | 13.83 KB |
+| `createCss(chakraPreset)` runtime          | 53.08 KB | 14.50 KB |
+| `createCss(pandaPreset)` runtime           | 46.34 KB | 13.46 KB |
+| `createCss(shadcnPreset)` runtime          | 87.21 KB | 16.68 KB |
+| `createCss(csstypePreset)` runtime         | 19.50 KB |  7.16 KB |
+| `createCss(minimal preset)` runtime        | 14.99 KB |  5.83 KB |
+| `createUnsafeCss()` fallback runtime       | 11.72 KB |  4.66 KB |
+| `createCssRuntime()` core (**internal**)   |  6.29 KB |  2.67 KB |
+| `createRuntimeCss()` + runtime sheet       | 37.44 KB | 13.72 KB |
 | `tw()` runtime                             |  2.80 KB |  1.31 KB |
 | `cx()` plain strings                       |  7.03 KB |  3.01 KB |
-| `cx()` + CSS atom registry                 | 18.79 KB |  7.28 KB |
-| all direct runtime entries                 | 21.48 KB |  8.24 KB |
-| stylesheet generator (**build-time only**) | 25.13 KB |  9.48 KB |
+| `cx()` + CSS atom registry                 | 18.66 KB |  7.24 KB |
+| all direct runtime entries                 | 21.35 KB |  8.21 KB |
+| stylesheet generator (**build-time only**) | 25.00 KB |  9.46 KB |
 
-The combined direct runtime is measured at 21.48 KB min / 8.24 KB gzip in this
+The combined direct runtime is measured at 21.35 KB min / 8.21 KB gzip in this
 record for `createUnsafeCss()` + `tw()` + `cx()`. The preset-bound
 `createCss(preset)` lanes are measured separately because they also carry the
 preset-aware resolver, and the preset they are handed decides how much token
@@ -73,36 +73,36 @@ same size gate checks these tree-shaken entry points:
 
 | fixture / import                           |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `pandwind/css` — createCss(defaultPreset)  | 26.12 KB |  9.38 KB |
-| `pandwind/css` — createCss(tailwindPreset) | 42.34 KB | 13.87 KB |
-| `pandwind/css` — createCss(chakraPreset)   | 53.19 KB | 14.53 KB |
-| `pandwind/css` — createCss(pandaPreset)    | 46.45 KB | 13.49 KB |
-| `pandwind/css` — createCss(shadcnPreset)   | 87.32 KB | 16.70 KB |
-| `pandwind/css` — createCss(csstypePreset)  | 19.61 KB |  7.19 KB |
-| `pandwind/css` — createCss(minimal preset) | 15.12 KB |  5.86 KB |
-| `pandwind/unsafe/css` — createUnsafeCss    | 11.85 KB |  4.70 KB |
+| `pandwind/css` — createCss(defaultPreset)  | 26.01 KB |  9.35 KB |
+| `pandwind/css` — createCss(tailwindPreset) | 42.22 KB | 13.83 KB |
+| `pandwind/css` — createCss(chakraPreset)   | 53.08 KB | 14.50 KB |
+| `pandwind/css` — createCss(pandaPreset)    | 46.34 KB | 13.46 KB |
+| `pandwind/css` — createCss(shadcnPreset)   | 87.21 KB | 16.68 KB |
+| `pandwind/css` — createCss(csstypePreset)  | 19.50 KB |  7.16 KB |
+| `pandwind/css` — createCss(minimal preset) | 14.99 KB |  5.83 KB |
+| `pandwind/unsafe/css` — createUnsafeCss    | 11.72 KB |  4.66 KB |
 | `pandwind/tw` — tw() only                  |  2.80 KB |  1.31 KB |
 | `pandwind/cx` — cx() plain strings         |  7.03 KB |  3.01 KB |
-| `pandwind/cx` — cx() with atom registry    | 17.54 KB |  6.84 KB |
+| `pandwind/cx` — cx() with atom registry    | 18.66 KB |  7.24 KB |
 | root barrel, tw only                       |  2.80 KB |  1.31 KB |
 | root barrel, cx + CSS                      | 17.53 KB |  6.86 KB |
 
 Compiler-pruned and static fixtures are smaller still. The Vite transform
 erases fully literal calls; for a dynamic value with statically known style
 keys it embeds only the matching preset properties, conditions, and token
-groups. Unknown spreads, computed keys, escaped factories, and
+groups. Unknown spreads, dynamic computed keys, escaped factories, and
 non-serializable preset data keep the conservative fallback.
 
 | fixture                                 |      min |    gzip |
 | --------------------------------------- | -------: | ------: |
 | all static unsafe `css()` calls         |     81 B |    98 B |
 | all static preset `css()` calls         |     37 B |    57 B |
-| compiler-pruned unsafe `css()` call     |  6.42 KB | 2.68 KB |
-| compiler-pruned unsafe `css.class()`    |  6.48 KB | 2.70 KB |
-| compiler-pruned unsafe `css.vars()`     |  8.84 KB | 3.56 KB |
-| compiler-pruned preset `css.class()`    |  9.75 KB | 3.90 KB |
-| compiler-pruned generated `keyframes()` | 10.32 KB | 4.12 KB |
-| compiler-pruned design `css.class()`    | 17.84 KB | 6.45 KB |
+| compiler-pruned unsafe `css()` call     |  6.28 KB | 2.67 KB |
+| compiler-pruned unsafe `css.class()`    |  6.34 KB | 2.69 KB |
+| compiler-pruned unsafe `css.vars()`     |  8.70 KB | 3.54 KB |
+| compiler-pruned preset `css.class()`    |  9.61 KB | 3.89 KB |
+| compiler-pruned generated `keyframes()` | 10.18 KB | 4.11 KB |
+| compiler-pruned design `css.class()`    | 17.70 KB | 6.45 KB |
 
 The opt-in `pandwind-codemod runtime generate` path has the same callable
 core, but can omit attachments that an application never uses:
@@ -165,11 +165,11 @@ the exact difference depends on the preset and is listed in the per-import
 table above.
 
 The direct `css()` lane appears once per preset because the preset, not the
-engine, is what moves it: 15.12 KB min with the minimal preset, 19.61 KB once
-the structural `csstypePreset` supplies the CSS property vocabulary, 26.12 KB
+engine, is what moves it: 14.99 KB min with the minimal preset, 19.50 KB once
+the structural `csstypePreset` supplies the CSS property vocabulary, 26.01 KB
 once `defaultPreset` adds Pandwind's stock scale groups and its property
-bindings, 42.34 KB with `tailwindPreset`, 53.19 KB with `chakraPreset`, 46.45
-KB with `pandaPreset`, and 87.32 KB with
+bindings, 42.22 KB with `tailwindPreset`, 53.08 KB with `chakraPreset`, 46.34
+KB with `pandaPreset`, and 87.21 KB with
 `shadcnPreset`, the widest catalog Pandwind ships: shadcn's color roles for
 every base color in both modes, its radius multipliers, and its font variables.
 These standalone rows intentionally bundle the live preset without the Vite
@@ -184,19 +184,19 @@ application importing a named-color preset ships.
 
 | runtime                                      |      min |     gzip | what ships                                |
 | -------------------------------------------- | -------: | -------: | ----------------------------------------- |
-| pandwind `css()` (defaultPreset)             | 26.12 KB |  9.38 KB | stock scales + resolver + atom engine     |
-| pandwind `css()` (fixture preset)            | 29.43 KB | 10.43 KB | fixture palette + resolver + engine       |
-| pandwind `css()` (tailwindPreset)            | 42.34 KB | 13.87 KB | Tailwind v4 catalog + resolver + engine   |
-| pandwind `css()` (chakraPreset)              | 53.19 KB | 14.53 KB | Chakra v3 catalog + resolver + engine     |
-| pandwind `css()` (pandaPreset)               | 46.45 KB | 13.49 KB | Panda CSS catalog + resolver + engine     |
-| pandwind `css()` (shadcnPreset)              | 87.32 KB | 16.70 KB | shadcn registry roles + resolver + engine |
-| pandwind `css()` (csstypePreset)             | 19.61 KB |  7.19 KB | property vocabulary + resolver + engine   |
-| pandwind `css()` (minimal preset)            | 15.12 KB |  5.86 KB | resolver + atom engine only               |
+| pandwind `css()` (defaultPreset)             | 26.01 KB |  9.35 KB | stock scales + resolver + atom engine     |
+| pandwind `css()` (fixture preset)            | 29.32 KB | 10.40 KB | fixture palette + resolver + engine       |
+| pandwind `css()` (tailwindPreset)            | 42.22 KB | 13.83 KB | Tailwind v4 catalog + resolver + engine   |
+| pandwind `css()` (chakraPreset)              | 53.08 KB | 14.50 KB | Chakra v3 catalog + resolver + engine     |
+| pandwind `css()` (pandaPreset)               | 46.34 KB | 13.46 KB | Panda CSS catalog + resolver + engine     |
+| pandwind `css()` (shadcnPreset)              | 87.21 KB | 16.68 KB | shadcn registry roles + resolver + engine |
+| pandwind `css()` (csstypePreset)             | 19.50 KB |  7.16 KB | property vocabulary + resolver + engine   |
+| pandwind `css()` (minimal preset)            | 14.99 KB |  5.83 KB | resolver + atom engine only               |
 | pandwind `tw()`                              |  2.80 KB |  1.31 KB | variant join syntax alone                 |
-| pandwind `css()` (fixture) + `tw()`          | 32.12 KB | 11.41 KB | the common two-lane app                   |
-| pandwind `css()` (fixture) + `cx()`          | 36.39 KB | 13.05 KB | atom registry + cross-engine merge        |
-| pandwind `css()` (fixture) + `tw()` + `cx()` | 39.07 KB | 14.01 KB | combined runtime                          |
-| pandwind compiler-pruned `css.class()`       |  9.75 KB |  3.90 KB | projected preset + shared engine          |
+| pandwind `css()` (fixture) + `tw()`          | 32.01 KB | 11.38 KB | the common two-lane app                   |
+| pandwind `css()` (fixture) + `cx()`          | 36.28 KB | 13.02 KB | atom registry + cross-engine merge        |
+| pandwind `css()` (fixture) + `tw()` + `cx()` | 38.96 KB | 13.99 KB | combined runtime                          |
+| pandwind compiler-pruned `css.class()`       |  9.61 KB |  3.89 KB | projected preset + shared engine          |
 | pandwind fully extracted `css()`             |     37 B |     57 B | emitted literals only                     |
 | `@stylexjs/stylex` 0.19.0                    |  4.06 KB |  1.74 KB | runtime only (compile happens in babel)   |
 | `@pandacss/core` 1.12.0 generated `css()`    |  13.4 KB |  5.31 KB | panda runtime engine + tokens             |

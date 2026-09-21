@@ -73,7 +73,7 @@ equivalent):
 Warm `cx()` matches or beats tailwind-merge exactly where class strings grow
 — while additionally resolving css() atoms and merging across engines.
 
-## Current runtime size record — 2026-09-17
+## Current runtime size record — 2026-09-21
 
 The canonical size table is [the size reference](/reference/size/); the
 exact byte record is the committed `runtime-size.json.snap` and the hard
@@ -82,26 +82,26 @@ ceilings are in `runtime-budget.json`. Values below use decimal KB
 
 | entry                                          | minified |     gzip |
 | ---------------------------------------------- | -------: | -------: |
-| `createCssRuntime()` core (internal)           |  5.82 KB |  2.52 KB |
-| `createCss(minimal preset)`                    | 13.08 KB |  5.18 KB |
-| `createCss(csstypePreset)`                     | 17.57 KB |  6.49 KB |
-| `createCss(defaultPreset)`                     | 24.10 KB |  8.68 KB |
-| `createCss(tailwindPreset)`                    | 40.31 KB | 13.17 KB |
-| `createCss(chakraPreset)`                      | 51.17 KB | 13.81 KB |
-| `createCss(pandaPreset)`                       | 44.42 KB | 12.79 KB |
-| `createCss(shadcnPreset)`                      | 85.08 KB | 15.95 KB |
-| `createCss(fixturePreset)`, test fixture       | 27.43 KB |  9.73 KB |
-| `createUnsafeCss()` fallback                   | 10.60 KB |  4.27 KB |
+| `createCssRuntime()` core (internal)           |  6.29 KB |  2.67 KB |
+| `createCss(minimal preset)`                    | 14.99 KB |  5.83 KB |
+| `createCss(csstypePreset)`                     | 19.50 KB |  7.16 KB |
+| `createCss(defaultPreset)`                     | 26.01 KB |  9.35 KB |
+| `createCss(tailwindPreset)`                    | 42.22 KB | 13.83 KB |
+| `createCss(chakraPreset)`                      | 53.08 KB | 14.50 KB |
+| `createCss(pandaPreset)`                       | 46.34 KB | 13.46 KB |
+| `createCss(shadcnPreset)`                      | 87.21 KB | 16.68 KB |
+| `createCss(fixturePreset)`, test fixture       | 29.32 KB | 10.40 KB |
+| `createUnsafeCss()` fallback                   | 11.72 KB |  4.66 KB |
 | `tw()`                                         |  2.80 KB |  1.31 KB |
 | `cx()` plain strings                           |  7.03 KB |  3.01 KB |
-| `cx()` + CSS atom registry                     | 17.54 KB |  6.84 KB |
-| `createCss(fixturePreset)` + `tw()`            | 30.11 KB | 10.72 KB |
-| `createCss(fixturePreset)` + `cx()`            | 34.38 KB | 12.37 KB |
-| `createCss(fixturePreset)` + `tw()` + `cx()`   | 37.06 KB | 13.32 KB |
-| all direct runtime entries (`unsafeCss+tw+cx`) | 20.23 KB |  7.80 KB |
-| `createRuntimeCss(preset)` + sheet             | 33.73 KB | 12.50 KB |
+| `cx()` + CSS atom registry                     | 18.66 KB |  7.24 KB |
+| `createCss(fixturePreset)` + `tw()`            | 32.01 KB | 11.38 KB |
+| `createCss(fixturePreset)` + `cx()`            | 36.28 KB | 13.02 KB |
+| `createCss(fixturePreset)` + `tw()` + `cx()`   | 38.96 KB | 13.99 KB |
+| all direct runtime entries (`unsafeCss+tw+cx`) | 21.35 KB |  8.21 KB |
+| `createRuntimeCss(preset)` + sheet             | 37.44 KB | 13.72 KB |
 
-The combined direct runtime is 20.23 KB min / 7.80 KB gzip in this record for
+The combined direct runtime is 21.35 KB min / 8.21 KB gzip in this record for
 the unsafe `createUnsafeCss()` + `tw()` + `cx()` shape; the preset-bound
 combination of the same lanes is 37.06 KB min / 13.32 KB gzip because it also
 carries the preset-aware resolver and its preset's whole catalog. Those rows use
@@ -112,9 +112,9 @@ measured shape matches a project that imports a named-color preset. The
 `shadcnPreset`, and the fixture preset) because the preset, not the engine, is
 what moves that number; the per-lane rows show what an application that does not
 need every engine actually ships, and `shadcnPreset` is the widest catalog of
-the eight at 85.08 KB min / 15.95 KB gzip, ahead of `chakraPreset` at 51.17 KB
-min / 13.81 KB gzip, `pandaPreset` at 44.42 KB min / 12.79 KB gzip, and
-`tailwindPreset` at 40.31 KB min / 13.17 KB gzip. The internal
+the eight at 87.21 KB min / 16.68 KB gzip, ahead of `chakraPreset` at 53.08 KB
+min / 14.50 KB gzip, `pandaPreset` at 46.34 KB min / 13.46 KB gzip, and
+`tailwindPreset` at 42.22 KB min / 13.83 KB gzip. The internal
 `createCssRuntime()` row has no public method attachments; it is included to
 show the shared engine's base cost, not as an application entry point. Fully
 extracted static calls remain below 100 bytes.

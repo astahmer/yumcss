@@ -1,8 +1,15 @@
 import { NodeKind, PropertyKindTag } from "../ast-node-kind.ts";
 
-type InlineAstNode = {
-	readonly type?: string;
-	readonly [key: string]: unknown;
+export { canonicalStyleKey } from "../css/style-key.ts";
+export { isLiteralKeyframeBody } from "../css/keyframes.ts";
+export { evalLiteral } from "../tw/literal.ts";
+export { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
+export { createCssLiteralScopeResolver } from "./css-literal-scope.ts";
+export type { LiteralCallEvaluator, LiteralConstantScope, OxcNode } from "../tw/literal.ts";
+
+export type InlineAstNode = {
+	readonly type: string;
+	readonly [key: string]: any;
 };
 
 const isNode = (value: unknown): value is InlineAstNode =>
@@ -23,6 +30,12 @@ const propertyName = (node: InlineAstNode): string | undefined => {
 		return key.value;
 	return undefined;
 };
+
+const isStaticComputedKey = (node: InlineAstNode): boolean =>
+	node.computed === true &&
+	isNode(node.key) &&
+	node.key.type === NodeKind.Literal &&
+	typeof node.key.value === "string";
 
 const appendPath = (prefix: string, name: string): string =>
 	prefix === "" ? name : `${prefix}__${name}`;
@@ -77,6 +90,7 @@ export interface CssInlineAnalysisOptions {
 	readonly evaluateStatic: (node: InlineAstNode) => unknown | typeof CSS_INLINE_UNKNOWN;
 	readonly canonicalizeKey?: (key: string) => string;
 	readonly forceDynamic?: boolean;
+	readonly isStaticSpread?: (node: InlineAstNode) => boolean;
 	readonly isDynamicFallback?: (node: InlineAstNode) => boolean;
 }
 
@@ -127,7 +141,11 @@ const analyzeObject = (
 			const spreadValue = isNode(property.argument)
 				? options.evaluateStatic(property.argument)
 				: CSS_INLINE_UNKNOWN;
-			if (spreadValue === CSS_INLINE_UNKNOWN || !isPlainObject(spreadValue)) {
+			const staticSpread =
+				isNode(property.argument) && options.isStaticSpread?.(property.argument) === true;
+			if (staticSpread && (spreadValue === CSS_INLINE_UNKNOWN || !isPlainObject(spreadValue)))
+				continue;
+			if (!isPlainObject(spreadValue)) {
 				residuals.push({ code: CssInlineResidualCode.Spread, node: property });
 				continue;
 			}
@@ -137,7 +155,7 @@ const analyzeObject = (
 		if (
 			property.type !== NodeKind.Property ||
 			property.kind !== PropertyKindTag.Init ||
-			property.computed === true ||
+			(property.computed === true && !isStaticComputedKey(property)) ||
 			property.method === true
 		) {
 			residuals.push({ code: CssInlineResidualCode.PropertyShape, node: property });
@@ -204,7 +222,7 @@ export const analyzeCssInlineArguments = (
 	const entries: CssInlineEntry[] = [];
 	for (const [argumentIndex, argument] of argumentsList.entries()) {
 		analyzeObject(
-			isNode(argument) ? argument : { type: undefined },
+			isNode(argument) ? argument : { type: "" },
 			"",
 			argumentIndex,
 			entries,
@@ -278,4 +296,74 @@ export const analyzeCssInlineArguments = (
 		evaluationEntries: canonicalEntries.filter((entry) => entry.dynamic),
 		residuals: dedupedResiduals,
 	};
+};
+
+const containsCall = (node: InlineAstNode, names: ReadonlySet<string>): boolean => {
+	let found = false;
+	const stack: unknown[] = [node];
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (Array.isArray(current)) {
+			for (let index = current.length - 1; index >= 0; index -= 1) stack.push(current[index]);
+			continue;
+		}
+		if (!isNode(current)) continue;
+		if (current.type === NodeKind.CallExpression) {
+			const callee = current.callee;
+			if (isNode(callee) && callee.type === NodeKind.Identifier && names.has(String(callee.name))) {
+				found = true;
+				break;
+			}
+		}
+		for (const [key, value] of Object.entries(current))
+			if (key !== "type" && key !== "parent") stack.push(value);
+	}
+	return found;
+};
+
+export const findCssFallbackValueNames = (
+	program: InlineAstNode,
+	callNames: ReadonlySet<string>,
+): ReadonlySet<string> => {
+	const declarations: Array<{ name: string; init: InlineAstNode }> = [];
+	const stack: unknown[] = [program];
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (Array.isArray(current)) {
+			for (let index = current.length - 1; index >= 0; index -= 1) stack.push(current[index]);
+			continue;
+		}
+		if (!isNode(current)) continue;
+		if (current.type === NodeKind.VariableDeclarator) {
+			const id = current.id;
+			if (
+				isNode(id) &&
+				id.type === NodeKind.Identifier &&
+				typeof id.name === "string" &&
+				isNode(current.init)
+			)
+				declarations.push({ name: id.name, init: current.init });
+		}
+		for (const [key, value] of Object.entries(current))
+			if (key !== "type" && key !== "parent") stack.push(value);
+	}
+	const values = new Set<string>();
+	let changed = true;
+	while (changed) {
+		changed = false;
+		for (const declaration of declarations) {
+			if (
+				values.has(declaration.name) ||
+				(!containsCall(declaration.init, callNames) &&
+					!(
+						declaration.init.type === NodeKind.Identifier &&
+						values.has(String(declaration.init.name))
+					))
+			)
+				continue;
+			values.add(declaration.name);
+			changed = true;
+		}
+	}
+	return values;
 };

@@ -22,10 +22,11 @@ interface OxcSpecifier {
 const importedFactoryKind = (source: string, name: string): CssFactoryKindType | undefined => {
 	const normalizedSource = source.replace(/\.[cm]?[jt]sx?$/u, "");
 	if (
-		(name === "createCss" &&
-			(normalizedSource.endsWith("/css") ||
-				normalizedSource.endsWith("/css/index") ||
-				normalizedSource.endsWith("/css/create-css"))))
+		name === "createCss" &&
+		(normalizedSource.endsWith("/css") ||
+			normalizedSource.endsWith("/css/index") ||
+			normalizedSource.endsWith("/css/create-css"))
+	)
 		return CssFactoryKind.Css;
 	if (name === "createGeneratedCss" && normalizedSource.endsWith("/css/generated"))
 		return CssFactoryKind.Css;
@@ -42,9 +43,7 @@ export interface CssFactoryBinding {
 	readonly kind: CssFactoryKindType;
 }
 
-export const findCssFactoryBindingsInProgram = (
-	program: OxcNode,
-): readonly CssFactoryBinding[] => {
+export const findCssFactoryBindingsInProgram = (program: OxcNode): readonly CssFactoryBinding[] => {
 	const bindings: CssFactoryBinding[] = [];
 	walk(program, (node) => {
 		if (node.type !== NodeKind.ImportDeclaration) return;

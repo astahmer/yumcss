@@ -267,6 +267,7 @@
 			"packageName": "pandwind",
 			"exportPaths": [
 				"./vite/css-extract",
+				"./vite/css-inline-analysis",
 				"./vite/cross-module-consts",
 				"./vite/cx-inline",
 				"./vite/inline",

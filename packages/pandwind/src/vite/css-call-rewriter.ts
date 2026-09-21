@@ -1,5 +1,5 @@
 import { createUnsafeCss } from "../unsafe/css.ts";
-import { canonicalStyleKey, cssPropertyFromKey, isEmptyCondition } from "../backends/css.ts";
+import { cssPropertyFromKey, isEmptyCondition } from "../backends/css.ts";
 import { isLiteralKeyframeBody } from "../css/keyframes.ts";
 import { normalizeCssValue } from "../css/value-normalization.ts";
 import { createTokenVariableName } from "../css/token-variable-names.ts";
@@ -13,18 +13,20 @@ import {
 	walk,
 	walkWithParent,
 } from "../tw/literal.ts";
-import { collectModuleConstants } from "./cx-static-evaluator.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import type { StyleObject, TokenVariableNames } from "../types/typings.ts";
-import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
+import { NodeKind } from "../ast-node-kind.ts";
 import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
 import { findFirstThatWorksBindings } from "./css-source-scanner.ts";
 import { findCssFactoryBindings } from "./css-factory-source.ts";
+import { createCssLiteralScopeResolver } from "./css-literal-scope.ts";
 import {
 	analyzeCssInlineArguments,
+	canonicalStyleKey,
 	CSS_INLINE_UNKNOWN,
+	findCssFallbackValueNames,
 	type CssInlineEntry,
 } from "./css-inline-analysis.ts";
 
@@ -142,39 +144,6 @@ const addModuleDeclarationsAfterDirectives = (source: string, declarations: stri
 	return lines.join("\n");
 };
 
-const collectCssLiteralConstants = (
-	program: OxcNode,
-	evaluateCall: LiteralCallEvaluator,
-): ReadonlyMap<string, unknown> => {
-	const constants = new Map<string, unknown>(
-		[...collectModuleConstants(program)].map(([name, known]) => [name, known.value] as const),
-	);
-	for (const statement of (program as { body?: OxcNode[] }).body ?? []) {
-		if (
-			statement.type !== NodeKind.VariableDeclaration ||
-			(statement as { kind?: string }).kind !== VariableDeclarationKindTag.Const
-		)
-			continue;
-		for (const declaration of (statement as { declarations?: OxcNode[] }).declarations ?? []) {
-			const binding = declaration as {
-				id?: { type?: string; name?: string };
-				init?: OxcNode | null;
-			};
-			if (
-				binding.id?.type !== NodeKind.Identifier ||
-				binding.id.name === undefined ||
-				binding.init === undefined ||
-				binding.init === null ||
-				constants.has(binding.id.name)
-			)
-				continue;
-			const value = evalLiteral(binding.init as never, constants, evaluateCall);
-			if (value !== undefined) constants.set(binding.id.name, value);
-		}
-	}
-	return constants;
-};
-
 export class StaticCssCallRewriter implements CssCallRewriter {
 	private readonly preset: CssPreset;
 	private readonly className: ClassNameStrategy | undefined;
@@ -240,8 +209,11 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		});
 		const firstThatWorksNames = findFirstThatWorksBindings(parsed as unknown as OxcNode);
 		const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksNames);
-		const literalConstants = collectCssLiteralConstants(parsed as unknown as OxcNode, evaluateCall);
-		const firstThatWorksValueNames = findFirstThatWorksValueNames(
+		const resolveLiteralScope = createCssLiteralScopeResolver(
+			parsed as unknown as OxcNode,
+			evaluateCall,
+		);
+		const firstThatWorksValueNames = findCssFallbackValueNames(
 			parsed as unknown as OxcNode,
 			firstThatWorksNames,
 		);
@@ -266,8 +238,6 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 			directTokenMaps.set(serialized, name);
 			return name;
 		};
-		const evaluateCssLiteral = (node: Parameters<LiteralCallEvaluator>[0] | undefined) =>
-			evalLiteral(node, literalConstants, evaluateCall);
 		const compileStaticArguments = (
 			entrySets: readonly (readonly CssInlineEntry[])[],
 		): string | null => {
@@ -291,6 +261,9 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		walkWithParent(parsed, (node, parent, ancestors) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
+			const literalConstants = resolveLiteralScope(call, ancestors);
+			const evaluateCssLiteral = (value: Parameters<LiteralCallEvaluator>[0] | undefined) =>
+				evalLiteral(value, literalConstants, evaluateCall);
 			const callee = call.callee;
 			const memberCallee =
 				callee?.type === NodeKind.MemberExpression
@@ -477,7 +450,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				}
 			}
 			if (kind === "group") {
-				const group = literalGroup(call.arguments[0], evaluateCall);
+				const group = literalGroup(call.arguments[0], literalConstants, evaluateCall);
 				if (group === undefined) return;
 				try {
 					edits.push({
@@ -560,17 +533,6 @@ const directClassNameHost = (
 	};
 };
 
-const containsFirstThatWorksCall = (node: OxcNode, names: ReadonlySet<string>): boolean => {
-	let found = false;
-	walk(node, (candidate) => {
-		if (candidate.type !== NodeKind.CallExpression) return;
-		const callee = (candidate as { callee?: OxcNode | null }).callee;
-		if (callee?.type !== NodeKind.Identifier) return;
-		if (names.has((callee as { name?: string }).name ?? "")) found = true;
-	});
-	return found;
-};
-
 const containsFirstThatWorksValue = (
 	node: OxcNode,
 	callNames: ReadonlySet<string>,
@@ -592,47 +554,6 @@ const containsFirstThatWorksValue = (
 			found = true;
 	});
 	return found;
-};
-
-const findFirstThatWorksValueNames = (
-	program: OxcNode,
-	callNames: ReadonlySet<string>,
-): ReadonlySet<string> => {
-	const declarations: Array<{ name: string; init: OxcNode }> = [];
-	walk(program, (node) => {
-		if (node.type !== NodeKind.VariableDeclarator) return;
-		const declaration = node as {
-			id?: { type?: string; name?: string };
-			init?: OxcNode | null;
-		};
-		if (
-			declaration.id?.type !== NodeKind.Identifier ||
-			declaration.id.name === undefined ||
-			declaration.init === undefined ||
-			declaration.init === null
-		)
-			return;
-		declarations.push({ name: declaration.id.name, init: declaration.init });
-	});
-	const values = new Set<string>();
-	let changed = true;
-	while (changed) {
-		changed = false;
-		for (const declaration of declarations) {
-			if (
-				values.has(declaration.name) ||
-				(!containsFirstThatWorksCall(declaration.init, callNames) &&
-					!(
-						declaration.init.type === NodeKind.Identifier &&
-						values.has((declaration.init as { name?: string }).name ?? "")
-					))
-			)
-				continue;
-			values.add(declaration.name);
-			changed = true;
-		}
-	}
-	return values;
 };
 
 const renderDirectCarrier = (
@@ -774,9 +695,10 @@ const hasTopLevelLiteralProperty = (node: OxcNode): boolean =>
 
 const literalGroup = (
 	argument: unknown,
+	literalConstants: ReadonlyMap<string, unknown>,
 	evaluateCall: LiteralCallEvaluator,
 ): Record<string, StyleObject> | undefined => {
-	const value = evalLiteral(argument as never, undefined, evaluateCall);
+	const value = evalLiteral(argument as never, literalConstants, evaluateCall);
 	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
 	const entries = Object.entries(value).filter(
 		(entry): entry is [string, object] => typeof entry[1] === "object" && entry[1] !== null,

@@ -16,10 +16,23 @@
  * - no-stale-migration-skip: static calls must not retain stale skip markers
  * - require-migration-residual: dynamic static-lane calls need a marker
  * - no-conflicting-style-props: css.props() must not compete with host props
+ * - no-dynamic-carrier-fallback: dynamic host carriers that cannot be lowered directly
+ * - no-dynamic-keyframes: keyframe bodies must be statically extractable
  * - no-raw-ast-identities: parser node discriminants must use an owned table
  */
 
 import { NodeKind } from "./ast-node-kind.ts";
+import {
+	analyzeCssInlineArguments,
+	canonicalStyleKey,
+	CSS_INLINE_UNKNOWN,
+	CssInlineResidualCode,
+	createCssLiteralScopeResolver,
+	createFirstThatWorksEvaluator,
+	evalLiteral,
+	findCssFallbackValueNames,
+	isLiteralKeyframeBody,
+} from "pandwind/vite/css-inline-analysis";
 
 const SOURCE = Object.freeze({
 	core: "pandwind",
@@ -44,6 +57,7 @@ const STYLE_METHOD = Object.freeze({
 	group: "group",
 	input: "input",
 	raw: "raw",
+	keyframes: "keyframes",
 });
 
 const CORE_APIS = new Set<string>([API.cx, API.tw]);
@@ -54,6 +68,7 @@ const STYLE_METHODS = new Set<string>([
 	STYLE_METHOD.group,
 	STYLE_METHOD.input,
 	STYLE_METHOD.raw,
+	STYLE_METHOD.keyframes,
 ]);
 const RUNTIME_STYLE_METHODS = new Set<string>([
 	STYLE_METHOD.vars,
@@ -488,9 +503,10 @@ const walkDesignValues = (root: AstValue, seen: Set<AstNode>, report: AstVisitor
 
 /**
  * Structural mirror of the shared governance `TokenPolicySnapshot` (plans/054).
- * Declared locally on purpose: the lint plugin has no runtime dependency on
- * the analyzer, and the governance contract is versioned and additive, so
- * structural compatibility is sufficient. Unknown strictness (resolved:
+ * Declared locally because this governance contract is versioned and additive,
+ * so structural compatibility is sufficient. The carrier rule imports the
+ * shared Pandwind analyzer separately; governance still stays synchronous and
+ * does not load arbitrary project packages. Unknown strictness (resolved:
  * false) stays report-only/fail-open.
  */
 type TokenPolicySnapshotOption = {
@@ -599,22 +615,226 @@ const isTokenLane = (api: ApiReference | undefined): boolean => api !== undefine
 const isClassLane = (api: ApiReference | undefined): boolean =>
 	api?.kind === API.cx || api?.kind === API.tw;
 
+const walkWithAncestors = (
+	root: AstValue,
+	visit: (node: AstNode, ancestors: readonly AstNode[]) => void,
+): void => {
+	const stack: Array<{ value: AstValue; ancestors: readonly AstNode[] }> = [
+		{ value: root, ancestors: [] },
+	];
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (current === undefined) continue;
+		if (Array.isArray(current.value)) {
+			for (let index = current.value.length - 1; index >= 0; index -= 1) {
+				stack.push({ value: current.value[index], ancestors: current.ancestors });
+			}
+			continue;
+		}
+		if (!isNode(current.value)) continue;
+		visit(current.value, current.ancestors);
+		const ancestors = [...current.ancestors, current.value];
+		const keys = Object.keys(current.value);
+		for (let index = keys.length - 1; index >= 0; index -= 1) {
+			const key = keys[index];
+			if (key !== undefined && key !== "parent" && key !== "type")
+				stack.push({ value: current.value[key], ancestors });
+		}
+	}
+};
+
+const firstThatWorksImports = (program: AstNode): ReadonlySet<string> => {
+	const names = new Set<string>();
+	walkNode(program, (node) => {
+		if (node.type !== NodeKind.ImportDeclaration || sourceName(node.source) !== "pandwind/css")
+			return;
+		for (const specifier of node.specifiers ?? []) {
+			if (
+				specifier.type === NodeKind.ImportSpecifier &&
+				specifier.imported?.type === NodeKind.Identifier &&
+				specifier.imported.name === "firstThatWorks" &&
+				specifier.local?.name !== undefined
+			)
+				names.add(specifier.local.name);
+		}
+	});
+	return names;
+};
+
+type LiteralScopeAnalysis = {
+	readonly evaluateCall: ReturnType<typeof createFirstThatWorksEvaluator>;
+	readonly scopes: WeakMap<AstNode, ReadonlyMap<string, unknown>>;
+};
+
+const createLiteralScopeAnalysis = (program: AstNode): LiteralScopeAnalysis => {
+	const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksImports(program));
+	const resolveLiteralScope = createCssLiteralScopeResolver(program, evaluateCall);
+	const scopes = new WeakMap<AstNode, ReadonlyMap<string, unknown>>();
+	walkWithAncestors(program, (node, ancestors) => {
+		if (node.type !== NodeKind.CallExpression) return;
+		scopes.set(node, resolveLiteralScope(node, ancestors));
+	});
+	return { evaluateCall, scopes };
+};
+
+const literalScopeForCall = (
+	analysis: LiteralScopeAnalysis,
+	node: AstNode,
+): ReadonlyMap<string, unknown> => analysis.scopes.get(node) ?? new Map();
+
+const staticBindingsForCall = (
+	analysis: LiteralScopeAnalysis,
+	node: AstNode,
+	fallback: ReadonlySet<string>,
+): ReadonlySet<string> => {
+	const scope = analysis.scopes.get(node);
+	return scope === undefined ? fallback : new Set(scope.keys());
+};
+
+const literalValueForCall = (
+	analysis: LiteralScopeAnalysis,
+	call: AstNode,
+	node: AstNode | undefined,
+): unknown =>
+	evalLiteral(node as never, literalScopeForCall(analysis, call), analysis.evaluateCall);
+
 const withResolver = (
 	onCall: (
 		node: AstNode,
 		api: ApiReference | undefined,
 		staticBindings: ReadonlySet<string>,
 	) => void,
+	options: { readonly useLiteralScopes?: boolean } = {},
 ): RuleListener => {
 	const resolver = createApiResolver();
+	let literalAnalysis: LiteralScopeAnalysis | undefined;
 	return {
 		Program(node) {
 			resolver.scan(node);
+			literalAnalysis = options.useLiteralScopes ? createLiteralScopeAnalysis(node) : undefined;
 		},
 		CallExpression(node) {
-			onCall(node, resolver.resolve(node), resolver.staticBindings);
+			const staticBindings =
+				literalAnalysis === undefined
+					? resolver.staticBindings
+					: staticBindingsForCall(literalAnalysis, node, resolver.staticBindings);
+			onCall(node, resolver.resolve(node), staticBindings);
 		},
 	};
+};
+
+const carrierResidualReason = (code: string): string => {
+	switch (code) {
+		case CssInlineResidualCode.Spread:
+			return "dynamic spread";
+		case CssInlineResidualCode.PathCollision:
+			return "ancestor/descendant style collision";
+		case CssInlineResidualCode.DynamicFallback:
+			return "dynamic firstThatWorks fallback";
+		case CssInlineResidualCode.NestedArray:
+			return "nested array value";
+		case CssInlineResidualCode.NestedFunction:
+			return "function-valued style entry";
+		case CssInlineResidualCode.ComputedKey:
+			return "computed style key";
+		case CssInlineResidualCode.NonObject:
+			return "non-object style argument";
+		default:
+			return "unsupported style shape";
+	}
+};
+
+const carrierTarget = (
+	node: AstNode,
+	ancestors: readonly AstNode[],
+	resolver: ReturnType<typeof createApiResolver>,
+):
+	| {
+			node: AstNode;
+			api: ApiReference;
+			forceDynamic: boolean;
+			additionalArguments?: readonly AstNode[];
+	  }
+	| undefined => {
+	const api = resolver.resolve(node);
+	if (api?.kind !== API.style) return undefined;
+	if (api.method === STYLE_METHOD.props) {
+		const vars = node.arguments?.[0];
+		const varsApi = isNode(vars) ? resolver.resolve(vars) : undefined;
+		return varsApi?.kind === API.style && varsApi.method === STYLE_METHOD.vars
+			? {
+					node: vars,
+					api: varsApi,
+					forceDynamic: true,
+					additionalArguments: (node.arguments ?? []).slice(1),
+				}
+			: undefined;
+	}
+	if (api.method !== undefined) return undefined;
+	const parent = ancestors.at(-1);
+	return parent?.type === NodeKind.JSXSpreadAttribute && parent.argument === node
+		? { node, api, forceDynamic: false }
+		: undefined;
+};
+
+const reportCarrierResiduals = (program: AstNode, context: RuleContext): void => {
+	const resolver = createApiResolver();
+	resolver.scan(program);
+	const literalAnalysis = createLiteralScopeAnalysis(program);
+	const fallbackNames = firstThatWorksImports(program);
+	const fallbackValueNames = findCssFallbackValueNames(program, fallbackNames);
+	walkWithAncestors(program, (node, ancestors) => {
+		if (node.type !== NodeKind.CallExpression) return;
+		const target = carrierTarget(node, ancestors, resolver);
+		if (target === undefined) return;
+		const isStatic = (value: AstNode): boolean =>
+			literalValueForCall(literalAnalysis, target.node, value) !== undefined;
+		const isStaticString = (value: AstNode): boolean => {
+			const literal = literalValueForCall(literalAnalysis, target.node, value);
+			return typeof literal === "string" && literal.length > 0;
+		};
+		const unsupportedAdditionalArgument = target.additionalArguments?.find(
+			(argument) => !isStaticString(argument),
+		);
+		if (unsupportedAdditionalArgument !== undefined) {
+			context.report({
+				node: unsupportedAdditionalArgument,
+				message:
+					"pandwind: non-static additional prop in {{name}}() cannot use the direct build-time carrier — the Vite transform keeps the runtime path",
+				data: { name: callName(target.api) },
+			});
+			return;
+		}
+		const analysis = analyzeCssInlineArguments(target.node.arguments ?? [], {
+			evaluateStatic: (value) => {
+				const literal = literalValueForCall(literalAnalysis, target.node, value);
+				return literal === undefined ? CSS_INLINE_UNKNOWN : literal;
+			},
+			isStaticSpread: isStatic,
+			forceDynamic: target.forceDynamic,
+			canonicalizeKey: canonicalStyleKey,
+			isDynamicFallback: (value) =>
+				(value.type === NodeKind.Identifier && fallbackValueNames.has(value.name)) ||
+				(value.type === NodeKind.CallExpression &&
+					value.callee?.type === NodeKind.Identifier &&
+					fallbackNames.has(value.callee.name)),
+		});
+		if (analysis.residuals.length === 0) return;
+		const residual = analysis.residuals[0]!;
+		const fullyStatic = (target.node.arguments ?? []).every(isStatic);
+		if (
+			analysis.dynamicWinners.length === 0 &&
+			residual.code !== CssInlineResidualCode.Spread &&
+			fullyStatic
+		)
+			return;
+		context.report({
+			node: residual.node ?? target.node,
+			message:
+				"pandwind: {{reason}} in {{name}}() cannot use the direct build-time carrier — the Vite transform keeps the runtime path",
+			data: { reason: carrierResidualReason(residual.code), name: callName(target.api) },
+		});
+	});
 };
 
 type MigrationMarker = SourceComment & { reason: string };
@@ -650,14 +870,16 @@ const hasMigrationReason = (marker: MigrationMarker): boolean =>
 const migrationAnalysis = (program: AstNode): CallAnalysis[] => {
 	const resolver = createApiResolver();
 	resolver.scan(program);
+	const literalAnalysis = createLiteralScopeAnalysis(program);
 	const calls: CallAnalysis[] = [];
 	walkNode(program, (node) => {
 		if (node.type !== NodeKind.CallExpression) return;
 		const api = resolver.resolve(node);
 		if (api === undefined) return;
+		const staticBindings = staticBindingsForCall(literalAnalysis, node, resolver.staticBindings);
 		const dynamic = isExtractionLane(api)
 			? node.arguments
-					.map((argument: AstNode) => findDynamicExpression(argument, resolver.staticBindings))
+					.map((argument: AstNode) => findDynamicExpression(argument, staticBindings))
 					.find(
 						(issue: DynamicExpression | undefined): issue is DynamicExpression =>
 							issue !== undefined,
@@ -696,6 +918,40 @@ const markerForAnyCall = (
 };
 
 const rules: Record<string, RuleDefinition> = {
+	"no-dynamic-carrier-fallback": {
+		create(context) {
+			return {
+				Program(node) {
+					reportCarrierResiduals(node, context);
+				},
+			};
+		},
+	},
+	"no-dynamic-keyframes": {
+		create(context) {
+			return {
+				Program(node) {
+					const resolver = createApiResolver();
+					resolver.scan(node);
+					const literalAnalysis = createLiteralScopeAnalysis(node);
+					walkWithAncestors(node, (current) => {
+						if (current.type !== NodeKind.CallExpression) return;
+						const api = resolver.resolve(current);
+						if (api?.kind !== API.style || api.method !== STYLE_METHOD.keyframes) return;
+						const body = current.arguments?.[0];
+						const literal = literalValueForCall(literalAnalysis, current, body);
+						if (current.arguments?.length === 1 && isLiteralKeyframeBody(literal)) return;
+						context.report({
+							node: body ?? current,
+							message:
+								"pandwind: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
+							data: { name: callName(api) },
+						});
+					});
+				},
+			};
+		},
+	},
 	"no-dollar-raw": {
 		create(context) {
 			return withResolver((node, api) => {
@@ -811,19 +1067,22 @@ const rules: Record<string, RuleDefinition> = {
 	},
 	"no-dynamic-values": {
 		create(context) {
-			return withResolver((node, api, staticBindings) => {
-				if (!isStaticLane(api)) return;
-				for (const arg of node.arguments) {
-					const dynamic = findDynamicExpression(arg, staticBindings);
-					if (dynamic === undefined) continue;
-					context.report({
-						node: dynamic.node,
-						message:
-							"pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
-						data: { bad: dynamic.bad, name: callName(api) },
-					});
-				}
-			});
+			return withResolver(
+				(node, api, staticBindings) => {
+					if (!isStaticLane(api)) return;
+					for (const arg of node.arguments) {
+						const dynamic = findDynamicExpression(arg, staticBindings);
+						if (dynamic === undefined) continue;
+						context.report({
+							node: dynamic.node,
+							message:
+								"pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
+							data: { bad: dynamic.bad, name: callName(api) },
+						});
+					}
+				},
+				{ useLiteralScopes: true },
+			);
 		},
 	},
 	"no-multiple-conditionals": {

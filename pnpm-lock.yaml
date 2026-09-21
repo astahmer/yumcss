@@ -868,6 +868,10 @@ importers:
         version: 5.0.0(@types/node@26.4.1)(@vitest/coverage-v8@5.0.0)(happy-dom@10.8.0)(vite@8.2.2)
 
   packages/lint-plugin:
+    dependencies:
+      pandwind:
+        specifier: workspace:*
+        version: link:../pandwind
     devDependencies:
       oxc-parser:
         specifier: 0.148.0

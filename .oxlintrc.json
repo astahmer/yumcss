@@ -25,6 +25,8 @@
 		"pandwind-extraction/no-stale-migration-skip": "error",
 		"pandwind-extraction/require-migration-residual": "error",
 		"pandwind-extraction/no-conflicting-style-props": "error",
+		"pandwind-extraction/no-dynamic-carrier-fallback": "error",
+		"pandwind-extraction/no-dynamic-keyframes": "error",
 		"pandwind-extraction/no-raw-ast-identities": "error"
 	},
 	"ignorePatterns": [
@@ -61,6 +63,8 @@
 				"pandwind-extraction/no-stale-migration-skip": "off",
 				"pandwind-extraction/require-migration-residual": "off",
 				"pandwind-extraction/no-conflicting-style-props": "off",
+				"pandwind-extraction/no-dynamic-carrier-fallback": "off",
+				"pandwind-extraction/no-dynamic-keyframes": "off",
 				"pandwind-extraction/no-raw-ast-identities": "off"
 			}
 		}
