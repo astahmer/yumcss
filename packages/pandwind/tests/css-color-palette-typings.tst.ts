@@ -108,11 +108,13 @@ test("preset-bound surfaces reserve colorPalette without configured palettes", (
 	});
 	noPaletteDesignCss.raw({
 		$raw: {
+			// @ts-expect-error not assignable
 			colorPalette: "brand",
 		},
 	});
 	noPaletteDesignCss.raw({
 		$raw: {
+			// @ts-expect-error not assignable
 			_dark: {
 				colorPalette: "brand",
 			},
@@ -133,10 +135,12 @@ test("preset-bound surfaces reserve colorPalette without configured palettes", (
 		colorPalette: "brand",
 	});
 	noPaletteRuntimeCss.raw({
+		// @ts-expect-error not assignable
 		colorPalette: "brand",
 	});
 	noPaletteRuntimeDesignCss.raw({
 		$raw: {
+			// @ts-expect-error not assignable
 			colorPalette: "brand",
 		},
 	});
