@@ -281,4 +281,7 @@ export type GeneratedDynamicStyle = {
 
 export type GeneratedCss = CssFn<GeneratedStyle, GeneratedDynamicStyle>;
 
-export const css: GeneratedCss = /* @__PURE__ */ createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(preset);
+export const css: GeneratedCss = /* @__PURE__ */ createGeneratedCss<
+	GeneratedStyle,
+	GeneratedDynamicStyle
+>(preset);

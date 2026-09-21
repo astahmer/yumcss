@@ -77,9 +77,9 @@ describe("pandwind-codemod css", () => {
 			"preset",
 		]);
 		const source = readFileSync(output, "utf8");
-		expect(source).toContain(
-			"/* @__PURE__ */ createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(preset)",
-		);
+		expect(source).toContain("/* @__PURE__ */ createGeneratedCss<");
+		expect(source).toContain("GeneratedStyle");
+		expect(source).toContain("GeneratedDynamicStyle");
 		expect(source).toContain("FirstThatWorksValue");
 		expect(source).toContain(
 			"export type GeneratedCss = CssFn<GeneratedStyle, GeneratedDynamicStyle>",
@@ -212,9 +212,8 @@ describe("pandwind-codemod css", () => {
 			tokenVariableNames: "authored",
 		}).source;
 
-		expect(source).toContain(
-			'createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(preset, { tokenVariableNames: "authored" })',
-		);
+		expect(source).toContain("createGeneratedCss<");
+		expect(source).toContain('>(preset, { tokenVariableNames: "authored" });');
 		expect(source).toContain('"$blue-500"');
 	});
 });

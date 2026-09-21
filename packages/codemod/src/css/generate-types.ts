@@ -273,7 +273,10 @@ ${generatedStyleType(preset)}
 
 export type GeneratedCss = CssFn<GeneratedStyle, GeneratedDynamicStyle>;
 
-export const css: GeneratedCss = /* @__PURE__ */ createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(preset${runtimeOptions});
+export const css: GeneratedCss = /* @__PURE__ */ createGeneratedCss<
+	GeneratedStyle,
+	GeneratedDynamicStyle
+>(preset${runtimeOptions});
 `;
 	return {
 		source,
