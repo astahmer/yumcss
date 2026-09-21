@@ -197,7 +197,7 @@ const collectStyleObject = (
 			if (!isCondition && !isRaw && !isDesignModuleKey(key)) usage.dynamicProperties.add(key);
 			collectStyleObject(value, usage, nestedDesignModule);
 		} else if (value?.type === NodeKind.ArrayExpression) {
-			if (!isCondition && !isRaw && !isDesignModuleKey(key)) usage.dynamicProperties.add(key);
+			if (!isCondition && !isRaw) usage.dynamicProperties.add(key);
 			for (const element of (value as { elements?: OxcNode[] }).elements ?? []) {
 				if (element?.type === NodeKind.Literal)
 					addLiteralValue(usage, key, (element as { value?: unknown }).value);
@@ -206,7 +206,8 @@ const collectStyleObject = (
 				else usage.dynamicProperties.add(key);
 			}
 		} else {
-			usage.dynamicProperties.add(key);
+			if (isCondition || isRaw) usage.sliceable = false;
+			else usage.dynamicProperties.add(key);
 		}
 	}
 };
@@ -535,6 +536,15 @@ const runtimePresetSource = (
 		for (const propertyName of moduleProperties) {
 			for (const group of DESIGN_TOKEN_GROUPS[designModule][propertyName] ?? [])
 				addTokenDependency(group, propertyName);
+		}
+	}
+	for (const designModule of ["$frame", "$layout", "$text"] as const) {
+		if (!usage.dynamicProperties.has(designModule)) continue;
+		for (const groups of Object.values(DESIGN_TOKEN_GROUPS[designModule])) {
+			for (const group of groups) {
+				tokenGroups.add(group);
+				dynamicTokenGroups.add(group);
+			}
 		}
 	}
 

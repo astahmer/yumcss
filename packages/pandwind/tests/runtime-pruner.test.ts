@@ -123,6 +123,39 @@ describe("runtime pruning", () => {
 		expect(loaded).not.toContain('"spacing"');
 	});
 
+	test("keeps all design groups for a dynamic module object", () => {
+		const pruner = createRuntimePruningTransform({ preset: examplePreset });
+		const source =
+			'import { createDesignCss } from "pandwind/design";\n' +
+			'import { examplePreset } from "@pandwind/example-preset";\n' +
+			"const css = createDesignCss(examplePreset);\n" +
+			"const frame = getFrame();\n" +
+			"export const styles = css.class({ $frame: frame });";
+
+		const result = pruner.transform(source, ID);
+		const virtualSource = result?.code.match(/pandwind:runtime\/css\?[^"']+/u)?.[0];
+		const virtual = pruner.resolveId(virtualSource!);
+		const loaded = pruner.load(virtual!);
+		expect(loaded).toContain('"colors":');
+		expect(loaded).toContain('"spacing":');
+		expect(loaded).toContain('"radii":');
+	});
+
+	test("falls back for a dynamic raw style object", () => {
+		const pruner = createRuntimePruningTransform({ preset: examplePreset });
+		const source =
+			'import { createCss } from "pandwind/css";\n' +
+			'import { examplePreset } from "@pandwind/example-preset";\n' +
+			"const css = createCss(examplePreset);\n" +
+			"const raw = getStyle();\n" +
+			"export const styles = css.class({ $raw: raw });";
+
+		const result = pruner.transform(source, ID);
+		expect(result?.code).toContain("factory=preset&methods=class");
+		expect(result?.code).toContain("createCss(examplePreset)");
+		expect(result?.code).not.toContain("slice=");
+	});
+
 	test("keeps the complete preset for dynamic style spreads", () => {
 		const pruner = createRuntimePruningTransform({ preset: examplePreset });
 		const source =
