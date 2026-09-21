@@ -93,15 +93,15 @@ keys it embeds only the matching preset properties, conditions, and token
 groups. Unknown spreads, computed keys, escaped factories, and
 non-serializable preset data keep the conservative fallback.
 
-| fixture                                 |     min |    gzip |
-| --------------------------------------- | ------: | ------: |
-| all static unsafe `css()` calls         |    81 B |    98 B |
-| all static preset `css()` calls         |    37 B |    57 B |
-| compiler-pruned unsafe `css()` call     | 6.42 KB | 2.68 KB |
-| compiler-pruned unsafe `css.class()`    | 6.48 KB | 2.70 KB |
-| compiler-pruned unsafe `css.vars()`     | 8.84 KB | 3.56 KB |
-| compiler-pruned preset `css.class()`    | 12.80 KB | 4.91 KB |
-| compiler-pruned generated `keyframes()` | 10.32 KB | 4.12 KB |
+| fixture                                 |      min |     gzip |
+| --------------------------------------- | -------: | -------: |
+| all static unsafe `css()` calls         |     81 B |     98 B |
+| all static preset `css()` calls         |     37 B |     57 B |
+| compiler-pruned unsafe `css()` call     |  6.42 KB |  2.68 KB |
+| compiler-pruned unsafe `css.class()`    |  6.48 KB |  2.70 KB |
+| compiler-pruned unsafe `css.vars()`     |  8.84 KB |  3.56 KB |
+| compiler-pruned preset `css.class()`    | 12.80 KB |  4.91 KB |
+| compiler-pruned generated `keyframes()` | 10.32 KB |  4.12 KB |
 | compiler-pruned design `css.class()`    | 32.14 KB | 10.95 KB |
 
 The opt-in `pandwind-codemod runtime generate` path has the same callable
