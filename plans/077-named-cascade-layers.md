@@ -27,10 +27,7 @@ SSR/DOM output, Vite HMR, and library artifacts.
 Extend the cascade policy with a structured named-layer form:
 
 ```ts
-type CssCascade =
-	| "specificity"
-	| "layers"
-	| { mode: "layers"; layer: string };
+type CssCascade = "specificity" | "layers" | { mode: "layers"; layer: string };
 ```
 
 `cascade: "layers"` remains the shorthand for `@layer pandwind`. The
@@ -82,13 +79,13 @@ createCss(preset, cascade policy)
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| API shape | Structured value nested under `cascade` | Prevents a loose layer option from silently doing nothing when layering is disabled. |
-| Existing shorthand | Keep `cascade: "layers"` | Preserves the current default and keeps the common case compact. |
-| Layer scope | One outer generated-sheet layer | Keeps class generation and cascade ordering unchanged; per-call layers would require separate rule registries and split semantics. |
-| Validation | Unescaped dotted CSS identifier path | Prevents CSS injection and keeps serialization deterministic without inventing an escaping contract. |
-| Artifact version | `pandwind.lib/2` | The compatibility schema gains a required layer field; stale v1 artifacts must fail closed. |
+| Choice             | Decision                                | Rationale                                                                                                                          |
+| ------------------ | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| API shape          | Structured value nested under `cascade` | Prevents a loose layer option from silently doing nothing when layering is disabled.                                               |
+| Existing shorthand | Keep `cascade: "layers"`                | Preserves the current default and keeps the common case compact.                                                                   |
+| Layer scope        | One outer generated-sheet layer         | Keeps class generation and cascade ordering unchanged; per-call layers would require separate rule registries and split semantics. |
+| Validation         | Unescaped dotted CSS identifier path    | Prevents CSS injection and keeps serialization deterministic without inventing an escaping contract.                               |
+| Artifact version   | `pandwind.lib/2`                        | The compatibility schema gains a required layer field; stale v1 artifacts must fail closed.                                        |
 
 ### Architecture
 
@@ -146,7 +143,7 @@ semantic CSS feature and is intentionally not part of this change.
 
 - [x] Existing `cascade: "layers"` output remains `@layer pandwind`.
 - [x] A structured named layer is emitted identically by pure, Vite, and
-  runtime paths.
+      runtime paths.
 - [x] Invalid layer paths fail closed before CSS serialization.
 - [x] Library artifacts record and validate the selected layer.
 - [x] The codemod library-build CLI accepts and documents named layers.
@@ -154,7 +151,7 @@ semantic CSS feature and is intentionally not part of this change.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-09-21 | Use a structured `cascade` value with a legacy shorthand | Keeps mode and layer ownership explicit without adding a silently inert top-level option. |
-| 2026-09-21 | Version artifacts as `pandwind.lib/2` | Layer identity is part of compatibility; old artifacts lack the field and must not be trusted. |
+| Date       | Decision                                                 | Rationale                                                                                      |
+| ---------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 2026-09-21 | Use a structured `cascade` value with a legacy shorthand | Keeps mode and layer ownership explicit without adding a silently inert top-level option.      |
+| 2026-09-21 | Version artifacts as `pandwind.lib/2`                    | Layer identity is part of compatibility; old artifacts lack the field and must not be trusted. |
