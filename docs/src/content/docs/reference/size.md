@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-Last measured: **2026-09-17** for the Pandwind runtime byte record. The
+Last measured: **2026-09-21** for the Pandwind runtime byte record. The
 competitor rows retain the supplied reference measurements for the named
 versions. The environment was local macOS (arm64), Node v24.19.0, esbuild
 0.28.2. Pandwind numbers come from real browser-targeted esbuild bundles
@@ -23,23 +23,23 @@ The compact snapshot-derived typecheck and size summary is in
 
 | entry                                      |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `createCss(defaultPreset)` runtime         | 24.10 KB |  8.68 KB |
-| `createCss(tailwindPreset)` runtime        | 40.31 KB | 13.17 KB |
-| `createCss(chakraPreset)` runtime          | 51.17 KB | 13.81 KB |
-| `createCss(pandaPreset)` runtime           | 44.42 KB | 12.79 KB |
-| `createCss(shadcnPreset)` runtime          | 85.08 KB | 15.95 KB |
-| `createCss(csstypePreset)` runtime         | 17.57 KB |  6.49 KB |
-| `createCss(minimal preset)` runtime        | 13.08 KB |  5.18 KB |
-| `createUnsafeCss()` fallback runtime       | 10.60 KB |  4.27 KB |
-| `createCssRuntime()` core (**internal**)   |  5.82 KB |  2.52 KB |
-| `createRuntimeCss()` + runtime sheet       | 33.73 KB | 12.50 KB |
+| `createCss(defaultPreset)` runtime         | 26.12 KB |  9.38 KB |
+| `createCss(tailwindPreset)` runtime        | 42.34 KB | 13.87 KB |
+| `createCss(chakraPreset)` runtime          | 53.19 KB | 14.53 KB |
+| `createCss(pandaPreset)` runtime           | 46.45 KB | 13.49 KB |
+| `createCss(shadcnPreset)` runtime          | 87.32 KB | 16.70 KB |
+| `createCss(csstypePreset)` runtime         | 19.61 KB |  7.19 KB |
+| `createCss(minimal preset)` runtime        | 15.12 KB |  5.86 KB |
+| `createUnsafeCss()` fallback runtime       | 11.85 KB |  4.70 KB |
+| `createCssRuntime()` core (**internal**)   |  6.42 KB |  2.70 KB |
+| `createRuntimeCss()` + runtime sheet       | 37.56 KB | 13.75 KB |
 | `tw()` runtime                             |  2.80 KB |  1.31 KB |
 | `cx()` plain strings                       |  7.03 KB |  3.01 KB |
-| `cx()` + CSS atom registry                 | 17.54 KB |  6.84 KB |
-| all direct runtime entries                 | 20.23 KB |  7.80 KB |
-| stylesheet generator (**build-time only**) | 21.09 KB |  8.18 KB |
+| `cx()` + CSS atom registry                 | 18.79 KB |  7.28 KB |
+| all direct runtime entries                 | 21.48 KB |  8.24 KB |
+| stylesheet generator (**build-time only**) | 25.13 KB |  9.48 KB |
 
-The combined direct runtime is measured at 20.23 KB min / 7.80 KB gzip in this
+The combined direct runtime is measured at 21.48 KB min / 8.24 KB gzip in this
 record for `createUnsafeCss()` + `tw()` + `cx()`. The preset-bound
 `createCss(preset)` lanes are measured separately because they also carry the
 preset-aware resolver, and the preset they are handed decides how much token
@@ -73,28 +73,36 @@ same size gate checks these tree-shaken entry points:
 
 | fixture / import                           |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `pandwind/css` — createCss(defaultPreset)  | 24.10 KB |  8.68 KB |
-| `pandwind/css` — createCss(tailwindPreset) | 40.31 KB | 13.17 KB |
-| `pandwind/css` — createCss(chakraPreset)   | 51.17 KB | 13.81 KB |
-| `pandwind/css` — createCss(pandaPreset)    | 44.42 KB | 12.79 KB |
-| `pandwind/css` — createCss(shadcnPreset)   | 85.08 KB | 15.95 KB |
-| `pandwind/css` — createCss(csstypePreset)  | 17.57 KB |  6.49 KB |
-| `pandwind/css` — createCss(minimal preset) | 13.08 KB |  5.18 KB |
-| `pandwind/unsafe/css` — createUnsafeCss    | 10.60 KB |  4.27 KB |
+| `pandwind/css` — createCss(defaultPreset)  | 26.12 KB |  9.38 KB |
+| `pandwind/css` — createCss(tailwindPreset) | 42.34 KB | 13.87 KB |
+| `pandwind/css` — createCss(chakraPreset)   | 53.19 KB | 14.53 KB |
+| `pandwind/css` — createCss(pandaPreset)    | 46.45 KB | 13.49 KB |
+| `pandwind/css` — createCss(shadcnPreset)   | 87.32 KB | 16.70 KB |
+| `pandwind/css` — createCss(csstypePreset)  | 19.61 KB |  7.19 KB |
+| `pandwind/css` — createCss(minimal preset) | 15.12 KB |  5.86 KB |
+| `pandwind/unsafe/css` — createUnsafeCss    | 11.85 KB |  4.70 KB |
 | `pandwind/tw` — tw() only                  |  2.80 KB |  1.31 KB |
 | `pandwind/cx` — cx() plain strings         |  7.03 KB |  3.01 KB |
 | `pandwind/cx` — cx() with atom registry    | 17.54 KB |  6.84 KB |
 | root barrel, tw only                       |  2.80 KB |  1.31 KB |
 | root barrel, cx + CSS                      | 17.53 KB |  6.86 KB |
 
-Compiler-pruned and static fixtures are smaller still:
+Compiler-pruned and static fixtures are smaller still. The Vite transform
+erases fully literal calls; for a dynamic value with statically known style
+keys it embeds only the matching preset properties, conditions, and token
+groups. Unknown spreads, computed keys, escaped factories, and
+non-serializable preset data keep the conservative fallback.
 
-| fixture                            |     min |    gzip |
-| ---------------------------------- | ------: | ------: |
-| all static `css()` calls           |    81 B |    98 B |
-| compiler-pruned `css()` call       | 5.82 KB | 2.50 KB |
-| compiler-pruned `css.class()` call | 5.88 KB | 2.52 KB |
-| compiler-pruned `css.vars()` call  | 8.24 KB | 3.38 KB |
+| fixture                                 |     min |    gzip |
+| --------------------------------------- | ------: | ------: |
+| all static unsafe `css()` calls         |    81 B |    98 B |
+| all static preset `css()` calls         |    37 B |    57 B |
+| compiler-pruned unsafe `css()` call     | 6.42 KB | 2.68 KB |
+| compiler-pruned unsafe `css.class()`    | 6.48 KB | 2.70 KB |
+| compiler-pruned unsafe `css.vars()`     | 8.84 KB | 3.56 KB |
+| compiler-pruned preset `css.class()`    | 12.80 KB | 4.91 KB |
+| compiler-pruned generated `keyframes()` | 10.32 KB | 4.12 KB |
+| compiler-pruned design `css.class()`    | 32.14 KB | 10.95 KB |
 
 The opt-in `pandwind-codemod runtime generate` path has the same callable
 core, but can omit attachments that an application never uses:
@@ -114,8 +122,9 @@ module is statically imported and retains only the selected typed methods;
 `group` automatically adds its required `vars` attachment. These figures are
 enforced by the generated rows in `packages/pandwind/tests/runtime-size.test.ts`.
 
-Literal calls are erased by the Vite compiler; these fallback numbers are
-the cost paid by dynamic or unsupported calls.
+Literal calls are erased by the Vite compiler. Dynamic preset-bound calls with
+literal property keys use the projected-preset lane above; dynamic or
+unsupported calls pay the corresponding full fallback runtime.
 
 ## Generated Tailwind conflict metadata
 
@@ -151,46 +160,44 @@ are the individual lanes an application pays for; `css()` + `tw()` +
 `cx()` is the combined shape and is the least common of them. Each lane is
 a real import bundle: `createCss(preset)` from `pandwind/css`,
 `createTw()` from `pandwind/tw`, and `createCx({ css })` from
-`pandwind/cx`. The `pandwind/unsafe/css` variants save roughly 2.5 KB min /
-0.9 KB gzip by dropping the preset resolver and are listed in the per-import
+`pandwind/cx`. The `pandwind/unsafe/css` variant drops the preset resolver;
+the exact difference depends on the preset and is listed in the per-import
 table above.
 
-The `css()` lane appears once per preset because the preset, not the engine, is
-what moves it: 13.08 KB min with the minimal preset, 17.57 KB once the
-structural `csstypePreset` supplies the CSS property vocabulary, 24.10 KB once
-`defaultPreset` adds Pandwind's stock scale groups and its property bindings,
-40.31 KB with `tailwindPreset`, 51.17 KB with `chakraPreset`, 44.42 KB with
-`pandaPreset`, and 85.08 KB with
+The direct `css()` lane appears once per preset because the preset, not the
+engine, is what moves it: 15.12 KB min with the minimal preset, 19.61 KB once
+the structural `csstypePreset` supplies the CSS property vocabulary, 26.12 KB
+once `defaultPreset` adds Pandwind's stock scale groups and its property
+bindings, 42.34 KB with `tailwindPreset`, 53.19 KB with `chakraPreset`, 46.45
+KB with `pandaPreset`, and 87.32 KB with
 `shadcnPreset`, the widest catalog Pandwind ships: shadcn's color roles for
 every base color in both modes, its radius multipliers, and its font variables.
-Every palette color, radius, shadow, blur, and role rides along as authored
-data, because esbuild cannot drop object entries that a live preset never reads.
-A runtime lane ships its preset as authored data:
-`defaultPreset` costs 6.53 KB min / 2.19 KB gzip over the `csstypePreset` lane,
-against 9.63 KB / 3.53 KB for adding both `tw()` and `cx()` to the unsafe
-runtime. An application that needs the smallest `css()` runtime supplies its
-own preset and its own tokens, or extracts its calls statically. The combination
-rows below use `fixturePreset`, a test fixture whose only difference from
-`defaultPreset` is that it still carries a named color palette; they measure a
-palette-resolving preset, which is the shape an application importing a
-named-color preset ships.
+These standalone rows intentionally bundle the live preset without the Vite
+transform, so every authored catalog entry remains available. Under Vite, the
+projected-preset lane avoids shipping unused entries when dynamic calls expose
+literal keys; fully static calls erase the preset entirely. An application that
+needs the smallest uncompiled `css()` runtime supplies its own preset and its
+own tokens. The combination rows below use `fixturePreset`, a test fixture
+whose only difference from `defaultPreset` is that it still carries a named
+color palette; they measure a palette-resolving preset, which is the shape an
+application importing a named-color preset ships.
 
 | runtime                                      |      min |     gzip | what ships                                |
 | -------------------------------------------- | -------: | -------: | ----------------------------------------- |
-| pandwind `css()` (defaultPreset)             | 24.10 KB |  8.68 KB | stock scales + resolver + atom engine     |
-| pandwind `css()` (fixture preset)            | 27.43 KB |  9.73 KB | fixture palette + resolver + engine       |
-| pandwind `css()` (tailwindPreset)            | 40.31 KB | 13.17 KB | Tailwind v4 catalog + resolver + engine   |
-| pandwind `css()` (chakraPreset)              | 51.17 KB | 13.81 KB | Chakra v3 catalog + resolver + engine     |
-| pandwind `css()` (pandaPreset)               | 44.42 KB | 12.79 KB | Panda CSS catalog + resolver + engine     |
-| pandwind `css()` (shadcnPreset)              | 85.08 KB | 15.95 KB | shadcn registry roles + resolver + engine |
-| pandwind `css()` (csstypePreset)             | 17.57 KB |  6.49 KB | property vocabulary + resolver + engine   |
-| pandwind `css()` (minimal preset)            | 13.08 KB |  5.18 KB | resolver + atom engine only               |
+| pandwind `css()` (defaultPreset)             | 26.12 KB |  9.38 KB | stock scales + resolver + atom engine     |
+| pandwind `css()` (fixture preset)            | 29.43 KB | 10.43 KB | fixture palette + resolver + engine       |
+| pandwind `css()` (tailwindPreset)            | 42.34 KB | 13.87 KB | Tailwind v4 catalog + resolver + engine   |
+| pandwind `css()` (chakraPreset)              | 53.19 KB | 14.53 KB | Chakra v3 catalog + resolver + engine     |
+| pandwind `css()` (pandaPreset)               | 46.45 KB | 13.49 KB | Panda CSS catalog + resolver + engine     |
+| pandwind `css()` (shadcnPreset)              | 87.32 KB | 16.70 KB | shadcn registry roles + resolver + engine |
+| pandwind `css()` (csstypePreset)             | 19.61 KB |  7.19 KB | property vocabulary + resolver + engine   |
+| pandwind `css()` (minimal preset)            | 15.12 KB |  5.86 KB | resolver + atom engine only               |
 | pandwind `tw()`                              |  2.80 KB |  1.31 KB | variant join syntax alone                 |
-| pandwind `css()` (fixture) + `tw()`          | 30.11 KB | 10.72 KB | the common two-lane app                   |
-| pandwind `css()` (fixture) + `cx()`          | 34.38 KB | 12.37 KB | atom registry + cross-engine merge        |
-| pandwind `css()` (fixture) + `tw()` + `cx()` | 37.06 KB | 13.32 KB | combined runtime                          |
-| pandwind compiler-pruned `css.class()`       |  5.88 KB |  2.52 KB | literals + shared engine, post-extraction |
-| pandwind fully extracted `css()`             |     81 B |     98 B | emitted literals only                     |
+| pandwind `css()` (fixture) + `tw()`          | 32.12 KB | 11.41 KB | the common two-lane app                   |
+| pandwind `css()` (fixture) + `cx()`          | 36.39 KB | 13.05 KB | atom registry + cross-engine merge        |
+| pandwind `css()` (fixture) + `tw()` + `cx()` | 39.07 KB | 14.01 KB | combined runtime                          |
+| pandwind compiler-pruned `css.class()`       | 12.80 KB |  4.91 KB | projected preset + shared engine          |
+| pandwind fully extracted `css()`             |     37 B |     57 B | emitted literals only                     |
 | `@stylexjs/stylex` 0.19.0                    |  4.06 KB |  1.74 KB | runtime only (compile happens in babel)   |
 | `@pandacss/core` 1.12.0 generated `css()`    |  13.4 KB |  5.31 KB | panda runtime engine + tokens             |
 | `@emotion/css` 11.13.5                       |  15.3 KB |  6.25 KB | emotion core (chakra's engine)            |
@@ -198,9 +205,10 @@ named-color preset ships.
 | `tailwind-merge` 3.6.0                       |  27.0 KB |  8.47 KB | merge function alone                      |
 | `tokenami`                                   |        0 |       ~0 | compile-time only, nothing ships          |
 
-The compiler-pruned row is what a production app pays once the Vite compiler
-has erased every literal call: the same shared engine with only the emitted
-literals and the attachments that inlined calls still need.
+The compiler-pruned row is what a production app pays for a dynamic
+preset-bound call whose style keys are statically visible: the shared engine
+plus only the projected preset metadata and attachments that call needs. A
+fully literal call pays only its emitted literals.
 
 Alternative-library values are the supplied reference run, not a release
 budget. Re-run that external rig before making a new ecosystem comparison;
