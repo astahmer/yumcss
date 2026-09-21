@@ -11,12 +11,13 @@ const app = resolve(import.meta.dirname, "../../examples/example");
 const meta = extractTwConfigFromSources([
 	readFileSync(resolve(app, "src/tw.ts"), "utf8"),
 	readFileSync(resolve(app, "src/tw.runtime.ts"), "utf8"),
+	readFileSync(resolve(app, "src/tw.conflicts.ts"), "utf8"),
 	readFileSync(resolve(app, "src/tw.build.ts"), "utf8"),
-])!;
+]);
+if (meta?.conflicts === undefined)
+	throw new Error("cx benchmark requires generated conflict metadata");
 
 const cx = createCx({
-	css: undefined as never,
-	variants: meta.variants,
 	conflicts: meta.conflicts,
 	compose: meta.compose,
 });

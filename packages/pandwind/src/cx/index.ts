@@ -555,13 +555,10 @@ export function createCx(options: CxOptions = {}): CxFn {
 	const outStyle = Object.create(null) as Record<string, string>;
 	/** Live (not-yet-overridden) signature count per outCls entry. */
 	const outLive: number[] = [];
-	/**
-	 * Live primary-signature ownership as parallel arrays (interned sid ->
-	 * outCls index). Signature counts per call are tiny (<40), so linear
-	 * scans beat Map hashing on the hot push path.
-	 */
-	const ownSid: number[] = [];
-	const ownIdx: number[] = [];
+	/** Direct sid ownership; counts preserve repeated signatures in one plan. */
+	const ownerBySid: number[] = [];
+	const ownerCountBySid: number[] = [];
+	const ownedSids: number[] = [];
 	const opaque = new Set<string>();
 	const parts: string[] = [];
 
@@ -646,18 +643,9 @@ export function createCx(options: CxOptions = {}): CxFn {
 		const all = plan.all;
 		for (let ai = 0; ai < all.length; ai++) {
 			const sid = all[ai]!;
-			let k = 0;
-			for (; k < ownSid.length; k++) {
-				if (ownSid[k] === sid) break;
-			}
-			if (k >= ownSid.length) continue;
-			const previous = ownIdx[k]!;
-			// Swap-remove keeps the arrays compact without reindexing others.
-			const last = ownSid.length - 1;
-			ownSid[k] = ownSid[last]!;
-			ownIdx[k] = ownIdx[last]!;
-			ownSid.pop();
-			ownIdx.pop();
+			const previous = ownerBySid[sid];
+			if (previous === undefined || previous < 0) continue;
+			if (--ownerCountBySid[sid]! === 0) ownerBySid[sid] = -1;
 			if (--outLive[previous]! === 0) outCls[previous] = "";
 		}
 		const index = outCls.length;
@@ -665,8 +653,14 @@ export function createCx(options: CxOptions = {}): CxFn {
 		outLive.push(plan.primaries);
 		outAtomKeys.push(atomKeys);
 		for (let i = 0; i < plan.primaries; i++) {
-			ownSid.push(all[i]!);
-			ownIdx.push(index);
+			const sid = all[i]!;
+			if (ownerBySid[sid] === undefined || ownerBySid[sid]! < 0) {
+				ownerBySid[sid] = index;
+				ownerCountBySid[sid] = 1;
+				ownedSids.push(sid);
+			} else {
+				ownerCountBySid[sid]!++;
+			}
 		}
 	};
 
@@ -810,8 +804,11 @@ export function createCx(options: CxOptions = {}): CxFn {
 		outCls.length = 0;
 		outAtomKeys.length = 0;
 		outLive.length = 0;
-		ownSid.length = 0;
-		ownIdx.length = 0;
+		for (const sid of ownedSids) {
+			ownerBySid[sid] = -1;
+			ownerCountBySid[sid] = 0;
+		}
+		ownedSids.length = 0;
 		opaque.clear();
 		for (const styleKey of Object.keys(outStyle)) delete outStyle[styleKey];
 	};

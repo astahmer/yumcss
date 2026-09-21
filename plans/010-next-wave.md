@@ -129,6 +129,36 @@ Size cost is real and deliberate: cx entry 6922→7512 min / 3056→3287 gz.
 Budgets raised with review: cx 7200/3100→7900/3400, all-three
 9200/3900→9900/4200. Snapshot + SIZE.md refreshed.
 
+### E.1 Outcomes — direct signature ownership (2026-09-22)
+
+The benchmark harness now includes the generated `tw.conflicts.ts` companion;
+without it, the configured lane silently measured opaque class composition.
+With the real 218-signature example metadata, replacing the live-signature
+linear scan with direct interned-id ownership raised the unique-token lane from
+roughly 103–114K to 115–118K ops/sec across noisy runs. The warm result-cache
+lanes stayed in the same broad range, as expected: cache hits do not enter the
+merge engine.
+
+The direct owner table is reset only for ids claimed by the current call and
+keeps a small count for repeated signatures in one compiled plan. The `cx`
+entry changed from 18,659 / 7,242 to 18,655 / 7,234 minified / gzip bytes;
+the change is a size reduction, not a budget increase.
+
+The remaining experiments were measured or rejected on cost grounds:
+
+- In-place survivor compaction still has to copy live entries before joining;
+  the reusable `parts` buffer means it did not produce a meaningful cold-path
+  win.
+- A right-to-left/per-first-character parser added work for the common small
+  buckets and one hybrid version added substantial code without improving the
+  cold median. The existing first-segment index remains the better trade-off.
+- Alternate result-cache keying cannot remove the first-call key work without
+  weakening the warm cache; no compelling cold benefit justified that change.
+- A single integer bitset does not fit the real metadata: the example has 218
+  distinct signatures, and CSS atoms can introduce further properties. A
+  BigInt or multi-word representation would add code and bit-enumeration work
+  before proving a win, so it is not shipped.
+
 ## H. Outcomes — bench lane gap investigated, no rewiring warranted (2026-08-23)
 
 Investigation lives in `/Users/astahmer/dev/css-in-js-bench` (branch
