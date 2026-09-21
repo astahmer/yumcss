@@ -2,7 +2,6 @@ import { ALL_RUNTIME_METHODS } from "../css/runtime-methods.ts";
 import { createDesignCssRuntime } from "./runtime.ts";
 import type { CreateCssOptions } from "../css/runtime-base.ts";
 import type { CssFn } from "../css/create-css.ts";
-import type { StyleObject } from "../types/typings.ts";
 import type { DesignDynamicStyleObject, DesignPreset, DesignStyleObject } from "./types.ts";
 
 /**
@@ -45,11 +44,15 @@ import type { DesignDynamicStyleObject, DesignPreset, DesignStyleObject } from "
 export const createDesignCss = <TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: CreateCssOptions = {},
-): CssFn<DesignStyleObject<TPreset>, DesignDynamicStyleObject<TPreset>, StyleObject> => {
+): CssFn<
+	DesignStyleObject<TPreset>,
+	DesignDynamicStyleObject<TPreset>,
+	DesignStyleObject<TPreset>
+> => {
 	return createDesignCssRuntime(preset, options, ALL_RUNTIME_METHODS) as unknown as CssFn<
 		DesignStyleObject<TPreset>,
 		DesignDynamicStyleObject<TPreset>,
-		StyleObject
+		DesignStyleObject<TPreset>
 	>;
 };
 

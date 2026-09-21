@@ -37,6 +37,7 @@ import type {
 	DynamicStyleObject,
 	StyleObject,
 	TypedDynamicStyleObject,
+	TypedRawStyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
 
@@ -96,8 +97,10 @@ export type RuntimeCssFn<
 	TDynamicStyles = DynamicStyleObject,
 	TOpenStyles extends StyleObject = OpenRuntimeStyleObject,
 	TOpenDynamicStyles = OpenRuntimeDynamicStyleObject,
-> = CssFn<TStyles, TDynamicStyles> &
-	CssFn<TOpenStyles, TOpenDynamicStyles> & {
+	TRawStyles extends StyleObject = TStyles,
+	TOpenRawStyles extends StyleObject = TOpenStyles,
+> = CssFn<TStyles, TDynamicStyles, TRawStyles> &
+	CssFn<TOpenStyles, TOpenDynamicStyles, TOpenRawStyles> & {
 		readonly sheet: RuntimeSheet;
 	};
 
@@ -287,14 +290,25 @@ export function createRuntimeCss<
 >(
 	preset: TPreset,
 	options: RuntimeCssOptions = {},
-): RuntimeCssFn<TypedStyleObject<TPreset>, TypedDynamicStyleObject<TPreset>> {
+): RuntimeCssFn<
+	TypedStyleObject<TPreset>,
+	TypedDynamicStyleObject<TPreset>,
+	OpenRuntimeStyleObject,
+	OpenRuntimeDynamicStyleObject,
+	TypedRawStyleObject<TPreset>,
+	OpenRuntimeStyleObject
+> {
 	const runtime = runtimeOptions(preset, options);
 	const css = createCss(preset, runtime.cssOptions) as CssFn<TypedStyleObject<TPreset>>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);
 	const flushed = withRuntimeFlush(css as unknown as CssFn<StyleObject>, runtime);
 	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
 		TypedStyleObject<TPreset>,
-		TypedDynamicStyleObject<TPreset>
+		TypedDynamicStyleObject<TPreset>,
+		OpenRuntimeStyleObject,
+		OpenRuntimeDynamicStyleObject,
+		TypedRawStyleObject<TPreset>,
+		OpenRuntimeStyleObject
 	>;
 }
 

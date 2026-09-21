@@ -147,7 +147,7 @@ type PropsInput =
 export interface CssFn<
 	TStyles extends StyleObject = StyleObject,
 	TDynamicStyles = DynamicStyleObject,
-	TRawStyles extends StyleObject = StyleObject,
+	TRawStyles extends StyleObject = TStyles,
 > {
 	/**
 	 * Compose authored style objects into an atomic declaration map.
