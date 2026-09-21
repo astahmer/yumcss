@@ -79,11 +79,11 @@ const scalarTokenValues = (config: AdapterProjectConfig): Set<string> =>
 function presetPropertiesSource(
 	groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
 ): string {
-	const properties: Record<string, { $tokens: string; $strict: false } | true> = {
+	const properties: Record<string, { $tokens: string } | true> = {
 		...PANDWIND_RAW_PROPERTIES,
 	};
 	for (const [property, group] of Object.entries(PANDWIND_TOKEN_PROPERTIES)) {
-		if (groups[group] !== undefined) properties[property] = { $tokens: group, $strict: false };
+		if (groups[group] !== undefined) properties[property] = { $tokens: group };
 	}
 	return JSON.stringify(properties, null, "\t");
 }
