@@ -102,7 +102,6 @@ type PropConfigValues<TConfig, TName extends keyof TConfig, TTokens> =
  *
  * `true` uses the CSS config; `$tokens` binds a token group; `$all` includes
  * all configured properties; `$strict: false` also allows CSS config values.
- * Omitting `$strict` keeps the binding strict.
  *
  * @typeParam TConfig - The CSS property configuration.
  * @typeParam TTokens - The token groups available to the preset.

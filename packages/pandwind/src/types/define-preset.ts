@@ -11,20 +11,6 @@ import type {
 
 export * from "./typings.ts";
 
-type PresetDefinition<TConfig extends object, TTokens extends AnyTokens> = Omit<
-	CssPreset<TConfig, TTokens>,
-	"strict"
-> & {
-	/** Mapped properties are token-only unless explicitly opened. */
-	strict?: boolean;
-};
-
-type EffectiveStrict<TPreset> = TPreset extends { readonly strict?: infer TStrict }
-	? [Extract<TStrict, boolean>] extends [never]
-		? true
-		: Extract<TStrict, boolean>
-	: true;
-
 /**
  * Preserve literal token and CSS config types for a preset theme.
  *
@@ -59,9 +45,8 @@ export const theme = <TTheme extends DefinePresetOptions>(theme: TTheme) => them
 /**
  * Combine theme values with the condition and property metadata used by CSS factories.
  *
- * Mapped properties are strict by default. `strict: false` opens the whole
- * preset, while `$strict: false` opens one mapped property without changing
- * the rest of the preset.
+ * `strict: true` exposes mapped token names; `$strict: false` also
+ * allows the property's raw CSS values.
  * `colorPalettes` adds named color roles that can be selected with
  * `colorPalette` and consumed as `colorPalette.<role>` values.
  * Palette sources are intentionally rooted in the `colors` token group; they
@@ -83,6 +68,7 @@ export const theme = <TTheme extends DefinePresetOptions>(theme: TTheme) => them
  *     tokens: { colors: { "$brand-500": "#2563eb" } },
  *   },
  *   {
+ *     strict: true,
  *     conditions: {},
  *     properties: {
  *       backgroundColor: { $tokens: "colors" },
@@ -99,8 +85,7 @@ export const theme = <TTheme extends DefinePresetOptions>(theme: TTheme) => them
  * @typeParam TTokens - Token groups and literal token names.
  * @typeParam TPreset - Resulting preset shape.
  * @param theme - Values, optionally produced by {@link define.theme}.
- * @param preset - Conditions and property-to-token mappings. Strictness
- * defaults to `true` and can be disabled explicitly.
+ * @param preset - Conditions, strictness, and property-to-token mappings.
  * @returns A preset carrying both runtime metadata and inferred token types.
  * @see {@link define.tokens} for the raw token layer.
  * @see {@link createCss} for consuming the resulting preset.
@@ -111,21 +96,9 @@ export function preset<
 	TTheme extends DefinePresetOptions<object, AnyTokens>,
 	TConfig extends TTheme["config"],
 	TTokens extends TTheme["tokens"],
-	TPreset extends PresetDefinition<TConfig, TTokens>,
->(
-	theme: TTheme,
-	preset: TPreset,
-): Omit<TPreset, "strict"> & {
-	strict: EffectiveStrict<TPreset>;
-	_config: TConfig;
-	tokens: TTokens;
-} {
-	return {
-		...preset,
-		strict: preset.strict ?? true,
-		tokens: theme.tokens,
-	} as unknown as Omit<TPreset, "strict"> & {
-		strict: EffectiveStrict<TPreset>;
+	TPreset extends CssPreset<TConfig, TTokens>,
+>(theme: TTheme, preset: TPreset) {
+	return { ...preset, tokens: theme.tokens } as TPreset & {
 		_config: TConfig;
 		tokens: TTokens;
 	};
