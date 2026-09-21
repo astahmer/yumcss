@@ -1091,7 +1091,8 @@ test("dynamic css calls keep the runtime fallback", () => {
 	const result = extract().inline(code, "app.ts", new Set(["css"]));
 
 	expect(result.inlined).toBe(0);
-	expect(result.code).toBe(code);
+	expect(result.code).toContain("/* @__PURE__ */ createUnsafeCss()");
+	expect(result.code).toContain("css.class({ color })");
 });
 
 test("dynamic className rewriting is opt-in and host-aware", () => {

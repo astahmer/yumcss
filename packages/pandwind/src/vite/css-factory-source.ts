@@ -15,26 +15,37 @@ interface ImportNode extends OxcNode {
 interface OxcSpecifier {
 	type: string;
 	imported?: { name?: string };
+	local?: { name?: string };
 	importKind?: string;
 }
 
 const importedFactoryKind = (source: string, name: string): CssFactoryKindType | undefined => {
-	if (source === "pandwind/css" && name === "createCss") return CssFactoryKind.Css;
-	if (source === "pandwind/css/generated" && name === "createGeneratedCss")
+	const normalizedSource = source.replace(/\.[cm]?[jt]sx?$/u, "");
+	if (
+		(name === "createCss" &&
+			(normalizedSource.endsWith("/css") ||
+				normalizedSource.endsWith("/css/index") ||
+				normalizedSource.endsWith("/css/create-css"))))
 		return CssFactoryKind.Css;
-	if (source === "pandwind/unsafe/css" && name === "createUnsafeCss") return CssFactoryKind.Css;
-	if (source === "pandwind/design" && name === "createDesignCss") return CssFactoryKind.Design;
+	if (name === "createGeneratedCss" && normalizedSource.endsWith("/css/generated"))
+		return CssFactoryKind.Css;
+	if (name === "createUnsafeCss" && normalizedSource.endsWith("/unsafe/css"))
+		return CssFactoryKind.Css;
+	if (name === "createDesignCss" && normalizedSource.endsWith("/design"))
+		return CssFactoryKind.Design;
 	return undefined;
 };
 
-export const findCssFactoryKinds = (code: string, id: string): ReadonlySet<CssFactoryKindType> => {
-	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return new Set();
-	const program = SOURCE_SCANNER_SERVICE.parse({
-		file: id,
-		source: code,
-		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-	}).program as unknown as OxcNode;
-	const kinds = new Set<CssFactoryKindType>();
+export interface CssFactoryBinding {
+	readonly local: string;
+	readonly source: string;
+	readonly kind: CssFactoryKindType;
+}
+
+export const findCssFactoryBindingsInProgram = (
+	program: OxcNode,
+): readonly CssFactoryBinding[] => {
+	const bindings: CssFactoryBinding[] = [];
 	walk(program, (node) => {
 		if (node.type !== NodeKind.ImportDeclaration) return;
 		const declaration = node as ImportNode;
@@ -48,10 +59,25 @@ export const findCssFactoryKinds = (code: string, id: string): ReadonlySet<CssFa
 			)
 				continue;
 			const imported = specifier.imported?.name;
-			if (typeof imported !== "string") continue;
+			const local = specifier.local?.name;
+			if (typeof imported !== "string" || typeof local !== "string") continue;
 			const kind = importedFactoryKind(source, imported);
-			if (kind !== undefined) kinds.add(kind);
+			if (kind !== undefined) bindings.push({ local, source, kind });
 		}
 	});
-	return kinds;
+	return bindings;
+};
+
+export const findCssFactoryBindings = (code: string, id: string): readonly CssFactoryBinding[] => {
+	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return [];
+	const program = SOURCE_SCANNER_SERVICE.parse({
+		file: id,
+		source: code,
+		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+	}).program as unknown as OxcNode;
+	return findCssFactoryBindingsInProgram(program);
+};
+
+export const findCssFactoryKinds = (code: string, id: string): ReadonlySet<CssFactoryKindType> => {
+	return new Set(findCssFactoryBindings(code, id).map((binding) => binding.kind));
 };

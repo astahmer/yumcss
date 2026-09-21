@@ -17,6 +17,7 @@ import {
 	type ReactStrictDomBindings,
 } from "./css-react-strict-dom.ts";
 import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
+import { findCssFactoryBindingsInProgram } from "./css-factory-source.ts";
 
 /**
  * Language-aware source observations for the CSS extraction façade.
@@ -158,6 +159,32 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 			if (typeof local !== "string") continue;
 			if (isCssCarrierImport(declaration, specifier)) names.add(local);
 		}
+	});
+	const factoryBindings = findCssFactoryBindingsInProgram(program);
+	const matchedFactoryNames = new Set(
+		factoryBindings
+			.filter((binding) => cssSourceMatches(binding.source, matchers))
+			.map((binding) => binding.local),
+	);
+	const factoryNames = new Set(factoryBindings.map((binding) => binding.local));
+	walk(program, (node) => {
+		if (node.type !== NodeKind.VariableDeclarator) return;
+		const declarator = node as unknown as {
+			id?: { type?: string; name?: string };
+			init?: { type?: string; callee?: { type?: string; name?: string } } | null;
+		};
+		const local = declarator.id?.name;
+		const callee = declarator.init?.callee;
+		if (
+			declarator.id?.type !== NodeKind.Identifier ||
+			declarator.init?.type !== NodeKind.CallExpression ||
+			callee?.type !== NodeKind.Identifier ||
+			local === undefined ||
+			!factoryNames.has(callee.name ?? "") ||
+			!matchedFactoryNames.has(callee.name ?? "")
+		)
+			return;
+		names.add(local);
 	});
 	for (const name of findReactStrictDomBindings(program).cssNames) names.add(name);
 	return names;

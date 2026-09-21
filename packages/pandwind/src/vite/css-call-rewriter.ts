@@ -15,6 +15,7 @@ import type { StyleObject } from "../types/typings.ts";
 import { NodeKind, PropertyKindTag } from "../ast-node-kind.ts";
 import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
 import { findFirstThatWorksBindings } from "./css-source-scanner.ts";
+import { findCssFactoryBindings } from "./css-factory-source.ts";
 
 /** Static rewrite port; unsupported or dynamic calls remain untouched. */
 interface CallNode extends OxcNode {
@@ -273,14 +274,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		for (const edit of edits.toReversed())
 			output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
 
-		// A static module no longer needs its factory instance. Mark only a
-		// factory whose local result has no remaining references: the bundler can
-		// then remove the call and its implementation, while dynamic/partial
-		// modules retain the ordinary runtime fallback.
-		const pureCalls = findUnusedCssFactoryCalls(output, id, names);
-		for (const start of pureCalls.toReversed()) {
-			output = output.slice(0, start) + "/* @__PURE__ */ " + output.slice(start);
-		}
+		output = markCssFactoryCallsPure(output, id);
 		return { code: output, inlined: edits.length, varKeys: [...this.varKeys] };
 	}
 }
@@ -479,69 +473,29 @@ const literalGroup = (
 		: undefined;
 };
 
-const CSS_FACTORY_NAMES = new Set(["createCss", "createUnsafeCss"]);
-
-function findUnusedCssFactoryCalls(code: string, id: string, names: ReadonlySet<string>): number[] {
-	const result: number[] = [];
+export const markCssFactoryCallsPure = (code: string, id: string): string => {
+	const bindings = findCssFactoryBindings(code, id);
+	if (bindings.length === 0) return code;
+	const factoryNames = new Set(bindings.map((binding) => binding.local));
 	const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program;
-	const factoryNames = new Set<string>();
+	const starts: number[] = [];
 	walk(program, (node) => {
-		if (node.type !== NodeKind.ImportDeclaration) return;
-		for (const specifier of (
-			node as {
-				specifiers?: Array<{
-					type?: string;
-					imported?: { name?: string };
-					local?: { name?: string };
-				}>;
-			}
-		).specifiers ?? []) {
-			const imported = specifier.imported?.name;
-			const local = specifier.local?.name;
-			if (
-				specifier.type === NodeKind.ImportSpecifier &&
-				local !== undefined &&
-				imported !== undefined &&
-				CSS_FACTORY_NAMES.has(imported)
-			)
-				factoryNames.add(local);
-		}
-	});
-
-	walk(program, (node) => {
-		if (node.type !== NodeKind.VariableDeclarator) return;
-		const declarator = node as unknown as {
-			id?: { type?: string; name?: string; start?: number };
-			init?: {
-				type?: string;
-				start?: number;
-				callee?: { type?: string; name?: string };
-				arguments?: unknown[];
-			} | null;
+		if (node.type !== NodeKind.CallExpression) return;
+		const call = node as unknown as {
+			start?: number;
+			callee?: { type?: string; name?: string };
 		};
-		const binding = declarator.id;
-		const init = declarator.init;
 		if (
-			binding?.type !== NodeKind.Identifier ||
-			binding.name === undefined ||
-			!names.has(binding.name) ||
-			init?.type !== NodeKind.CallExpression ||
-			init.callee?.type !== NodeKind.Identifier ||
-			init.callee.name === undefined ||
-			!factoryNames.has(init.callee.name) ||
-			(init.arguments?.length ?? 0) !== 0 ||
-			init.start === undefined
+			call.start === undefined ||
+			call.callee?.type !== NodeKind.Identifier ||
+			!factoryNames.has(call.callee.name ?? "")
 		)
 			return;
-
-		let references = 0;
-		walk(program, (candidate) => {
-			if (candidate.type !== NodeKind.Identifier) return;
-			const identifier = candidate as unknown as { name?: string; start?: number };
-			if (identifier.name === binding.name && identifier.start !== binding.start) references++;
-		});
-		if (references === 0) result.push(init.start);
+		const prefix = code.slice(Math.max(0, call.start - 32), call.start);
+		if (prefix.includes("@__PURE__")) return;
+		starts.push(call.start);
 	});
-
-	return result;
-}
+	for (const start of starts.toReversed())
+		code = code.slice(0, start) + "/* @__PURE__ */ " + code.slice(start);
+	return code;
+};

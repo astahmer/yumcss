@@ -10,6 +10,7 @@ import {
 	type CssRuntimeMethod,
 } from "../css/runtime-codegen.ts";
 import { identifierName, memberName as genericMemberName } from "./ast-walk.ts";
+import { markCssFactoryCallsPure } from "./css-call-rewriter.ts";
 
 const VIRTUAL_PREFIX = "pandwind:runtime/css";
 const CSS_RUNTIME_SOURCES =
@@ -244,10 +245,13 @@ export const createRuntimePruningTransform = (): RuntimePruningTransform => {
 	return {
 		transform(code, id) {
 			if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return null;
+			const pureCode = markCssFactoryCallsPure(code, id);
+			const pureChanged = pureCode !== code;
+			code = pureCode;
 			const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
 				.program as unknown as OxcNode;
 			const imports = collectImports(program);
-			if (imports.length === 0) return null;
+			if (imports.length === 0) return pureChanged ? { code, map: null } : null;
 			const replacements = new Map<string, { start: number; end: number; text: string }>();
 			for (const runtimeImport of imports) {
 				const methods = methodsFor(program, runtimeImport.local);
@@ -259,7 +263,7 @@ export const createRuntimePruningTransform = (): RuntimePruningTransform => {
 				};
 				replacements.set(`${replacement.start}:${replacement.end}`, replacement);
 			}
-			if (replacements.size === 0) return null;
+			if (replacements.size === 0) return pureChanged ? { code, map: null } : null;
 			let output = code;
 			for (const replacement of [...replacements.values()].toReversed()) {
 				output =
