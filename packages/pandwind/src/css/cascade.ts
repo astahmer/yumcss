@@ -13,7 +13,7 @@ export type CssCascade = CssCascadeMode | CssCascadeLayerOptions;
 export const DEFAULT_CASCADE_LAYER = "pandwind";
 
 const CASCADE_LAYER_SEGMENT =
-	/^(?:-?(?:[A-Za-z_]|[^\u0000-\u007F])(?:[A-Za-z0-9_-]|[^\u0000-\u007F])*|--(?:[A-Za-z0-9_-]|[^\u0000-\u007F])+)$/u;
+	/^(?:-?(?:[A-Za-z_]|[\u{80}-\u{10FFFF}])(?:[A-Za-z0-9_-]|[\u{80}-\u{10FFFF}])*|--(?:[A-Za-z0-9_-]|[\u{80}-\u{10FFFF}])+)$/u;
 
 export const isValidCascadeLayerName = (value: string): boolean =>
 	value.length > 0 && value.split(".").every((segment) => CASCADE_LAYER_SEGMENT.test(segment));
