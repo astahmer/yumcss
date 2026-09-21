@@ -76,7 +76,51 @@ describe("runtime pruning", () => {
 		expect(result?.code).not.toContain('from "@pandwind/example-preset"');
 		const virtual = pruner.resolveId(virtualSource!);
 		expect(virtual).not.toBeNull();
-		expect(pruner.load(virtual!)).toContain("createPresetCssRuntime({");
+		const loaded = pruner.load(virtual!);
+		expect(loaded).toContain("createPresetCssRuntime({");
+		expect(loaded).toContain('"$red-500"');
+		expect(loaded).toContain('"$blue-600"');
+	});
+
+	test("projects design presets to the used token group and literal entry", () => {
+		const pruner = createRuntimePruningTransform({ preset: examplePreset });
+		const source =
+			'import { createDesignCss } from "pandwind/design";\n' +
+			'import { examplePreset } from "@pandwind/example-preset";\n' +
+			"const css = createDesignCss(examplePreset);\n" +
+			'export const styles = css.class({ $frame: { fill: "$red-500" } });';
+
+		const result = pruner.transform(source, ID);
+		const virtualSource = result?.code.match(/pandwind:runtime\/css\?[^"']+/u)?.[0];
+		expect(virtualSource).toContain("factory=design");
+		expect(virtualSource).toContain("slice=");
+		expect(result?.code).toContain("createDesignCss(undefined)");
+		expect(result?.code).not.toContain('from "@pandwind/example-preset"');
+		const virtual = pruner.resolveId(virtualSource!);
+		const loaded = pruner.load(virtual!);
+		expect(loaded).toContain('"tokens":{"colors":{"$red-500"');
+		expect(loaded).not.toContain('"$blue-600"');
+		expect(loaded).not.toContain('"radii"');
+		expect(loaded).not.toContain('"spacing"');
+	});
+
+	test("keeps a complete design token group for dynamic design values", () => {
+		const pruner = createRuntimePruningTransform({ preset: examplePreset });
+		const source =
+			'import { createDesignCss } from "pandwind/design";\n' +
+			'import { examplePreset } from "@pandwind/example-preset";\n' +
+			"const css = createDesignCss(examplePreset);\n" +
+			"const color = getColor();\n" +
+			"export const styles = css.class({ $frame: { fill: color } });";
+
+		const result = pruner.transform(source, ID);
+		const virtualSource = result?.code.match(/pandwind:runtime\/css\?[^"']+/u)?.[0];
+		const virtual = pruner.resolveId(virtualSource!);
+		const loaded = pruner.load(virtual!);
+		expect(loaded).toContain('"tokens":{"colors":');
+		expect(loaded).toContain('"$blue-600"');
+		expect(loaded).not.toContain('"radii"');
+		expect(loaded).not.toContain('"spacing"');
 	});
 
 	test("keeps the complete preset for dynamic style spreads", () => {

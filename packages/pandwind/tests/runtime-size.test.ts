@@ -210,6 +210,7 @@ test("runtime entries stay stylex-sized", async () => {
 		),
 		"createDesignCss(), compiler-pruned class": await bundleAfterRuntimePruning(
 			"runtime-css-pruned-design.ts",
+			fixturePreset,
 		),
 		"createUnsafeCss(), generated call": bundleGeneratedRuntime([]),
 		"createUnsafeCss(), generated class": bundleGeneratedRuntime(["class"]),

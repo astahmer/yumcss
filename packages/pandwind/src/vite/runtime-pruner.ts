@@ -1,4 +1,6 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
+import { canonicalTokenName } from "../lib/token-path.ts";
+import { isDesignModuleKey, type DesignModuleKey } from "../design/contracts.ts";
 import { walkWithParent, type OxcNode } from "../tw/literal.ts";
 import { ImportKindTag, NodeKind } from "../ast-node-kind.ts";
 import {
@@ -66,6 +68,9 @@ interface Usage {
 	readonly methods: Set<CssRuntimeMethod>;
 	readonly properties: Set<string>;
 	readonly conditions: Set<string>;
+	readonly literalValues: Map<string, Set<string>>;
+	readonly dynamicProperties: Set<string>;
+	readonly designProperties: Map<DesignModuleKey, Set<string>>;
 	readonly escaped: boolean;
 	readonly sliceable: boolean;
 }
@@ -125,10 +130,37 @@ const literalKeyName = (node: OxcNode | null | undefined): string | undefined =>
 interface RuntimeStyleUsage {
 	readonly properties: Set<string>;
 	readonly conditions: Set<string>;
+	readonly literalValues: Map<string, Set<string>>;
+	readonly dynamicProperties: Set<string>;
+	readonly designProperties: Map<DesignModuleKey, Set<string>>;
 	sliceable: boolean;
 }
 
-const collectStyleObject = (node: OxcNode, usage: RuntimeStyleUsage): void => {
+const addLiteralValue = (usage: RuntimeStyleUsage, property: string, value: unknown): void => {
+	if (typeof value !== "string" && !(typeof value === "number" && Number.isFinite(value))) {
+		usage.dynamicProperties.add(property);
+		return;
+	}
+	const values = usage.literalValues.get(property) ?? new Set<string>();
+	values.add(String(value));
+	usage.literalValues.set(property, values);
+};
+
+const addDesignProperty = (
+	usage: RuntimeStyleUsage,
+	designModule: DesignModuleKey,
+	property: string,
+): void => {
+	const properties = usage.designProperties.get(designModule) ?? new Set<string>();
+	properties.add(property);
+	usage.designProperties.set(designModule, properties);
+};
+
+const collectStyleObject = (
+	node: OxcNode,
+	usage: RuntimeStyleUsage,
+	designModule?: DesignModuleKey,
+): void => {
 	if (!usage.sliceable) return;
 	if (node.type !== NodeKind.ObjectExpression) {
 		usage.sliceable = false;
@@ -151,13 +183,30 @@ const collectStyleObject = (node: OxcNode, usage: RuntimeStyleUsage): void => {
 			return;
 		}
 		usage.properties.add(key);
+		if (designModule !== undefined) addDesignProperty(usage, designModule, key);
 		if (key.startsWith("_") || key.startsWith("@")) usage.conditions.add(key);
 		const value = property.value;
-		if (value?.type === NodeKind.ObjectExpression) collectStyleObject(value, usage);
-		else if (value?.type === NodeKind.ArrayExpression) {
+		if (value?.type === NodeKind.Literal) {
+			addLiteralValue(usage, key, (value as { value?: unknown }).value);
+			continue;
+		}
+		const isCondition = key.startsWith("_") || key.startsWith("@");
+		const isRaw = key === "$raw";
+		const nestedDesignModule = isDesignModuleKey(key) ? key : isRaw ? undefined : designModule;
+		if (value?.type === NodeKind.ObjectExpression) {
+			if (!isCondition && !isRaw && !isDesignModuleKey(key)) usage.dynamicProperties.add(key);
+			collectStyleObject(value, usage, nestedDesignModule);
+		} else if (value?.type === NodeKind.ArrayExpression) {
+			if (!isCondition && !isRaw && !isDesignModuleKey(key)) usage.dynamicProperties.add(key);
 			for (const element of (value as { elements?: OxcNode[] }).elements ?? []) {
-				if (element?.type === NodeKind.ObjectExpression) collectStyleObject(element, usage);
+				if (element?.type === NodeKind.Literal)
+					addLiteralValue(usage, key, (element as { value?: unknown }).value);
+				else if (element?.type === NodeKind.ObjectExpression)
+					collectStyleObject(element, usage, nestedDesignModule);
+				else usage.dynamicProperties.add(key);
 			}
+		} else {
+			usage.dynamicProperties.add(key);
 		}
 	}
 };
@@ -194,6 +243,9 @@ const usageFor = (program: OxcNode, local: string): Usage => {
 	const styleUsage: RuntimeStyleUsage = {
 		properties: new Set(),
 		conditions: new Set(),
+		literalValues: new Map(),
+		dynamicProperties: new Set(),
+		designProperties: new Map(),
 		sliceable: true,
 	};
 	let escaped = false;
@@ -264,6 +316,9 @@ const usageFor = (program: OxcNode, local: string): Usage => {
 		methods,
 		properties: styleUsage.properties,
 		conditions: styleUsage.conditions,
+		literalValues: styleUsage.literalValues,
+		dynamicProperties: styleUsage.dynamicProperties,
+		designProperties: styleUsage.designProperties,
 		escaped,
 		sliceable: styleUsage.sliceable,
 	};
@@ -320,6 +375,9 @@ const usageForFactory = (program: OxcNode, local: string): Usage | undefined => 
 	const methods = new Set<CssRuntimeMethod>();
 	const properties = new Set<string>();
 	const conditions = new Set<string>();
+	const literalValues = new Map<string, Set<string>>();
+	const dynamicProperties = new Set<string>();
+	const designProperties = new Map<DesignModuleKey, Set<string>>();
 	let sliceable = true;
 	for (const variable of variables) {
 		const usage = usageFor(program, variable);
@@ -327,12 +385,26 @@ const usageForFactory = (program: OxcNode, local: string): Usage | undefined => 
 		for (const method of usage.methods) methods.add(method);
 		for (const property of usage.properties) properties.add(property);
 		for (const condition of usage.conditions) conditions.add(condition);
+		for (const property of usage.dynamicProperties) dynamicProperties.add(property);
+		for (const [property, values] of usage.literalValues) {
+			const existing = literalValues.get(property) ?? new Set<string>();
+			for (const value of values) existing.add(value);
+			literalValues.set(property, existing);
+		}
+		for (const [designModule, moduleProperties] of usage.designProperties) {
+			const existing = designProperties.get(designModule) ?? new Set<string>();
+			for (const property of moduleProperties) existing.add(property);
+			designProperties.set(designModule, existing);
+		}
 		sliceable &&= usage.sliceable;
 	}
 	return {
 		methods: new Set(normalizeCssRuntimeMethods([...methods])),
 		properties,
 		conditions,
+		literalValues,
+		dynamicProperties,
+		designProperties,
 		escaped: false,
 		sliceable,
 	};
@@ -368,29 +440,102 @@ const isSerializableRuntimeValue = (value: unknown, seen = new Set<object>()): b
 	return valid;
 };
 
+const DESIGN_TOKEN_GROUPS: Readonly<
+	Record<DesignModuleKey, Readonly<Record<string, readonly string[]>>>
+> = {
+	$frame: {
+		w: ["spacing"],
+		h: ["spacing"],
+		corners: ["radii"],
+		fill: ["colors"],
+		border: ["colors", "spacing"],
+		pad: ["spacing"],
+		padX: ["spacing"],
+		padY: ["spacing"],
+	},
+	$layout: {
+		gap: ["spacing"],
+		gapX: ["spacing"],
+		gapY: ["spacing"],
+	},
+	$text: {
+		color: ["colors"],
+		font: ["fonts"],
+		weight: ["fontWeights"],
+		size: ["fontSizes"],
+		spacing: ["lineHeights", "letterSpacings"],
+		decoration: ["colors"],
+		highlight: ["colors"],
+	},
+};
+
+const canonicalNames = (values: ReadonlySet<string>): Set<string> =>
+	new Set([...values].map((value) => canonicalTokenName(value)));
+
+const projectTokenGroup = (
+	values: unknown,
+	requested: ReadonlySet<string> | undefined,
+	dynamic: boolean,
+): unknown => {
+	if (dynamic) return values;
+	if (requested === undefined) return Object.create(null) as Record<string, unknown>;
+	if (!isRecord(values)) return values;
+	const names = canonicalNames(requested);
+	const projected = Object.create(null) as Record<string, unknown>;
+	for (const [name, value] of Object.entries(values)) {
+		if (names.has(canonicalTokenName(name))) projected[name] = value;
+	}
+	return projected;
+};
+
+const projectProperty = (propertyName: string, property: unknown, usage: Usage): unknown => {
+	if (!isRecord(property) || usage.dynamicProperties.has(propertyName)) return property;
+	const requested = usage.literalValues.get(propertyName);
+	if (requested === undefined) return property;
+	const names = canonicalNames(requested);
+	const projected = Object.create(null) as Record<string, unknown>;
+	for (const [name, value] of Object.entries(property)) {
+		if (name === "$strict" || name === "$tokens" || names.has(canonicalTokenName(name)))
+			projected[name] = value;
+	}
+	return projected;
+};
+
 const runtimePresetSource = (
 	preset: CssPreset,
 	usage: Usage,
 	factory: CssRuntimeFactory,
 ): string | undefined => {
-	if (
-		factory === CssRuntimeFactoryTag.Unsafe ||
-		factory === CssRuntimeFactoryTag.Design ||
-		!usage.sliceable
-	)
-		return undefined;
+	if (factory === CssRuntimeFactoryTag.Unsafe || !usage.sliceable) return undefined;
 
 	const properties = Object.create(null) as Record<string, unknown>;
 	const tokenGroups = new Set<string>();
+	const dynamicTokenGroups = new Set<string>();
+	const tokenRequests = new Map<string, Set<string>>();
+	const addTokenDependency = (group: string, propertyName: string): void => {
+		tokenGroups.add(group);
+		if (usage.dynamicProperties.has(propertyName)) dynamicTokenGroups.add(group);
+		const values = usage.literalValues.get(propertyName);
+		if (values === undefined) return;
+		const requested = tokenRequests.get(group) ?? new Set<string>();
+		for (const value of values) requested.add(value);
+		tokenRequests.set(group, requested);
+	};
 	let needsColorPalettes = false;
 	for (const propertyName of usage.properties) {
 		const property = Object.entries(preset.properties).find(([name]) => name === propertyName)?.[1];
 		if (property === undefined) continue;
 		if (!isSerializableRuntimeValue(property)) return undefined;
-		properties[propertyName] = property;
+		properties[propertyName] = projectProperty(propertyName, property, usage);
 		if (isRecord(property) && typeof property.$tokens === "string")
-			tokenGroups.add(property.$tokens);
+			addTokenDependency(property.$tokens, propertyName);
 		if (propertyName === "colorPalette") needsColorPalettes = true;
+	}
+	for (const [designModule, moduleProperties] of usage.designProperties) {
+		for (const propertyName of moduleProperties) {
+			for (const group of DESIGN_TOKEN_GROUPS[designModule][propertyName] ?? [])
+				addTokenDependency(group, propertyName);
+		}
 	}
 
 	const conditions = Object.create(null) as Record<string, unknown>;
@@ -407,7 +552,11 @@ const runtimePresetSource = (
 		const values = preset.tokens[group];
 		if (values === undefined) continue;
 		if (typeof values === "function" || !isSerializableRuntimeValue(values)) return undefined;
-		tokens[group] = values;
+		tokens[group] = projectTokenGroup(
+			values,
+			tokenRequests.get(group),
+			dynamicTokenGroups.has(group),
+		);
 	}
 
 	const projected: Record<string, unknown> = {
@@ -424,7 +573,12 @@ const runtimePresetSource = (
 		const tokenVariables = Object.create(null) as Record<string, unknown>;
 		for (const group of tokenGroups) {
 			const values = preset.tokenVariables[group];
-			if (values !== undefined) tokenVariables[group] = values;
+			if (values !== undefined)
+				tokenVariables[group] = projectTokenGroup(
+					values,
+					tokenRequests.get(group),
+					dynamicTokenGroups.has(group),
+				);
 		}
 		projected.tokenVariables = tokenVariables;
 	}

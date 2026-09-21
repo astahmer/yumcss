@@ -84,16 +84,16 @@
     "gz": 3557
   },
   "createCss(), compiler-pruned class": {
-    "min": 12797,
-    "gz": 4910
+    "min": 9748,
+    "gz": 3902
   },
   "createGeneratedCss(), compiler-pruned keyframes": {
     "min": 10318,
     "gz": 4124
   },
   "createDesignCss(), compiler-pruned class": {
-    "min": 32140,
-    "gz": 10947
+    "min": 17835,
+    "gz": 6452
   },
   "createUnsafeCss(), generated call": {
     "min": 6355,
