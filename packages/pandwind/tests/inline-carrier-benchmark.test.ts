@@ -17,7 +17,7 @@ interface CarrierCase {
 	readonly name: string;
 	readonly sourceExpression: string;
 	readonly currentCarrier: string;
-	readonly directCarrier: string;
+	readonly directNeedles: readonly string[];
 }
 
 interface BundleSize {
@@ -40,22 +40,19 @@ const cases: readonly CarrierCase[] = [
 		name: "one dynamic property",
 		sourceExpression: 'css({ color: "red", backgroundColor: shade })',
 		currentCarrier: 'css.props(css.vars({ backgroundColor: shade }), "1nmpgqu")',
-		directCarrier:
-			'{ className: "pw-background-color 1nmpgqu", style: { "--pw-c-background-color": shade } }',
+		directNeedles: ['style["--pw-c-background-color"]'],
 	},
 	{
 		name: "two dynamic properties",
 		sourceExpression: 'css({ color: "red", backgroundColor: shade, margin: gap })',
 		currentCarrier: 'css.props(css.vars({ backgroundColor: shade, margin: gap }), "1nmpgqu")',
-		directCarrier:
-			'{ className: "pw-background-color pw-margin 1nmpgqu", style: { "--pw-c-background-color": shade, "--pw-c-margin": gap } }',
+		directNeedles: ['style["--pw-c-background-color"]', 'style["--pw-c-margin"]'],
 	},
 	{
 		name: "dynamic condition",
 		sourceExpression: 'css({ color: "red", _hover: { backgroundColor: shade } })',
 		currentCarrier: 'css.props(css.vars({ color: "red", _hover: { backgroundColor: shade } }))',
-		directCarrier:
-			'{ className: "pw:hover:background-color pw-color", style: { "--pw-c-background-color_hover": shade, "--pw-c-color": "red" } }',
+		directNeedles: ["css.props(css.vars"],
 	},
 ];
 
@@ -109,24 +106,19 @@ const bundleSize = async (
 	return { min: minified.length, gz: gzipSync(minified).byteLength };
 };
 
-const transformCurrent = (source: string): string => {
+const transformCurrent = (source: string, current: CarrierCase): string => {
+	const replaced = source.replace(current.sourceExpression, current.currentCarrier);
+	const runtimePruner = createRuntimePruningTransform();
+	return runtimePruner.transform(replaced, SOURCE_ID)?.code ?? replaced;
+};
+
+const transformDirect = (source: string): string => {
 	const extraction = createCssExtractionService({ matchers: ["css"], preset: examplePreset });
 	const extracted = extraction.inline(source, SOURCE_ID, new Set(["css"]));
 	const runtimePruner = createRuntimePruningTransform();
 	return runtimePruner.transform(extracted.code, SOURCE_ID)?.code ?? extracted.code;
 };
 
-const transformDirect = (source: string, current: CarrierCase): string => {
-	const direct = source.replace(
-		'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\n',
-		"",
-	);
-	return direct.replace(current.sourceExpression, current.directCarrier);
-};
-
-// This is an upper-bound prototype: it assumes safe string values and known
-// carrier keys, but deliberately does not inline preset token resolution or
-// numeric CSS normalization yet.
 let benchmarkSink: unknown;
 
 const measure = (callback: () => unknown, iterations = 40_000): number => {
@@ -143,16 +135,18 @@ const measure = (callback: () => unknown, iterations = 40_000): number => {
 };
 
 describe("direct inline carrier benchmark", () => {
-	test("compares post-pruner bundles with a semantics-limited inline prototype", async () => {
+	test("compares post-pruner bundles with the production direct carrier", async () => {
 		const measurements: Record<
 			string,
 			{ current: CarrierMeasurement; direct: CarrierMeasurement }
 		> = {};
 		for (const currentCase of cases) {
 			const source = sourceFor(currentCase.sourceExpression);
-			const current = transformCurrent(source);
+			const current = transformCurrent(source, currentCase);
 			expect(current).toContain(currentCase.currentCarrier);
-			const direct = transformDirect(source, currentCase);
+			const direct = transformDirect(source);
+			for (const needle of currentCase.directNeedles) expect(direct).toContain(needle);
+			expect(direct).not.toContain("__pandwind_direct_token_map");
 			const runtimePruner = createRuntimePruningTransform();
 			measurements[currentCase.name] = {
 				current: {
@@ -161,12 +155,17 @@ describe("direct inline carrier benchmark", () => {
 				},
 				direct: {
 					source: { raw: direct.length, gz: gzipSync(direct).byteLength },
-					bundle: await bundleSize(direct),
+					bundle: await bundleSize(direct, runtimePruner),
 				},
 			};
-			expect(measurements[currentCase.name]!.direct.bundle.gz).toBeLessThan(
-				measurements[currentCase.name]!.current.bundle.gz,
-			);
+			if (currentCase.name === "dynamic condition")
+				expect(measurements[currentCase.name]!.direct.bundle.gz).toBe(
+					measurements[currentCase.name]!.current.bundle.gz,
+				);
+			else
+				expect(measurements[currentCase.name]!.direct.bundle.gz).toBeLessThan(
+					measurements[currentCase.name]!.current.bundle.gz,
+				);
 		}
 
 		const css = createUnsafeCss();

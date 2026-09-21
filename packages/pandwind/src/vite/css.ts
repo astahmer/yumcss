@@ -25,9 +25,10 @@
  * added to a shared stylesheet; the virtual module serves the deduped CSS
  * (tokens + rules), and the transform replaces the call with its final carrier.
  * The runtime hashes the same calls deterministically, so runtime class names
- * always match. Calls with dynamic arguments are skipped and keep the runtime
- * fallback by default; `transformDynamicClassName` is the opt-in host rewrite
- * for simple mixed `css.class()` JSX bindings.
+ * always match. Calls with dynamic arguments keep the runtime fallback unless
+ * they are a provably safe flat JSX carrier; those carriers are emitted as
+ * direct `{ className, style }` objects. `transformDynamicClassName` is the
+ * opt-in host rewrite for simple mixed `css.class()` JSX bindings.
  *
  * This is a thin vite wrapper over the bundler-agnostic core in css-core.ts;
  * other bundlers are served by `pandwindUnpluginCss` (src/unplugin.ts).
@@ -102,8 +103,9 @@ export interface PandwindCssViteOptions {
 	/**
 	 * Opt-in JSX rewrite for mixed `className={css.class({ ... })}` calls.
 	 * Scalar dynamic declarations move to `css.vars()` and literal
-	 * declarations stay in `css.class()`, with the host changed to a
-	 * `css.props()` spread. Unsupported host shapes stay untouched.
+	 * declarations stay in `css.class()`, with the host changed to a direct
+	 * `className`/`style` props spread when the flat carrier is safe. Unsupported
+	 * shapes keep the `css.props(css.vars(...))` fallback.
 	 */
 	transformDynamicClassName?: boolean;
 	/** Directory scanned for css() calls. Defaults to process.cwd(). */

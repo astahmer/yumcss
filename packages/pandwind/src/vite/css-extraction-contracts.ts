@@ -7,6 +7,7 @@ import type {
 	CssConfigReturn,
 	DefinePresetOptions,
 	StyleObject,
+	TokenVariableNames,
 } from "../types/typings.ts";
 
 export type CssPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
@@ -143,4 +144,6 @@ export type CssExtractorOptions = {
 	readonly className?: ClassNameStrategy;
 	/** Namespace used by generated dynamic-value carriers. */
 	readonly namespace?: string;
+	/** Token variable spelling used by generated dynamic carriers. */
+	readonly tokenVariableNames?: TokenVariableNames;
 };

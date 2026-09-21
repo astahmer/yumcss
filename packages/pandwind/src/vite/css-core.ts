@@ -150,6 +150,7 @@ export function createCssExtractorPluginCore(
 		rewriter: new StaticCssCallRewriter(preset, className, {
 			transformDynamicClassName: options.transformDynamicClassName === true,
 			namespace,
+			tokenVariableNames: options.tokenVariableNames,
 		}),
 	});
 	const runtimePruner = createRuntimePruningTransform({ preset });

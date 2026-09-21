@@ -1145,9 +1145,9 @@ test("dynamic className rewriting is opt-in and host-aware", () => {
 		)(readFileSync(join(dir, "src/app.tsx"), "utf8"), join(dir, "src/app.tsx"));
 		const generated = loadGenerated(plugin);
 
-		expect(transformed?.code).toContain(
-			'<button {...css.props(css.vars({ color: color }), "qko5uj")} />',
-		);
+		expect(transformed?.code).toContain("<button {...((values) => {");
+		expect(transformed?.code).toContain('style["--checkout-c-color"]');
+		expect(transformed?.code).not.toContain("css.props(css.vars");
 		expect(transformed?.code).not.toContain("className={css.class");
 		expect(transformed?.code).not.toContain("css.class({ padding: 8 })");
 		expect(generated).toContain("padding:8");
@@ -1194,10 +1194,7 @@ test("the checked-in dynamic example exercises both compiler carrier rewrites", 
 		file,
 	);
 
-	expect(transformed?.code).toContain("relaxedCss.props(relaxedCss.vars({ color: accent })");
-	expect(transformed?.code).toContain(
-		"relaxedCss.props(relaxedCss.vars({ backgroundColor: accent })",
-	);
+	expect(transformed?.code.match(/\{\.\.\.\(\(values\) =>/g)?.length).toBe(2);
 	expect(transformed?.code).not.toContain("className={relaxedCss.class");
 	expect(transformed?.code).not.toContain("{...relaxedCss({");
 });
@@ -1220,10 +1217,9 @@ test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers",
 	// carrier. The _hover-only call has no top-level literal declaration,
 	// so it keeps the untouched runtime fallback.
 	expect(result.inlined).toBe(2);
-	expect(result.code).toContain('css.props(css.vars({ backgroundColor: shade }), "[color:red]")');
-	expect(result.code).toContain(
-		'css.props(css.vars({ margin: shade }), "[padding:1rem] [display:flex]")',
-	);
+	expect(result.code).toContain('style["--pw-c-background-color"]');
+	expect(result.code).toContain('style["--pw-c-margin"]');
+	expect(result.code).not.toContain("css.props(css.vars");
 	expect(result.code).toContain("css({ _hover: { bg: shade } })");
 	// Flattened toggle keys mirror the scanner contract.
 	expect(result.varKeys).toEqual(["backgroundColor", "margin"]);
@@ -1260,9 +1256,8 @@ test("vars carriers preserve an aliased css binding", () => {
 	const result = inline().inline(code, "app.tsx", new Set(["uiCss"]));
 
 	expect(result.inlined).toBe(1);
-	expect(result.code).toContain(
-		'uiCss.props(uiCss.vars({ backgroundColor: tone }), "[color:red]")',
-	);
+	expect(result.code).toContain('style["--pw-c-background-color"]');
+	expect(result.code).not.toContain("uiCss.props(uiCss.vars");
 	expect(result.code).not.toContain("css.props(css.vars");
 });
 
@@ -1277,7 +1272,8 @@ test("vars carriers are gated to JSX host positions", () => {
 	const result = inline().inline(code, "app.tsx", new Set(["css"]));
 
 	// JSX host position: carrier. Plain statement: untouched runtime fallback.
-	expect(result.code).toContain('css.props(css.vars({ backgroundColor: shade }), "[color:red]")');
+	expect(result.code).toContain('style["--pw-c-background-color"]');
+	expect(result.code).not.toContain("css.props(css.vars");
 	expect(result.code).toContain('const plain = css({ color: "red", backgroundColor: shade });');
 	// Full-literal plain call still folds through the ordinary engine path.
 	expect(result.code).toContain('const full = {"color":"[color:red]"}');
