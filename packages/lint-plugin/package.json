@@ -27,6 +27,9 @@
 		"provenance": true,
 		"registry": "https://registry.npmjs.org/"
 	},
+	"dependencies": {
+		"pandwind": "workspace:*"
+	},
 	"scripts": {
 		"build": "pnpm exec tsdown",
 		"typecheck": "tsc --noEmit",

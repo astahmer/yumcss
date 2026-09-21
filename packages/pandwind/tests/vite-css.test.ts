@@ -1267,7 +1267,7 @@ test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers",
 	// Nested condition leaves now use the same direct carrier as flat leaves.
 	expect(result.inlined).toBe(3);
 	expect(result.code).toContain('style["--pw-c-background-color"]');
-	expect(result.code).toContain('style["--pw-c-background-color_hover"]');
+	expect(result.code).toContain('style["--pw-c-bg_hover"]');
 	expect(result.code).toContain('style["--pw-c-margin"]');
 	expect(result.code).not.toContain("css.props(css.vars");
 	// Flattened toggle keys mirror the scanner contract.
