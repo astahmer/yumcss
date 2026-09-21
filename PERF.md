@@ -253,21 +253,21 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |   11 | createUnsafeCss(), generated vars                 | generated runtime         |          8.77 |      3.52 |
 |   12 | createUnsafeCss(), generated class+vars           | generated runtime         |          8.83 |      3.53 |
 |   13 | createUnsafeCss(), compiler-pruned vars           | compiler-pruned           |          8.84 |      3.56 |
-|   14 | createGeneratedCss(), compiler-pruned keyframes   | compiler-pruned           |         10.32 |      4.12 |
-|   15 | createUnsafeCss(), generated all                  | generated runtime         |         11.12 |      4.38 |
-|   16 | createUnsafeCss(), dynamic fallback               | unsafe fallback           |         11.84 |      4.70 |
-|   17 | createUnsafeCss(), fallback                       | unsafe fallback           |         11.85 |      4.70 |
-|   18 | unsafe css subpath only                           | tree-shaken subpath       |         11.86 |      4.71 |
-|   19 | createCss(), compiler-pruned class                | compiler-pruned           |         12.80 |      4.91 |
+|   14 | createCss(), compiler-pruned class                | compiler-pruned           |          9.75 |      3.90 |
+|   15 | createGeneratedCss(), compiler-pruned keyframes   | compiler-pruned           |         10.32 |      4.12 |
+|   16 | createUnsafeCss(), generated all                  | generated runtime         |         11.12 |      4.38 |
+|   17 | createUnsafeCss(), dynamic fallback               | unsafe fallback           |         11.84 |      4.70 |
+|   18 | createUnsafeCss(), fallback                       | unsafe fallback           |         11.85 |      4.70 |
+|   19 | unsafe css subpath only                           | tree-shaken subpath       |         11.86 |      4.71 |
 |   20 | createCss(minimal preset), fallback               | preset-bound fallback     |         15.12 |      5.86 |
-|   21 | createCss(csstypePreset)                          | preset-bound structural   |         19.61 |      7.19 |
-|   22 | cx                                                | runtime                   |         18.79 |      7.28 |
-|   23 | root barrel, cx + unsafe css                      | tree-shaken barrel        |         18.79 |      7.29 |
-|   24 | all (createUnsafeCss+tw+cx)                       | runtime                   |         21.48 |      8.24 |
-|   25 | createCss(defaultPreset)                          | preset-bound default      |         26.12 |      9.38 |
-|   26 | stylesheet generator (build-time only)            | build-time only           |         25.13 |      9.48 |
-|   27 | createCss(fixturePreset)                          | preset-bound full catalog |         29.43 |     10.43 |
-|   28 | createDesignCss(), compiler-pruned class          | compiler-pruned           |         32.14 |     10.95 |
+|   21 | createDesignCss(), compiler-pruned class          | compiler-pruned           |         17.84 |      6.45 |
+|   22 | createCss(csstypePreset)                          | preset-bound structural   |         19.61 |      7.19 |
+|   23 | cx                                                | runtime                   |         18.79 |      7.28 |
+|   24 | root barrel, cx + unsafe css                      | tree-shaken barrel        |         18.79 |      7.29 |
+|   25 | all (createUnsafeCss+tw+cx)                       | runtime                   |         21.48 |      8.24 |
+|   26 | createCss(defaultPreset)                          | preset-bound default      |         26.12 |      9.38 |
+|   27 | stylesheet generator (build-time only)            | build-time only           |         25.13 |      9.48 |
+|   28 | createCss(fixturePreset)                          | preset-bound full catalog |         29.43 |     10.43 |
 |   29 | createCss(fixturePreset) + tw()                   | preset-bound full catalog |         32.12 |     11.41 |
 |   30 | createDesignCss(fixturePreset), fallback          | runtime                   |         37.50 |     12.88 |
 |   31 | createCss(fixturePreset) + cx()                   | preset-bound full catalog |         36.39 |     13.05 |

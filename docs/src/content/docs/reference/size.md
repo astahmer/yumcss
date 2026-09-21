@@ -93,16 +93,16 @@ keys it embeds only the matching preset properties, conditions, and token
 groups. Unknown spreads, computed keys, escaped factories, and
 non-serializable preset data keep the conservative fallback.
 
-| fixture                                 |      min |     gzip |
-| --------------------------------------- | -------: | -------: |
-| all static unsafe `css()` calls         |     81 B |     98 B |
-| all static preset `css()` calls         |     37 B |     57 B |
-| compiler-pruned unsafe `css()` call     |  6.42 KB |  2.68 KB |
-| compiler-pruned unsafe `css.class()`    |  6.48 KB |  2.70 KB |
-| compiler-pruned unsafe `css.vars()`     |  8.84 KB |  3.56 KB |
-| compiler-pruned preset `css.class()`    | 12.80 KB |  4.91 KB |
-| compiler-pruned generated `keyframes()` | 10.32 KB |  4.12 KB |
-| compiler-pruned design `css.class()`    | 32.14 KB | 10.95 KB |
+| fixture                                 |      min |    gzip |
+| --------------------------------------- | -------: | ------: |
+| all static unsafe `css()` calls         |     81 B |    98 B |
+| all static preset `css()` calls         |     37 B |    57 B |
+| compiler-pruned unsafe `css()` call     |  6.42 KB | 2.68 KB |
+| compiler-pruned unsafe `css.class()`    |  6.48 KB | 2.70 KB |
+| compiler-pruned unsafe `css.vars()`     |  8.84 KB | 3.56 KB |
+| compiler-pruned preset `css.class()`    |  9.75 KB | 3.90 KB |
+| compiler-pruned generated `keyframes()` | 10.32 KB | 4.12 KB |
+| compiler-pruned design `css.class()`    | 17.84 KB | 6.45 KB |
 
 The opt-in `pandwind-codemod runtime generate` path has the same callable
 core, but can omit attachments that an application never uses:
@@ -196,7 +196,7 @@ application importing a named-color preset ships.
 | pandwind `css()` (fixture) + `tw()`          | 32.12 KB | 11.41 KB | the common two-lane app                   |
 | pandwind `css()` (fixture) + `cx()`          | 36.39 KB | 13.05 KB | atom registry + cross-engine merge        |
 | pandwind `css()` (fixture) + `tw()` + `cx()` | 39.07 KB | 14.01 KB | combined runtime                          |
-| pandwind compiler-pruned `css.class()`       | 12.80 KB |  4.91 KB | projected preset + shared engine          |
+| pandwind compiler-pruned `css.class()`       |  9.75 KB |  3.90 KB | projected preset + shared engine          |
 | pandwind fully extracted `css()`             |     37 B |     57 B | emitted literals only                     |
 | `@stylexjs/stylex` 0.19.0                    |  4.06 KB |  1.74 KB | runtime only (compile happens in babel)   |
 | `@pandacss/core` 1.12.0 generated `css()`    |  13.4 KB |  5.31 KB | panda runtime engine + tokens             |
@@ -207,8 +207,8 @@ application importing a named-color preset ships.
 
 The compiler-pruned row is what a production app pays for a dynamic
 preset-bound call whose style keys are statically visible: the shared engine
-plus only the projected preset metadata and attachments that call needs. A
-fully literal call pays only its emitted literals.
+plus only the projected preset metadata, token entries, and attachments that
+call needs. A fully literal call pays only its emitted literals.
 
 Alternative-library values are the supplied reference run, not a release
 budget. Re-run that external rig before making a new ecosystem comparison;
