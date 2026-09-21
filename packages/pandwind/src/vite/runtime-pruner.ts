@@ -681,6 +681,117 @@ const dropUnusedPresetImport = (
 	return foundImport ? edits : [];
 };
 
+export type RuntimePruningStatus =
+	| "unbound"
+	| "escaped"
+	| "fallback-dynamic-shape"
+	| "preset-projected"
+	| "method-pruned"
+	| "full-runtime";
+
+export interface RuntimePruningExplanation {
+	readonly local: string;
+	readonly factory: CssRuntimeFactory;
+	readonly status: RuntimePruningStatus;
+	readonly methods: readonly CssRuntimeMethod[];
+	readonly properties: readonly string[];
+	readonly conditions: readonly string[];
+	readonly sliceable: boolean;
+	readonly presetProjected: boolean;
+	readonly projectedPresetBytes?: number;
+	readonly projectedTokenGroups: Readonly<Record<string, number>>;
+}
+
+export interface RuntimePruningExplanationOptions {
+	readonly code: string;
+	readonly id: string;
+	readonly preset?: CssPreset;
+}
+
+const projectedTokenGroups = (source: string | undefined): Readonly<Record<string, number>> => {
+	if (source === undefined) return {};
+	try {
+		const parsed: unknown = JSON.parse(source);
+		if (!isRecord(parsed) || !isRecord(parsed.tokens)) return {};
+		const groups: Record<string, number> = {};
+		for (const [group, values] of Object.entries(parsed.tokens)) {
+			if (isRecord(values)) groups[group] = Object.keys(values).length;
+		}
+		return groups;
+	} catch {
+		return {};
+	}
+};
+
+export const explainRuntimePruning = ({
+	code,
+	id,
+	preset,
+}: RuntimePruningExplanationOptions): readonly RuntimePruningExplanation[] => {
+	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return [];
+	const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
+		.program as unknown as OxcNode;
+	return collectImports(program).map((runtimeImport) => {
+		const variables = findFactoryVariables(program, new Set([runtimeImport.local]));
+		if (variables.size === 0)
+			return {
+				local: runtimeImport.local,
+				factory: runtimeImport.factory,
+				status: "unbound",
+				methods: [],
+				properties: [],
+				conditions: [],
+				sliceable: false,
+				presetProjected: false,
+				projectedTokenGroups: {},
+			} satisfies RuntimePruningExplanation;
+
+		const usage = usageForFactory(program, runtimeImport.local);
+		if (usage === undefined)
+			return {
+				local: runtimeImport.local,
+				factory: runtimeImport.factory,
+				status: "escaped",
+				methods: [],
+				properties: [],
+				conditions: [],
+				sliceable: false,
+				presetProjected: false,
+				projectedTokenGroups: {},
+			} satisfies RuntimePruningExplanation;
+
+		const candidatePresetSource =
+			preset === undefined ? undefined : runtimePresetSource(preset, usage, runtimeImport.factory);
+		const argumentRewrite =
+			candidatePresetSource === undefined
+				? undefined
+				: presetArgumentEdits(program, runtimeImport.local);
+		const presetSource =
+			candidatePresetSource !== undefined && argumentRewrite !== undefined
+				? candidatePresetSource
+				: undefined;
+		const status: RuntimePruningStatus = !usage.sliceable
+			? "fallback-dynamic-shape"
+			: presetSource !== undefined
+				? "preset-projected"
+				: usage.methods.size < CSS_RUNTIME_METHODS.length
+					? "method-pruned"
+					: "full-runtime";
+		return {
+			local: runtimeImport.local,
+			factory: runtimeImport.factory,
+			status,
+			methods: normalizeCssRuntimeMethods([...usage.methods]),
+			properties: [...usage.properties].toSorted(),
+			conditions: [...usage.conditions].toSorted(),
+			sliceable: usage.sliceable,
+			presetProjected: presetSource !== undefined,
+			...(presetSource === undefined ? {} : { projectedPresetBytes: presetSource.length }),
+			projectedTokenGroups: projectedTokenGroups(presetSource),
+		} satisfies RuntimePruningExplanation;
+	});
+};
+
 const parseRuntimeModule = (
 	id: string,
 ): { factory: CssRuntimeFactory; methods: CssRuntimeMethod[] } => {

@@ -201,6 +201,12 @@
 			"import": "./dist/vite/index.js",
 			"default": "./dist/vite/index.js"
 		},
+		"./vite/runtime-pruner": {
+			"pandwind": "./src/vite/runtime-pruner.ts",
+			"types": "./dist/vite/runtime-pruner.d.ts",
+			"import": "./dist/vite/runtime-pruner.js",
+			"default": "./dist/vite/runtime-pruner.js"
+		},
 		"./vite/css-extract": {
 			"pandwind": "./src/vite/css-extract.ts",
 			"types": "./dist/vite/css-extract.d.ts",

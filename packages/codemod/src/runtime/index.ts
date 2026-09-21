@@ -7,6 +7,7 @@ export {
 } from "./codegen.ts";
 export {
 	createRuntimeCli,
+	formatRuntimeExplanation,
 	parseRuntimeCommand,
 	RuntimeCommand,
 	type RuntimeCli,
@@ -14,4 +15,5 @@ export {
 	type RuntimeCommandInvocation,
 	type RuntimeCommandName,
 	type RuntimeGenerateCommand,
+	type RuntimeExplainCommand,
 } from "./cli.ts";

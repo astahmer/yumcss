@@ -1,14 +1,19 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import {
 	DEFAULT_RUNTIME_CSS_OUTPUT,
 	generateRuntimeCssModule,
 	parseRuntimeMethods,
 	RUNTIME_CSS_GENERATED_HEADER,
 } from "../src/runtime/codegen.ts";
-import { createRuntimeCli, parseRuntimeCommand, RuntimeCommand } from "../src/runtime/cli.ts";
+import {
+	createRuntimeCli,
+	formatRuntimeExplanation,
+	parseRuntimeCommand,
+	RuntimeCommand,
+} from "../src/runtime/cli.ts";
 
 const cwd = "/fixture/project";
 
@@ -45,6 +50,18 @@ describe("pandwind-codemod runtime command", () => {
 			outFile: `${cwd}/${DEFAULT_RUNTIME_CSS_OUTPUT}`,
 			methods: ["class", "vars", "raw", "props", "group", "input", "keyframes"],
 			check: false,
+			cwd,
+		});
+		expect(
+			parseRuntimeCommand(
+				[RuntimeCommand.Explain, "src/styles.ts", "--preset", "./preset.ts#preset", "--json"],
+				cwd,
+			),
+		).toEqual({
+			command: RuntimeCommand.Explain,
+			sourceFile: `${cwd}/src/styles.ts`,
+			presetSpecifier: "./preset.ts#preset",
+			json: true,
 			cwd,
 		});
 	});
@@ -85,6 +102,50 @@ describe("pandwind-codemod runtime command", () => {
 				cli.run([RuntimeCommand.Generate, "src/runtime.ts", "--methods", "class", "--check"]),
 			).rejects.toThrow("generated runtime is stale");
 		} finally {
+			rmSync(project, { recursive: true, force: true });
+		}
+	});
+
+	test("formats a pruning explanation for humans and tools", () => {
+		const explanation = {
+			local: "css",
+			factory: "design",
+			status: "preset-projected",
+			methods: ["class"],
+			properties: ["$frame", "fill"],
+			conditions: [],
+			sliceable: true,
+			presetProjected: true,
+			projectedPresetBytes: 128,
+			projectedTokenGroups: { colors: 1 },
+		} as const;
+		expect(
+			formatRuntimeExplanation({ sourceFile: "src/styles.ts", explanations: [explanation] }),
+		).toContain("preset-projected");
+		expect(
+			formatRuntimeExplanation({
+				sourceFile: "src/styles.ts",
+				explanations: [explanation],
+				json: true,
+			}),
+		).toContain('"schema": "pandwind.runtime-explain/1"');
+	});
+
+	test("runs the explanation command against a source file", async () => {
+		const project = mkdtempSync(join(tmpdir(), "pandwind-runtime-explain-"));
+		const sourceFile = join(project, "styles.ts");
+		writeFileSync(
+			sourceFile,
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+				"const css = createUnsafeCss();\n" +
+				"export const styles = css.class({ color: getColor() });\n",
+		);
+		const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
+		try {
+			await createRuntimeCli(undefined, project).run([RuntimeCommand.Explain, "styles.ts"]);
+			expect(log).toHaveBeenCalledWith(expect.stringContaining("method-pruned"));
+		} finally {
+			log.mockRestore();
 			rmSync(project, { recursive: true, force: true });
 		}
 	});

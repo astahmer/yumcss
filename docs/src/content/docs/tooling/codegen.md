@@ -154,6 +154,20 @@ present and byte-for-byte current without writing it; add that command to CI.
 Vite users already receive equivalent usage-aware virtual modules from
 `pandwindCssVite`, so this command is primarily for non-Vite/static builds.
 
+## `pandwind-codemod runtime explain` — inspect Vite runtime pruning
+
+```
+pnpm exec pandwind-codemod runtime explain src/styles.ts \
+  [--preset @pandwind/example-preset#examplePreset] [--json]
+```
+
+This reports which CSS factory methods, style keys, conditions, preset metadata,
+and token entries the Vite runtime pruner can retain for a source module. An
+`escaped` or `fallback-dynamic-shape` result identifies code that correctly
+keeps the conservative runtime. Use `--preset` with the same preset configured
+in `pandwindVite` to see projected token-group and entry counts; `--json` emits
+the versioned `pandwind.runtime-explain/1` report for CI or bundle tooling.
+
 ## `pandwind-codemod tw scan` — safelist from real call sites
 
 ```

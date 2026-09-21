@@ -3,11 +3,35 @@ import { examplePreset } from "@pandwind/example-preset";
 import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
 import { createInlineTwPluginCore } from "../src/vite/index.ts";
 import { renderCssRuntimeModule } from "../src/css/runtime-codegen.ts";
-import { createRuntimePruningTransform } from "../src/vite/runtime-pruner.ts";
+import {
+	createRuntimePruningTransform,
+	explainRuntimePruning,
+} from "../src/vite/runtime-pruner.ts";
 
 const ID = "/project/src/styles.ts";
 
 describe("runtime pruning", () => {
+	test("explains projected methods, keys, and token entries", () => {
+		const explanations = explainRuntimePruning({
+			code:
+				'import { createDesignCss } from "pandwind/design";\n' +
+				'import { examplePreset } from "@pandwind/example-preset";\n' +
+				"const css = createDesignCss(examplePreset);\n" +
+				'export const styles = css.class({ $frame: { fill: "$red-500" } });',
+			id: ID,
+			preset: examplePreset,
+		});
+
+		expect(explanations).toHaveLength(1);
+		expect(explanations[0]).toMatchObject({
+			factory: "design",
+			status: "preset-projected",
+			methods: ["class"],
+			properties: ["$frame", "fill"],
+			projectedTokenGroups: { colors: 1 },
+		});
+	});
+
 	test("selects the callable core for aliased call-only factories", () => {
 		const pruner = createRuntimePruningTransform();
 		const result = pruner.transform(
