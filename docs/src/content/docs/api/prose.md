@@ -100,11 +100,14 @@ all three stylesheets:
 @layer reset, prose, pandwind;
 ```
 
+For a named generated layer, replace `pandwind` with the configured layer path.
+
 Layer order is fixed by the first time a layer name appears, so a declaration
 that stops at `pandwind` sorts the whole prose scale after every generated atom
-and prose would win the properties both set. Tailwind emits the same relationship
-inside `@layer utilities`, where the `.prose` rules come first and the utility
-classes follow.
+and prose would win the properties both set. If the application gives generated
+rules a custom layer, use that name in the declaration instead. Tailwind emits
+the same relationship inside `@layer utilities`, where the `.prose` rules come
+first and the utility classes follow.
 
 ## Divergences from upstream
 

@@ -111,9 +111,12 @@ both stylesheets:
 @layer reset, pandwind;
 ```
 
+For a named generated layer, replace `pandwind` with the configured layer path.
+
 Layer order is fixed by the first time a layer name appears, so an import
 order that puts the generated stylesheet first would otherwise sort `reset`
-after `pandwind`.
+after `pandwind`. If generated rules use a custom cascade layer, replace
+`pandwind` in the declaration with that configured name.
 
 ## Typing the import
 

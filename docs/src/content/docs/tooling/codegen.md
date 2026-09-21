@@ -12,10 +12,11 @@ manager's equivalent executable command works.
 ## `pandwind-codemod lib build` — publish extracted component-library rules
 
 ```sh
-pnpm exec pandwind-codemod lib build [root] [out-file] \
+	pnpm exec pandwind-codemod lib build [root] [out-file] \
 	[--include <glob>] [--css-source <module>] \
 	[--preset-import <module>] [--preset-export <name>] \
-	[--namespace <name>] [--cascade specificity|layers] [--check]
+	[--namespace <name>] [--cascade specificity|layers] \
+	[--cascade-layer <name>] [--check]
 ```
 
 The defaults are the current directory, `dist/pandwind.lib.json`, the
@@ -24,13 +25,15 @@ sources.
 Repeat `--include` for source globs and `--css-source` for custom CSS factory
 module names. The command scans source with the shared workspace, compiles
 literal `css()`/`css.class()` calls, includes structural rules for
-`css.vars()`, and writes a deterministic `pandwind.lib/1` artifact.
+`css.vars()`, and writes a deterministic `pandwind.lib/2` artifact.
 
 The artifact records used token declarations, stable rule identities and
 priorities, source content hashes, and a compatibility fingerprint covering
-the preset, compiler contract, namespace, cascade mode, and default class
-strategy. Expose `pandwind.lib.json` from the library package and register its
-package name with `pandwindCssVite(css, { libraries: ["@acme/ui"] })`.
+the preset, compiler contract, namespace, cascade mode, cascade layer, and
+default class strategy. Pass `--cascade-layer <name>` together with
+`--cascade layers` when the published rules belong to a named layer. Expose
+`pandwind.lib.json` from the library package and register its package name with
+`pandwindCssVite(css, { libraries: ["@acme/ui"] })`.
 `--check` rebuilds in memory and fails when the packed artifact is missing or
 stale. Invalid or incompatible artifacts fail closed; ordinary local source
 extraction remains available when no library is registered.

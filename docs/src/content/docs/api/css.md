@@ -208,22 +208,25 @@ use the Panda-style layer strategy:
 ```
 
 ```ts
-const css = createCss(preset, { cascade: "layers" });
+const css = createCss(preset, {
+	cascade: { mode: "layers", layer: "app.utilities" },
+});
 
 // vite.config.ts
-pandwindCssVite(css, { cascade: "layers" });
+pandwindCssVite(css);
 ```
 
-Pandwind wraps its generated tokens, atomic rules, and variable rules in
-`@layer pandwind`. Declare the layer order before those rules are imported and
-place host layers around it as needed. Native layers are not an override for
-ordinary unlayered host declarations: unlayered normal CSS has higher cascade
-priority than normal layered CSS.
+`cascade: "layers"` remains the shorthand for Pandwind's default
+`@layer pandwind`. The structured form selects another layer name, such as
+`@layer app.utilities`. Declare that layer order before the generated rules are
+imported and place host layers around it as needed. Native layers are not an
+override for ordinary unlayered host declarations: unlayered normal CSS has
+higher cascade priority than normal layered CSS.
 
 The runtime lane accepts the same option. Use `createRuntimeCss(preset, {
-cascade: "specificity" })` or `{ cascade: "layers" }`; when supplying an
-explicit `sheet`, configure the cascade on `createRuntimeSheet()` itself so
-the sheet and its CSS factory share one policy.
+cascade: "specificity" })`, `{ cascade: "layers" }`, or the structured named
+layer form above. When supplying an explicit `sheet`, configure the cascade on
+`createRuntimeSheet()` itself so the sheet and its CSS factory share one policy.
 
 ## Pick a return shape
 

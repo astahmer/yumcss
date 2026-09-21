@@ -10,6 +10,8 @@
  *      output declares the order once:
  *
  *        @layer reset, pandwind;
+ *      If the generated CSS uses a custom cascade layer, replace `pandwind`
+ *      with that configured name.
  *
  *      An undeclared layer still loses to unlayered CSS, so a project on the
  *      default `specificity` cascade needs no declaration. Import this reset

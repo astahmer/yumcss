@@ -377,7 +377,8 @@ selectors emitted by the official engine.
 ## Boundaries
 
 The publishable CSS artifact is its own boundary: `vite/lib-artifact.ts` owns
-the `pandwind.lib/1` contract, compatibility fingerprint, content validation,
+the `pandwind.lib/2` contract, compatibility fingerprint (including the
+cascade layer), content validation,
 and rule-entry types; `packages/codemod/src/lib/` owns source scanning and
 artifact writing; `vite/css.ts` owns explicit package resolution; and
 `vite/css-core.ts` only merges already-validated entries. It remains separate

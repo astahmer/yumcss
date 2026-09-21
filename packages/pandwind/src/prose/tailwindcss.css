@@ -16,6 +16,8 @@
  *      Pandwind's `cascade: "layers"` output declares the order once:
  *
  *        @layer reset, prose, pandwind;
+ *      If the generated CSS uses a custom cascade layer, replace `pandwind`
+ *      with that configured name.
  *
  *      Layer order is fixed by first appearance, so a declaration that stops at
  *      `pandwind` would sort this whole scale after every generated atom. An

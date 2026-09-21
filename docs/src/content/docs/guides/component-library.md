@@ -123,7 +123,7 @@ export default {
 ```
 
 The package artifact is validated against the consumer's preset, namespace,
-cascade mode, and class-output strategy before its rules are merged. Keep the
+cascade mode and layer, and class-output strategy before its rules are merged. Keep the
 same Pandwind preset semantics on both sides; token/property/condition or
 compiler mismatches fail the build with the differing compatibility fields.
 Use `pandwind-codemod lib build --check` in the library's CI to catch stale

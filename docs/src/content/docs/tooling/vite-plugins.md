@@ -69,8 +69,8 @@ plugins: [
 ];
 ```
 
-The artifact is checked against the active preset, namespace, cascade mode,
-and default class strategy. A malformed, stale, or incompatible artifact
+The artifact is checked against the active preset, namespace, cascade mode and
+layer, and default class strategy. A malformed, stale, or incompatible artifact
 fails closed with the fields that differ. Leave `libraries` unset for ordinary
 local source extraction.
 
