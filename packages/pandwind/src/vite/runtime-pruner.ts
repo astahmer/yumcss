@@ -72,15 +72,21 @@ const factoryForImport = (
 		specifier.local?.name === undefined
 	)
 		return undefined;
-	const source = declaration.source?.value ?? "";
+	const source = (declaration.source?.value ?? "").replace(/\.[cm]?[jt]sx?$/u, "");
 	const imported = specifier.imported?.name;
 	if (imported === "createUnsafeCss" && source.endsWith("/unsafe/css"))
 		return CssRuntimeFactoryTag.Unsafe;
-	if (imported === "createCss" && (source.endsWith("/css") || source.endsWith("/css/index")))
+	if (
+		imported === "createCss" &&
+		(source.endsWith("/css") || source.endsWith("/css/index") || source.endsWith("/css/create-css"))
+	)
 		return CssRuntimeFactoryTag.Preset;
 	if (imported === "createGeneratedCss" && source.endsWith("/css/generated"))
 		return CssRuntimeFactoryTag.Generated;
-	if (imported === "createDesignCss" && source.endsWith("/design"))
+	if (
+		imported === "createDesignCss" &&
+		(source.endsWith("/design") || source.endsWith("/design/index"))
+	)
 		return CssRuntimeFactoryTag.Design;
 	return undefined;
 };

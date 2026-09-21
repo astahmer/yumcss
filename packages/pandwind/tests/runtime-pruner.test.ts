@@ -93,6 +93,16 @@ describe("runtime pruning", () => {
 		expect(pruner.load(designVirtual!)).toContain("createDesignCss");
 	});
 
+	test("accepts explicit source-file extensions on package factory imports", () => {
+		const pruner = createRuntimePruningTransform();
+		const result = pruner.transform(
+			'import { createCss } from "pandwind/css/create-css.ts";\nconst css = createCss(preset);\nconst styles = css.class({ color: "red" });',
+			ID,
+		);
+
+		expect(result?.code).toContain("factory=preset&methods=class");
+	});
+
 	test("is wired into the bundler-agnostic css plugin", () => {
 		const core = createCssExtractorPluginCore(examplePreset, { root: "/project" });
 		const result = core.transform(
