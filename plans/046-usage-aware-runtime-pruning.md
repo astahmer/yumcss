@@ -13,8 +13,9 @@ JavaScript pay only for the runtime methods a module actually uses.
 - Split the CSS runtime into a small core plus independently importable method
   attachments.
 - Have the existing bundler adapters inspect local factory usage with the
-  shared AST scanner and rewrite safe `createCss` imports to a virtual,
-  feature-specific runtime module.
+  shared AST scanner and rewrite safe `createCss`, `createGeneratedCss`,
+  `createDesignCss`, and `createUnsafeCss` imports to a virtual,
+  factory-specific runtime module.
 - Treat escaping factories (exports, returns, unknown calls, cross-module
   assignments, or dynamic member access) as full-runtime cases.
 - Keep static extraction first: completely extracted calls must remove their
@@ -32,8 +33,8 @@ not change; the optimization exists only in emitted JavaScript.
 - unit tests for usage classification and escape conservatism;
 - transform tests for virtual feature modules and import preservation;
 - runtime parity tests for every retained method combination;
-- size snapshots for call-only, class-only, vars, props, group, and full
-  runtime lanes;
+- size snapshots for call-only, class-only, vars, props, group, keyframes,
+  preset-bound, generated, design, and full runtime lanes;
 - browser bundle checks proving no build-time or Node-only code is included.
 
 ## Rejected alternatives

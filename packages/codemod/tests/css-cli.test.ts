@@ -45,6 +45,12 @@ describe("pandwind-codemod css", () => {
 			presetExport: "preset",
 			check: false,
 		});
+		expect(
+			parseCssCommand(["generate", "--token-variable-names", "authored"], "/project"),
+		).toMatchObject({ tokenVariableNames: "authored" });
+		expect(() =>
+			parseCssCommand(["generate", "--token-variable-names", "invalid"], "/project"),
+		).toThrow("--token-variable-names must be 'hashed' or 'authored'");
 	});
 
 	test("generates a package-bound facade and verifies freshness", async () => {
@@ -71,6 +77,13 @@ describe("pandwind-codemod css", () => {
 			"preset",
 		]);
 		const source = readFileSync(output, "utf8");
+		expect(source).toContain(
+			"/* @__PURE__ */ createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(preset)",
+		);
+		expect(source).toContain("FirstThatWorksValue");
+		expect(source).toContain(
+			"export type GeneratedCss = CssFn<GeneratedStyle, GeneratedDynamicStyle>",
+		);
 		expect(source).toBe(
 			generateCssTypes(examplePreset, {
 				presetImport: "@acme/preset",
@@ -190,5 +203,18 @@ describe("pandwind-codemod css", () => {
 
 		expect(source).toContain('"colorPalette"');
 		expect(source).toContain('"colorPalette.500"');
+	});
+
+	test("passes authored token-variable naming through the generated factory", () => {
+		const source = generateCssTypes(examplePreset, {
+			presetImport: "./preset",
+			presetExport: "preset",
+			tokenVariableNames: "authored",
+		}).source;
+
+		expect(source).toContain(
+			'createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(preset, { tokenVariableNames: "authored" })',
+		);
+		expect(source).toContain('"$blue-500"');
 	});
 });

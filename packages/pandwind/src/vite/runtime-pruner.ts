@@ -76,10 +76,7 @@ const factoryForImport = (
 	const imported = specifier.imported?.name;
 	if (imported === "createUnsafeCss" && source.endsWith("/unsafe/css"))
 		return CssRuntimeFactoryTag.Unsafe;
-	if (
-		imported === "createCss" &&
-		(source.endsWith("/css") || source.endsWith("/css/index"))
-	)
+	if (imported === "createCss" && (source.endsWith("/css") || source.endsWith("/css/index")))
 		return CssRuntimeFactoryTag.Preset;
 	if (imported === "createGeneratedCss" && source.endsWith("/css/generated"))
 		return CssRuntimeFactoryTag.Generated;
@@ -205,8 +202,7 @@ const virtualIdFor = (
 	methods: ReadonlySet<CssRuntimeMethod>,
 ): string => {
 	const methodQuery = normalizeCssRuntimeMethods([...methods]).join(",");
-	if (factory === CssRuntimeFactoryTag.Unsafe)
-		return `${VIRTUAL_PREFIX}?methods=${methodQuery}`;
+	if (factory === CssRuntimeFactoryTag.Unsafe) return `${VIRTUAL_PREFIX}?methods=${methodQuery}`;
 	return `${VIRTUAL_PREFIX}?factory=${factory}&methods=${methodQuery}`;
 };
 

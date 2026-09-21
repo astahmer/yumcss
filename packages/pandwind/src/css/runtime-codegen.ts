@@ -27,8 +27,7 @@ export const CssRuntimeFactoryTag = {
 	Design: "design",
 } as const;
 
-export type CssRuntimeFactory =
-	(typeof CssRuntimeFactoryTag)[keyof typeof CssRuntimeFactoryTag];
+export type CssRuntimeFactory = (typeof CssRuntimeFactoryTag)[keyof typeof CssRuntimeFactoryTag];
 
 /** Stable registry order used for method ids, imports, and generated output. */
 export const CSS_RUNTIME_METHODS = [
@@ -91,9 +90,7 @@ const renderRuntimeFactory = (
 	if (factory === CssRuntimeFactoryTag.Unsafe)
 		return `export const createUnsafeCss = (options = {}) => createCssRuntime(options, [${attachments}]);`;
 	const factoryName =
-		factory === CssRuntimeFactoryTag.Design
-			? "createDesignCssRuntime"
-			: "createPresetCssRuntime";
+		factory === CssRuntimeFactoryTag.Design ? "createDesignCssRuntime" : "createPresetCssRuntime";
 	const exportName =
 		factory === CssRuntimeFactoryTag.Design
 			? "createDesignCss"

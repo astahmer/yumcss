@@ -52,6 +52,11 @@ The generated module calls `createGeneratedCss(preset)` from
 `pandwind/css/generated`, so it keeps the same
 runtime behavior and all projections as `createCss(preset)`. It only replaces
 the preset-derived TypeScript computation with concrete generated unions.
+The generated facade includes `firstThatWorks` and `keyframes` in its type
+surface, and the Vite plugin can specialize its runtime attachments when the
+facade is used locally. Use `--token-variable-names authored` with the
+codegen command when declared token names should become custom-property
+names; hashed names remain the default.
 Use this opt-in path when typecheck measurements show that a large catalog is
 worth generating; ordinary projects should keep using `createCss(preset)`.
 

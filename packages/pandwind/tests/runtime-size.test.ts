@@ -23,7 +23,7 @@
  */
 import { readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
@@ -93,11 +93,18 @@ const bundleAfterRuntimePruning = async (fixture: string): Promise<{ min: number
 				{
 					name: "pandwind-runtime-pruner-test",
 					setup(build) {
-						build.onLoad({ filter: /runtime-css-pruned-(?:call|class|vars)\.ts$/ }, (args) => {
-							const source = readFileSync(args.path, "utf8");
-							const transformed = pruner.transform(source, args.path);
-							return { contents: transformed?.code ?? source, loader: "ts", resolveDir: ROOT };
-						});
+						build.onLoad(
+							{ filter: /runtime-css-pruned-(?:call|class|vars|preset|generated|design)\.ts$/ },
+							(args) => {
+								const source = readFileSync(args.path, "utf8");
+								const transformed = pruner.transform(source, args.path);
+								return {
+									contents: transformed?.code ?? source,
+									loader: "ts",
+									resolveDir: dirname(args.path),
+								};
+							},
+						);
 						build.onResolve({ filter: /^pandwind:runtime\/css/ }, (args) => ({
 							path: args.path,
 							namespace: "pandwind-runtime",
@@ -165,6 +172,7 @@ test("runtime entries stay stylex-sized", async () => {
 		// The palette fixture keeps a full token catalog, so these lanes measure
 		// a preset whose tokens resolve to named colors.
 		"createCss(fixturePreset)": bundle("runtime-preset-fixture.ts"),
+		"createDesignCss(fixturePreset), fallback": bundle("runtime-design.ts"),
 		"createCss(fixturePreset) + tw()": bundle("runtime-preset-tw.ts"),
 		"createCss(fixturePreset) + cx()": bundle("runtime-preset-cx.ts"),
 		"createCss(fixturePreset) + tw() + cx()": bundle("runtime-preset-all.ts"),
@@ -181,6 +189,15 @@ test("runtime entries stay stylex-sized", async () => {
 		),
 		"createUnsafeCss(), compiler-pruned vars": await bundleAfterRuntimePruning(
 			"runtime-css-pruned-vars.ts",
+		),
+		"createCss(), compiler-pruned class": await bundleAfterRuntimePruning(
+			"runtime-css-pruned-preset.ts",
+		),
+		"createGeneratedCss(), compiler-pruned keyframes": await bundleAfterRuntimePruning(
+			"runtime-css-pruned-generated.ts",
+		),
+		"createDesignCss(), compiler-pruned class": await bundleAfterRuntimePruning(
+			"runtime-css-pruned-design.ts",
 		),
 		"createUnsafeCss(), generated call": bundleGeneratedRuntime([]),
 		"createUnsafeCss(), generated class": bundleGeneratedRuntime(["class"]),
@@ -238,6 +255,18 @@ test("runtime entries stay stylex-sized", async () => {
 		sizes["createUnsafeCss(), generated class+vars"].min,
 		"generated class+vars runtime must be smaller than generated all",
 	).toBeLessThan(sizes["createUnsafeCss(), generated all"].min);
+	expect(
+		sizes["createCss(), compiler-pruned class"].min,
+		"preset-bound compiler pruning must reduce the full preset runtime",
+	).toBeLessThan(sizes["createCss(fixturePreset)"].min);
+	expect(
+		sizes["createGeneratedCss(), compiler-pruned keyframes"].min,
+		"generated compiler pruning must reduce the full preset runtime",
+	).toBeLessThan(sizes["createCss(fixturePreset)"].min);
+	expect(
+		sizes["createDesignCss(), compiler-pruned class"].min,
+		"design compiler pruning must reduce the full design runtime",
+	).toBeLessThan(sizes["createDesignCss(fixturePreset), fallback"].min);
 
 	// 2. Regression guard vs the committed baseline (noise-tolerant).
 	if (!updatingSnapshots()) {

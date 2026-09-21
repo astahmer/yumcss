@@ -79,4 +79,13 @@ describe("generated CSS facade", () => {
 			baseCss.props(baseGroups.card, baseGroups.gap(8), baseGroups.banner({ color: "tomato" })),
 		);
 	});
+
+	test("matches createCss for keyframes", () => {
+		const body = {
+			from: { opacity: 0 },
+			to: { opacity: 1 },
+		} as const;
+
+		expect(generatedCss.keyframes(body)).toBe(baseCss.keyframes(body));
+	});
 });

@@ -46,7 +46,8 @@ static-CSS-only runtime.
 
 ```sh
 pnpm exec pandwind-codemod css generate [root] [out-file] \
-	[--preset-import <module>] [--preset-export <name>] [--check]
+	[--preset-import <module>] [--preset-export <name>] \
+	[--token-variable-names <hashed|authored>] [--check]
 ```
 
 The defaults are the current directory, `src/css.generated.ts`, and a named
@@ -65,11 +66,15 @@ export const button = css.class({
 ```
 
 The generated facade uses `createGeneratedCss` from `pandwind/css/generated`. It has the
-same runtime and complete `css`, `class`, `vars`, `raw`, `props`, `group`, and
-`input` behavior as `createCss(preset)`; only the expensive preset-derived
-type computation is replaced with concrete generated types. It is therefore
-an opt-in typecheck optimization for large design systems, not a new styling
-runtime or a zero-JavaScript mode. `--check` verifies the file byte-for-byte
+same runtime and complete `css`, `class`, `vars`, `raw`, `props`, `group`,
+`input`, and `keyframes` behavior as `createCss(preset)`; only the expensive
+preset-derived type computation is replaced with concrete generated types. It
+is therefore an opt-in typecheck optimization for large design systems, not a
+new styling runtime or a zero-JavaScript mode. The generated source keeps
+`firstThatWorks` in property unions and marks the factory call pure, so an
+unused generated facade can disappear in a normal bundle. Pass
+`--token-variable-names authored` when the runtime should use declared token
+spellings for custom properties; the default remains `hashed`. `--check` verifies the file byte-for-byte
 without writing it, so it can be added to CI after the preset build is
 available.
 

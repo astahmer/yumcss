@@ -22,9 +22,12 @@ type evaluation with a concrete local style catalog.
   that implement the existing `CssFn` surface. The generated facade exports
   the concrete types and a runtime `css` binding; it does not add a second CSS
   compiler.
+- Preserve newer `CssFn` additions such as `firstThatWorks` values and
+  `keyframes`, and allow the generated factory to select authored token
+  custom-property names explicitly while retaining hashed names by default.
 - Preserve the runtime contract by delegating to the existing CSS factory.
   Generated output must support the callable API and every existing
-  projection: `class`, `vars`, `raw`, `props`, `group`, and `input`.
+  projection: `class`, `vars`, `raw`, `props`, `group`, `input`, and `keyframes`.
 - Keep the feature opt-in and version-tied. Generated files are checked in by
   applications, and stale output must be visible through `--check`.
 

@@ -50,6 +50,18 @@ const css = createCss(examplePreset);
 plugins: [pandwindCssVite(css)];
 ```
 
+The Vite runtime transform also specializes the JavaScript runtime when a
+module keeps a runtime CSS call. It recognizes `createCss`, generated CSS
+facades, `createDesignCss`, and `createUnsafeCss`, then serves a virtual
+module containing only the projections used by that module (`class`, `vars`,
+`raw`, `props`, `group`, `input`, or `keyframes`; `group` includes its `vars`
+dependency). This rewrite changes only the runtime import specifier, so the
+full TypeScript `CssFn`/generated facade contract remains available to the
+typechecker. Re-exports, dynamic member access, and other escaped factories
+stay on the complete runtime because their consumers are not locally provable.
+`firstThatWorks` remains part of the small callable core: its encoded fallback
+values must be understood by ordinary `css()` and `.class()` compilation.
+
 ```ts
 // main.tsx
 import "pandwind:css";

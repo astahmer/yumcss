@@ -89,9 +89,7 @@ describe("runtime pruning", () => {
 			ID,
 		);
 		expect(design?.code).toContain("factory=design&methods=class");
-		const designVirtual = pruner.resolveId(
-			"pandwind:runtime/css?factory=design&methods=class",
-		);
+		const designVirtual = pruner.resolveId("pandwind:runtime/css?factory=design&methods=class");
 		expect(pruner.load(designVirtual!)).toContain("createDesignCss");
 	});
 

@@ -35,6 +35,10 @@
 		"min": 29900,
 		"gz": 10650
 	},
+	"createDesignCss(fixturePreset), fallback": {
+		"min": 39000,
+		"gz": 13500
+	},
 	"createCss(fixturePreset) + tw()": {
 		"min": 32800,
 		"gz": 11750
@@ -74,6 +78,18 @@
 	"createUnsafeCss(), compiler-pruned vars": {
 		"min": 11000,
 		"gz": 4500
+	},
+	"createCss(), compiler-pruned class": {
+		"min": 25000,
+		"gz": 9000
+	},
+	"createGeneratedCss(), compiler-pruned keyframes": {
+		"min": 26000,
+		"gz": 9500
+	},
+	"createDesignCss(), compiler-pruned class": {
+		"min": 33000,
+		"gz": 11500
 	},
 	"createUnsafeCss(), generated call": {
 		"min": 8500,
@@ -124,7 +140,7 @@
 		"gz": 8100
 	},
 	"stylesheet generator (build-time only)": {
-		"min": 25000,
+		"min": 25500,
 		"gz": 9500
 	}
 }

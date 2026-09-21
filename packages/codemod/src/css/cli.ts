@@ -9,6 +9,7 @@ import {
 } from "./generate-types.ts";
 import { loadPandwindPreset } from "../preset-loader.ts";
 import type { ProjectModuleLoader } from "../swap/project-module-loader.ts";
+import type { TokenVariableNames } from "pandwind/types/typings";
 
 export const CssCommand = {
 	Generate: "generate",
@@ -22,6 +23,7 @@ export interface CssGenerateCommand {
 	readonly outFile: string;
 	readonly presetImport: string;
 	readonly presetExport: string;
+	readonly tokenVariableNames?: TokenVariableNames;
 	readonly check: boolean;
 }
 
@@ -57,7 +59,19 @@ const configureGenerate = (command: Command): void => {
 	command
 		.option("--preset-import <module>", "Module that exports the Pandwind preset")
 		.option("--preset-export <name>", "Preset export name; use 'default' for a default export")
+		.option(
+			"--token-variable-names <mode>",
+			"Token custom-property names: hashed (default) or authored",
+		)
 		.option("--check", "Fail if the generated facade is missing or stale");
+};
+
+const optionTokenVariableNames = (options: CliOptions): TokenVariableNames | undefined => {
+	const value = optionString(options, "tokenVariableNames");
+	if (value === undefined) return undefined;
+	if (value !== "hashed" && value !== "authored")
+		throw new Error(`--token-variable-names must be 'hashed' or 'authored', got '${value}'`);
+	return value;
 };
 
 const generateCommand = (
@@ -66,12 +80,14 @@ const generateCommand = (
 	options: CliOptions,
 ): CssGenerateCommand => {
 	const root = resolve(cwd, positionals[0] ?? ".");
+	const tokenVariableNames = optionTokenVariableNames(options);
 	return {
 		command: CssCommand.Generate,
 		root,
 		outFile: resolve(root, positionals[1] ?? DEFAULT_CSS_TYPES_OUTPUT),
 		presetImport: optionString(options, "presetImport") ?? "./src/preset.ts",
 		presetExport: optionString(options, "presetExport") ?? "preset",
+		...(tokenVariableNames === undefined ? {} : { tokenVariableNames }),
 		check: optionBoolean(options, "check"),
 	};
 };
@@ -126,6 +142,7 @@ const generatedPresetImport = (command: CssGenerateCommand): string => {
 const generatedOptions = (command: CssGenerateCommand): GenerateCssTypesOptions => ({
 	presetImport: generatedPresetImport(command),
 	presetExport: command.presetExport,
+	tokenVariableNames: command.tokenVariableNames,
 });
 
 const defaultHandlers = (dependencies: CssCliDependencies): CssCliHandlers => ({

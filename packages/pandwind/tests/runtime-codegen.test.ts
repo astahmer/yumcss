@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	CSS_RUNTIME_METHODS,
+	CssRuntimeFactoryTag,
 	CssRuntimeMethodTag,
 	normalizeCssRuntimeMethods,
 	renderCssRuntimeModule,
@@ -51,5 +52,25 @@ describe("CSS runtime codegen registry", () => {
 		expect(source).toContain('Pick<CssFn<TStyles>, "class">');
 		expect(source).toContain("export const createUnsafeCss");
 		expect(source).not.toContain("[ATTACHMENTS]");
+	});
+
+	test("renders preset, generated, and design factories over the same lean attachments", () => {
+		const preset = renderCssRuntimeModule(["class"], {
+			factory: CssRuntimeFactoryTag.Preset,
+		});
+		const generated = renderCssRuntimeModule(["keyframes"], {
+			factory: CssRuntimeFactoryTag.Generated,
+		});
+		const design = renderCssRuntimeModule(["class"], {
+			factory: CssRuntimeFactoryTag.Design,
+		});
+
+		expect(preset).toContain("createPresetCssRuntime");
+		expect(preset).toContain("export const createCss");
+		expect(preset).not.toContain("pandwind/_runtime/css-vars");
+		expect(generated).toContain("export const createGeneratedCss");
+		expect(generated).toContain("pandwind/_runtime/css-keyframes");
+		expect(design).toContain("createDesignCssRuntime");
+		expect(design).toContain("export const createDesignCss");
 	});
 });

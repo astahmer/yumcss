@@ -42,6 +42,7 @@ test("generated css has the complete callable and projection surface", () => {
 	expect(directCss).type.toBe<GeneratedCss>();
 	expect(compiled).type.toBe<Compiled>();
 	expect(css.class({ color: "$blue-500" })).type.toBe<string>();
+	expect(css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } })).type.toBe<string>();
 	expect(css.raw({ color: "$blue-500" })).type.toBeAssignableTo<StyleObject>();
 	expect(dynamic).type.toBeAssignableTo<{ class: string; style: Record<string, string> }>();
 	expect(

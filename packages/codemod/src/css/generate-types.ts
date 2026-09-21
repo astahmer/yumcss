@@ -1,4 +1,4 @@
-import type { CssConfigReturn } from "pandwind/types/typings";
+import type { CssConfigReturn, TokenVariableNames } from "pandwind/types/typings";
 
 type RecordValue = Record<string, unknown>;
 
@@ -209,6 +209,8 @@ ${generatedDynamicPropertyBlock(preset)}
 export interface GenerateCssTypesOptions {
 	readonly presetImport: string;
 	readonly presetExport?: string;
+	/** Select the token custom-property spelling used by the generated runtime. */
+	readonly tokenVariableNames?: TokenVariableNames;
 }
 
 export interface GeneratedCssTypesSource {
@@ -245,6 +247,10 @@ export const generateCssTypes = (
 					"\t",
 				)
 			: "never";
+	const runtimeOptions =
+		options.tokenVariableNames === undefined
+			? ""
+			: `, { tokenVariableNames: ${quote(options.tokenVariableNames)} }`;
 	const source = `${GENERATED_CSS_TYPES_HEADER}
 // Regenerate after changing the preset or upgrading Pandwind.
 import { createGeneratedCss } from "pandwind/css/generated";
@@ -267,7 +273,7 @@ ${generatedStyleType(preset)}
 
 export type GeneratedCss = CssFn<GeneratedStyle, GeneratedDynamicStyle>;
 
-export const css: GeneratedCss = createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(preset);
+export const css: GeneratedCss = /* @__PURE__ */ createGeneratedCss<GeneratedStyle, GeneratedDynamicStyle>(preset${runtimeOptions});
 `;
 	return {
 		source,
