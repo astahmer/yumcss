@@ -317,6 +317,12 @@ spreads, unsupported value expressions, and static/dynamic collisions keep the
 conservative `css.props(css.vars(...))` carrier instead of being partially
 reordered or dropped.
 
+The same lowering recognizes an explicit flat
+`css.props(css.vars({...}), "static-class")` composition, even outside JSX.
+It keeps the public composition untouched for nested conditions, non-string
+additional props, fallback declarations, or any other shape whose merge
+semantics cannot be proven equivalent.
+
 ## Per-route CSS splitting (opt-in)
 
 ```ts

@@ -1181,6 +1181,56 @@ test("dynamic className rewriting leaves conflicting hosts untouched", () => {
 	}
 });
 
+test("direct carriers preserve preset token aliases", () => {
+	const code = `
+		import { css } from "./design";
+		const color = getColor();
+		const space = getSpace();
+		export const App = () => <div {...css({ color, marginTop: space })} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.code).toContain("__pandwind_direct_token_map_0");
+	expect(result.code).toContain("var(--");
+	expect(result.code).toContain('style["--pw-c-color"]');
+	expect(result.code).toContain('style["--pw-c-margin-top"]');
+	expect(result.code).not.toContain("css.props(css.vars");
+});
+
+test("explicit vars props lower to one direct host carrier", () => {
+	const code = `
+		import { css } from "./design";
+		const color = getColor();
+		const props = css.props(css.vars({ color, padding: 4 }), "card");
+		export const App = () => <div {...props} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain('style["--pw-c-color"]');
+	expect(result.code).toContain('style["--pw-c-padding"]');
+	expect(result.code).toContain('classNames.push("card")');
+	expect(result.code).not.toContain("css.props");
+	expect(result.code).not.toContain("css.vars");
+	expect(result.varKeys).toEqual(["color", "padding"]);
+});
+
+test("firstThatWorks aliases stay on the runtime path", () => {
+	const code = `
+		import { firstThatWorks } from "pandwind/css";
+		import { css } from "./design";
+		const displayFallback = firstThatWorks("flex", "block");
+		const color = getColor();
+		export const App = () => <div {...css({ padding: 4, color, display: displayFallback })} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.inlined).toBe(0);
+	expect(result.code).toContain("css({ padding: 4, color, display: displayFallback })");
+	expect(result.code).not.toContain("css.props(css.vars");
+	expect(result.code).not.toContain("__pandwind_direct_token_map");
+});
+
 test("the checked-in dynamic example exercises both compiler carrier rewrites", () => {
 	const appRoot = resolve(import.meta.dirname, "../../../examples/example");
 	const file = join(appRoot, "src/examples/dynamic-app.tsx");

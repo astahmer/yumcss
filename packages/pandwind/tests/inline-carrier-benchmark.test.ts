@@ -49,6 +49,18 @@ const cases: readonly CarrierCase[] = [
 		directNeedles: ['style["--pw-c-background-color"]', 'style["--pw-c-margin"]'],
 	},
 	{
+		name: "all dynamic properties",
+		sourceExpression: "css({ backgroundColor: shade, margin: gap })",
+		currentCarrier: "css.props(css.vars({ backgroundColor: shade, margin: gap }))",
+		directNeedles: ['style["--pw-c-background-color"]', 'style["--pw-c-margin"]'],
+	},
+	{
+		name: "explicit vars props",
+		sourceExpression: 'css.props(css.vars({ backgroundColor: shade, margin: gap }), "1nmpgqu")',
+		currentCarrier: 'css.props(css.vars({ backgroundColor: shade, margin: gap }), "1nmpgqu")',
+		directNeedles: ['style["--pw-c-background-color"]', 'style["--pw-c-margin"]'],
+	},
+	{
 		name: "dynamic condition",
 		sourceExpression: 'css({ color: "red", _hover: { backgroundColor: shade } })',
 		currentCarrier: 'css.props(css.vars({ color: "red", _hover: { backgroundColor: shade } }))',

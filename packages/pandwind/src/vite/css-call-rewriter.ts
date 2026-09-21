@@ -65,7 +65,6 @@ interface ClassNameHost {
 
 interface DirectVarDescriptor {
 	readonly sourceName: string;
-	readonly property: string;
 	readonly className: string;
 	readonly customProperty: string;
 	readonly addsPixels: boolean;
@@ -119,7 +118,6 @@ const directVarDescriptor = (
 	if (cssProperty === "colorPalette") return undefined;
 	return {
 		sourceName: property,
-		property: cssProperty,
 		className: atom.cls,
 		customProperty,
 		addsPixels: normalizeCssValue(cssProperty, 1) === "1px",
@@ -218,6 +216,10 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				unsafeCssNames.add(declarator.id.name);
 		});
 		const firstThatWorksNames = findFirstThatWorksBindings(parsed as unknown as OxcNode);
+		const firstThatWorksValueNames = findFirstThatWorksValueNames(
+			parsed as unknown as OxcNode,
+			firstThatWorksNames,
+		);
 		const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksNames);
 		const usedIdentifiers = new Set<string>();
 		walk(parsed as unknown as OxcNode, (node) => {
@@ -279,6 +281,56 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						})
 					: undefined;
 			if (
+				memberCallee?.property?.name === "props" &&
+				memberCallee.object?.type === NodeKind.Identifier &&
+				names.has(memberCallee.object.name ?? "")
+			) {
+				const carrierName = memberCallee.object.name!;
+				const varsCall = call.arguments[0] as CallNode | undefined;
+				const varsCallee = varsCall?.callee;
+				const varsMember =
+					varsCallee?.type === NodeKind.MemberExpression
+						? (varsCallee as {
+								object?: { type?: string; name?: string } | null;
+								property?: { name?: string } | null;
+							})
+						: undefined;
+				const extraClassNames = call.arguments
+					.slice(1)
+					.map((argument) => evaluateCssLiteral(argument as never));
+				if (
+					varsCall !== undefined &&
+					varsCall.type === NodeKind.CallExpression &&
+					varsMember?.object?.type === NodeKind.Identifier &&
+					varsMember.object.name === carrierName &&
+					varsMember.property?.name === "vars" &&
+					extraClassNames.every(
+						(value): value is string => typeof value === "string" && value.length > 0,
+					)
+				) {
+					const carrier = dynamicHostCarrier(
+						code,
+						varsCall,
+						compileStaticArguments,
+						evaluateCall,
+						firstThatWorksNames,
+						firstThatWorksValueNames,
+						varCompiler,
+						this.preset,
+						this.tokenVariableNames,
+						registerDirectTokenMap,
+						!unsafeCssNames.has(carrierName),
+						true,
+						extraClassNames.join(" "),
+					);
+					if (carrier !== undefined) {
+						edits.push({ start: call.start, end: call.end, text: carrier.text });
+						for (const key of carrier.varKeys) this.varKeys.add(key);
+						return;
+					}
+				}
+			}
+			if (
 				memberCallee?.property?.name === "keyframes" &&
 				memberCallee.object?.type === NodeKind.Identifier &&
 				names.has(memberCallee.object.name ?? "")
@@ -326,6 +378,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					compileStaticArguments,
 					evaluateCall,
 					firstThatWorksNames,
+					firstThatWorksValueNames,
 					varCompiler,
 					this.preset,
 					this.tokenVariableNames,
@@ -349,7 +402,6 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				kind !== "group" &&
 				objectArguments.length > 0 &&
 				objectArguments.length === call.arguments.length &&
-				call.arguments.every((argument) => hasLiteralProperty(argument as OxcNode)) &&
 				call.arguments.some((argument) => evaluateCssLiteral(argument as never) === undefined)
 			) {
 				// The carrier's host-prop result shape ({style, className}) is
@@ -365,6 +417,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						compileStaticArguments,
 						evaluateCall,
 						firstThatWorksNames,
+						firstThatWorksValueNames,
 						varCompiler,
 						this.preset,
 						this.tokenVariableNames,
@@ -376,6 +429,18 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						for (const key of carrier.varKeys) this.varKeys.add(key);
 						return;
 					}
+					if (
+						call.arguments.some((argument) =>
+							containsFirstThatWorksValue(
+								argument as OxcNode,
+								firstThatWorksNames,
+								firstThatWorksValueNames,
+							),
+						)
+					)
+						return;
+					if (!call.arguments.some((argument) => hasTopLevelLiteralProperty(argument as OxcNode)))
+						return;
 					// Preserve the existing conservative rewrite when the static/dynamic
 					// partition is ambiguous or cannot be compiled independently.
 					const ranges = call.arguments.map(
@@ -494,12 +559,77 @@ const containsFirstThatWorksCall = (node: OxcNode, names: ReadonlySet<string>): 
 	return found;
 };
 
+const containsFirstThatWorksValue = (
+	node: OxcNode,
+	callNames: ReadonlySet<string>,
+	valueNames: ReadonlySet<string>,
+): boolean => {
+	let found = false;
+	walk(node, (candidate) => {
+		if (candidate.type === NodeKind.Identifier) {
+			const name = (candidate as { name?: string }).name;
+			if (name !== undefined && valueNames.has(name)) found = true;
+			return;
+		}
+		if (candidate.type !== NodeKind.CallExpression) return;
+		const callee = (candidate as { callee?: OxcNode | null }).callee;
+		if (
+			callee?.type === NodeKind.Identifier &&
+			callNames.has((callee as { name?: string }).name ?? "")
+		)
+			found = true;
+	});
+	return found;
+};
+
+const findFirstThatWorksValueNames = (
+	program: OxcNode,
+	callNames: ReadonlySet<string>,
+): ReadonlySet<string> => {
+	const declarations: Array<{ name: string; init: OxcNode }> = [];
+	walk(program, (node) => {
+		if (node.type !== NodeKind.VariableDeclarator) return;
+		const declaration = node as {
+			id?: { type?: string; name?: string };
+			init?: OxcNode | null;
+		};
+		if (
+			declaration.id?.type !== NodeKind.Identifier ||
+			declaration.id.name === undefined ||
+			declaration.init === undefined ||
+			declaration.init === null
+		)
+			return;
+		declarations.push({ name: declaration.id.name, init: declaration.init });
+	});
+	const values = new Set<string>();
+	let changed = true;
+	while (changed) {
+		changed = false;
+		for (const declaration of declarations) {
+			if (
+				values.has(declaration.name) ||
+				(!containsFirstThatWorksCall(declaration.init, callNames) &&
+					!(
+						declaration.init.type === NodeKind.Identifier &&
+						values.has((declaration.init as { name?: string }).name ?? "")
+					))
+			)
+				continue;
+			values.add(declaration.name);
+			changed = true;
+		}
+	}
+	return values;
+};
+
 /** Split one flat style object without changing any runtime value expression. */
 const splitStyleArgument = (
-	code: string,
 	argument: unknown,
 	evaluateCall: LiteralCallEvaluator,
 	firstThatWorksNames: ReadonlySet<string>,
+	firstThatWorksValueNames: ReadonlySet<string>,
+	allPropertiesDynamic: boolean,
 ): SplitStyleArgument | undefined => {
 	const node = argument as (OxcNode & { properties?: readonly PropertyNode[] }) | undefined;
 	if (node?.type !== NodeKind.ObjectExpression) return undefined;
@@ -511,7 +641,6 @@ const splitStyleArgument = (
 			property.kind !== PropertyKindTag.Init ||
 			property.computed === true ||
 			property.method === true ||
-			property.shorthand === true ||
 			property.start === undefined ||
 			property.end === undefined
 		)
@@ -528,7 +657,10 @@ const splitStyleArgument = (
 			value === null
 		)
 			return undefined;
-		if (evalLiteral(value as never, undefined, evaluateCall) !== undefined) {
+		if (
+			!allPropertiesDynamic &&
+			evalLiteral(value as never, undefined, evaluateCall) !== undefined
+		) {
 			staticProperties.push(property);
 			continue;
 		}
@@ -539,7 +671,8 @@ const splitStyleArgument = (
 			value.type === NodeKind.FunctionExpression
 		)
 			return undefined;
-		if (containsFirstThatWorksCall(value, firstThatWorksNames)) return undefined;
+		if (containsFirstThatWorksValue(value, firstThatWorksNames, firstThatWorksValueNames))
+			return undefined;
 		dynamicProperties.push(property);
 	}
 	return { staticProperties, dynamicProperties };
@@ -552,7 +685,7 @@ const renderDirectCarrier = (
 	code: string,
 	dynamicProperties: readonly PropertyNode[],
 	descriptors: readonly DirectVarDescriptor[],
-	staticClass: string | undefined,
+	staticClasses: readonly string[],
 ): string => {
 	const sortedDescriptors = descriptors.toSorted((left, right) =>
 		left.sourceName.localeCompare(right.sourceName),
@@ -578,8 +711,8 @@ const renderDirectCarrier = (
 		lines.push("\t\thasStyle = true;");
 		lines.push("\t}");
 	}
-	if (staticClass !== undefined && staticClass !== "")
-		lines.push(`\tclassNames.push(${JSON.stringify(staticClass)});`);
+	for (const staticClass of staticClasses)
+		if (staticClass !== "") lines.push(`\tclassNames.push(${JSON.stringify(staticClass)});`);
 	lines.push(
 		'\treturn { className: classNames.length > 0 ? classNames.join(" ") : undefined, style: hasStyle ? style : undefined };',
 	);
@@ -616,14 +749,23 @@ const dynamicHostCarrier = (
 	compileStatic: (propertySets: readonly (readonly PropertyNode[])[]) => string | null,
 	evaluateCall: LiteralCallEvaluator,
 	firstThatWorksNames: ReadonlySet<string>,
+	firstThatWorksValueNames: ReadonlySet<string>,
 	varCompiler: ReturnType<typeof createVarCompiler>,
 	preset: CssPreset,
 	tokenVariableNames: TokenVariableNames | undefined,
 	registerTokenMap: (map: Readonly<Record<string, string>>) => string,
 	resolveTokens: boolean,
+	allPropertiesDynamic = false,
+	additionalStaticClass: string | undefined = undefined,
 ): { readonly text: string; readonly varKeys: readonly string[] } | undefined => {
 	const splits = call.arguments.map((argument) =>
-		splitStyleArgument(code, argument, evaluateCall, firstThatWorksNames),
+		splitStyleArgument(
+			argument,
+			evaluateCall,
+			firstThatWorksNames,
+			firstThatWorksValueNames,
+			allPropertiesDynamic,
+		),
 	);
 	if (splits.some((split): split is undefined => split === undefined)) return undefined;
 	const resolved = splits as SplitStyleArgument[];
@@ -664,21 +806,21 @@ const dynamicHostCarrier = (
 	});
 	if (descriptors.length !== dynamicNames.size) return undefined;
 	return {
-		text: renderDirectCarrier(code, dynamicProperties, descriptors, staticClass ?? undefined),
+		text: renderDirectCarrier(code, dynamicProperties, descriptors, [
+			...(staticClass === undefined ? [] : [staticClass]),
+			...(additionalStaticClass === undefined ? [] : [additionalStaticClass]),
+		]),
 		varKeys: [...dynamicNames],
 	};
 };
 
-/** At least one ordinary property with a literal value (see pushPartialLiteral). */
-const hasLiteralProperty = (node: OxcNode): boolean =>
+const hasTopLevelLiteralProperty = (node: OxcNode): boolean =>
 	((node as { properties?: unknown[] }).properties ?? []).some((property) => {
 		const entry = property as {
 			type?: string;
-			key?: { name?: string; value?: { value?: string } };
 			value?: { type?: string };
 		};
-		if (entry?.type !== NodeKind.Property || entry.value?.type !== NodeKind.Literal) return false;
-		return typeof (entry.key?.name ?? entry.key?.value?.value) === "string";
+		return entry.type === NodeKind.Property && entry.value?.type === NodeKind.Literal;
 	});
 
 const literalGroup = (
