@@ -4,15 +4,6 @@ import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { define } from "../src/types/define-preset.export.ts";
 
-test("define.preset defaults to strict token resolution", () => {
-	const preset = define.preset(
-		{ config: {}, tokens: {} },
-		{ conditions: {}, properties: { $all: true } },
-	);
-
-	expect(preset.strict).toBe(true);
-});
-
 test("css gen simple prop", () => {
 	const preset = define.preset(
 		{

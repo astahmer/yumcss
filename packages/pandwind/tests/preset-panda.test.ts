@@ -512,15 +512,17 @@ describe("panda preset parity with the installed package", () => {
 			"4px": "4px",
 			"8px": "8px",
 		});
-		expect(pandaProperties.outlineOffset).toEqual({ $tokens: "spacing" });
-		expect(pandaProperties.scrollbarWidth).toEqual({ $tokens: "sizes" });
-		expect(pandaProperties.border).toEqual({ $tokens: "borders" });
+		expect(pandaProperties.outlineOffset).toEqual({ $tokens: "spacing", $strict: false });
+		expect(pandaProperties.scrollbarWidth).toEqual({ $tokens: "sizes", $strict: false });
+		expect(pandaProperties.border).toEqual({ $tokens: "borders", $strict: false });
 		expect(Object.hasOwn(presetProperties, "transitionProperty")).toBe(false);
 		expect(pandaProperties.transitionProperty).toEqual({
 			$tokens: "transitionProperties",
+			$strict: false,
 		});
 		expect(pandaProperties.transition).toEqual({
 			$tokens: "transitions",
+			$strict: false,
 		});
 		expect(
 			Object.values(presetProperties).filter(
@@ -622,7 +624,7 @@ describe("panda preset runtime resolution", () => {
 		expect(atomicOf({ margin: 4 })).toContain("margin:4px");
 	});
 
-	test("the bound shorthands reach their scale and preserve the raw escape", () => {
+	test("the bound shorthands reach their scale and keep raw CSS available", () => {
 		expect(atomicOf({ border: "none" })).toContain("border:var(--");
 		expect(atomicOf({ animationDuration: "fast" })).toContain("animation-duration:var(--");
 		expect(atomicOf({ animation: "spin 1s linear infinite" })).toContain(

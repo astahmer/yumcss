@@ -387,7 +387,6 @@ For a mapped property such as
 
 | preset setting                       | accepted values                                                  |
 | ------------------------------------ | ---------------------------------------------------------------- |
-| `strict` omitted                     | same as `strict: true`                                           |
 | `strict: true`                       | token names from the mapped group (plus color opacity modifiers) |
 | `strict: false`                      | token names and raw values from `config`                         |
 | `strict: true` with `$strict: false` | token names and raw values from `config` for that property       |

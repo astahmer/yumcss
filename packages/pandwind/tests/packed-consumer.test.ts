@@ -112,15 +112,19 @@ describe("packed Pandwind consumer", () => {
 			expect(defaultPreset.properties).toHaveProperty("padding");
 			expect(tailwindPreset.properties.backgroundColor).toEqual({
 				$tokens: "colors",
+				$strict: true,
 			});
 			expect(chakraPreset.properties.backgroundColor).toEqual({
 				$tokens: "colors",
+				$strict: true,
 			});
 			expect(shadcnPreset.properties.backgroundColor).toEqual({
 				$tokens: "colors",
+				$strict: true,
 			});
 			expect(pandaPreset.properties.backgroundColor).toEqual({
 				$tokens: "colors",
+				$strict: true,
 			});
 			expect(shadcnPreset.cssVariables).toHaveProperty("radius");
 			expect(packedTailwindResetPath).toMatch(/dist\/reset\/tailwindcss\.css$/);

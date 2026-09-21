@@ -542,7 +542,10 @@ describe("chakra preset runtime resolution", () => {
 		expect(logical).toContain("scroll-padding-inline-start:4px");
 		expect(logical).not.toContain("var(--");
 		expect("scrollMarginInline" in chakraProperties).toBe(false);
-		expect(chakraProperties.scrollMarginTop).toEqual({ $tokens: "spacing" });
+		expect(chakraProperties.scrollMarginTop).toEqual({
+			$tokens: "spacing",
+			$strict: false,
+		});
 	});
 
 	test("each transition longhand emits a single binding declaration", () => {

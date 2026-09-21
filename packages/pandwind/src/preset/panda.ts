@@ -47,13 +47,12 @@ export type PandaTokens = typeof pandaTokens;
 
 type PandaTokenGroup = TokenGroupKey<PandaTokens>;
 
-// Bound scales are token-only by default. Use `$raw` at a call site for a
-// one-off authored value, or `$strict: false` only for an intentionally open
-// application-owned property map.
-const boundTo = <const TGroup extends PandaTokenGroup>(group: TGroup) => ({
-	$tokens: group,
-});
-const strictBoundTo = boundTo;
+// Every bound scale keeps raw CSS available: a Panda project writes arbitrary
+// values for spacing and sizing often enough that a token-only vocabulary
+// would reject ordinary styles, which is the same reason `defaultPreset`
+// inherits on colors.
+const boundTo = (group: PandaTokenGroup) => ({ $tokens: group, $strict: false }) as const;
+const strictBoundTo = (group: PandaTokenGroup) => ({ $tokens: group, $strict: true }) as const;
 
 /**
  * Property vocabulary of {@link pandaPreset}.

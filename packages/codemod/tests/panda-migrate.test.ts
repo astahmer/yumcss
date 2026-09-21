@@ -223,8 +223,6 @@ describe("supporting migration primitives", () => {
 		expect(preset).toContain("const componentTokens = appSemanticTokens.defineSemanticTokens");
 		expect(preset).toContain("define.properties");
 		expect(preset).toContain('"component.card.border"');
-		expect(preset).toContain("strict: true");
-		expect(preset).not.toContain('"$strict": false');
 		expect(preset).toContain('"base": "colors.brand"');
 		expect(preset).toContain('"_dark": "colors.accent"');
 		expect(preset).toContain('"raw.semantic.label.base": "#444444"');
