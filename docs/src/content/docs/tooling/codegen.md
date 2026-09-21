@@ -190,6 +190,14 @@ spreads, and opaque `$raw` objects remain conservative; the latter reports
 one source module at a time; the Vite plugin is the authority that applies the
 same analysis during a real bundle.
 
+When that real bundle has a JSX host carrier with only flat scalar dynamic
+values, the Vite rewrite can remove both `css.props()` and `css.vars()` from
+the emitted JavaScript. It keeps the same structural var rules in the CSS
+artifact and inlines only the value validation, normalization, and token
+aliases required by that carrier. `lib build` remains a CSS distribution
+boundary: it publishes the rules and token declarations, while the consuming
+Vite build decides whether its JavaScript carrier can be lowered directly.
+
 This report is complementary to `pandwind-codemod lib build`. `lib build`
 publishes extracted CSS rules and used token declarations for a component
 library; it does not carry consumer-specific JavaScript runtime usage. Build a

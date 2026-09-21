@@ -64,11 +64,14 @@ values must be understood by ordinary `css()` and `.class()` compilation.
 
 The compiler makes this decision per call site. A fully static call becomes a
 literal class string and its factory can disappear. A dynamic call with known
-property names keeps only the methods and preset metadata that the call can
-reach. Literal token values can be projected to individual entries; a dynamic
-value keeps its whole token group because its runtime spelling is unknowable at
-build time. Dynamic object shape, computed keys, spreads, escaped factories,
-and non-serializable preset data use the conservative runtime instead.
+flat scalar properties is emitted as a direct host carrier, so it pays only for
+the value checks, normalization, structural classes, and token aliases that
+the carrier needs. Preset-bound carriers keep token resolution; unsafe CSS
+factories do not inject preset metadata. Literal token values can be projected
+to individual entries; a dynamic value keeps its whole token group because its
+runtime spelling is unknowable at build time. Dynamic object shape, computed
+keys, spreads, escaped factories, and non-serializable preset data use the
+conservative runtime instead.
 
 ```ts
 // main.tsx
@@ -259,24 +262,27 @@ source:
 />
 ```
 
-becomes the equivalent host carrier:
+becomes a direct host carrier (shown conceptually):
 
 ```tsx
 <button
-	{...css.props(
-		css.vars({ color: props.color, opacity: props.opacity }),
-		"<static-color-and-padding-class>",
-	)}
+	{...{
+		className: "<dynamic-color-class> <dynamic-opacity-class> <static-class>",
+		style: {
+			"--pw-c-color": props.color,
+			"--pw-c-opacity": props.opacity,
+		},
+	}}
 />
 ```
 
 The static declarations are compiled at build time; only dynamic declarations
-use `css.vars()`. The generated carrier is intentionally not a hand-written
-`["static-class", dynamicClass].join(" ")`: `css.vars()` emits the structural
-carrier class and normalized inline custom properties, including condition and
-token-resolution behavior, while `css.props()` preserves the public host-prop
-merge semantics. Runtime pruning then retains only the `vars`/`props`
-attachments and the projected metadata they need.
+need a carrier. For the supported flat scalar shape, the compiler emits a
+direct `{ className, style }` expression with one evaluation per dynamic value,
+safe-value filtering, numeric normalization, structural classes, and any
+required preset token aliases. This removes both `css.props()` and `css.vars()`
+from that call site. Unsupported shapes retain the public carrier so merge,
+condition, and validation semantics stay exact.
 
 A direct `className` rewrite is limited to a simple host with no existing
 `style` or JSX spread prop. The compiler cannot use a props carrier in a plain
@@ -294,15 +300,22 @@ spreads:
 <div {...css({ color: "red", backgroundColor: shade, padding: 8 })} />
 ```
 
-becomes:
+becomes a direct host carrier conceptually:
 
 ```tsx
-<div {...css.props(css.vars({ backgroundColor: shade }), "<static-class>")} />
+<div
+	{...{
+		className: "<dynamic-structural-class> <static-class>",
+		style: { "--pw-c-background-color": shade },
+	}}
+/>
 ```
 
-Both rewrites only split flat scalar declarations. Nested conditions, spreads,
-unsupported value expressions, and static/dynamic collisions keep the
-conservative runtime carrier instead of being partially reordered or dropped.
+The actual emitted expression is specialized so values are evaluated once and
+invalid values are omitted exactly like `css.vars()`. Nested conditions,
+spreads, unsupported value expressions, and static/dynamic collisions keep the
+conservative `css.props(css.vars(...))` carrier instead of being partially
+reordered or dropped.
 
 ## Per-route CSS splitting (opt-in)
 
