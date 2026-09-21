@@ -70,6 +70,8 @@ export interface RenderCssRuntimeModuleOptions {
 	readonly typed?: boolean;
 	/** Select the public factory implemented by the specialized module. */
 	readonly factory?: CssRuntimeFactory;
+	/** Replace a preset argument with build-time projected metadata. */
+	readonly presetSource?: string;
 }
 
 const renderRuntimeImports = (
@@ -85,6 +87,7 @@ const renderRuntimeImports = (
 const renderRuntimeFactory = (
 	methods: readonly CssRuntimeMethod[],
 	factory: CssRuntimeFactory,
+	presetSource?: string,
 ): string => {
 	const attachments = methods.map(attachmentName).join(", ");
 	if (factory === CssRuntimeFactoryTag.Unsafe)
@@ -97,7 +100,8 @@ const renderRuntimeFactory = (
 			: factory === CssRuntimeFactoryTag.Generated
 				? "createGeneratedCss"
 				: "createCss";
-	return `export const ${exportName} = (preset, options = {}) => ${factoryName}(preset, options, [${attachments}]);`;
+	const preset = presetSource ?? "preset";
+	return `export const ${exportName} = (preset, options = {}) => ${factoryName}(${preset}, options, [${attachments}]);`;
 };
 
 const renderTypedRuntime = (methods: readonly CssRuntimeMethod[]): string[] => {
@@ -132,7 +136,7 @@ export const renderCssRuntimeModule = (
 			),
 		);
 	} else {
-		lines.push(renderRuntimeFactory(normalized, factory));
+		lines.push(renderRuntimeFactory(normalized, factory, options.presetSource));
 	}
 	return `${lines.join("\n")}\n`;
 };

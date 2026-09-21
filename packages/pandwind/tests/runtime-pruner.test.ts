@@ -19,7 +19,7 @@ describe("runtime pruning", () => {
 		// The inline snapshot intentionally contains quoted source-code strings.
 		/* oxlint-disable no-useless-escape */
 		expect(result?.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss as makeCss } from \"pandwind:runtime/css?methods=\";\nconst css = makeCss();\nexport const styles = css({ color: \"red\" });"
+		"import { createUnsafeCss as makeCss } from \"pandwind:runtime/css?methods=\";\nconst css = /* @__PURE__ */ makeCss();\nexport const styles = css({ color: \"red\" });"
 	`);
 		/* oxlint-enable no-useless-escape */
 		expect(result?.code).toContain('methods="');
@@ -48,13 +48,51 @@ describe("runtime pruning", () => {
 		const source =
 			'import { createUnsafeCss } from "pandwind/unsafe/css";\nexport const css = createUnsafeCss();';
 
-		expect(pruner.transform(source, ID)).toBeNull();
-		expect(
-			pruner.transform(
-				'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nuse(css);',
-				ID,
-			),
-		).toBeNull();
+		const exported = pruner.transform(source, ID);
+		expect(exported?.code).toContain("/* @__PURE__ */ createUnsafeCss()");
+		expect(exported?.code).not.toContain("pandwind:runtime/css");
+		const used = pruner.transform(
+			'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nuse(css);',
+			ID,
+		);
+		expect(used?.code).toContain("/* @__PURE__ */ createUnsafeCss()");
+		expect(used?.code).not.toContain("pandwind:runtime/css");
+	});
+
+	test("projects serializable preset metadata for dynamic property calls", () => {
+		const pruner = createRuntimePruningTransform({ preset: examplePreset });
+		const source =
+			'import { createCss } from "pandwind/css";\n' +
+			'import { examplePreset } from "@pandwind/example-preset";\n' +
+			"const css = createCss(examplePreset);\n" +
+			"const color = getColor();\n" +
+			"export const styles = css.class({ color });";
+
+		const result = pruner.transform(source, ID);
+		const virtualSource = result?.code.match(/pandwind:runtime\/css\?[^"']+/u)?.[0];
+		expect(virtualSource).toContain("factory=preset");
+		expect(virtualSource).toContain("slice=");
+		expect(result?.code).toContain("createCss(undefined)");
+		expect(result?.code).not.toContain('from "@pandwind/example-preset"');
+		const virtual = pruner.resolveId(virtualSource!);
+		expect(virtual).not.toBeNull();
+		expect(pruner.load(virtual!)).toContain("createPresetCssRuntime({");
+	});
+
+	test("keeps the complete preset for dynamic style spreads", () => {
+		const pruner = createRuntimePruningTransform({ preset: examplePreset });
+		const source =
+			'import { createCss } from "pandwind/css";\n' +
+			'import { examplePreset } from "@pandwind/example-preset";\n' +
+			"const css = createCss(examplePreset);\n" +
+			"const style = getStyle();\n" +
+			"export const styles = css.class({ ...style });";
+
+		const result = pruner.transform(source, ID);
+		expect(result?.code).toContain("factory=preset&methods=class");
+		expect(result?.code).toContain("createCss(examplePreset)");
+		expect(result?.code).toContain('from "@pandwind/example-preset"');
+		expect(result?.code).not.toContain("slice=");
 	});
 
 	test("specializes preset-bound createCss without losing preset resolution", () => {

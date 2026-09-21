@@ -37,7 +37,7 @@
   },
   "createDesignCss(fixturePreset), fallback": {
     "min": 37497,
-    "gz": 12877
+    "gz": 12876
   },
   "createCss(fixturePreset) + tw()": {
     "min": 32116,
@@ -57,11 +57,15 @@
   },
   "createRuntimeCss(preset), live sheet": {
     "min": 37555,
-    "gz": 13747
+    "gz": 13746
   },
   "createUnsafeCss(), static output after extraction": {
     "min": 81,
     "gz": 98
+  },
+  "createCss(), static output after extraction": {
+    "min": 37,
+    "gz": 57
   },
   "createUnsafeCss(), dynamic fallback": {
     "min": 11837,
@@ -80,12 +84,12 @@
     "gz": 3557
   },
   "createCss(), compiler-pruned class": {
-    "min": 24053,
-    "gz": 8468
+    "min": 12797,
+    "gz": 4910
   },
   "createGeneratedCss(), compiler-pruned keyframes": {
-    "min": 24650,
-    "gz": 8710
+    "min": 10318,
+    "gz": 4124
   },
   "createDesignCss(), compiler-pruned class": {
     "min": 32140,

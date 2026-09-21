@@ -27,9 +27,13 @@ import { dirname, resolve } from "node:path";
 import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
+import { fixturePreset } from "./fixtures/fixture-preset.ts";
 import { createCssExtractionService } from "../src/vite/css-extract.ts";
 import { renderCssRuntimeModule } from "../src/css/runtime-codegen.ts";
-import { createRuntimePruningTransform } from "../src/vite/runtime-pruner.ts";
+import {
+	createRuntimePruningTransform,
+	type RuntimePruningOptions,
+} from "../src/vite/runtime-pruner.ts";
 import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -77,9 +81,12 @@ const bundleAfterCssExtraction = (fixture: string): { min: number; gz: number } 
 	return { min: code.length, gz: gzipSync(code).byteLength };
 };
 
-const bundleAfterRuntimePruning = async (fixture: string): Promise<{ min: number; gz: number }> => {
+const bundleAfterRuntimePruning = async (
+	fixture: string,
+	preset?: RuntimePruningOptions["preset"],
+): Promise<{ min: number; gz: number }> => {
 	const entry = resolve(ROOT, "tests/fixtures", fixture);
-	const pruner = createRuntimePruningTransform();
+	const pruner = createRuntimePruningTransform({ preset });
 	const result = await import("esbuild").then(({ build }) =>
 		build({
 			entryPoints: [entry],
@@ -180,6 +187,9 @@ test("runtime entries stay stylex-sized", async () => {
 		"createRuntimeCss(preset), live sheet": bundle("runtime-css-sheet.ts"),
 		"createUnsafeCss(), static output after extraction":
 			bundleAfterCssExtraction("runtime-css-static.ts"),
+		"createCss(), static output after extraction": bundleAfterCssExtraction(
+			"runtime-css-pruned-preset.ts",
+		),
 		"createUnsafeCss(), dynamic fallback": bundle("runtime-css-dynamic.ts"),
 		"createUnsafeCss(), compiler-pruned call": await bundleAfterRuntimePruning(
 			"runtime-css-pruned-call.ts",
@@ -192,9 +202,11 @@ test("runtime entries stay stylex-sized", async () => {
 		),
 		"createCss(), compiler-pruned class": await bundleAfterRuntimePruning(
 			"runtime-css-pruned-preset.ts",
+			fixturePreset,
 		),
 		"createGeneratedCss(), compiler-pruned keyframes": await bundleAfterRuntimePruning(
 			"runtime-css-pruned-generated.ts",
+			fixturePreset,
 		),
 		"createDesignCss(), compiler-pruned class": await bundleAfterRuntimePruning(
 			"runtime-css-pruned-design.ts",

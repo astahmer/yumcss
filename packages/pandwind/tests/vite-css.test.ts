@@ -99,6 +99,16 @@ test("findCssCallSites reports extraction coverage with provenance", () => {
 	`);
 });
 
+test("findCssImports discovers same-module CSS factory carriers", () => {
+	const code = `
+		import { createCss as makeCss } from "pandwind/css";
+		const css = makeCss(preset);
+		css.class({ color: "red" });
+	`;
+
+	expect(scan(["css"]).findImports(code, "src/card.tsx")).toEqual(new Set(["css"]));
+});
+
 test("diagnoseCssSources reports unsupported constructs and missed extraction", () => {
 	const code = `
 		import { css } from "./design";
@@ -1018,6 +1028,22 @@ test("static direct factory calls are marked pure for bundler elimination", () =
 
 	expect(result.inlined).toBe(1);
 	expect(result.code).toContain("/* @__PURE__ */ createUnsafeCss()");
+});
+
+test("static preset factory calls are extracted and marked pure", () => {
+	const code = `
+		import { createCss } from "pandwind/css";
+		const css = createCss(preset);
+		const card = css.class({ color: "red" });
+	`;
+	const service = extract(["css"]);
+	const names = service.findImports(code, "app.ts");
+	const result = service.inline(code, "app.ts", names);
+
+	expect(names).toEqual(new Set(["css"]));
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain("/* @__PURE__ */ createCss(preset)");
+	expect(result.code).not.toContain("css.class");
 });
 
 test("extractCssFile records literal keyframe bodies with their provenance", () => {

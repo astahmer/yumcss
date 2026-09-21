@@ -73,4 +73,16 @@ describe("CSS runtime codegen registry", () => {
 		expect(design).toContain("createDesignCssRuntime");
 		expect(design).toContain("export const createDesignCss");
 	});
+
+	test("embeds projected preset metadata in specialized preset modules", () => {
+		const source = renderCssRuntimeModule(["class"], {
+			factory: CssRuntimeFactoryTag.Preset,
+			presetSource:
+				'{"conditions":{},"properties":{"color":{"$tokens":"colors"}},"strict":true,"tokens":{"colors":{"red":"#f00"}}}',
+		});
+
+		expect(source).toContain(
+			'createPresetCssRuntime({"conditions":{},"properties":{"color":{"$tokens":"colors"}},"strict":true,"tokens":{"colors":{"red":"#f00"}}}, options',
+		);
+	});
 });

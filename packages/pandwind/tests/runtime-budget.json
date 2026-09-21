@@ -63,6 +63,10 @@
 		"min": 100,
 		"gz": 120
 	},
+	"createCss(), static output after extraction": {
+		"min": 100,
+		"gz": 120
+	},
 	"createUnsafeCss(), dynamic fallback": {
 		"min": 13500,
 		"gz": 5400

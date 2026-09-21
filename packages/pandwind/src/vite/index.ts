@@ -228,7 +228,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			}
 		: undefined;
 	const cssSourceService = createCssSourceService();
-	const runtimePruner = createRuntimePruningTransform();
+	const runtimePruner = createRuntimePruningTransform({ preset: cssFold?.engine.preset });
 
 	const isTwSource = (source: string): boolean => matchesSource(source, options.twSources, "tw");
 	const isCxSource = (source: string): boolean =>

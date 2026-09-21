@@ -152,7 +152,7 @@ export function createCssExtractorPluginCore(
 			namespace,
 		}),
 	});
-	const runtimePruner = createRuntimePruningTransform();
+	const runtimePruner = createRuntimePruningTransform({ preset });
 	const strategy: ClassNameStrategy | undefined = className;
 	// External-compiler modes (tailwind): the sheet stays empty. Sheet-backed
 	// strategies still get the generated stylesheet — with their class names.
