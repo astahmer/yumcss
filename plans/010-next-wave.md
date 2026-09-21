@@ -1,8 +1,8 @@
 # Plan 010 — Next wave briefs
 
 **Status: COMPLETE for the approved waves.** Items A–H were implemented or
-investigated with evidence. The untried cx cold-path ideas at the end are
-optional experiments, not a correctness or pivot requirement.
+investigated with evidence. The remaining cx cold-path ideas are optional
+experiments, not a correctness or pivot requirement; E.1 records their outcome.
 
 ## A. SIZE micro-touch (bitset delta)
 
@@ -207,10 +207,11 @@ verified (parity/fuzz/golden + full suite green); the runtime-size gate
 shows the change SHRANK cx by ~31 bytes (snapshot refreshed). Structural
 argument stands: one fewer O(n) pass per input string on every call.
 
-Untried future work:
+Cold-path experiments evaluated in E.1:
 
-- (b) in-place survivor compaction of outCls before join (drop the second
-  parts array)
-- (c) parseUtility per-first-character index (re-profile after b)
-- (d) resultCache key-building alternatives
-  Measurements for any of these must be taken on an idle machine.
+- (b) In-place survivor compaction of `outCls` before join — not shipped; the
+  reusable `parts` buffer left no meaningful cold-path win.
+- (c) A per-first-character / right-to-left `parseUtility` index — not shipped;
+  it regressed the measured cold median or added too much code.
+- (d) `resultCache` key-building alternatives — not shipped; no compelling
+  cold benefit justified risking the warm cache.
