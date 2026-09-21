@@ -154,6 +154,22 @@ describe("runtime pruning", () => {
 		expect(core.load(virtual!)).toContain("pandwind/_runtime/css-base");
 	});
 
+	test("projects preset metadata through the bundler-agnostic css plugin", () => {
+		const core = createCssExtractorPluginCore(examplePreset, { root: "/project" });
+		const result = core.transform(
+			'import { createCss } from "pandwind/css";\n' +
+				'import { examplePreset } from "@pandwind/example-preset";\n' +
+				"const css = createCss(examplePreset);\n" +
+				"const color = getColor();\n" +
+				"export const styles = css.class({ color });",
+			ID,
+		);
+
+		expect(result?.code).toContain("factory=preset");
+		expect(result?.code).toContain("slice=");
+		expect(result?.code).not.toContain('from "@pandwind/example-preset"');
+	});
+
 	test("is also available from the general Vite plugin", async () => {
 		const core = createInlineTwPluginCore();
 		const result = await core.transform(
