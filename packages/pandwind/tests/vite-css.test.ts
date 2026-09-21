@@ -1083,7 +1083,7 @@ test("a literal keyframes call folds to the name literal the sheet emits", () =>
 	expect(result.code).not.toContain("css.keyframes");
 });
 
-test("a dynamic keyframes body keeps the runtime call", () => {
+test("a module-constant keyframes body folds to the name literal the sheet emits", () => {
 	const code = `
 		import { css } from "./design";
 		const fade = { from: { opacity: 0 } };
@@ -1091,8 +1091,9 @@ test("a dynamic keyframes body keeps the runtime call", () => {
 	`;
 	const result = extract().inline(code, "app.ts", new Set(["css"]));
 
-	expect(result.inlined).toBe(0);
-	expect(result.code).toBe(code);
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain('export const spin = "pw-kf-');
+	expect(result.code).not.toContain("css.keyframes");
 });
 
 test("a keyframes-only module still marks the factory pure", () => {
@@ -1263,21 +1264,19 @@ test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers",
 	`;
 	const result = inline().inline(code, "app.tsx", new Set(["css"]));
 
-	// Two carriers: each mixed call with a static subset lowers as one
-	// carrier. The _hover-only call has no top-level literal declaration,
-	// so it keeps the untouched runtime fallback.
-	expect(result.inlined).toBe(2);
+	// Nested condition leaves now use the same direct carrier as flat leaves.
+	expect(result.inlined).toBe(3);
 	expect(result.code).toContain('style["--pw-c-background-color"]');
+	expect(result.code).toContain('style["--pw-c-background-color_hover"]');
 	expect(result.code).toContain('style["--pw-c-margin"]');
 	expect(result.code).not.toContain("css.props(css.vars");
-	expect(result.code).toContain("css({ _hover: { bg: shade } })");
 	// Flattened toggle keys mirror the scanner contract.
-	expect(result.varKeys).toEqual(["backgroundColor", "margin"]);
+	expect(result.varKeys).toEqual(["backgroundColor", "_hover__bg", "margin"]);
 	expect(result.code).toContain("const shade = getShade();");
 	expect(result.code).toContain("<>");
 });
 
-test("ambiguous mixed css spreads keep the conservative all-vars carrier", () => {
+test("same-path collisions preserve last-write semantics in a direct carrier", () => {
 	const code = `
 		import { css } from "./design";
 		const shade = getShade();
@@ -1291,10 +1290,11 @@ test("ambiguous mixed css spreads keep the conservative all-vars carrier", () =>
 	const result = inline().inline(code, "app.tsx", new Set(["css"]));
 
 	expect(result.inlined).toBe(1);
-	expect(result.code).toContain(
-		'css.props(css.vars({ color: "red", backgroundColor: shade }, { color: shade, borderColor: "blue" }))',
-	);
-	expect(result.varKeys).toEqual(["color", "backgroundColor", "borderColor"]);
+	expect(result.code).toContain('style["--pw-c-background-color"]');
+	expect(result.code).toContain('style["--pw-c-color"]');
+	expect(result.code).toContain('classNames.push("[border-color:blue]")');
+	expect(result.code).not.toContain("css.props(css.vars");
+	expect(result.varKeys).toEqual(["backgroundColor", "color"]);
 });
 
 test("vars carriers preserve an aliased css binding", () => {

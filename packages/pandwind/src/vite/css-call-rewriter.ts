@@ -240,10 +240,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		});
 		const firstThatWorksNames = findFirstThatWorksBindings(parsed as unknown as OxcNode);
 		const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksNames);
-		const literalConstants = collectCssLiteralConstants(
-			parsed as unknown as OxcNode,
-			evaluateCall,
-		);
+		const literalConstants = collectCssLiteralConstants(parsed as unknown as OxcNode, evaluateCall);
 		const firstThatWorksValueNames = findFirstThatWorksValueNames(
 			parsed as unknown as OxcNode,
 			firstThatWorksNames,

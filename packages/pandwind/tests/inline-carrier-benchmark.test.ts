@@ -64,7 +64,7 @@ const cases: readonly CarrierCase[] = [
 		name: "dynamic condition",
 		sourceExpression: 'css({ color: "red", _hover: { backgroundColor: shade } })',
 		currentCarrier: 'css.props(css.vars({ color: "red", _hover: { backgroundColor: shade } }))',
-		directNeedles: ["css.props(css.vars"],
+		directNeedles: ['style["--pw-c-background-color_hover"]'],
 	},
 ];
 
@@ -170,14 +170,9 @@ describe("direct inline carrier benchmark", () => {
 					bundle: await bundleSize(direct, runtimePruner),
 				},
 			};
-			if (currentCase.name === "dynamic condition")
-				expect(measurements[currentCase.name]!.direct.bundle.gz).toBe(
-					measurements[currentCase.name]!.current.bundle.gz,
-				);
-			else
-				expect(measurements[currentCase.name]!.direct.bundle.gz).toBeLessThan(
-					measurements[currentCase.name]!.current.bundle.gz,
-				);
+			expect(measurements[currentCase.name]!.direct.bundle.gz).toBeLessThan(
+			measurements[currentCase.name]!.current.bundle.gz,
+		);
 		}
 
 		const css = createUnsafeCss();
