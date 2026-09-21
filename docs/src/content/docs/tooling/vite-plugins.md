@@ -62,6 +62,14 @@ stay on the complete runtime because their consumers are not locally provable.
 `firstThatWorks` remains part of the small callable core: its encoded fallback
 values must be understood by ordinary `css()` and `.class()` compilation.
 
+The compiler makes this decision per call site. A fully static call becomes a
+literal class string and its factory can disappear. A dynamic call with known
+property names keeps only the methods and preset metadata that the call can
+reach. Literal token values can be projected to individual entries; a dynamic
+value keeps its whole token group because its runtime spelling is unknowable at
+build time. Dynamic object shape, computed keys, spreads, escaped factories,
+and non-serializable preset data use the conservative runtime instead.
+
 ```ts
 // main.tsx
 import "pandwind:css";
@@ -85,6 +93,18 @@ The artifact is checked against the active preset, namespace, cascade mode and
 layer, and default class strategy. A malformed, stale, or incompatible artifact
 fails closed with the fields that differ. Leave `libraries` unset for ordinary
 local source extraction.
+
+`lib build` and runtime pruning cover different distribution boundaries. The
+artifact supplies the host with pre-extracted CSS rules, variable-carrier rules,
+used token declarations, and source hashes; it does not describe which
+JavaScript runtime methods a consumer will call. The Vite runtime transform
+therefore still analyzes source in the current bundle. Registered library
+packages are excluded from that source transform by default: a library that
+wants its own JavaScript runtime specialized should run its library build
+through `pandwindCssVite` (or use `runtime generate` for a non-Vite build),
+while the consuming application registers the `pandwind.lib.json` only for CSS.
+This keeps the JSON artifact small and reusable instead of coupling it to one
+consumer's runtime usage.
 
 ### `Stack` bindings and build-time folding
 
@@ -216,7 +236,9 @@ own token resolution, class-name strategy, route-splitting configuration, and
 virtual stylesheet. This pattern is useful for isolated design-system
 boundaries, not for ordinary components that can share one preset.
 
-Dynamic `css.class()` values can also be rewritten at the JSX host boundary,
+### Mixed static/dynamic styles
+
+Dynamic `css.class()` values can also be split at a safe JSX host boundary,
 but this is opt-in because it changes a `className` attribute into a
 `className`/`style` props spread:
 
@@ -228,19 +250,42 @@ With the option enabled in the default or a sheet-backed class-name mode, this
 source:
 
 ```tsx
-<button className={css.class({ color: props.color, padding: 8 })} />
+<button
+	className={css.class({
+		color: props.color,
+		padding: "2",
+		opacity: props.opacity,
+	})}
+/>
 ```
 
 becomes the equivalent host carrier:
 
 ```tsx
-<button {...css.props(css.vars({ color: props.color }), "<static-class>")} />
+<button
+	{...css.props(
+		css.vars({ color: props.color, opacity: props.opacity }),
+		"<static-color-and-padding-class>",
+	)}
+/>
 ```
 
 The static declarations are compiled at build time; only dynamic declarations
-use `css.vars()`. A direct `className` rewrite is limited to a simple host with
-no existing `style` or JSX spread prop. Use a relaxed or untyped CSS binding if
-the raw dynamic value is intentionally outside a strict preset's authored type.
+use `css.vars()`. The generated carrier is intentionally not a hand-written
+`["static-class", dynamicClass].join(" ")`: `css.vars()` emits the structural
+carrier class and normalized inline custom properties, including condition and
+token-resolution behavior, while `css.props()` preserves the public host-prop
+merge semantics. Runtime pruning then retains only the `vars`/`props`
+attachments and the projected metadata they need.
+
+A direct `className` rewrite is limited to a simple host with no existing
+`style` or JSX spread prop. The compiler cannot use a props carrier in a plain
+string expression without changing its return shape, so code such as
+`const className = css.class({ color: dynamicColor, padding: "2" })` keeps the
+runtime `class()` call. Use `css.props(css.vars(...), staticClass)` explicitly
+when the surrounding API accepts host props. Use a relaxed or untyped CSS
+binding if the raw dynamic value is intentionally outside a strict preset's
+authored type.
 
 The same static/dynamic partition also applies by default to mixed callable JSX
 spreads:

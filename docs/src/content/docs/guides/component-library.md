@@ -131,6 +131,15 @@ output. The artifact contains extracted atomic and variable-carrier rules plus
 used token declarations; it does not replace the library's JavaScript runtime,
 dynamic `css.vars()` values, or authored CSS imports.
 
+Runtime pruning is a separate JavaScript-build concern. If the library ships
+unbundled modules that still import Pandwind factories, run its distributable
+build through `pandwindCssVite` so static calls and unused runtime attachments
+are removed before publishing. A consuming Vite build intentionally does not
+rewrite `node_modules` from the JSON artifact alone. Use
+`pandwind-codemod runtime explain` against library source when checking the
+expected method and token projection; use `lib build` for the reusable CSS
+artifact.
+
 If you publish prebuilt CSS, document whether it is additive, replaceable, or
 expected to be tree-shaken. Do not make consumers guess which virtual module
 to import.

@@ -168,6 +168,31 @@ keeps the conservative runtime. Use `--preset` with the same preset configured
 in `pandwindVite` to see projected token-group and entry counts; `--json` emits
 the versioned `pandwind.runtime-explain/1` report for CI or bundle tooling.
 
+For example, this source exposes a dynamic color but a literal spacing token:
+
+```ts
+const color = getColor();
+
+css.class({
+	color,
+	padding: "2",
+});
+```
+
+The report keeps the `color` token group conservatively, projects only
+`spacing.2`, and records the `class` method plus the two property names. A
+literal `color: "blue.100"` would project only that color entry. A dynamic
+spread or opaque `$raw` object reports `fallback-dynamic-shape` and retains the
+full preset path. The command explains one source module at a time; the Vite
+plugin is the authority that applies the same analysis during a real bundle.
+
+This report is complementary to `pandwind-codemod lib build`. `lib build`
+publishes extracted CSS rules and used token declarations for a component
+library; it does not carry consumer-specific JavaScript runtime usage. Build a
+library's JavaScript through the Vite transform (or use `runtime generate` for
+a static build), and register its `pandwind.lib.json` separately so the host
+can consume the CSS artifact without rescanning the library source.
+
 ## `pandwind-codemod tw scan` — safelist from real call sites
 
 ```
