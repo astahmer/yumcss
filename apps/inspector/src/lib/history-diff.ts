@@ -1,7 +1,6 @@
 /**
  * Run-history diff helpers — pure functions shared by the node server and
- * the browser UI. Entries are versioned snapshots (timestamp + payload +
- * parent pointer) per plans/020.
+ * the browser UI. Entries are versioned snapshots with a parent pointer.
  */
 import type { StudioPayload } from "../types.ts";
 

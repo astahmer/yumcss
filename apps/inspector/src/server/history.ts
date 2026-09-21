@@ -1,7 +1,7 @@
 /**
  * Run-history persistence: every successful studio gather is written as a
- * versioned snapshot (timestamp + payload + parent pointer, plans/020
- * shape) under <inspector package dir>/.studio-history/ (gitignored).
+ * versioned snapshot (timestamp + payload + parent pointer) under <inspector
+ * package dir>/.studio-history/ (gitignored).
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";

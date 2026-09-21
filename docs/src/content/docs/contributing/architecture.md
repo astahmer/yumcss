@@ -1131,11 +1131,11 @@ deliberate:
   in `plans/evidence/panda-website-proof.md`.
 - `plans/021-multi-target-backends.md` keeps canvas and build-time Metro
   intentionally deferred until a concrete consumer requires them, and
-  `plans/028-define-preset-web-notes.md` remains decision notes rather than an
-  implementation commitment.
-- `plans/045-lazy-runtime-methods.md` is superseded by the shipped
-  compiler-aware runtime pruning. Its runtime-only accessor checklist is not
-  pending work.
+  a `definePreset({ web: ... })` surface remains deliberately deferred rather
+  than becoming a second global-CSS language.
+- Runtime-only lazy method accessors were rejected after measurement. The
+  shipped compiler-aware runtime pruning removes unused attachments without
+  imposing a first-access tax on every factory instance.
 - `plans/054-token-usage-governance.md` is complete for the tooling ledger: versioned report, effective universe, strictness classification, exact suggestions, reachability, prune changesets, CLI/Inspector/lint/codemod consumption, and the governance bench. Studio-side paginated queries for very large catalogs and an approved write-mode removal command remain bounded follow-ups inside their owning plans, not open governance work.
 - `plans/065-proof-and-adoption-closure.md` is complete for ordinary-CI
   evidence checks, scanner-backed shared JSX host rewrites, official-loader

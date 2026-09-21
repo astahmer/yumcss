@@ -197,6 +197,39 @@ This report is deliberately separate from installed-site promotion: the
 checked-in production matrix remains the authority for framework builds,
 application SSR, and route-level browser claims.
 
+## Package and compiler closure
+
+The final implementation wave closed the remaining package, compiler, and
+adoption boundaries without expanding the frozen authoring API:
+
+- Runtime code generation is opt-in through `pandwind-codemod runtime generate`.
+  It shares the attachment registry and renderer with Vite pruning, emits
+  deterministic typed modules, and supports freshness checks for non-Vite
+  consumers.
+- CSS/runtime/build factories accept an opt-in namespace for dynamic carriers,
+  while caller-owned class strategies remain authoritative. `Stack` bindings
+  can use the configured compiler strategy through `createStack(css)`; the
+  bare helper remains the explicit Tailwind-compatible fast path.
+- The safe CSS factory requires a preset. Generated and adapter-owned code can
+  use the explicit `pandwind/unsafe/css` boundary, which keeps missing design
+  system semantics visible instead of silently widening the canonical API.
+- Component libraries can publish a versioned `pandwind.lib` artifact with
+  extracted rules, token usage, provenance, and compatibility fingerprints.
+  Consumers register artifacts explicitly; malformed, stale, or incompatible
+  artifacts fail closed, while unregistered libraries keep source extraction.
+- Preset layers separate structural CSS types from token-aware defaults, and
+  generated CSS typings preserve accepted and rejected property/value
+  combinations. Starter presets and reset/prose assets remain opt-in and are
+  generated from pinned upstream sources with measured package-surface cost.
+- Component-local `css.keyframes()` is a static, deterministic, tree-shakeable
+  lane. Browser-global rules, fonts, resets, and arbitrary selectors remain
+  authored CSS. Named cascade layers use one validated outer layer across
+  pure CSS, Vite, runtime sheets, and library artifacts.
+
+The ecosystem starter-preset work remains active where its acceptance scope is
+not yet closed. Unfinished generated assets, package surfaces, and measured
+evidence stay in the engineering workspace until complete.
+
 ## Deliberately not complete
 
 These records must not be presented as shipped product commitments:
@@ -205,9 +238,8 @@ These records must not be presented as shipped product commitments:
   polish remains optional.
 - Plan 019 is a point-in-time competitive research record, not a feature
   checklist.
-- Plan 020 is abandoned research mining and has no implementation commitment.
-- Plan 028 deliberately defers a `define.preset.web` API; authored CSS remains
-  the web-global escape hatch.
+- A `definePreset({ web: ... })` surface remains deliberately deferred;
+  authored CSS remains the complete web-global escape hatch.
 - Canvas and build-time Metro support remain extension points without a
   validated consumer.
 - Tokenami and UnoCSS have documented token-bridge workflows but no dedicated

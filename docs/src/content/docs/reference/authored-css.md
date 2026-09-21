@@ -98,6 +98,11 @@ intentionally not part of the frozen Pandwind API. An authored CSS import is
 explicit, portable across the web toolchain, and also usable by a library
 consumer without requiring a runtime stylesheet registry.
 
+`definePreset` likewise has no `web` section for globals, fonts, or keyframes.
+Keeping browser-global authoring in CSS preserves the platform's full syntax,
+ordering, and bundler behavior without creating a second CSS language inside
+design-token configuration.
+
 ## Sharing tokens with authored CSS
 
 Expose the design tokens that authored CSS needs as custom properties in a

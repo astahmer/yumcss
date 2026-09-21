@@ -1,5 +1,5 @@
 /**
- * Token reference DAG (plans/020 adopt #1, from ultra's token-graph).
+ * Token reference DAG over the generated theme and component-token tiers.
  *
  * Builds a directed graph over the three token tiers from the same inputs
  * the theme bridge consumes:

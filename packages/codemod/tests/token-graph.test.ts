@@ -1,6 +1,6 @@
 /**
- * Token reference DAG (plans/020 adopt #1): nodes across the three tiers,
- * edges from consumer to dependency, cycle/orphan/reachability computations.
+ * Token reference DAG: nodes across the three tiers, edges from consumer to
+ * dependency, cycle/orphan/reachability computations.
  * The graph must agree with the bridge's skip-loudly behavior on cycles.
  */
 import { describe, expect, test } from "vitest";
