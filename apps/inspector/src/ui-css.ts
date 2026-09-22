@@ -335,7 +335,16 @@ export const ui = {
 		borderRadius: 8,
 		zIndex: 20,
 		boxShadow: "0 8px 24px rgb(0 0 0 / 45%)",
-		"& button": { all: "unset", cursor: "pointer", padding: "0.5rem 0.9rem", fontSize: "0.85rem" },
+		"& button": {
+			cursor: "pointer",
+			border: "none",
+			background: "transparent",
+			color: "inherit",
+			textAlign: "left",
+			padding: "0.5rem 0.9rem",
+			font: "inherit",
+			fontSize: "0.85rem",
+		},
 		"& button:hover": { background: "#22222a" },
 	}),
 };
