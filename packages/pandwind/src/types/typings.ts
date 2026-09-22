@@ -1,5 +1,12 @@
 import type { AnySelector } from "./selectors.d.ts";
+import type {
+	CssWideValue,
+	PandwindColorPropertyName,
+	PandwindPropertyValue,
+} from "./css-values.ts";
 import type { FirstThatWorksValue } from "../css/first-that-works.ts";
+
+export type { CssWideValue } from "./css-values.ts";
 
 /** A value accepted in a Pandwind style object, including nested conditions. */
 export type StyleValue = string | number | null | StyleObject | readonly StyleValue[] | undefined;
@@ -41,21 +48,6 @@ export interface DynamicStyleObject extends Record<string, DynamicStyleValue> {}
 /** A CSS property configuration supplied by the project's type vocabulary. */
 export type AnyCssConfig = object;
 
-type ColorPropertyName =
-	| "color"
-	| "background"
-	| "backgroundColor"
-	| "borderColor"
-	| "borderTopColor"
-	| "borderRightColor"
-	| "borderBottomColor"
-	| "borderLeftColor"
-	| "outlineColor"
-	| "textDecorationColor"
-	| "textEmphasisColor"
-	| "fill"
-	| "stroke";
-
 type OpacityModifier =
 	| "0"
 	| "5"
@@ -85,7 +77,7 @@ type WithOpacityModifiers<Value> = Value extends string
 		: Value | `${Value}/${OpacityModifier}`
 	: Value;
 
-type MaybeColorOpacity<TName, Value> = TName extends ColorPropertyName
+type MaybeColorOpacity<TName, Value> = TName extends PandwindColorPropertyName
 	? WithOpacityModifiers<Value>
 	: Value;
 
@@ -307,9 +299,6 @@ export type TokenVariableNames = "hashed" | "authored";
 /** Authored custom-property names, keyed by token group and token name. */
 export type TokenVariables = Readonly<Record<string, Readonly<Record<string, string>>>>;
 
-/** CSS-wide values remain available on every preset-bound CSS property. */
-export type CssWideValue = "inherit" | "initial" | "revert" | "revert-layer" | "unset";
-
 /** Scalar values accepted by build-time preset web declarations. */
 export type PresetWebValue = string | number | null | undefined;
 
@@ -470,7 +459,7 @@ type ColorPaletteValue<
 	TName extends string,
 	TTokens extends AnyTokens,
 	TPreset,
-> = TName extends ColorPropertyName ? ColorPaletteVirtualNames<TTokens, TPreset> : never;
+> = TName extends PandwindColorPropertyName ? ColorPaletteVirtualNames<TTokens, TPreset> : never;
 
 type ColorPaletteReference<TPreset> = [ColorPaletteNames<TPreset>] extends [never]
 	? never
@@ -535,10 +524,13 @@ type StrictValue<
 					InferPropValues<TTokens, Value> | ColorPaletteValue<TName, TTokens, TPreset>
 			  >
 			| ConfigPropertyValue<TConfig, TName>
-	: MaybeColorOpacity<
-			TName,
-			InferPropValues<TTokens, Value> | ColorPaletteValue<TName, TTokens, TPreset>
-		>;
+			| PandwindPropertyValue<TName>
+	:
+			| MaybeColorOpacity<
+					TName,
+					InferPropValues<TTokens, Value> | ColorPaletteValue<TName, TTokens, TPreset>
+			  >
+			| PandwindPropertyValue<TName>;
 
 type PropValue<TConfig, TTokens extends AnyTokens, TName extends string, Value, Strict, TPreset> =
 	| CssWideValue

@@ -138,9 +138,10 @@ conditions, but its `tokens` map and property-token bindings are empty, so
 every value stays authored CSS. The default preset keeps Pandwind's stock
 property mappings and its spacing, radius, shadow, and typography scales, but
 it ships no color palette: color properties accept the CSS-wide keywords
-(`transparent`, `currentColor`, `inherit`, `black`, `white`) and any
-authored CSS color. A name such as `"red.500"` therefore stays authored CSS in
-both presets:
+(`inherit`, `initial`, `revert`, `revert-layer`, `unset`) plus the
+property-aware intrinsic color keywords (`transparent`, `currentColor`) and
+the preset's explicit `black` and `white` tokens. A name such as `"red.500"`
+therefore stays authored CSS in both presets:
 
 ```ts
 import { createCss } from "pandwind/css";
@@ -434,17 +435,23 @@ unrelated tokens valid for every CSS property.
 For a mapped property such as
 `backgroundColor: { $tokens: "colors" }`, the value rules are:
 
-| preset setting                       | accepted values                                                  |
-| ------------------------------------ | ---------------------------------------------------------------- |
-| `strict` omitted                     | same as `strict: true`                                           |
-| `strict: true`                       | token names from the mapped group (plus color opacity modifiers) |
-| `strict: false`                      | token names and raw values from `config`                         |
-| `strict: true` with `$strict: false` | token names and raw values from `config` for that property       |
-| property value `true`                | raw values from `config`, regardless of `strict`                 |
+| preset setting                       | accepted values                                                               |
+| ------------------------------------ | ----------------------------------------------------------------------------- |
+| `strict` omitted                     | same as `strict: true`                                                        |
+| `strict: true`                       | token names, property-aware intrinsic CSS values, and color opacity modifiers |
+| `strict: false`                      | token names and raw values from `config`                                      |
+| `strict: true` with `$strict: false` | token names and raw values from `config` for that property                    |
+| property value `true`                | raw values from `config`, regardless of `strict`                              |
 
 Use `strict: true` when the preset is the design-system boundary and every
-mapped value should be intentional. Use `strict: false` for an open preset or
-when raw CSS values are part of the contract. Use `$strict: false`
+mapped value should be intentional. Strict mode still accepts CSS-wide values
+everywhere, plus a bounded intrinsic vocabulary where the property has one:
+`auto` for margins, insets, and sizing; `transparent` and `currentColor` for
+colors; finite layout keywords such as `flex` and `grid`; and ordinary CSS
+font-weight keywords such as `normal` and `bold`. Design-system names such as
+`semibold` remain token names and must be declared by the preset. Use
+`strict: false` for an open preset or when arbitrary raw CSS values are part of
+the contract. Use `$strict: false`
 when most of the preset is strict but one mapped property needs a controlled
 raw escape without giving up its token names. For an untyped style subtree,
 use `$raw: { ... }` instead.

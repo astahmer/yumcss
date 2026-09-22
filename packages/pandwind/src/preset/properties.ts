@@ -1,5 +1,8 @@
 import { define } from "../types/define-preset.export.ts";
+import type { PandwindPropertyValue } from "../types/css-values.ts";
 import { tokens } from "./tokens.ts";
+
+export type { PandwindCssValue } from "../types/css-values.ts";
 
 // The default preset ships no palette, so color properties inline the CSS-wide
 // color keywords and inherit the raw CSS value type. A palette preset binds
@@ -213,102 +216,6 @@ export const presetProperties = define.properties({
 type PresetProperties = typeof presetProperties;
 
 type StandardPropertyName = Exclude<keyof PresetProperties, "$all">;
-
-/** Common CSS values keep autocomplete without expanding csstype's full keyword graph. */
-export type PandwindCssValue = "inherit" | "initial" | "revert" | "revert-layer" | "unset" | number;
-
-type PandwindFinitePropertyValues = {
-	display:
-		| "block"
-		| "contents"
-		| "flex"
-		| "flow-root"
-		| "grid"
-		| "inline"
-		| "inline-block"
-		| "inline-flex"
-		| "inline-grid"
-		| "list-item"
-		| "math"
-		| "none"
-		| "table"
-		| "table-caption"
-		| "table-cell"
-		| "table-column"
-		| "table-column-group"
-		| "table-footer-group"
-		| "table-header-group"
-		| "table-row"
-		| "table-row-group";
-	alignContent:
-		| "baseline"
-		| "center"
-		| "end"
-		| "flex-end"
-		| "flex-start"
-		| "normal"
-		| "safe center"
-		| "safe end"
-		| "safe start"
-		| "space-around"
-		| "space-between"
-		| "space-evenly"
-		| "start"
-		| "stretch";
-	alignItems:
-		| "baseline"
-		| "center"
-		| "end"
-		| "flex-end"
-		| "flex-start"
-		| "normal"
-		| "safe center"
-		| "safe end"
-		| "safe start"
-		| "self-end"
-		| "self-start"
-		| "start"
-		| "stretch";
-	alignSelf: PandwindFinitePropertyValues["alignItems"] | "auto";
-	appearance: "auto" | "none" | "base-select";
-	backgroundAttachment: "fixed" | "local" | "scroll";
-	borderCollapse: "collapse" | "separate";
-	flexDirection: "column" | "column-reverse" | "row" | "row-reverse";
-	flexWrap: "nowrap" | "wrap" | "wrap-reverse";
-	objectFit: "contain" | "cover" | "fill" | "none" | "scale-down";
-	outlineStyle:
-		| "auto"
-		| "dashed"
-		| "dotted"
-		| "double"
-		| "groove"
-		| "inset"
-		| "none"
-		| "outset"
-		| "ridge"
-		| "solid";
-	pointerEvents:
-		| "all"
-		| "auto"
-		| "fill"
-		| "none"
-		| "painted"
-		| "stroke"
-		| "visible"
-		| "visibleFill"
-		| "visiblePainted"
-		| "visibleStroke";
-	position: "absolute" | "fixed" | "relative" | "static" | "sticky";
-	resize: "block" | "both" | "horizontal" | "inline" | "none" | "vertical";
-	userSelect: "all" | "auto" | "none" | "text";
-	visibility: "collapse" | "hidden" | "visible";
-	wordBreak: "auto-phrase" | "break-all" | "break-word" | "keep-all" | "normal";
-};
-
-type PandwindPropertyValue<TPropertyName extends StandardPropertyName> =
-	TPropertyName extends keyof PandwindFinitePropertyValues
-		? PandwindFinitePropertyValues[TPropertyName]
-		: PandwindCssValue;
 
 type PandwindPropertyContract = {
 	[TPropertyName in StandardPropertyName]?: PandwindPropertyValue<TPropertyName>;

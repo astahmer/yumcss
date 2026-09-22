@@ -62,13 +62,64 @@ test("createCss rejects invalid finite CSS keywords", () => {
 	).type.toBe<Compiled>();
 });
 
+test("strict token bindings retain property-aware intrinsic CSS values", () => {
+	const preset = define.preset(
+		{
+			config: {} as PandwindProperties,
+			tokens: {
+				colors: { brand: "#2563eb" },
+				spacing: { 2: "0.5rem" },
+				fontWeights: { semibold: "600" },
+				display: { grid: "grid" },
+			},
+		},
+		{
+			strict: true,
+			conditions: {},
+			properties: {
+				backgroundColor: { $tokens: "colors" },
+				display: { $tokens: "display" },
+				fontWeight: { $tokens: "fontWeights" },
+				marginLeft: { $tokens: "spacing" },
+			},
+		},
+	);
+	const strictCss = createCss(preset);
+
+	expect(
+		strictCss({
+			backgroundColor: "transparent",
+			display: "flex",
+			fontWeight: "bold",
+			marginLeft: "auto",
+		}),
+	).type.toBe<Compiled>();
+	expect(strictCss({ fontWeight: "semibold" })).type.toBe<Compiled>();
+
+	expect(
+		strictCss({
+			// @ts-expect-error not assignable
+			backgroundColor: "auto",
+		}),
+	).type.toBe<Compiled>();
+	expect(
+		strictCss({
+			// @ts-expect-error not assignable
+			marginLeft: "flex",
+		}),
+	).type.toBe<Compiled>();
+});
+
 test("PandwindProperties exposes a curated CSS contract with an explicit csstype escape hatch", () => {
 	const common: PandwindProperties = {
 		display: "flex",
 		padding: 16,
 		alignItems: "center",
+		backgroundColor: "transparent",
+		fontWeight: "bold",
+		marginLeft: "auto",
+		overflow: "hidden",
 		position: "relative",
-		overflow: "inherit",
 	};
 	const modernDisplay: PandwindProperties = { display: "inline-flex" };
 	const invalid: PandwindProperties = {
