@@ -122,6 +122,9 @@ function normalizeMarkup(markup: string): string {
 	return markup.replace(/class="[^"]*"/u, 'class="CLASS"');
 }
 
+const hasPandwindImport = (code: string): boolean =>
+	/(?:\bfrom\s+|\bimport\s*(?:\(\s*)?)["']pandwind(?:["/])/u.test(code);
+
 async function browserProof(
 	sourceCss: string,
 	targetCss: string,
@@ -207,7 +210,7 @@ export async function runEmotionInstalledProof(): Promise<EmotionProofReport> {
 				converted: migration.converted,
 				skipped: migration.skipped,
 				residuals: migration.residuals.length,
-				outputContainsPandwind: migration.code.includes("pandwind/css"),
+				outputContainsPandwind: hasPandwindImport(migration.code),
 				sourceImportRemoved: !migration.code.includes("@emotion/react"),
 			},
 			ssr: {
