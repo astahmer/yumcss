@@ -30,7 +30,7 @@ stay on the runtime component.
 ## Erasure mechanics
 
 The vite fold pass (`stackFoldVite()`, opt-in plugin) rewrites literal-prop
-JSX at build time:
+JSX, Svelte, and Astro component usage at build time:
 
     <Stack direction="column" gap={4}>…</Stack>
     → <div className="flex flex-col gap-4">…</Stack→div>
@@ -44,6 +44,9 @@ JSX at build time:
 - When a file's last `<Stack>` is erased, the now-unused
   `import { Stack } from "pandwind/stack"` is removed.
 - Self-closing forms fold too.
+- In `.svelte` and `.astro` files, native `<Stack>` markup folds to a valid
+  `<div>` while preserving native attributes, children, and slots. Dynamic
+  native props stay on the component.
 
 ## Renderer-agnostic core
 
@@ -89,10 +92,10 @@ Implemented exactly per the design:
 - `src/stack/react.tsx` — optional-peer React component (`pandwind/stack/react`),
   thin div wrapper appending an optional user className.
 - `src/vite/stack-fold.ts` — `stackFoldVite()` opt-in plugin: literal-prop
-  \`<Stack>\` elements fold to \`<div className="…">\`; any dynamic/spread
-  prop keeps the WHOLE element runtime; unknown attributes pass through onto
-  the div; self-closing forms fold; unused pandwind/stack import removed when
-  the last Stack in the file is erased.
+  JSX and native Svelte/Astro \`<Stack>\` elements fold to divs; any
+  dynamic/spread prop keeps the WHOLE element runtime; unknown attributes pass
+  through onto the div; unused Stack imports are removed when the last static
+  Stack in the file is erased.
 - Exports: ./stack + ./stack/react added; react optional peer (+@types/react dev).
 - Tests (11): mapping table, differential vs hand-written class strings,
   fold fixtures (static/dynamic/mixed/passthrough/self-closing/import removal).

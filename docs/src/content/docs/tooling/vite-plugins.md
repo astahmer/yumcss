@@ -165,7 +165,10 @@ import Stack from "pandwind/stack/astro";
 These native files stay in the host framework's compilation lane and use the
 default Tailwind-compatible classes. Use `class` for additional project
 utilities; configured Pandwind class-name strategies remain available through
-the JavaScript `createStack(css)` renderers above.
+the JavaScript `createStack(css)` renderers above. `stackFoldVite()` also
+recognizes static `<Stack>` usages in `.svelte` and `.astro` files, so place it
+before the host framework plugin when those props should fold into generated
+CSS. Dynamic native props remain runtime components.
 
 ### Composed CSS changes during Vite HMR
 

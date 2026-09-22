@@ -87,7 +87,8 @@ they do not use.
    **Done:** each renderer has its own entry and optional peer declaration.
 4. Add native Svelte and Astro component-file adapters with optional peer
    dependencies and package-file copying. **Done:** both adapters consume the
-   shared mapper, forward native attributes, and support responsive props.
+   shared mapper, forward native attributes, support responsive props, and
+   participate in the opt-in Vite static fold.
 5. Add export-resolution, inline-snapshot, native-file, and type-level contract tests.
    **Done:** package exports, SSR/VNode snapshots, assertions, and tstyche
    coverage are present.
@@ -102,8 +103,9 @@ they do not use.
 - Each renderer maps the same props to the same class string.
 - Each renderer forwards framework-native attributes and children.
 - Static Stack folding remains renderer-neutral; its default output is
-  unchanged, and configured folding consumes the shared engine instead of a
-  renderer implementation.
+  unchanged, configured folding consumes the shared engine instead of a
+  renderer implementation, and native Svelte/Astro markup is folded before
+  the host compiler runs.
 - Dynamic framework props remain dynamic and type-safe.
 - Optional renderer dependencies are not included in the neutral core path.
 - Focused tests, package typecheck, formatting, and export checks pass.
