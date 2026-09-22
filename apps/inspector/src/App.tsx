@@ -20,7 +20,12 @@ import {
 	type UnusedTokenCandidate,
 } from "pandwind-analyze/governance/browser";
 
-type Tab = "design" | "stats" | "history" | "graph" | "usage" | "governance";
+import {
+	INSPECTOR_TABS,
+	readInspectorUrlState,
+	serializeInspectorUrlState,
+	type InspectorTab,
+} from "./lib/url-state.ts";
 
 /* ---------------------------------- helpers ---------------------------------- */
 
@@ -30,22 +35,137 @@ const isHex = (value: string): boolean => /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.t
 
 function CopyButton(props: { text: string; className?: string }) {
 	const [copied, setCopied] = useState(false);
+	const copy = (): void => {
+		const clipboard = navigator.clipboard;
+		if (clipboard === undefined) return;
+		void clipboard.writeText(props.text).then(
+			() => {
+				setCopied(true);
+				setTimeout(() => setCopied(false), 900);
+			},
+			() => {},
+		);
+	};
 	return (
 		<button
-			className={props.className ?? ui.copy}
+			type="button"
+			className={
+				copied ? `${props.className ?? ui.copy} ${ui.copied}` : (props.className ?? ui.copy)
+			}
+			aria-label={copied ? `copied ${props.text}` : `copy ${props.text}`}
+			aria-live="polite"
 			title={`copy ${props.text}`}
-			onClick={() => {
-				navigator.clipboard?.writeText(props.text).then(
-					() => {
-						setCopied(true);
-						setTimeout(() => setCopied(false), 900);
-					},
-					() => {},
-				);
-			}}
+			onClick={copy}
 		>
-			{copied ? "✓" : "⧉"}
+			<span aria-hidden="true">{copied ? "✓" : "⧉"}</span>
+			<span className={ui.srOnly}>{copied ? "copied" : "copy"}</span>
 		</button>
+	);
+}
+
+function SwatchButton(props: { name: string; mode: string; color: string }) {
+	const [copied, setCopied] = useState(false);
+	const copy = (): void => {
+		const clipboard = navigator.clipboard;
+		if (clipboard === undefined) return;
+		void clipboard.writeText(props.color).then(
+			() => {
+				setCopied(true);
+				setTimeout(() => setCopied(false), 900);
+			},
+			() => {},
+		);
+	};
+	return (
+		<button
+			type="button"
+			className={copied ? `${ui.swatch} ${ui.copied}` : ui.swatch}
+			style={{ background: props.color }}
+			aria-label={`${copied ? "Copied" : "Copy"} ${props.name}${props.mode === "base" ? "" : ` (${props.mode})`} color ${props.color}`}
+			title={`${props.name}${props.mode === "base" ? "" : ` (${props.mode})`} = ${props.color} — click to copy`}
+			onClick={copy}
+		>
+			<span className={ui.srOnly}>{copied ? "copied" : "copy"}</span>
+		</button>
+	);
+}
+
+function SearchControl(props: {
+	query: string;
+	queryChange: (value: string) => void;
+	matchCount: number;
+	totalCount: number;
+}) {
+	return (
+		<div className={ui.searchRow}>
+			<label className={ui.srOnly} htmlFor="studio-search">
+				Filter visible inspector data
+			</label>
+			<input
+				id="studio-search"
+				className={ui.search}
+				type="search"
+				placeholder="filter tokens & utilities…"
+				value={props.query}
+				aria-label="Filter visible inspector data"
+				aria-controls="studio-panel"
+				aria-describedby="studio-search-status studio-search-hint"
+				aria-keyshortcuts="/"
+				onChange={(event) => props.queryChange(event.target.value)}
+			/>
+			<button
+				type="button"
+				className={ui.searchClear}
+				disabled={props.query === ""}
+				aria-label="Clear search"
+				onClick={() => props.queryChange("")}
+			>
+				clear
+			</button>
+			<span id="studio-search-status" className={ui.searchMeta} role="status" aria-live="polite">
+				{props.matchCount} of {props.totalCount} matches
+			</span>
+			<span id="studio-search-hint" className={ui.srOnly}>
+				Press slash to focus search.
+			</span>
+		</div>
+	);
+}
+
+function ErrorState(props: { message: string; retry: () => void }) {
+	return (
+		<div className={ui.emptyState} role="alert">
+			<div>
+				<p className={ui.error}>{props.message}</p>
+				<p className={ui.muted}>
+					Check that the Inspector dev server and analyzer dependencies are running, then retry. If
+					the project is large, the first gather can take a moment.
+				</p>
+				<button type="button" onClick={props.retry}>
+					retry analysis
+				</button>
+			</div>
+		</div>
+	);
+}
+
+function LoadingSkeleton() {
+	return (
+		<div
+			className={ui.loadingState}
+			role="status"
+			aria-live="polite"
+			aria-label="Loading inspector data"
+		>
+			<div className={ui.skeletonGrid} aria-hidden="true">
+				<div className={ui.skeletonCard} />
+				<div className={ui.skeletonCard} />
+				<div className={ui.skeletonCard} />
+				<div className={ui.skeletonCard} />
+			</div>
+			<div className={ui.skeletonTable} aria-hidden="true" />
+			<span className={ui.muted}>analyzing project…</span>
+		</div>
 	);
 }
 
@@ -103,20 +223,14 @@ function ColorSwatches(props: {
 	}>;
 	if (usable.length === 0) return null;
 	return (
-		<section>
+		<section id={props.section.id}>
 			<h2>{props.section.label}</h2>
 			<div className={ui.swatches}>
 				{usable.map((s) => (
 					<div className={ui.swatchCard} key={`${props.section.id}:${s.name}`}>
 						<div className={ui.swatchModes}>
 							{Object.entries(s.modes).map(([mode, color]) => (
-								<button
-									key={mode}
-									className={ui.swatch}
-									style={{ background: color }}
-									title={`${s.name}${mode === "base" ? "" : ` (${mode})`} = ${color} — click to copy`}
-									onClick={() => navigator.clipboard?.writeText(color)}
-								/>
+								<SwatchButton key={mode} name={s.name} mode={mode} color={color} />
 							))}
 						</div>
 						<div className={ui.swatchMeta}>
@@ -133,6 +247,17 @@ function ColorSwatches(props: {
 	);
 }
 
+const isRenderableColorEntry = (
+	entry: TokenSection["entries"][number],
+	rawColors: Map<string, string>,
+): boolean => {
+	const split = splitTokenValue(entry.value);
+	if (split.conditionBound && split.json !== null) return true;
+	if (isHex(split.raw)) return true;
+	const chain = resolveChain(split.raw, rawColors);
+	return isHex(chain[chain.length - 1] ?? "");
+};
+
 const categorizeColor = (v: ThemeVar): string | null =>
 	v.name.startsWith("--color-") ? v.value : null;
 
@@ -142,6 +267,8 @@ function DesignSystemView(props: {
 	data: StudioPayload;
 	query: string;
 	queryChange: (v: string) => void;
+	section: string | null;
+	sectionChange: (section: string) => void;
 }) {
 	const d = props.data.designSystem;
 	const matchText = makeTextMatcher(props.query);
@@ -160,6 +287,93 @@ function DesignSystemView(props: {
 	const trackingEntries = sectionsById.get("letterSpacings")?.entries ?? [];
 	const spacingEntries = sectionsById.get("spacing")?.entries ?? [];
 	const radiiEntries = sectionsById.get("radii")?.entries ?? [];
+	const visibleColorEntries = filterNamed(
+		sectionsById.get("colors")?.entries ?? [],
+		matchText,
+	).filter((entry) => isRenderableColorEntry(entry, rawColors));
+	const visibleSemanticEntries = filterNamed(
+		sectionsById.get("semantic")?.entries ?? [],
+		matchText,
+	).filter((entry) => isRenderableColorEntry(entry, rawColors));
+	const visibleFontSizeEntries = filterNamed(fontSizeEntries, matchText);
+	const visibleWeightEntries = filterNamed(weightEntries, matchText);
+	const visibleFamilyEntries = filterNamed(familyEntries, matchText);
+	const visibleLineHeightEntries = filterNamed(lineHeightEntries, matchText);
+	const visibleTrackingEntries = filterNamed(trackingEntries, matchText);
+	const visibleSpacingEntries = filterNamed(spacingEntries, matchText);
+	const visibleRadiiEntries = filterNamed(radiiEntries, matchText);
+	const visibleUtilities = d.utilities.filter((u) => matchText(u.key) || u.sample.some(matchText));
+	const visibleThemeGroups = (
+		Object.entries(groupedVars) as Array<[ThemeVarCategory, Array<ThemeVar>]>
+	).map(
+		([category, vars]) =>
+			[category, vars.filter((v) => matchText(v.name) || matchText(v.value))] as const,
+	);
+	const typographyVisible =
+		visibleFontSizeEntries.length > 0 ||
+		visibleWeightEntries.length > 0 ||
+		visibleFamilyEntries.length > 0 ||
+		visibleLineHeightEntries.length > 0 ||
+		visibleTrackingEntries.length > 0;
+	const themeVisible = visibleThemeGroups.some(([, vars]) => vars.length > 0);
+	const sectionLinks = [
+		{ id: "sec-colors", label: "colors", visible: visibleColorEntries.length > 0 },
+		{ id: "sec-semantic", label: "semantic", visible: visibleSemanticEntries.length > 0 },
+		{ id: "sec-typography", label: "typography", visible: typographyVisible },
+		{ id: "sec-spacing", label: "spacing", visible: visibleSpacingEntries.length > 0 },
+		{ id: "sec-radii", label: "radii", visible: visibleRadiiEntries.length > 0 },
+		{ id: "sec-utilities", label: "utilities", visible: visibleUtilities.length > 0 },
+		{ id: "sec-theme-vars", label: "theme vars", visible: themeVisible },
+	].filter((link) => link.visible);
+	const visibleSectionIds = sectionLinks.map((link) => link.id);
+	const visibleSectionKey = visibleSectionIds.join("|");
+	const totalCount =
+		d.tokenSections.reduce((count, section) => count + section.entries.length, 0) +
+		d.utilities.length +
+		d.themeVars.length;
+	const matchCount =
+		visibleColorEntries.length +
+		visibleSemanticEntries.length +
+		visibleFontSizeEntries.length +
+		visibleWeightEntries.length +
+		visibleFamilyEntries.length +
+		visibleLineHeightEntries.length +
+		visibleTrackingEntries.length +
+		visibleSpacingEntries.length +
+		visibleRadiiEntries.length +
+		visibleUtilities.length +
+		visibleThemeGroups.reduce((count, [, vars]) => count + vars.length, 0);
+	const [activeSection, setActiveSection] = useState(props.section ?? visibleSectionIds[0] ?? null);
+
+	useEffect(() => {
+		if (typeof IntersectionObserver === "undefined") return;
+		const elements = visibleSectionIds
+			.map((id) => document.getElementById(id))
+			.filter((element): element is HTMLElement => element !== null);
+		if (elements.length === 0) return;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const visible = entries
+					.filter((entry) => entry.isIntersecting)
+					.toSorted((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+				const next = visible[0]?.target.id;
+				if (next !== undefined) setActiveSection(next);
+			},
+			{ rootMargin: "-92px 0px -60% 0px", threshold: [0, 1] },
+		);
+		for (const element of elements) observer.observe(element);
+		return () => observer.disconnect();
+	}, [visibleSectionKey]);
+
+	useEffect(() => {
+		if (props.section === null || !visibleSectionIds.includes(props.section)) return;
+		setActiveSection(props.section);
+		requestAnimationFrame(() =>
+			document
+				.getElementById(props.section!)
+				?.scrollIntoView({ behavior: "smooth", block: "start" }),
+		);
+	}, [props.section, visibleSectionKey]);
 
 	return (
 		<>
@@ -177,126 +391,144 @@ function DesignSystemView(props: {
 				/>
 			</section>
 
-			<input
-				className={ui.search}
-				placeholder="filter tokens & utilities…"
-				value={props.query}
-				onChange={(e) => props.queryChange(e.target.value)}
+			<SearchControl
+				query={props.query}
+				queryChange={props.queryChange}
+				matchCount={matchCount}
+				totalCount={totalCount}
 			/>
 
-			{(sectionsById.get("colors") !== undefined || sectionsById.get("semantic") !== undefined) && (
+			{sectionLinks.length > 0 && (
 				<nav className={ui.sectionNav}>
-					<a href="#sec-colors">colors</a>
-					<a href="#sec-typography">typography</a>
-					<a href="#sec-spacing">spacing</a>
-					<a href="#sec-radii">radii</a>
-					<a href="#sec-utilities">utilities</a>
-					<a href="#sec-theme-vars">theme vars</a>
+					{sectionLinks.map((link) => (
+						<a
+							key={link.id}
+							className={ui.sectionNavLink}
+							href={`#design/${link.id}`}
+							aria-current={activeSection === link.id ? "true" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								props.sectionChange(link.id);
+								document
+									.getElementById(link.id)
+									?.scrollIntoView({ behavior: "smooth", block: "start" });
+							}}
+						>
+							{link.label}
+						</a>
+					))}
 				</nav>
 			)}
 
-			{sectionsById.get("colors") !== undefined && <div id="sec-colors" />}
-			<ColorSwatches
-				section={{
-					id: "colors",
-					label: "Colors",
-					entries: sectionsById.get("colors")?.entries ?? [],
-				}}
-				rawColors={rawColors}
-				matches={matchText}
-			/>
-			{sectionsById.get("semantic") !== undefined && (
+			{visibleColorEntries.length > 0 && (
+				<ColorSwatches
+					section={{ id: "sec-colors", label: "Colors", entries: visibleColorEntries }}
+					rawColors={rawColors}
+					matches={() => true}
+				/>
+			)}
+			{visibleSemanticEntries.length > 0 && (
 				<ColorSwatches
 					section={{
-						id: "semantic",
+						id: "sec-semantic",
 						label: "Semantic tokens",
-						entries: sectionsById.get("semantic")?.entries ?? [],
+						entries: visibleSemanticEntries,
 					}}
 					rawColors={rawColors}
-					matches={matchText}
+					matches={() => true}
 				/>
 			)}
 
-			<section id="sec-typography">
-				<h2>Typography — font sizes at real size</h2>
-				<div className={ui.typeSizes}>
-					{fontSizeEntries
-						.filter((e) => matchText(e.name))
-						.map((e) => (
-							<div className={ui.typeSizeRow} key={e.name}>
-								<span className={ui.typeSizeSample} style={{ fontSize: e.value }}>
-									Ag {FONT_SIZE_SAMPLE}
-								</span>
-								<code>
-									{e.name} · {e.value}
-								</code>
-								<CopyButton text={e.name} />
-							</div>
-						))}
-				</div>
-
-				<h3>weights</h3>
-				<div className={ui.chipRow}>
-					{filterNamed(weightEntries, matchText).map((e) => (
-						<span className={ui.chip} key={e.name} style={{ fontWeight: Number(e.value) }}>
-							{e.name} {e.value}
-						</span>
-					))}
-				</div>
-
-				<h3>families</h3>
-				<div>
-					{filterNamed(familyEntries, matchText).map((e) => (
-						<div className={ui.typeSizeRow} key={e.name}>
-							<span className={ui.typeSizeSample} style={{ fontFamily: e.value }}>
-								{e.name}: Pandwind studio preview 123
-							</span>
-							<code>{e.value}</code>
+			{typographyVisible && (
+				<section id="sec-typography">
+					<h2>Typography — font sizes at real size</h2>
+					{visibleFontSizeEntries.length > 0 && (
+						<div className={ui.typeSizes}>
+							{visibleFontSizeEntries.map((e) => (
+								<div className={ui.typeSizeRow} key={e.name}>
+									<span className={ui.typeSizeSample} style={{ fontSize: e.value }}>
+										Ag {FONT_SIZE_SAMPLE}
+									</span>
+									<code>
+										{e.name} · {e.value}
+									</code>
+									<CopyButton text={e.name} />
+								</div>
+							))}
 						</div>
-					))}
-				</div>
+					)}
 
-				{(lineHeightEntries.length > 0 || trackingEntries.length > 0) && (
-					<>
-						<h3>line heights & letter spacings</h3>
-						<table>
-							<tbody>
-								{filterNamed(
-									[
-										...lineHeightEntries.map((x) => ({ ...x, _k: "lh-" + x.name })),
-										...trackingEntries.map((x) => ({ ...x, _k: "ls-" + x.name })),
-									],
-									matchText,
-								).map((e) => (
-									<tr key={e._k}>
-										<td>
-											<code>{e.name}</code>
-										</td>
-										<td>{e.value}</td>
-										<td className={ui.sample}>
-											<span
-												style={
-													e.value.includes("em")
-														? { letterSpacing: e.value }
-														: { lineHeight: e.value }
-												}
-											>
-												Hamburgefonstiv 0123
-											</span>
-										</td>
-									</tr>
+					{visibleWeightEntries.length > 0 && (
+						<>
+							<h3>weights</h3>
+							<div className={ui.chipRow}>
+								{visibleWeightEntries.map((e) => (
+									<span className={ui.chip} key={e.name} style={{ fontWeight: Number(e.value) }}>
+										{e.name} {e.value}
+									</span>
 								))}
-							</tbody>
-						</table>
-					</>
-				)}
-			</section>
+							</div>
+						</>
+					)}
 
-			{spacingEntries.length > 0 && (
+					{visibleFamilyEntries.length > 0 && (
+						<>
+							<h3>families</h3>
+							<div>
+								{visibleFamilyEntries.map((e) => (
+									<div className={ui.typeSizeRow} key={e.name}>
+										<span className={ui.typeSizeSample} style={{ fontFamily: e.value }}>
+											{e.name}: Pandwind studio preview 123
+										</span>
+										<code>{e.value}</code>
+									</div>
+								))}
+							</div>
+						</>
+					)}
+
+					{(visibleLineHeightEntries.length > 0 || visibleTrackingEntries.length > 0) && (
+						<>
+							<h3>line heights & letter spacings</h3>
+							<table>
+								<tbody>
+									{[
+										...visibleLineHeightEntries.map((x) => ({ ...x, _k: "lh-" + x.name })),
+										...visibleTrackingEntries.map((x) => ({ ...x, _k: "ls-" + x.name })),
+									].map((e) => (
+										<tr key={e._k}>
+											<td>
+												<code>{e.name}</code>
+											</td>
+											<td>{e.value}</td>
+											<td className={ui.sample}>
+												<span
+													style={
+														e.value.includes("em")
+															? { letterSpacing: e.value }
+															: { lineHeight: e.value }
+													}
+												>
+													Hamburgefonstiv 0123
+												</span>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</>
+					)}
+				</section>
+			)}
+
+			{visibleSpacingEntries.length > 0 && (
 				<section id="sec-spacing">
 					<h2>Spacing scale</h2>
 					{(() => {
-						const px = spacingEntries.map((e) => ({ ...e, n: Number.parseFloat(e.value) || 0 }));
+						const px = visibleSpacingEntries.map((e) => ({
+							...e,
+							n: Number.parseFloat(e.value) || 0,
+						}));
 						const max = Math.max(...px.map((p) => p.n), 1);
 						return px.map((p) => (
 							<Bar
@@ -311,11 +543,11 @@ function DesignSystemView(props: {
 				</section>
 			)}
 
-			{radiiEntries.length > 0 && (
+			{visibleRadiiEntries.length > 0 && (
 				<section id="sec-radii">
 					<h2>Radii</h2>
 					<div className={ui.radii}>
-						{radiiEntries.map((e) => (
+						{visibleRadiiEntries.map((e) => (
 							<div className={ui.radiusDemo} key={e.name}>
 								<div
 									className={ui.radiusBox}
@@ -329,21 +561,20 @@ function DesignSystemView(props: {
 				</section>
 			)}
 
-			<section id="sec-utilities">
-				<h2>typed utility unions</h2>
-				<table>
-					<thead>
-						<tr>
-							<th>key</th>
-							<th>values</th>
-							<th>sample</th>
-							<th>open</th>
-						</tr>
-					</thead>
-					<tbody>
-						{d.utilities
-							.filter((u) => matchText(u.key) || u.sample.some(matchText))
-							.map((u) => (
+			{visibleUtilities.length > 0 && (
+				<section id="sec-utilities">
+					<h2>typed utility unions</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>key</th>
+								<th>values</th>
+								<th>sample</th>
+								<th>open</th>
+							</tr>
+						</thead>
+						<tbody>
+							{visibleUtilities.map((u) => (
 								<tr key={u.key}>
 									<td>{u.key}</td>
 									<td>{u.count}</td>
@@ -351,24 +582,24 @@ function DesignSystemView(props: {
 									<td>{u.openEnded ? "∞" : ""}</td>
 								</tr>
 							))}
-					</tbody>
-				</table>
-			</section>
+						</tbody>
+					</table>
+				</section>
+			)}
 
-			<section id="sec-theme-vars">
-				<h2>@theme variables by category</h2>
-				{(Object.entries(groupedVars) as Array<[ThemeVarCategory, Array<ThemeVar>]>)
-					.filter(([, vars]) => vars.length > 0)
-					.map(([category, vars]) => (
-						<div key={category}>
-							<h3>
-								{category} · {vars.length}
-							</h3>
-							<table>
-								<tbody>
-									{vars
-										.filter((v: ThemeVar) => matchText(v.name) || matchText(v.value))
-										.map((v: ThemeVar) => (
+			{themeVisible && (
+				<section id="sec-theme-vars">
+					<h2>@theme variables by category</h2>
+					{visibleThemeGroups
+						.filter(([, vars]) => vars.length > 0)
+						.map(([category, vars]) => (
+							<div key={category}>
+								<h3>
+									{category} · {vars.length}
+								</h3>
+								<table>
+									<tbody>
+										{vars.map((v: ThemeVar) => (
 											<tr key={`${v.scope ?? ":root"}:${v.name}`}>
 												<td>
 													{categorizeColor(v) !== null ? (
@@ -383,11 +614,15 @@ function DesignSystemView(props: {
 												<td>{v.value}</td>
 											</tr>
 										))}
-								</tbody>
-							</table>
-						</div>
-					))}
-			</section>
+									</tbody>
+								</table>
+							</div>
+						))}
+				</section>
+			)}
+			{props.query !== "" && matchCount === 0 && (
+				<p className={ui.emptyState}>No visible inspector data matches “{props.query}”.</p>
+			)}
 		</>
 	);
 }
@@ -433,10 +668,24 @@ function HistoryView(props: {
 	diffData: { a: HistoryEntry; b: HistoryEntry } | null;
 	setDiffPair: (pair: { a: string; b: string }) => void;
 	loadDiff: (a: string, b: string) => void;
+	retry: () => void;
 }) {
 	return (
 		<div>
-			{props.error !== null && <p className={ui.error}>{props.error}</p>}
+			{props.error !== null && (
+				<div className={ui.emptyState} role="alert">
+					<div>
+						<p className={ui.error}>{props.error}</p>
+						<p className={ui.muted}>
+							History is optional and may be disabled for this project. Check the Inspector server,
+							then retry.
+						</p>
+						<button type="button" onClick={props.retry}>
+							retry history
+						</button>
+					</div>
+				</div>
+			)}
 			{(props.list ?? []).length < 2 && props.error === null && (
 				<p className={ui.muted}>need at least 2 runs — hit refresh to snapshot another one.</p>
 			)}
@@ -531,11 +780,24 @@ function HistoryView(props: {
 	);
 }
 
-function StatsView(props: { data: StudioPayload; query: string }) {
+function StatsView(props: {
+	data: StudioPayload;
+	query: string;
+	queryChange: (value: string) => void;
+}) {
 	const c = props.data.coverage;
 	const [sortKey, setSortKey] = useState<"file" | "eliminatedPct" | "cxRuntime">("eliminatedPct");
 	const [asc, setAsc] = useState(true);
 	const q = props.query.toLowerCase();
+	const valueCoverageByFile = new Map(
+		(props.data.analytics?.fileValueCoverage ?? []).map((coverage) => [coverage.file, coverage]),
+	);
+	const fileGroups = {
+		full: c.files.filter((file) => file.cxRuntime === 0 && file.cxFoldedPartial === 0).length,
+		partial: c.files.filter((file) => file.cxRuntime === 0 && file.cxFoldedPartial > 0).length,
+		runtime: c.files.filter((file) => file.cxRuntime > 0).length,
+	};
+	const valueCoverage = props.data.analytics?.valueCoverage;
 
 	const sortedFiles = [...c.files]
 		.filter((f) => f.file.toLowerCase().includes(q))
@@ -547,45 +809,77 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 	const maxPrefix = Math.max(...c.budget.perPrefix.map((p) => p.rules), 1);
 
 	const sortHeader = (key: "file" | "eliminatedPct" | "cxRuntime", label: string) => (
-		<th
-			className={ui.sortable}
-			onClick={() => {
-				if (sortKey === key) setAsc(!asc);
-				else {
-					setSortKey(key);
-					setAsc(key === "file");
-				}
-			}}
-		>
-			{label}
-			{sortKey === key ? (asc ? " ▲" : " ▼") : ""}
+		<th aria-sort={sortKey === key ? (asc ? "ascending" : "descending") : "none"}>
+			<button
+				type="button"
+				className={ui.sortButton}
+				onClick={() => {
+					if (sortKey === key) setAsc(!asc);
+					else {
+						setSortKey(key);
+						setAsc(key === "file");
+					}
+				}}
+			>
+				{label}
+				{sortKey === key ? (asc ? " ▲" : " ▼") : ""}
+			</button>
 		</th>
 	);
 
 	return (
 		<>
-			<section className={ui.cards}>
-				<Card
-					label="cx eliminated (build time)"
-					value={`${c.eliminatedPct}%`}
-					sub={`${c.fullFolded} full · ${c.partialFolded} partial · ${c.runtimeCalls} runtime`}
-				/>
-				<Card
-					label="files fully eliminated"
-					value={`${c.entryEliminatedPct}%`}
-					sub={`${c.totalCxCalls} cx calls across ${c.files.length} files`}
-				/>
-				<Card
-					label="css budget"
-					value={InspectorApi.kb(c.budget.cssBytes)}
-					sub={`${InspectorApi.kb(c.budget.cssGzipBytes)} gzip · ${c.budget.rules} rules`}
-				/>
-				<Card
-					label="missing-css warnings"
-					value={String(c.totalMissingCss)}
-					sub={`dead candidates: ${c.budget.deadCandidates}`}
-				/>
-			</section>
+			<div className={ui.statsGroups}>
+				<section className={ui.statsGroup}>
+					<h2>build-time folding</h2>
+					<div className={ui.cards}>
+						<Card
+							label="cx eliminated"
+							value={`${c.eliminatedPct}%`}
+							sub={`${c.fullFolded} full · ${c.partialFolded} partial · ${c.runtimeCalls} runtime`}
+						/>
+						<Card
+							label="files fully eliminated"
+							value={`${c.entryEliminatedPct}%`}
+							sub={`${c.totalCxCalls} cx calls across ${c.files.length} files`}
+						/>
+						<Card
+							label="file outcomes"
+							value={String(c.files.length)}
+							sub={`${fileGroups.full} full · ${fileGroups.partial} partial · ${fileGroups.runtime} runtime`}
+						/>
+					</div>
+				</section>
+				<section className={ui.statsGroup}>
+					<h2>stylesheet budget</h2>
+					<div className={ui.cards}>
+						<Card
+							label="css budget"
+							value={InspectorApi.kb(c.budget.cssBytes)}
+							sub={`${InspectorApi.kb(c.budget.cssGzipBytes)} gzip · ${c.budget.rules} rules`}
+						/>
+						<Card
+							label="missing-css warnings"
+							value={String(c.totalMissingCss)}
+							sub={`dead candidates: ${c.budget.deadCandidates}`}
+						/>
+						{valueCoverage !== undefined && (
+							<Card
+								label="tokenized authored values"
+								value={`${valueCoverage.tokenPct}%`}
+								sub={`${valueCoverage.tokenValues} token · ${valueCoverage.literalValues} literal · ${valueCoverage.dynamicValues} dynamic`}
+							/>
+						)}
+					</div>
+				</section>
+			</div>
+
+			<SearchControl
+				query={props.query}
+				queryChange={props.queryChange}
+				matchCount={sortedFiles.length}
+				totalCount={c.files.length}
+			/>
 
 			<section>
 				<h2>css budget — rule distribution by prefix</h2>
@@ -633,13 +927,14 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 
 			<section>
 				<h2>per-file fold coverage</h2>
-				<table>
+				<table className={ui.stickyTable}>
 					<thead>
 						<tr>
 							{sortHeader("file", "file")}
 							{sortHeader("eliminatedPct", "eliminated %")}
 							<th>full/part/runtime</th>
 							{sortHeader("cxRuntime", "runtime")}
+							<th>token / literal</th>
 							<th>missing-css</th>
 						</tr>
 					</thead>
@@ -652,6 +947,11 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 								</td>
 								<td>{`${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`}</td>
 								<td>{f.cxRuntime}</td>
+								<td>
+									{valueCoverageByFile.get(f.file) === undefined
+										? "—"
+										: `${valueCoverageByFile.get(f.file)!.tokenPct}% / ${valueCoverageByFile.get(f.file)!.literalPct}%`}
+								</td>
 								<td>{f.missingCssCount}</td>
 							</tr>
 						))}
@@ -1058,10 +1358,13 @@ function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
 	const [content, setContent] = useState<string | null>(null);
 	const [busy, setBusy] = useState(false);
 	const [copied, setCopied] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 	const generate = (): void => {
 		setBusy(true);
+		setError(null);
 		InspectorApi.fetchPruneChangeset()
 			.then((r) => setContent(r.content))
+			.catch((e: Error) => setError(e.message))
 			.finally(() => setBusy(false));
 	};
 	const copy = (): void => {
@@ -1078,11 +1381,24 @@ function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
 				generates a .changeset file proposing removal of the {unusedCount} zero-use token(s).
 				read-only: nothing is written server-side.
 			</p>
-			<button onClick={generate} disabled={busy || unusedCount === 0}>
+			<button type="button" onClick={generate} disabled={busy || unusedCount === 0}>
 				{busy ? "generating…" : `generate changeset (${unusedCount})`}
 			</button>{" "}
+			{error !== null && (
+				<div role="alert">
+					<p className={ui.error}>{error}</p>
+					<p className={ui.muted}>
+						Check that the Inspector server is running, then retry generation.
+					</p>
+					<button type="button" onClick={generate} disabled={busy || unusedCount === 0}>
+						retry changeset
+					</button>
+				</div>
+			)}
 			{content !== null && (
-				<button onClick={copy}>{copied ? "copied ✓" : "copy to clipboard"}</button>
+				<button type="button" onClick={copy} aria-label="Copy generated changeset">
+					{copied ? "copied ✓" : "copy to clipboard"}
+				</button>
 			)}
 			{content !== null && <pre className={ui.card}>{content}</pre>}
 		</section>
@@ -1309,16 +1625,26 @@ const HISTORY_H = 90;
 function AnalyticsHistoryChart() {
 	const [series, setSeries] = useState<Array<AnalyticsHistoryPoint> | null>(null);
 	const [error, setError] = useState<string | null>(null);
-	useEffect(() => {
+	const load = useCallback(() => {
+		setError(null);
+		setSeries(null);
 		InspectorApi.fetchAnalyticsHistory()
 			.then(setSeries)
 			.catch((e: Error) => setError(e.message));
 	}, []);
+	useEffect(load, [load]);
 	if (error !== null) {
 		return (
-			<section>
+			<section role="alert">
 				<h2>trend</h2>
-				<p className={ui.muted}>{error} (enable INSPECTOR_HISTORY=1 to record snapshots)</p>
+				<p className={ui.error}>{error}</p>
+				<p className={ui.muted}>
+					History is optional. Enable INSPECTOR_HISTORY=1 to record snapshots, then retry if the
+					server was restarted.
+				</p>
+				<button type="button" onClick={load}>
+					retry trend
+				</button>
 			</section>
 		);
 	}
@@ -1381,12 +1707,25 @@ function AnalyticsHistoryChart() {
 
 /* ------------------------------------- app ------------------------------------- */
 
+const TAB_LABELS: Record<InspectorTab, string> = {
+	design: "Design system",
+	graph: "Token graph",
+	stats: "Stats",
+	usage: "Usage",
+	governance: "Governance",
+	history: "History",
+};
+
 export function App() {
-	const [tab, setTab] = useState<Tab>("design");
+	const [urlState, setUrlState] = useState(() =>
+		readInspectorUrlState({ hash: window.location.hash, search: window.location.search }),
+	);
+	const tab = urlState.tab;
+	const query = urlState.query;
+	const section = urlState.section;
 	const [data, setData] = useState<StudioPayload | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [query, setQuery] = useState("");
 	const [historyList, setHistoryList] = useState<Array<HistoryListItem> | null>(null);
 	const [diffPair, setDiffPair] = useState<{ a: string; b: string } | null>(null);
 	const [diffData, setDiffData] = useState<{ a: HistoryEntry; b: HistoryEntry } | null>(null);
@@ -1402,6 +1741,63 @@ export function App() {
 	}, []);
 
 	useEffect(refresh, [refresh]);
+
+	useEffect(() => {
+		const syncUrlState = (): void =>
+			setUrlState(
+				readInspectorUrlState({ hash: window.location.hash, search: window.location.search }),
+			);
+		window.addEventListener("hashchange", syncUrlState);
+		window.addEventListener("popstate", syncUrlState);
+		return () => {
+			window.removeEventListener("hashchange", syncUrlState);
+			window.removeEventListener("popstate", syncUrlState);
+		};
+	}, []);
+
+	useEffect(() => {
+		const focusSearch = (event: KeyboardEvent): void => {
+			if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
+			const target = event.target;
+			if (
+				target instanceof HTMLElement &&
+				(target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
+			)
+				return;
+			const search = document.getElementById("studio-search");
+			if (!(search instanceof HTMLInputElement)) return;
+			event.preventDefault();
+			search.focus();
+			search.select();
+		};
+		document.addEventListener("keydown", focusSearch);
+		return () => document.removeEventListener("keydown", focusSearch);
+	}, []);
+
+	const updateUrlState = useCallback(
+		(next: Partial<typeof urlState>): void => {
+			const state = { ...urlState, ...next };
+			setUrlState(state);
+			window.history.replaceState(
+				null,
+				"",
+				`${window.location.pathname}${serializeInspectorUrlState(state, window.location.search)}`,
+			);
+		},
+		[urlState],
+	);
+	const changeTab = useCallback(
+		(next: InspectorTab): void => updateUrlState({ tab: next, section: null }),
+		[updateUrlState],
+	);
+	const queryChange = useCallback(
+		(value: string): void => updateUrlState({ query: value }),
+		[updateUrlState],
+	);
+	const sectionChange = useCallback(
+		(next: string): void => updateUrlState({ tab: "design", section: next }),
+		[updateUrlState],
+	);
 
 	const loadDiff = useCallback(async (a: string, b: string) => {
 		setHistoryError(null);
@@ -1419,29 +1815,22 @@ export function App() {
 		}
 	}, []);
 
-	useEffect(() => {
-		if (tab !== "history") return;
+	const loadHistory = useCallback(() => {
 		setHistoryError(null);
 		InspectorApi.fetchHistoryList()
 			.then(setHistoryList)
 			.catch((e: Error) => setHistoryError(e.message));
-	}, [tab]);
-	const queryChange = useCallback((v: string) => setQuery(v), []);
+	}, []);
 
+	useEffect(() => {
+		if (tab !== "history") return;
+		loadHistory();
+	}, [loadHistory, tab]);
 	let body: React.ReactNode;
 	if (error !== null) {
-		body = (
-			<div className={ui.emptyState}>
-				<p className={ui.error}>{error}</p>
-				<button onClick={refresh}>retry</button>
-			</div>
-		);
-	} else if (data === null || loading) {
-		body = (
-			<div className={ui.emptyState}>
-				<span className={ui.spinner} /> analyzing…
-			</div>
-		);
+		body = <ErrorState message={error} retry={refresh} />;
+	} else if (data === null) {
+		body = <LoadingSkeleton />;
 	} else {
 		body =
 			tab === "graph" ? (
@@ -1451,7 +1840,13 @@ export function App() {
 			) : tab === "governance" ? (
 				<GovernanceView data={data} />
 			) : tab === "design" ? (
-				<DesignSystemView data={data} query={query} queryChange={queryChange} />
+				<DesignSystemView
+					data={data}
+					query={query}
+					queryChange={queryChange}
+					section={section}
+					sectionChange={sectionChange}
+				/>
 			) : tab === "history" ? (
 				<HistoryView
 					list={historyList}
@@ -1460,66 +1855,64 @@ export function App() {
 					diffData={diffData}
 					setDiffPair={setDiffPair}
 					loadDiff={loadDiff}
+					retry={loadHistory}
 				/>
 			) : (
-				<StatsView data={data} query={query} />
+				<StatsView data={data} query={query} queryChange={queryChange} />
 			);
 	}
 
 	return (
-		<main className={ui.wrap}>
+		<main className={ui.wrap} aria-busy={loading}>
 			<header>
 				<h1>
 					<span className={ui.brandMark}>◆</span> pandwind{" "}
 					<span className={ui.brandThin}>studio</span>
 				</h1>
-				<nav>
-					<button
-						className={tab === "design" ? ui.active : undefined}
-						onClick={() => setTab("design")}
-					>
-						Design system
-					</button>
-					<button
-						className={tab === "graph" ? ui.active : undefined}
-						onClick={() => setTab("graph")}
-					>
-						token graph
-					</button>
-					<button
-						className={tab === "stats" ? ui.active : undefined}
-						onClick={() => setTab("stats")}
-					>
-						Stats
-					</button>
-					<button
-						className={tab === "usage" ? ui.active : undefined}
-						onClick={() => setTab("usage")}
-					>
-						Usage
-					</button>
-					<button
-						className={tab === "governance" ? ui.active : undefined}
-						onClick={() => setTab("governance")}
-					>
-						Governance
-					</button>
-					<button
-						className={tab === "history" ? ui.active : undefined}
-						onClick={() => setTab("history")}
-					>
-						History
-					</button>
-					<button onClick={refresh} disabled={loading} title="re-run analysis">
+				<nav className={ui.tabList} aria-label="Inspector views" role="tablist">
+					{INSPECTOR_TABS.map((tabId, index) => (
+						<button
+							key={tabId}
+							type="button"
+							id={`tab-${tabId}`}
+							role="tab"
+							aria-selected={tab === tabId}
+							aria-controls="studio-panel"
+							tabIndex={tab === tabId ? 0 : -1}
+							className={tab === tabId ? ui.active : undefined}
+							onClick={() => changeTab(tabId)}
+							onKeyDown={(event) => {
+								if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+								event.preventDefault();
+								const nextIndex =
+									event.key === "Home"
+										? 0
+										: event.key === "End"
+											? INSPECTOR_TABS.length - 1
+											: (index + (event.key === "ArrowRight" ? 1 : -1) + INSPECTOR_TABS.length) %
+												INSPECTOR_TABS.length;
+								const nextTab = INSPECTOR_TABS[nextIndex]!;
+								changeTab(nextTab);
+								document.getElementById(`tab-${nextTab}`)?.focus();
+							}}
+						>
+							{TAB_LABELS[tabId]}
+						</button>
+					))}
+				</nav>
+				<div className={ui.headerActions}>
+					<button type="button" onClick={refresh} disabled={loading} title="re-run analysis">
 						{loading ? "…" : "⟳ refresh"}
 					</button>
 					{data !== null && !loading && (
 						<details className={ui.exportMenu}>
-							<summary>⬇ export</summary>
+							<summary aria-label="Open export menu">⬇ export</summary>
 							<div className={ui.exportItems}>
 								{tab === "design" ? (
 									<>
 										<button
+											type="button"
+											aria-label="Download tokens as DTCG JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-tokens.json",
@@ -1531,6 +1924,8 @@ export function App() {
 											tokens — DTCG JSON
 										</button>
 										<button
+											type="button"
+											aria-label="Download theme variables as CSS"
 											onClick={() => {
 												InspectorExport.downloadFile(
 													"pandwind-theme-vars.css",
@@ -1544,6 +1939,8 @@ ${InspectorExport.themeVarsToCss(data)}}
 											theme vars — CSS
 										</button>
 										<button
+											type="button"
+											aria-label="Download utility unions as JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-unions.json",
@@ -1558,6 +1955,8 @@ ${InspectorExport.themeVarsToCss(data)}}
 								) : (
 									<>
 										<button
+											type="button"
+											aria-label="Download coverage as JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-coverage.json",
@@ -1569,6 +1968,21 @@ ${InspectorExport.themeVarsToCss(data)}}
 											coverage — JSON
 										</button>
 										<button
+											type="button"
+											aria-label="Download per-file coverage as CSV"
+											onClick={() =>
+												InspectorExport.downloadFile(
+													"pandwind-coverage.csv",
+													InspectorExport.coverageToCsv(data),
+													"text/csv",
+												)
+											}
+										>
+											per-file coverage — CSV
+										</button>
+										<button
+											type="button"
+											aria-label="Download coverage report as Markdown"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-report.md",
@@ -1580,6 +1994,8 @@ ${InspectorExport.themeVarsToCss(data)}}
 											report — Markdown
 										</button>
 										<button
+											type="button"
+											aria-label="Download coverage report as self-contained HTML"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-report.html",
@@ -1595,9 +2011,23 @@ ${InspectorExport.themeVarsToCss(data)}}
 							</div>
 						</details>
 					)}
-				</nav>
+				</div>
 			</header>
-			{body}
+			<div
+				id="studio-panel"
+				className={ui.tabPanel}
+				role="tabpanel"
+				aria-labelledby={`tab-${tab}`}
+				tabIndex={-1}
+				aria-busy={loading}
+			>
+				{loading && data !== null && (
+					<div className={ui.refreshing} role="status">
+						refreshing analysis…
+					</div>
+				)}
+				{body}
+			</div>
 		</main>
 	);
 }
