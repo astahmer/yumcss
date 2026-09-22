@@ -1,0 +1,5 @@
+{
+	"name": "@pandwind/playground-package-fixture",
+	"private": true,
+	"type": "module"
+}

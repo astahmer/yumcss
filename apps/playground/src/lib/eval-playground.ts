@@ -345,10 +345,12 @@ export interface PlaygroundStyleMapping {
 
 export const PLAYGROUND_EXECUTION_LANE = {
 	Sandbox: "sandbox",
+	PackageFixture: "package-fixture",
 } as const;
 
 export const PLAYGROUND_EXECUTION_SCOPE = {
 	BrowserEvaluator: "browser-evaluator",
+	ProjectPackage: "project-package",
 } as const;
 
 export const PLAYGROUND_EVIDENCE_CHECK = {
@@ -358,7 +360,8 @@ export const PLAYGROUND_EVIDENCE_CHECK = {
 	ProjectTypecheck: "project-typecheck",
 	ProjectBuild: "project-build",
 	BrowserHost: "browser-host",
-	SsrHydration: "ssr-hydration",
+	SsrBuild: "ssr-build",
+	Hydration: "hydration",
 } as const;
 
 export interface PlaygroundExecutionEvidence {
@@ -1551,7 +1554,8 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 				PLAYGROUND_EVIDENCE_CHECK.ProjectTypecheck,
 				PLAYGROUND_EVIDENCE_CHECK.ProjectBuild,
 				PLAYGROUND_EVIDENCE_CHECK.BrowserHost,
-				PLAYGROUND_EVIDENCE_CHECK.SsrHydration,
+				PLAYGROUND_EVIDENCE_CHECK.SsrBuild,
+				PLAYGROUND_EVIDENCE_CHECK.Hydration,
 			],
 			note: "This result runs in the browser sandbox; it does not execute a host project pipeline.",
 		},
