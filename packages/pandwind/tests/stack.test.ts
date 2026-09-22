@@ -324,6 +324,28 @@ describe("foldStackElements — vite fold pass", () => {
 		expect(stackFoldVite().transform(source, "/src/App.svelte")).toBeNull();
 	});
 
+	test("configured native folding uses the shared CSS engine", () => {
+		const source = "/src/App.svelte";
+		const engine = createPandwindEngineContext({
+			preset: examplePreset,
+			className: createNamedAtomsStrategy("app"),
+		});
+		const transformed = stackFoldVite({ engine }).transform(
+			`<Stack direction={{ base: "column", md: "row" }} gap={4} />`,
+			source,
+		);
+
+		expect(transformed?.code).toContain(
+			`<div class="app-display-flex app-flexDirection-column app-flexDirection__md-row app-gap-4px"></div>`,
+		);
+		expect(engine.preparedStyles.get(source)).toEqual([
+			{ key: "display", value: "flex", className: "app-display-flex" },
+			{ key: "flexDirection", value: "column", className: "app-flexDirection-column" },
+			{ key: "flexDirection__md", value: "row", className: "app-flexDirection__md-row" },
+			{ key: "gap", value: "4px", className: "app-gap-4px" },
+		]);
+	});
+
 	test("configured folding supports the renderer's `class` attribute spelling", () => {
 		const out = foldStackElements(`<Stack gap={4} />`, "solid.tsx", {
 			classAttribute: "class",
