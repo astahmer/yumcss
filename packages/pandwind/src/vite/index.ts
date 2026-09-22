@@ -208,11 +208,35 @@ const reportUnresolved = (id: string, unresolved: UnresolvedToken[], mode: OnUnr
 
 export function createInlineTwPluginCore(options: PandwindViteOptions = {}): InlineTwPluginCore {
 	const configCache = new Map<string, TwConfig>();
-	const transformCache = new Map<string, { result: { code: string; map: null } | null }>();
-	const cacheKeyFor = (id: string, code: string): string => `${id}\0${code}`;
-	const remember = (key: string, result: { code: string; map: null } | null): void => {
-		if (transformCache.size >= 2048) transformCache.clear();
-		transformCache.set(key, { result });
+	const transformCache = new Map<
+		string,
+		{ code: string; result: { code: string; map: null } | null }
+	>();
+	const transformCacheLimit = 2048;
+	const cachedTransform = (
+		id: string,
+		code: string,
+	): { code: string; map: null } | null | undefined => {
+		const cached = transformCache.get(id);
+		if (cached === undefined) return undefined;
+		if (cached.code !== code) {
+			transformCache.delete(id);
+			return undefined;
+		}
+		transformCache.delete(id);
+		transformCache.set(id, cached);
+		return cached.result;
+	};
+	const remember = (
+		id: string,
+		code: string,
+		result: { code: string; map: null } | null,
+	): void => {
+		transformCache.delete(id);
+		transformCache.set(id, { code, result });
+		if (transformCache.size <= transformCacheLimit) return;
+		const oldest = transformCache.keys().next().value;
+		if (oldest !== undefined) transformCache.delete(oldest);
 	};
 	const sourceWorkspace = createSourceWorkspace();
 
@@ -280,12 +304,11 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 		async transform(code: string, id: string, resolver?: Resolver) {
 			if (id.includes("node_modules")) return null;
 			if (options.exclude?.some((pattern) => pattern.test(id))) return null;
-			const cacheKey = cacheKeyFor(id, code);
-			const cached = transformCache.get(cacheKey);
-			if (cached !== undefined) return cached.result;
+			const cached = cachedTransform(id, code);
+			if (cached !== undefined) return cached;
 			if (!/\b(tw|cx)\b/.test(code)) {
 				const result = runtimePruner.transform(code, id);
-				remember(cacheKey, result);
+				remember(id, code, result);
 				return result;
 			}
 
@@ -299,13 +322,13 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				// css()/css.class() when the CSS lane is configured.
 				if (cssFold === undefined || cxImports.localNames.size === 0) {
 					const result = runtimePruner.transform(code, id);
-					remember(cacheKey, result);
+					remember(id, code, result);
 					return result;
 				}
 				const cssNames = cssSourceService.findCssImports(code, id, cssFold.cssSources);
 				if (cssNames.size === 0) {
 					const result = runtimePruner.transform(code, id);
-					remember(cacheKey, result);
+					remember(id, code, result);
 					return result;
 				}
 				const cssOnly = inlineCxCalls(code, id, { variants: {} }, cxImports.localNames, {
@@ -318,7 +341,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 					cssOnly.inlined === 0 && optimized === null
 						? null
 						: { code: optimized?.code ?? cssOnly.code, map: null };
-				remember(cacheKey, result);
+				remember(id, code, result);
 				return result;
 			}
 			if (resolver === undefined) return null;
@@ -393,9 +416,9 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 									unresolvedMode,
 								);
 							}
-							return { code: working, map: null } as const;
-						})();
-			remember(cacheKey, transformed);
+						return { code: working, map: null } as const;
+					})();
+			remember(id, code, transformed);
 			return transformed;
 		},
 		invalidate(file: string) {
