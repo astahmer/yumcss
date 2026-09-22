@@ -1900,24 +1900,27 @@ function CleanupReportView(props: { data: StudioPayload }) {
 					zero reachable usage after alias/composition/generated-artifact/export analysis — safety
 					is a classification, not a deletion approval.
 				</p>
-				<table>
-					<thead>
-						<tr>
-							<th>token</th>
-							<th>safety</th>
-							<th>reasons / boundaries</th>
-						</tr>
-					</thead>
-					<tbody>
-						{unused.map((c: UnusedTokenCandidate) => (
-							<tr key={c.tokenId}>
-								<td>{stripDollar(authoredTokenSpelling(c.tokenId))}</td>
-								<td style={{ color: SAFETY_COLOR[c.safety] }}>{c.safety}</td>
-								<td>{c.reasons.join("; ") || "—"}</td>
+				<details className={ui.unknownTokens}>
+					<summary>show {unused.length} cleanup candidates</summary>
+					<table>
+						<thead>
+							<tr>
+								<th>token</th>
+								<th>safety</th>
+								<th>reasons / boundaries</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{unused.map((c: UnusedTokenCandidate) => (
+								<tr key={c.tokenId}>
+									<td>{stripDollar(authoredTokenSpelling(c.tokenId))}</td>
+									<td style={{ color: SAFETY_COLOR[c.safety] }}>{c.safety}</td>
+									<td>{c.reasons.join("; ") || "—"}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</details>
 			</section>
 			{suggestions.length > 0 && (
 				<section>
