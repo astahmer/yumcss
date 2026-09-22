@@ -83,6 +83,10 @@ const sourceId = (id: string): string => id.split(/[?#]/u, 1)[0]!;
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
+const STACK_DIRECTIONS = new Set(["row", "column", "row-reverse", "column-reverse"]);
+const STACK_ALIGNS = new Set(["start", "center", "end", "stretch", "baseline"]);
+const STACK_JUSTIFIES = new Set(["start", "center", "end", "between", "around", "evenly"]);
+
 const isResponsiveValue = (value: unknown, leaf: (value: unknown) => boolean): boolean => {
 	if (!isPlainObject(value)) return leaf(value);
 	const entries = Object.entries(value);
@@ -96,15 +100,12 @@ const isResponsiveValue = (value: unknown, leaf: (value: unknown) => boolean): b
 
 const isStackProps = (value: unknown): value is StackProps => {
 	if (!isPlainObject(value)) return false;
-	const directions = ["row", "column", "row-reverse", "column-reverse"];
-	const aligns = ["start", "center", "end", "stretch", "baseline"];
-	const justifies = ["start", "center", "end", "between", "around", "evenly"];
 	return Object.entries(value).every(([name, propValue]) => {
 		switch (name) {
 			case "direction":
 				return isResponsiveValue(
 					propValue,
-					(leaf) => typeof leaf === "string" && directions.includes(leaf),
+					(leaf) => typeof leaf === "string" && STACK_DIRECTIONS.has(leaf),
 				);
 			case "gap":
 			case "padding":
@@ -117,12 +118,12 @@ const isStackProps = (value: unknown): value is StackProps => {
 			case "align":
 				return isResponsiveValue(
 					propValue,
-					(leaf) => typeof leaf === "string" && aligns.includes(leaf),
+					(leaf) => typeof leaf === "string" && STACK_ALIGNS.has(leaf),
 				);
 			case "justify":
 				return isResponsiveValue(
 					propValue,
-					(leaf) => typeof leaf === "string" && justifies.includes(leaf),
+					(leaf) => typeof leaf === "string" && STACK_JUSTIFIES.has(leaf),
 				);
 			default:
 				return false;
