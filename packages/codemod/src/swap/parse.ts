@@ -31,6 +31,7 @@ import {
 	suggestionLookup,
 	type GovernanceSuggestionInput,
 } from "./tokens.ts";
+import { variantPathForKey } from "./variant-hoisting.ts";
 
 const enum LiteralParserValueTag {
 	Dynamic = "dynamic",
@@ -324,12 +325,6 @@ function splitFlatKey(key: string): { conditions: string[]; prop: string } {
 	};
 }
 
-/** Is this tw object key a variant (recursable) rather than a utility? */
-function isVariantKey(meta: PandwindMeta, key: string): boolean {
-	if (meta.variants.has(key) || key === "*" || key === "**") return true;
-	return /^(?:group|peer)-(?:data|aria)-\[/.test(key);
-}
-
 /* ------------------------------------------------------------------ */
 /* tw() parser                                                         */
 /* ------------------------------------------------------------------ */
@@ -386,7 +381,8 @@ function walkTwEntries(
 	_missResolver?: (utilityClass: string) => readonly { prop: string; value: string }[] | null,
 ): void {
 	for (const { key, value } of obj.keys) {
-		if (isVariantKey(meta, key)) {
+		const variantPath = variantPathForKey(meta, key);
+		if (variantPath !== undefined) {
 			if (typeof value !== "object" || value === null || Array.isArray(value)) {
 				ir.residuals.push({
 					kind: SwapResidualKindTag.Dynamic,
@@ -395,7 +391,7 @@ function walkTwEntries(
 				});
 				continue;
 			}
-			walkTwEntries(meta, value, [...conditions, key], ir, _missResolver);
+			walkTwEntries(meta, value, [...conditions, ...variantPath], ir, _missResolver);
 			continue;
 		}
 		const parts = Array.isArray(value) ? value : [value];

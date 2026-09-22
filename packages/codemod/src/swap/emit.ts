@@ -30,6 +30,11 @@ import type { StyleProgram } from "./semantic-ir.ts";
 import type { AdapterCapabilities, AdapterCapabilityReport } from "./capabilities.ts";
 import { CSS_PROPERTY_ALIASES } from "./property-aliases.ts";
 import { CodemodAdapterId } from "./identifiers.ts";
+import {
+	normalizeVariantPath,
+	variantKeyForTarget,
+	variantPathForKey,
+} from "./variant-hoisting.ts";
 
 export interface EmitterContext {
 	/** 1-based ordinal of the call site within the current file pass. */
@@ -212,10 +217,8 @@ function renderInlineScopes(scopes: Array<Scope>, sort = false): string {
 		for (const [condition, child] of [...node.children.entries()].toSorted(([a], [b]) =>
 			a.localeCompare(b),
 		)) {
-			const key =
-				condition.startsWith("&") || condition.startsWith("@")
-					? JSON.stringify(condition)
-					: `_${condition}`;
+			const variantKey = variantKeyForTarget(condition, "design");
+			const key = /^[A-Za-z_$][\w$]*$/u.test(variantKey) ? variantKey : JSON.stringify(variantKey);
 			parts.push(`${key}: { ${renderNode(child)} }`);
 		}
 		return parts.join(", ");
@@ -297,12 +300,6 @@ function forwardIndex(meta: PandwindMeta): Map<string, string> {
 	return index;
 }
 
-const DATA_ARIA_VARIANT = /^(?:group|peer)-(?:data|aria)-\[/;
-
-function isKnownVariant(meta: PandwindMeta, name: string): boolean {
-	return meta.variants.has(name) || DATA_ARIA_VARIANT.test(name) || name === "*" || name === "**";
-}
-
 const dashedProperty = (property: string): string =>
 	property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
@@ -358,10 +355,14 @@ type TwTree = Map<string, TwTree | TwSlot[]>;
 
 function insertIntoTree(meta: PandwindMeta, tree: TwTree, entry: SwapEntry): string | null {
 	let node = tree;
-	for (const condition of entry.conditions) {
-		if (!isKnownVariant(meta, condition)) {
-			return `variant "${condition}" is not a generated tw variant`;
-		}
+	const conditions = normalizeVariantPath(meta, entry.conditions);
+	if (conditions === undefined) {
+		const unknown = entry.conditions.find(
+			(condition) => variantPathForKey(meta, condition) === undefined,
+		);
+		return `variant "${unknown ?? "unknown"}" is not a generated tw variant`;
+	}
+	for (const condition of conditions) {
 		let child = node.get(condition);
 		if (child === undefined || Array.isArray(child)) {
 			child = new Map();
@@ -789,7 +790,7 @@ function emitDesignVocabWithCallee(
 		if (modules.length === 0) continue;
 		let body = modules.join(", ");
 		for (let i = conditions.length - 1; i >= 0; i--) {
-			body = `_${conditions[i]}: { ${body} }`;
+			body = `${variantKeyForTarget(conditions[i]!, "design")}: { ${body} }`;
 		}
 		parts.push(body);
 	}
