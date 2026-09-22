@@ -1,8 +1,10 @@
 import { define } from "../types/define-preset.export.ts";
-import type { CssVariables, TokenGroupKey } from "../types/typings.ts";
+import type { CssVariables } from "../types/typings.ts";
 import { presetConditions } from "./conditions.ts";
 import { shadcnTheme } from "./generated/shadcn-theme.ts";
-import { presetProperties, type PandwindProperties } from "./properties.ts";
+import type { PandwindProperties } from "./properties.ts";
+import { shadcnPreset as defaultShadcnPreset } from "./shadcn-default.ts";
+import { createShadcnProperties } from "./shadcn-properties.ts";
 
 /** A base color the shadcn registry publishes values for. */
 export type ShadcnBaseColor = (typeof shadcnTheme.baseColorNames)[number];
@@ -42,14 +44,6 @@ export type ShadcnColorRole = Exclude<keyof ShadcnBaseColorLightVariables, "radi
 type ShadcnColorToken = { readonly base: string; readonly _dark: string };
 
 type ShadcnColorTokens = Record<`$${ShadcnColorRole}`, ShadcnColorToken>;
-
-type ShadcnTokenGroups = {
-	readonly colors: ShadcnColorTokens;
-	readonly radii: typeof shadcnTheme.radiusMultipliers;
-	readonly fonts: Readonly<Record<string, string>>;
-};
-
-type ShadcnTokenGroup = TokenGroupKey<ShadcnTokenGroups>;
 
 /**
  * Everything a shadcn project selects on the create page, plus the pointer
@@ -93,13 +87,6 @@ export interface ShadcnDeclarations {
 	readonly pointerCss: string | undefined;
 }
 
-const baseColorNames: ReadonlySet<string> = new Set(shadcnTheme.baseColorNames);
-const themeNames: ReadonlySet<string> = new Set(shadcnTheme.themeNames);
-const unsupportedNames: ReadonlySet<string> = new Set([
-	...shadcnTheme.unsupportedBaseColors,
-	...shadcnTheme.unsupportedThemes,
-]);
-
 /** The chart roles the create page's chart color overrides. */
 const chartRoles = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"] as const;
 
@@ -120,8 +107,10 @@ const readVariable = (variables: Readonly<Record<string, string>>, name: string)
  */
 export const shadcnThemesForBaseColor = (
 	baseColor: ShadcnBaseColor,
-): ReadonlyArray<ShadcnThemeName> =>
-	shadcnTheme.themeNames.filter((name) => name === baseColor || !baseColorNames.has(name));
+): ReadonlyArray<ShadcnThemeName> => {
+	const baseColorNames: ReadonlySet<string> = new Set(shadcnTheme.baseColorNames);
+	return shadcnTheme.themeNames.filter((name) => name === baseColor || !baseColorNames.has(name));
+};
 
 // The create page derives this from the selected style on render and rewrites
 // the query string so the built config carries the coerced radius. Resolving it
@@ -136,6 +125,12 @@ const radiusForStyle = (style: ShadcnStyleName, radius: ShadcnRadiusName): Shadc
 const assertSupported = (
 	selection: Pick<ShadcnConfig, "baseColor" | "theme" | "chartColor">,
 ): void => {
+	const baseColorNames: ReadonlySet<string> = new Set(shadcnTheme.baseColorNames);
+	const themeNames: ReadonlySet<string> = new Set(shadcnTheme.themeNames);
+	const unsupportedNames: ReadonlySet<string> = new Set([
+		...shadcnTheme.unsupportedBaseColors,
+		...shadcnTheme.unsupportedThemes,
+	]);
 	if (unsupportedNames.has(selection.baseColor) || !baseColorNames.has(selection.baseColor))
 		throw new Error(
 			`shadcn publishes no values for the "${selection.baseColor}" base color; choose one of ${shadcnTheme.baseColorNames.join(", ")}.`,
@@ -328,15 +323,6 @@ const shadcnTokenVariables = (config: ShadcnConfig) => ({
 	fonts: Object.fromEntries(Object.keys(fontTokens(config)).map((name) => [name, `font-${name}`])),
 });
 
-// Bound scales are token-only by default. Use `$raw` at a call site for a
-// one-off authored value, or `$strict: false` only for an intentionally open
-// application-owned property map.
-const boundTo = <const TGroup extends ShadcnTokenGroup>(group: TGroup) => ({
-	$tokens: group,
-});
-const strictBoundTo = <const TGroup extends ShadcnTokenGroup>(group: TGroup) =>
-	({ $tokens: group, $strict: true }) as const;
-
 /**
  * Property vocabulary of {@link shadcnPreset}.
  *
@@ -348,32 +334,10 @@ const strictBoundTo = <const TGroup extends ShadcnTokenGroup>(group: TGroup) =>
  * @category presets
  * @since 0.1.0
  */
-export const shadcnProperties = define.properties({
-	...presetProperties,
-	fontFamily: boundTo("fonts"),
-	borderRadius: boundTo("radii"),
-	borderTopLeftRadius: boundTo("radii"),
-	borderTopRightRadius: boundTo("radii"),
-	borderBottomLeftRadius: boundTo("radii"),
-	borderBottomRightRadius: boundTo("radii"),
-	borderStartStartRadius: boundTo("radii"),
-	borderStartEndRadius: boundTo("radii"),
-	borderEndStartRadius: boundTo("radii"),
-	borderEndEndRadius: boundTo("radii"),
-	color: strictBoundTo("colors"),
-	background: strictBoundTo("colors"),
-	backgroundColor: strictBoundTo("colors"),
-	borderColor: strictBoundTo("colors"),
-	borderTopColor: strictBoundTo("colors"),
-	borderRightColor: strictBoundTo("colors"),
-	borderBottomColor: strictBoundTo("colors"),
-	borderLeftColor: strictBoundTo("colors"),
-	borderInlineEndColor: strictBoundTo("colors"),
-	outlineColor: strictBoundTo("colors"),
-	textDecorationColor: strictBoundTo("colors"),
-	textEmphasisColor: strictBoundTo("colors"),
-	fill: strictBoundTo("colors"),
-	stroke: strictBoundTo("colors"),
+export const shadcnProperties = /* @__PURE__ */ createShadcnProperties({
+	colors: "colors",
+	radii: "radii",
+	fonts: "fonts",
 });
 
 /** The inferred property-vocabulary type of {@link shadcnProperties}. */
@@ -389,7 +353,7 @@ export type ShadcnProperties = typeof shadcnProperties;
  * @category presets
  * @since 0.1.0
  */
-export const shadcnConditions = define.conditions({ ...presetConditions });
+export const shadcnConditions = /* @__PURE__ */ define.conditions({ ...presetConditions });
 
 /** The inferred condition-key type of {@link shadcnConditions}. */
 export type ShadcnConditions = typeof shadcnConditions;
@@ -468,7 +432,7 @@ export const createShadcnPreset = (options: ShadcnPresetOptions = {}) =>
  * @since 0.1.0
  * @see {@link https://ui.shadcn.com/create | shadcn create}
  */
-export const shadcnPreset = createShadcnPreset();
+export const shadcnPreset = defaultShadcnPreset;
 
 /** The inferred type of {@link shadcnPreset} and {@link createShadcnPreset}. */
 export type ShadcnPreset = typeof shadcnPreset;

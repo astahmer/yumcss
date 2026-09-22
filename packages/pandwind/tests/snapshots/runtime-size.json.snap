@@ -20,8 +20,8 @@
     "gz": 14503
   },
   "createCss(shadcnPreset)": {
-    "min": 87205,
-    "gz": 16675
+    "min": 34318,
+    "gz": 11033
   },
   "createCss(pandaPreset)": {
     "min": 46337,
@@ -44,12 +44,12 @@
     "gz": 11384
   },
   "createCss(fixturePreset) + cx()": {
-    "min": 36279,
-    "gz": 13024
+    "min": 36276,
+    "gz": 13025
   },
   "createCss(fixturePreset) + tw() + cx()": {
-    "min": 38958,
-    "gz": 13991
+    "min": 38953,
+    "gz": 13987
   },
   "createUnsafeCss(), fallback": {
     "min": 11723,
@@ -120,20 +120,20 @@
     "gz": 1314
   },
   "cx, plain": {
-    "min": 7027,
+    "min": 7023,
     "gz": 3008
   },
   "cx": {
-    "min": 18659,
-    "gz": 7242
+    "min": 18655,
+    "gz": 7234
   },
   "all (createUnsafeCss+tw+cx)": {
-    "min": 21351,
-    "gz": 8208
+    "min": 21346,
+    "gz": 8201
   },
   "stylesheet generator (build-time only)": {
-    "min": 24998,
-    "gz": 9459
+    "min": 28617,
+    "gz": 10547
   },
   "unsafe css subpath only": {
     "min": 11731,
@@ -144,7 +144,7 @@
     "gz": 1314
   },
   "root barrel, cx + unsafe css": {
-    "min": 18659,
-    "gz": 7271
+    "min": 18655,
+    "gz": 7263
   }
 }

@@ -56,6 +56,7 @@ import {
 } from "../src/preset/shadcn.ts";
 import {
 	renderShadcnPresetModule,
+	shadcnDefaultThemeModulePath,
 	shadcnPresetModulePath,
 } from "../../../scripts/promote-shadcn-preset.ts";
 import {
@@ -153,9 +154,11 @@ describe("shadcn preset data", () => {
 		"the checked-in data matches a fresh render of the pinned checkout",
 		async () => {
 			const checkedIn = readFileSync(shadcnPresetModulePath, "utf8");
+			const defaultCheckedIn = readFileSync(shadcnDefaultThemeModulePath, "utf8");
 			const rendered = await renderShadcnPresetModule();
 
 			expect(checkedIn).toBe(rendered.contents);
+			expect(defaultCheckedIn).toBe(rendered.defaultContents);
 			expect(rendered.version).toBe(shadcnTheme.version);
 		},
 	);
@@ -274,6 +277,10 @@ describe("shadcn preset parity with the create page", () => {
 		expect(config.fontHeading).toBe(shadcnTheme.defaults.fontHeading);
 		expect(config.menuAccent).toBe(shadcnTheme.defaults.menuAccent);
 		expectCreatePageEnvironment({});
+	});
+
+	test("the default-only preset matches the configurable default", () => {
+		expect(shadcnPreset).toEqual(createShadcnPreset());
 	});
 
 	test("every base color reproduces the create page's variables", () => {
