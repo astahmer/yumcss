@@ -1,0 +1,77 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"reference": {
+		"repository": "https://github.com/johanholmerin/style9",
+		"commit": "b0657ddb3cd24434a6a59db9c2e22cbedf5e6f42",
+		"sourceEntry": "examples/nextjs/shared/styles.js"
+	},
+	"route": {
+		"from": "style9",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"files": [
+			"src/App.tsx",
+			"src/main.tsx",
+			"src/entry-server.tsx",
+			"vite.config.ts"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 2,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 209,
+			"targetBytes": 209,
+			"differences": []
+		},
+		"targetUsesPandwind": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "rgb(0, 0, 0)|16px|16px|240px",
+				"hover": "rgb(0, 0, 0)|16px|16px|240px"
+			},
+			"target": {
+				"base": "rgb(0, 0, 0)|16px|16px|240px",
+				"hover": "rgb(0, 0, 0)|16px|16px|240px"
+			}
+		},
+		"hydrationErrors": []
+	},
+	"css": {
+		"sourceBytes": 428,
+		"targetBytes": 310,
+		"targetNotLarger": true,
+		"comparison": "comparable"
+	}
+}

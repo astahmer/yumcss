@@ -1,9 +1,9 @@
-# Fixture-only adapter proof plan
+# Installed-project adapter proof plan
 
 This is the executable backlog behind
 [`real-browser-ssr-proof-matrix.json`](./real-browser-ssr-proof-matrix.json).
-It replaces the phrase “add installed proof” with one pinned source, one host
-shape, one runner, and one acceptance record per adapter. A row is complete
+It originally tracked fixture-only adapters; it now records the pinned source,
+host shape, runner, and acceptance record for every promoted web lane. A row is complete
 only when its runner writes `plans/evidence/<id>-installed-proof.json` and the
 report contains the required dimensions below.
 
@@ -35,26 +35,132 @@ The codemod route remains conservative: a residual is a failed proof until the
 fixture proves that the residual is intentional and the route policy records
 that exception. No snapshot refresh can make an unproved route pass.
 
-## Rows to promote
+## Promoted rows
 
-| Adapter           | Pinned source and entry                                                                                                               | Host and exact runner                                                                                                                                 | Required proof state                                                                                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `vanilla-extract` | `vanilla-extract-example` at `881c256a867f55386f96a7fe95068300bac720e6`; `examples/next/components/HelloWorld.css.ts`                 | Next host copied from `examples/next`; add `scripts/promote-vanilla-extract.ts` and run `pnpm run pivot:proof:installed:vanilla-extract`              | `tsc`, `next build`, `/`, `/about` browser states, SSR/hydration, extracted CSS bytes; fail on the current 2 configuration residuals until config loading is proven |
-| `stitches`        | `stitches-react-test` at `50fd8a1adc6360340fe348a8b3ebc8b06d38e230`; `packages/core/tests/basic.js`                                   | Create a disposable React/Vite host around the pinned `@stitches/react` test API; `scripts/promote-stitches.ts`                                       | `tsc`, Vite build, one SSR render, base/hover browser states, extracted source CSS vs target CSS; preserve media/pseudo residuals                                   |
-| `linaria`         | `linaria-solid-example` at `41d201d45aa7c64aa0f2bd3148ec919c8e1f54eb`; `examples/astro-solid/pages/csr.tsx`                           | Use the existing Astro/Solid example and add `scripts/promote-linaria-solid.ts`                                                                       | Astro build, browser `/`, SSR HTML where Astro exposes it, hydration error check, generated CSS byte comparison                                                     |
-| `mantine`         | `mantine-style-props` at `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8`; `apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx`   | Promote the existing help app as a Next host; `scripts/promote-mantine.ts`                                                                            | installed `@mantine/core`/emotion dependencies, typecheck/build, one docs route plus a style-prop route, SSR/hydration, CSS size                                    |
-| `mui`             | `mui-box-sx` at `fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4`; `docs/data/material/components/box/BoxSx.tsx`                             | Extract the docs example into a disposable React/Vite host while retaining installed `@mui/material` and Emotion; `scripts/promote-mui.ts`            | typecheck/build, SSR `renderToString`, browser base/hover/media states, Emotion source CSS vs Pandwind CSS size                                                     |
-| `next-yak`        | `next-yak-benchmark-realistic-button` at `3dee1bc32e651ace01c5e4d9306c541337d0c1ce`; `techs/next-yak/case/realistic-button/index.tsx` | Use the benchmark's Next host; `scripts/promote-next-yak.ts`                                                                                          | Next typecheck/build, `/` SSR/RSC response, hydration, browser button states, emitted CSS size                                                                      |
-| `jss`             | `jss-nested-benchmark` at `901882a894c7e802450696ebe2ea633ae63c5977`; `examples/inline/app.js`                                        | Add a minimal React/Vite shell that imports the pinned JSS renderer; `scripts/promote-jss.ts`                                                         | installed JSS typecheck/build, SSR style-tag capture, browser nested/hover states, source style-tag bytes vs target CSS                                             |
-| `fela`            | `fela-render-test` at `6883525fa44c2c47d0d93768eb26f072fee3c439`; `packages/fela-dom/src/dom/__tests__/render-test.js`                | Wrap the pinned Fela DOM renderer in a React/Vite host; `scripts/promote-fela.ts`                                                                     | typecheck/build, SSR renderer output, browser pseudo/hover state, hydration errors, CSS size                                                                        |
-| `aphrodite`       | `aphrodite-api-test` at `225f43c5802259a9e042b384a1f4f2e5b48094ea`; `tests/index_test.js`                                             | Use a React/Vite host with installed Aphrodite injection; `scripts/promote-aphrodite.ts`                                                              | typecheck/build, SSR extracted style tags, browser base/hover state, hydration, CSS size                                                                            |
-| `style9`          | `style9-next-styles` at `b0657ddb3cd24434a6a59db9c2e22cbedf5e6f42`; `examples/nextjs/shared/styles.js`                                | Use the pinned Next example; `scripts/promote-style9.ts`                                                                                              | Next typecheck/build, `/` SSR/RSC, browser responsive states, CSS size; keep the existing linked-CSS semantics                                                      |
-| `treat`           | `treat-button` at `1cc001170ee6b66b1d960ac4097fb84597163d1c`; `examples/gatsby-plugin-treat-example/src/components/Button.treat.js`   | Promote the Gatsby example with its official plugin; `scripts/promote-treat.ts`                                                                       | Gatsby build, browser route, SSR HTML/style extraction, hydration if the host hydrates, CSS size                                                                    |
-| `compiled`        | `compiled-vite-example` at `0f5d2b606471b9fb92c2402d5367c3c23efd1a29`; `fixtures/parcel-optimizer-test-app/src/index.jsx`             | Use the fixture's Vite/Parcel host; `scripts/promote-compiled.ts`                                                                                     | official transform/build, browser state, SSR only if the host has a server entry, CSS size plus inline-style accounting                                             |
-| `solid-styled`    | `solid-styled-runtime` at `b798a6d91a02450f3649365a3cdb27a282f4b37d`; `test/test.spec.tsx`                                            | Use the pinned Solid test host with a browser build; `scripts/promote-solid-styled.ts`                                                                | Solid typecheck/build, browser base/hover states, SSR if the package's Solid server renderer is present, generated CSS size                                         |
-| `vue-styled`      | `vue-styled-css-test` at `5874630ed4d54aa955052fc864140eeae30fad2c`; `packages/playground/src/App.vue`                                | Use the pinned Vue playground/Vite host; `scripts/promote-vue-styled.ts`                                                                              | Vue typecheck/build, browser route and hydration, SSR only when the host has `@vue/server-renderer`, CSS size                                                       |
-| `tokenami`        | `tokenami-nextjs-button` at `29cf3b97ef14b22421734113f37b7b29e73f35e0`; `examples/nextjs/src/components/button.tsx`                   | Use the pinned Next example; `scripts/promote-tokenami.ts`                                                                                            | Next typecheck/build, `/` SSR/RSC, hydration, browser token/variant states, target CSS not larger                                                                   |
-| `unocss`          | `unocss-nextjs-page` at `75103d5e12ec9876069daf6b97a7db1d73428829`; `examples/next/app/page.tsx`                                      | Extend `scripts/promote-unocss-fixture.ts` into `scripts/promote-unocss-next.ts`; use the official UnoCSS config/generator and the existing Next host | Next typecheck/build, `/` SSR/RSC, hydration, browser base/hover/responsive states, generated CSS size                                                              |
+`vanilla-extract` is now covered by the pinned installed-project runner
+`scripts/promote-vanilla-extract.ts` and
+`plans/evidence/vanilla-extract-installed-proof.json`. The proof uses the
+upstream `HelloWorld.css.ts` example at
+`881c256a867f55386f96a7fe95068300bac720e6`, preserves typed custom
+properties, fallback variables, and keyframes, and passes typecheck, build,
+SSR, hydration, and base/hover browser parity. Its tiny CSS byte comparison
+is intentionally diagnostic: fused source CSS and Pandwind atomic runtime CSS
+are different representations, so the route does not claim non-growth from
+that fixture.
+
+Stitches is now covered by the pinned installed-project runner
+scripts/promote-stitches.ts and
+plans/evidence/stitches-installed-proof.json. The proof exercises the
+upstream Stitches React API with theme tokens, a variant recipe, and a hover
+pseudo-condition, then checks typecheck, build, SSR, hydration, browser parity,
+and canonical CSS. Its source sheet is fused while the target is atomic, so the
+CSS byte comparison is useful for this fixture but is not a universal size
+claim.
+
+MUI is now covered by the pinned installed-project runner
+scripts/promote-mui.ts and plans/evidence/mui-installed-proof.json. The proof
+uses the upstream Box sx example as its source reference, proves static system
+values and a hover condition through the installed React/Vite host, and passes
+typecheck, build, SSR, hydration, generated atomic CSS, and browser parity.
+ThemeProvider-owned callbacks, responsive arrays, and component theme overrides
+remain explicit residual territory.
+
+Mantine is now covered by the pinned installed-project runner
+scripts/promote-mantine.ts and plans/evidence/mantine-installed-proof.json. The
+proof uses the upstream help-center style-prop surface as its source reference,
+exercises an installed MantineProvider plus a real Box with static `c`, `bg`,
+`p`, `bdrs`, and `fw` props, and passes typecheck, build, SSR, hydration,
+atomic CSS generation, and base/hover browser parity. Provider-owned theme
+callbacks, styles/classNames/vars maps, and responsive style-prop objects remain
+explicit residual territory.
+
+Tokenami is now covered by the pinned installed-project runner
+`scripts/promote-tokenami.ts` and
+`plans/evidence/tokenami-installed-proof.json`. The proof uses the upstream
+`css.compose` button example at
+`29cf3b97ef14b22421734113f37b7b29e73f35e0`, exercises encoded aliases, grid
+values, verified theme-variable resolution, and hover conditions, and passes
+typecheck, build, SSR, hydration, canonical CSS, atomic CSS generation, and
+browser parity. The target is smaller for this fixture because it inlines only
+the theme values actually used instead of retaining Tokenami's full generated
+theme/reset sheet; runtime composition, theme-mode switching, and global rules
+remain explicit residual territory.
+
+UnoCSS now also has a real upstream Next proof in
+`scripts/promote-unocss-next.ts` and
+`plans/evidence/unocss-next-installed-proof.json`. It uses the pinned upstream
+Next page at `75103d5e12ec9876069daf6b97a7db1d73428829`, loads the official
+UnoCSS PostCSS generator during migration, then removes the UnoCSS config,
+plugin bridge, and direct dependencies from the target. The target passes
+typecheck, Next Webpack build, HTTP route checks, RSC streaming, browser text
+parity, and canonical CSS equality; CSS falls from 5,462 to 2,647 bytes. The
+proof uses Next 16's Webpack mode because the generated Pandwind integration is
+a Webpack plugin in this host; the existing Vite proof remains the browser
+pixel-parity check for UnoCSS hover and responsive states.
+
+JSS is now covered by the shared installed CSS-in-JS runner
+`scripts/promote-css-in-js.ts jss` and
+`plans/evidence/jss-installed-proof.json`. It uses the pinned JSS inline example
+at `901882a894c7e802450696ebe2ea633ae63c5977`, installs the official nested and
+camel-case plugins, and proves static sheet creation, attachment, SSR, hydration,
+and browser parity. Dynamic rule values, plugin-specific runtime behavior, and
+non-static renderer inputs remain explicit residual territory; the source-sheet
+versus atomic-CSS byte comparison is diagnostic rather than a universal budget.
+
+Fela is now covered by `scripts/promote-css-in-js.ts fela` and
+`plans/evidence/fela-installed-proof.json`. It uses the pinned Fela DOM render
+test, proves a static `renderRule` with empty props, hover output, SSR,
+hydration, and browser parity. Dynamic props, enhancers, plugins, and
+renderer-owned component options remain explicit residual territory.
+
+Aphrodite is now covered by `scripts/promote-css-in-js.ts aphrodite` and
+`plans/evidence/aphrodite-installed-proof.json`. It uses the pinned Aphrodite
+API test, proves `StyleSheet.create` plus `css`, server CSS collection, SSR,
+hydration, and base/hover browser parity. Dynamic style arrays, keyframes,
+font-face, and runtime-specific injection options remain explicit residual
+territory.
+
+Compiled is now covered by `scripts/promote-css-in-js.ts compiled` and
+`plans/evidence/compiled-installed-proof.json`. It uses the pinned Atlassian
+Compiled Vite fixture, proves the official Vite plugin, `styled`, `cssMapScoped`,
+SSR, hydration, browser parity, and inline-style-aware CSS accounting. The
+fixture is typechecked with the published package's intentional `cssMapScoped`
+root-type gap preserved as a narrow proof shim; plugin-specific transforms,
+dynamic style expressions, and broader CSS-map runtime semantics remain explicit
+residual territory.
+
+Style9 and Next-yak are now covered by the shared installed runner through
+`scripts/promote-css-in-js.ts style9` and `scripts/promote-css-in-js.ts
+next-yak`, with reports in `plans/evidence/style9-installed-proof.json` and
+`plans/evidence/next-yak-installed-proof.json`. The proofs use pinned upstream
+examples, pass typecheck, build, SSR, hydration, and browser parity, and record
+their static versus runtime CSS accounting. Style9's dynamic style-map
+expressions and Next-yak's nested dynamic template composition remain explicit
+residual territory.
+
+Linaria, Treat, Solid Styled, and Vue Styled now have installed-project proofs
+as well. `scripts/promote-framework-css-in-js.ts` covers the pinned Astro/Solid,
+Solid test-host, and Vue SFC examples; `scripts/promote-treat.ts` uses Treat's
+official Webpack compiler for the source copy and Pandwind's Vite integration
+for the target. Their reports are `linaria-installed-proof.json`,
+`solid-styled-installed-proof.json`, `vue-styled-installed-proof.json`, and
+`treat-installed-proof.json`. Each passes canonical migration, dependency
+installation, typecheck, build, SSR, hydration, and base/hover browser parity.
+Linaria and Treat record diagnostic CSS-size comparisons where the runtime
+carrier is larger than the source compiler's extracted stylesheet; this is
+visible evidence, not a waived failure. Dynamic theme APIs, nested templates,
+framework macros, and other unsupported host semantics remain residual work.
+
+## Web rows now promoted
+
+The six previously queued web rows are now registered as experimental
+installed-project routes in `packages/codemod/src/swap/route-proof-catalog.ts`.
+Run `pnpm run pivot:proof:installed:routes` for the read-only gate, or
+`pnpm run pivot:proof:installed:routes:run` to rebuild every route report.
+
+The only remaining shape in this plan is React Native, because its Metro and
+`react-native-web` proof cannot honestly share the web CSS/DOM acceptance
+contract below.
 
 ## React Native is a separate proof shape
 
@@ -81,17 +187,13 @@ target backends.
 
 The promotion order minimizes new runner code:
 
-1. Promote `unocss`, `tokenami`, `mantine`, and `mui` through the existing Next
-   host proof because their reference entries already expose application code.
-2. Extract the shared React/Vite SSR/browser/CSS harness used by `jss`, `fela`,
-   `aphrodite`, `stitches`, and `compiled`; each adapter runner supplies only
-   its source entry and official build command.
-3. Promote `vanilla-extract`, `style9`, `next-yak`, and the Solid/Vue rows with
-   their native host build plugins.
-4. Add the explicit React Native web/Metro report shape.
-5. Update `fixtureOnlyAdapters` only after `pnpm run proof:docs:check` sees the
-   corresponding JSON evidence and the route catalog evaluates every required
-   dimension as passed or explicitly not-applicable.
+1. Keep the shared installed runners deterministic and rerun them when adapter
+   or host semantics change; the 19 web routes now share the route gate and
+   record adapter-specific CSS accounting.
+2. Add the explicit React Native web/Metro report shape.
+3. Update the documentation matrix only when a route has a real project claim;
+   installed-project evidence and broad documentation migrations remain separate
+   proof tiers.
 
 Each row has one bounded command, one pinned input, and one report path. This is
 enough to implement and review the work without treating a broad “run more
@@ -121,11 +223,9 @@ Use these exact catalog ids when preparing the rows:
   is intentionally a checked-in local fixture with `react-native-web` and
   Metro, so it must not be blocked on an external repository.
 
-UnoCSS already has a complete installed-project fixture at
-`plans/evidence/unocss-installed-proof.json` and passes
-`pnpm run pivot:proof:installed:routes`. The remaining UnoCSS task is the
-upstream `unocss/examples/next` promotion in the table, which upgrades the
-evidence from a generated fixture to a pinned real project. StyleX is already
+UnoCSS has both the bounded installed fixture at
+`plans/evidence/unocss-installed-proof.json` and the pinned upstream Next proof
+at `plans/evidence/unocss-next-installed-proof.json`. StyleX is already
 represented by the `stylex-docs` and `astryx-docsite` claims below; its open
 item is route breadth, not a missing typecheck/build/browser proof.
 

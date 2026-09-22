@@ -1,0 +1,79 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"reference": {
+		"repository": "https://github.com/solidjs/solid-styled-components",
+		"commit": "b798a6d91a02450f3649365a3cdb27a282f4b37d",
+		"sourceEntry": "test/test.spec.tsx"
+	},
+	"route": {
+		"from": "solid-styled",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"files": [
+			"src/App.tsx",
+			"vite.config.ts"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 5,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 379,
+			"targetBytes": 379,
+			"differences": []
+		},
+		"targetUsesPandwind": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "rgb(255, 255, 255)|16px|8px 14px|rgb(46, 139, 87)",
+				"hover": "rgb(255, 255, 255)|16px|8px 14px|rgb(255, 99, 71)"
+			},
+			"target": {
+				"base": "rgb(255, 255, 255)|16px|8px 14px|rgb(46, 139, 87)",
+				"hover": "rgb(255, 255, 255)|16px|8px 14px|rgb(255, 99, 71)"
+			}
+		},
+		"hydrationErrors": [],
+		"runtimeStyleBytes": {
+			"source": 474,
+			"target": 458
+		}
+	},
+	"css": {
+		"sourceBytes": 474,
+		"targetBytes": 458,
+		"targetNotLarger": true,
+		"comparison": "comparable"
+	}
+}

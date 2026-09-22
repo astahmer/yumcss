@@ -353,6 +353,17 @@ Function-valued styles need framework-specific prop and theme wrappers. Keep
 reactivity, Vue scoped-style behavior, Solid signals, and SSR boundaries in
 framework fixtures; a static declaration rewrite is insufficient.
 
+The repository includes pinned real-project acceptance fixtures for these
+routes in `plans/evidence/linaria-installed-proof.json`,
+`plans/evidence/treat-installed-proof.json`,
+`plans/evidence/solid-styled-installed-proof.json`, and
+`plans/evidence/vue-styled-installed-proof.json`.
+Run `pnpm run pivot:proof:installed:routes` to validate the checked-in reports;
+the route gate covers canonical CSS, installed dependencies, typecheck/build,
+SSR/hydration, browser states, and CSS accounting. These are still
+experimental route proofs, not claims that dynamic themes, macros, plugins, or
+framework-specific APIs all migrate automatically.
+
 ## Bamboo and React Native
 
 Bamboo uses its adapter and should be checked for its composition/runtime
@@ -380,7 +391,9 @@ reason, target capability, and suggested strategy. The usual fixes are:
 - replace a runtime interpolation with `css.vars()` or a custom property;
 - rewrite a styled subject into an explicit host component;
 - map a theme read into a preset token or target theme provider;
-- preserve globals/keyframes/font-face as authored CSS;
+- preserve broad globals/keyframes/font-face as authored CSS, or map
+  preset-owned flat selectors, named keyframes, and typed font faces to
+  `define.preset({ web: ... })`;
 - register a source plugin transform for framework syntax; or
 - choose a runtime-capable backend instead of forcing static extraction.
 

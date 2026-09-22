@@ -1,0 +1,77 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"route": {
+		"from": "vanilla-extract",
+		"to": "pandwind"
+	},
+	"referenceCommit": "881c256a867f55386f96a7fe95068300bac720e6",
+	"fixture": {
+		"files": [
+			"src/HelloWorld.css.ts",
+			"src/HelloWorld.tsx",
+			"src/App.tsx"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 2,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 420,
+			"targetBytes": 420,
+			"differences": []
+		},
+		"targetUsesPandwind": true,
+		"sourceImportRemoved": true,
+		"typedVariableLowered": true,
+		"propertyRegistrationPreserved": true,
+		"keyframesPreserved": true,
+		"generatedVitePresetImportIsExplicit": true,
+		"generatedVitePluginPresent": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "rgb(255, 192, 203)|rgb(0, 0, 255)|16px|1",
+				"hover": "rgb(255, 192, 203)|rgb(255, 238, 255)|16px|0.8"
+			},
+			"target": {
+				"base": "rgb(255, 192, 203)|rgb(0, 0, 255)|16px|1",
+				"hover": "rgb(255, 192, 203)|rgb(255, 238, 255)|16px|0.8"
+			}
+		},
+		"hydrationErrors": []
+	},
+	"css": {
+		"sourceBytes": 414,
+		"targetBytes": 635,
+		"note": "The tiny fixture compares fused Vanilla Extract CSS with Pandwind's atomic runtime CSS. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget."
+	}
+}

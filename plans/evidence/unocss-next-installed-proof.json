@@ -1,0 +1,88 @@
+{
+	"schema": "pandwind.unocss-next-installed-proof/2",
+	"reference": {
+		"repository": "https://github.com/unocss/unocss",
+		"commit": "75103d5e12ec9876069daf6b97a7db1d73428829",
+		"sourceEntry": "examples/next/app/page.tsx"
+	},
+	"route": {
+		"from": "unocss",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"isolated": true,
+		"routeCount": 3
+	},
+	"dependencies": {
+		"sourceInstalled": true,
+		"targetNodeModule": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+	},
+	"migration": {
+		"converted": 12,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"differences": []
+		},
+		"targetUsesPandwind": true,
+		"sourceUnoIntegrationRemoved": true,
+		"nextWebpackIntegrationPresent": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true
+	},
+	"next": {
+		"schema": "pandwind.next-installed-proof/1",
+		"http": {
+			"checked": true,
+			"routeCount": 3,
+			"sourceFailures": [],
+			"targetFailures": [],
+			"routeSetEqual": true
+		},
+		"rsc": {
+			"checked": true,
+			"routeCount": 1,
+			"sourceFailures": [],
+			"targetFailures": [],
+			"streamedRoutes": 1
+		},
+		"browser": {
+			"checked": true,
+			"routeCount": 1,
+			"equivalent": true,
+			"failures": [],
+			"pageErrors": [],
+			"consoleErrors": [],
+			"ignoredConsoleErrors": [
+				{
+					"path": "source:/",
+					"reason": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+				},
+				{
+					"path": "source:/",
+					"reason": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+				},
+				{
+					"path": "target:/",
+					"reason": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+				},
+				{
+					"path": "target:/",
+					"reason": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+				}
+			]
+		}
+	},
+	"css": {
+		"sourceBytes": 5462,
+		"targetBytes": 2647,
+		"targetNotLarger": true
+	}
+}

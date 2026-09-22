@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-_Review snapshot: 2026-09-08._
+_Review snapshot: 2026-09-22._
 
 The blunt answer: Pandwind is technically ambitious, but currently tries to be
 too many products at once. The core idea is useful; the weakest parts are
@@ -20,9 +20,10 @@ adoption simplicity, real-world proof, and scope discipline.
   or intentionally mixing styling ecosystems.
 - "This is not actually zero-runtime CSS." Dynamic `tw()` values require
   safelisting or runtime handling. Dynamic `css()` values use `css.vars()`.
-  Globals, fonts, layers, and complex selectors often remain authored CSS or
-  runtime rules; component-local keyframes have a build-time lane
-  (`css.keyframes`). The limitations are documented in
+  Globals, fonts, layers, and complex selectors use authored CSS or explicit
+  runtime rules; narrow preset-owned flat globals, font faces, and named
+  keyframes have a build-time lane (`define.preset({ web: ... })`), while
+  component-local keyframes use `css.keyframes`. The limitations are documented in
   `docs/src/content/docs/reference/limitations.md` and the CSS scorecard.
 - "The setup is too dependent on generated files." A normal Tailwind lane
   generates `tw.ts`, `tw.runtime.ts`, `tw.build.ts`, `types.d.ts`, and theme
@@ -43,8 +44,8 @@ adoption simplicity, real-world proof, and scope discipline.
   API. That is the correct source of truth today, but it is also a compatibility
   risk when Tailwind changes internals.
 - "The codemod matrix looks broader than the actual guarantee." The checked-in
-  real-repository report contains 34 reports, with 28 passed proof dimensions,
-  235 pending dimensions, and 6 pipeline-unpaired references. The adapter
+  real-repository report contains 35 reports, with 29 passed proof dimensions,
+  242 pending dimensions, and 6 pipeline-unpaired references. The adapter
   reference proof has 29 small probes, 139 converted sites, 10 residuals, and
   26 fully valid migrations. That is useful evidence, but it is not proof that
   arbitrary production applications migrate cleanly.
@@ -61,21 +62,22 @@ adoption simplicity, real-world proof, and scope discipline.
   in a browser sandbox with shims and deliberately excludes project module
   loading and Tailwind's Node engine. A scenario passing there does not prove
   the same source will build correctly in a real project.
-- There are now four bounded installed-project proofs for Tailwind CSS ->
-  Pandwind, styled-components -> Pandwind, Panda -> Pandwind, and UnoCSS ->
-  Pandwind. They run the real CLI, generated project files, typechecks, Vite
-  builds, SSR, hydration, and browser base/hover comparisons. The Tailwind
-  proof also migrates an imported second source module and aggregates its
-  canonical evidence. That raises confidence in the covered lanes, but small
-  React/Vite fixtures do not establish broad route coverage.
+- There are now 19 bounded installed-project proofs for web routes into
+  Pandwind, covering the Tailwind, Panda, styled-components, UnoCSS, Vanilla
+  Extract, Stitches, MUI, Mantine, Tokenami, JSS, Fela, Aphrodite, Compiled,
+  Style9, Next-yak, Linaria, Treat, Solid Styled, and Vue Styled lanes. The
+  registry-owned gate runs the real migration, installed dependencies,
+  typechecks, host builds, SSR, hydration, browser-state comparisons, and CSS
+  accounting for every route. That raises confidence in the covered lanes, but
+  bounded pinned projects do not establish broad production route coverage.
 - Goober and Emotion also have installed SSR/browser fixture reports in the
   evidence matrix. They remain separate adapter fixtures because their reports
   do not prove the route gate's full canonical-CSS, typecheck, build, and
   dependency dimensions; counting them as full project routes would overstate
   the evidence.
-- Those four proofs are now checked by one registry-owned gate. The read-only
+- Those proofs are checked by one registry-owned gate. The read-only
   `pivot:proof:installed:routes` command validates every checked-in report, and
-  `pivot:proof:installed:routes:run` reruns all four project lanes in CI. A
+  `pivot:proof:installed:routes:run` reruns all 19 project lanes in CI. A
   missing, stale, residual-bearing, or incomplete report fails the gate rather
   than being treated as route coverage.
 - "The MCP surface is ahead of the underlying proof."
@@ -126,11 +128,12 @@ describe evidence, not a promise that every construct in a route is lossless.
 | MCP and analyzer                                                 | experimental | typed tool/resource contracts, per-result execution evidence, an opt-in isolated Node package-script host, reproducible in-process benchmark profiles, and Studio execution evidence | richer framework/browser hosts and durable project evidence                |
 | React Native/React Strict DOM/OpenTUI and other non-web backends | research     | contract and typing coverage                                                                                                                                                         | real consumers and backend-specific runtime proof                          |
 
-The catalog has seven named route policies plus an unavailable research policy
-for every additional route the adapter registry can resolve. Four named routes
-have bounded installed-project evidence; the remaining named and generated
-routes stay experimental or research until their required dimensions are passed
-by an installed-project execution lane.
+The catalog has 19 named installed-project route policies plus three explicit
+unavailable reverse-direction policies, and it generates an unavailable research
+policy for every additional route the adapter registry can resolve. All named
+routes remain experimental: passing the bounded proof gate means the documented
+lane is exercised, not that every theme API, framework host, dynamic expression,
+or plugin semantics are complete.
 
 ## The most questionable scope
 

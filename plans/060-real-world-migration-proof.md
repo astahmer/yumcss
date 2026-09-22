@@ -295,10 +295,16 @@ interface MigrationRouteProof {
       route.
 
 The route catalog test loads every installed-project evidence file and rejects
-missing, mismatched, residual-bearing, or incomplete reports. The four current
+missing, mismatched, residual-bearing, or incomplete reports. The 19 current
 installed directions remain experimental because their fixtures are deliberately
 bounded, but the evidence gate now proves the acceptance threshold that any
 future stable route must meet.
+
+The evidence wave has since expanded the same gate to Style9, Next-yak,
+Linaria, Treat, Solid Styled, and Vue Styled. Their pinned installed-project
+reports live under `plans/evidence/*-installed-proof.json`; Treat's source
+project is compiled through its official Webpack plugin. These additions widen
+the proven web lanes without changing the experimental maturity boundary.
 
 ## Decisions log
 

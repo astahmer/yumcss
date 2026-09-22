@@ -2,7 +2,7 @@
   "schema": "pandwind.real-repository-report/4",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
   "cloneRoot": "${PANDWIND_REFERENCE_ROOT:-~/.references}",
-  "sourceFiles": 31,
+  "sourceFiles": 32,
   "reports": [
     {
       "id": "panda-website-home",
@@ -84,10 +84,8 @@
         "pandwind/preset.ts",
         "pandwind/css.ts",
         "pandwind/virtual.d.ts",
-        "pandwind/internal.ts",
         "pandwind/recipes/index.ts",
-        "pandwind/patterns/index.ts",
-        "pandwind/jsx/index.tsx"
+        "pandwind/patterns/index.ts"
       ],
       "runtimeBundleImpact": {
         "measured": false,
@@ -123,8 +121,8 @@
         ]
       },
       "sourceBytes": 164,
-      "outputBytes": 126,
-      "outputByteDelta": -38,
+      "outputBytes": 127,
+      "outputByteDelta": -37,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -204,7 +202,7 @@
           "@emotion/css",
           "@emotion/react"
         ],
-        "byteDelta": -38
+        "byteDelta": -37
       }
     },
     {
@@ -222,8 +220,8 @@
         ]
       },
       "sourceBytes": 333,
-      "outputBytes": 305,
-      "outputByteDelta": -28,
+      "outputBytes": 304,
+      "outputByteDelta": -29,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -303,7 +301,7 @@
         "removed": [
           "styled-components"
         ],
-        "byteDelta": -28
+        "byteDelta": -29
       }
     },
     {
@@ -386,10 +384,8 @@
         "pandwind/preset.ts",
         "pandwind/css.ts",
         "pandwind/virtual.d.ts",
-        "pandwind/internal.ts",
         "pandwind/recipes/index.ts",
-        "pandwind/patterns/index.ts",
-        "pandwind/jsx/index.tsx"
+        "pandwind/patterns/index.ts"
       ],
       "runtimeBundleImpact": {
         "measured": false,
@@ -425,8 +421,8 @@
         ]
       },
       "sourceBytes": 164,
-      "outputBytes": 269,
-      "outputByteDelta": 105,
+      "outputBytes": 244,
+      "outputByteDelta": 80,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -506,7 +502,7 @@
           "@emotion/css",
           "@emotion/react"
         ],
-        "byteDelta": 105
+        "byteDelta": 80
       }
     },
     {
@@ -524,8 +520,8 @@
         ]
       },
       "sourceBytes": 333,
-      "outputBytes": 589,
-      "outputByteDelta": 256,
+      "outputBytes": 561,
+      "outputByteDelta": 228,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -603,7 +599,7 @@
         "removed": [
           "styled-components"
         ],
-        "byteDelta": 256
+        "byteDelta": 228
       }
     },
     {
@@ -621,20 +617,18 @@
         ]
       },
       "sourceBytes": 774,
-      "outputBytes": 1303,
-      "outputByteDelta": 529,
-      "converted": 2,
-      "skipped": 2,
-      "residuals": 2,
-      "residualKinds": {
-        "configuration": 2
-      },
+      "outputBytes": 1268,
+      "outputByteDelta": 494,
+      "converted": 4,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
       "validations": 2,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 401,
-        "targetBytes": 401,
+        "sourceBytes": 420,
+        "targetBytes": 420,
         "byteDelta": 0
       },
       "promotion": {
@@ -675,8 +669,6 @@
           }
         },
         "reasons": [
-          "2 residual conversion(s) remain",
-          "2 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -686,9 +678,7 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [
-        "Vanilla Extract createVar requires contract-aware variable lowering"
-      ],
+      "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -706,7 +696,7 @@
         "removed": [
           "@vanilla-extract/css"
         ],
-        "byteDelta": 529
+        "byteDelta": 494
       }
     },
     {
@@ -723,8 +713,8 @@
         ]
       },
       "sourceBytes": 7459,
-      "outputBytes": 8398,
-      "outputByteDelta": 939,
+      "outputBytes": 7818,
+      "outputByteDelta": 359,
       "converted": 11,
       "skipped": 0,
       "residuals": 0,
@@ -802,7 +792,7 @@
         "removed": [
           "@stitches/react"
         ],
-        "byteDelta": 939
+        "byteDelta": 359
       }
     },
     {
@@ -820,8 +810,8 @@
         ]
       },
       "sourceBytes": 1175,
-      "outputBytes": 1141,
-      "outputByteDelta": -34,
+      "outputBytes": 1375,
+      "outputByteDelta": 200,
       "converted": 4,
       "skipped": 0,
       "residuals": 0,
@@ -899,7 +889,7 @@
           "@linaria/core",
           "@linaria/react"
         ],
-        "byteDelta": -34
+        "byteDelta": 200
       }
     },
     {
@@ -917,8 +907,8 @@
         ]
       },
       "sourceBytes": 583,
-      "outputBytes": 656,
-      "outputByteDelta": 73,
+      "outputBytes": 678,
+      "outputByteDelta": 95,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -927,8 +917,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 71,
-        "targetBytes": 71,
+        "sourceBytes": 63,
+        "targetBytes": 63,
         "byteDelta": 0
       },
       "promotion": {
@@ -996,7 +986,7 @@
           "jss",
           "react-jss"
         ],
-        "byteDelta": 73
+        "byteDelta": 95
       }
     },
     {
@@ -1013,20 +1003,20 @@
         ]
       },
       "sourceBytes": 5663,
-      "outputBytes": 6086,
-      "outputByteDelta": 423,
+      "outputBytes": 5339,
+      "outputByteDelta": -324,
       "converted": 8,
-      "skipped": 7,
+      "skipped": 1,
       "residuals": 7,
       "residualKinds": {
-        "configuration": 7
+        "dynamic": 7
       },
       "validations": 8,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 398,
-        "targetBytes": 398,
+        "sourceBytes": 554,
+        "targetBytes": 554,
         "byteDelta": 0
       },
       "promotion": {
@@ -1067,7 +1057,7 @@
         },
         "reasons": [
           "7 residual conversion(s) remain",
-          "7 source match(es) were skipped",
+          "1 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -1077,7 +1067,7 @@
         ]
       },
       "manualFixes": [
-        "Fela renderer configuration and plugins require target-aware lowering"
+        "Fela renderRule props require a target-aware dynamic projection"
       ],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -1098,7 +1088,7 @@
           "fela",
           "react-fela"
         ],
-        "byteDelta": 423
+        "byteDelta": -324
       }
     },
     {
@@ -1115,8 +1105,8 @@
         ]
       },
       "sourceBytes": 3301,
-      "outputBytes": 3500,
-      "outputByteDelta": 199,
+      "outputBytes": 3503,
+      "outputByteDelta": 202,
       "converted": 1,
       "skipped": 1,
       "residuals": 1,
@@ -1198,7 +1188,7 @@
         "removed": [
           "goober"
         ],
-        "byteDelta": 199
+        "byteDelta": 202
       }
     },
     {
@@ -1215,8 +1205,8 @@
         ]
       },
       "sourceBytes": 16434,
-      "outputBytes": 15054,
-      "outputByteDelta": -1380,
+      "outputBytes": 14778,
+      "outputByteDelta": -1656,
       "converted": 22,
       "skipped": 0,
       "residuals": 0,
@@ -1225,8 +1215,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1108,
-        "targetBytes": 1108,
+        "sourceBytes": 1222,
+        "targetBytes": 1222,
         "byteDelta": 0
       },
       "promotion": {
@@ -1294,7 +1284,7 @@
         "removed": [
           "aphrodite"
         ],
-        "byteDelta": -1380
+        "byteDelta": -1656
       }
     },
     {
@@ -1312,8 +1302,8 @@
         ]
       },
       "sourceBytes": 200,
-      "outputBytes": 278,
-      "outputByteDelta": 78,
+      "outputBytes": 296,
+      "outputByteDelta": 96,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1391,7 +1381,7 @@
         "removed": [
           "style9"
         ],
-        "byteDelta": 78
+        "byteDelta": 96
       }
     },
     {
@@ -1409,8 +1399,8 @@
         ]
       },
       "sourceBytes": 439,
-      "outputBytes": 529,
-      "outputByteDelta": 90,
+      "outputBytes": 542,
+      "outputByteDelta": 103,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1419,8 +1409,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 208,
-        "targetBytes": 208,
+        "sourceBytes": 261,
+        "targetBytes": 261,
         "byteDelta": 0
       },
       "promotion": {
@@ -1488,7 +1478,7 @@
         "removed": [
           "treat"
         ],
-        "byteDelta": 90
+        "byteDelta": 103
       }
     },
     {
@@ -1505,8 +1495,8 @@
         ]
       },
       "sourceBytes": 1357,
-      "outputBytes": 1701,
-      "outputByteDelta": 344,
+      "outputBytes": 1494,
+      "outputByteDelta": 137,
       "converted": 6,
       "skipped": 0,
       "residuals": 0,
@@ -1515,8 +1505,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 277,
-        "targetBytes": 277,
+        "sourceBytes": 315,
+        "targetBytes": 315,
         "byteDelta": 0
       },
       "promotion": {
@@ -1586,7 +1576,7 @@
           "@compiled/react",
           "@compiled/css-in-js"
         ],
-        "byteDelta": 344
+        "byteDelta": 137
       }
     },
     {
@@ -1603,8 +1593,8 @@
         ]
       },
       "sourceBytes": 4251,
-      "outputBytes": 5917,
-      "outputByteDelta": 1666,
+      "outputBytes": 4840,
+      "outputByteDelta": 589,
       "converted": 9,
       "skipped": 0,
       "residuals": 0,
@@ -1680,7 +1670,7 @@
         "removed": [
           "solid-styled-components"
         ],
-        "byteDelta": 1666
+        "byteDelta": 589
       }
     },
     {
@@ -1694,22 +1684,24 @@
         "confidence": 0.8,
         "evidence": [
           "from\\s+[\"'](?:vue-styled-components|@vue-styled-components\\/core)[\"']",
-          "\\bstyled\\.[A-Za-z_$][\\w$]*[^`]*`"
+          "\\bstyled\\.[A-Za-z_$][\\w$]*(?:<[^`]*>)?\\s*`"
         ]
       },
       "sourceBytes": 6953,
-      "outputBytes": 8492,
-      "outputByteDelta": 1539,
-      "converted": 7,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 7,
+      "outputBytes": 9179,
+      "outputByteDelta": 2226,
+      "converted": 6,
+      "skipped": 2,
+      "residuals": 4,
+      "residualKinds": {
+        "dynamic": 4
+      },
+      "validations": 6,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1479,
-        "targetBytes": 1479,
+        "sourceBytes": 826,
+        "targetBytes": 826,
         "byteDelta": 0
       },
       "promotion": {
@@ -1749,6 +1741,8 @@
           }
         },
         "reasons": [
+          "4 residual conversion(s) remain",
+          "2 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -1757,7 +1751,9 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "vue-styled function interpolation requires a framework prop wrapper"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -1775,7 +1771,7 @@
         "removed": [
           "vue-styled-components"
         ],
-        "byteDelta": 1539
+        "byteDelta": 2226
       }
     },
     {
@@ -1793,8 +1789,8 @@
         ]
       },
       "sourceBytes": 966,
-      "outputBytes": 930,
-      "outputByteDelta": -36,
+      "outputBytes": 948,
+      "outputByteDelta": -18,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1872,7 +1868,7 @@
         "removed": [
           "@stylexjs/stylex"
         ],
-        "byteDelta": -36
+        "byteDelta": -18
       }
     },
     {
@@ -1890,8 +1886,8 @@
         ]
       },
       "sourceBytes": 937,
-      "outputBytes": 899,
-      "outputByteDelta": -38,
+      "outputBytes": 917,
+      "outputByteDelta": -20,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1969,7 +1965,7 @@
         "removed": [
           "react-strict-dom"
         ],
-        "byteDelta": -38
+        "byteDelta": -20
       }
     },
     {
@@ -1986,8 +1982,8 @@
         ]
       },
       "sourceBytes": 2729,
-      "outputBytes": 2634,
-      "outputByteDelta": -95,
+      "outputBytes": 2664,
+      "outputByteDelta": -65,
       "converted": 4,
       "skipped": 0,
       "residuals": 0,
@@ -1996,8 +1992,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1125,
-        "targetBytes": 1125,
+        "sourceBytes": 1160,
+        "targetBytes": 1160,
         "byteDelta": 0
       },
       "promotion": {
@@ -2064,7 +2060,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": -95
+        "byteDelta": -65
       }
     },
     {
@@ -2082,18 +2078,120 @@
         ]
       },
       "sourceBytes": 2921,
-      "outputBytes": 2865,
-      "outputByteDelta": -56,
+      "outputBytes": 2965,
+      "outputByteDelta": 44,
       "converted": 3,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
+      "skipped": 1,
+      "residuals": 2,
+      "residualKinds": {
+        "dynamic": 2
+      },
       "validations": 3,
       "canonicalCss": {
         "checked": true,
         "equal": true,
         "sourceBytes": 379,
         "targetBytes": 379,
+        "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "2 residual conversion(s) remain",
+          "1 source match(es) were skipped",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [
+        "styled nested template interpolation requires a host-specific lowering"
+      ],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [
+          "next-yak"
+        ],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [
+          "next-yak"
+        ],
+        "byteDelta": 44
+      }
+    },
+    {
+      "id": "next-yak-dynamic-benchmark",
+      "repository": "https://github.com/jantimon/css-in-js-bench",
+      "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+      "path": "techs/next-yak/case/dyn-fair/index.tsx",
+      "adapterRoute": "next-yak -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 0.7,
+        "evidence": [
+          "\\bfrom\\s+[\"']next-yak[\"']"
+        ]
+      },
+      "sourceBytes": 647,
+      "outputBytes": 1364,
+      "outputByteDelta": 717,
+      "converted": 1,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 106,
+        "targetBytes": 106,
         "byteDelta": 0
       },
       "promotion": {
@@ -2161,7 +2259,7 @@
         "removed": [
           "next-yak"
         ],
-        "byteDelta": -56
+        "byteDelta": 717
       }
     },
     {
@@ -2179,8 +2277,8 @@
         ]
       },
       "sourceBytes": 3121,
-      "outputBytes": 3998,
-      "outputByteDelta": 877,
+      "outputBytes": 4025,
+      "outputByteDelta": 904,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -2258,7 +2356,7 @@
         "removed": [
           "next-yak"
         ],
-        "byteDelta": 877
+        "byteDelta": 904
       }
     },
     {
@@ -2276,18 +2374,20 @@
         ]
       },
       "sourceBytes": 831,
-      "outputBytes": 1282,
-      "outputByteDelta": 451,
-      "converted": 5,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 5,
+      "outputBytes": 1188,
+      "outputByteDelta": 357,
+      "converted": 3,
+      "skipped": 1,
+      "residuals": 1,
+      "residualKinds": {
+        "unknown-utility": 1
+      },
+      "validations": 3,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 343,
-        "targetBytes": 343,
+        "sourceBytes": 145,
+        "targetBytes": 145,
         "byteDelta": 0
       },
       "promotion": {
@@ -2328,6 +2428,8 @@
           }
         },
         "reasons": [
+          "1 residual conversion(s) remain",
+          "1 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -2337,7 +2439,9 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "textStyle is not present in the Chakra theme"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -2352,8 +2456,10 @@
         "added": [
           "pandwind"
         ],
-        "removed": [],
-        "byteDelta": 451
+        "removed": [
+          "@chakra-ui/react"
+        ],
+        "byteDelta": 357
       }
     },
     {
@@ -2371,8 +2477,8 @@
         ]
       },
       "sourceBytes": 561,
-      "outputBytes": 793,
-      "outputByteDelta": 232,
+      "outputBytes": 773,
+      "outputByteDelta": 212,
       "converted": 1,
       "skipped": 2,
       "residuals": 2,
@@ -2383,8 +2489,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 96,
-        "targetBytes": 96,
+        "sourceBytes": 115,
+        "targetBytes": 115,
         "byteDelta": 0
       },
       "promotion": {
@@ -2455,7 +2561,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 232
+        "byteDelta": 212
       }
     },
     {
@@ -2473,18 +2579,20 @@
         ]
       },
       "sourceBytes": 3131,
-      "outputBytes": 3655,
-      "outputByteDelta": 524,
-      "converted": 9,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 9,
+      "outputBytes": 3823,
+      "outputByteDelta": 692,
+      "converted": 6,
+      "skipped": 3,
+      "residuals": 3,
+      "residualKinds": {
+        "component": 3
+      },
+      "validations": 6,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 288,
-        "targetBytes": 288,
+        "sourceBytes": 138,
+        "targetBytes": 138,
         "byteDelta": 0
       },
       "promotion": {
@@ -2525,6 +2633,8 @@
           }
         },
         "reasons": [
+          "3 residual conversion(s) remain",
+          "3 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -2534,7 +2644,11 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "Mantine host 'Anchor' has no verified intrinsic projection",
+        "Mantine host 'Center' has no verified intrinsic projection",
+        "Mantine host 'Text' has no verified intrinsic projection"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -2550,7 +2664,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 524
+        "byteDelta": 692
       }
     },
     {
@@ -2568,8 +2682,8 @@
         ]
       },
       "sourceBytes": 1921,
-      "outputBytes": 2316,
-      "outputByteDelta": 395,
+      "outputBytes": 2264,
+      "outputByteDelta": 343,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -2578,8 +2692,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 337,
-        "targetBytes": 337,
+        "sourceBytes": 356,
+        "targetBytes": 356,
         "byteDelta": 0
       },
       "promotion": {
@@ -2649,7 +2763,7 @@
           "@tokenami/css",
           "@tokenami/config"
         ],
-        "byteDelta": 395
+        "byteDelta": 343
       }
     },
     {
@@ -2666,8 +2780,8 @@
         ]
       },
       "sourceBytes": 2935,
-      "outputBytes": 4375,
-      "outputByteDelta": 1440,
+      "outputBytes": 4430,
+      "outputByteDelta": 1495,
       "converted": 0,
       "skipped": 12,
       "residuals": 82,
@@ -2753,7 +2867,7 @@
           "unocss",
           "@unocss/core"
         ],
-        "byteDelta": 1440
+        "byteDelta": 1495
       }
     },
     {
@@ -2770,8 +2884,8 @@
         ]
       },
       "sourceBytes": 2708,
-      "outputBytes": 4050,
-      "outputByteDelta": 1342,
+      "outputBytes": 4100,
+      "outputByteDelta": 1392,
       "converted": 0,
       "skipped": 11,
       "residuals": 62,
@@ -2857,7 +2971,7 @@
           "tailwindcss",
           "@tailwindcss/node"
         ],
-        "byteDelta": 1342
+        "byteDelta": 1392
       }
     },
     {
@@ -2874,8 +2988,8 @@
         ]
       },
       "sourceBytes": 4057,
-      "outputBytes": 4287,
-      "outputByteDelta": 230,
+      "outputBytes": 4306,
+      "outputByteDelta": 249,
       "converted": 3,
       "skipped": 0,
       "residuals": 0,
@@ -2949,7 +3063,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 230
+        "byteDelta": 249
       }
     },
     {
@@ -2966,8 +3080,8 @@
         ]
       },
       "sourceBytes": 210,
-      "outputBytes": 290,
-      "outputByteDelta": 80,
+      "outputBytes": 309,
+      "outputByteDelta": 99,
       "converted": 2,
       "skipped": 0,
       "residuals": 0,
@@ -3041,7 +3155,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 80
+        "byteDelta": 99
       }
     },
     {
@@ -3242,8 +3356,8 @@
         ]
       },
       "sourceBytes": 283,
-      "outputBytes": 442,
-      "outputByteDelta": 159,
+      "outputBytes": 461,
+      "outputByteDelta": 178,
       "converted": 5,
       "skipped": 0,
       "residuals": 0,
@@ -3315,7 +3429,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 159
+        "byteDelta": 178
       }
     }
   ],
@@ -3325,7 +3439,7 @@
       "from": "tailwind",
       "to": "pandwind",
       "maturity": "experimental",
-      "execution": "source-only",
+      "execution": "installed-project",
       "referenceIds": [
         "tailwindcss-docs-home"
       ],
@@ -3379,14 +3493,14 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "The pinned corpus proves source routing; installed project proof is still required for promotion."
+      "note": "A bounded installed React/Vite fixture covers the project lifecycle; broader route coverage is still required for promotion."
     },
     {
       "id": "panda-to-pandwind",
       "from": "panda",
       "to": "pandwind",
       "maturity": "experimental",
-      "execution": "source-only",
+      "execution": "installed-project",
       "referenceIds": [
         "panda-website"
       ],
@@ -3448,14 +3562,14 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "Panda uses its project migration pipeline; its generated project must be typechecked and built before promotion."
+      "note": "A bounded installed React/Vite fixture covers official generated-system loading, shorthand lowering, token preservation, SSR, hydration, and browser parity; broader recipe and framework coverage is still required for promotion."
     },
     {
       "id": "styled-components-to-pandwind",
       "from": "styled-components",
       "to": "pandwind",
       "maturity": "experimental",
-      "execution": "source-only",
+      "execution": "installed-project",
       "referenceIds": [
         "styled-components-benchmark"
       ],
@@ -3505,14 +3619,14 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "The adapter-program/browser probe is not a dependency-installed styled-components project migration."
+      "note": "A bounded installed React/Vite fixture covers a styled object and pseudo-condition; broader component and theme coverage is still required for promotion."
     },
     {
       "id": "unocss-to-pandwind",
       "from": "unocss",
       "to": "pandwind",
       "maturity": "experimental",
-      "execution": "source-only",
+      "execution": "installed-project",
       "referenceIds": [
         "unocss-nextjs-page"
       ],
@@ -3566,7 +3680,883 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "UnoCSS preset and plugin behavior still needs an installed project proof lane."
+      "note": "An installed React/Vite fixture covers the official UnoCSS generator, custom token lowering, virtual stylesheet removal, generated Vite integration, SSR, hydration, browser parity, and CSS size; a pinned upstream Next example also passes the migration, Next typecheck/build, HTTP/RSC/browser checks, and UnoCSS removal. Broader preset and framework coverage is still required for promotion."
+    },
+    {
+      "id": "vanilla-extract-to-pandwind",
+      "from": "vanilla-extract",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "vanilla-extract-example"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "vanilla-extract-example"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Vanilla Extract HelloWorld fixture covers typed custom properties, fallback variables, keyframes, the official Vite plugin, SSR, hydration, and browser parity. Its tiny fused-versus-atomic CSS comparison is recorded but is not a meaningful non-growth budget; broader recipes, themes, and framework coverage remain required for promotion."
+    },
+    {
+      "id": "stitches-to-pandwind",
+      "from": "stitches",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "stitches-react-test"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "stitches-react-test"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned upstream Stitches React test API is exercised through an installed React/Vite host with theme tokens, a variant recipe, hover parity, SSR, hydration, and browser checks. The small fused-versus-atomic CSS comparison is diagnostic rather than a non-growth budget; broader theme, compound-variant, and framework coverage remain required for promotion."
+    },
+    {
+      "id": "mui-to-pandwind",
+      "from": "mui",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "mui-box-sx"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "mui-box-sx"
+      ],
+      "reasons": [
+        "2 residual conversion(s) remain",
+        "2 source match(es) were skipped",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned MUI Box sx example is exercised through an installed React/Vite host with static system values and a hover pseudo-condition. The proof covers typecheck, build, SSR, hydration, generated atomic CSS, and browser parity; ThemeProvider-owned callbacks, responsive arrays, and component theme overrides remain explicit residual territory."
+    },
+    {
+      "id": "mantine-to-pandwind",
+      "from": "mantine",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "mantine-style-props"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "mantine-style-props"
+      ],
+      "reasons": [
+        "3 residual conversion(s) remain",
+        "3 source match(es) were skipped",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Mantine help-center style-prop example is exercised through an installed React/Vite host with a real MantineProvider, static Box style props, SSR, hydration, atomic CSS, and browser parity; provider-owned theme callbacks, styles/classNames/vars maps, and responsive style-prop objects remain explicit residual territory."
+    },
+    {
+      "id": "tokenami-to-pandwind",
+      "from": "tokenami",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "tokenami-nextjs-button"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "tokenami-nextjs-button"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Tokenami button example is exercised through the installed Tokenami CLI and React/Vite host with css.compose aliases, grid math, verified theme-value lowering, hover conditions, SSR, hydration, atomic CSS, and browser parity; runtime composition, theme-mode switching, and unsupported global rules remain explicit residual territory."
+    },
+    {
+      "id": "jss-to-pandwind",
+      "from": "jss",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "jss-nested-benchmark"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "jss-nested-benchmark"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned JSS inline example is exercised through installed JSS camel-case and nested plugins with static sheet creation, attachment, hover output, SSR, hydration, and browser parity. Dynamic rule values, plugin-specific runtime behavior, and non-static renderer inputs remain explicit residual territory."
+    },
+    {
+      "id": "fela-to-pandwind",
+      "from": "fela",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "fela-render-test"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "fela-render-test"
+      ],
+      "reasons": [
+        "7 residual conversion(s) remain",
+        "1 source match(es) were skipped",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Fela renderRule example is exercised through installed Fela and fela-dom with a static rule, empty props, hover output, SSR, hydration, and browser parity. Dynamic props, enhancers, plugins, and renderer-owned component options remain explicit residual territory."
+    },
+    {
+      "id": "aphrodite-to-pandwind",
+      "from": "aphrodite",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "aphrodite-api-test"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "aphrodite-api-test"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Aphrodite API example is exercised through installed StyleSheet.create and css with a static rule, hover output, server CSS collection, SSR, hydration, and browser parity. Dynamic style arrays, keyframes, font-face, and runtime-specific injection options remain explicit residual territory."
+    },
+    {
+      "id": "compiled-to-pandwind",
+      "from": "compiled",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "compiled-vite-example"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "compiled-vite-example"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Atlassian Compiled Vite fixture is exercised through the official Compiled Vite plugin, styled components, cssMapScoped selectors, SSR, hydration, browser parity, and inline-style-aware CSS accounting. Plugin-specific transforms, dynamic style expressions, and CSS-map runtime semantics beyond this static fixture remain explicit residual territory."
+    },
+    {
+      "id": "style9-to-pandwind",
+      "from": "style9",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "style9-next-styles"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "style9-next-styles"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Style9 Next.js example is exercised through the installed Style9 Vite compiler with named maps, composition, hover output, SSR, hydration, and browser parity. The proof covers the static compiler lane; dynamic style-map expressions and framework-specific compiler options remain explicit residual territory."
+    },
+    {
+      "id": "next-yak-to-pandwind",
+      "from": "next-yak",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "next-yak-dynamic-benchmark"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "next-yak-benchmark-realistic-button",
+        "next-yak-dynamic-benchmark",
+        "next-yak-css-prop-benchmark-realistic-button"
+      ],
+      "reasons": [
+        "2 residual conversion(s) remain",
+        "1 source match(es) were skipped",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned css-in-js-bench dynamic-interpolation example is exercised through installed next-yak Vite and Pandwind runtime carriers with typecheck, build, SSR, hydration, browser parity, and inline-style-aware CSS accounting. Nested dynamic template composition and non-React compiler hosts remain explicit residual territory."
+    },
+    {
+      "id": "linaria-to-pandwind",
+      "from": "linaria",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "linaria-solid-example"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "linaria-solid-example"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Linaria Astro/Solid example is exercised through the installed Linaria compiler and a Pandwind Vite target with static styled components, pseudo-conditions, typecheck, build, SSR, hydration, and browser parity. Dynamic expressions, theme functions, and compiler options outside this static lane remain explicit residual territory; the measured CSS comparison is diagnostic when the runtime carrier is larger."
+    },
+    {
+      "id": "treat-to-pandwind",
+      "from": "treat",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "treat-button"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "treat-button"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "RSC/streaming proof is not available in the source-only runner",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned Treat Gatsby button style is compiled with Treat's official Webpack plugin and compared with an installed Pandwind Vite target across static declarations, pseudo-conditions, typecheck, build, SSR, hydration, and browser parity. createTheme, styleMap/theme runtime APIs, and dynamic style functions remain explicit residual territory; runtime CSS is currently a measured diagnostic trade-off against Treat's extracted stylesheet."
+    },
+    {
+      "id": "solid-styled-to-pandwind",
+      "from": "solid-styled",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "solid-styled-runtime"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "solid-styled-runtime"
+      ],
+      "reasons": [
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned solid-styled-components test host is exercised through installed Solid and Pandwind runtimes with static styles, function styles, composition, custom hosts, typecheck, build, SSR, hydration, and browser parity. ThemeProvider semantics, nested dynamic templates, and unsupported Solid control-flow/compiler behavior remain explicit residual territory."
+    },
+    {
+      "id": "vue-styled-to-pandwind",
+      "from": "vue-styled",
+      "to": "pandwind",
+      "maturity": "experimental",
+      "execution": "installed-project",
+      "referenceIds": [
+        "vue-styled-css-test"
+      ],
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "dimensions": {
+        "canonical-css": {
+          "status": "passed"
+        },
+        "typecheck": {
+          "status": "pending"
+        },
+        "build": {
+          "status": "pending"
+        },
+        "browser-states": {
+          "status": "pending"
+        },
+        "ssr-hydration": {
+          "status": "pending"
+        },
+        "dependencies": {
+          "status": "pending"
+        },
+        "css-size": {
+          "status": "pending"
+        }
+      },
+      "status": "pending",
+      "eligible": false,
+      "reportIds": [
+        "vue-styled-css-test"
+      ],
+      "reasons": [
+        "4 residual conversion(s) remain",
+        "2 source match(es) were skipped",
+        "the converted reference was not typechecked with its installed dependencies",
+        "the converted reference was not built with its installed project tooling",
+        "real browser states have not been executed for this reference",
+        "real SSR and hydration have not been executed for this reference",
+        "dependency graphs are not installed by the reference runner",
+        "built CSS size is not measured by the source-only runner"
+      ],
+      "note": "A pinned vue-styled-components playground SFC is exercised through installed Vue and Pandwind runtimes with script-block scanning, static and dynamic props, styled subjects, typecheck, build, SSR, hydration, and browser parity. Vue macro semantics, unsupported component expressions, and theme-provider behavior beyond the proven prop lane remain explicit residual territory."
     },
     {
       "id": "unocss-to-tailwind",

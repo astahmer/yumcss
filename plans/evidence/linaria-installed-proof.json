@@ -1,0 +1,81 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"reference": {
+		"repository": "https://github.com/callstack/linaria",
+		"commit": "41d201d45aa7c64aa0f2bd3148ec919c8e1f54eb",
+		"sourceEntry": "examples/astro-solid/pages/csr.tsx"
+	},
+	"route": {
+		"from": "linaria",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"files": [
+			"src/App.tsx",
+			"src/csr_child.tsx",
+			"src/external.ts",
+			"vite.config.ts"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 5,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 190,
+			"targetBytes": 190,
+			"differences": []
+		},
+		"targetUsesPandwind": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "rgb(255, 0, 0)|16px|normal",
+				"hover": "rgb(255, 0, 0)|16px|normal"
+			},
+			"target": {
+				"base": "rgb(255, 0, 0)|16px|normal",
+				"hover": "rgb(255, 0, 0)|16px|normal"
+			}
+		},
+		"hydrationErrors": [],
+		"runtimeStyleBytes": {
+			"source": 171,
+			"target": 171
+		}
+	},
+	"css": {
+		"sourceBytes": 173,
+		"targetBytes": 190,
+		"targetNotLarger": false,
+		"comparison": "diagnostic"
+	}
+}

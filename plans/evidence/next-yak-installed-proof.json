@@ -1,0 +1,77 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"reference": {
+		"repository": "https://github.com/jantimon/css-in-js-bench",
+		"commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+		"sourceEntry": "techs/next-yak/case/dyn-fair/index.tsx"
+	},
+	"route": {
+		"from": "next-yak",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"files": [
+			"src/App.tsx",
+			"src/main.tsx",
+			"src/entry-server.tsx",
+			"vite.config.ts"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 1,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 106,
+			"targetBytes": 106,
+			"differences": []
+		},
+		"targetUsesPandwind": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "matrix(1, 0, 0, 1, 1, 0)|160px|56px|block",
+				"hover": "matrix(1, 0, 0, 1, 1, 0)|160px|56px|block"
+			},
+			"target": {
+				"base": "matrix(1, 0, 0, 1, 1, 0)|160px|56px|block",
+				"hover": "matrix(1, 0, 0, 1, 1, 0)|160px|56px|block"
+			}
+		},
+		"hydrationErrors": []
+	},
+	"css": {
+		"sourceBytes": 90,
+		"targetBytes": 0,
+		"targetNotLarger": true,
+		"comparison": "comparable"
+	}
+}

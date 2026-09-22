@@ -1,0 +1,77 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"reference": {
+		"repository": "https://github.com/rofrischmann/fela",
+		"commit": "6883525fa44c2c47d0d93768eb26f072fee3c439",
+		"sourceEntry": "packages/fela-dom/src/dom/__tests__/render-test.js"
+	},
+	"route": {
+		"from": "fela",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"files": [
+			"src/App.tsx",
+			"src/main.tsx",
+			"src/entry-server.tsx",
+			"vite.config.ts"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 1,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 119,
+			"targetBytes": 119,
+			"differences": []
+		},
+		"targetUsesPandwind": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "rgb(18, 52, 86)|rgb(255, 255, 255)|16px|8px",
+				"hover": "rgb(35, 69, 103)|rgb(255, 255, 255)|16px|8px"
+			},
+			"target": {
+				"base": "rgb(18, 52, 86)|rgb(255, 255, 255)|16px|8px",
+				"hover": "rgb(35, 69, 103)|rgb(255, 255, 255)|16px|8px"
+			}
+		},
+		"hydrationErrors": []
+	},
+	"css": {
+		"sourceBytes": 114,
+		"targetBytes": 172,
+		"targetNotLarger": false,
+		"comparison": "diagnostic"
+	}
+}

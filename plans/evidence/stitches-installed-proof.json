@@ -1,0 +1,77 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"route": {
+		"from": "stitches",
+		"to": "pandwind"
+	},
+	"referenceCommit": "50fd8a1adc6360340fe348a8b3ebc8b06d38e230",
+	"referencePath": "packages/react/tests/basic.js",
+	"fixture": {
+		"files": [
+			"src/styles.ts",
+			"src/App.tsx",
+			"src/entry-server.tsx"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 1,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 138,
+			"targetBytes": 138,
+			"differences": []
+		},
+		"targetUsesPandwind": true,
+		"sourceImportRemoved": true,
+		"variantLowered": true,
+		"recipeRuntimeGenerated": true,
+		"generatedVitePresetImportIsExplicit": true,
+		"generatedVitePluginPresent": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "rgb(156, 44, 44)|rgb(255, 255, 255)|16px|8px",
+				"hover": "rgb(35, 69, 103)|rgb(255, 255, 255)|16px|8px"
+			},
+			"target": {
+				"base": "rgb(156, 44, 44)|rgb(255, 255, 255)|16px|8px",
+				"hover": "rgb(35, 69, 103)|rgb(255, 255, 255)|16px|8px"
+			}
+		},
+		"hydrationErrors": []
+	},
+	"css": {
+		"sourceBytes": 458,
+		"targetBytes": 350,
+		"note": "The tiny fixture compares Stitches' fused SSR sheet with Pandwind's atomic runtime sheet. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget."
+	}
+}

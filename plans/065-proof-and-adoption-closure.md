@@ -5,7 +5,8 @@ Status: complete
 ## Context
 
 The pivot and adapter architecture are implemented, and the repository has
-strong in-process route coverage plus four installed-project migration proofs.
+strong in-process route coverage plus an installed-project migration proof for
+each of the 19 named web routes.
 The remaining criticisms are concentrated in evidence breadth, host syntax
 ownership, ecosystem configuration coverage, and adoption friction. They are
 different kinds of work and should not be hidden behind one universal
@@ -16,6 +17,17 @@ installed-proof evidence gate was not required by the ordinary pull-request
 CI job, and generated artifact size budgets were checked locally but not by
 that job. The plan inventory had a stale aggregate label for plans that are no
 longer present as files.
+
+## Current evidence addendum — 2026-09-22
+
+The installed-project gate now covers 19 named web routes, including Linaria,
+Treat, Solid Styled, Vue Styled, Style9, and Next-yak. The new lanes use pinned
+upstream source commits and real source/target host builds; Treat is compiled
+with its official Webpack plugin. All 19 route reports pass canonical
+migration, dependency installation, typecheck/build, SSR/hydration, browser
+states, and the route CSS accounting contract. They remain experimental because
+the fixtures cover representative lanes, not every theme, plugin, macro, or
+framework semantic.
 
 ## Goal
 
@@ -118,7 +130,7 @@ validation, and host ports. No new central ecosystem switchboard is allowed.
   budget check in addition to the existing offline pivot proof.
 - The plan inventory and implementation-status documentation no longer use the
   stale `063–068` aggregate label for the current plan files.
-- Local checks passed for all four installed-route evidence records, generated
+- Local checks passed for all 19 installed-route evidence records, generated
   artifact budgets, formatting, and diff hygiene.
 - Shared JSX host rewrites now consume `SourceBindings` opening/closing ranges;
   `host-compiler.test.ts` covers nested hosts and shadowed bindings while the

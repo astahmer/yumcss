@@ -1,0 +1,79 @@
+{
+	"schema": "pandwind.installed-project-proof/1",
+	"reference": {
+		"repository": "https://github.com/vue-styled-components/core",
+		"commit": "5874630ed4d54aa955052fc864140eeae30fad2c",
+		"sourceEntry": "packages/playground/src/App.vue"
+	},
+	"route": {
+		"from": "vue-styled",
+		"to": "pandwind"
+	},
+	"fixture": {
+		"files": [
+			"src/App.vue",
+			"vite.config.ts"
+		],
+		"isolated": true
+	},
+	"dependencies": {
+		"installed": true,
+		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetNodeModule": true
+	},
+	"migration": {
+		"converted": 8,
+		"skipped": 0,
+		"residuals": 0,
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 1634,
+			"targetBytes": 1634,
+			"differences": []
+		},
+		"targetUsesPandwind": true
+	},
+	"checks": {
+		"sourceTypecheck": true,
+		"targetTypecheck": true,
+		"sourceBuild": true,
+		"targetBuild": true,
+		"sourceSsr": true,
+		"targetSsr": true,
+		"hydration": true
+	},
+	"ssr": {
+		"markupEquivalent": true
+	},
+	"browser": {
+		"checked": true,
+		"states": [
+			"base",
+			"hover"
+		],
+		"equivalent": true,
+		"changedPixels": 0,
+		"computed": {
+			"source": {
+				"base": "rgb(255, 0, 0)|32px|rgba(0, 0, 0, 0)|0px",
+				"hover": "rgb(255, 0, 0)|32px|rgba(0, 0, 0, 0)|0px"
+			},
+			"target": {
+				"base": "rgb(255, 0, 0)|32px|rgba(0, 0, 0, 0)|0px",
+				"hover": "rgb(255, 0, 0)|32px|rgba(0, 0, 0, 0)|0px"
+			}
+		},
+		"hydrationErrors": [],
+		"runtimeStyleBytes": {
+			"source": 2875,
+			"target": 695
+		}
+	},
+	"css": {
+		"sourceBytes": 2875,
+		"targetBytes": 803,
+		"targetNotLarger": true,
+		"comparison": "comparable"
+	}
+}
