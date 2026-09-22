@@ -22,6 +22,8 @@ import { createTwCli } from "./tw/cli.ts";
 import { createRuntimeCli } from "./runtime/cli.ts";
 import { createLibCli } from "./lib/cli.ts";
 import { createCssCli } from "./css/cli.ts";
+import { extractArbitraryValueProposals } from "./arbitrary-values.ts";
+import { sortStaticClassSource } from "./class-sorter.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
 import {
 	createPandwindProjectSupport,
@@ -947,6 +949,11 @@ const createCodemodCli = (): CAC => {
 	configureMigrateCommand(migrate);
 	const tokens = cli.command("tokens <input>", "Convert token files between supported formats");
 	configureTokensCommand(tokens);
+	const polish = cli.command(
+		"polish <mode> [...patterns]",
+		"Inspect or normalize static codemod source shapes",
+	);
+	configurePolishCommand(polish);
 	cli.command("tw [...args]", "Generate and inspect Pandwind Tailwind artifacts");
 	cli.command("runtime [...args]", "Generate a specialized Pandwind CSS runtime");
 	cli.command("lib [...args]", "Build a publishable Pandwind design-system artifact");
@@ -972,6 +979,132 @@ async function mainTokens(argv: string[]): Promise<void> {
 		process.stdout.write(result);
 		console.error(
 			`\n// ${groupCount} group(s), ${tokenCount} token(s), converted ${from} -> ${to}`,
+		);
+	}
+}
+
+const configurePolishCommand = (command: Command): void => {
+	command
+		.option("--meta <dir>", "Generated Pandwind metadata directory")
+		.option("--root <dir>", "Project root (defaults to cwd or the absolute-pattern root)")
+		.option("--write", "Write class-sort changes to source files")
+		.option("--diff", "Print class-sort unified diffs")
+		.option("--report-format <format>", "Report format: text or json", { default: "text" })
+		.option("--min-occurrences <count>", "Only report arbitrary values used this many times")
+		.option("--max-suggestions <count>", "Maximum nearest-token suggestions per arbitrary value");
+};
+
+const polishNumber = (options: CliOptions, name: string, fallback: number): number => {
+	const value = optionString(options, name);
+	if (value === undefined) return fallback;
+	const parsed = Number(value);
+	if (!Number.isInteger(parsed) || parsed < 1)
+		throw new Error(`codemod polish: --${name} must be a positive integer`);
+	return parsed;
+};
+
+const polishReportFormat = (options: CliOptions): "text" | "json" => {
+	const value = optionString(options, "reportFormat") ?? "text";
+	if (value === "text" || value === "json") return value;
+	throw new Error("codemod polish: --report-format must be text or json");
+};
+
+const polishRoot = (patterns: readonly string[], options: CliOptions): string => {
+	const explicit = optionString(options, "root");
+	return explicit === undefined
+		? nearestProjectRoot(absolutePatternRoot(patterns) ?? process.cwd())
+		: resolve(process.cwd(), explicit);
+};
+
+const polishMeta = async (root: string, options: CliOptions): Promise<PandwindMeta> => {
+	const directory = optionString(options, "meta");
+	if (directory === undefined)
+		throw new Error("codemod polish: --meta <dir> is required for metadata-aware tooling");
+	const metaDir = resolve(root, directory);
+	const bridgePath = resolve(metaDir, "bridge.ts");
+	return loadMetaFromSourcesAsync({
+		typesDtsPath: resolve(metaDir, "types.d.ts"),
+		twTsPath: resolve(metaDir, "tw.ts"),
+		bridgePath: existsSync(bridgePath) ? bridgePath : undefined,
+	});
+};
+
+const printArbitraryReport = (
+	report: ReturnType<typeof extractArbitraryValueProposals>,
+	format: "text" | "json",
+): void => {
+	if (format === "json") {
+		process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+		return;
+	}
+	if (report.proposals.length === 0) {
+		console.log("codemod polish: no arbitrary values found");
+		return;
+	}
+	for (const proposal of report.proposals) {
+		const property =
+			proposal.properties.length > 0 ? proposal.properties.join(", ") : "unknown property";
+		const exact = proposal.exactTokens.map((token) => `${token.group}.${token.ref}`).join(", ");
+		const nearest = proposal.nearestTokens
+			.map((token) => `${token.group}.${token.ref} (${token.distance.toFixed(3)})`)
+			.join(", ");
+		console.log(`${proposal.count}x ${property}: ${JSON.stringify(proposal.value)}`);
+		if (exact !== "") console.log(`  exact tokens: ${exact}`);
+		if (nearest !== "") console.log(`  nearest tokens: ${nearest}`);
+		console.log(`  files: ${proposal.files.join(", ")}`);
+	}
+};
+
+async function mainPolish(argv: string[]): Promise<void> {
+	const cli = cac("pandwind-codemod polish");
+	const command = cli.command(
+		"<mode> [...patterns]",
+		"Inspect or normalize static codemod source shapes",
+	);
+	configurePolishCommand(command);
+	cli.parse(["node", "pandwind-codemod polish", ...argv], { run: false });
+	if (cli.matchedCommand === undefined)
+		throw new Error("codemod polish: mode is required (sort or arbitrary)");
+	validateCommand(cli.matchedCommand);
+	const options = cli.options as CliOptions;
+	const mode = cli.args[0];
+	if (mode !== "sort" && mode !== "arbitrary")
+		throw new Error(`codemod polish: unknown mode '${mode ?? ""}' (expected sort|arbitrary)`);
+	const patterns = cli.args.slice(1).map(String);
+	if (patterns.length === 0)
+		throw new Error("codemod polish: at least one source pattern is required");
+	const root = polishRoot(patterns, options);
+	const meta = await polishMeta(root, options);
+	const filePaths = expandPatterns(patterns, root);
+	if (mode === "arbitrary") {
+		const report = extractArbitraryValueProposals(
+			filePaths.map((file) => ({ file: relative(root, file), source: readFileSync(file, "utf8") })),
+			meta,
+			{
+				minOccurrences: polishNumber(options, "minOccurrences", 1),
+				maxSuggestions: polishNumber(options, "maxSuggestions", 5),
+			},
+		);
+		printArbitraryReport(report, polishReportFormat(options));
+		return;
+	}
+	const changes: Array<{ readonly file: string; readonly code: string; readonly edits: number }> =
+		[];
+	for (const file of filePaths) {
+		const source = readFileSync(file, "utf8");
+		const result = sortStaticClassSource(source, meta, file);
+		if (!result.changed) continue;
+		changes.push({ file, code: result.code, edits: result.edits });
+		if (options.diff === true) process.stdout.write(unifiedDiff(source, result.code, file));
+		if (options.write === true) writeFileSync(file, result.code);
+	}
+	if (polishReportFormat(options) === "json") {
+		process.stdout.write(
+			`${JSON.stringify({ files: changes.map((change) => ({ file: relative(root, change.file), edits: change.edits })) }, null, 2)}\n`,
+		);
+	} else {
+		console.log(
+			`codemod polish: ${changes.length} file(s) ${options.write === true ? "updated" : "would change"}`,
 		);
 	}
 }
@@ -1036,6 +1169,10 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 		}
 		if (cli.matchedCommand.name === "tokens") {
 			await mainTokens(argv.slice(1));
+			return;
+		}
+		if (cli.matchedCommand.name === "polish") {
+			await mainPolish(argv.slice(1));
 			return;
 		}
 	} catch (error) {

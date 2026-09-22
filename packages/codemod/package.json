@@ -103,6 +103,24 @@
 			"import": "./dist/class-sorter.js",
 			"default": "./dist/class-sorter.js"
 		},
+		"./migration/arbitrary-values": {
+			"pandwind": "./src/arbitrary-values.ts",
+			"types": "./dist/arbitrary-values.d.ts",
+			"import": "./dist/arbitrary-values.js",
+			"default": "./dist/arbitrary-values.js"
+		},
+		"./swap/variant-hoisting": {
+			"pandwind": "./src/swap/variant-hoisting.ts",
+			"types": "./dist/swap/variant-hoisting.d.ts",
+			"import": "./dist/swap/variant-hoisting.js",
+			"default": "./dist/swap/variant-hoisting.js"
+		},
+		"./swap/token-set": {
+			"pandwind": "./src/swap/token-set.ts",
+			"types": "./dist/swap/token-set.d.ts",
+			"import": "./dist/swap/token-set.js",
+			"default": "./dist/swap/token-set.js"
+		},
 		"./swap/unplugin": {
 			"pandwind": "./src/swap/unplugin.ts",
 			"types": "./dist/swap/unplugin.d.ts",

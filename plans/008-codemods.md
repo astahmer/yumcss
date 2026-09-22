@@ -57,6 +57,28 @@ declarations, or styled-components with no props interpolation, become
 - **Vue/Svelte adapters**: same core over different template syntaxes
   (attribute regexes differ; core mapping is shared).
 
+## Codemod polish landed (2026-09-22)
+
+The five remaining polish items are now implemented on top of the generated
+metadata and the shared swap IR:
+
+- conflict-aware class sorting is available through the library and
+  `polish sort`; generated utility order and conflict properties preserve
+  last-wins behavior, while unknown/plugin/arbitrary classes remain barriers;
+- nearest-token diagnostics are available through `migrate --nearest-tokens`
+  and arbitrary-value reports; they never rewrite a near miss;
+- `polish arbitrary` groups static arbitrary values by property and resolved
+  value and reports exact/near token proposals;
+- variant nesting uses one bidirectional normalizer for `_hover`, `hover`, and
+  known compound keys, so target emitters choose their native spelling;
+- the StyleX token format imports scalar `defineVars` leaves through
+  `tokens --from=stylex`; conditional/theme-dependent values remain outside
+  the static token set.
+
+The remaining limits are intentional: dynamic class strings, unknown variants,
+conditional token objects, and unsupported plugin semantics stay visible as
+residuals or report omissions rather than being guessed.
+
 ## Codemod 1+2 Outcomes (2026-08-23)
 
 - `packages/codemod` shipped: CLI (`pnpm codemod <globs> --to=… [--diff] [--write]

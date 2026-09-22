@@ -160,8 +160,58 @@ pnpm exec pandwind-codemod tokens --from=preset --to=panda src/preset.ts
 
 Supported format adapters are DTCG, Tailwind `@theme`, Panda, Pandwind
 presets, Style Dictionary, Figma Tokens, root CSS variables, and StyleX
-export. Adding a format means implementing one source/target adapter; the
+import/export. Adding a format means implementing one source/target adapter; the
 normalized representation is shared.
+
+## Codemod polish
+
+The metadata-aware polish command handles the small, repetitive cleanup tasks
+around a migration. It reads the generated `types.d.ts`, `tw.ts`, and optional
+`bridge.ts` from `--meta`; it never invents a utility or token vocabulary.
+
+```sh
+# Preview conflict-aware class ordering; add --write to apply it.
+pnpm exec pandwind-codemod polish sort "src/**/*.{ts,tsx}" \
+  --meta examples/example/src --diff
+
+# Find repeated arbitrary values and show exact/nearby token proposals.
+pnpm exec pandwind-codemod polish arbitrary "src/**/*.{ts,tsx}" \
+  --meta examples/example/src --min-occurrences 2
+
+# Use machine-readable output in CI or an editor integration.
+pnpm exec pandwind-codemod polish arbitrary "src/**/*.{ts,tsx}" \
+  --meta examples/example/src --report-format=json
+```
+
+Class sorting uses generated utility order and conflict properties. Colliding
+utilities remain in source order so last-wins behavior is unchanged; unknown,
+plugin, and arbitrary classes are barriers rather than guesses. The pass covers
+static JSX `class`/`className` attributes, object properties, and literal
+arguments to `cx`, `clsx`, `classnames`, and `twMerge`.
+
+Arbitrary-value mode reports static class literals only. It groups occurrences
+by property and resolved value, including forms such as `w-[37px]` and
+`[width:37px]`, and reports exact or nearby preset matches without rewriting.
+`--min-occurrences` filters the proposal list; dynamic expressions, spreads,
+and runtime-built class strings remain outside the report.
+
+Variant nesting is normalized through one shared condition pass. `_hover`,
+`hover`, and known compound variant spellings resolve to the same IR path, then
+the target emitter writes its native form (`_hover` for design objects,
+`hover` nesting for `tw`). Unknown variants remain residuals.
+
+StyleX `defineVars` is now importable through the token command as well as
+exportable:
+
+```sh
+pnpm exec pandwind-codemod tokens --from=stylex --to=dtcg vars.stylex.ts \
+  --out=tokens.json
+```
+
+Named aliases, namespace imports, and default imports are recognized. Static
+string/number leaves become token-set entries; conditional/theme objects are
+not flattened into invented token names. If a file contains only conditional
+values, the importer fails with an actionable diagnostic.
 
 ## Safety rails and reports
 

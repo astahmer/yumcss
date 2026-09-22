@@ -126,5 +126,8 @@ pnpm codemod swap --from=<api> --to=<api> [--write] [--diff] [--report] <paths..
   panda.config tokens ({value} leaves), and pandwind definePreset modules
   (dynamic import). Adding a format = one importer + one exporter.
 
-Deferred (explicitly): --engine flag (Tailwind candidatesToCss resolution of
-bridge misses), stylex-config importer.
+The original follow-up importer is now landed as the StyleX token-format
+adapter: `tokens --from=stylex` reads static scalar `defineVars` leaves while
+leaving conditional/theme objects outside the static catalog. The unrelated
+`--engine` flag remains deferred (Tailwind `candidatesToCss` resolution of
+bridge misses).
