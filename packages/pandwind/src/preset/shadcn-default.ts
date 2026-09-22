@@ -1,5 +1,4 @@
 import { define } from "../types/define-preset.export.ts";
-import type { TokenGroupKey } from "../types/typings.ts";
 import { presetConditions } from "./conditions.ts";
 import { shadcnDefaultTheme } from "./generated/shadcn-default-theme.ts";
 import type { PandwindProperties } from "./properties.ts";
@@ -10,14 +9,6 @@ type ShadcnDefaultBaseColorVariables = ShadcnDefaultTheme["colorVariables"]["lig
 type ShadcnDefaultColorRole = Exclude<keyof ShadcnDefaultBaseColorVariables, "radius">;
 type ShadcnDefaultColorToken = { readonly base: string; readonly _dark: string };
 type ShadcnDefaultColorTokens = Record<`$${ShadcnDefaultColorRole}`, ShadcnDefaultColorToken>;
-
-type ShadcnDefaultTokenGroups = {
-	readonly colors: ShadcnDefaultColorTokens;
-	readonly radii: ShadcnDefaultTheme["radiusMultipliers"];
-	readonly fonts: Readonly<Record<string, string>>;
-};
-
-type ShadcnDefaultTokenGroup = TokenGroupKey<ShadcnDefaultTokenGroups>;
 
 const tokenConditions = { base: "", _dark: ".dark &" } as const;
 const shadcnCssConfig: PandwindProperties = {};
