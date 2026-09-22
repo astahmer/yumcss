@@ -97,6 +97,12 @@
 			"import": "./dist/tokens.js",
 			"default": "./dist/tokens.js"
 		},
+		"./migration/class-sorter": {
+			"pandwind": "./src/class-sorter.ts",
+			"types": "./dist/class-sorter.d.ts",
+			"import": "./dist/class-sorter.js",
+			"default": "./dist/class-sorter.js"
+		},
 		"./swap/unplugin": {
 			"pandwind": "./src/swap/unplugin.ts",
 			"types": "./dist/swap/unplugin.d.ts",

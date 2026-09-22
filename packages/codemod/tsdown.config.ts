@@ -22,6 +22,7 @@ export default defineConfig({
 		"src/map.ts",
 		"src/shared.ts",
 		"src/tokens.ts",
+		"src/class-sorter.ts",
 		"src/swap/unplugin.ts",
 		"src/swap/vite.ts",
 		"src/swap/browser.ts",
