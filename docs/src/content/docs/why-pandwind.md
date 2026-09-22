@@ -73,7 +73,7 @@ emits a plain `@keyframes` rule.
 ### Be honest about migrations
 
 The codemod has many adapters, but an adapter name is not a guarantee that an
-arbitrary production app is losslessly portable. Studio and the CLI preserve
+arbitrary production app is losslessly portable. Migration Preview and the CLI preserve
 unsupported source and report residuals for theme callbacks, recipes,
 framework behavior, runtime interpolation, and other semantics that need a
 human decision.
@@ -92,11 +92,11 @@ If that trade is not useful for your project, ordinary CSS is a good answer.
 
 ## Where to go next
 
-- [Getting started](/getting-started/) for the primary CSS path, or
-  [Build your first Tailwind app](/guides/basic/) when Tailwind already owns
-  your stylesheet.
+- [Getting started](/getting-started/) for the primary CSS path.
+- [Tailwind component patterns](/guides/basic/) after generating the helper
+  from your existing Tailwind stylesheet.
 - [Build a design system](/guides/design-system/) for tokens and themes.
-- [Playground, inspector, and Studio](/tooling/analyze-and-studio/) to see
+- [Tooling workflows](/tooling/workflows/) to see
   what each tool actually does.
 - [Current limitations](/reference/current-limitations-and-criticism/) for a
   candid view of the unfinished or experimental parts.

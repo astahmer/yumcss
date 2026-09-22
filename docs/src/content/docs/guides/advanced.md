@@ -207,7 +207,8 @@ lossiness contracts, scanners, lowerings, and validators are shared. Plugins
 can be discovered through the adapter manifest convention. See [the adapter
 contract](/reference/adapter-contract/) and [codemod](/tooling/codemod/).
 
-Analyzer and Studio consume the same scanner and semantic facts. Use them to
+The analyzer CLI, Inspector, and Migration Preview consume the same scanner
+and semantic facts. Use them to
 measure source coverage, dynamic/residual sites, dependency changes, CSS shape,
 and migration history before and after a change.
 

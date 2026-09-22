@@ -780,7 +780,7 @@ parameter properties.
 
 Prefer one cohesive façade, registry, or class over a module that exports a
 collection of unrelated operations. The analyzer's collect subpath exposes
-named collection operations directly, the Studio workspace has one factory,
+named collection operations directly, the Migration Preview workspace has one factory,
 and the backend registry has one factory collection and lookup view. Export a
 primitive only when it is an independent contract or a narrow public entry
 point. Knip is the required check for unused exports; generated `tw.ts`
@@ -815,7 +815,7 @@ modules. `createDesignSystemCodegen` accepts substitutions for every policy;
 CSS budget analysis follows the same rule. `CssBudgetEvaluator` composes source
 candidate scanning, artifact compilation, and metrics; `TailwindCssArtifactInspection`
 composes those same ports for class drill-down and stylesheet shape. The CLI
-and studio use `createCssBudgetService`, whose substitution test covers both
+and the Inspector use `createCssBudgetService`, whose substitution test covers both
 budget and inspection paths. Runtime sheets and stylesheet lowering likewise
 accept replacement ports for storage, ordering, canonicalization,
 serialization, conditions, decoding, and sinks.
@@ -1073,7 +1073,7 @@ The same boundary applies to three workspace dependencies that are intentionally
 kept in `knip.json`'s ignore list: `@pandwind/example-preset` is imported through
 the repository's `pandwind` condition and also resolved from generated/config
 strings; `prettier` is loaded through browser-only formatter subpaths; and
-`@hono/node-server` is used by the public Node studio transport entrypoint.
+`@hono/node-server` is used by the public Node Migration Preview transport entrypoint.
 Their package manifests and typechecks own those dependencies, while Knip cannot
 trace the conditional or subpath resolution reliably.
 
@@ -1136,7 +1136,7 @@ deliberate:
 - Runtime-only lazy method accessors were rejected after measurement. The
   shipped compiler-aware runtime pruning removes unused attachments without
   imposing a first-access tax on every factory instance.
-- `plans/054-token-usage-governance.md` is complete for the tooling ledger: versioned report, effective universe, strictness classification, exact suggestions, reachability, prune changesets, CLI/Inspector/lint/codemod consumption, and the governance bench. Studio-side paginated queries for very large catalogs and an approved write-mode removal command remain bounded follow-ups inside their owning plans, not open governance work.
+- `plans/054-token-usage-governance.md` is complete for the tooling ledger: versioned report, effective universe, strictness classification, exact suggestions, reachability, prune changesets, CLI/Inspector/lint/codemod consumption, and the governance bench. Migration Preview pagination for very large catalogs and an approved write-mode removal command remain bounded follow-ups inside their owning plans, not open governance work.
 - `plans/065-proof-and-adoption-closure.md` is complete for ordinary-CI
   evidence checks, scanner-backed shared JSX host rewrites, official-loader
   context fixtures, multi-file installed-project proofs, typed opt-in MCP host

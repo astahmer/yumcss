@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { CodemodAdapterId } from "pandwind-codemod/swap/browser";
 import { createMigrationLab } from "./migration-lab.ts";
 
-describe("migration lab plan 055 adapters", () => {
+describe("migration examples plan 055 adapters", () => {
 	/** Roundtrip leg: migrate back to the source adapter with the generated code. */
 	function roundtrip(lab: ReturnType<typeof createMigrationLab>, source: CodemodAdapterId) {
 		const first = lab.migrate(source, CodemodAdapterId.Pandwind, lab.sampleFor(source));

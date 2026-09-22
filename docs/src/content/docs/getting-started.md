@@ -196,7 +196,7 @@ literal source that Tailwind can see.
 - [Build a component library](/guides/component-library/) when styles cross a
   package boundary.
 - [Theming](/api/theming/) for light/dark and component scopes.
-- [Playground, inspector, and Studio](/tooling/analyze-and-studio/) to see
+- [Tooling workflows](/tooling/workflows/) to see
   generated output instead of guessing.
 - [Migration guide](/guides/migrations/) when you are bringing an existing
   codebase along.

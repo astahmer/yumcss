@@ -833,7 +833,7 @@ export function MigrationLabPage() {
 									color: "textStrong",
 								})}
 							>
-								Migration lab
+								Migration examples
 							</h1>
 						</div>
 						<p

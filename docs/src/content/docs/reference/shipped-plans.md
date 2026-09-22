@@ -76,11 +76,11 @@ generated CSS. See [tw() dynamic values](/api/tw/), the
 
 ### Plans 053–058 closeout
 
-The local codebase Studio (053), token-governance ledger (054), non-CSS-in-JS
+The local codebase Migration Preview (053), token-governance ledger (054), non-CSS-in-JS
 source adapters (055), renderer-neutral Stack bindings (056), and dynamic
 lowering for every Pandwind API (057–058) are complete. Their focused tests,
 typechecks, generated artifacts, and pinned-reference evidence are kept with
-the repository plans. Studio also has a real Chromium host proof for CSS
+the repository plans. Migration Preview also has a real Chromium host proof for CSS
 injection and computed-style evidence; static-only projects retain an explicit
 unavailable preview state.
 

@@ -73,7 +73,7 @@ From research.md — before scoping a custom extension:
 
 - [ ] Workflow recording cx-bench cold/warm numbers + analyze css budget per
       commit on main into a committed JSONL (e.g. `metrics/history.jsonl`).
-- [ ] Render trend graph in the studio History view (reads same JSONL).
+- [ ] Render trend graph in the Inspector History view (reads same JSONL).
 - [ ] Optional: post weekly summary to PR bot sticky comment.
 
 ## 6. Playground launch

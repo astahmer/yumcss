@@ -3,9 +3,9 @@ import { createBdd, test } from "playwright-bdd";
 
 const { Given, When, Then } = createBdd(test);
 
-Given("I open the playground migration lab", async ({ page }) => {
+Given("I open the playground migration examples", async ({ page }) => {
 	await page.goto("/migrate", { waitUntil: "domcontentloaded" });
-	await expect(page.locator("main h1")).toHaveText("Migration lab", {
+	await expect(page.locator("main h1")).toHaveText("Migration examples", {
 		timeout: 15_000,
 	});
 });

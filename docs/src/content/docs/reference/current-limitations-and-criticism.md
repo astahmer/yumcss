@@ -15,7 +15,7 @@ adoption simplicity, real-world proof, and scope discipline.
 
 - "Why use Pandwind instead of Tailwind, Panda, StyleX, or vanilla-extract?"
   Pandwind currently combines typed Tailwind objects, atomic CSS-in-JS, design
-  system CSS, migration tooling, many adapters, non-web backends, Studio,
+  system CSS, migration tooling, many adapters, non-web backends, the Inspector,
   DevTools, Playground, and MCP. The value is clear mainly for teams migrating
   or intentionally mixing styling ecosystems.
 - "This is not actually zero-runtime CSS." Dynamic `tw()` values require
@@ -127,7 +127,7 @@ describe evidence, not a promise that every construct in a route is lossless.
 | Panda -> Pandwind bounded fixture             | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels                                                                   | recipes, plugins, themes, frameworks, and multi-file projects                        |
 | UnoCSS -> Pandwind bounded fixture            | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels                                            | shortcuts, transformers, variants, frameworks, and multi-file projects               |
 | Playground                                    | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection, and a real package/Vite fixture with TypeScript, client build, SSR build, Chromium, and hydration evidence | broader framework fixtures                                                           |
-| MCP and analyzer                              | experimental | typed tool/resource contracts, per-result execution evidence, an opt-in isolated Node package-script host, reproducible in-process benchmark profiles, and Studio execution evidence          | richer framework/browser hosts and durable project evidence                          |
+| MCP and analyzer                              | experimental | typed tool/resource contracts, per-result execution evidence, an opt-in isolated Node package-script host, reproducible in-process benchmark profiles, and Migration Preview evidence     | richer framework/browser hosts and durable project evidence                          |
 | React Native/OpenTUI backends                 | experimental | backend contract/type coverage plus bounded real hosts: react-native-web Chromium toggle assertions and OpenTUI headless/PTY assertions                                                       | real external consumers, native-device/platform proof, and broader backend semantics |
 | React Strict DOM and other non-web backends   | research     | contract, typing, and adapter coverage                                                                                                                                                        | real consumers and backend-specific runtime proof                                    |
 

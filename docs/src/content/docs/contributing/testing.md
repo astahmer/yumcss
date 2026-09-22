@@ -38,7 +38,7 @@ browser servers, generated artifacts, PTYs, and native fixtures should not
 compete for the same ports or terminal state.
 
 `test:e2e:playground` generates the Playwright-BDD specs from the `.feature`
-files, starts the playground, and checks the migration lab plus editor typing
+files, starts the playground, and checks the migration examples plus editor typing
 experience in Chromium.
 
 `test:e2e:authored-tokens` generates a preset stylesheet and checks it in real
@@ -272,7 +272,7 @@ The recursive test command includes:
 When changing a host adapter or backend, run the matching example directly as
 well as `pnpm run test:all`.
 
-The Playwright-BDD migration lab adds browser coverage for every registered
+The Playwright-BDD migration examples adds browser coverage for every registered
 source and target selector. Its feature scenarios prove that the browser
 composition root exposes the same adapter registry as the migration use case;
 the residual scenario keeps non-happy behavior visible to users.

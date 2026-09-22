@@ -21,8 +21,8 @@ needs something special.
 
 ## See it in action
 
-The repository includes a live playground, a design-system inspector, analyzer
-coverage views, and a migration Studio. These captures come from the running
+The repository includes a live playground, a project Inspector, analyzer
+coverage, and a read-only Migration Preview. These captures come from the running
 apps, not mock marketing screens.
 
 <table>
@@ -50,15 +50,11 @@ apps, not mock marketing screens.
     <td><strong>Inspector — understand your system</strong><br />Browse tokens, theme variables, utility unions, and bridge mappings.</td>
     <td><strong>Analyzer — measure what shipped</strong><br />See build-time elimination, stylesheet shape, CSS size, and missing-CSS warnings.</td>
   </tr>
-  <tr>
-    <td colspan="2">
-      <img src="docs/assets/showcase/studio-migration.png" alt="Pandwind Studio showing an Emotion source file migrated to the Pandwind css.class target" />
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2"><strong>Studio — review a migration before changing files</strong><br />Choose a source and target, inspect the generated code, and see any unsupported behavior instead of guessing.</td>
-  </tr>
 </table>
+
+**Migration Preview** opens a real project in a read-only workspace. Choose a
+source and target, inspect generated code, and review unsupported behavior
+before changing files.
 
 ## A working CSS setup in five minutes
 
@@ -412,10 +408,10 @@ Run these from the repository checkout:
 pnpm run playground   # learn the APIs in a live editor
 pnpm run inspect      # inspect tokens, coverage, and generated CSS
 pnpm run analyze      # produce a CI-friendly analysis report
-pnpm run studio       # review a migration in a read-only workspace
+pnpm run migration-preview # review a migration in a read-only workspace
 ```
 
-The [playground, inspector, and Studio guide](./docs/src/content/docs/tooling/analyze-and-studio.md)
+The [tooling workflows guide](./docs/src/content/docs/tooling/workflows.md)
 explains which question each tool answers. The [migration guide](./docs/src/content/docs/guides/migrations.md)
 shows the safe preview workflow.
 
@@ -438,8 +434,8 @@ for measured boundaries.
 
 ## Documentation map
 
-- [Build your first Tailwind app](./docs/src/content/docs/guides/basic.md) — a
-  complete compatibility path for existing Tailwind apps.
+- [Tailwind component patterns](./docs/src/content/docs/guides/basic.md) — use
+  the generated helper for reusable and finite runtime choices.
 - [Build a design system](./docs/src/content/docs/guides/design-system.md) —
   tokens, themes, and component contracts.
 - [Build a component library](./docs/src/content/docs/guides/component-library.md) —
@@ -448,8 +444,8 @@ for measured boundaries.
   preview, review, validate, and apply.
 - [API reference](./docs/src/content/docs/api/css.md) — the primary `css()` API
   plus the design, Tailwind, and composition lanes.
-- [Tooling](./docs/src/content/docs/tooling/analyze-and-studio.md) —
-  playground, analyzer, inspector, Studio, codegen, and Vite.
+- [Tooling workflows](./docs/src/content/docs/tooling/workflows.md) —
+  playground, Inspector, analysis CLI, Migration Preview, codegen, and Vite.
 - [Reference](./docs/src/content/docs/reference/limitations.md) — technical
   contracts, support boundaries, benchmarks, and architecture.
 
@@ -464,5 +460,5 @@ pnpm --filter pandwind-docs run dev
 ```
 
 The project is pre-launch and experimental tooling is labeled as such in the
-documentation. Start with the core web lanes; the analyzer, codemod, Studio,
+documentation. Start with the core web lanes; the analyzer, codemod, Migration Preview,
 backends, and integrations are separate tools with their own proof boundaries.

@@ -33,11 +33,12 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: "Start here",
-					items: ["getting-started", "guides/basic", "why-pandwind"],
+					items: ["getting-started", "why-pandwind"],
 				},
 				{
 					label: "Build with pandwind",
 					items: [
+						"guides/basic",
 						"guides/design-system",
 						"guides/component-library",
 						"guides/migrations",
@@ -80,7 +81,7 @@ export default defineConfig({
 				{
 					label: "See and ship the result",
 					items: [
-						"tooling/analyze-and-studio",
+						"tooling/workflows",
 						"tooling/codegen",
 						"tooling/vite-plugins",
 						"tooling/multi-bundler",
@@ -92,28 +93,34 @@ export default defineConfig({
 					items: [
 						"interop/tailwind-adapter",
 						"interop/css-in-js-adapters",
+						"interop/migration-adapters",
 						"interop/compatibility",
 					],
 				},
 				{
 					label: "Reference",
 					items: [
-						"reference/implementation-status",
 						"reference/technical-overview",
 						"reference/adoption",
-						"reference/adapter-contract",
-						"reference/css-in-js-scorecard",
 						"reference/authored-css",
 						"reference/backends",
 						"reference/ssr",
 						"reference/size",
 						"reference/benchmarks",
 						"reference/limitations",
+						{
+							label: "Ecosystem details",
+							items: ["reference/adapter-contract", "reference/css-in-js-scorecard"],
+						},
 					],
 				},
 				{
 					label: "Contributing",
-					items: ["contributing/architecture", "contributing/testing"],
+					items: [
+						"reference/implementation-status",
+						"contributing/architecture",
+						"contributing/testing",
+					],
 				},
 			],
 		}),

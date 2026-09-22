@@ -285,7 +285,7 @@ function MigrationLabLink() {
 			aria-current={pathname === "/migrate" ? "page" : undefined}
 			className={`${HEADER_LINK} ${pathname === "/migrate" ? HEADER_LINK_ACTIVE : HEADER_LINK_IDLE}`}
 		>
-			migration lab
+			migration examples
 		</Link>
 	);
 }
@@ -385,7 +385,7 @@ function ShellFrame() {
 				</div>
 			</header>
 			<main className={uiCss.class({ minHeight: "0px", flex: "1 1 0%" })}>
-				<Suspense fallback={<div className={ROUTE_LOADING}>loading migration lab…</div>}>
+				<Suspense fallback={<div className={ROUTE_LOADING}>loading migration examples…</div>}>
 					<Outlet />
 				</Suspense>
 			</main>

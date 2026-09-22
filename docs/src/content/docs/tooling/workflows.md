@@ -1,6 +1,6 @@
 ---
-title: Playground, inspector, and Studio
-description: Learn Pandwind by trying styles, inspecting a project, and previewing migrations.
+title: Tooling workflows
+description: Learn Pandwind in the Playground, inspect a project, and review migration output.
 sidebar:
   order: 1
 ---
@@ -8,12 +8,12 @@ sidebar:
 These tools answer different questions. You do not need to run all of them to
 use Pandwind:
 
-| You want to know…                             | Use…                 |
-| --------------------------------------------- | -------------------- |
-| “What does this style object do?”             | the **Playground**   |
-| “What did my project generate?”               | the **Inspector**    |
-| “How much work will this migration leave me?” | **Studio**           |
-| “Can CI check this on every pull request?”    | the **analyzer CLI** |
+| You want to know…                              | Use…                         |
+| ---------------------------------------------- | ---------------------------- |
+| “What does this style object do?”              | the **Playground**           |
+| “What did this project generate or use?”       | the **Inspector**            |
+| “Can CI repeat the same checks?”               | the **analyzer CLI**         |
+| “What will this migration change?”             | **Migration Preview**        |
 
 ## Playground: learn by changing code
 
@@ -45,17 +45,15 @@ filesystem, Tailwind Node pipeline, or framework plugins.
 pnpm run inspect
 ```
 
-The Inspector reads the repository and presents the useful results without
-making you parse JSON:
+The Inspector reads the repository and presents the useful results in three
+views:
 
-- **Design system** — colors, typography, spacing, radii, theme variables,
-  typed utility unions, bridge mappings, and exportable token data.
-- **Stats** — how many style calls were eliminated at build time, how much CSS
+- **Tokens** — a catalog of colors, typography, spacing, radii, theme
+  variables, typed utility unions, and bridge mappings. Its sections group the
+  catalog, usage and cleanup, and focused token relationships.
+- **Build report** — how many style calls were eliminated at build time, how much CSS
   was generated, where the stylesheet is large, and where CSS may be missing.
-- **Token graph** — aliases, references, cycles, and provenance.
-- **Usage & cleanup** — which properties and tokens are used, plus candidates
-  for cleanup with the analysis boundaries shown before any removal preview.
-- **History** — compare saved inspector runs when history is enabled.
+- **History** — compare snapshots saved by earlier Inspector runs.
 
 The Usage & cleanup view groups tokens by catalog category and shows catalog
 coverage, the hottest entries, and tokens not observed by the current scan.
@@ -77,29 +75,35 @@ Usage also includes a focused WCAG checker for one selected text/background
 palette pair. It reports the ratio and AA status without generating a noisy
 all-colors matrix; source pairs that fail contrast remain listed separately.
 
+The Relationships section opens on a connected token and shows only its direct
+dependents and references. Select a neighboring token to follow its links. An
+“unlinked raw variable” is only unreferenced inside this graph; check Usage &
+cleanup for application-level scan evidence before deciding it is unused.
+
 The Inspector is read-only. It is a lens over analyzer results, not another
 compiler or a second source of truth.
 
-Inspector views are deep-linkable: `#design`, `#graph`, `#stats`, `#usage`,
-and `#history` select a view, while a design-system section can
-be addressed as `#design/sec-colors` or `#design/sec-spacing`. The filter is
-stored in the `q` query parameter, so a link such as
-`?q=blue#design/sec-colors` opens the same filtered view after a refresh.
+Inspector views are deep-linkable: `#tokens`, `#tokens/usage`,
+`#tokens/relationships`, `#build`, and `#history` select a view, while a token
+catalog section can be addressed as `#tokens/sec-colors` or
+`#tokens/sec-spacing`. The catalog and Build report filters are stored in the
+`q` query parameter, so a link such as
+`?q=blue#tokens/sec-colors` opens the same filtered view after a refresh.
 Use `/` to focus the filter, **clear** to reset it, and the live match count
 to see how much of the current view remains visible. Empty sections disappear
 while filtering, and the section links track the section currently in view.
 
-The Stats view groups build-time folding separately from stylesheet budget and
+The Build report groups build-time folding separately from stylesheet budget and
 shows per-file fold outcomes in a sortable, horizontally scrollable table. Its
 token/literal percentages describe statically classified authored values;
 dynamic expressions are reported separately and excluded from that percentage
 denominator. The export menu includes JSON, Markdown, self-contained HTML,
 and an optional per-file CSV report for CI or spreadsheet analysis.
 
-## Analyzer: make the useful checks repeatable
+### Repeat the analysis in CI
 
-The analyzer is the command-line version of the questions above. Run the
-repository example with:
+The analyzer CLI consumes the same project scanner and reports the same
+coverage and budget evidence. Run the repository example with:
 
 ```sh
 pnpm run analyze
@@ -130,12 +134,12 @@ Use it to track:
 The goal is not a wall of numbers. Use the human-readable output while
 developing and `--json` when a CI job or editor needs structured data.
 
-## Studio: preview a migration
+## Migration Preview: inspect a project before applying changes
 
-Studio gives you a project-shaped, read-only migration workspace:
+Migration Preview opens a project-shaped, read-only migration workspace:
 
 ```sh
-pnpm exec pandwind-studio /path/to/project --no-open
+pnpm exec pandwind-migration-preview /path/to/project --no-open
 ```
 
 Open the printed localhost URL. Choose a source adapter and a Pandwind target,
@@ -147,7 +151,7 @@ then inspect:
 4. token/theme information; and
 5. diagnostics for behavior that needs a human decision.
 
-Edits in Studio are overlays in memory. **Apply edit** re-evaluates the
+Edits in Migration Preview are overlays in memory. **Apply edit** re-evaluates the
 overlay; it does not write the project. Use the CLI when you are ready to
 produce a real diff:
 
@@ -187,7 +191,7 @@ Playground → copy the style → typecheck your app → inspect generated CSS
 When migrating:
 
 ```text
-analyzer → Studio preview → codemod diff/report → typecheck/build/browser
+analyzer CLI → Migration Preview → codemod diff/report → typecheck/build/browser
 ```
 
 When running CI:

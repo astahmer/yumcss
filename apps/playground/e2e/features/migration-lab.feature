@@ -1,14 +1,14 @@
-Feature: Playground migration lab
+Feature: Playground migration examples
   The playground exposes the same registry-backed migration use case as the
   CLI, so users can inspect source adapters, target adapters, emitted code,
   validation, and residuals in a browser.
 
   Background:
-    Given I open the playground migration lab
+    Given I open the playground migration examples
 
   @smoke
   Scenario: the default migration lane is visible
-    Then the page heading is "Migration lab"
+    Then the page heading is "Migration examples"
     And the editor has no TypeScript error markers
     And the "from · source adapter" selector has value "styled-components"
     And the "to · target adapter" selector has value "pandwind"

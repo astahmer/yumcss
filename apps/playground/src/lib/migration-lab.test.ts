@@ -12,7 +12,7 @@ import {
 	createMigrationLab,
 } from "./migration-lab.ts";
 
-describe("migration lab", () => {
+describe("migration examples", () => {
 	test("projects the built-in adapter registry into both endpoint lists", () => {
 		const lab = createMigrationLab();
 		const sourceIds = new Set(lab.sources.map((endpoint) => endpoint.id));

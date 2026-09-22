@@ -27,7 +27,7 @@ build tools
   ├─ Vite/unplugin: scan → fold/extract → emit artifact → serve/invalidate
   ├─ codegen: theme → catalog → conflicts/variants → types/runtime/bridge
   ├─ codemod: detect → config → scan → parse → semantic IR → lower → validate → rewrite
-  └─ analyzer: scan → classify → residuals → CSS shape/budget → report/Studio
+  └─ analyzer: scan → classify → residuals → CSS shape/budget → report/Inspector/Migration Preview
 ```
 
 The stable center is semantic intent plus explicit capabilities. A backend or
@@ -260,7 +260,7 @@ collect files
   → fold coverage + dynamic/residual collection
   → optional Tailwind artifact compilation
   → CSS shape, provenance, and budget metrics
-  → human/JSON/GitHub/Studio report
+  → human/JSON/GitHub/Inspector report
 ```
 
 ## CSS artifact lifecycle
