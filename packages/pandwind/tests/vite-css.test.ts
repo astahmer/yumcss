@@ -1280,6 +1280,59 @@ test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers",
 	expect(result.code).toContain("<>");
 });
 
+test("mixed dynamic values inside a raw subtree use the direct carrier", () => {
+	const code = `
+		import { css } from "./design";
+		const shade = getShade();
+		export const App = () => (
+			<div {...css({
+				padding: 2,
+				$raw: {
+					borderStyle: "solid",
+					borderColor: shade,
+					_hover: { opacity: shade },
+				},
+			})} />
+		);
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain('style["--pw-c-border-color"]');
+	expect(result.code).toContain('style["--pw-c-opacity_hover"]');
+	expect(result.code).toContain("border-style:solid");
+	expect(result.code).not.toContain("css.props(css.vars");
+	expect(result.varKeys).toEqual(["borderColor", "_hover__opacity"]);
+});
+
+test("statically proven raw objects join the direct carrier partition", () => {
+	const code = `
+		import { css } from "./design";
+		const raw = { borderStyle: "solid" };
+		const shade = getShade();
+		export const App = () => <div {...css({ color: shade, $raw: raw })} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain("border-style:solid");
+	expect(result.code).toContain('style["--pw-c-color"]');
+	expect(result.code).not.toContain("css.props(css.vars");
+});
+
+test("unknown raw subtrees keep the conservative carrier path", () => {
+	const code = `
+		import { css } from "./design";
+		const shade = getShade();
+		const raw = getRawStyles();
+		export const App = () => <div {...css({ padding: 2, color: shade, $raw: raw })} />;
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	expect(result.code).toContain("css.props(css.vars");
+	expect(result.code).not.toContain("((values) => {");
+});
+
 test("inlines local constants in JSX carriers and extracts their CSS", () => {
 	const code = `
 		import { css } from "./design";

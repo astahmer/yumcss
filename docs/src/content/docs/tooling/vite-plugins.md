@@ -350,6 +350,11 @@ and block scope are expanded, including object spreads, and same-path
 collisions use the JavaScript last-write winner while still evaluating
 overwritten dynamic expressions for side effects.
 
+Object-shaped `$raw` subtrees use the same partition: static raw declarations
+join the static class and dynamic raw leaves use the direct variable carrier.
+An unresolved `$raw` binding, dynamic raw spread, or unsafe raw shape remains
+on the conservative `css.props(css.vars(...))` path.
+
 The same lexical scope resolver is used by the rewriter, stylesheet extractor,
 call-site scanner, diagnostics, and JSX pattern lane. This means a constant
 declared inside a component or class method can feed a JSX carrier, a plain

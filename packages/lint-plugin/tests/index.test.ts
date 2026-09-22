@@ -325,6 +325,18 @@ const Nested = () => <div {...css({ _hover: { backgroundColor: shade } })} />;`,
 		expect(reports).toEqual([]);
 	});
 
+	test("accepts inlineable dynamic values inside a raw subtree", () => {
+		const reports = runRule(
+			"no-dynamic-carrier-fallback",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+const shade = getShade();
+const Raw = () => <div {...css({ padding: 2, $raw: { borderColor: shade } })} />;`,
+		);
+
+		expect(reports).toEqual([]);
+	});
+
 	test("reports dynamic spreads and ancestor/descendant collisions", () => {
 		const spreadReports = runRule(
 			"no-dynamic-carrier-fallback",

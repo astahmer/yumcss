@@ -168,6 +168,21 @@ const analyzeObject = (
 			continue;
 		}
 		const key = appendPath(prefix, name);
+		if (name === "$raw") {
+			if (valueNode.type === NodeKind.ObjectExpression) {
+				analyzeObject(valueNode, prefix, argumentIndex, entries, residuals, options, order);
+				continue;
+			}
+			if (!options.forceDynamic) {
+				const staticRaw = options.evaluateStatic(valueNode);
+				if (staticRaw !== CSS_INLINE_UNKNOWN && isPlainObject(staticRaw)) {
+					appendStaticObject(staticRaw, prefix, argumentIndex, entries, order);
+					continue;
+				}
+			}
+			residuals.push({ code: CssInlineResidualCode.PropertyShape, node: property });
+			continue;
+		}
 		if (name.startsWith("$")) {
 			residuals.push({ code: CssInlineResidualCode.PropertyShape, node: property });
 			continue;
