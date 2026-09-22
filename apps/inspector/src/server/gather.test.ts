@@ -9,6 +9,12 @@ describe("gather (integration over examples/example)", { timeout: 60_000 }, () =
 	test("returns a fully-populated studio payload", async () => {
 		const data = await gather(ROOT);
 		expect(data.meta.root).toBe(ROOT);
+		expect(data.coverage.files.length).toBeGreaterThan(0);
+		expect(
+			data.coverage.files.every(({ file }) =>
+				file.replaceAll("\\", "/").includes("examples/example/src/"),
+			),
+		).toBe(true);
 		expect(data.coverage.budget.cssBytes).toBeGreaterThan(0);
 		expect(data.designSystem.themeVars.length).toBeGreaterThan(0);
 		expect(data.designSystem.utilities.length).toBeGreaterThan(10);

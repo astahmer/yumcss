@@ -54,16 +54,16 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	const readSourceArtifact = (file: string): string | undefined =>
 		sourceWorkspace.read([file])[0]?.source;
 	const appSourceFiles = sourceWorkspace
-		.collect(["**/*"], root)
+		.collect(["**/*.{ts,tsx}"], resolve(root, APP, "src"))
 		.filter(
 			({ path: file }) =>
-				file.includes(`${APP}/src`) && SOURCE_SCANNER_SERVICE.isTypeScriptFile(file),
+				SOURCE_SCANNER_SERVICE.isTypeScriptFile(file),
 		)
 		.map(({ path: file, source: content }) => ({ file, content }));
 
 	// --- coverage: the CLI is the single interface to fold analysis.
 	const summaryJson = await runCli([
-		"**/*.{ts,tsx}",
+		`${APP}/src/**/*.{ts,tsx}`,
 		"--tw",
 		appSrc("tw.ts"),
 		"--root",
