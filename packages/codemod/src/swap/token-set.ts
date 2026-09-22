@@ -84,6 +84,9 @@ class TokenSetCodec {
 	toStylexVars(set: TokenSet): string {
 		return this.to(TokenFormatId.StyleX, set);
 	}
+	fromStylexVars(text: string): TokenSet {
+		return this.fromText(TokenFormatId.StyleX, text);
+	}
 	fromDefinePreset(path: string): Promise<TokenSet> {
 		return this.fromFile(TokenFormatId.Preset, path);
 	}
