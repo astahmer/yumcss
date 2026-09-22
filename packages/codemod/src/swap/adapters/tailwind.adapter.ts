@@ -1207,17 +1207,16 @@ function classicTokenCatalog(
 
 function generatedSelectorConditions(selector: string, token: string): readonly StyleCondition[] {
 	const normalized = selector.trim();
-	if (normalized.startsWith("&"))
-		return [{ kind: "selector", name: normalized, value: normalized }];
-	if (/(?::where|:is|:not|:has)\(/u.test(normalized)) {
-		const classMarker = `.${escapeGeneratedClassName(token)}`;
-		const classStart = normalized.indexOf(classMarker);
-		if (classStart >= 0) {
-			const relative =
-				normalized.slice(0, classStart) + "&" + normalized.slice(classStart + classMarker.length);
-			return [{ kind: "selector", name: relative, value: relative }];
-		}
+	const classMarker = `.${escapeGeneratedClassName(token)}`;
+	const classStart = normalized.indexOf(classMarker);
+	if (classStart >= 0) {
+		const relative =
+			normalized.slice(0, classStart) + "&" + normalized.slice(classStart + classMarker.length);
+		if (relative === "&") return [];
+		return [{ kind: "selector", name: relative, value: relative }];
 	}
+	if (normalized.includes("&"))
+		return [{ kind: "selector", name: normalized, value: normalized }];
 	const conditions: StyleCondition[] = [];
 	for (const match of selector.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
 		const name = match[1];

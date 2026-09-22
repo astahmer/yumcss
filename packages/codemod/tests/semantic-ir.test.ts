@@ -92,6 +92,38 @@ describe("versioned semantic style-program IR", () => {
 		]);
 	});
 
+	test("keeps resolved at-rule conditions in the flat emitter bridge", () => {
+		const program = styleProgramFromRules([
+			{
+				kind: "style",
+				conditions: [],
+				declarations: [
+					{
+						conditions: [
+							{
+								kind: "media",
+								name: "(width >= 48rem)",
+								value: "(width >= 48rem)",
+							},
+						],
+						property: "height",
+						value: { kind: "literal", value: "100%" },
+					},
+				],
+				children: [],
+				order: 0,
+			},
+		]);
+
+		expect(swapIRFromStyleProgram(program).entries).toEqual([
+			{
+				conditions: ["@media (width >= 48rem)"],
+				prop: "height",
+				value: "100%",
+			},
+		]);
+	});
+
 	test("preserves dynamic source expressions and richer condition data", () => {
 		const body = `color: theme.foreground, _hover: { backgroundColor: palette.accent }, "@media (min-width: 40rem)": { opacity: 0.8 }`;
 		const program = styleProgramFromSourceObject(body, {

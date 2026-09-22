@@ -6,6 +6,7 @@ import {
 	createTailwindAdapter,
 	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
+import { parseTailwindCandidateCss } from "../src/swap/adapters/tailwind.adapter.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 
 const root = "/project";
@@ -92,6 +93,40 @@ function spacingLoader(): ProjectModuleLoader {
 }
 
 describe("Tailwind official CSS context", () => {
+	test("preserves nested arbitrary selectors as selectors instead of pseudo variants", () => {
+		expect(
+			parseTailwindCandidateCss(
+				".md\\:\\*\\*\\:\\[button\\,a\\]\\:w-full { @media (width >= 48rem) { :is(& *) { &:is(button,a) { width: 100%; } } } }",
+				"md:**:[button,a]:w-full",
+			),
+		).toEqual([
+			{
+				conditions: [
+					{ kind: "media", name: "(width >= 48rem)", value: "(width >= 48rem)" },
+					{ kind: "selector", name: ":is(& *)", value: ":is(& *)" },
+					{ kind: "selector", name: "&:is(button,a)", value: "&:is(button,a)" },
+				],
+				property: "width",
+				value: { kind: "literal", value: "100%" },
+			},
+		]);
+	});
+
+	test("preserves combined utility and attribute selectors as relative selectors", () => {
+		expect(
+			parseTailwindCandidateCss(
+				'.data-\\[size\\=sm\\]\\:pb-0[data-size="sm"] { padding-bottom: 0px; }',
+				"data-[size=sm]:pb-0",
+			),
+		).toEqual([
+			{
+				conditions: [{ kind: "selector", name: '&[data-size="sm"]', value: '&[data-size="sm"]' }],
+				property: "paddingBottom",
+				value: { kind: "literal", value: "0px" },
+			},
+		]);
+	});
+
 	test("discovers a non-standard CSS entry and preserves nested engine semantics", async () => {
 		const result = await migrate(
 			'export const App = () => <div className="tab-4 hover:tab-4 prose" />;',

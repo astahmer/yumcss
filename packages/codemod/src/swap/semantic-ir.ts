@@ -1402,7 +1402,7 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 				continue;
 			}
 			entries.push({
-				conditions: declaration.conditions.map((condition) => condition.name),
+				conditions: declaration.conditions.map(flatConditionName),
 				prop: declaration.property,
 				value,
 			});
@@ -1410,6 +1410,20 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 	}
 	return { entries, residuals };
 }
+
+const flatConditionName = (condition: StyleCondition): string => {
+	if (
+		condition.kind === SemanticConditionKindTag.Media ||
+		condition.kind === SemanticConditionKindTag.Container ||
+		condition.kind === SemanticConditionKindTag.Supports
+	) {
+		const prefix = `@${condition.kind}`;
+		const value = condition.value ?? condition.name;
+		if (value.startsWith(`${prefix} `)) return value;
+		if (condition.value !== undefined || value.startsWith("(")) return `${prefix} ${value}`;
+	}
+	return condition.name;
+};
 
 function isResidualKind(value: string): value is SwapResidualKind {
 	return (
