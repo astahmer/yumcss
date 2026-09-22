@@ -234,6 +234,20 @@ Canvas and build-time Metro remain explicitly deferred because this workspace
 has no concrete consumer or target semantics to validate. They are extension
 points, not missing implementations of the CSS/RN/OpenTUI contract.
 
+## Revalidated host evidence — 2026-09-22
+
+The bounded non-web hosts were rerun after the later runtime/codegen changes:
+
+- `rn-example`: TypeScript passed; the React Native Web Chromium E2E passed
+  shorthand expansion, dark-toggle transitions, later-wins merging, and zero
+  console/page errors.
+- `opentui-example`: TypeScript passed; the real `@opentui/core` headless
+  assertions and PTY smoke passed labels, cell padding, borders, token
+  backgrounds, dark boot behavior, and zero fallback markers.
+
+This strengthens the experimental host claim. It does not promote native-device
+React Native, arbitrary OpenTUI applications, canvas, or build-time Metro.
+
 ## Decisions log
 
 | Date       | Decision                                                                                                                                                                                              | Rationale                                                                                                                                                                              |

@@ -402,6 +402,40 @@
 			"note": "Catalog and proof data used by the migration lab and verification tooling."
 		},
 		{
+			"packageName": "pandwind-codemod",
+			"exportPaths": [
+				"./migration/class-sorter",
+				"./migration/arbitrary-values",
+				"./swap/variant-hoisting",
+				"./swap/token-set"
+			],
+			"owner": "tooling",
+			"maturity": "experimental",
+			"dependencies": ["magic-string", "oxc-parser"],
+			"externalContract": true,
+			"evidence": [
+				"packages/codemod/package.json",
+				"docs/src/content/docs/tooling/codemod.md",
+				"docs/src/content/docs/contributing/architecture.md"
+			],
+			"note": "Narrow published migration helpers for sorting, arbitrary-value handling, variant hoisting, and normalized token-format conversion."
+		},
+		{
+			"packageName": "pandwind",
+			"exportPaths": ["./stack/svelte", "./stack/astro"],
+			"owner": "integration",
+			"maturity": "experimental",
+			"dependencies": [],
+			"externalContract": true,
+			"evidence": [
+				"packages/pandwind/package.json",
+				"packages/pandwind/src/stack/Stack.svelte",
+				"packages/pandwind/src/stack/Stack.astro",
+				"docs/src/content/docs/tooling/vite-plugins.md"
+			],
+			"note": "Renderer-specific Stack host projections; the shared style mapping remains owned by the Pandwind stack contract."
+		},
+		{
 			"packageName": "pandwind-analyze",
 			"exportPaths": [
 				".",

@@ -16,10 +16,13 @@ parked with notes.
   of duplicating logic), corpus integration so `pandwind analyze` reproduces
   the vite-cx-coverage numbers on demand.
 
-## [NOW] 3. Semantic-token parity coverage (007-B follow-through)
+## Parked — condition-bound semantic-token parity (007-B follow-through)
 
 - Real-Tailwind compilation proof for condition-bound tokens (dark-mode
-  utilities through the actual compiler), same standard as everything else.
+  utilities through the actual compiler) remains unbuilt. The current bridge
+  intentionally handles flat string tokens only; a condition-bound token needs
+  a verified `@theme`/custom-variant/CSS-variable mapping before it can be
+  implemented without inventing Tailwind semantics.
 
 ## [NOW] 4. Inspiration mining → `plans/012-inspiration-report.md`
 

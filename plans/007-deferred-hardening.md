@@ -6,7 +6,10 @@ workstream merges. Each is small-to-medium; none blocks the other. Ordered by
 
 ## F. cx() merge-engine v2 — twMerge parity (perf AND correctness)
 
-**State:** found by a token-level differential prober against tailwind-merge
+**State:** core correctness and benchmark-shim work complete (2026-09-22),
+with the generated directional hierarchy now covering the remaining
+multi-property families. The historical defects were found by a token-level
+differential prober against tailwind-merge
 while integrating pandwind into jantimon/css-in-js-bench (SSR microbench:
 pandwind runtime-merge lane at 0.24× twMerge geo-mean; up to 12× slower on
 long class lists).
@@ -260,9 +263,10 @@ css: { engine | preset/className } })` folds literal `css()` /
   **13% -> 63% eliminated** (4F/0P/26R -> 11F/8P/11R). Remaining runtime calls
   are genuinely dynamic (map callbacks, prop-driven classes, spreads,
   cross-module values).
-- Cross-module constant propagation (export const X imported elsewhere)
-  deliberately skipped: needs module-graph resolution inside the transform;
-  revisit if real apps show heavy cross-module class constants.
+- Cross-module constant propagation is now landed behind the Vite build's
+  injected resolver: direct imports and one barrel re-export level propagate
+  string constants, HMR invalidation refreshes the owning file, and circular,
+  non-literal, or deeper graphs stay dynamic.
 
 ### F.1 — long-list scaling follow-up (cx v3, 2026-08-23)
 
@@ -308,6 +312,11 @@ Targets: cold path >=1.5x (from ~119K), warm long-pair no regression (~1.7M).
 Zero behavior change — parity/fuzz/golden suites green unmodified.
 Harness: packages/pandwind/cx-bench.mts. Report before/after + size delta.
 
+This remains an optional cold-path experiment. The current generated metadata
+has more than 64 canonical signatures and CSS atoms can add further
+properties; a multi-word or BigInt representation has not justified its code
+and allocation cost. It is not part of the correctness completion bar.
+
 ### A++ — cross-module constant propagation (compiler)
 
 Repo-wide exported-const registry in pandwindVite state (Map absPath ->
@@ -315,3 +324,27 @@ exports, invalidated on HMR); resolve import bindings one barrel level deep;
 only string literals propagate; circular/non-literal/dynamic => untouched,
 never throw. Tests: fixtures + differential equivalence + invalidation +
 real-vite integration; extend coverage corpus, report new % vs 63% baseline.
+
+### A++ Outcomes — 2026-09-22
+
+The registry, one-level barrel resolver, HMR invalidation, fixture corpus,
+differential checks, and real-Vite integration are implemented. The resolver
+is intentionally bounded to exported string literals and one barrel hop; this
+is sufficient compiler propagation without turning the Vite plugin into a
+general module evaluator. The old 63% same-module coverage baseline is now
+extended by direct-import, named-barrel, star-barrel, conditional, shadowing,
+circular, and invalidation cases.
+
+### F.3 — directional hierarchy and benchmark shim — 2026-09-22
+
+Generated Tailwind metadata now includes a property-group directional kill
+table derived from the installed Tailwind resolver and differential probes
+against `tailwind-merge`. Runtime `cx()` consumes that table by property group,
+so partial multi-property survival covers `overflow`, `flex`, `font-size`,
+`border-radius`, and the related directional families without synthetic
+runtime class ids. The external css-in-js benchmark shim now regenerates its
+metadata and passes the direction table through the real `createCx` lane.
+
+The proof is exact for the checked-in parity corpus and benchmark cases; it is
+not a promise of arbitrary future Tailwind utilities without regenerating the
+project metadata.

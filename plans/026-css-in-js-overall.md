@@ -267,11 +267,12 @@ schema version.
 
 ## Decisions log
 
-| Date       | Decision                                   | Rationale                                                                                      |
-| ---------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| 2026-08-26 | Work in a new jj workspace                 | Keep this wave isolated from existing runtime and codemod workspaces                           |
-| 2026-08-26 | Implement revisions 1–5 only               | User selected the first five roadmap revisions                                                 |
-| 2026-08-26 | Defer recipes/composition                  | User will handle that in a separate dedicated session                                          |
-| 2026-08-26 | Defer release/publishing in foundation     | Release gates were intentionally added in the follow-on completion wave                        |
-| 2026-08-26 | Preserve the minimal public API by default | Repository API-surface policy requires design notes for additions                              |
-| 2026-08-27 | Defer authored CSS primitive decisions     | Globals, keyframes, font-face, layers, `@supports`, and `@property` will be planned separately |
+| Date       | Decision                                                       | Rationale                                                                                                                                              |
+| ---------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2026-08-26 | Work in a new jj workspace                                     | Keep this wave isolated from existing runtime and codemod workspaces                                                                                   |
+| 2026-08-26 | Implement revisions 1–5 only                                   | User selected the first five roadmap revisions                                                                                                         |
+| 2026-08-26 | Defer recipes/composition                                      | User will handle that in a separate dedicated session                                                                                                  |
+| 2026-08-26 | Defer release/publishing in foundation                         | Release gates were intentionally added in the follow-on completion wave                                                                                |
+| 2026-08-26 | Preserve the minimal public API by default                     | Repository API-surface policy requires design notes for additions                                                                                      |
+| 2026-08-27 | Defer authored CSS primitive decisions                         | Globals, keyframes, font-face, layers, `@supports`, and `@property` will be planned separately                                                         |
+| 2026-09-22 | Permanently reject a Pandwind recipe/composition authoring API | Use external CVA-style composition over Pandwind class strings; preserve the frozen small authoring surface and do not reopen this as a future feature |

@@ -269,6 +269,25 @@ pack/import smoke, `pnpm run generated:check`, and `pnpm run surface:check` pass
 The Basic mode guide is the short primary path; the current limitations page
 now labels runtime, codegen, codemod, Playground, MCP, and non-web maturity.
 
+## Decisions log — 2026-09-22
+
+- **No separate codegen package for now.** The existing codemod package and
+  declared codegen subpaths provide an explicit build/tooling boundary; a new
+  package would add publishing, dependency, and migration cost without a
+  demonstrated external consumer.
+- **No separate React Native or OpenTUI packages.** The backends are additive
+  subpaths over dependency-free structural objects, and Plan 021 already
+  records the no-split decision. Revisit only if a real consumer needs an
+  independent release or dependency graph.
+- **No external compatibility promise for internal subpaths.** The pre-launch
+  policy permits direct cleanup, and only verified package exports remain
+  compatibility contracts.
+- **`pandwind setup` is deferred, not required for Plan 059 completion.** If
+  later justified by onboarding evidence, it should be a bounded, idempotent
+  bootstrap that discovers the project, writes only the selected generated
+  artifacts/configuration, and prints the exact verification command. It must
+  not become a second codegen engine or hide project-specific choices.
+
 ## Decisions log
 
 | Date       | Decision                                                                          | Rationale                                                              |

@@ -417,3 +417,5 @@ snapshot.
 | 2026-09-04 | Keep the lint policy a structural mirror without a dependency                         | The plugin consumes a plain snapshot; the composition root owns governance wiring                                       |
 | 2026-09-04 | Keep Studio exposure at the shared-report level for now                               | Paginated queries for very large catalogs and a write-mode removal command are bounded follow-ups in their owning plans |
 | 2026-09-04 | Bound repository-scale cost with a committed bench                                    | 2k definitions / 400 files / ~16k sites run ~4.9s per full pass; the bench guards future regressions                    |
+| 2026-09-22 | Keep governance report-first and read-only by default                                 | No current usage evidence justifies automatic token deletion; write mode remains opt-in tooling work                    |
+| 2026-09-22 | Defer catalog pagination and a large-repository Studio policy                         | Add them only after the committed benchmark or real projects show that full snapshots are a user-visible bottleneck     |

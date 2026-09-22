@@ -128,6 +128,9 @@ pnpm codemod swap --from=<api> --to=<api> [--write] [--diff] [--report] <paths..
 
 The original follow-up importer is now landed as the StyleX token-format
 adapter: `tokens --from=stylex` reads static scalar `defineVars` leaves while
-leaving conditional/theme objects outside the static catalog. The unrelated
-`--engine` flag remains deferred (Tailwind `candidatesToCss` resolution of
-bridge misses).
+leaving conditional/theme objects outside the static catalog. The
+`--engine` bridge-miss resolver also landed: it boots Tailwind's official
+`candidatesToCss` system once per CLI run, resolves utilities absent from the
+generated bridge, caches bounded misses, and fails soft to a visible residual
+when the project engine cannot resolve them. It remains an opt-in CLI path,
+not a browser/runtime dependency.

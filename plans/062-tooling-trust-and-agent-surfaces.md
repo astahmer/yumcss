@@ -1,5 +1,10 @@
 # Plan 062: make the playground, MCP, and diagnostics trustworthy
 
+**Status: COMPLETE for the declared tooling boundary (2026-09-22).** Sandbox,
+real package-fixture, MCP evidence labels, typed validation/resource ports, and
+visible diagnostic boundaries are shipped. A browser host remains explicitly
+unavailable in the checked-in fixture lane.
+
 ## Goal
 
 Make Pandwind's tooling tell users exactly what it proved. The playground,
@@ -174,6 +179,24 @@ an arbitrary command string as a shortcut.
   That is a product improvement because it distinguishes evidence from absence.
 - Browser and host fixtures increase maintenance cost. They should cover stable
   representative routes rather than every adapter matrix entry.
+
+## Completion evidence — 2026-09-22
+
+- The playground has separate `sandbox` and `package-fixture` execution
+  identities, with evidence checks and unavailable checks carried as data.
+- `apps/playground/fixtures/package-fixture` is a real workspace package that
+  imports `pandwind/css` and `@pandwind/example-preset` through package names,
+  resolves the Vite CSS plugin, and passes TypeScript, client Vite, and SSR Vite
+  builds. The test asserts that extracted CSS and the server bundle exist.
+- The fixture reports `browser-host` and `hydration` as unavailable rather than
+  relabeling an SSR build as a browser or hydration proof.
+- The browser sandbox remains the fast teaching/evaluation lane; the fixture
+  lane is the slower build-level confidence lane. Neither lane is an arbitrary
+  code-execution host.
+
+This closes the plan's representative real-fixture requirement. A future
+browser-host fixture is an evidence expansion, not a reason to reopen the
+execution-lane architecture.
 
 ## Decisions log
 

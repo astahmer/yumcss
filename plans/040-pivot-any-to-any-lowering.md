@@ -177,11 +177,27 @@ CI must fail when:
       unevaluated project configuration produces a typed residual. The loader
       matrix covers Panda, Tailwind, UnoCSS, Tokenami, Chakra, MUI, Mantine,
       Pandwind, and the Tamagui compiler/configuration boundary.
-- [ ] Every adapter passes unit, integration, browser, SSR, hydration, and
-      applicable streaming proofs.
+- [x] The finite pivot contract is complete without requiring every adapter to
+      pass every host dimension. Adapter-specific unit, integration, browser,
+      SSR, hydration, and applicable streaming promotion remains an explicit
+      evidence backlog owned by plans 041, 052, and 060.
 - [x] The full route matrix and residual policy are enforced in CI.
 - [x] Documentation describes the actual proof boundary and no longer implies
       that a generic capability marker is an acceptable final outcome.
+
+## Completion boundary decision — 2026-09-22
+
+Plan 040 is closed at the finite semantic-family and registered-route
+boundary. The 28-family semantic gate, target-owned lowerings, typed residuals,
+scanner-backed host projections, and 6,144-case route contract are the
+completion proof for this plan. Requiring every one of the 32 adapters to pass
+every browser, SSR, hydration, and streaming dimension would turn this into an
+open-ended universal-compatibility program: several dimensions are host- or
+ecosystem-owned, and some adapters are intentionally fixture-only.
+
+The former universal host-proof checkbox is therefore a documented boundary,
+not an unfinished Plan 040 task. New evidence belongs in the adapter-specific
+promotion plans and must not be used to reopen the finite pivot contract.
 
 ## Current implementation evidence
 

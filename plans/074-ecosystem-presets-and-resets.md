@@ -1,7 +1,8 @@
 # Feature Plan: Ecosystem starter presets and reset stylesheets
 
-**Status:** Approved — implementing; see §7 for the resolved decisions and §9
-for what has landed
+**Status:** Complete for the approved preset/reset scope (2026-09-22); the
+StyleX lane is intentionally skipped and the keyframes follow-up is shipped
+by Plan 076.
 **Created:** 2026-09-17
 **Owner:** Pandwind maintainers
 
@@ -614,7 +615,7 @@ generator`, `feat(preset): generate the shadcn starter preset data`,
   test, and size revision that adds the preset itself.
   - The data is generated from the pinned `shadcn` 4.19.0 checkout by
     `scripts/promote-shadcn-preset.ts` (chained into `pnpm run
-    presets:generate` / `presets:check`) into
+presets:generate` / `presets:check`) into
     `packages/pandwind/src/preset/generated/shadcn-theme.ts`. The generator
     reads the registry's base-color properties, its theme accents, its font
     definitions, its radius styles, and the create page's own default
@@ -709,9 +710,9 @@ Remaining lanes:
 - [x] `pandwind/preset/panda` — shipped, §7.20–§7.29.
 - [x] `pandwind/reset/{tailwindcss,panda,pandwind}` — shipped, including the
       `reset` versus `preset` naming note the maintainer asked for (§7.31).
-- [ ] A build-time `keyframes()` utility that emits project-authored
-      `@keyframes` and returns the animation name the preset-free
-      `animation` shorthand can reference — the follow-up the `animations`
-      drop leaves open (§7.32).
-- [ ] `pandwind/preset/stylex` and `pandwind/reset/stylex` — skipped with a
-      recorded reason (§7.30); revisit only if a maintainer asks.
+- [x] A build-time `keyframes()` utility that emits project-authored
+      `@keyframes` and returns the animation name the preset-free `animation`
+      shorthand can reference — shipped separately in Plan 076.
+- [x] `pandwind/preset/stylex` and `pandwind/reset/stylex` — intentionally
+      skipped with the recorded upstream/source-of-truth reason (§7.30); revisit
+      only if a maintainer asks.
