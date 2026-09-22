@@ -49,8 +49,7 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { styled } from "solid-styled-components";
+		    "code": "import { styled } from "solid-styled-components";
 		export const App = () => styled.div({ "padding": "16px", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,8 +85,7 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
+		    "code": "import { styled } from "@mui/system";
 		export const App = () => styled("div")({ padding: "16px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -135,8 +133,7 @@ test("mui -> solid-styled -> mui: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { styled } from "solid-styled-components";
+		    "code": "import { styled } from "solid-styled-components";
 		export const Card = styled.div({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +231,7 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { styled } from "solid-styled-components";
+		      "code": "import { styled } from "solid-styled-components";
 		export const App = () => styled.div({ "padding": "16px", "color": "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -271,8 +267,7 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
+		      "code": "import { styled } from "@mui/system";
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -308,8 +303,7 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { styled } from "solid-styled-components";
+		      "code": "import { styled } from "solid-styled-components";
 		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -345,8 +339,7 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
+		      "code": "import { styled } from "@mui/system";
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -396,8 +389,7 @@ test("mui -> solid-styled -> mui: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { styled } from "solid-styled-components";
+		    "code": "import { styled } from "solid-styled-components";
 		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -433,8 +425,7 @@ test("mui -> solid-styled -> mui: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
+		    "code": "import { styled } from "@mui/system";
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -109,8 +109,7 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 		export const Card = defaultSystem.css({ padding: "8px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -144,8 +143,7 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": "8px", "color": "red" });",
 		    "converted": 1,

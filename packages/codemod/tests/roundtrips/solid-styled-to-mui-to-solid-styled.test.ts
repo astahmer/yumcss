@@ -83,8 +83,7 @@ test("solid-styled -> mui -> solid-styled: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { styled } from "solid-styled-components";
+		    "code": "import { styled } from "solid-styled-components";
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -168,8 +167,7 @@ test("solid-styled -> mui -> solid-styled: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { styled } from "solid-styled-components";
+		    "code": "import { styled } from "solid-styled-components";
 		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -268,8 +266,7 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-		import { styled } from "solid-styled-components";
+		      "code": "import { styled } from "solid-styled-components";
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -341,8 +338,7 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-		import { styled } from "solid-styled-components";
+		      "code": "import { styled } from "solid-styled-components";
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -428,8 +424,7 @@ test("solid-styled -> mui -> solid-styled: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { styled } from "solid-styled-components";
+		    "code": "import { styled } from "solid-styled-components";
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

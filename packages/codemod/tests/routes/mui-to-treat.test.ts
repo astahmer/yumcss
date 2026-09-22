@@ -93,8 +93,7 @@ test("mui -> treat: carries a documented secondary mui API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import { style } from "@/styles.treat";
+		  "code": "import { style } from "@/styles.treat";
 		export const Card = style({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

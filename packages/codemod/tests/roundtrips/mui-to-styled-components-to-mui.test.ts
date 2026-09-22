@@ -49,8 +49,7 @@ test("mui -> styled-components -> mui: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import styled from "styled-components";
+		    "code": "import styled from "styled-components";
 		export const App = () => styled.div({ padding: "16px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,8 +83,7 @@ test("mui -> styled-components -> mui: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
+		    "code": "import { styled } from "@mui/system";
 		export const App = () => styled("div")({ padding: "16px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -133,8 +131,7 @@ test("mui -> styled-components -> mui: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import styled from "styled-components";
+		    "code": "import styled from "styled-components";
 		export const Card = styled.div({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,8 +227,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import styled from "styled-components";
+		      "code": "import styled from "styled-components";
 		export const App = () => styled.div({ padding: "16px", color: "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -265,8 +261,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
+		      "code": "import { styled } from "@mui/system";
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -302,8 +297,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import styled from "styled-components";
+		      "code": "import styled from "styled-components";
 		export const App = () => styled.div({ padding: "16px", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -337,8 +331,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
+		      "code": "import { styled } from "@mui/system";
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -388,8 +381,7 @@ test("mui -> styled-components -> mui: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import styled from "styled-components";
+		    "code": "import styled from "styled-components";
 		export const App = () => styled.div({ padding: "16px", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,8 +415,7 @@ test("mui -> styled-components -> mui: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
+		    "code": "import { styled } from "@mui/system";
 		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
 		    "converted": 1,
 		    "generatedFiles": [],

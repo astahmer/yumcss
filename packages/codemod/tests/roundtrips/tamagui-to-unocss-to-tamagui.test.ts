@@ -257,7 +257,7 @@ test("tamagui -> unocss -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { ".\\\\[padding\\\\:\\\\$4\\\\]": { padding: "$4" }, ".\\\\[color\\\\:\\\\#2563eb\\\\]": { color: "#2563eb" } });
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -331,7 +331,7 @@ test("tamagui -> unocss -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { color: "#2563eb", ".\\\\[padding\\\\:\\\\$4\\\\]": { padding: "$4" } });
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -419,7 +419,7 @@ test("tamagui -> unocss -> tamagui: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { color: "#2563eb", ".\\\\[padding\\\\:\\\\$4\\\\]": { padding: "$4" } });
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

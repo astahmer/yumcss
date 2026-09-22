@@ -49,8 +49,7 @@ test("mui -> emotion -> mui: preserves an actionable concrete round trip", () =>
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { css } from "@emotion/css";
+		    "code": "import { css } from "@emotion/css";
 		export const App = () => css({ padding: "16px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -84,8 +83,7 @@ test("mui -> emotion -> mui: preserves an actionable concrete round trip", () =>
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "padding": "16px", "color": "red" });",
 		    "converted": 1,
@@ -135,8 +133,7 @@ test("mui -> emotion -> mui: retains the documented secondary API without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { css } from "@emotion/css";
+		    "code": "import { css } from "@emotion/css";
 		export const Card = css({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,8 +167,7 @@ test("mui -> emotion -> mui: retains the documented secondary API without silent
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,
@@ -235,8 +231,7 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { css } from "@emotion/css";
+		      "code": "import { css } from "@emotion/css";
 		export const App = () => css({ padding: "16px", color: "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -270,8 +265,7 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
 		      "converted": 1,
@@ -309,8 +303,7 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { css } from "@emotion/css";
+		      "code": "import { css } from "@emotion/css";
 		export const App = () => css({ padding: "16px", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -344,8 +337,7 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
 		      "converted": 1,
@@ -397,8 +389,7 @@ test("mui -> emotion -> mui: resolves token values across both concrete legs", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { css } from "@emotion/css";
+		    "code": "import { css } from "@emotion/css";
 		export const App = () => css({ padding: "16px", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -432,8 +423,7 @@ test("mui -> emotion -> mui: resolves token values across both concrete legs", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
 		    "converted": 1,

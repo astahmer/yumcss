@@ -47,8 +47,7 @@ test("mui -> stylex: migrates concrete mui syntax to stylex", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		import * as stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { padding: "16px", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,8 +92,7 @@ test("mui -> stylex: carries a documented secondary mui API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import * as stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const Card = stylex.create({ style: { padding: "8px", color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,8 +146,7 @@ test("mui -> stylex: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import * as stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { padding: "16px", color: "#f97316" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,8 +182,7 @@ test("mui -> stylex: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import * as stylex from "@stylexjs/stylex";
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { padding: "16px", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +230,7 @@ test("mui -> stylex: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		import * as stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { padding: "16px", color: "#2563eb" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +275,7 @@ test("mui -> stylex: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		import * as stylex from "@stylexjs/stylex";
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { padding: "16px", color: "red" } }).style;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

@@ -93,8 +93,7 @@ test("mui -> compiled: carries a documented secondary mui API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import { css } from "@compiled/react";
+		  "code": "import { css } from "@compiled/react";
 		export const Card = css({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

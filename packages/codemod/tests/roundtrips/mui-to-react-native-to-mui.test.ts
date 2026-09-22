@@ -137,8 +137,7 @@ test("mui -> react-native -> mui: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { StyleSheet } from "react-native";
+		    "code": "import { StyleSheet } from "react-native";
 		export const Card = StyleSheet.create({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -175,8 +174,7 @@ test("mui -> react-native -> mui: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,

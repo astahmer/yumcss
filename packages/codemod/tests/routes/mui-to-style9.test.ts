@@ -93,8 +93,7 @@ test("mui -> style9: carries a documented secondary mui API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import style9 from "style9";
+		  "code": "import style9 from "style9";
 		export const Card = style9.create({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

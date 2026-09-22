@@ -47,8 +47,7 @@ test("mui -> goober: migrates concrete mui syntax to goober", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		import { css } from "goober";
+		  "code": "import { css } from "goober";
 		export const App = () => css({ "padding": "16px", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,8 +92,7 @@ test("mui -> goober: carries a documented secondary mui API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import { css } from "goober";
+		  "code": "import { css } from "goober";
 		export const Card = css({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,8 +145,7 @@ test("mui -> goober: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { css } from "goober";
+		    "code": "import { css } from "goober";
 		export const App = () => css({ "padding": "16px", "color": "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,8 +181,7 @@ test("mui -> goober: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { css } from "goober";
+		    "code": "import { css } from "goober";
 		export const App = () => css({ "padding": "16px", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,8 +229,7 @@ test("mui -> goober: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		import { css } from "goober";
+		  "code": "import { css } from "goober";
 		export const App = () => css({ "padding": "16px", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -279,8 +274,7 @@ test("mui -> goober: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		import { css } from "goober";
+		  "code": "import { css } from "goober";
 		export const App = () => css({ "padding": "16px", "color": "red" });
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

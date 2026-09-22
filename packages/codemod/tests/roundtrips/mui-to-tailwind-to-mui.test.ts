@@ -133,8 +133,7 @@ test("mui -> tailwind -> mui: retains the documented secondary API without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		export const Card = "[padding:8] [color:red]";",
+		    "code": "export const Card = "[padding:8] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,8 +168,7 @@ test("mui -> tailwind -> mui: retains the documented secondary API without silen
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": "8", "color": "red" });",
 		    "converted": 1,

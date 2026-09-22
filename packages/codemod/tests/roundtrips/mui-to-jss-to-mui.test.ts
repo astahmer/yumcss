@@ -136,8 +136,7 @@ test("mui -> jss -> mui: retains the documented secondary API without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUseStyles } from "react-jss";
+		    "code": "import { createUseStyles } from "react-jss";
 		export const Card = createUseStyles({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,8 +172,7 @@ test("mui -> jss -> mui: retains the documented secondary API without silent los
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,

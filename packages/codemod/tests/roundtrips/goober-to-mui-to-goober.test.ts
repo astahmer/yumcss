@@ -146,8 +146,7 @@ test("goober -> mui -> goober: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { css } from "goober";
+		    "code": "import { css } from "goober";
 		export const Card = css({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],

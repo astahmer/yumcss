@@ -248,9 +248,9 @@ test("aphrodite -> unocss -> aphrodite: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> aphrodite | lowering-residual: validation)
-		{ "card": "[padding:8] [color:#2563eb]" };",
-		      "converted": 0,
+		      "code": "import { StyleSheet } from "aphrodite";
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -268,25 +268,17 @@ test("aphrodite -> unocss -> aphrodite: preserves concrete theme and project con
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -329,9 +321,9 @@ test("aphrodite -> unocss -> aphrodite: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> aphrodite | lowering-residual: validation)
-		{ "card": "[padding:8] text-brand" };",
-		      "converted": 0,
+		      "code": "import { StyleSheet } from "aphrodite";
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -349,25 +341,17 @@ test("aphrodite -> unocss -> aphrodite: preserves concrete theme and project con
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -424,9 +408,9 @@ test("aphrodite -> unocss -> aphrodite: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: unocss -> aphrodite | lowering-residual: validation)
-		{ "card": "[padding:8] text-brand" };",
-		    "converted": 0,
+		    "code": "import { StyleSheet } from "aphrodite";
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -444,25 +428,17 @@ test("aphrodite -> unocss -> aphrodite: resolves token values across both concre
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

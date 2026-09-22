@@ -271,9 +271,9 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
-		{ "card": "[padding:8] [color:#2563eb]" };",
-		      "converted": 0,
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -292,25 +292,17 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -353,9 +345,9 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
-		{ "card": "[padding:8] text-brand" };",
-		      "converted": 0,
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -374,25 +366,17 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -449,9 +433,9 @@ test("react-native -> unocss -> react-native: resolves token values across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
-		{ "card": "[padding:8] text-brand" };",
-		    "converted": 0,
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -470,25 +454,17 @@ test("react-native -> unocss -> react-native: resolves token values across both 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

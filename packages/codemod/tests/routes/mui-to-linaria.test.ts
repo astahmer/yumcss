@@ -93,8 +93,7 @@ test("mui -> linaria: carries a documented secondary mui API explicitly", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import { css } from "@linaria/core";
+		  "code": "import { css } from "@linaria/core";
 		export const Card = css\`padding: 8; color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -86,11 +86,12 @@ test("pandwind -> solid-styled -> pandwind: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { Dynamic } from "solid-js/web";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
 		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t752ck", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
@@ -265,7 +266,7 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "../__pandwind/solid-slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 
@@ -273,7 +274,7 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
-		          "path": "__pandwind/slot.tsx",
+		          "path": "__pandwind/solid-slot.tsx",
 		          "purpose": "shared static component slot helper",
 		        },
 		      ],
@@ -349,7 +350,7 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "../__pandwind/solid-slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 
@@ -357,7 +358,7 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
-		          "path": "__pandwind/slot.tsx",
+		          "path": "__pandwind/solid-slot.tsx",
 		          "purpose": "shared static component slot helper",
 		        },
 		      ],
@@ -446,7 +447,7 @@ test("pandwind -> solid-styled -> pandwind: resolves token values across both co
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "../__pandwind/solid-slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 
@@ -454,7 +455,7 @@ test("pandwind -> solid-styled -> pandwind: resolves token values across both co
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
-		        "path": "__pandwind/slot.tsx",
+		        "path": "__pandwind/solid-slot.tsx",
 		        "purpose": "shared static component slot helper",
 		      },
 		    ],

@@ -255,9 +255,8 @@ test("fela -> unocss -> fela: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: unocss -> fela | lowering-residual: validation)
-		"[color:#2563eb]";",
-		      "converted": 0,
+		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -275,25 +274,17 @@ test("fela -> unocss -> fela: preserves concrete theme and project context varia
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },

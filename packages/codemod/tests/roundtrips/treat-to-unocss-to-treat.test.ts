@@ -269,9 +269,9 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
-		"[padding:8] [color:#2563eb]";",
-		      "converted": 0,
+		      "code": "import { style } from "@/styles.treat";
+		export const card = style({ "padding": "8", "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -289,25 +289,17 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -350,9 +342,9 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
-		"[padding:8] text-brand";",
-		      "converted": 0,
+		      "code": "import { style } from "@/styles.treat";
+		export const card = style({ "padding": "8", "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -370,25 +362,17 @@ test("treat -> unocss -> treat: preserves concrete theme and project context var
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -445,9 +429,9 @@ test("treat -> unocss -> treat: resolves token values across both concrete legs"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const card = // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
-		"[padding:8] text-brand";",
-		    "converted": 0,
+		    "code": "import { style } from "@/styles.treat";
+		export const card = style({ "padding": "8", "color": "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -465,25 +449,17 @@ test("treat -> unocss -> treat: resolves token values across both concrete legs"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

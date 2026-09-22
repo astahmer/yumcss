@@ -93,8 +93,7 @@ test("mui -> aphrodite: carries a documented secondary mui API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import { StyleSheet } from "aphrodite";
+		  "code": "import { StyleSheet } from "aphrodite";
 		export const Card = StyleSheet.create({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

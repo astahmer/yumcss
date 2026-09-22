@@ -93,8 +93,7 @@ test("mui -> vanilla-extract: carries a documented secondary mui API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import { style } from "@vanilla-extract/css";
+		  "code": "import { style } from "@vanilla-extract/css";
 		export const Card = style({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

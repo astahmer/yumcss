@@ -248,9 +248,9 @@ test("stitches -> unocss -> stitches: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
-		"[padding:1rem] [color:#2563eb]";",
-		      "converted": 0,
+		      "code": "import { css } from "@stitches/react";
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -268,25 +268,17 @@ test("stitches -> unocss -> stitches: preserves concrete theme and project conte
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -329,9 +321,9 @@ test("stitches -> unocss -> stitches: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
-		"[padding:1rem] text-brand";",
-		      "converted": 0,
+		      "code": "import { css } from "@stitches/react";
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -349,25 +341,17 @@ test("stitches -> unocss -> stitches: preserves concrete theme and project conte
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -424,9 +408,9 @@ test("stitches -> unocss -> stitches: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const card = // pandwind:migrate-skip (route: unocss -> stitches | lowering-residual: validation)
-		"[padding:1rem] text-brand";",
-		    "converted": 0,
+		    "code": "import { css } from "@stitches/react";
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -444,25 +428,17 @@ test("stitches -> unocss -> stitches: resolves token values across both concrete
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

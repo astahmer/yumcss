@@ -136,8 +136,7 @@ test("mui -> linaria -> mui: retains the documented secondary API without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { css } from "@linaria/core";
+		    "code": "import { css } from "@linaria/core";
 		export const Card = css\`padding: 8; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,8 +172,7 @@ test("mui -> linaria -> mui: retains the documented secondary API without silent
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": "8", "color": "red" });",
 		    "converted": 1,

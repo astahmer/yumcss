@@ -146,8 +146,7 @@ test("linaria -> mui -> linaria: retains the documented secondary API without si
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { css } from "@linaria/core";
+		    "code": "import { css } from "@linaria/core";
 		export const Card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -49,8 +49,7 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", () =>
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { View, styled } from "@tamagui/core";
+		    "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => styled(View, { padding: "16px", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -83,8 +82,7 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", () =>
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { View } from "@tamagui/core";
+		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
 		export const App = () => styled(View)({ padding: "16px", color: "red" });",
 		    "converted": 1,
@@ -133,8 +131,7 @@ test("mui -> tamagui -> mui: retains the documented secondary API without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { View, styled } from "@tamagui/core";
+		    "code": "import { View, styled } from "@tamagui/core";
 		export const Card = styled(View, { padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -167,8 +164,8 @@ test("mui -> tamagui -> mui: retains the documented secondary API without silent
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { View } from "@tamagui/core";
+		    "code": "import { View } from "@tamagui/core";
+		import { styled } from "@mui/system";
 		export const Card = styled(View)({ padding: 8, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,8 +227,7 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { View, styled } from "@tamagui/core";
+		      "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => styled(View, { padding: "16px", color: "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -264,8 +260,7 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { View } from "@tamagui/core";
+		      "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
 		export const App = () => styled(View)({ padding: "16px", color: "primary.main" });",
 		      "converted": 1,
@@ -302,8 +297,7 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { View, styled } from "@tamagui/core";
+		      "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => styled(View, { padding: "16px", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -336,8 +330,7 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { View } from "@tamagui/core";
+		      "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
 		export const App = () => styled(View)({ padding: "16px", color: "primary.main" });",
 		      "converted": 1,
@@ -388,8 +381,7 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { View, styled } from "@tamagui/core";
+		    "code": "import { View, styled } from "@tamagui/core";
 		export const App = () => styled(View, { padding: "16px", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -422,8 +414,7 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { View } from "@tamagui/core";
+		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
 		export const App = () => styled(View)({ padding: "16px", color: "primary.main" });",
 		    "converted": 1,

@@ -86,7 +86,6 @@ test("tamagui -> mui -> tamagui: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { styled } from "@mui/system";
 		import { View, styled } from "@tamagui/core";
 		export const Card = styled(View, { padding: "$4", color: "red" });
 		export const App = () => <Card />;",
@@ -248,7 +247,6 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { styled } from "@mui/system";
 		import { View, styled } from "@tamagui/core";
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <Card />;",
@@ -322,7 +320,6 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { styled } from "@mui/system";
 		import { View, styled } from "@tamagui/core";
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <Card />;",
@@ -410,7 +407,6 @@ test("tamagui -> mui -> tamagui: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { styled } from "@mui/system";
 		import { View, styled } from "@tamagui/core";
 		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <Card />;",

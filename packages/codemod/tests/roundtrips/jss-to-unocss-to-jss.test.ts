@@ -269,9 +269,9 @@ test("jss -> unocss -> jss: preserves concrete theme and project context variant
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const useStyles = // pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
-		{ "card": "[color:#2563eb]" };",
-		      "converted": 0,
+		      "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = createUseStyles({ "card": { color: "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -289,25 +289,17 @@ test("jss -> unocss -> jss: preserves concrete theme and project context variant
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },

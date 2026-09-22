@@ -4109,12 +4109,10 @@ describe("official adapter API families", () => {
 			  "vue-styled/theme callback": {
 			    "changed": true,
 			    "code": "<script setup>
-			import { createCx } from "pandwind/cx";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
-			const runtimeCss = createRuntimeCss(defaultPreset);
-			const cx = createCx();
-			const Card = (props) => <div {...props} className={cx((props) => { const style = runtimeCss.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={runtimeCss.props(style, props.className).className} style={{ ...props.style, ...style.style }} />; }, props.className)} />;
+			import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+
+			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-e5b0p9", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-e5b0p9"; return component; })();
 			</script>
 			<template><Card color="red" /></template>",
 			    "converted": 1,

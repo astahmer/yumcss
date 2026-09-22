@@ -133,8 +133,7 @@ test("mui -> unocss -> mui: retains the documented secondary API without silent 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		export const Card = "[padding:8] [color:red]";",
+		    "code": "export const Card = "[padding:8] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,8 +168,7 @@ test("mui -> unocss -> mui: retains the documented secondary API without silent 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": "8", "color": "red" });",
 		    "converted": 1,
@@ -271,9 +269,8 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<Box className={"[padding:16px] text-brand"}/>;",
-		      "converted": 0,
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -289,25 +286,17 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -352,9 +341,8 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<Box className={"[padding:16px] text-brand"}/>;",
-		      "converted": 0,
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -370,25 +358,17 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -447,9 +427,8 @@ test("mui -> unocss -> mui: resolves token values across both concrete legs", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<Box className={"[padding:16px] text-brand"}/>;",
-		    "converted": 0,
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -465,25 +444,17 @@ test("mui -> unocss -> mui: resolves token values across both concrete legs", as
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

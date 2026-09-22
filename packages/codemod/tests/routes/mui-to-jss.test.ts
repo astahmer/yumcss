@@ -93,8 +93,7 @@ test("mui -> jss: carries a documented secondary mui API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import { createUseStyles } from "react-jss";
+		  "code": "import { createUseStyles } from "react-jss";
 		export const Card = createUseStyles({ padding: 8, color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

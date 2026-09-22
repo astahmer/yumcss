@@ -266,7 +266,7 @@ test("emotion -> unocss -> emotion: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" }, ".\\\\[color\\\\:\\\\#2563eb\\\\]": { color: "#2563eb" } });",
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -337,7 +337,7 @@ test("emotion -> unocss -> emotion: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ color: "#2563eb", ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" } });",
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -422,7 +422,7 @@ test("emotion -> unocss -> emotion: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ color: "#2563eb", ".\\\\[padding\\\\:1rem\\\\]": { padding: "1rem" } });",
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

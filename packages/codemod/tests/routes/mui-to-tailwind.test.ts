@@ -92,8 +92,7 @@ test("mui -> tailwind: carries a documented secondary mui API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		export const Card = "[padding:8] [color:red]";",
+		  "code": "export const Card = "[padding:8] [color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

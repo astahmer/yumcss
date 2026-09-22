@@ -90,8 +90,7 @@ test("mui -> chakra-ui: carries a documented secondary mui API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 		export const Card = defaultSystem.css({ padding: "8px", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

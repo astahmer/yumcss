@@ -247,7 +247,7 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", ".\\\\[margin-left\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginLeft: "var(--mantine-spacing-auto)" }, ".\\\\[margin-right\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginRight: "var(--mantine-spacing-auto)" }, ".\\\\[max-width\\\\:400\\\\]": { maxWidth: "400" } }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -319,7 +319,7 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", ".\\\\[margin-left\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginLeft: "var(--mantine-spacing-auto)" }, ".\\\\[margin-right\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginRight: "var(--mantine-spacing-auto)" }, ".\\\\[max-width\\\\:400\\\\]": { maxWidth: "400" } }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -405,7 +405,7 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", ".\\\\[margin-left\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginLeft: "var(--mantine-spacing-auto)" }, ".\\\\[margin-right\\\\:var\\\\(--mantine-spacing-auto\\\\)\\\\]": { marginRight: "var(--mantine-spacing-auto)" }, ".\\\\[max-width\\\\:400\\\\]": { maxWidth: "400" } }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

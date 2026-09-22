@@ -255,10 +255,10 @@ test("react-strict-dom -> unocss -> react-strict-dom: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: unocss -> react-strict-dom | lowering-residual: validation)
-		{ "card": "[padding:1rem] [color:#2563eb]" };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -276,25 +276,17 @@ test("react-strict-dom -> unocss -> react-strict-dom: preserves concrete theme a
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -340,10 +332,10 @@ test("react-strict-dom -> unocss -> react-strict-dom: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: unocss -> react-strict-dom | lowering-residual: validation)
-		{ "card": "[padding:1rem] text-brand" };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -361,25 +353,17 @@ test("react-strict-dom -> unocss -> react-strict-dom: preserves concrete theme a
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -439,10 +423,10 @@ test("react-strict-dom -> unocss -> react-strict-dom: resolves token values acro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: unocss -> react-strict-dom | lowering-residual: validation)
-		{ "card": "[padding:1rem] text-brand" };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -460,25 +444,17 @@ test("react-strict-dom -> unocss -> react-strict-dom: resolves token values acro
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

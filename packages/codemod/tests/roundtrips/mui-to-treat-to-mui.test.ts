@@ -136,8 +136,7 @@ test("mui -> treat -> mui: retains the documented secondary API without silent l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { style } from "@/styles.treat";
+		    "code": "import { style } from "@/styles.treat";
 		export const Card = style({ "padding": 8, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,8 +172,7 @@ test("mui -> treat -> mui: retains the documented secondary API without silent l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ "padding": 8, "color": "red" });",
 		    "converted": 1,

@@ -146,8 +146,7 @@ test("next-yak -> mui -> next-yak: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		import { css } from "next-yak";
+		    "code": "import { css } from "next-yak";
 		export const Card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

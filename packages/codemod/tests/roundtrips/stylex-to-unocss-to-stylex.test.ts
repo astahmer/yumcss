@@ -269,9 +269,9 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
-		{ "card": "[padding:8px] [color:#2563eb]" };",
-		      "converted": 0,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = stylex.create({ "card": { padding: "8px", color: "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -289,25 +289,17 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -350,9 +342,9 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
-		{ "card": "[padding:8px] text-brand" };",
-		      "converted": 0,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = stylex.create({ "card": { padding: "8px", color: "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -370,25 +362,17 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -445,9 +429,9 @@ test("stylex -> unocss -> stylex: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
-		{ "card": "[padding:8px] text-brand" };",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = stylex.create({ "card": { padding: "8px", color: "#2563eb" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -465,25 +449,17 @@ test("stylex -> unocss -> stylex: resolves token values across both concrete leg
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

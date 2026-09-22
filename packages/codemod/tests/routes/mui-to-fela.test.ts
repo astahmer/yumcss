@@ -47,8 +47,7 @@ test("mui -> fela: migrates concrete mui syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		export const App = () => renderer.renderRule({ "padding": "16px", "color": "red" });",
+		  "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +91,7 @@ test("mui -> fela: carries a documented secondary mui API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		export const Card = renderer.renderRule({ "padding": 8, "color": "red" });",
+		  "code": "export const Card = renderer.renderRule({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,8 +143,7 @@ test("mui -> fela: loads concrete theme and project context variants", async () 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		export const App = () => renderer.renderRule({ "padding": "16px", "color": "#f97316" });",
+		    "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,8 +178,7 @@ test("mui -> fela: loads concrete theme and project context variants", async () 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		export const App = () => renderer.renderRule({ "padding": "16px", "color": "#2563eb" });",
+		    "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,8 +225,7 @@ test("mui -> fela: resolves concrete token values with project context", async (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		export const App = () => renderer.renderRule({ "padding": "16px", "color": "#2563eb" });",
+		  "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -274,8 +269,7 @@ test("mui -> fela: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mui/material";
-		export const App = () => renderer.renderRule({ "padding": "16px", "color": "red" });
+		  "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "red" });
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],
