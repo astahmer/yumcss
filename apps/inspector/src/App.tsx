@@ -2098,16 +2098,16 @@ export function App() {
 	const [diffData, setDiffData] = useState<{ a: HistoryEntry; b: HistoryEntry } | null>(null);
 	const [historyError, setHistoryError] = useState<string | null>(null);
 
-	const refresh = useCallback(() => {
+	const refresh = useCallback((forceRefresh = false) => {
 		setLoading(true);
 		setError(null);
-		InspectorApi.fetchData()
+		InspectorApi.fetchData(forceRefresh)
 			.then(setData)
 			.catch((e: Error) => setError(e.message))
 			.finally(() => setLoading(false));
 	}, []);
 
-	useEffect(refresh, [refresh]);
+	useEffect(() => refresh(), [refresh]);
 
 	useEffect(() => {
 		const syncUrlState = (): void =>
@@ -2267,7 +2267,7 @@ export function App() {
 				</nav>
 				<div className={ui.headerActions}>
 					{data !== null && <AnalysisConfidenceBadge data={data} />}
-					<button type="button" onClick={refresh} disabled={loading} title="re-run analysis">
+					<button type="button" onClick={() => refresh(true)} disabled={loading} title="re-run analysis">
 						{loading ? "…" : "⟳ refresh"}
 					</button>
 					{data !== null && !loading && (

@@ -1,10 +1,12 @@
 import type { StudioPayload } from "../types.ts";
 
-async function fetchData(): Promise<StudioPayload> {
-	const res = await fetch("/api/data");
+async function fetchData(forceRefresh = false): Promise<StudioPayload> {
+	const res = await fetch(forceRefresh ? "/api/data?refresh=1" : "/api/data", {
+		cache: "no-store",
+	});
 	if (!res.ok) {
 		const body = (await res.json().catch(() => ({}))) as { error?: string };
-		throw new Error(body.error ?? `studio api failed: ${res.status}`);
+		throw new Error(body.error ?? `inspector api failed: ${res.status}`);
 	}
 	return (await res.json()) as StudioPayload;
 }
