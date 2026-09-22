@@ -1913,6 +1913,7 @@ export function App() {
 										<button
 											type="button"
 											aria-label="Download tokens as DTCG JSON"
+											title="Download tokens as DTCG JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-tokens.json",
@@ -1926,6 +1927,7 @@ export function App() {
 										<button
 											type="button"
 											aria-label="Download theme variables as CSS"
+											title="Download theme variables as CSS"
 											onClick={() => {
 												InspectorExport.downloadFile(
 													"pandwind-theme-vars.css",
@@ -1941,6 +1943,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 										<button
 											type="button"
 											aria-label="Download utility unions as JSON"
+											title="Download utility unions as JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-unions.json",
@@ -1957,6 +1960,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 										<button
 											type="button"
 											aria-label="Download coverage as JSON"
+											title="Download coverage as JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-coverage.json",
@@ -1970,6 +1974,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 										<button
 											type="button"
 											aria-label="Download per-file coverage as CSV"
+											title="Download per-file coverage as CSV"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-coverage.csv",
@@ -1983,6 +1988,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 										<button
 											type="button"
 											aria-label="Download coverage report as Markdown"
+											title="Download coverage report as Markdown"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-report.md",
@@ -1996,6 +2002,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 										<button
 											type="button"
 											aria-label="Download coverage report as self-contained HTML"
+											title="Download coverage report as self-contained HTML"
 											onClick={() =>
 												InspectorExport.downloadFile(
 													"pandwind-report.html",
