@@ -13,12 +13,13 @@
  */
 import type { StyleObject } from "../types/typings.ts";
 import type { CssFn } from "../css/create-css.ts";
+import { forEachResponsiveLeaf, type ResponsiveValue } from "./responsive.ts";
 
 export type StackDirection = "row" | "column" | "row-reverse" | "column-reverse";
 export type StackAlign = "start" | "center" | "end" | "stretch" | "baseline";
 export type StackJustify = "start" | "center" | "end" | "between" | "around" | "evenly";
 export type StackCssValue = string | number;
-export type StackResponsiveValue<T> = T | { readonly [condition: string]: StackResponsiveValue<T> };
+export type StackResponsiveValue<T> = ResponsiveValue<T>;
 
 export interface StackProps {
 	/** Flex direction. Default `row`. */
@@ -105,11 +106,6 @@ const JUSTIFY_STYLES: Readonly<Record<StackJustify, StackJustifyStyle>> = {
 
 type StackStyleLeaf = string | number;
 
-const isResponsiveObject = <T>(
-	value: StackResponsiveValue<T>,
-): value is { readonly [condition: string]: StackResponsiveValue<T> } =>
-	typeof value === "object" && value !== null && !Array.isArray(value);
-
 const isStyleObject = (value: unknown): value is StyleObject =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -124,22 +120,12 @@ const appendVariantClasses = <T>(
 	classes: string[],
 	value: StackResponsiveValue<T>,
 	utility: (value: T) => string,
-	prefixes: readonly string[] = [],
 ): void => {
-	if (isResponsiveObject(value)) {
-		for (const [condition, nested] of Object.entries(value)) {
-			const prefix = variantName(condition);
-			appendVariantClasses(
-				classes,
-				nested,
-				utility,
-				prefix === "" ? prefixes : [...prefixes, prefix],
-			);
-		}
-		return;
-	}
-	const className = utility(value);
-	classes.push(prefixes.length === 0 ? className : `${prefixes.join(":")}:${className}`);
+	forEachResponsiveLeaf(value, (leaf, conditions) => {
+		const prefixes = conditions.map(variantName).filter(Boolean);
+		const className = utility(leaf);
+		classes.push(prefixes.length === 0 ? className : `${prefixes.join(":")}:${className}`);
+	});
 };
 
 const assignResponsiveStyle = <T extends StackStyleLeaf>(
@@ -148,19 +134,15 @@ const assignResponsiveStyle = <T extends StackStyleLeaf>(
 	value: StackResponsiveValue<T>,
 	map: (value: T) => StackStyleLeaf,
 ): void => {
-	if (!isResponsiveObject(value)) {
-		target[property] = map(value);
-		return;
-	}
-	for (const [condition, nested] of Object.entries(value)) {
-		if (condition === "base") {
-			assignResponsiveStyle(target, property, nested, map);
-			continue;
+	forEachResponsiveLeaf(value, (leaf, conditions) => {
+		let branch = target;
+		for (const condition of conditions) {
+			const next = isStyleObject(branch[condition]) ? branch[condition] : {};
+			branch[condition] = next;
+			branch = next;
 		}
-		const branch = isStyleObject(target[condition]) ? target[condition] : {};
-		target[condition] = branch;
-		assignResponsiveStyle(branch, property, nested, map);
-	}
+		branch[property] = map(leaf);
+	});
 };
 
 /** Map Stack props to the CSS object consumed by a configured compiler. */

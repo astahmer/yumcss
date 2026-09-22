@@ -12,6 +12,7 @@ import { NodeKind } from "../ast-node-kind.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { evalLiteral, walk, type OxcNode } from "../tw/literal.ts";
 import { stackClasses, stackStyle, type StackProps } from "../stack/index.ts";
+import { isResponsiveValue } from "../stack/responsive.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 
 export interface StackFoldOptions {
@@ -181,17 +182,6 @@ const readNativeAttributes = (openingText: string): { attrs: JsxAttr[] } => {
 const STACK_DIRECTIONS = new Set(["row", "column", "row-reverse", "column-reverse"]);
 const STACK_ALIGNS = new Set(["start", "center", "end", "stretch", "baseline"]);
 const STACK_JUSTIFIES = new Set(["start", "center", "end", "between", "around", "evenly"]);
-
-const isResponsiveValue = (value: unknown, leaf: (value: unknown) => boolean): boolean => {
-	if (!isPlainObject(value)) return leaf(value);
-	const entries = Object.entries(value);
-	return (
-		entries.length > 0 &&
-		entries.every(([condition, nested]) => {
-			return condition.length > 0 && isResponsiveValue(nested, leaf);
-		})
-	);
-};
 
 const isStackProps = (value: unknown): value is StackProps => {
 	if (!isPlainObject(value)) return false;
