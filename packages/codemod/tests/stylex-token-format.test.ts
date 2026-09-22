@@ -7,7 +7,7 @@ describe("StyleX defineVars token format", () => {
 // stylex.defineVars({ ignored: "comment" });
 import * as stylex from "@stylexjs/stylex";
 import { defineVars as vars } from "@stylexjs/stylex";
-export const colors = stylex.defineVars({ blue: "#3182ce", white: "#fff" });
+export const colors = stylex.defineVars({ blue: "#3182ce" /* keep */, white: "#fff" });
 export const spacing = vars({ sm: 4, md: "8px", dark: { default: "4px", "@media (min-width: 1px)": "8px" } });
 `);
 

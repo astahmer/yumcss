@@ -94,6 +94,7 @@ const splitEntries = (
 		let bracketDepth = 0;
 		let parenDepth = 0;
 		let quote: string | undefined;
+		let valueEnd: number | undefined;
 		for (; index < body.length; index += 1) {
 			const character = body[index]!;
 			if (quote !== undefined) {
@@ -105,6 +106,30 @@ const splitEntries = (
 				quote = character;
 				continue;
 			}
+			if (
+				character === "/" &&
+				body[index + 1] === "/" &&
+				braceDepth === 0 &&
+				bracketDepth === 0 &&
+				parenDepth === 0
+			) {
+				valueEnd ??= index;
+				const end = body.indexOf("\n", index + 2);
+				index = end === -1 ? body.length : end;
+				continue;
+			}
+			if (
+				character === "/" &&
+				body[index + 1] === "*" &&
+				braceDepth === 0 &&
+				bracketDepth === 0 &&
+				parenDepth === 0
+			) {
+				valueEnd ??= index;
+				const end = body.indexOf("*/", index + 2);
+				index = end === -1 ? body.length : end + 1;
+				continue;
+			}
 			if (character === "{") braceDepth += 1;
 			else if (character === "}") braceDepth = Math.max(0, braceDepth - 1);
 			else if (character === "[") bracketDepth += 1;
@@ -114,7 +139,7 @@ const splitEntries = (
 			else if (character === "," && braceDepth === 0 && bracketDepth === 0 && parenDepth === 0)
 				break;
 		}
-		entries.push({ key: key.key, value: body.slice(valueStart, index).trim() });
+		entries.push({ key: key.key, value: body.slice(valueStart, valueEnd ?? index).trim() });
 		if (body[index] === ",") index += 1;
 	}
 	return entries;
