@@ -184,7 +184,6 @@ export type GeneratedStyle = {
 		| "colorPalette.contrast"
 		| "colorPalette.muted"
 		| "colorPalette.solid"
-		| GeneratedOpenCssValue
 		| FirstThatWorksValue
 		| null;
 	readonly display?: GeneratedOpenCssValue | FirstThatWorksValue | null;
