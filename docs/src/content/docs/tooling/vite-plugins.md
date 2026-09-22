@@ -132,12 +132,40 @@ export const Stack = createStack(css);
 plugins: [stackFoldVite({ engine }), pandwindCssVite(css, { engine })];
 ```
 
-Static `<Stack>` props then become the strategy's class names and, for
-sheet-backed strategies, matching generated CSS. With the Tailwind adapter,
-the same recipe feeds Tailwind's scanner. Dynamic props stay on the runtime
-component. The engine is explicit because a JSX alias such as
+Static `<Stack>` props, including fully static responsive and variant objects,
+become the strategy's class names and, for sheet-backed strategies, matching
+generated CSS. With the Tailwind adapter, the same recipe feeds Tailwind's
+scanner. Dynamic leaves stay on the runtime component. The engine is explicit because a JSX alias such as
 `const Stack = createStack(css)` does not retain reliable compiler ownership
 metadata for a Vite plugin to infer after re-exporting.
+
+The native component-file adapters use the same renderer-neutral mapper and
+are useful when the host compiler is Svelte or Astro:
+
+```svelte
+<script lang="ts">
+  import Stack from "pandwind/stack/svelte";
+</script>
+
+<Stack direction={{ base: "column", md: "row" }} gap={{ base: 2, md: 4 }} class="demo">
+  <div>Responsive content</div>
+</Stack>
+```
+
+```astro
+---
+import Stack from "pandwind/stack/astro";
+---
+
+<Stack direction={{ base: "column", md: "row" }} gap={{ base: 2, md: 4 }} class="demo">
+  <div>Responsive content</div>
+</Stack>
+```
+
+These native files stay in the host framework's compilation lane and use the
+default Tailwind-compatible classes. Use `class` for additional project
+utilities; configured Pandwind class-name strategies remain available through
+the JavaScript `createStack(css)` renderers above.
 
 ### Composed CSS changes during Vite HMR
 

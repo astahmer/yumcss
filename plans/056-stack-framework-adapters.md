@@ -7,10 +7,10 @@ a React renderer at `pandwind/stack/react`. The mapper emits the same class
 contract used by the static Stack fold pass, while the renderer owns the
 framework's element and attribute conventions.
 
-The current public shape does not yet make the same component available to
-other supported host frameworks. The host registry already distinguishes
-`className` from `class`, so duplicating that policy in callers would weaken
-the pivot architecture.
+The public shape now makes the same component family available to supported
+JavaScript and native host frameworks. The host registry distinguishes
+`className` from `class`, so keeping that policy inside each adapter avoids
+weakening the pivot architecture.
 
 ## Goal
 
@@ -23,6 +23,8 @@ implementation.
 - Keep `pandwind/stack` as the renderer-neutral core.
 - Keep `pandwind/stack/react` as the React renderer.
 - Add `pandwind/stack/solid`, `pandwind/stack/vue`, and `pandwind/stack/preact`.
+- Add native `pandwind/stack/svelte` and `pandwind/stack/astro` component-file
+  adapters.
 - Make each renderer own only its framework import, component type, attribute
   spelling, children handling, and prop forwarding.
 - Preserve `stackClasses` and the no-engine Vite fold output byte-for-byte;
@@ -42,7 +44,9 @@ renderers without changing the root API.
                     ┌─ stack/react.tsx  ── React className + children
 StackProps ─────────┼─ stack/solid.tsx  ── Solid class + reactive props
 stackClasses() ────┼─ stack/vue.ts     ── Vue class + attrs/slots
-                    └─ stack/preact.tsx ─ Preact className + children
+                    ├─ stack/preact.tsx ─ Preact className + children
+                    ├─ Stack.svelte    ── native class + rest props + slot
+                    └─ Stack.astro     ── native class + attrs + slot
                          │
                          └─ static Stack fold uses stackClasses() directly
 ```
@@ -57,6 +61,8 @@ they do not use.
 - `import { Stack } from "pandwind/stack/solid"`
 - `import { Stack } from "pandwind/stack/vue"`
 - `import { Stack } from "pandwind/stack/preact"`
+- `import Stack from "pandwind/stack/svelte"`
+- `import Stack from "pandwind/stack/astro"`
 - framework-native attributes and children without leaking renderer policy
   into the core or Vite plugin.
 - configured class-name strategies through `createStack(css)`; namespace
@@ -65,10 +71,6 @@ they do not use.
 
 ## What this does not allow
 
-- It does not pretend that Svelte/Astro can consume a JavaScript component
-  export as if it were a native `.svelte` or `.astro` file. Those require
-  framework-native source assets and compiler integration and remain a
-  separate adapter decision.
 - It does not add a second style vocabulary or a second Stack implementation.
 - It does not force a framework dependency into the neutral `pandwind/stack`
   entry.
@@ -83,15 +85,20 @@ they do not use.
    removed.
 3. Add Solid, Vue, and Preact renderers with optional peer dependencies.
    **Done:** each renderer has its own entry and optional peer declaration.
-4. Add export-resolution, inline-snapshot, and type-level contract tests.
+4. Add native Svelte and Astro component-file adapters with optional peer
+   dependencies and package-file copying. **Done:** both adapters consume the
+   shared mapper, forward native attributes, and support responsive props.
+5. Add export-resolution, inline-snapshot, native-file, and type-level contract tests.
    **Done:** package exports, SSR/VNode snapshots, assertions, and tstyche
    coverage are present.
-5. Build/typecheck the package and run focused Stack tests. **Done.**
-6. Record the completed boundary in the architecture documentation. **Done.**
+6. Build/typecheck the package and run focused Stack tests. **Done.**
+7. Record the completed boundary in the Stack plans and Vite tooling
+   documentation. **Done.**
 
 ## Acceptance criteria
 
-- All four renderer entry points resolve through package exports.
+- All six renderer entry points resolve through package exports, including the
+  native Svelte and Astro source files.
 - Each renderer maps the same props to the same class string.
 - Each renderer forwards framework-native attributes and children.
 - Static Stack folding remains renderer-neutral; its default output is
@@ -105,13 +112,13 @@ they do not use.
 
 - Use `pandwind/stack/{framework}` rather than `pandwind/{framework}`: the
   namespace represents a component family, not a framework-wide API bucket.
-- Add React, Solid, Vue, and Preact first because they have JavaScript
-  component entry points and are already represented by Pandwind's host
-  boundaries. Svelte/Astro need native source-file adapters instead.
+- Add React, Solid, Vue, and Preact as JavaScript renderer entry points, and
+  ship Svelte/Astro as native source-file adapters so each host compiler owns
+  its component semantics.
 - Keep the flat class mapper as the fast path; framework renderers are only
   runtime carriers for values the compiler cannot erase.
 
 ## Status
 
-Complete for JavaScript component renderers: React, Solid, Vue, and Preact.
-Native Svelte/Astro component adapters remain intentionally separate work.
+Complete for JavaScript component renderers and native component-file
+adapters: React, Solid, Vue, Preact, Svelte, and Astro.

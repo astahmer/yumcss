@@ -21,6 +21,12 @@ verbatim after the utility prefix (`gap-3.5` works) — closeness to TW beats
 validation here, and the generated unions can tighten later without an API
 change.
 
+Every style prop also accepts a recursively nested condition object. `base`
+sets the unprefixed value, named keys such as `md` add responsive prefixes,
+and underscore keys such as `_hover` add variant prefixes. Static condition
+objects fold in the same deterministic order as scalar props; dynamic leaves
+stay on the runtime component.
+
 ## Erasure mechanics
 
 The vite fold pass (`stackFoldVite()`, opt-in plugin) rewrites literal-prop
@@ -30,8 +36,9 @@ JSX at build time:
     → <div className="flex flex-col gap-4">…</Stack→div>
 
 - All-present-literal rule: if ANY known prop carries a dynamic expression
-  (`gap={x}`) or spread, the whole element stays runtime — no partial folds
-  for v1 (conservative, matches "when in doubt nothing is dropped").
+  (`gap={x}`) or spread, the whole element stays runtime. Static nested
+  condition objects fold recursively; a dynamic leaf keeps the whole element
+  truly runtime so no authored behavior is dropped.
 - Unknown attributes (`onClick`, `data-*`, extra className) are copied
   through onto the `div` verbatim — they are valid on any element.
 - When a file's last `<Stack>` is erased, the now-unused
@@ -70,8 +77,6 @@ pure function.
 ## Non-goals
 
 - No `as`/polymorphic rendering (a div is the contract).
-- No responsive/variant prefixes on stack props in v1 — compose with `tw()`
-  inside `className` instead.
 - No recipes/variants system (explicitly rejected in TODO.md).
 
 ## Outcomes (2026-08-23, spike landed)
@@ -93,8 +98,9 @@ Implemented exactly per the design:
   fold fixtures (static/dynamic/mixed/passthrough/self-closing/import removal).
 - Gates: format/lint/typecheck green; 391 tests / 37 files.
 
-Follow-ups: responsive/variant prefixes on stack props; solid adapter on the
-shared mapper; wire stackFoldVite into the example app dogfood.
+The formerly listed responsive/variant props, shared-renderer adapters,
+example-app Vite wiring, and native Svelte/Astro components are complete.
+The remaining framework-specific details are tracked by Plan 056.
 
 ## Strategy-aware evolution (2026-09-13)
 
