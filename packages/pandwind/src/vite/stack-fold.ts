@@ -139,7 +139,7 @@ export function foldStackElements(
 	const source = sourceId(id);
 	options.engine?.clearPreparedStyles(source);
 	if (!code.includes("Stack")) return { code, folded: 0 };
-	const parsed = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file: source, source: code });
 
 	const targets: FoldTarget[] = [];
 	const classAttribute = options.classAttribute ?? "className";
@@ -250,12 +250,23 @@ function passthroughAttrs(openingText: string, classAttribute: "className" | "cl
 	const kept: string[] = [];
 	// crude but safe split on top-level spaces outside braces/brackets/quotes
 	let depth = 0;
+	let quote: '"' | "'" | undefined;
 	let cur = "";
 	const parts: string[] = [];
 	for (const ch of withoutTag) {
+		if (quote !== undefined) {
+			cur += ch;
+			if (ch === quote) quote = undefined;
+			continue;
+		}
+		if (ch === '"' || ch === "'") {
+			quote = ch;
+			cur += ch;
+			continue;
+		}
 		if ("([{".includes(ch)) depth++;
 		if (")]}".includes(ch)) depth--;
-		if (depth === 0 && ch === " " && cur.trim() !== "") {
+		if (depth === 0 && /\s/u.test(ch) && cur.trim() !== "") {
 			parts.push(cur.trim());
 			cur = "";
 			continue;
@@ -282,7 +293,7 @@ export function stackFoldVite(options: StackFoldOptions = {}): {
 		name: "pandwind:stack-fold",
 		enforce: "pre",
 		transform(code: string, id: string) {
-			if (!/\.[cm]?[jt]sx$/.test(sourceId(id))) return null;
+			if (/[?#]/u.test(id) || !/\.[cm]?[jt]sx$/.test(id)) return null;
 			const result = foldStackElements(code, id, options);
 			if (result.folded === 0) return null;
 			return { code: result.code, map: null };

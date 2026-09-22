@@ -180,6 +180,14 @@ describe("foldStackElements — vite fold pass", () => {
 		expect(out.code).toBe(`<div className="flex gap-2 custom" />`);
 	});
 
+	test("static renderer class attributes preserve whitespace", () => {
+		const out = foldStackElements(
+			`<Stack gap="2" className="custom with spaces" />`,
+			"class-spaces.tsx",
+		);
+		expect(out.code).toBe(`<div className="flex gap-2 custom with spaces" />`);
+	});
+
 	test("dynamic renderer class attributes keep the component runtime", () => {
 		const input = `<Stack gap="2" className={customClass} />`;
 		expect(foldStackElements(input, "dynamic-class.tsx")).toEqual({ code: input, folded: 0 });
@@ -271,6 +279,19 @@ describe("foldStackElements — vite fold pass", () => {
 
 		plugin.handleHotUpdate({ file: source, modules: [] });
 		expect(engine.preparedStyles.has(source)).toBe(false);
+	});
+
+	test("the Stack fold hook ignores Vite query modules", () => {
+		const plugin = stackFoldVite();
+
+		expect(plugin.transform("<Stack gap={4} />", "/src/app.tsx?raw")).toBeNull();
+	});
+
+	test("direct Stack folding normalizes query-bearing source ids", () => {
+		expect(foldStackElements("<Stack gap={4} />", "/src/app.tsx?direct")).toEqual({
+			code: `<div className="flex gap-4" />`,
+			folded: 1,
+		});
 	});
 
 	test("configured folding supports the renderer's `class` attribute spelling", () => {
