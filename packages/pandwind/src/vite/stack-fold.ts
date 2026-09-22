@@ -530,7 +530,7 @@ function passthroughAttrs(openingText: string, classAttribute: "className" | "cl
 	}
 	if (cur.trim() !== "") parts.push(cur.trim());
 	for (const part of parts) {
-		const name = /^([A-Za-z_][\w-]*)/.exec(part)?.[1] ?? "";
+		const name = attributeName(part);
 		if (STACK_PROPS.has(name) || name === classAttribute) continue;
 		kept.push(part.replace(/=\{"([^"]*)"\}$/, '="$1"'));
 	}

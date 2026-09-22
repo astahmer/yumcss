@@ -299,13 +299,14 @@ describe("foldStackElements — vite fold pass", () => {
 		const svelte = plugin.transform(
 			`<script>\nimport Stack from "pandwind/stack/svelte";\n</script>\n` +
 				`<Stack direction={{ base: "column", md: "row" }} ` +
-				`gap={{ base: 2, md: 4 }} class="custom with spaces">\n` +
+				`gap={{ base: 2, md: 4 }} class="custom with spaces" class:active={active}>\n` +
 				`<span>content</span>\n</Stack>`,
 			"/src/App.svelte",
 		);
 		expect(svelte?.code).toContain(
-			`<div class="flex flex-col md:flex-row gap-2 md:gap-4 custom with spaces">`,
+			`<div class="flex flex-col md:flex-row gap-2 md:gap-4 custom with spaces" class:active={active}>`,
 		);
+		expect(svelte?.code).toContain("class:active={active}");
 		expect(svelte?.code).toContain("</div>");
 		expect(svelte?.code).not.toContain("pandwind/stack/svelte");
 
