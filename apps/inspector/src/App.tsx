@@ -5,6 +5,7 @@ import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
 import { InspectorExport } from "./lib/export.ts";
 import { filterNamed, makeTextMatcher } from "./lib/filter.ts";
 import {
+	evaluateContrastPair,
 	groupThemeVars,
 	resolveChain,
 	splitTokenValue,
@@ -1164,6 +1165,177 @@ function TokenGraphView({ graph }: { graph: TokenGraph }) {
 
 /* ---------------------------------- usage tab ---------------------------------- */
 
+type TokenUsageFilter = "all" | "hot" | "used" | "unused";
+type TokenUsageStatus = "hot" | "used" | "unused";
+
+interface TokenUsageRow {
+	id: string;
+	group: string;
+	groupLabel: string;
+	name: string;
+	value: string;
+	count: number;
+	status: TokenUsageStatus;
+}
+
+interface TokenUsageData {
+	rows: Array<TokenUsageRow>;
+	unknown: Array<{ name: string; count: number }>;
+}
+
+const tokenName = (name: string): string => (name.startsWith("$") ? name : `$${name}`);
+
+const tokenLabel = (group: string, name: string): string =>
+	group === "" ? tokenName(name) : `${group}/${tokenName(name)}`;
+
+const buildTokenUsageData = (data: StudioPayload): TokenUsageData => {
+	const sections = data.designSystem.tokenSections;
+	const rows: Array<TokenUsageRow> = sections.flatMap((section) =>
+		section.entries.map((entry) => ({
+			id: `${section.id}/${entry.name.replace(/^\$/, "")}`,
+			group: section.id,
+			groupLabel: section.label,
+			name: entry.name,
+			value: entry.value,
+			count: 0,
+			status: "unused",
+		})),
+	);
+	const ids = new Set(rows.map((row) => row.id));
+	const authoredToIds = new Map<string, Array<string>>();
+	for (const row of rows) {
+		const authored = tokenName(row.name);
+		const matches = authoredToIds.get(authored) ?? [];
+		matches.push(row.id);
+		authoredToIds.set(authored, matches);
+	}
+	const counts = new Map<string, number>();
+	const unknown: Array<{ name: string; count: number }> = [];
+	for (const usage of data.analytics?.tokenUsage ?? []) {
+		if (ids.has(usage.name)) {
+			counts.set(usage.name, (counts.get(usage.name) ?? 0) + usage.count);
+			continue;
+		}
+		const matches = authoredToIds.get(usage.name) ?? [];
+		if (matches.length === 1) {
+			const id = matches[0]!;
+			counts.set(id, (counts.get(id) ?? 0) + usage.count);
+			continue;
+		}
+		unknown.push(usage);
+	}
+	const ranked = rows
+		.map((row) => ({ id: row.id, count: counts.get(row.id) ?? 0 }))
+		.filter((row) => row.count > 0)
+		.toSorted((a, b) => b.count - a.count || a.id.localeCompare(b.id));
+	const hot = new Set(ranked.slice(0, 8).map((row) => row.id));
+	return {
+		rows: rows.map((row) => {
+			const count = counts.get(row.id) ?? 0;
+			return {
+				...row,
+				count,
+				status: count === 0 ? "unused" : hot.has(row.id) ? "hot" : "used",
+			};
+		}),
+		unknown: unknown.toSorted((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
+	};
+};
+
+const ANALYSIS_BOUNDARIES: ReadonlyArray<{
+	key: GovernanceCoverageBoundary;
+	label: string;
+}> = [
+	{ key: "configuration-failure", label: "configuration failure" },
+	{ key: "unresolved-import", label: "unresolved import" },
+	{ key: "dynamic-expression", label: "dynamic expression" },
+	{ key: "runtime-theme-access", label: "runtime theme access" },
+	{ key: "generated-css", label: "generated CSS" },
+	{ key: "plugin-output", label: "plugin output" },
+	{ key: "public-export", label: "public export" },
+	{ key: "safelist", label: "safelist" },
+	{ key: "unscanned-file", label: "unscanned file" },
+];
+
+type AnalysisConfidenceLevel = "verified" | "scan" | "conservative";
+
+interface AnalysisConfidence {
+	level: AnalysisConfidenceLevel;
+	label: string;
+	summary: string;
+	reasons: Array<string>;
+}
+
+const getAnalysisConfidence = (data: StudioPayload): AnalysisConfidence => {
+	const governance = data.governance;
+	const reasons: Array<string> = [];
+	if (governance !== undefined) {
+		for (const boundary of ANALYSIS_BOUNDARIES) {
+			const count = governance.summary.boundaries[boundary.key] ?? 0;
+			if (count > 0) reasons.push(`${boundary.label} (${count})`);
+		}
+	}
+	if (data.coverage.runtimeCalls > 0) reasons.push(`runtime cx() (${data.coverage.runtimeCalls})`);
+	const unresolvedImports = data.cssCrawl?.unresolved.length ?? 0;
+	if (unresolvedImports > 0) {
+		reasons.push(`unresolved CSS imports (${unresolvedImports})`);
+	}
+	if (data.coverage.totalMissingCss > 0) {
+		reasons.push(`missing CSS candidates (${data.coverage.totalMissingCss})`);
+	}
+	if (reasons.length > 0) {
+		return {
+			level: "conservative",
+			label: "conservative",
+			summary:
+				"Some usage claims are incomplete; unobserved tokens are not automatically safe to remove.",
+			reasons,
+		};
+	}
+	if (governance?.policy?.resolved === true && data.cssSources.length > 0) {
+		return {
+			level: "verified",
+			label: "extraction-backed",
+			summary: "Structured source extraction and resolved project policy back this snapshot.",
+			reasons: [],
+		};
+	}
+	return {
+		level: "scan",
+		label: "static source scan",
+		summary:
+			"Metrics come from static source scanning without a fully resolved governance context.",
+		reasons: [],
+	};
+};
+
+function AnalysisConfidenceBadge({ data }: { data: StudioPayload }) {
+	const confidence = getAnalysisConfidence(data);
+	const tone =
+		confidence.level === "verified"
+			? ui.confidenceVerified
+			: confidence.level === "conservative"
+				? ui.confidenceConservative
+				: ui.confidenceScan;
+	return (
+		<details className={ui.confidenceDetails}>
+			<summary className={`${ui.confidenceBadge} ${tone}`}>
+				<span aria-hidden="true">●</span> {confidence.label} analysis
+			</summary>
+			<div className={ui.confidencePopover}>
+				<strong>{confidence.summary}</strong>
+				{confidence.reasons.length > 0 && (
+					<ul>
+						{confidence.reasons.map((reason) => (
+							<li key={reason}>{reason}</li>
+						))}
+					</ul>
+				)}
+			</div>
+		</details>
+	);
+}
+
 const pct = (n: number): string => `${n}`;
 
 function UsageView(props: { data: StudioPayload }) {
@@ -1261,46 +1433,153 @@ function UsageView(props: { data: StudioPayload }) {
 					</tbody>
 				</table>
 			</section>
-			<section>
-				<h2>token usage</h2>
-				<table>
-					<thead>
-						<tr>
-							<th>token</th>
-							<th>uses</th>
-						</tr>
-					</thead>
-					<tbody>
-						{a.tokenUsage.slice(0, 20).map((t) => (
-							<tr key={t.name}>
-								<td>{t.name}</td>
-								<td>{t.count}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-				{props.data.governance !== undefined ? (
-					<p className={ui.muted}>
-						{props.data.governance.summary.unusedCandidates} unused candidate(s) per the governance
-						report — see the Governance tab ({props.data.governance.summary.safeToRemove} safe ·{" "}
-						{props.data.governance.summary.reviewRequired} review ·{" "}
-						{props.data.governance.summary.notRemovable} not removable).
-					</p>
-				) : (
-					a.unusedTokens.length > 0 && (
-						<>
-							<h3>not observed in the scanned graph ({a.unusedTokens.length}) — unclassified</h3>
-							<p className={ui.muted}>{a.unusedTokens.slice(0, 40).join(", ")}</p>
-						</>
-					)
-				)}
-			</section>
+			<TokenUsageIntelligence data={props.data} />
 			<ContrastWarningsView warnings={props.data.contrastWarnings ?? []} />
+			<ContrastPairView data={props.data} />
 			<PruneChangesetView
 				unusedCount={props.data.governance?.summary.safeToRemove ?? a.unusedTokens.length}
 			/>
 			<AnalyticsHistoryChart />
 		</div>
+	);
+}
+
+const TOKEN_USAGE_FILTERS: ReadonlyArray<{ id: TokenUsageFilter; label: string }> = [
+	{ id: "all", label: "all" },
+	{ id: "hot", label: "hot" },
+	{ id: "used", label: "used" },
+	{ id: "unused", label: "not observed" },
+];
+
+function TokenUsageIntelligence({ data }: { data: StudioPayload }) {
+	const usage = buildTokenUsageData(data);
+	const [filter, setFilter] = useState<TokenUsageFilter>("all");
+	const total = usage.rows.length;
+	const used = usage.rows.filter((row) => row.count > 0).length;
+	const hot = usage.rows.filter((row) => row.status === "hot");
+	const visible = usage.rows.filter(
+		(row) => filter === "all" || (filter === "used" ? row.count > 0 : row.status === filter),
+	);
+	const maxHotUses = Math.max(...hot.map((row) => row.count), 1);
+	const groupStats = data.designSystem.tokenSections
+		.map((section) => {
+			const rows = usage.rows.filter((row) => row.group === section.id);
+			return {
+				label: section.label,
+				used: rows.filter((row) => row.count > 0).length,
+				total: rows.length,
+			};
+		})
+		.filter((group) => group.total > 0);
+	const coverage = total === 0 ? 0 : Math.round((used / total) * 100);
+	return (
+		<section>
+			<h2>token intelligence</h2>
+			<p className={ui.muted}>
+				Authored shorthand is normalized to its catalog group before usage is compared. “Not
+				observed” is an analysis result, not an automatic removal recommendation.
+			</p>
+			<div className={ui.cards}>
+				<Card
+					label="catalog coverage"
+					value={total === 0 ? "—" : `${used}/${total}`}
+					sub={total === 0 ? "no token catalog loaded" : `${coverage}% observed`}
+				/>
+				<Card label="hot tokens" value={String(hot.length)} sub="most-used catalog entries" />
+				<Card
+					label="not observed"
+					value={String(total - used)}
+					sub="before governance boundaries"
+				/>
+			</div>
+			{groupStats.length > 0 && (
+				<div className={ui.usageCoverage} aria-label="token coverage by category">
+					{groupStats.map((group) => (
+						<Bar
+							key={group.label}
+							label={group.label}
+							value={group.used}
+							max={group.total}
+							suffix={` / ${group.total}`}
+						/>
+					))}
+				</div>
+			)}
+			{hot.length > 0 && (
+				<div className={ui.usageHot}>
+					<h3>hot tokens</h3>
+					{hot.map((row) => (
+						<Bar
+							key={row.id}
+							label={tokenLabel(row.group, row.name)}
+							value={row.count}
+							max={maxHotUses}
+						/>
+					))}
+				</div>
+			)}
+			<div className={ui.usageFilters} role="group" aria-label="Filter token usage">
+				{TOKEN_USAGE_FILTERS.map((option) => (
+					<button
+						key={option.id}
+						type="button"
+						className={filter === option.id ? ui.active : undefined}
+						aria-pressed={filter === option.id}
+						onClick={() => setFilter(option.id)}
+					>
+						{option.label}
+					</button>
+				))}
+			</div>
+			{visible.length > 0 ? (
+				<table>
+					<thead>
+						<tr>
+							<th>category</th>
+							<th>token</th>
+							<th>uses</th>
+							<th>status</th>
+						</tr>
+					</thead>
+					<tbody>
+						{visible
+							.toSorted((a, b) => b.count - a.count || a.id.localeCompare(b.id))
+							.slice(0, 80)
+							.map((row) => (
+								<tr key={row.id}>
+									<td>{row.groupLabel}</td>
+									<td title={row.value}>
+										<code>{tokenLabel(row.group, row.name)}</code>
+									</td>
+									<td>{row.count}</td>
+									<td>
+										<span className={row.status === "unused" ? ui.muted : ui.good}>
+											{row.status === "unused" ? "not observed" : row.status}
+										</span>
+									</td>
+								</tr>
+							))}
+					</tbody>
+				</table>
+			) : (
+				<p className={ui.muted}>No catalog tokens match this view.</p>
+			)}
+			{usage.unknown.length > 0 && (
+				<details className={ui.unknownTokens}>
+					<summary>observed outside the loaded catalog ({usage.unknown.length})</summary>
+					<p className={ui.muted}>
+						{usage.unknown.map((entry) => `${entry.name} (${entry.count})`).join(", ")}
+					</p>
+				</details>
+			)}
+			{data.governance !== undefined && (
+				<p className={ui.muted}>
+					{data.governance.summary.unusedCandidates} unused candidate(s) per governance —{" "}
+					{data.governance.summary.safeToRemove} safe · {data.governance.summary.reviewRequired}{" "}
+					review · {data.governance.summary.notRemovable} not removable.
+				</p>
+			)}
+		</section>
 	);
 }
 
@@ -1350,6 +1629,97 @@ function ContrastWarningsView({
 					))}
 				</tbody>
 			</table>
+		</section>
+	);
+}
+
+function ContrastPairView({ data }: { data: StudioPayload }) {
+	const colorOptions = useMemo(
+		() =>
+			(
+				data.designSystem.tokenSections.find((section) => section.id === "colors")?.entries ?? []
+			).filter((entry) => !entry.value.includes("condition-bound")),
+		[data.designSystem.tokenSections],
+	);
+	const colorValues = useMemo(() => {
+		const values: Record<string, string> = {};
+		for (const option of colorOptions) {
+			values[option.name] = option.value;
+			values[tokenName(option.name)] = option.value;
+		}
+		return values;
+	}, [colorOptions]);
+	const [foreground, setForeground] = useState(() => colorOptions[0]?.name ?? "");
+	const [background, setBackground] = useState(
+		() => colorOptions[1]?.name ?? colorOptions[0]?.name ?? "",
+	);
+	useEffect(() => {
+		const names = new Set(colorOptions.map((option) => option.name));
+		setForeground((current) => (names.has(current) ? current : (colorOptions[0]?.name ?? "")));
+		setBackground((current) =>
+			names.has(current) ? current : (colorOptions[1]?.name ?? colorOptions[0]?.name ?? ""),
+		);
+	}, [colorOptions]);
+	if (colorOptions.length < 2) {
+		return (
+			<section>
+				<h2>check a palette pair</h2>
+				<p className={ui.muted}>
+					A resolved color catalog is required for focused contrast checks.
+				</p>
+			</section>
+		);
+	}
+	const evaluation = evaluateContrastPair(foreground, background, colorValues);
+	const statusClass =
+		evaluation?.status === "pass"
+			? ui.good
+			: evaluation?.status === "fail-large"
+				? ui.error
+				: ui.warn;
+	return (
+		<section>
+			<h2>check a palette pair</h2>
+			<p className={ui.muted}>
+				Choose one text and one background token. This keeps palette accessibility useful without
+				producing an all-colors matrix.
+			</p>
+			<div className={ui.contrastControls}>
+				<label>
+					text
+					<select value={foreground} onChange={(event) => setForeground(event.target.value)}>
+						{colorOptions.map((option) => (
+							<option key={option.name} value={option.name}>
+								{tokenName(option.name)}
+							</option>
+						))}
+					</select>
+				</label>
+				<label>
+					background
+					<select value={background} onChange={(event) => setBackground(event.target.value)}>
+						{colorOptions.map((option) => (
+							<option key={option.name} value={option.name}>
+								{tokenName(option.name)}
+							</option>
+						))}
+					</select>
+				</label>
+			</div>
+			{evaluation === null ? (
+				<p className={ui.muted}>The selected values could not be resolved to colors.</p>
+			) : (
+				<div className={ui.contrastResult} role="status" aria-live="polite">
+					<span className={statusClass}>{evaluation.ratio.toFixed(2)}:1</span>
+					<span>
+						{evaluation.status === "pass"
+							? "passes AA for normal text"
+							: evaluation.status === "fail-normal"
+								? "passes large text only"
+								: "fails AA for large text"}
+					</span>
+				</div>
+			)}
 		</section>
 	);
 }
@@ -1901,6 +2271,7 @@ export function App() {
 					))}
 				</nav>
 				<div className={ui.headerActions}>
+					{data !== null && <AnalysisConfidenceBadge data={data} />}
 					<button type="button" onClick={refresh} disabled={loading} title="re-run analysis">
 						{loading ? "…" : "⟳ refresh"}
 					</button>
