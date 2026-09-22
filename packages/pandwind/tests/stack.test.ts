@@ -47,6 +47,28 @@ describe("stackClasses — mapping table", () => {
 			padding: 6,
 		});
 	});
+
+	test("responsive and variant values use the same deterministic utility order", () => {
+		expect(
+			stackClasses({
+				direction: { base: "column", md: "row" },
+				gap: { base: 2, md: 4 },
+				align: { _hover: "center" },
+			}),
+		).toBe("flex flex-col md:flex-row gap-2 md:gap-4 hover:items-center");
+		expect(
+			stackStyle({
+				direction: { base: "column", md: "row" },
+				gap: { md: 4 },
+				align: { _hover: "center" },
+			}),
+		).toEqual({
+			display: "flex",
+			flexDirection: "column",
+			md: { flexDirection: "row", gap: 4 },
+			_hover: { alignItems: "center" },
+		});
+	});
 });
 
 test("createStackClassName delegates layout declarations to the supplied CSS compiler", () => {
@@ -126,6 +148,24 @@ describe("foldStackElements — vite fold pass", () => {
 		expect(out.code).toBe(src);
 	});
 
+	test("static responsive and variant props fold to prefixed classes", () => {
+		const input =
+			`<Stack direction={{ base: "column", md: "row" }} ` +
+			`gap={{ base: 2, md: 4 }} align={{ _hover: "center" }} />`;
+		expect(foldStackElements(input, "responsive.tsx")).toEqual({
+			code: `<div className="flex flex-col md:flex-row gap-2 md:gap-4 hover:items-center" />`,
+			folded: 1,
+		});
+	});
+
+	test("dynamic nested responsive values keep the component runtime", () => {
+		const input = `<Stack gap={{ base: dynamicGap, md: 4 }} />`;
+		expect(foldStackElements(input, "dynamic-responsive.tsx")).toEqual({
+			code: input,
+			folded: 0,
+		});
+	});
+
 	test("unknown attributes pass through onto the div; known literals still fold", () => {
 		const src = `<Stack direction="row" onClick={handler} data-x="1"><span/></Stack>`;
 		const out = foldStackElements(src, "c.tsx");
@@ -176,6 +216,31 @@ describe("foldStackElements — vite fold pass", () => {
 			},
 			{ key: "gap", value: "4px", className: "app-gap-4px" },
 			{ key: "alignItems", value: "center", className: "app-alignItems-center" },
+		]);
+	});
+
+	test("configured folding preserves responsive conditions in the shared engine", () => {
+		const engine = createPandwindEngineContext({
+			preset: examplePreset,
+			className: {
+				name: "responsive",
+				sheetBacked: true,
+				toClassName: (key, value) => `app-${key}-${value}`,
+			},
+		});
+		const source = "/src/responsive-stack.tsx";
+		const input = `<Stack direction={{ base: "column", md: "row" }} gap={{ md: 4 }} />`;
+		const out = foldStackElements(input, source, { engine });
+
+		expect(out.folded).toBe(1);
+		expect(out.code).toContain("app-flexDirection-column");
+		expect(out.code).toContain("app-flexDirection__md-row");
+		expect(out.code).toContain("app-gap__md-4px");
+		expect(engine.preparedStyles.get(source)).toEqual([
+			{ key: "display", value: "flex", className: "app-display-flex" },
+			{ key: "flexDirection", value: "column", className: "app-flexDirection-column" },
+			{ key: "flexDirection__md", value: "row", className: "app-flexDirection__md-row" },
+			{ key: "gap__md", value: "4px", className: "app-gap__md-4px" },
 		]);
 	});
 

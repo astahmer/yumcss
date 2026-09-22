@@ -18,32 +18,29 @@ export type StackDirection = "row" | "column" | "row-reverse" | "column-reverse"
 export type StackAlign = "start" | "center" | "end" | "stretch" | "baseline";
 export type StackJustify = "start" | "center" | "end" | "between" | "around" | "evenly";
 export type StackCssValue = string | number;
+export type StackResponsiveValue<T> = T | { readonly [condition: string]: StackResponsiveValue<T> };
 
 export interface StackProps {
 	/** Flex direction. Default `row`. */
-	direction?: StackDirection;
+	direction?: StackResponsiveValue<StackDirection>;
 	/** CSS value for `createStack`; the default renderer emits `gap-${value}`. */
-	gap?: StackCssValue;
+	gap?: StackResponsiveValue<StackCssValue>;
 	/** CSS value for `createStack`; the default renderer emits `p-${value}`. */
-	padding?: StackCssValue;
-	align?: StackAlign;
-	justify?: StackJustify;
+	padding?: StackResponsiveValue<StackCssValue>;
+	align?: StackResponsiveValue<StackAlign>;
+	justify?: StackResponsiveValue<StackJustify>;
 }
 
 /** CSS declarations produced by the configured Stack renderer. */
 export interface StackStyle extends StyleObject {
 	display: "flex";
-	flexDirection?: StackDirection;
-	gap?: StackCssValue;
-	padding?: StackCssValue;
-	alignItems?: "flex-start" | "center" | "flex-end" | "stretch" | "baseline";
-	justifyContent?:
-		| "flex-start"
-		| "center"
-		| "flex-end"
-		| "space-between"
-		| "space-around"
-		| "space-evenly";
+	flexDirection?: StackResponsiveValue<StackDirection>;
+	gap?: StackResponsiveValue<StackCssValue>;
+	padding?: StackResponsiveValue<StackCssValue>;
+	alignItems?: StackResponsiveValue<"flex-start" | "center" | "flex-end" | "stretch" | "baseline">;
+	justifyContent?: StackResponsiveValue<
+		"flex-start" | "center" | "flex-end" | "space-between" | "space-around" | "space-evenly"
+	>;
 }
 
 /**
@@ -80,7 +77,16 @@ const JUSTIFY_CLASSES: Readonly<Record<StackJustify, string>> = {
 	evenly: "justify-evenly",
 };
 
-const ALIGN_STYLES: Readonly<Record<StackAlign, NonNullable<StackStyle["alignItems"]>>> = {
+type StackAlignStyle = "flex-start" | "center" | "flex-end" | "stretch" | "baseline";
+type StackJustifyStyle =
+	| "flex-start"
+	| "center"
+	| "flex-end"
+	| "space-between"
+	| "space-around"
+	| "space-evenly";
+
+const ALIGN_STYLES: Readonly<Record<StackAlign, StackAlignStyle>> = {
 	start: "flex-start",
 	center: "center",
 	end: "flex-end",
@@ -88,7 +94,7 @@ const ALIGN_STYLES: Readonly<Record<StackAlign, NonNullable<StackStyle["alignIte
 	baseline: "baseline",
 };
 
-const JUSTIFY_STYLES: Readonly<Record<StackJustify, NonNullable<StackStyle["justifyContent"]>>> = {
+const JUSTIFY_STYLES: Readonly<Record<StackJustify, StackJustifyStyle>> = {
 	start: "flex-start",
 	center: "center",
 	end: "flex-end",
@@ -97,14 +103,78 @@ const JUSTIFY_STYLES: Readonly<Record<StackJustify, NonNullable<StackStyle["just
 	evenly: "space-evenly",
 };
 
+type StackStyleLeaf = string | number;
+
+const isResponsiveObject = <T>(
+	value: StackResponsiveValue<T>,
+): value is { readonly [condition: string]: StackResponsiveValue<T> } =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isStyleObject = (value: unknown): value is StyleObject =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const variantName = (condition: string): string => {
+	if (condition === "base") return "";
+	const name = condition.startsWith("_") ? condition.slice(1) : condition;
+	if (!/^[a-z][A-Za-z0-9]*$/u.test(name)) return name.replace(/:$/u, "");
+	return name.replace(/[A-Z]/gu, (character) => `-${character.toLowerCase()}`);
+};
+
+const appendVariantClasses = <T>(
+	classes: string[],
+	value: StackResponsiveValue<T>,
+	utility: (value: T) => string,
+	prefixes: readonly string[] = [],
+): void => {
+	if (isResponsiveObject(value)) {
+		for (const [condition, nested] of Object.entries(value)) {
+			const prefix = variantName(condition);
+			appendVariantClasses(
+				classes,
+				nested,
+				utility,
+				prefix === "" ? prefixes : [...prefixes, prefix],
+			);
+		}
+		return;
+	}
+	const className = utility(value);
+	classes.push(prefixes.length === 0 ? className : `${prefixes.join(":")}:${className}`);
+};
+
+const assignResponsiveStyle = <T extends StackStyleLeaf>(
+	target: StyleObject,
+	property: string,
+	value: StackResponsiveValue<T>,
+	map: (value: T) => StackStyleLeaf,
+): void => {
+	if (!isResponsiveObject(value)) {
+		target[property] = map(value);
+		return;
+	}
+	for (const [condition, nested] of Object.entries(value)) {
+		if (condition === "base") {
+			assignResponsiveStyle(target, property, nested, map);
+			continue;
+		}
+		const branch = isStyleObject(target[condition]) ? target[condition] : {};
+		target[condition] = branch;
+		assignResponsiveStyle(branch, property, nested, map);
+	}
+};
+
 /** Map Stack props to the CSS object consumed by a configured compiler. */
 export const stackStyle = (props: StackProps): StackStyle => {
 	const style: StackStyle = { display: "flex" };
-	if (props.direction !== undefined) style.flexDirection = props.direction;
-	if (props.gap !== undefined) style.gap = props.gap;
-	if (props.padding !== undefined) style.padding = props.padding;
-	if (props.align !== undefined) style.alignItems = ALIGN_STYLES[props.align];
-	if (props.justify !== undefined) style.justifyContent = JUSTIFY_STYLES[props.justify];
+	if (props.direction !== undefined)
+		assignResponsiveStyle(style, "flexDirection", props.direction, (value) => value);
+	if (props.gap !== undefined) assignResponsiveStyle(style, "gap", props.gap, (value) => value);
+	if (props.padding !== undefined)
+		assignResponsiveStyle(style, "padding", props.padding, (value) => value);
+	if (props.align !== undefined)
+		assignResponsiveStyle(style, "alignItems", props.align, (value) => ALIGN_STYLES[value]);
+	if (props.justify !== undefined)
+		assignResponsiveStyle(style, "justifyContent", props.justify, (value) => JUSTIFY_STYLES[value]);
 	return style;
 };
 
@@ -121,10 +191,14 @@ export const createStackClassName = (compiler: StackClassCompiler): StackClassNa
  */
 export function stackClasses(props: StackProps): string {
 	const classes: string[] = ["flex"];
-	if (props.direction !== undefined) classes.push(DIRECTION_CLASSES[props.direction]!);
-	if (props.gap !== undefined) classes.push(`gap-${props.gap}`);
-	if (props.padding !== undefined) classes.push(`p-${props.padding}`);
-	if (props.align !== undefined) classes.push(ALIGN_CLASSES[props.align]!);
-	if (props.justify !== undefined) classes.push(JUSTIFY_CLASSES[props.justify]!);
+	if (props.direction !== undefined)
+		appendVariantClasses(classes, props.direction, (value) => DIRECTION_CLASSES[value]!);
+	if (props.gap !== undefined) appendVariantClasses(classes, props.gap, (value) => `gap-${value}`);
+	if (props.padding !== undefined)
+		appendVariantClasses(classes, props.padding, (value) => `p-${value}`);
+	if (props.align !== undefined)
+		appendVariantClasses(classes, props.align, (value) => ALIGN_CLASSES[value]!);
+	if (props.justify !== undefined)
+		appendVariantClasses(classes, props.justify, (value) => JUSTIFY_CLASSES[value]!);
 	return classes.join(" ");
 }

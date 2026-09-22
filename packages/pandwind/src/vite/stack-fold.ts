@@ -10,7 +10,7 @@ import { NodeKind } from "../ast-node-kind.ts";
  * `createStack(css)`; without one, this pass is explicitly Tailwind-only.
  */
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
-import { walk, type OxcNode } from "../tw/literal.ts";
+import { evalLiteral, walk, type OxcNode } from "../tw/literal.ts";
 import { stackClasses, stackStyle, type StackProps } from "../stack/index.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 
@@ -25,8 +25,8 @@ const STACK_PROPS = new Set(["direction", "gap", "padding", "align", "justify"])
 
 interface JsxAttr {
 	name: string;
-	/** Literal string/number value, or undefined when dynamic/spread. */
-	value?: string | number;
+	/** Statically evaluated value, or undefined when dynamic/spread. */
+	value?: unknown;
 	dynamic: boolean;
 	raw: string;
 }
@@ -45,36 +45,33 @@ interface FoldTarget {
 
 function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } {
 	const attrs: JsxAttr[] = [];
-	const pieces: string[] = [];
 	for (const attr of (opening.attributes ?? []) as Array<Record<string, unknown>>) {
 		if (attr["type"] === NodeKind.JSXAttribute) {
 			const name = ((attr["name"] as { name?: string })?.name ?? "") as string;
 			const valueNode = attr["value"] as Record<string, unknown> | undefined;
-			let value: string | number | undefined;
+			let value: unknown;
 			let dynamic = false;
 			if (valueNode === undefined || valueNode === null) {
 				// Boolean-presence attributes stay passthrough, while a known prop
 				// correctly prevents folding instead of being silently discarded.
 				const raw = String((attr["name"] as { raw?: string })?.raw ?? name);
 				attrs.push({ name, value: undefined, dynamic: true, raw });
-				pieces.push(raw);
 				continue;
 			}
 			if (valueNode["type"] === NodeKind.Literal) {
 				value = valueNode["value"] as string | number;
 			} else if (valueNode["type"] === NodeKind.JSXExpressionContainer) {
 				const inner = valueNode["expression"] as Record<string, unknown>;
-				if (inner?.type === NodeKind.Literal) value = inner["value"] as string | number;
+				const literal = evalLiteral(inner as never);
+				if (literal !== undefined) value = literal;
 				else dynamic = true;
 			} else {
 				dynamic = true;
 			}
 			const raw = String((attr["name"] as { raw?: string })?.raw ?? name);
 			attrs.push({ name, value, dynamic, raw });
-			pieces.push(raw);
 		} else {
 			// spread or namespace attr — unknown shape; remember raw text
-			pieces.push(String(attr));
 			attrs.push({ name: "", value: undefined, dynamic: true, raw: String(attr) });
 		}
 	}
@@ -82,6 +79,56 @@ function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } 
 }
 
 const sourceId = (id: string): string => id.split(/[?#]/u, 1)[0]!;
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isResponsiveValue = (value: unknown, leaf: (value: unknown) => boolean): boolean => {
+	if (!isPlainObject(value)) return leaf(value);
+	const entries = Object.entries(value);
+	return (
+		entries.length > 0 &&
+		entries.every(([condition, nested]) => {
+			return condition.length > 0 && isResponsiveValue(nested, leaf);
+		})
+	);
+};
+
+const isStackProps = (value: unknown): value is StackProps => {
+	if (!isPlainObject(value)) return false;
+	const directions = ["row", "column", "row-reverse", "column-reverse"];
+	const aligns = ["start", "center", "end", "stretch", "baseline"];
+	const justifies = ["start", "center", "end", "between", "around", "evenly"];
+	return Object.entries(value).every(([name, propValue]) => {
+		switch (name) {
+			case "direction":
+				return isResponsiveValue(
+					propValue,
+					(leaf) => typeof leaf === "string" && directions.includes(leaf),
+				);
+			case "gap":
+			case "padding":
+				return isResponsiveValue(
+					propValue,
+					(leaf) =>
+						(typeof leaf === "string" || typeof leaf === "number") &&
+						(typeof leaf !== "number" || Number.isFinite(leaf)),
+				);
+			case "align":
+				return isResponsiveValue(
+					propValue,
+					(leaf) => typeof leaf === "string" && aligns.includes(leaf),
+				);
+			case "justify":
+				return isResponsiveValue(
+					propValue,
+					(leaf) => typeof leaf === "string" && justifies.includes(leaf),
+				);
+			default:
+				return false;
+		}
+	});
+};
 
 /** Fold all literal-prop Stack elements in one module. Returns edited code. */
 export function foldStackElements(
@@ -109,24 +156,30 @@ export function foldStackElements(
 
 		const { attrs } = readAttributes(opening);
 		const known = attrs.filter((a) => a.name !== "" && STACK_PROPS.has(a.name));
+		const classAttr = attrs.find((attr) => attr.name === classAttribute);
 		// conservative: any dynamic/spread anywhere → leave the element alone
 		if (
 			known.some((a) => a.dynamic) ||
-			attrs.some((a) => a.dynamic && (a.name === "" || a.name === classAttribute))
+			attrs.some((a) => a.dynamic && (a.name === "" || a.name === classAttribute)) ||
+			(classAttr !== undefined &&
+				classAttr.value !== undefined &&
+				typeof classAttr.value !== "string" &&
+				typeof classAttr.value !== "number")
 		)
 			return;
 
-		const props: StackProps = {};
+		const props: Record<string, unknown> = {};
 		for (const a of known) {
 			if (a.value === undefined) continue;
-			(props as unknown as Record<string, string | number>)[a.name] = a.value;
+			props[a.name] = a.value;
 		}
+		if (!isStackProps(props)) return;
 		const classes =
 			options.engine === undefined
 				? stackClasses(props)
 				: options.engine.foldLiteralStyle(stackStyle(props), source);
 		if (classes === null) return;
-		const extraClass = attrs.find((attr) => attr.name === classAttribute)?.value;
+		const extraClass = classAttr?.value;
 		const mergedClasses =
 			typeof extraClass === "string" || typeof extraClass === "number"
 				? `${classes}${String(extraClass) === "" ? "" : ` ${extraClass}`}`

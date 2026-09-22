@@ -42,6 +42,9 @@ test("stackClasses accepts the public stack props", () => {
 		justify: "between",
 	};
 	expect(stackClasses(props)).type.toBe<string>();
+	expect(
+		stackClasses({ direction: { base: "column", md: "row" }, gap: { base: 2, md: 4 } }),
+	).type.toBe<string>();
 });
 
 test("createStack binds every renderer to a loose CSS compiler", () => {
@@ -69,6 +72,8 @@ test("stack direction and alignment values stay constrained", () => {
 	stackClasses({ direction: "diagonal" });
 	// @ts-expect-error is not assignable
 	stackClasses({ align: "middle" });
+	// @ts-expect-error is not assignable
+	stackClasses({ direction: { md: "diagonal" } });
 });
 
 test("each component renderer accepts its framework-native class prop", () => {
