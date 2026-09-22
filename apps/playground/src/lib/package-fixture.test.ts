@@ -7,7 +7,7 @@ import {
 import { runPackageFixtureProof } from "./package-fixture.ts";
 
 describe("playground package fixture lane", () => {
-	test("proves a real package through typecheck, Vite client build, and SSR build", () => {
+	test("proves a real package through typecheck, Vite, Chromium, and hydration", () => {
 		const proof = runPackageFixtureProof();
 		expect(proof).toMatchObject({
 			lane: PLAYGROUND_EXECUTION_LANE.PackageFixture,
@@ -16,8 +16,10 @@ describe("playground package fixture lane", () => {
 				PLAYGROUND_EVIDENCE_CHECK.ProjectTypecheck,
 				PLAYGROUND_EVIDENCE_CHECK.ProjectBuild,
 				PLAYGROUND_EVIDENCE_CHECK.SsrBuild,
+				PLAYGROUND_EVIDENCE_CHECK.BrowserHost,
+				PLAYGROUND_EVIDENCE_CHECK.Hydration,
 			]),
-			unavailable: [PLAYGROUND_EVIDENCE_CHECK.BrowserHost, PLAYGROUND_EVIDENCE_CHECK.Hydration],
+			unavailable: [],
 		});
-	});
+	}, 120_000);
 });

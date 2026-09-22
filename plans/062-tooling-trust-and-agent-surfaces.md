@@ -186,17 +186,16 @@ an arbitrary command string as a shortcut.
   identities, with evidence checks and unavailable checks carried as data.
 - `apps/playground/fixtures/package-fixture` is a real workspace package that
   imports `pandwind/css` and `@pandwind/example-preset` through package names,
-  resolves the Vite CSS plugin, and passes TypeScript, client Vite, and SSR Vite
-  builds. The test asserts that extracted CSS and the server bundle exist.
-- The fixture reports `browser-host` and `hydration` as unavailable rather than
-  relabeling an SSR build as a browser or hydration proof.
+  resolves the Vite CSS plugin, and passes TypeScript, client Vite, SSR Vite,
+  and real Chromium checks. The SSR-rendered HTML is served with the production
+  client bundle; Chromium verifies emitted CSS and clicks a React control after
+  hydration without console or page errors.
 - The browser sandbox remains the fast teaching/evaluation lane; the fixture
   lane is the slower build-level confidence lane. Neither lane is an arbitrary
   code-execution host.
 
-This closes the plan's representative real-fixture requirement. A future
-browser-host fixture is an evidence expansion, not a reason to reopen the
-execution-lane architecture.
+This closes the plan's representative real-fixture requirement, including the
+browser and hydration dimensions for this bounded React/Vite fixture.
 
 ## Decisions log
 

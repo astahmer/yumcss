@@ -25,11 +25,16 @@ const filesUnder = (directory: string): string[] => {
 	});
 };
 
-const run = (fixture: string, outputDirectory: string, args: readonly string[]): void => {
+const run = (
+	fixture: string,
+	outputDirectory: string,
+	args: readonly string[],
+	extraEnv: Readonly<Record<string, string>> = {},
+): void => {
 	try {
 		execFileSync("pnpm", ["exec", ...args], {
 			cwd: fixture,
-			env: { ...process.env, PANDWIND_FIXTURE_OUT_DIR: outputDirectory },
+			env: { ...process.env, PANDWIND_FIXTURE_OUT_DIR: outputDirectory, ...extraEnv },
 			stdio: "pipe",
 		});
 	} catch (error) {
@@ -70,6 +75,9 @@ export const runPackageFixtureProof = (): PackageFixtureProof => {
 		if (filesUnder(ssrOutput).filter((path) => path.endsWith(".js")).length === 0) {
 			throw new Error("SSR build did not emit a server bundle");
 		}
+		run(fixtureRoot, clientOutput, ["node", "test/e2e.mjs"], {
+			PANDWIND_FIXTURE_SSR_OUT_DIR: ssrOutput,
+		});
 		return {
 			lane: PLAYGROUND_EXECUTION_LANE.PackageFixture,
 			scope: PLAYGROUND_EXECUTION_SCOPE.ProjectPackage,
@@ -77,9 +85,11 @@ export const runPackageFixtureProof = (): PackageFixtureProof => {
 				PLAYGROUND_EVIDENCE_CHECK.ProjectTypecheck,
 				PLAYGROUND_EVIDENCE_CHECK.ProjectBuild,
 				PLAYGROUND_EVIDENCE_CHECK.SsrBuild,
+				PLAYGROUND_EVIDENCE_CHECK.BrowserHost,
+				PLAYGROUND_EVIDENCE_CHECK.Hydration,
 			],
-			unavailable: [PLAYGROUND_EVIDENCE_CHECK.BrowserHost, PLAYGROUND_EVIDENCE_CHECK.Hydration],
-			note: "This proof runs the fixture package through workspace TypeScript, Vite client build, and Vite SSR build.",
+			unavailable: [],
+			note: "This proof imports the fixture through package names, typechecks it, builds client and SSR bundles, then hydrates the server-rendered client in Chromium and verifies its click handler.",
 		};
 	} finally {
 		for (const directory of [typecheckOutput, clientOutput, ssrOutput]) {
