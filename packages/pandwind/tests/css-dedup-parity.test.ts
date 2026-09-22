@@ -90,6 +90,7 @@ function makeMode(strategy: (typeof MODES)[number]["strategy"]) {
 		css: css as never,
 		conflicts: real.conflicts,
 		compose: real.compose,
+		directionalConflicts: real.directionalConflicts,
 	});
 
 	/** Compile a style: returns { flat key -> class } and feeds the sheet. */

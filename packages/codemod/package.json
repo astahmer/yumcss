@@ -191,6 +191,7 @@
 		"oxc-parser": "0.148.0",
 		"pandwind": "workspace:*",
 		"postcss": "8.5.28",
+		"tailwind-merge": "3.6.0",
 		"unplugin": "3.3.0"
 	},
 	"devDependencies": {

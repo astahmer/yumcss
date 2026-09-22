@@ -4,7 +4,7 @@
 // calls and register finite candidates.
 import type { TwOptions } from "pandwind/tw";
 
-import { __pandwindConflicts } from "./tw.conflicts.ts";
+import { __pandwindConflicts, __pandwindDirectionalConflicts } from "./tw.conflicts.ts";
 
 const __pandwindValueTokens0 = {
 	"-0.125rem": "0.5",
@@ -5153,6 +5153,7 @@ export const __pandwindRuntimeConfig: TwOptions = {
 		"divide-x",
 		"divide-y",
 	],
+	directionalConflicts: __pandwindDirectionalConflicts,
 	valueTokens: {
 		"-bottom": __pandwindValueTokens0,
 		"-col-end": __pandwindValueTokens1,

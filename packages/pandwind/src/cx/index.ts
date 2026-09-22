@@ -46,7 +46,7 @@ import type { CssFn } from "../css/create-css.ts";
 import { dashCase } from "../css/hash.ts";
 import { VARS_ATOMS } from "../css/vars-carrier.ts";
 import type { VarAtom, VarsOutput } from "../css/var-compiler.ts";
-import type { TwComposeMeta, TwConflictsMeta } from "../tw/compile.ts";
+import type { TwComposeMeta, TwConflictsMeta, TwDirectionalConflictsMeta } from "../tw/compile.ts";
 
 /**
  * Metadata used by {@link createCx} to resolve utility and CSS-atom conflicts.
@@ -72,6 +72,8 @@ import type { TwComposeMeta, TwConflictsMeta } from "../tw/compile.ts";
 export interface CxOptions {
 	conflicts?: TwConflictsMeta;
 	compose?: TwComposeMeta;
+	/** Generated broad-to-narrow utility hierarchy for full twMerge parity. */
+	directionalConflicts?: TwDirectionalConflictsMeta;
 	/**
 	 * A createCss / createDesignCss instance. Its atom registry lets cx
 	 * resolve css.class() strings to the properties they set, so they merge
@@ -208,6 +210,12 @@ interface CompiledSigs {
 	/** How many of `all` are primaries (live-count basis for an entry). */
 	primaries: number;
 }
+
+const directionalGroupKey = (signatures: readonly string[]): string =>
+	signatures
+		.map((signature) => signature.slice(signature.indexOf("|") + 1))
+		.toSorted()
+		.join(",");
 
 /**
  * Parse a utility class (`bg-sky-600`, `-top-4`, `flex`, `w-[3.5rem]`) into
@@ -500,6 +508,7 @@ export interface CxFn {
  */
 export function createCx(options: CxOptions = {}): CxFn {
 	const conflicts = options.conflicts;
+	const directionalKills = options.directionalConflicts?.kills;
 	const composeSet = options.compose === undefined ? undefined : new Set(options.compose);
 	// First-segment utility index for the cold parse path (built once; the
 	// generated map is fixed at createCx time).
@@ -524,19 +533,43 @@ export function createCx(options: CxOptions = {}): CxFn {
 		}
 		return id;
 	};
-	/** Bake KILLS_ALSO expansions into the cached plan (same prefix rule). */
+	/** Bake directional expansions into the cached plan (same prefix rule). */
 	const compileSigs = (raw: string[] | null): CompiledSigs | null => {
 		if (raw === null || raw.length === 0) return null;
 		const all: number[] = [];
+		const seen = new Set<number>();
 		// All signatures of one token share the variant prefix; the directional
 		// expansion is keyed by the bare prop part under that same prefix.
 		const scopeEnd = raw[0]!.indexOf("|");
 		const prefix = raw[0]!.slice(0, scopeEnd + 1);
 		for (const sig of raw) {
-			all.push(idOf(sig));
+			const primaryId = idOf(sig);
+			if (!seen.has(primaryId)) {
+				seen.add(primaryId);
+				all.push(primaryId);
+			}
 			const expansion = KILLS_ALSO[sig.slice(prefix.length)];
 			if (expansion !== undefined) {
-				for (const killed of expansion) all.push(idOf(`${prefix}${killed}`));
+				for (const killed of expansion) {
+					const killId = idOf(`${prefix}${killed}`);
+					if (!seen.has(killId)) {
+						seen.add(killId);
+						all.push(killId);
+					}
+				}
+			}
+		}
+		const directional = directionalKills?.[directionalGroupKey(raw)];
+		if (directional !== undefined) {
+			for (const killedGroup of directional) {
+				for (const killed of killedGroup.split(",")) {
+					if (killed === "") continue;
+					const killId = idOf(`${prefix}${killed}`);
+					if (!seen.has(killId)) {
+						seen.add(killId);
+						all.push(killId);
+					}
+				}
 			}
 		}
 		return { all, primaries: raw.length };

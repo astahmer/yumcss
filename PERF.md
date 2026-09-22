@@ -286,11 +286,11 @@ These rows are separate from the native CSS runtime: static generated calls eras
 | ---: | --------------------------------------- | ------------: | --------: |
 |    1 | generated tw+cx (static)                |          0.05 |      0.07 |
 |    2 | generated tw (dynamic)                  |          4.45 |      1.74 |
-|    3 | generated conflict metadata (opt-in)    |         22.37 |      7.23 |
-|    4 | generated conflict cx (dynamic, no css) |         29.37 |     10.18 |
-|    5 | example dss+cx (no tw metadata)         |         33.71 |     12.44 |
-|    6 | generated tw runtime metadata (opt-in)  |        177.07 |     19.43 |
-|    7 | explicit conflict cx (dynamic)          |         56.03 |     19.61 |
+|    3 | generated conflict metadata (opt-in)    |         23.17 |      7.36 |
+|    4 | generated conflict cx (dynamic, no css) |         30.44 |     10.44 |
+|    5 | example dss+cx (no tw metadata)         |         34.02 |     12.56 |
+|    6 | generated tw runtime metadata (opt-in)  |        177.82 |     19.56 |
+|    7 | explicit conflict cx (dynamic)          |         57.10 |     19.87 |
 
 ## Ecosystem bundle-size comparison
 

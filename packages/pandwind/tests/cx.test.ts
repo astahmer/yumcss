@@ -16,12 +16,14 @@ const cx = createCx({
 	css,
 	conflicts: real.conflicts,
 	compose: real.compose,
+	directionalConflicts: real.directionalConflicts,
 });
 
 const designCx = createCx({
 	css: dss,
 	conflicts: real.conflicts,
 	compose: real.compose,
+	directionalConflicts: real.directionalConflicts,
 });
 
 describe("tw class merging across calls", () => {

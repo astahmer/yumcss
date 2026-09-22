@@ -1,4 +1,5 @@
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
+import { twMerge } from "tailwind-merge";
 import { longestFunctionalPrefix } from "./codegen-catalog.ts";
 import { resolveVar, simplifyCalc } from "pandwind/tw";
 
@@ -385,6 +386,82 @@ const COMPOSE_KEYS = new Set([
 	"-divide-y",
 ]);
 
+const directionalGroupKey = (properties: readonly string[]): string =>
+	properties.toSorted().join(",");
+
+interface DirectionalCandidate {
+	candidate: string;
+	properties: string[];
+}
+
+const buildDirectionalConflicts = (
+	system: { candidatesToCss: (candidates: string[]) => (string | null)[] },
+	classList: Array<[string, unknown]>,
+	functionalKeys: string[],
+	conflicts: Record<string, Record<string, string[]>>,
+): { kills: Record<string, readonly string[]> } | undefined => {
+	const candidates: DirectionalCandidate[] = [];
+	const utilityKeys = [...new Set([...functionalKeys, ...Object.keys(conflicts)])].toSorted(
+		(a, b) => b.length - a.length,
+	);
+	for (const batch of chunk(
+		classList.flatMap(([candidate]) => {
+			const utility = utilityKeys.find(
+				(key) =>
+					conflicts[key] !== undefined && (candidate === key || candidate.startsWith(`${key}-`)),
+			);
+			if (utility === undefined) return [];
+			return [{ candidate, utility }];
+		}),
+		300,
+	)) {
+		const results = system.candidatesToCss(batch.map(({ candidate }) => candidate));
+		batch.forEach(({ candidate, utility }, index) => {
+			const css = results[index];
+			if (css === null || css === undefined) return;
+			let properties = conflictProps(dashCase(utility), css);
+			if (
+				utility === "text" &&
+				properties.includes("font-size") &&
+				properties.includes("line-height")
+			) {
+				properties = ["font-size"];
+			}
+			if (properties.length > 0) candidates.push({ candidate, properties });
+		});
+	}
+
+	const sampleByGroup = new Map<string, string>();
+	for (const { candidate, properties } of candidates) {
+		const key = directionalGroupKey(properties);
+		if (!sampleByGroup.has(key)) sampleByGroup.set(key, candidate);
+	}
+	const groups = [...sampleByGroup.entries()];
+	const kills = new Map<string, Set<string>>();
+	for (const [newKey, newCandidate] of groups) {
+		const newProperties = new Set(newKey.split(","));
+		for (const [oldKey, oldCandidate] of groups) {
+			if (newKey === oldKey || oldKey.split(",").some((property) => newProperties.has(property))) {
+				continue;
+			}
+			const merged = twMerge(`${oldCandidate} ${newCandidate}`).split(/\s+/);
+			if (!merged.includes(oldCandidate) && merged.includes(newCandidate)) {
+				const targets = kills.get(newKey) ?? new Set<string>();
+				targets.add(oldKey);
+				kills.set(newKey, targets);
+			}
+		}
+	}
+	if (kills.size === 0) return undefined;
+	return {
+		kills: Object.fromEntries(
+			[...kills]
+				.toSorted(([a], [b]) => a.localeCompare(b, "en"))
+				.map(([source, targets]) => [source, [...targets].toSorted()]),
+		),
+	};
+};
+
 function chunk<T>(items: T[], size: number): T[][] {
 	const chunks: T[][] = [];
 	for (let index = 0; index < items.length; index += size) {
@@ -432,6 +509,12 @@ export function buildConflicts(
 	 * never plausible. Empty utilities are omitted from the map.
 	 */
 	valueTokens?: Record<string, Readonly<Record<string, string>>>;
+	/**
+	 * Directional group relationships that the CSS-property map cannot model.
+	 * Keys and values are canonical property-group keys; the codegen probe is
+	 * backed by the installed tailwind-merge contract.
+	 */
+	directionalConflicts?: { kills: Record<string, readonly string[]> };
 } {
 	const functional = new Set(functionalKeys);
 	const completions = new Map<string, Array<{ values: Array<string | null> }>>();
@@ -640,6 +723,7 @@ export function buildConflicts(
 		compose: [...COMPOSE_KEYS].filter((key) => conflicts[key] !== undefined),
 		wildcardValues,
 		valueTokens,
+		directionalConflicts: buildDirectionalConflicts(system, classList, functionalKeys, conflicts),
 	};
 }
 

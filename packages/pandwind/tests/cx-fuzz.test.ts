@@ -149,6 +149,7 @@ export const cx = createCx({
 	css,
 	conflicts: real.conflicts,
 	compose: real.compose,
+	directionalConflicts: real.directionalConflicts,
 });
 
 /** Fresh instance with a cold cache — the differential oracle. */
@@ -157,6 +158,7 @@ function coldCx(): ReturnType<typeof createCx> {
 		css: createUnsafeCss(),
 		conflicts: real.conflicts,
 		compose: real.compose,
+		directionalConflicts: real.directionalConflicts,
 	});
 }
 

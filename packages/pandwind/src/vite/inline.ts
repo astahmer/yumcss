@@ -16,6 +16,7 @@ import {
 	compileStyles,
 	type TwComposeMeta,
 	type TwConflictsMeta,
+	type TwDirectionalConflictsMeta,
 	type TwNestedStyles,
 	type TwVariantsMeta,
 	type TwValueTokensMeta,
@@ -43,6 +44,7 @@ export interface TwConfig {
 	/** Raw CSS value to token spelling remap catalog for dynamic candidates. */
 	valueTokens?: TwValueTokensMeta;
 	compose?: TwComposeMeta;
+	directionalConflicts?: TwDirectionalConflictsMeta;
 }
 
 interface CallNode extends OxcNode {
@@ -245,6 +247,10 @@ export function extractTwConfigFromSources(sources: readonly string[]): TwConfig
 					? (options.valueTokens as TwValueTokensMeta)
 					: undefined,
 			compose: Array.isArray(options.compose) ? (options.compose as string[]) : undefined,
+			directionalConflicts:
+				typeof options.directionalConflicts === "object" && options.directionalConflicts !== null
+					? (options.directionalConflicts as TwDirectionalConflictsMeta)
+					: undefined,
 		};
 	};
 	// The generated entry is intentionally cheap and contains only variant

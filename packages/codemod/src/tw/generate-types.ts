@@ -134,10 +134,31 @@ const selectConflictUtilities = (
 	const conflicts = Object.fromEntries(
 		Object.entries(metadata.conflicts).filter(([utility]) => selected.has(utility)),
 	);
+	const availableProperties = new Set(
+		Object.values(conflicts).flatMap((values) => Object.values(values).flat()),
+	);
+	const directionalConflicts =
+		metadata.directionalConflicts === undefined
+			? undefined
+			: {
+					kills: Object.fromEntries(
+						Object.entries(metadata.directionalConflicts.kills).flatMap(([source, targets]) => {
+							const sourceProperties = source.split(",");
+							if (!sourceProperties.every((property) => availableProperties.has(property))) {
+								return [];
+							}
+							const filtered = targets.filter((target) =>
+								target.split(",").every((property) => availableProperties.has(property)),
+							);
+							return filtered.length > 0 ? [[source, filtered] as const] : [];
+						}),
+					),
+				};
 	return {
 		...metadata,
 		conflicts,
 		compose: metadata.compose.filter((utility) => selected.has(utility)),
+		directionalConflicts,
 	};
 };
 
@@ -173,10 +194,8 @@ class DefaultDesignSystemCodegen implements DesignSystemCodegen {
 		const types = this.catalog.collect(system);
 		const allMetadata = this.buildConflicts(system, types, functionalKeys);
 		this.catalog.expand(types, allMetadata.conflicts);
-		const { conflicts, compose, wildcardValues, valueTokens } = selectConflictUtilities(
-			allMetadata,
-			options.conflictUtilities,
-		);
+		const { conflicts, compose, wildcardValues, valueTokens, directionalConflicts } =
+			selectConflictUtilities(allMetadata, options.conflictUtilities);
 		const modifierCapable = this.detectModifiers(system, types);
 		const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
 		for (const variant of system.getVariants()) {
@@ -193,6 +212,7 @@ class DefaultDesignSystemCodegen implements DesignSystemCodegen {
 			compose,
 			wildcardValues,
 			valueTokens,
+			directionalConflicts,
 		);
 		return {
 			typesDts: `${header}

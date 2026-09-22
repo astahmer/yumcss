@@ -230,6 +230,7 @@ export class CxCallRewriter {
 		const evaluate = createCx({
 			conflicts: config.conflicts,
 			compose: config.compose,
+			directionalConflicts: config.directionalConflicts,
 			...(fold === undefined
 				? {}
 				: { css: { [ATOM_REGISTRY]: fold.engine.registry } as unknown as CssFn<never> }),

@@ -121,6 +121,7 @@ describe("cx() merging survives the mode switch", () => {
 		css: dss,
 		conflicts: real.conflicts,
 		compose: real.compose,
+		directionalConflicts: real.directionalConflicts,
 	});
 
 	test("named atoms join the registry", () => {

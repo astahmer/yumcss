@@ -25,6 +25,7 @@ const cx = createCx({
 	css,
 	conflicts: real.conflicts,
 	compose: real.compose,
+	directionalConflicts: real.directionalConflicts,
 });
 
 // Verbatim inputs from the css-in-js-bench techs/pandwind lane cases.
@@ -128,6 +129,14 @@ describe("cx() matches tailwind-merge on targeted v2 defect pairs", () => {
 		expect(cx("border-x", "border-x-(--pattern-fg)")).toBe("border-x border-x-(--pattern-fg)");
 	});
 	const pairs: Array<Array<string>> = [
+		["overflow-x-auto", "overflow-hidden"],
+		["overflow-hidden", "overflow-x-auto"],
+		["grow", "flex-1"],
+		["flex-1", "grow"],
+		["leading-tight", "text-sm"],
+		["text-sm", "leading-tight"],
+		["rounded-t", "rounded"],
+		["rounded", "rounded-t"],
 		["text-xs", "leading-tight"],
 		["leading-tight", "text-xs"],
 		["text-xs", "text-sm"],

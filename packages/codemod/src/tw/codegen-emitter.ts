@@ -216,6 +216,7 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 		compose: string[],
 		wildcardValues: Record<string, ReadonlySet<string>> = {},
 		valueTokens: Record<string, Readonly<Record<string, string>>> = {},
+		directionalConflicts?: { kills: Record<string, readonly string[]> },
 	): GeneratedTwSources {
 		const runtimeDeclarations: string[] = [];
 		const buildDeclarations: string[] = [];
@@ -236,8 +237,10 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 		};
 		const serializedConflicts =
 			Object.keys(conflicts).length === 0 ? undefined : serializeConflicts(conflicts);
+		const serializedDirectionalConflicts =
+			directionalConflicts === undefined ? undefined : JSON.stringify(directionalConflicts);
 		const conflictDeclaration =
-			serializedConflicts === undefined
+			serializedConflicts === undefined && serializedDirectionalConflicts === undefined
 				? ""
 				: `type __pandwindPackedConflicts = {
 	s: string[];
@@ -289,11 +292,28 @@ const __pandwindDecodeConflicts = (packed: __pandwindPackedConflicts) => {
 		getOwnPropertyDescriptor: () => ({ enumerable: true, configurable: true }),
 	});
 };
-export const __pandwindConflicts = __pandwindDecodeConflicts(JSON.parse(${JSON.stringify(serializedConflicts)}));`;
+
+${
+	serializedConflicts === undefined
+		? ""
+		: `export const __pandwindConflicts = __pandwindDecodeConflicts(JSON.parse(${JSON.stringify(serializedConflicts)}));`
+}
+${
+	serializedDirectionalConflicts === undefined
+		? ""
+		: `export const __pandwindDirectionalConflicts: TwOptions["directionalConflicts"] = ${serializedDirectionalConflicts};`
+}`;
 		const conflictImport =
-			serializedConflicts === undefined
+			serializedConflicts === undefined && serializedDirectionalConflicts === undefined
 				? ""
-				: 'import { __pandwindConflicts } from "./tw.conflicts.ts";';
+				: `import { ${[
+						serializedConflicts === undefined ? undefined : "__pandwindConflicts",
+						serializedDirectionalConflicts === undefined
+							? undefined
+							: "__pandwindDirectionalConflicts",
+					]
+						.filter(Boolean)
+						.join(", ")} } from "./tw.conflicts.ts";`;
 		const sharedTokens = (values: Readonly<Record<string, string>>): string => {
 			const entries = Object.entries(values).toSorted(([a], [b]) => a.localeCompare(b, "en"));
 			const key = JSON.stringify(entries);
@@ -322,6 +342,9 @@ ${variantEntries.join("\n")}
 			"\tvariants: __pandwindVariants,",
 			serializedConflicts !== undefined ? "\tconflicts: __pandwindConflicts," : "",
 			composeEntries,
+			serializedDirectionalConflicts !== undefined
+				? "\tdirectionalConflicts: __pandwindDirectionalConflicts,"
+				: "",
 		]
 			.filter(Boolean)
 			.join("\n");
@@ -354,6 +377,9 @@ ${valueTokenBlock ? `${valueTokenBlock}\n` : ""}};
 		const conflictConfigEntries = [
 			serializedConflicts !== undefined ? "\tconflicts: __pandwindConflicts," : "",
 			composeEntries,
+			serializedDirectionalConflicts !== undefined
+				? "\tdirectionalConflicts: __pandwindDirectionalConflicts,"
+				: "",
 		]
 			.filter(Boolean)
 			.join("\n");
@@ -365,7 +391,10 @@ import type { TwOptions } from "pandwind/tw";
 
 ${conflictDeclaration}
 
-export const __pandwindConflictConfig: Pick<TwOptions, "conflicts" | "compose"> = {
+export const __pandwindConflictConfig: Pick<
+	TwOptions,
+	"conflicts" | "compose" | "directionalConflicts"
+> = {
 ${conflictConfigEntries}
 };
 `;

@@ -21,6 +21,7 @@ import {
 	compileStyles,
 	type TwComposeMeta,
 	type TwConflictsMeta,
+	type TwDirectionalConflictsMeta,
 	type TwNestedStyles,
 	type TwVariantsMeta,
 } from "./compile.ts";
@@ -28,6 +29,7 @@ import {
 export type {
 	TwComposeMeta,
 	TwConflictsMeta,
+	TwDirectionalConflictsMeta,
 	TwNestedStyles,
 	TwValue,
 	TwVariantsMeta,
@@ -63,6 +65,8 @@ export interface TwOptions {
 	valueTokens?: Record<string, Readonly<Record<string, string>>>;
 	/** Generated composing utilities that must never merge across keys. */
 	compose?: TwComposeMeta;
+	/** Generated directional utility-group conflicts for runtime cx(). */
+	directionalConflicts?: TwDirectionalConflictsMeta;
 }
 
 /** Create a typed `tw` function bound to generated design-system types.

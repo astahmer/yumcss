@@ -4,24 +4,24 @@
     "gz": 1739
   },
   "generated tw runtime metadata (opt-in)": {
-    "min": 177065,
-    "gz": 19431
+    "min": 177823,
+    "gz": 19564
   },
   "generated conflict metadata (opt-in)": {
-    "min": 22374,
-    "gz": 7227
+    "min": 23166,
+    "gz": 7364
   },
   "generated conflict cx (dynamic, no css)": {
-    "min": 29370,
-    "gz": 10182
+    "min": 30442,
+    "gz": 10440
   },
   "explicit conflict cx (dynamic)": {
-    "min": 56027,
-    "gz": 19605
+    "min": 57100,
+    "gz": 19870
   },
   "example dss+cx (no tw metadata)": {
-    "min": 33706,
-    "gz": 12438
+    "min": 34021,
+    "gz": 12562
   },
   "generated tw+cx (static)": {
     "min": 51,

@@ -56,6 +56,15 @@ export interface TwConflictsMeta {
 }
 
 /**
+ * Directional utility-group conflicts that CSS property overlap cannot model.
+ * A later broad group may remove an earlier narrow group, but not the reverse.
+ * The codegen lane derives this from the active Tailwind merge contract.
+ */
+export interface TwDirectionalConflictsMeta {
+	readonly kills: Readonly<Record<string, readonly string[]>>;
+}
+
+/**
  * Utilities that compose through a shared CSS property instead of replacing it.
  *
  * For example, `scale-x` and `scale-y` both contribute to `scale`, so they

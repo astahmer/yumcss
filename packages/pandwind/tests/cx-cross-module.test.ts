@@ -178,6 +178,7 @@ describe("inlineCxCalls folds through importedConstants", () => {
 			css: dss as never,
 			conflicts: config.conflicts,
 			compose: config.compose,
+			directionalConflicts: config.directionalConflicts,
 		});
 
 		const cases: Array<Array<string>> = [

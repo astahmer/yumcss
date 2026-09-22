@@ -25,39 +25,39 @@
   },
   "createCss(pandaPreset)": {
     "min": 46337,
-    "gz": 13455
+    "gz": 13458
   },
   "createCss(defaultPreset)": {
     "min": 26012,
-    "gz": 9348
+    "gz": 9347
   },
   "createCss(fixturePreset)": {
     "min": 29322,
-    "gz": 10399
+    "gz": 10398
   },
   "createDesignCss(fixturePreset), fallback": {
     "min": 37389,
-    "gz": 12853
+    "gz": 12850
   },
   "createCss(fixturePreset) + tw()": {
     "min": 32009,
-    "gz": 11384
+    "gz": 11380
   },
   "createCss(fixturePreset) + cx()": {
-    "min": 36276,
-    "gz": 13025
+    "min": 36597,
+    "gz": 13160
   },
   "createCss(fixturePreset) + tw() + cx()": {
-    "min": 38953,
-    "gz": 13987
+    "min": 39273,
+    "gz": 14101
   },
   "createUnsafeCss(), fallback": {
     "min": 11723,
     "gz": 4660
   },
   "createRuntimeCss(preset), live sheet": {
-    "min": 37435,
-    "gz": 13721
+    "min": 37489,
+    "gz": 13749
   },
   "createUnsafeCss(), static output after extraction": {
     "min": 81,
@@ -117,23 +117,23 @@
   },
   "tw": {
     "min": 2800,
-    "gz": 1314
+    "gz": 1315
   },
   "cx, plain": {
-    "min": 7023,
-    "gz": 3008
+    "min": 7341,
+    "gz": 3135
   },
   "cx": {
-    "min": 18655,
-    "gz": 7234
+    "min": 18974,
+    "gz": 7367
   },
   "all (createUnsafeCss+tw+cx)": {
-    "min": 21346,
-    "gz": 8201
+    "min": 21667,
+    "gz": 8331
   },
   "stylesheet generator (build-time only)": {
-    "min": 28617,
-    "gz": 10547
+    "min": 28911,
+    "gz": 10634
   },
   "unsafe css subpath only": {
     "min": 11731,
@@ -141,10 +141,10 @@
   },
   "root barrel, tw only": {
     "min": 2800,
-    "gz": 1314
+    "gz": 1315
   },
   "root barrel, cx + unsafe css": {
-    "min": 18655,
-    "gz": 7263
+    "min": 18974,
+    "gz": 7398
   }
 }
