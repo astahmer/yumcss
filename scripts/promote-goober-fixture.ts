@@ -34,6 +34,9 @@ const preset = {
 const proofHtml = (css: string, className: string): string =>
 	`<!doctype html><style>${css}</style><main><div class="${className}">Installed adapter proof</div></main>`;
 
+const hasPandwindImport = (code: string): boolean =>
+	/(?:\bfrom\s+|\bimport\s*(?:\(\s*)?)["']pandwind(?:["/])/u.test(code);
+
 interface GooberProofReport {
 	readonly schema: "pandwind.installed-adapter-proof/1";
 	readonly adapter: CodemodAdapterId.Goober;
@@ -177,8 +180,7 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 		to: CodemodAdapterId.Pandwind,
 		file: sourcePath,
 	});
-	if (!migration.code.includes("pandwind/css"))
-		throw new Error("Goober migration did not emit Pandwind");
+	if (!hasPandwindImport(migration.code)) throw new Error("Goober migration did not emit Pandwind");
 	const installed = installedGoober();
 	const baselineClass = installed.css(style);
 	const baselineCss = installed.extractCss();
@@ -205,7 +207,7 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 			sourceFixtureContainsStyleCall: /\bcss\s*\(/.test(source) || source.includes("css`"),
 			sourceImportReboundToInstalledPackage: source.includes('from "goober"'),
 			sourceImportRemovedFromTarget: !migration.code.includes('from "goober"'),
-			targetCodeContainsPandwind: migration.code.includes("pandwind"),
+			targetCodeContainsPandwind: hasPandwindImport(migration.code),
 		},
 		ssr: {
 			checked: true,
