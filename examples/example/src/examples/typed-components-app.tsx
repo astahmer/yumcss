@@ -80,7 +80,7 @@ export function TypedComponentsApp() {
 			>
 				<div>
 					<strong className={tw({ textColor: "gray-900" })}>Responsive Stack</strong>
-					<p className={tw({ mt: "1", textSize: "sm", textColor: "gray-600" })}>
+					<p className={tw({ mt: "2", textSize: "sm", textColor: "gray-600" })}>
 						The Vite fold turns these literal props into configured classes and CSS media rules.
 					</p>
 				</div>
