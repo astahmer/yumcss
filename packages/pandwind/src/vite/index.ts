@@ -227,11 +227,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 		transformCache.set(id, cached);
 		return cached.result;
 	};
-	const remember = (
-		id: string,
-		code: string,
-		result: { code: string; map: null } | null,
-	): void => {
+	const remember = (id: string, code: string, result: { code: string; map: null } | null): void => {
 		transformCache.delete(id);
 		transformCache.set(id, { code, result });
 		if (transformCache.size <= transformCacheLimit) return;
@@ -416,8 +412,8 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 									unresolvedMode,
 								);
 							}
-						return { code: working, map: null } as const;
-					})();
+							return { code: working, map: null } as const;
+						})();
 			remember(id, code, transformed);
 			return transformed;
 		},

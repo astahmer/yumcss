@@ -217,7 +217,7 @@ type DynamicExpression = { node: AstNode; bad: string };
  */
 const findDynamicExpression = (
 	root: AstValue,
-	staticBindings: ReadonlySet<string>,
+	staticBindings: Pick<ReadonlySet<string>, "has">,
 	resolveCall?: (call: AstNode) => ApiReference | undefined,
 ): DynamicExpression | undefined => {
 	const stack: AstValue[] = [root];
@@ -302,9 +302,28 @@ const findDynamicExpression = (
  * local functions named `cx`, `tw`, or `css`; aliases and namespace imports
  * remain fully supported without putting ecosystem checks in every rule.
  */
+type ApiResolver = {
+	readonly resolve: (call: AstNode) => ApiReference | undefined;
+	readonly staticBindings: Pick<ReadonlySet<string>, "has">;
+};
+
+const apiResolverCache = new WeakMap<AstNode, Map<string, ApiResolver>>();
+
+const cssModuleExportsCacheKey = (cssModuleExports: CssModuleExports): string =>
+	JSON.stringify(
+		[...cssModuleExports.entries()]
+			.sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+			.map(([source, exports]) => [source, [...exports].sort()]),
+	);
+
 const createApiResolver = (
-	cssModuleExports: ReadonlyMap<string, ReadonlySet<string>> = new Map(),
-) => {
+	program: AstNode,
+	cssModuleExports: CssModuleExports = new Map(),
+): ApiResolver => {
+	const cacheKey = cssModuleExportsCacheKey(cssModuleExports);
+	const cached = apiResolverCache.get(program)?.get(cacheKey);
+	if (cached !== undefined) return cached;
+
 	const direct = new Map<string, string>();
 	const namespaces = new Map<string, string>();
 	const factories = new Map<string, string>();
@@ -317,7 +336,7 @@ const createApiResolver = (
 		if (node.importKind === IMPORT_KIND.type) return;
 		const source = sourceName(node.source);
 		if (source === undefined) return;
-		const configuredCssExports = cssModuleExports.get(source ?? "");
+		const configuredCssExports = cssModuleExports.get(source);
 		if (
 			source !== SOURCE.core &&
 			source !== SOURCE.css &&
@@ -361,11 +380,11 @@ const createApiResolver = (
 		return resolveMember(expression.callee);
 	};
 
-	const scan = (program: AstNode): void => {
-		walkNode(program, (node) => {
+	const scan = (sourceProgram: AstNode): void => {
+		walkNode(sourceProgram, (node) => {
 			if (node.type === NodeKind.ImportDeclaration) registerImport(node);
 		});
-		walkNode(program, (node) => {
+		walkNode(sourceProgram, (node) => {
 			if (node.type !== NodeKind.VariableDeclarator || node.id?.type !== NodeKind.Identifier)
 				return;
 			if (node.init !== undefined) declarations.set(node.id.name, node.init);
@@ -388,7 +407,7 @@ const createApiResolver = (
 		}
 
 		const scopedStack: Array<{ value: AstValue; shadowed: ReadonlySet<string> }> = [
-			{ value: program, shadowed: new Set() },
+			{ value: sourceProgram, shadowed: new Set() },
 		];
 		while (scopedStack.length > 0) {
 			const current = scopedStack.pop();
@@ -459,14 +478,18 @@ const createApiResolver = (
 		const factory = instances.get(call.callee.object.name);
 		return {
 			kind,
-			name: `${call.callee.object.name}.${method}`,
+			name: call.callee.object.name + "." + method,
 			...(factory !== undefined ? { method, factory } : {}),
 		};
 	};
 
-	return { scan, resolve, staticBindings };
+	scan(program);
+	const resolver: ApiResolver = { resolve, staticBindings };
+	const resolvers = apiResolverCache.get(program) ?? new Map<string, ApiResolver>();
+	resolvers.set(cacheKey, resolver);
+	apiResolverCache.set(program, resolvers);
+	return resolver;
 };
-
 const countDynamicConditionals = (args: readonly AstNode[]): number => {
 	let count = 0;
 	const stack: AstValue[] = [...args];
@@ -689,7 +712,11 @@ type LiteralScopeAnalysis = {
 	readonly scopes: WeakMap<AstNode, ReadonlyMap<string, unknown>>;
 };
 
+const literalScopeAnalysisCache = new WeakMap<AstNode, LiteralScopeAnalysis>();
+
 const createLiteralScopeAnalysis = (program: AstNode): LiteralScopeAnalysis => {
+	const cached = literalScopeAnalysisCache.get(program);
+	if (cached !== undefined) return cached;
 	const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksImports(program));
 	const resolveLiteralScope = createCssLiteralScopeResolver(program, evaluateCall);
 	const scopes = new WeakMap<AstNode, ReadonlyMap<string, unknown>>();
@@ -697,7 +724,9 @@ const createLiteralScopeAnalysis = (program: AstNode): LiteralScopeAnalysis => {
 		if (node.type !== NodeKind.CallExpression) return;
 		scopes.set(node, resolveLiteralScope(node, ancestors));
 	});
-	return { evaluateCall, scopes };
+	const analysis = { evaluateCall, scopes };
+	literalScopeAnalysisCache.set(program, analysis);
+	return analysis;
 };
 
 const literalScopeForCall = (
@@ -705,14 +734,13 @@ const literalScopeForCall = (
 	node: AstNode,
 ): ReadonlyMap<string, unknown> => analysis.scopes.get(node) ?? new Map();
 
+const EMPTY_STATIC_BINDINGS: Pick<ReadonlySet<string>, "has"> = new Set();
+
 const staticBindingsForCall = (
 	analysis: LiteralScopeAnalysis,
 	node: AstNode,
-	fallback: ReadonlySet<string>,
-): ReadonlySet<string> => {
-	const scope = analysis.scopes.get(node);
-	return scope === undefined ? fallback : new Set(scope.keys());
-};
+	fallback: Pick<ReadonlySet<string>, "has"> = EMPTY_STATIC_BINDINGS,
+): Pick<ReadonlySet<string>, "has"> => analysis.scopes.get(node) ?? fallback;
 
 const literalValueForCall = (
 	analysis: LiteralScopeAnalysis,
@@ -726,19 +754,20 @@ const withResolver = (
 	onCall: (
 		node: AstNode,
 		api: ApiReference | undefined,
-		staticBindings: ReadonlySet<string>,
+		staticBindings: Pick<ReadonlySet<string>, "has">,
 		resolveCall: (call: AstNode) => ApiReference | undefined,
 	) => void,
 	options: { readonly useLiteralScopes?: boolean } = {},
 ): RuleListener => {
-	const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
+	let resolver: ReturnType<typeof createApiResolver> | undefined;
 	let literalAnalysis: LiteralScopeAnalysis | undefined;
 	return {
 		Program(node) {
-			resolver.scan(node);
+			resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
 			literalAnalysis = options.useLiteralScopes ? createLiteralScopeAnalysis(node) : undefined;
 		},
 		CallExpression(node) {
+			if (resolver === undefined) return;
 			const staticBindings =
 				literalAnalysis === undefined
 					? resolver.staticBindings
@@ -803,8 +832,7 @@ const carrierTarget = (
 };
 
 const reportCarrierResiduals = (program: AstNode, context: RuleContext): void => {
-	const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
-	resolver.scan(program);
+	const resolver = createApiResolver(program, configuredCssModuleExportsForContext(context));
 	const literalAnalysis = createLiteralScopeAnalysis(program);
 	const fallbackNames = firstThatWorksImports(program);
 	const fallbackValueNames = findCssFallbackValueNames(program, fallbackNames);
@@ -869,6 +897,8 @@ type CallAnalysis = {
 	dynamic?: DynamicExpression;
 };
 
+const migrationAnalysisCache = new WeakMap<AstNode, Map<string, CallAnalysis[]>>();
+
 const migrationMarkerFor = (context: RuleContext): string => {
 	const option = context.options?.[0];
 	if (option === null || typeof option !== "object") return MIGRATION_MARKER;
@@ -893,15 +923,18 @@ const hasMigrationReason = (marker: MigrationMarker): boolean =>
 	marker.reason !== "" && marker.reason !== "()";
 
 const migrationAnalysis = (program: AstNode, context: RuleContext): CallAnalysis[] => {
-	const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
-	resolver.scan(program);
+	const cssModuleExports = configuredCssModuleExportsForContext(context);
+	const cacheKey = cssModuleExportsCacheKey(cssModuleExports);
+	const cached = migrationAnalysisCache.get(program)?.get(cacheKey);
+	if (cached !== undefined) return cached;
+	const resolver = createApiResolver(program, cssModuleExports);
 	const literalAnalysis = createLiteralScopeAnalysis(program);
 	const calls: CallAnalysis[] = [];
 	walkNode(program, (node) => {
 		if (node.type !== NodeKind.CallExpression) return;
 		const api = resolver.resolve(node);
 		if (api === undefined) return;
-		const staticBindings = staticBindingsForCall(literalAnalysis, node, resolver.staticBindings);
+		const staticBindings = staticBindingsForCall(literalAnalysis, node);
 		const dynamic = isExtractionLane(api)
 			? node.arguments
 					.map((argument: AstNode) =>
@@ -914,6 +947,9 @@ const migrationAnalysis = (program: AstNode, context: RuleContext): CallAnalysis
 			: undefined;
 		calls.push({ node, api, dynamic });
 	});
+	const programCache = migrationAnalysisCache.get(program) ?? new Map<string, CallAnalysis[]>();
+	programCache.set(cacheKey, calls);
+	migrationAnalysisCache.set(program, programCache);
 	return calls;
 };
 
@@ -1270,8 +1306,7 @@ const rules: Record<string, RuleDefinition> = {
 		create(context) {
 			return {
 				Program(node) {
-					const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
-					resolver.scan(node);
+					const resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
 					const literalAnalysis = createLiteralScopeAnalysis(node);
 					walkWithAncestors(node, (current) => {
 						if (current.type !== NodeKind.CallExpression) return;
@@ -1334,12 +1369,14 @@ const rules: Record<string, RuleDefinition> = {
 			],
 		},
 		create(context) {
-			const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
 			return {
 				Program(program) {
 					const source = context.sourceCode?.text;
 					if (source === undefined) return;
-					resolver.scan(program);
+					const resolver = createApiResolver(
+						program,
+						configuredCssModuleExportsForContext(context),
+					);
 					const reported = new Set<AstNode>();
 					const styleSpreadBindings = new Set<string>();
 					const declarations = new Map<string, AstNode>();
@@ -1661,8 +1698,7 @@ const rules: Record<string, RuleDefinition> = {
 		create(context) {
 			return {
 				Program(node) {
-					const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
-					resolver.scan(node);
+					const resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
 					walkNode(node, (opening) => {
 						if (opening.type !== NodeKind.JSXOpeningElement) return;
 						let stylePropsSpread = false;

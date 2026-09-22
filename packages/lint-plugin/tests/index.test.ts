@@ -145,6 +145,14 @@ const applyFixes = (source: string, fixes: readonly FixEdit[]): string => {
 	return fixed;
 };
 
+const staticBindingChain = (size: number): string =>
+	[
+		'import { tw } from "pandwind";',
+		...Array.from({ length: size }, (_, index) => `const value${index} = value${index + 1};`),
+		`const value${size} = "static";`,
+		"tw(...values);",
+	].join("\n");
+
 describe("Pandwind Oxlint API binding resolution", () => {
 	test("recognizes aliases and namespaces, while ignoring unrelated local functions", () => {
 		const reports = runRule(
@@ -1018,5 +1026,36 @@ tw(theme.color);`;
 			  },
 			]
 		`);
+	});
+});
+
+describe("Pandwind Oxlint scaling", () => {
+	test("keeps the full custom rule set linear in static declaration count", () => {
+		const measure = (size: number): number => {
+			const source = staticBindingChain(size).replace("tw(...values);", 'tw({ display: "flex" });');
+			const started = Date.now();
+			for (let sample = 0; sample < 3; sample += 1) {
+				const program = parseSync("fixture.tsx", source, {
+					sourceType: "module",
+					lang: "tsx",
+				}).program as AstNode;
+				for (const ruleName of Object.keys(typedPlugin.rules))
+					expect(runRule(ruleName, program), ruleName).toEqual([]);
+			}
+			return Date.now() - started;
+		};
+		const measureMedian = (size: number): number => {
+			const samples: number[] = [];
+			for (let sample = 0; sample < 3; sample += 1) samples.push(measure(size));
+			samples.sort((left, right) => left - right);
+			return samples[Math.floor(samples.length / 2)] ?? Number.POSITIVE_INFINITY;
+		};
+		measure(150);
+		measure(1_500);
+		const smallMs = measureMedian(150);
+		const largeMs = measureMedian(1_500);
+		expect(largeMs / smallMs, `${smallMs.toFixed(1)}ms -> ${largeMs.toFixed(1)}ms`).toBeLessThan(
+			24,
+		);
 	});
 });
