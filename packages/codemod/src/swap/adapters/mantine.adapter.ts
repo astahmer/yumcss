@@ -180,6 +180,7 @@ const styleProps = [
 	"c",
 	"bg",
 	"bd",
+	"bdrs",
 	"radius",
 	"shadow",
 	"fw",
@@ -207,6 +208,7 @@ const propertyAliases = {
 	c: "color",
 	bg: "backgroundColor",
 	bd: "border",
+	bdrs: "borderRadius",
 	radius: "borderRadius",
 	shadow: "boxShadow",
 	fw: "fontWeight",
@@ -323,7 +325,7 @@ function resolveMantineValue(
 				? theme?.fontSizes
 				: property === "lineHeight" || property === "lh"
 					? theme?.lineHeights
-					: property === "borderRadius" || property === "radius"
+					: property === "borderRadius" || property === "radius" || property === "bdrs"
 						? theme?.radius
 						: property === "boxShadow" || property === "shadow"
 							? theme?.shadows

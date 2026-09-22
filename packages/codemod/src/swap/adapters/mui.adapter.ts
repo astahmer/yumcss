@@ -46,6 +46,9 @@ const muiTokenGroup = (property: string): string | undefined => {
 
 const MUI_TOKEN_POLICY = createTokenPolicy(muiTokenGroup, (match) => match.ref);
 
+const isMuiSourceModule = (moduleSpecifier: string): boolean =>
+	/^@mui\/(?:material|system)(?:\/|$)/u.test(moduleSpecifier);
+
 // These are documented MUI source spellings, not a project vocabulary. The
 // official theme loader below supplies project-specific values and overrides
 // the no-context source parser where possible.
@@ -544,6 +547,7 @@ export function createMuiAdapter(
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		detectPatterns: [/@mui\/(?:system|material)/, /\bsx\s*=/, /\bstyled\s*\(/],
 		sourceModules: [],
+		sourceModuleMatchers: [isMuiSourceModule],
 		sourceModulesToRemove: (targetId) =>
 			targetId === CodemodAdapterId.Pandwind ? ["@mui/system", "@mui/material"] : [],
 		configFiles: ["package.json", "src/theme.ts", "src/theme.js"],

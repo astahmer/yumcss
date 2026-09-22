@@ -45,6 +45,7 @@ import {
 } from "../adapter-projections.ts";
 import { PortableStyleArtifact } from "../portable-artifact.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
+import { styledSubjectFromFunctionMatch } from "../host-component-rewriter.ts";
 
 export interface ExtraAdapterOptions {
 	readonly id: string;
@@ -275,11 +276,7 @@ function parseFunctionCalls(
 			functionCall,
 			namedObjects: options.namedObjects,
 			sourceObjectOptions: options.sourceObjectOptions,
-			subjectFromMatch: (value) =>
-				value
-					.match(/^styled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
-					?.replace(/\s+/g, " ")
-					.replace(/\.\s+/g, "."),
+			subjectFromMatch: (value) => styledSubjectFromFunctionMatch(value),
 		});
 		matches.push(...parsed.matches);
 		residuals.push(...parsed.residuals);
@@ -443,17 +440,14 @@ function parseTemplateCalls(
 		let program = parseAdapterTemplate(source.slice(firstTick + 1, lastTick), context, id, start, {
 			functionValues: options.functionValues === true,
 		});
-		const subject = source
-			.slice(start, firstTick)
-			.match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[1];
-		if (subject !== undefined) {
-			const normalized = `styled${subject.replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
+		const normalized = styledSubjectFromFunctionMatch(`${source.slice(start, firstTick)}(`);
+		if (normalized !== undefined) {
 			program = {
 				...program,
 				source: {
 					...program.source,
 					subject: normalized,
-					subjectKind: subject.trim().startsWith(".") ? "member" : "call",
+					subjectKind: normalized.startsWith("styled.") ? "member" : "call",
 					...(context.semantic?.source?.framework
 						? { framework: context.semantic.source.framework }
 						: {}),

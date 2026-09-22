@@ -104,6 +104,8 @@ export interface HostComponentRewriteRequest {
 	readonly classExpression: string;
 	/** Optional inline style carrier for runtime-valued component declarations. */
 	readonly styleExpression?: string;
+	/** The class expression is actually a complete component value from the target emitter. */
+	readonly componentExpression?: boolean;
 }
 
 export interface HostComponentRewriteResult {
@@ -153,9 +155,9 @@ export interface HostDynamicCarrierRewriteResult {
 }
 
 export function intrinsicTagForSubject(subject: string): string | undefined {
-	const member = /^styled\.([A-Za-z_$][\w$]*)$/.exec(subject)?.[1];
+	const member = /^styled\.([A-Za-z_$][\w$]*)(?:\.props\([\s\S]*\))?$/.exec(subject)?.[1];
 	if (member !== undefined && /^[a-z][\w-]*$/.test(member)) return member;
-	const call = /^styled\(\s*["']([a-z][\w-]*)["']\s*\)$/.exec(subject)?.[1];
+	const call = /^styled\(\s*["']([a-z][\w-]*)["']\s*\)(?:\.props\([\s\S]*\))?$/.exec(subject)?.[1];
 	return call;
 }
 
@@ -181,6 +183,87 @@ export function componentAttrsExpressionForSubject(subject: string): string | un
 	if (match === null) return undefined;
 	const expression = match[1]?.trim();
 	return expression === undefined || expression === "" ? undefined : expression;
+}
+
+/** Return the static `.props({...})` payload when a styled subject exposes one. */
+export function componentPropsExpressionForSubject(subject: string): string | undefined {
+	const match = /\.props\(\s*([\s\S]*)\s*\)$/.exec(subject);
+	if (match === null) return undefined;
+	const expression = match[1]?.trim();
+	return expression === undefined || expression === "" ? undefined : expression;
+}
+
+/**
+ * Return top-level keys consumed by a literal `.props({...})` payload. Dynamic
+ * payloads stay unfiltered because their key set cannot be proven here.
+ */
+export function componentPropNamesForSubject(subject: string): readonly string[] | undefined {
+	const expression = componentPropsExpressionForSubject(subject);
+	if (expression === undefined || !expression.startsWith("{")) return undefined;
+	const block = SourcePass.matchBlock(expression, 0);
+	if (block === null || expression.slice(block.end).trim() !== "") return undefined;
+	const names: string[] = [];
+	let cursor = 0;
+	while (cursor < block.body.length) {
+		while (/[\s,]/u.test(block.body[cursor] ?? "")) cursor++;
+		if (cursor >= block.body.length) break;
+		if (block.body.startsWith("...", cursor)) {
+			const spreadEnd = block.body.indexOf(",", cursor);
+			cursor = spreadEnd === -1 ? block.body.length : spreadEnd + 1;
+			continue;
+		}
+		const key = /^(?:([A-Za-z_$][\w$]*)|(["'])(.*?)\2)/u.exec(block.body.slice(cursor));
+		if (key === null) return undefined;
+		const name = key[1] ?? key[3];
+		if (name === undefined) return undefined;
+		cursor += key[0].length;
+		while (/\s/u.test(block.body[cursor] ?? "")) cursor++;
+		if (block.body[cursor] === ":") {
+			cursor++;
+			let braces = 0;
+			let brackets = 0;
+			let parentheses = 0;
+			let quote: string | undefined;
+			for (; cursor < block.body.length; cursor++) {
+				const character = block.body[cursor]!;
+				if (quote !== undefined) {
+					if (character === quote && block.body[cursor - 1] !== "\\") quote = undefined;
+					continue;
+				}
+				if (character === '"' || character === "'" || character === "`") {
+					quote = character;
+					continue;
+				}
+				if (character === "{") braces++;
+				else if (character === "}") braces--;
+				else if (character === "[") brackets++;
+				else if (character === "]") brackets--;
+				else if (character === "(") parentheses++;
+				else if (character === ")") parentheses--;
+				else if (character === "," && braces === 0 && brackets === 0 && parentheses === 0) {
+					break;
+				}
+			}
+		} else if (block.body[cursor] !== "," && cursor < block.body.length) {
+			return undefined;
+		}
+		names.push(name);
+	}
+	return names;
+}
+
+/** Preserve a styled subject, including a literal `.props(...)` suffix. */
+export function styledSubjectFromFunctionMatch(match: string): string | undefined {
+	const subject = match
+		.trim()
+		.replace(/\(\s*$/u, "")
+		.replace(/\s+/gu, " ")
+		.replace(/\.\s+/gu, ".");
+	return /^styled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\([\s\S]*\))?$/u.test(
+		subject,
+	)
+		? subject
+		: undefined;
 }
 
 /**
@@ -396,6 +479,13 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 			],
 		};
 	}
+	if (request.componentExpression === true)
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [],
+		};
 	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
 	const mergedClass = mergeClassExpression(request.classExpression, `props.${classAttribute}`);
 	const declaration =

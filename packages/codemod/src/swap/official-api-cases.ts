@@ -594,7 +594,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.VanillaExtract,
 			name: "createVar",
-			expectation: "context",
+			expectation: "converted",
 			file: "theme.css.ts",
 			source:
 				'import { createVar } from "@vanilla-extract/css";\nexport const brand = createVar();',

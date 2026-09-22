@@ -131,7 +131,7 @@ export default defineCodemodAdapter({
 				program.rules.length > 0 &&
 				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 		}),
-		rewrite: ({ code, targetId }) => {
+		rewrite: ({ code, targetId, project }) => {
 			if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
 			if (!/\bcss\.(?:class|vars|group)\s*\(/u.test(code) && !/\bcreateVar\s*\(/u.test(code))
 				return { code, residuals: [] };
@@ -221,11 +221,12 @@ export default defineCodemodAdapter({
 							`{ kind: "property", name: ${JSON.stringify(name)}, declarations: [{ property: "syntax", value: ${JSON.stringify(descriptor.syntax)} }, { property: "inherits", value: ${descriptor.inherits} }, { property: "initial-value", value: ${JSON.stringify(descriptor.initialValue)} }] }`,
 					)
 					.join(", ");
-				runtimeImports = [
-					'import { createRuntimeCss } from "pandwind/css/runtime";',
-					'import { defaultPreset } from "pandwind/preset/default";',
-					`const ${binding} = createRuntimeCss(defaultPreset);`,
-				];
+				if (project?.runtimeCssModule === undefined)
+					runtimeImports = [
+						'import { createRuntimeCss } from "pandwind/css/runtime";',
+						'import { defaultPreset } from "pandwind/preset/default";',
+						`const ${binding} = createRuntimeCss(defaultPreset);`,
+					];
 				rewritten = `${binding}.sheet.registerSemanticRules([${registrations}]);\n${rewritten}`;
 			}
 			return {

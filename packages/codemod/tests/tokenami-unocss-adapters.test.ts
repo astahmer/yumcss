@@ -254,6 +254,30 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		]);
 	});
 
+	test("preserves generated parent variants and responsive at-rules", () => {
+		const resolver = createUnoCssResolverFromCss(
+			".dark .dark\\:bg-black{background-color:#000}" +
+				".group:hover .group-hover\\:text-red-500{color:#f00}" +
+				"@media (min-width: 640px){.sm\\:items-start{align-items:flex-start}}",
+		);
+
+		expect(resolver.resolve("dark:bg-black", {} as never)).toEqual([
+			expect.objectContaining({
+				conditions: [{ kind: "selector", name: ".dark &", value: ".dark &" }],
+			}),
+		]);
+		expect(resolver.resolve("group-hover:text-red-500", {} as never)).toEqual([
+			expect.objectContaining({
+				conditions: [{ kind: "selector", name: ".group:hover &", value: ".group:hover &" }],
+			}),
+		]);
+		expect(resolver.resolve("sm:items-start", {} as never)).toEqual([
+			expect.objectContaining({
+				conditions: [{ kind: "media", name: "(min-width: 640px)", value: "(min-width: 640px)" }],
+			}),
+		]);
+	});
+
 	test("loads Tokenami aliases through its official config package boundary", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage(packageName) {

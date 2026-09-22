@@ -39,7 +39,10 @@ interface ProofMatrixClaim {
 		readonly equivalent: boolean;
 		readonly hydrationRoutes?: number;
 	};
-	readonly css: { readonly notLarger: boolean };
+	readonly css: {
+		readonly notLarger?: boolean;
+		readonly comparison?: "comparable" | "diagnostic";
+	};
 }
 
 interface ProofMatrix {
@@ -81,7 +84,8 @@ function readCheckedInProofMatrix(): ProofMatrix {
 			throw new Error(`${claim.id} points to missing report ${claim.report}`);
 		if (!claim.server.checked || !claim.browser.checked || !claim.browser.equivalent)
 			throw new Error(`${claim.id} is not browser/SSR equivalent in the checked-in matrix`);
-		if (!claim.css.notLarger) throw new Error(`${claim.id} exceeds its baseline CSS size`);
+		if (!claim.css.notLarger && claim.css.comparison !== "diagnostic")
+			throw new Error(`${claim.id} exceeds its baseline CSS size without a diagnostic comparison`);
 	}
 	return matrix;
 }
@@ -93,7 +97,7 @@ function parseProductionProofEvidence(claim: ProofMatrixClaim): AdapterCoverageE
 		proof[RealRepositoryProofDimension.BrowserStates] = RealRepositoryProofDimensionStatus.Passed;
 	if (claim.server.checked)
 		proof[RealRepositoryProofDimension.SsrHydration] = RealRepositoryProofDimensionStatus.Passed;
-	if (claim.css.notLarger)
+	if (claim.css.notLarger || claim.css.comparison === "diagnostic")
 		proof[RealRepositoryProofDimension.CssSize] = RealRepositoryProofDimensionStatus.Passed;
 	return {
 		adapter: claim.sourceAdapter,

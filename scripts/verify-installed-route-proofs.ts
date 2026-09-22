@@ -30,6 +30,51 @@ const installedProofCommands: ReadonlyMap<MigrationRouteProofRouteId, readonly s
 		MigrationRouteProofRouteId.UnoCssToPandwind,
 		["--conditions", "pandwind", "scripts/promote-unocss-fixture.ts"],
 	],
+	[MigrationRouteProofRouteId.VanillaExtractToPandwind, ["scripts/promote-vanilla-extract.ts"]],
+	[MigrationRouteProofRouteId.StitchesToPandwind, ["scripts/promote-stitches.ts"]],
+	[MigrationRouteProofRouteId.MuiToPandwind, ["scripts/promote-mui.ts"]],
+	[MigrationRouteProofRouteId.MantineToPandwind, ["scripts/promote-mantine.ts"]],
+	[MigrationRouteProofRouteId.TokenamiToPandwind, ["scripts/promote-tokenami.ts"]],
+	[
+		MigrationRouteProofRouteId.JssToPandwind,
+		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "jss"],
+	],
+	[
+		MigrationRouteProofRouteId.FelaToPandwind,
+		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "fela"],
+	],
+	[
+		MigrationRouteProofRouteId.AphroditeToPandwind,
+		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "aphrodite"],
+	],
+	[
+		MigrationRouteProofRouteId.CompiledToPandwind,
+		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "compiled"],
+	],
+	[
+		MigrationRouteProofRouteId.Style9ToPandwind,
+		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "style9"],
+	],
+	[
+		MigrationRouteProofRouteId.NextYakToPandwind,
+		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "next-yak"],
+	],
+	[
+		MigrationRouteProofRouteId.LinariaToPandwind,
+		["--conditions", "pandwind", "scripts/promote-framework-css-in-js.ts", "linaria"],
+	],
+	[
+		MigrationRouteProofRouteId.TreatToPandwind,
+		["--conditions", "pandwind", "scripts/promote-treat.ts"],
+	],
+	[
+		MigrationRouteProofRouteId.SolidStyledToPandwind,
+		["--conditions", "pandwind", "scripts/promote-framework-css-in-js.ts", "solid-styled"],
+	],
+	[
+		MigrationRouteProofRouteId.VueStyledToPandwind,
+		["--conditions", "pandwind", "scripts/promote-framework-css-in-js.ts", "vue-styled"],
+	],
 ]);
 
 function installedRoutes() {

@@ -40,6 +40,7 @@ export interface InstalledProofBrowserEvidence {
 		readonly target: { readonly base: string; readonly hover: string };
 	};
 	readonly hydrationErrors: readonly string[];
+	readonly runtimeStyleBytes?: { readonly source: number; readonly target: number };
 }
 
 export interface InstalledProofProject {
@@ -135,6 +136,7 @@ export async function renderInstalledServer(
 	options: {
 		readonly renderer?: "static" | "string";
 		readonly collectStyledComponents?: boolean;
+		readonly collectAphrodite?: boolean;
 	} = {},
 ): Promise<{ readonly markup: string; readonly css: string }> {
 	run("pnpm", ["run", "ssr"], root);
@@ -149,9 +151,40 @@ export async function renderInstalledServer(
 					element: unknown,
 				) => string)
 			: (requireFromProject("react-dom/server").renderToString as (element: unknown) => string);
-	const module = (await import(pathToFileURL(serverBundle).href)) as { readonly App: unknown };
+	const module = (await import(pathToFileURL(serverBundle).href)) as {
+		readonly App: unknown;
+		readonly pandwindCss?: string | (() => string);
+		readonly stitchesCss?: string | (() => string);
+		readonly sourceCss?: string | (() => string);
+	};
 	const element = React.createElement(module.App);
-	if (!options.collectStyledComponents) return { markup: render(element), css: "" };
+	if (options.collectAphrodite === true) {
+		const renderStatic = requireFromProject("aphrodite").StyleSheetServer.renderStatic as (
+			render: () => string,
+		) => { readonly html: string; readonly css: { readonly content: string } };
+		const rendered = renderStatic(() => render(element));
+		return { markup: rendered.html, css: rendered.css.content };
+	}
+	const markup = render(element);
+	if (module.pandwindCss !== undefined) {
+		return {
+			markup,
+			css: typeof module.pandwindCss === "function" ? module.pandwindCss() : module.pandwindCss,
+		};
+	}
+	if (module.stitchesCss !== undefined) {
+		return {
+			markup,
+			css: typeof module.stitchesCss === "function" ? module.stitchesCss() : module.stitchesCss,
+		};
+	}
+	if (module.sourceCss !== undefined) {
+		return {
+			markup,
+			css: typeof module.sourceCss === "function" ? module.sourceCss() : module.sourceCss,
+		};
+	}
+	if (!options.collectStyledComponents) return { markup, css: "" };
 	const ServerStyleSheet = requireFromProject("styled-components").ServerStyleSheet as new () => {
 		collectStyles(element: unknown): unknown;
 		getStyleTags(): string;
@@ -210,6 +243,7 @@ export async function browserProof(options: {
 	readonly targetRoot: string;
 	readonly resetStyles: string;
 	readonly computedProperties: readonly string[];
+	readonly collectRuntimeStyleBytes?: boolean;
 }): Promise<InstalledProofBrowserEvidence> {
 	const requireFromRoot = createRequire(
 		join(options.repositoryRoot, "examples/showcase/package.json"),
@@ -237,6 +271,7 @@ export async function browserProof(options: {
 		source: { base: "", hover: "" },
 		target: { base: "", hover: "" },
 	};
+	const runtimeStyleBytes: Record<"source" | "target", number> = { source: 0, target: 0 };
 	try {
 		for (const [label, server] of [
 			["source", sourceServer] as const,
@@ -245,6 +280,15 @@ export async function browserProof(options: {
 			for (const state of states) {
 				await page.goto(server.url, { waitUntil: "networkidle" });
 				await page.addStyleTag({ content: options.resetStyles });
+				if (state === "base" && options.collectRuntimeStyleBytes === true) {
+					runtimeStyleBytes[label] = await page.evaluate(() =>
+						[...document.querySelectorAll("style")].reduce(
+							(total, element) =>
+								total + new TextEncoder().encode(element.textContent ?? "").byteLength,
+							0,
+						),
+					);
+				}
 				if (state === "hover") await page.hover("[data-proof]");
 				computed[label][state] = await page.$eval(
 					"[data-proof]",
@@ -290,6 +334,11 @@ export async function browserProof(options: {
 		changedPixels,
 		computed,
 		hydrationErrors,
+		...(options.collectRuntimeStyleBytes === true
+			? {
+					runtimeStyleBytes: { source: runtimeStyleBytes.source, target: runtimeStyleBytes.target },
+				}
+			: {}),
 	};
 }
 

@@ -281,6 +281,8 @@ export interface AdapterEmissionDecision {
 
 export interface AdapterEmitResult {
 	readonly text: string;
+	/** The emitted expression is already a component value, not a class carrier. */
+	readonly componentExpression?: boolean;
 	/** Semantic observation for opaque runtime registration or an intentional portable artifact. */
 	readonly semantic?: StyleProgram;
 	readonly imports?: readonly string[];

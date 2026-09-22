@@ -59,6 +59,7 @@ export const buildPandwindLib = (options: BuildPandwindLibOptions): BuildPandwin
 		for (const { style } of extracted.sources) sheet.process([style]);
 		for (const key of extracted.varKeys) sheet.processVarKey(key);
 	}
+	const web = sheet.gen.web();
 
 	return {
 		artifact: createPandwindLibArtifact({
@@ -68,6 +69,7 @@ export const buildPandwindLib = (options: BuildPandwindLibOptions): BuildPandwin
 			}),
 			sources,
 			tokens: sheet.gen.tokenEntries(),
+			web,
 			atomic: sheet.gen.atomicEntries(),
 			vars: sheet.gen.varEntries(),
 		}),

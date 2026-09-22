@@ -99,7 +99,26 @@ const STITCHES_TOKEN_POLICY = createTokenPolicy(
 );
 
 function stitchesConfig(context: AdapterConfigContext): AdapterProjectConfig {
-	const tokenCatalog = stitchesTheme(context.source)?.contract;
+	let projectSource = context.source;
+	if (
+		projectSource.length === 0 &&
+		context.root !== undefined &&
+		context.listFiles !== undefined &&
+		context.readFile !== undefined
+	) {
+		const root = context.root;
+		const listFiles = context.listFiles;
+		const readFile = context.readFile;
+		projectSource = listFiles(root)
+			.filter(
+				(file) =>
+					/\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/u.test(file) &&
+					!/(?:^|[\\/])(?:node_modules|dist|build)(?:[\\/]|$)/u.test(file),
+			)
+			.map((file) => readFile(file) ?? "")
+			.join("\n");
+	}
+	const tokenCatalog = stitchesTheme(projectSource)?.contract;
 	return {
 		adapter: CodemodAdapterId.Stitches,
 		root: context.root,
@@ -112,7 +131,7 @@ function stitchesConfig(context: AdapterConfigContext): AdapterProjectConfig {
 function removeStitchesBootstrap(code: string): string {
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	for (const match of code.matchAll(
-		/\b(?:const|let|var)\s+\{\s*css\s*\}\s*=\s*createStitches\s*\(/g,
+		/\b(?:export\s+)?(?:const|let|var)\s+\{[^}]*\bcss\b[^}]*\}\s*=\s*createStitches\s*\(/g,
 	)) {
 		const start = match.index ?? 0;
 		let cursor = start + match[0].length;

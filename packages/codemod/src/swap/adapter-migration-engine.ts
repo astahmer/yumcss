@@ -1184,6 +1184,7 @@ function runAdapterMigrationInternal(
 					...declarationRewrite,
 					source,
 					classExpression,
+					...(emitted.componentExpression === true ? { componentExpression: true } : {}),
 				});
 			}
 		}
@@ -1372,6 +1373,7 @@ function runAdapterMigrationInternal(
 		for (const statement of rewrite.imports ?? []) imports.add(statement);
 		residuals.push(...rewrite.residuals);
 		for (const handled of rewrite.handledResiduals ?? []) {
+			converted++;
 			for (let index = residuals.length - 1; index >= 0; index--) {
 				const residual = residuals[index];
 				if (

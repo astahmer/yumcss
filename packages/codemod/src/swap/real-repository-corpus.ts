@@ -319,6 +319,16 @@ export default styled.div({
 				framework: "react",
 			},
 			{
+				id: "next-yak-dynamic-benchmark",
+				repository: "https://github.com/jantimon/css-in-js-bench",
+				clone: "css-in-js-bench",
+				commit: "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+				path: "techs/next-yak/case/dyn-fair/index.tsx",
+				from: CodemodAdapterId.NextYak,
+				to: CodemodAdapterId.Pandwind,
+				framework: "react",
+			},
+			{
 				id: "next-yak-css-prop-benchmark-realistic-button",
 				repository: "https://github.com/jantimon/css-in-js-bench",
 				clone: "css-in-js-bench",

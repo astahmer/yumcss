@@ -53,6 +53,7 @@ import {
 } from "../pandwind-conditions.ts";
 import {
 	componentAttrsExpressionForSubject,
+	componentPropNamesForSubject,
 	componentExpressionForSubject,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
@@ -861,7 +862,10 @@ function useProjectBindings(
 	const runtime = emission.imports.some((statement) =>
 		/from\s+["']pandwind\/css\/runtime["']/u.test(statement),
 	);
-	const cssModule = runtime ? project.runtimeCssModule : project.cssModule;
+	const unsafe = emission.imports.some((statement) =>
+		/from\s+["']pandwind\/unsafe\/css["']/u.test(statement),
+	);
+	const cssModule = runtime ? project.runtimeCssModule : unsafe ? undefined : project.cssModule;
 	const exportedBinding = runtime ? (project.runtimeCssBinding ?? "runtimeCss") : "css";
 	const localBinding = runtime ? "runtimeCss" : binding;
 	let text = emission.text;
@@ -869,10 +873,8 @@ function useProjectBindings(
 	if (cssModule !== undefined) {
 		imports = imports.filter(
 			(statement) =>
-				!/(?:from\s+["']pandwind\/css(?:\/runtime)?["']|from\s+["']pandwind\/preset["'])/u.test(
-					statement,
-				) &&
-				!new RegExp(`^const\\s+${localBinding}\\s*=\\s*create(?:Runtime)?Css\\(`, "u").test(
+				!/(?:from\s+["']pandwind\/(?:css(?:\/runtime)?|unsafe\/css|preset)["'])/u.test(statement) &&
+				!new RegExp(`^const\\s+${localBinding}\\s*=\\s*create(?:Runtime|Unsafe)?Css\\(`, "u").test(
 					statement.trim(),
 				),
 		);
@@ -903,6 +905,7 @@ function hasThemeContextValues(program: StyleProgram, source: string | undefined
 			rule.declarations.some((declaration) => {
 				if (declaration.value.kind !== StyleValueKindTag.Dynamic) return false;
 				const binding = declaration.value.expression.trim();
+				if (/\btheme\b/.test(binding)) return true;
 				if (!/^[A-Za-z_$][\w$]*$/.test(binding)) return false;
 				const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 				return new RegExp(
@@ -1196,7 +1199,7 @@ function runtimeComponent(
 	program: StyleProgram,
 	programObject: AdapterRenderers["programObject"],
 	context: AdapterEmitContext | undefined,
-): { text: string; imports: readonly string[] } | undefined {
+): { text: string; imports: readonly string[]; componentExpression: true } | undefined {
 	const host = context?.host;
 	const subject = host?.subject ?? program.source?.subject;
 	const tag = subject === undefined ? undefined : intrinsicTagForSubject(subject);
@@ -1208,23 +1211,33 @@ function runtimeComponent(
 	const componentAttrs =
 		host?.subjectAttrs ??
 		(subject === undefined ? undefined : componentAttrsExpressionForSubject(subject));
+	const componentPropNames =
+		subject === undefined ? undefined : componentPropNamesForSubject(subject);
 	if (
 		host?.binding === undefined ||
 		(componentExpression === undefined && tag === undefined) ||
 		framework === undefined
 	)
 		return undefined;
-	const object = programObject(
-		mapRuntimeProps(program, framework === BuiltinHostFramework.Vue ? "attrs" : "props"),
-	);
+	const needsThemeContext = hasThemeContextValues(program, context?.document?.document.source);
+	const object = programObject(mapRuntimeProps(program));
 	if (framework === BuiltinHostFramework.Vue) {
+		const runtimeProps = needsThemeContext
+			? "const props: Record<string, any> = { ...attrs, theme: useTheme() };"
+			: "const props: Record<string, any> = attrs;";
+		const forwardedAttrs =
+			componentPropNames === undefined || componentPropNames.length === 0
+				? "attrs"
+				: `Object.fromEntries(Object.entries(attrs).filter(([key]) => !${JSON.stringify(componentPropNames)}.includes(key)))`;
 		return {
-			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = computed(() => runtimeCss.vars(${object})); return () => h(${JSON.stringify(tag)}, { ...attrs, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } })`,
+			text: `defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; ${runtimeProps} const style = computed(() => runtimeCss.vars(${object})); return () => h(${JSON.stringify(tag)}, { ...${forwardedAttrs}, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } })`,
+			componentExpression: true,
 			imports: [
 				'import { computed, defineComponent, h } from "vue";',
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { defaultPreset } from "pandwind/preset/default";',
 				"const runtimeCss = createRuntimeCss(defaultPreset);",
+				...(needsThemeContext ? ['import { useTheme } from "@vue-styled-components/core";'] : []),
 			],
 		};
 	}
@@ -1234,7 +1247,15 @@ function runtimeComponent(
 		framework !== BuiltinHostFramework.Preact
 	)
 		return undefined;
+	const propsParameter =
+		framework === BuiltinHostFramework.React
+			? `props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }`
+			: framework === BuiltinHostFramework.Preact
+				? `props: { readonly as?: JSX.ElementType; readonly className?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }`
+				: `props: { readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }`;
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
+	const hostTypeImports =
+		framework === BuiltinHostFramework.Solid ? ['import type { JSX } from "solid-js";'] : [];
 	const mergedClass =
 		inheritedClass === undefined
 			? `runtimeCss.props(style, props.${classAttribute}).className`
@@ -1242,15 +1263,23 @@ function runtimeComponent(
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css: runtimeCss }); ";
 	if (tag === undefined) {
+		const propFilter =
+			componentPropNames === undefined || componentPropNames.length === 0
+				? ""
+				: `Object.fromEntries(Object.entries(props).filter(([key]) => !${JSON.stringify(componentPropNames)}.includes(key)))`;
 		const forwardedProps =
 			componentAttrs === undefined
-				? "{...props}"
+				? propFilter === ""
+					? "{...props}"
+					: `{...${propFilter}}`
 				: /=>|\bfunction\b/.test(componentAttrs)
 					? `{...(${componentAttrs})(props), ...props}`
-					: `{...(${componentAttrs}), ...props}`;
+					: `{...(${componentAttrs}), ${propFilter === "" ? "...props" : `...${propFilter}`}}`;
 		return {
-			text: `(props) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const Base = props.as ?? (${componentExpression}); return <Base ${forwardedProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
+			text: `(${propsParameter}) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const ResolvedComponent = props.as ?? (${componentExpression}); return <ResolvedComponent ${forwardedProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
+			componentExpression: true,
 			imports: [
+				...hostTypeImports,
 				...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { defaultPreset } from "pandwind/preset/default";',
@@ -1258,9 +1287,20 @@ function runtimeComponent(
 			],
 		};
 	}
+	const solidIntrinsic = framework === BuiltinHostFramework.Solid;
+	const renderedComponent = solidIntrinsic
+		? `<Dynamic component={ResolvedComponent} {...attrs} {...forwarded} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />`
+		: `<ResolvedComponent {...attrs} {...forwarded} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />`;
+	const forwardedFilter =
+		componentPropNames === undefined || componentPropNames.length === 0
+			? '!key.startsWith("$")'
+			: `!key.startsWith("$") && !${JSON.stringify(componentPropNames)}.includes(key)`;
 	return {
-		text: `(props) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const Component = props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <Component {...attrs} {...rest} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
+		text: `(${propsParameter}) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const ResolvedComponent = props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => ${forwardedFilter})); const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return ${renderedComponent}; }`,
+		componentExpression: true,
 		imports: [
+			...hostTypeImports,
+			...(solidIntrinsic ? ['import { Dynamic } from "solid-js/web";'] : []),
 			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { defaultPreset } from "pandwind/preset/default";',
@@ -1316,10 +1356,44 @@ export const __pandwindSlot = ({
 	return component;
 };
 `;
+const PANDWIND_SOLID_SLOT_MODULE_PATH = "__pandwind/solid-slot.tsx";
+const PANDWIND_SOLID_SLOT_MODULE_CONTENT = `import { Dynamic } from "solid-js/web";
+
+type PandwindSlotProps = Record<string, any> & { as?: any };
+type PandwindSlotOptions = {
+	readonly defaultComponent: any;
+	readonly style: string;
+	readonly stableClass: string;
+	readonly inheritedClass?: string;
+	readonly classAttribute: string;
+	readonly attrs: Record<string, any>;
+	readonly joinClass: (...values: any[]) => string;
+};
+
+export const __pandwindSlot = ({
+	defaultComponent,
+	style,
+	stableClass,
+	inheritedClass,
+	classAttribute,
+	attrs,
+	joinClass,
+}: PandwindSlotOptions) => {
+	const component = (props: PandwindSlotProps) => {
+		const Component = props.as ?? defaultComponent;
+		const { as: _as, ...rest } = props;
+		return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />;
+	};
+	component.__pandwindClassName = stableClass;
+	return component;
+};
+`;
 
 const PANDWIND_RECIPE_MODULE_PATH = "__pandwind/recipe.ts";
-const PANDWIND_RECIPE_MODULE_CONTENT = `type RecipeSelection = Readonly<Record<string, string | boolean | undefined>>;
-type StyleRecord = Record<string, unknown>;
+const PANDWIND_RECIPE_MODULE_CONTENT = `import type { StyleObject } from "pandwind/types/typings";
+
+type RecipeSelection = Readonly<Record<string, string | boolean | undefined>>;
+type StyleRecord = StyleObject;
 type SlotStyleMap = Readonly<Record<string, StyleRecord>>;
 type SlotVariantMap = Readonly<Record<string, SlotStyleMap>>;
 type SlotVariants = Readonly<Record<string, SlotVariantMap>>;
@@ -1333,7 +1407,7 @@ type SlotRecipeDefinition = RecipeDefinition & {
   readonly slots: SlotStyleMap;
   readonly slotVariants?: SlotVariants;
 };
-type CssClass = { readonly class: (...styles: readonly unknown[]) => string };
+type CssClass = { readonly class: (...styles: StyleRecord[]) => string };
 
 const selectedValues = (definition: RecipeDefinition, selection: RecipeSelection) => {
   const values: Record<string, string | boolean> = {};
@@ -1352,7 +1426,7 @@ const matches = (
 export const createRecipe = (css: CssClass, definition: RecipeDefinition) =>
   (selection: RecipeSelection = {}) => {
     const values = selectedValues(definition, selection);
-    const styles: unknown[] = [];
+	const styles: StyleRecord[] = [];
     if (definition.base !== undefined) styles.push(definition.base);
     for (const [name, value] of Object.entries(values)) {
       const style = definition.variants?.[name]?.[String(value)];
@@ -1371,7 +1445,7 @@ export const createSlotRecipe = (css: CssClass, definition: SlotRecipeDefinition
     const values = selectedValues(definition, selection);
     const output: Record<string, string> = {};
     for (const [slot, base] of Object.entries(definition.slots)) {
-      const styles: unknown[] = [base];
+		const styles: StyleRecord[] = [base];
       for (const [name, value] of Object.entries(values)) {
         const style = definition.slotVariants?.[name]?.[String(value)]?.[slot];
         if (style !== undefined) styles.push(style);
@@ -1384,22 +1458,31 @@ export const createSlotRecipe = (css: CssClass, definition: SlotRecipeDefinition
 
 function sharedSlotModule(
 	context: AdapterEmitContext | undefined,
+	framework: BuiltinHostFramework,
 ): { readonly importPath: string; readonly file: AdapterGeneratedFile } | undefined {
 	const root = context?.config.root;
 	const file = context?.file;
 	if (root === undefined || file === undefined) return undefined;
 	const projectFile = isAbsoluteDocumentPath(file) ? relativeDocumentPath(root, file) : file;
+	const modulePath =
+		framework === BuiltinHostFramework.Solid
+			? PANDWIND_SOLID_SLOT_MODULE_PATH
+			: PANDWIND_SLOT_MODULE_PATH;
+	const moduleContent =
+		framework === BuiltinHostFramework.Solid
+			? PANDWIND_SOLID_SLOT_MODULE_CONTENT
+			: PANDWIND_SLOT_MODULE_CONTENT;
 	let importPath = relativeDocumentPath(
 		dirnameDocumentPath(projectFile),
-		PANDWIND_SLOT_MODULE_PATH.replace(/\.(?:[cm]?tsx?|jsx?)$/u, ""),
+		modulePath.replace(/\.(?:[cm]?tsx?|jsx?)$/u, ""),
 	);
 	if (!importPath.startsWith(".")) importPath = `./${importPath}`;
 	return {
 		importPath,
 		file: {
-			path: PANDWIND_SLOT_MODULE_PATH,
+			path: modulePath,
 			purpose: "shared static component slot helper",
-			content: PANDWIND_SLOT_MODULE_CONTENT,
+			content: moduleContent,
 		},
 	};
 }
@@ -1499,6 +1582,7 @@ function staticComponent(
 	if (tag === undefined && base === undefined) return undefined;
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const attrs = host.subjectAttrs ?? componentAttrsExpressionForSubject(subject);
+	const componentPropNames = componentPropNamesForSubject(subject);
 	if (attrs !== undefined && /=>|\bfunction\b/.test(attrs)) return undefined;
 	const stableClass =
 		host.stableClassName ??
@@ -1514,11 +1598,13 @@ function staticComponent(
 	const sourceText = context?.document?.document.source;
 	const composedCxBinding =
 		inheritedClass === undefined ? undefined : generatedBinding(sourceText, "composedCx");
-	const sharedModule = sharedSlotModule(context);
+	const sharedModule = sharedSlotModule(context, framework);
 	const slotBinding = generatedBinding(sourceText, "__pandwindSlot");
 	const slotHelper =
 		sharedModule === undefined
-			? `const ${slotBinding} = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`
+			? framework === BuiltinHostFramework.Solid
+				? `const ${slotBinding} = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`
+				: `const ${slotBinding} = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`
 			: undefined;
 	const slotImport =
 		sharedModule === undefined
@@ -1528,8 +1614,12 @@ function staticComponent(
 				];
 	if (framework === BuiltinHostFramework.Vue) {
 		const tagExpression = tag === undefined ? `(${base})` : JSON.stringify(tag);
+		const forwardedAttrs =
+			componentPropNames === undefined || componentPropNames.length === 0
+				? "attrs"
+				: `Object.fromEntries(Object.entries(attrs).filter(([key]) => !${JSON.stringify(componentPropNames)}.includes(key)))`;
 		return {
-			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = ${style}; return () => h(${tagExpression}, { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } })`,
+			text: `defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = ${style}; return () => h(${tagExpression}, { ...${forwardedAttrs}, class: cx(style, attrs.class) }, slots.default?.()); } })`,
 			imports: [
 				'import { defineComponent, h } from "vue";',
 				'import { createUnsafeCss } from "pandwind/unsafe/css";',
@@ -1547,6 +1637,9 @@ function staticComponent(
 	return {
 		text: `${slotBinding}({ defaultComponent: ${defaultComponent}, style: ${style}, stableClass: ${JSON.stringify(stableClass)}, inheritedClass: ${inheritedClassExpression}, classAttribute: ${JSON.stringify(classAttribute)}, attrs: ${attrsExpression}, joinClass: ${joinClass} })`,
 		imports: [
+			...(sharedModule === undefined && framework === BuiltinHostFramework.Solid
+				? ['import { Dynamic } from "solid-js/web";']
+				: []),
 			'import { createUnsafeCss } from "pandwind/unsafe/css";',
 			"const css = createUnsafeCss();",
 			'import { createCx } from "pandwind/cx";',
@@ -1997,7 +2090,11 @@ function runtimeRawComponent(
 			: `composedCx(${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, props.${classAttribute})`;
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css: runtimeCss }); ";
-	const render = `const Component = props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; const element = <Component {...attrs} {...rest} ${classAttribute}={${classExpression}} />; return element;`;
+	const solidIntrinsic = framework === BuiltinHostFramework.Solid && tag !== undefined;
+	const renderedElement = solidIntrinsic
+		? `<Dynamic component={Component} {...attrs} {...rest} ${classAttribute}={${classExpression}} />`
+		: `<Component {...attrs} {...rest} ${classAttribute}={${classExpression}} />`;
+	const render = `const Component = props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; const element = ${renderedElement}; return element;`;
 	const themeContextAssignment = needsThemeContext
 		? "props = { ...props, theme: props.theme ?? usePandwindTheme() };"
 		: "";
@@ -2016,6 +2113,7 @@ function runtimeRawComponent(
 			? `(() => { ${composedCxBinding}${hostStyleSanitizer} ${variantHelper} ${staticRegistration} ${componentFactory} })()`
 			: `(() => { ${composedCxBinding}${hostStyleSanitizer} ${registration} ${componentFactory} })()`,
 		imports: [
+			...(solidIntrinsic ? ['import { Dynamic } from "solid-js/web";'] : []),
 			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { defaultPreset } from "pandwind/preset/default";',
@@ -2072,6 +2170,24 @@ function runtimeGlobalVars(program: StyleProgram): string {
 		.join(", ");
 	return `(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${declarations}] }]), { ${references} })`;
 }
+
+const pandwindRecipeDeclarationsObject = (
+	declarationsObject: AdapterRenderers["declarationsObject"],
+	declarations: readonly StyleProgram["declarations"][number][],
+): string =>
+	declarationsObject(
+		declarations.map((declaration) => ({
+			...declaration,
+			conditions: declaration.conditions.map((condition) => {
+				if (condition.kind !== SemanticConditionKindTag.Selector) return condition;
+				const selector = condition.value ?? condition.name;
+				const name = pandwindConditionNameForSelector(selector);
+				return name === undefined
+					? condition
+					: { ...condition, name, value: condition.value ?? selector };
+			}),
+		})),
+	);
 
 function slotRecipeDefinitionObject(
 	program: StyleProgram,
@@ -2369,6 +2485,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				programObject(normalizeOutput(value));
 			const finalize = (emission: {
 				text: string;
+				componentExpression?: boolean;
 				imports: readonly string[];
 				generatedStatements?: readonly string[];
 				generatedFiles?: readonly AdapterGeneratedFile[];
@@ -2386,6 +2503,9 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				...(emission.generatedFiles === undefined
 					? {}
 					: { generatedFiles: emission.generatedFiles }),
+				...(emission.componentExpression === undefined
+					? {}
+					: { componentExpression: emission.componentExpression }),
 				residuals: [...conditionResiduals, ...(emission.residuals ?? [])],
 				// The target object syntax is intentionally a projection of the
 				// versioned program. Keep the program attached for validation and
@@ -2623,7 +2743,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				: `${dynamicCssBinding}.vars(${renderProgramObject(outputProgram)})`;
 			if (program.source?.pattern === CodemodPatternId.TokenamiCompose)
 				return finalize({
-					text: `() => { const className = ${cssBinding}.class(${renderProgramObject(outputProgram)}); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; }`,
+					text: `() => { const className = ${cssBinding}.class(${renderProgramObject(outputProgram)}); return [(value?: string) => pandwindCx(className, value), (style?: Record<string, unknown>) => style ?? {}] as const; }`,
 					imports: [
 						'import { createUnsafeCss } from "pandwind/unsafe/css";',
 						`const ${cssBinding} = createUnsafeCss();`,
@@ -2636,11 +2756,16 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				: recipeVariants
 					? recipeRuntime(context, "createRecipe")
 					: undefined;
+			const recipeUsesProjectRuntime = context?.project?.runtimeCssModule !== undefined;
+			const recipeCssBinding = recipeUsesProjectRuntime ? "runtimeCss" : "css";
+			const recipeDeclarationsObject = (
+				declarations: readonly StyleProgram["declarations"][number][],
+			) => pandwindRecipeDeclarationsObject(declarationsObject, declarations);
 			return finalize({
 				text: slotRecipe
-					? `${recipe?.binding ?? "createSlotRecipe"}(css, ${slotRecipeDefinitionObject(outputProgram, declarationsObject)})`
+					? `${recipe?.binding ?? "createSlotRecipe"}(${recipeCssBinding}, ${slotRecipeDefinitionObject(outputProgram, recipeDeclarationsObject)})`
 					: recipeVariants
-						? `${recipe?.binding ?? "createRecipe"}(css, ${recipeDefinitionObject(outputProgram, declarationsObject)})`
+						? `${recipe?.binding ?? "createRecipe"}(${recipeCssBinding}, ${recipeDefinitionObject(outputProgram, recipeDeclarationsObject)})`
 						: named
 							? (jssClassMap ?? `css.group(${renderProgramObject(outputProgram)})`)
 							: functionDynamic
@@ -2651,17 +2776,31 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 										? dynamicEmission
 										: `css.class(${renderProgramObject(outputProgram)})`,
 				imports: slotRecipe
-					? [
-							'import { createUnsafeCss } from "pandwind/unsafe/css";',
-							...(recipe?.imports ?? []),
-							"const css = createUnsafeCss();",
-						]
-					: recipeVariants
+					? recipeUsesProjectRuntime
 						? [
+								'import { createRuntimeCss } from "pandwind/css/runtime";',
+								'import { defaultPreset } from "pandwind/preset/default";',
+								...(recipe?.imports ?? []),
+								"const runtimeCss = createRuntimeCss(defaultPreset);",
+							]
+						: [
 								'import { createUnsafeCss } from "pandwind/unsafe/css";',
 								...(recipe?.imports ?? []),
 								"const css = createUnsafeCss();",
 							]
+					: recipeVariants
+						? recipeUsesProjectRuntime
+							? [
+									'import { createRuntimeCss } from "pandwind/css/runtime";',
+									'import { defaultPreset } from "pandwind/preset/default";',
+									...(recipe?.imports ?? []),
+									"const runtimeCss = createRuntimeCss(defaultPreset);",
+								]
+							: [
+									'import { createUnsafeCss } from "pandwind/unsafe/css";',
+									...(recipe?.imports ?? []),
+									"const css = createUnsafeCss();",
+								]
 						: needsRuntimeCss
 							? [
 									'import { createRuntimeCss } from "pandwind/css/runtime";',

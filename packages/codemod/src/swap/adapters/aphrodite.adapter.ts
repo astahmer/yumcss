@@ -1,4 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { SourcePass } from "../../source-pass-utils.ts";
+import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
@@ -7,6 +9,22 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
+
+const rewriteAphroditeApplications = (context: AdapterRewriteContext): AdapterRewriteResult => {
+	if (context.targetId !== CodemodAdapterId.Pandwind) return { code: context.code, residuals: [] };
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	for (const binding of context.convertedBindings) {
+		const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const cssCall = new RegExp(`\\bcss\\(\\s*${escapedBinding}\\.([A-Za-z_$][\\w$]*)\\s*\\)`, "g");
+		for (const match of context.code.matchAll(cssCall)) {
+			const rule = match[1];
+			if (rule === undefined) continue;
+			const start = match.index ?? 0;
+			edits.push({ start, end: start + match[0].length, text: `${binding}.${rule}` });
+		}
+	}
+	return { code: SourcePass.applyEdits(context.code, edits), residuals: [] };
+};
 
 const aphrodite = makeExtraAdapter({
 	id: CodemodAdapterId.Aphrodite,
@@ -46,6 +64,7 @@ const aphrodite = makeExtraAdapter({
 		namedRuleObjects: true,
 		arrayRuleKinds: { fontFamily: "font-face" },
 	},
+	migration: { rewrite: rewriteAphroditeApplications },
 	targetEmit: (program, context, programObject) => {
 		if (context?.host?.representation !== StyleHostRepresentationKind.Class) return undefined;
 		const named = program.rules.some((rule) => rule.name !== undefined);

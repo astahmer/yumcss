@@ -3603,7 +3603,7 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const pandwindCx = createCx();
 			const css = createUnsafeCss();
-			export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
+			export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value?: string) => pandwindCx(className, value), (style?: Record<string, unknown>) => style ?? {}] as const; };",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3831,10 +3831,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/createVar": {
 			    "changed": true,
-			    "code": "import { createVar } from "@vanilla-extract/css";
-			export const brand = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createVar();",
-			    "converted": 0,
+			    "code": "export const brand = "--pw-brand";",
+			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -3847,20 +3845,9 @@ describe("official adapter API families", () => {
 			        "residuals": [],
 			      },
 			    ],
-			    "outcomes": [
-			      {
-			        "outcome": "residual",
-			        "representation": "residual",
-			      },
-			    ],
-			    "residuals": [
-			      {
-			        "hint": "Vanilla Extract createVar requires contract-aware variable lowering",
-			        "kind": "configuration",
-			        "preserved": undefined,
-			      },
-			    ],
-			    "skipped": 1,
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
 			    "validations": [],
 			  },
 			  "vanilla-extract/fontFace": {

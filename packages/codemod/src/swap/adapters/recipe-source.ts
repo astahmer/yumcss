@@ -25,20 +25,27 @@ export function recipeDefinitionObject(
 	program: StyleProgram,
 	declarationsObject: AdapterRenderers["declarationsObject"],
 ): string {
+	const isVariantDeclaration = (declaration: StyleProgram["declarations"][number]): boolean => {
+		const [variant, value] = declaration.conditions;
+		return (
+			variant?.kind === SemanticConditionKindTag.Named &&
+			value?.kind === SemanticConditionKindTag.Named
+		);
+	};
 	const base = declarationsObject(
-		program.declarations.filter((declaration) => declaration.conditions.length === 0),
+		program.declarations.filter((declaration) => !isVariantDeclaration(declaration)),
 	);
 	const variants = new Map<string, Map<string, typeof program.declarations>>();
 	for (const declaration of program.declarations) {
 		const [variant, value] = declaration.conditions;
-		if (
-			variant?.kind !== SemanticConditionKindTag.Named ||
-			value?.kind !== SemanticConditionKindTag.Named
-		)
-			continue;
+		if (!isVariantDeclaration(declaration)) continue;
+		if (variant === undefined || value === undefined) continue;
 		const values = variants.get(variant.name) ?? new Map();
 		const declarations = values.get(value.name) ?? [];
-		values.set(value.name, [...declarations, { ...declaration, conditions: [] }]);
+		values.set(value.name, [
+			...declarations,
+			{ ...declaration, conditions: declaration.conditions.slice(2) },
+		]);
 		variants.set(variant.name, values);
 	}
 	const variantText = [...variants].map(

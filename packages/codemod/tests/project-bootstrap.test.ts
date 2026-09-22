@@ -460,6 +460,12 @@ describe("Pandwind project bootstrap", () => {
 			content:
 				'"use client";\n\nimport "pandwind-css.css";\nexport default function Layout() { return <html />; }\n',
 		});
+		const runtimePreset = support.files.find(
+			(file) => file.path === "pandwind/preset.mjs",
+		)?.content;
+		expect(runtimePreset).toBeDefined();
+		expect(runtimePreset).not.toContain(" as const");
+		expect(runtimePreset).not.toContain("type PandwindProperties");
 	});
 
 	test("finds wrapped config objects and webpack arrows through the AST", async () => {

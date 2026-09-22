@@ -21,7 +21,7 @@ import {
 describe("migration route proof catalog", () => {
 	test("declares the first-tier routes and their proof debt once", () => {
 		expect(validateMigrationRouteProofCatalog(createRealRepositoryCorpus())).toEqual([]);
-		expect(MIGRATION_ROUTE_PROOF_CATALOG).toHaveLength(7);
+		expect(MIGRATION_ROUTE_PROOF_CATALOG).toHaveLength(22);
 		expect(
 			MIGRATION_ROUTE_PROOF_CATALOG.filter(
 				(route) => route.maturity === MigrationRouteMaturityTag.Stable,
@@ -47,6 +47,66 @@ describe("migration route proof catalog", () => {
 			expect.objectContaining({
 				id: MigrationRouteProofRouteId.UnoCssToPandwind,
 				evidenceIds: ["unocss-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.VanillaExtractToPandwind,
+				evidenceIds: ["vanilla-extract-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.StitchesToPandwind,
+				evidenceIds: ["stitches-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.MuiToPandwind,
+				evidenceIds: ["mui-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.MantineToPandwind,
+				evidenceIds: ["mantine-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.TokenamiToPandwind,
+				evidenceIds: ["tokenami-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.JssToPandwind,
+				evidenceIds: ["jss-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.FelaToPandwind,
+				evidenceIds: ["fela-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.AphroditeToPandwind,
+				evidenceIds: ["aphrodite-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.CompiledToPandwind,
+				evidenceIds: ["compiled-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.Style9ToPandwind,
+				evidenceIds: ["style9-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.NextYakToPandwind,
+				evidenceIds: ["next-yak-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.LinariaToPandwind,
+				evidenceIds: ["linaria-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.TreatToPandwind,
+				evidenceIds: ["treat-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.SolidStyledToPandwind,
+				evidenceIds: ["solid-styled-installed-proof"],
+			}),
+			expect.objectContaining({
+				id: MigrationRouteProofRouteId.VueStyledToPandwind,
+				evidenceIds: ["vue-styled-installed-proof"],
 			}),
 		]);
 	});

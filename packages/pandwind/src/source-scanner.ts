@@ -159,8 +159,10 @@ export interface SourceScannerContractSuite {
 	): SourceScannerContractResult;
 }
 
+const fileWithoutQuery = (file: string): string => file.split(/[?#]/u, 1)[0] ?? file;
+
 function sourceLanguageForFile(file: string): SourceLanguage {
-	return SOURCE_LANGUAGE_CLASSIFIER.languageForFile(file);
+	return SOURCE_LANGUAGE_CLASSIFIER.languageForFile(fileWithoutQuery(file));
 }
 
 const isOxcLanguage = (language: SourceLanguage): boolean =>
@@ -168,6 +170,68 @@ const isOxcLanguage = (language: SourceLanguage): boolean =>
 	language === "tsx" ||
 	language === "javascript" ||
 	language === "jsx";
+
+const scriptLanguageFromText = (text: string): SourceLanguage => {
+	if (/\blang\s*=\s*["'](?:tsx|jsx)["']/iu.test(text)) return "tsx";
+	if (/\blang\s*=\s*["'](?:ts|typescript)["']/iu.test(text)) return "typescript";
+	if (/\blang\s*=\s*["']jsx["']/iu.test(text)) return "jsx";
+	return "javascript";
+};
+
+const scriptLanguageFromFile = (file: string): SourceLanguage | undefined => {
+	const match = /(?:lang[.=])(?:tsx|jsx|ts|typescript|js|javascript)(?:&|$)/iu.exec(file);
+	if (match?.[0] === undefined) return undefined;
+	return scriptLanguageFromText(match[0]);
+};
+
+interface EmbeddedScriptSource {
+	readonly source: string;
+	readonly language: SourceLanguage;
+}
+
+const embeddedScriptSource = (document: SourceDocument): EmbeddedScriptSource | undefined => {
+	const language = document.language ?? sourceLanguageForFile(document.file);
+	if (language !== "vue") return undefined;
+	const blocks = [...document.source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/giu)];
+	if (blocks.length === 0) {
+		if (/<(?:template|style)\b/iu.test(document.source)) return undefined;
+		return {
+			source: document.source,
+			language: scriptLanguageFromFile(document.file) ?? "typescript",
+		};
+	}
+	const ranges = blocks.map((block) => {
+		const contentStart = (block.index ?? 0) + block[0].indexOf(">") + 1;
+		const content = block[2] ?? "";
+		return {
+			start: contentStart,
+			end: contentStart + content.length,
+			language: scriptLanguageFromText(block[1] ?? ""),
+		};
+	});
+	const characters = document.source.split("");
+	for (let index = 0; index < characters.length; index++) {
+		if (ranges.some((range) => index >= range.start && index < range.end)) continue;
+		if (characters[index] !== "\n" && characters[index] !== "\r") characters[index] = " ";
+	}
+	const parserLanguage = ranges.some(
+		(range) => range.language === "tsx" || range.language === "jsx",
+	)
+		? "tsx"
+		: ranges.some((range) => range.language === "typescript")
+			? "typescript"
+			: "javascript";
+	return { source: characters.join(""), language: parserLanguage };
+};
+
+const parserDocument = (document: SourceDocument): SourceDocument | undefined => {
+	const language = document.language ?? sourceLanguageForFile(document.file);
+	if (isOxcLanguage(language)) return { ...document, language };
+	const embedded = embeddedScriptSource(document);
+	return embedded === undefined
+		? undefined
+		: { ...document, source: embedded.source, language: embedded.language };
+};
 
 /**
  * Shared parsed-program cache for the document boundary. Analyzer, codemod,
@@ -222,12 +286,15 @@ function mdxExcludedRanges(source: string): SourceRange[] {
 
 /** Parse an ECMAScript-family document using the same language selection as scanning. */
 export function parseSourceProgram(document: SourceDocument): ParseResult {
-	const language = document.language ?? sourceLanguageForFile(document.file);
-	if (!isOxcLanguage(language))
+	const parsedDocument = parserDocument(document);
+	if (parsedDocument === undefined) {
+		const language = document.language ?? sourceLanguageForFile(document.file);
 		throw new Error(`source language ${language} does not expose an oxc program`);
+	}
+	const language = parsedDocument.language ?? sourceLanguageForFile(document.file);
 	const cached = sourceParseCache.get(document.file);
 	if (cached?.source === document.source && cached.language === language) return cached.result;
-	const result = parseSync(document.file, document.source, {
+	const result = parseSync(document.file, parsedDocument.source, {
 		sourceType: "module",
 		lang: language === "tsx" || language === "jsx" ? "tsx" : "ts",
 	});
@@ -244,15 +311,15 @@ export function computeExcludedRanges(
 	source: string,
 	file: string,
 ): { excluded: Array<[number, number]>; isExcluded(start: number): boolean } {
-	const language = sourceLanguageForFile(file);
-	if (!isOxcLanguage(language)) {
+	const parsedDocument = parserDocument({ file, source });
+	if (parsedDocument === undefined) {
 		const ranges = lexicalExcludedRanges(source);
 		return {
 			excluded: ranges.map(({ start, end }) => [start, end]),
 			isExcluded: (start) => ranges.some((range) => start >= range.start && start < range.end),
 		};
 	}
-	const parsed = parseSourceProgram({ file, source, language });
+	const parsed = parseSourceProgram({ file, source });
 	const excluded: Array<[number, number]> = [];
 	for (const comment of (
 		parsed as unknown as { comments?: Array<{ start?: number; end?: number }> }
@@ -322,7 +389,7 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 				? SourceRuntimeBoundary.Server
 				: SourceRuntimeBoundary.Shared);
 	let excluded: SourceRange[] = [];
-	if (isOxcLanguage(language)) {
+	if (parserDocument(document) !== undefined) {
 		try {
 			program = parseSourceProgram({ ...document, language }).program as unknown as OxcNode;
 			excluded = computeExcludedRanges(document.source, document.file).excluded.map(
@@ -453,14 +520,16 @@ function createSourceLanguageClassifier(
 	}
 	return {
 		languageForFile(file) {
-			const extension = `.${file.split(".").pop()?.toLowerCase() ?? ""}`;
+			const normalizedFile = fileWithoutQuery(file);
+			const extension = `.${normalizedFile.split(".").pop()?.toLowerCase() ?? ""}`;
 			return languagesByExtension.get(extension) ?? "unknown";
 		},
 		isSupportedFile(file) {
 			return this.languageForFile(file) !== "unknown";
 		},
 		isScriptFile(file) {
-			return isOxcLanguage(this.languageForFile(file));
+			const language = this.languageForFile(file);
+			return isOxcLanguage(language) || language === "vue";
 		},
 		isTypeScriptFile(file) {
 			const language = this.languageForFile(file);

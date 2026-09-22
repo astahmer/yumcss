@@ -27,11 +27,11 @@ export default defineCodemodAdapter({
 			form: CodemodCallPatternFormTag.JsxStyle,
 			styleProps: ["css"],
 		},
-		{ name: "css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: CodemodCallPatternFormTag.Template },
+		{ name: "css", regex: /\bcss\s*`/g, form: CodemodCallPatternFormTag.Template },
 		{
 			name: "styled",
 			kind: CodemodCallPatternKindTag.Styled,
-			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
+			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^`]*>)?\s*`/g,
 			form: CodemodCallPatternFormTag.Template,
 		},
 	],

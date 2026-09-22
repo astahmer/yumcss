@@ -89,6 +89,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		}
 	});
 
+	test("consumes Fela's empty renderRule props argument", () => {
+		const result = runAdapterMigration(
+			'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: "red" }), {});',
+			{
+				from: CodemodAdapterId.Fela,
+				to: CodemodAdapterId.Pandwind,
+				file: "styles.ts",
+			},
+		);
+		expect(result.residuals).toHaveLength(0);
+		expect(result.code).toContain('css.class({ color: "red" })');
+		expect(result.code).not.toContain(", {});");
+	});
+
 	test("loads Chakra's official merged system config through the adapter port", async () => {
 		const system = {
 			$$chakra: true as const,
@@ -619,6 +633,22 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('const useStyles = { "button": css.class({ color: "red" }) };');
 	});
 
+	test("projects JSS attached sheet class maps into direct Pandwind classes", () => {
+		const result = runAdapterMigration(
+			'import jss from "jss";\n' +
+				'const sheet = jss.createStyleSheet({ button: { color: "red" } }).attach();\n' +
+				"export const view = <button className={sheet.classes.button} />;",
+			{ from: "jss", to: "pandwind", file: "styles.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('const sheet = { "button": css.class({ color: "red" }) };');
+		expect(result.code).toContain("className={sheet.button}");
+		expect(result.code).not.toContain(".attach()");
+		expect(result.code).not.toContain(".classes");
+	});
+
 	test("lowers Aphrodite font-face arrays into runtime semantic rules", () => {
 		const result = runAdapterMigration(
 			'import { StyleSheet } from "aphrodite";\n' +
@@ -631,6 +661,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("registerSemanticRules");
 		expect(result.code).toContain('kind: "font-face"');
 		expect(result.code).toContain('property: "fontFamily"');
+	});
+
+	test("projects Aphrodite css calls onto lowered class maps", () => {
+		const result = runAdapterMigration(
+			'import { StyleSheet, css } from "aphrodite";\n' +
+				'const styles = StyleSheet.create({ button: { color: "red" } });\n' +
+				"export const view = <button className={css(styles.button)} />;",
+			{ from: "aphrodite", to: "pandwind", file: "styles.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("className={styles.button}");
+		expect(result.code).not.toContain("css(styles.button)");
 	});
 
 	test("migrates an Emotion object into styled-components with selectors and dynamics", () => {
@@ -708,12 +752,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("solid-styled-components");
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCx } from "pandwind/cx";
-			import { createRuntimeCss } from "pandwind/css/runtime";
+			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { defaultPreset } from "pandwind/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			const cx = createCx();
-			const Div = (props) => <div {...props} class={cx((props) => { const style = runtimeCss.vars({ border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), color: "steelblue", fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} class={runtimeCss.props(style, props.class).className} style={{ ...props.style, ...style.style }} />; }, props.class)} />;
+			const Div = runtimeCss.group({ border: ({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`, color: "steelblue", fontWeight: ({ bold = false }) => (bold ? "bold" : 100) });
 			export const App = () => <Div bold={true} border={1} color="whitesmoke" />;"
 		`);
 	});
@@ -1722,6 +1764,21 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('Button({ shade: "red" })');
 	});
 
+	test("removes the complete Stitches bootstrap when SSR bindings are destructured", () => {
+		const result = runAdapterMigration(
+			'import { createStitches } from "@stitches/react";\n' +
+				'export const { css, getCssText } = createStitches({ theme: { colors: { blue: "blue" } } });\n' +
+				'export const card = css({ color: "$colors$blue" });\n',
+			{ from: "stitches", to: "pandwind", file: "styles.ts", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("createStitches");
+		expect(result.code).not.toContain("getCssText");
+		expect(result.code).not.toContain("@stitches/react");
+	});
+
 	test("rewrites Vanilla Extract variable declarations for the runtime target", () => {
 		const result = runAdapterMigration(
 			'import { style, createVar, fallbackVar } from "@vanilla-extract/css";\n' +
@@ -1729,7 +1786,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 				'export const card = style({ color, vars: { [color]: fallbackVar(color, "red") } });',
 			{ from: "vanilla-extract", to: "pandwind", file: "card.css.ts", mode: "safe" },
 		);
-		expect(result.converted).toBe(1);
+		expect(result.converted).toBe(2);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("pandwind:migrate-skip");
@@ -1992,7 +2049,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const vue = runAdapterMigration(
 			"<script setup>\n" +
 				'import styled from "vue-styled-components";\n' +
-				"const Card = styled.div`color: ${(props) => props.color};`;\n" +
+				"const Card = styled.div.props({ color: 'red' })`color: ${(props) => props.color};`;\n" +
 				"</script>",
 			{
 				from: "vue-styled",
@@ -2005,8 +2062,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(vue.converted).toBe(1);
 		expect(vue.residuals).toEqual([]);
 		expect(vue.code).toContain(
-			"computed(() => runtimeCss.vars({ color: ((props) => props.color)(attrs) }))",
+			"computed(() => runtimeCss.vars({ color: ((props) => props.color)(props) }))",
 		);
+		expect(vue.code).toContain('["color"].includes(key)');
 		expect(vue.code).toContain('import { computed, defineComponent, h } from "vue";');
 	});
 
@@ -2044,9 +2102,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.converted).toBe(2);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("<Base {...props} class={cx(");
-		expect(result.code).toContain("runtimeCss.vars({ color:");
-		expect(result.code).toContain(")(props) });");
+		expect(result.code).toContain(
+			"const Card = runtimeCss.group({ color: ({ color }) => color });",
+		);
+		expect(result.code).not.toContain("class={cx((props) =>");
 	});
 
 	test("lowers Chakra, MUI, and Mantine host style props to canonical elements", () => {

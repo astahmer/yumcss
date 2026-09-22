@@ -63,6 +63,7 @@ interface NextServer {
 }
 
 const EXPECTED_NOT_FOUND_ROUTE = "/_not-found";
+const FRAMEWORK_ROUTES = new Set(["/_global-error"]);
 
 function routeStatus(path: string): number {
 	return path === EXPECTED_NOT_FOUND_ROUTE ? 404 : 200;
@@ -73,7 +74,9 @@ function readRoutes(root: string): readonly string[] {
 	if (!existsSync(manifestPath))
 		throw new Error(`missing Next prerender manifest: ${manifestPath}`);
 	const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as NextRouteManifest;
-	return Object.keys(manifest.routes).toSorted();
+	return Object.keys(manifest.routes)
+		.filter((path) => !FRAMEWORK_ROUTES.has(path))
+		.toSorted();
 }
 
 function isRscRoute(path: string): boolean {
@@ -81,7 +84,8 @@ function isRscRoute(path: string): boolean {
 		path !== EXPECTED_NOT_FOUND_ROUTE &&
 		path !== "/og" &&
 		!path.startsWith("/llms.txt/") &&
-		!path.endsWith(".txt")
+		!path.endsWith(".txt") &&
+		!/[.][a-z0-9]+$/iu.test(path)
 	);
 }
 
@@ -271,6 +275,8 @@ async function compareRscRoutes(
 				),
 			),
 		]);
+		const validSourceRoutes = new Set<string>();
+		const validTargetRoutes = new Set<string>();
 		for (const [path, response] of source) {
 			if (response.status !== 200)
 				sourceFailures.push(routeFailure(path, `expected HTTP 200, got ${response.status}`));
@@ -280,6 +286,7 @@ async function compareRscRoutes(
 				);
 			else if (response.bytes === 0 || response.chunks === 0)
 				sourceFailures.push(routeFailure(path, "RSC stream is empty"));
+			else validSourceRoutes.add(path);
 		}
 		for (const [path, response] of target) {
 			if (response.status !== 200)
@@ -290,8 +297,9 @@ async function compareRscRoutes(
 				);
 			else if (response.bytes === 0 || response.chunks === 0)
 				targetFailures.push(routeFailure(path, "RSC stream is empty"));
-			else streamedRoutes++;
+			else validTargetRoutes.add(path);
 		}
+		streamedRoutes += [...validSourceRoutes].filter((path) => validTargetRoutes.has(path)).length;
 	}
 	return {
 		checked: true,

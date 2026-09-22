@@ -227,9 +227,33 @@ export default {
 	parse(source: string, context: AdapterParseContext): AdapterParseResult {
 		const parsed = fela.parse(source, context);
 		const components = parseFelaComponents(source, context);
+		const matches: AdapterMatch[] = [];
+		const residuals = [...parsed.residuals];
+		for (const match of parsed.matches) {
+			const open = source.indexOf("(", match.start);
+			const call = open === -1 ? undefined : balancedCall(source, open);
+			if (call === undefined) {
+				matches.push(match);
+				continue;
+			}
+			const trailingArguments = source.slice(match.end, call.end - 1).trim();
+			if (trailingArguments === "" || trailingArguments === ", {}") {
+				matches.push({
+					...match,
+					end: call.end,
+					sourceText: source.slice(match.start, call.end),
+				});
+				continue;
+			}
+			residuals.push({
+				kind: StyleProgramResidualKindTag.Dynamic,
+				text: source.slice(match.start, call.end),
+				hint: "Fela renderRule props require a target-aware dynamic projection",
+			});
+		}
 		return {
-			matches: [...parsed.matches, ...components.matches].toSorted((a, b) => a.start - b.start),
-			residuals: [...parsed.residuals, ...components.residuals],
+			matches: [...matches, ...components.matches].toSorted((a, b) => a.start - b.start),
+			residuals: [...residuals, ...components.residuals],
 		};
 	},
 };

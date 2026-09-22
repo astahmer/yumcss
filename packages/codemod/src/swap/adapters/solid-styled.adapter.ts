@@ -106,7 +106,7 @@ const solidStyled = makeExtraAdapter({
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`/g,
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))\s*\(\s*\{/g,
 	],
-	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`(?:\\.|[^`])*`/g,
+	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))(?:\.props\s*\(\s*\{[\s\S]*?\}\s*\))?[^`]*`(?:\\.|[^`])*`/g,
 	form: CodemodCallPatternFormTag.Template,
 	prefix: "styled.div(",
 	functionValues: true,

@@ -100,10 +100,10 @@ const vueStyled = makeExtraAdapter({
 	},
 	detect: [
 		/from\s+["'](?:vue-styled-components|@vue-styled-components\/core)["']/g,
-		/\bstyled\.[A-Za-z_$][\w$]*[^`]*`/g,
+		/\bstyled\.[A-Za-z_$][\w$]*(?:<[^`]*>)?\s*`/g,
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))\s*\(\s*\{/g,
 	],
-	call: /\bstyled\.[A-Za-z_$][\w$]*[^`]*`(?:\\.|[^`])*`/g,
+	call: /\bstyled\.[A-Za-z_$][\w$]*(?:<[^`]*>)?(?:\.props\s*\(\s*\{[\s\S]*?\}\s*\))?\s*`(?:\\.|[^`])*`/g,
 	form: CodemodCallPatternFormTag.Template,
 	prefix: "styled.div(",
 	targetImports: ['import styled from "vue-styled-components";'],

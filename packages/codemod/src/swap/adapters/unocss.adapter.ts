@@ -81,27 +81,33 @@ function generatedAtRuleCondition(rule: GeneratedCssAtRule): StyleCondition | un
 }
 
 function generatedSelectorConditions(selector: string, token: string): readonly StyleCondition[] {
+	const normalized = selector.trim();
+	const classMatch = [...normalized.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)].find(
+		(match) => unescapeUnoCssSelector(match[1] ?? "") === token,
+	);
+	if (classMatch === undefined || classMatch.index === undefined) return [];
+	const classStart = classMatch.index;
+	const classEnd = classStart + classMatch[0].length;
+	const relative = `${normalized.slice(0, classStart)}&${normalized.slice(classEnd)}`;
+	const targetMarker = relative.indexOf("&");
+	if (targetMarker < 0) return [{ kind: "selector", name: relative, value: relative }];
+	const parent = relative.slice(0, targetMarker + 1).trim();
+	const targetSuffix = relative.slice(targetMarker + 1).trim();
 	const conditions: StyleCondition[] = [];
-	for (const match of selector.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
+	for (const match of targetSuffix.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
 		const name = match[1];
 		if (name !== undefined) conditions.push(generatedPseudoCondition(name));
 	}
-	if (conditions.length > 0) return conditions;
-	const normalized = selector.trim();
-	if (
-		!normalized.includes("[") &&
-		!normalized.includes("]") &&
-		!/[>&+~\s]/u.test(normalized) &&
-		/^\.?[\\A-Za-z0-9_-]+$/u.test(normalized)
-	)
-		return [];
-	const utility = splitUtilityToken(token).at(-1) ?? token;
-	const escapedUtility = utility.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	const relative = normalized.replace(
-		new RegExp(`\\.${escapedUtility}(?=[\\s:#.\\[>,+~]|$)`, "u"),
-		"&",
-	);
-	return [{ kind: "selector", name: relative, value: relative }];
+	const recognizedTargetSuffix = targetSuffix.replace(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu, "");
+	if (recognizedTargetSuffix.trim() !== "") {
+		const selectorWithSuffix = `${parent}${targetSuffix}`;
+		return [
+			{ kind: "selector", name: selectorWithSuffix, value: selectorWithSuffix },
+			...conditions,
+		];
+	}
+	if (parent !== "&") conditions.unshift({ kind: "selector", name: parent, value: parent });
+	return conditions;
 }
 
 /** Build a resolver from CSS emitted by the real UnoCSS generator. */

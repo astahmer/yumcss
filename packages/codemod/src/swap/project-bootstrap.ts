@@ -28,6 +28,7 @@ import {
 } from "./host-integration.ts";
 import { PANDWIND_RAW_PROPERTIES, PANDWIND_TOKEN_PROPERTIES } from "./adapters/panda/properties.ts";
 import { canonicalizePandwindConditions } from "./pandwind-conditions.ts";
+import { presetConditions } from "pandwind/preset";
 
 export interface ProjectBootstrapRequest {
 	readonly root: string;
@@ -739,6 +740,7 @@ function presetSource(
 		...conditions,
 	});
 	const typeImports = typescript ? ", type PandwindProperties" : "";
+	const literalAssertion = typescript ? " as const" : "";
 	const colorPaletteEntries = Object.entries(config.colorPalettes ?? {}).toSorted(
 		([left], [right]) => left.localeCompare(right),
 	);
@@ -749,7 +751,7 @@ function presetSource(
 					Object.fromEntries(colorPaletteEntries),
 					null,
 					"\t",
-				)} as const);\n`;
+				)}${literalAssertion});\n`;
 	const colorPaletteProperty = colorPaletteEntries.length === 0 ? "" : "\n\t\tcolorPalettes,";
 	const configDeclaration = typescript ? "\nconst cssConfig: PandwindProperties = {};\n" : "";
 	const configReference = typescript ? "cssConfig" : "{}";
@@ -758,7 +760,7 @@ function presetSource(
 			? ""
 			: `const appSemanticTokens = appTokens.defineSemanticTokens(
 	conditions,
-	${JSON.stringify(appSemanticTokens, null, "\t")} as const,
+	${JSON.stringify(appSemanticTokens, null, "\t")}${literalAssertion},
 );
 `;
 	const componentDeclaration =
@@ -766,7 +768,7 @@ function presetSource(
 			? ""
 			: `const componentTokens = ${appSemanticGroups.length > 0 ? "appSemanticTokens" : "appTokens"}.defineSemanticTokens(
 	conditions,
-	${JSON.stringify(componentTokens, null, "\t")} as const,
+	${JSON.stringify(componentTokens, null, "\t")}${literalAssertion},
 );
 `;
 	const tokenDeclaration =
@@ -777,10 +779,10 @@ function presetSource(
 				: "const tokens = appTokens;";
 	return `import { define${typeImports} } from "pandwind/preset";
 
-const conditions = define.conditions(${JSON.stringify(presetConditions, null, "\t")} as const);
-const appTokens = define.tokens(${JSON.stringify(appTokens, null, "\t")} as const);
+const conditions = define.conditions(${JSON.stringify(presetConditions, null, "\t")}${literalAssertion});
+const appTokens = define.tokens(${JSON.stringify(appTokens, null, "\t")}${literalAssertion});
 ${appSemanticDeclaration}${componentDeclaration}${configDeclaration}
-const properties = define.properties(${presetPropertiesSource(rawSourceTokens)} as const);
+const properties = define.properties(${presetPropertiesSource(rawSourceTokens)}${literalAssertion});
 ${tokenDeclaration}${colorPaletteDeclaration}
 
 export const preset = define.preset(
@@ -969,6 +971,7 @@ export async function createPandwindProjectSupport(
 	const stylesheet = cssEntry === undefined ? undefined : request.readFile(cssEntry);
 	const customConditions = stylesheet === undefined ? {} : customVariantConditions(stylesheet);
 	const targetConditionCatalog = canonicalizePandwindConditions({
+		...presetConditions,
 		...sourceConfig.conditionCatalog,
 		...customConditions,
 	});
@@ -977,14 +980,14 @@ export async function createPandwindProjectSupport(
 		: [
 				generatedFile(
 					preset,
-					presetSource(sourceConfig, customConditions),
+					presetSource(sourceConfig, targetConditionCatalog),
 					"Pandwind target preset",
 				),
 				...(nextIntegration.enabled
 					? [
 							generatedFile(
 								runtimePreset,
-								presetSource(sourceConfig, customConditions, false),
+								presetSource(sourceConfig, targetConditionCatalog, false),
 								"Next/Webpack runtime preset",
 							),
 						]
@@ -1001,9 +1004,8 @@ export async function createPandwindProjectSupport(
 	const derivedFiles: AdapterGeneratedFile[] = [];
 
 	if (!configurationFailed && cssEntry !== undefined && stylesheet !== undefined) {
-		const conditions = customConditions;
 		const presetFile = files.find((file) => file.path === preset)!;
-		const withConditions = presetSource(sourceConfig, conditions);
+		const withConditions = presetSource(sourceConfig, targetConditionCatalog);
 		files[files.indexOf(presetFile)] = generatedFile(
 			preset,
 			withConditions,
@@ -1013,7 +1015,7 @@ export async function createPandwindProjectSupport(
 		if (runtimePresetFile !== undefined) {
 			files[files.indexOf(runtimePresetFile)] = generatedFile(
 				runtimePreset,
-				presetSource(sourceConfig, conditions, false),
+				presetSource(sourceConfig, targetConditionCatalog, false),
 				"Next/Webpack runtime preset",
 			);
 		}

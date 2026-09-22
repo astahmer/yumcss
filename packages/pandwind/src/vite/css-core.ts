@@ -42,6 +42,7 @@ const render = (
 	atomic: readonly PandwindLibRule[],
 	vars: readonly PandwindLibRule[],
 	tokens: string,
+	web: string,
 	keyframes: string,
 	cascade: PandwindCssViteOptions["cascade"],
 	priorityUniverse: readonly PandwindLibRule[] = [...atomic, ...vars],
@@ -56,6 +57,7 @@ const render = (
 	);
 	const body = [
 		tokens,
+		web,
 		keyframes,
 		decorated
 			.slice(0, orderedAtomic.length)
@@ -90,7 +92,22 @@ const mergeTokenEntries = (
 	return [...entries.values()];
 };
 
+const mergeCssSections = (...sections: readonly string[]): string =>
+	[...new Set(sections.filter((section) => section.length > 0))].join("\n");
+
 const addImportAfterDirectives = (source: string, statement: string): string => {
+	const scriptOpen = /<script\b[^>]*>/iu.exec(source);
+	if (scriptOpen !== null) {
+		const bodyStart = scriptOpen.index + scriptOpen[0].length;
+		const close = /<\/script\s*>/iu.exec(source.slice(bodyStart));
+		if (close !== null) {
+			const bodyEnd = bodyStart + close.index;
+			return `${source.slice(0, bodyStart)}${addImportAfterDirectives(
+				source.slice(bodyStart, bodyEnd),
+				statement,
+			)}${source.slice(bodyEnd)}`;
+		}
+	}
 	const lines = source.split("\n");
 	let directiveEnd = -1;
 	let insertAt = -1;
@@ -146,6 +163,7 @@ export function createCssExtractorPluginCore(
 	const externalAtomic = externalArtifacts.flatMap((artifact) => artifact.rules.atomic);
 	const externalVars = externalArtifacts.flatMap((artifact) => artifact.rules.vars);
 	const externalTokens = externalArtifacts.flatMap((artifact) => artifact.tokens);
+	const externalWeb = mergeCssSections(...externalArtifacts.map((artifact) => artifact.web));
 	const sourceService = createCssSourceService({
 		rewriter: new StaticCssCallRewriter(preset, className, {
 			transformDynamicClassName: options.transformDynamicClassName === true,
@@ -161,7 +179,7 @@ export function createCssExtractorPluginCore(
 	// treat the virtual module as stylesheet, not JavaScript.
 	const resolvedVirtualId = `\0${virtualId}.css`;
 	const root = options.root ?? process.cwd();
-	const include = options.include ?? [/\.(?:[cm]?[jt]sx?)$/];
+	const include = options.include ?? [/\.(?:[cm]?[jt]sx?|vue)$/];
 	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
 	const sourceWorkspace = createSourceWorkspace();
 	const workspace = createCssSourceWorkspace({
@@ -225,12 +243,14 @@ export function createCssExtractorPluginCore(
 		if (bodyCache !== undefined && workspace.isFresh(files, bodyCache.files))
 			return bodyCache.value;
 		const sheet = collect(files);
+		const web = sheet.gen.web();
 		const body = render(
 			mergeEntries(sheet.gen.atomicEntries(), externalAtomic),
 			mergeEntries(sheet.gen.varEntries(), externalVars),
 			mergeTokenEntries(sheet.gen.tokenEntries(), externalTokens)
 				.map((entry) => entry.declaration)
 				.join("\n"),
+			mergeCssSections(web, externalWeb),
 			sheet.gen.keyframes(),
 			options.cascade,
 			[...sheet.gen.atomicEntries(), ...sheet.gen.varEntries(), ...externalAtomic, ...externalVars],
@@ -264,6 +284,27 @@ export function createCssExtractorPluginCore(
 		return value;
 	};
 
+	/** Render only preset-owned web CSS for external compiler modes. */
+	const collectWebBody = (): string => {
+		const sheet = createStylesheet(
+			preset,
+			{ className, namespace, tokenVariableNames: options.tokenVariableNames },
+			{ tokens: "used" },
+		);
+		const web = sheet.gen.web();
+		return render(
+			[],
+			[],
+			mergeTokenEntries(sheet.gen.tokenEntries(), externalTokens)
+				.map((entry) => entry.declaration)
+				.join("\n"),
+			mergeCssSections(web, externalWeb),
+			"",
+			options.cascade,
+			[],
+		);
+	};
+
 	/** Re-scan changed files and return a fresh stylesheet with every rule. */
 	const collect = (files: Array<string> = workspace.files()) => {
 		const sheet = createStylesheet(
@@ -292,6 +333,7 @@ export function createCssExtractorPluginCore(
 
 	interface BucketSheet {
 		tokenEntries: Array<{ declaration: string; priority: number }>;
+		web: string;
 		atomicIds: Set<string>;
 		varIds: Set<string>;
 		keyframeIds: Set<string>;
@@ -315,6 +357,7 @@ export function createCssExtractorPluginCore(
 			for (const key of entry.varKeys) sheet.processVarKey(key);
 			for (const key of carriedVarKeys.get(file) ?? []) sheet.processVarKey(key);
 		}
+		const web = sheet.gen.web();
 		const atomic = sheet.gen.atomicEntries();
 		const vars = sheet.gen.varEntries();
 		const keyframes = sheet.gen.keyframesEntries();
@@ -322,6 +365,7 @@ export function createCssExtractorPluginCore(
 		// intersection can count them in one map without collisions.
 		return {
 			tokenEntries: sheet.gen.tokenEntries(),
+			web,
 			atomicIds: new Set(atomic.map((e) => `a:${e.id}`)),
 			varIds: new Set(vars.map((e) => `v:${e.id}`)),
 			keyframeIds: new Set(keyframes.map((e) => `k:${e.id}`)),
@@ -414,6 +458,7 @@ export function createCssExtractorPluginCore(
 			commonAtomic,
 			commonVars,
 			tokenEntries.map((entry) => entry.declaration).join("\n"),
+			mergeCssSections(commonBucket.web, externalWeb),
 			commonKeyframes.map((entry) => entry.css).join("\n"),
 			options.cascade,
 			priorityUniverse,
@@ -430,6 +475,7 @@ export function createCssExtractorPluginCore(
 				render(
 					atomic,
 					vars,
+					"",
 					"",
 					keyframes.map((entry) => entry.css).join("\n"),
 					options.cascade,
@@ -502,7 +548,7 @@ ${split.routes.get(route.name) ?? ""}`;
 			const emptyMode = className !== undefined && strategy?.sheetBacked !== true;
 
 			if (id === resolvedVirtualId) {
-				if (emptyMode) return "";
+				if (emptyMode) return collectWebBody();
 				if (routes.length === 0) return collectBody();
 				return collectSplit().common;
 			}

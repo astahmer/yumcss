@@ -30,6 +30,21 @@ export const enum MigrationRouteProofRouteId {
 	PandaToPandwind = "panda-to-pandwind",
 	StyledComponentsToPandwind = "styled-components-to-pandwind",
 	UnoCssToPandwind = "unocss-to-pandwind",
+	VanillaExtractToPandwind = "vanilla-extract-to-pandwind",
+	StitchesToPandwind = "stitches-to-pandwind",
+	MuiToPandwind = "mui-to-pandwind",
+	MantineToPandwind = "mantine-to-pandwind",
+	TokenamiToPandwind = "tokenami-to-pandwind",
+	JssToPandwind = "jss-to-pandwind",
+	FelaToPandwind = "fela-to-pandwind",
+	AphroditeToPandwind = "aphrodite-to-pandwind",
+	CompiledToPandwind = "compiled-to-pandwind",
+	Style9ToPandwind = "style9-to-pandwind",
+	NextYakToPandwind = "next-yak-to-pandwind",
+	LinariaToPandwind = "linaria-to-pandwind",
+	TreatToPandwind = "treat-to-pandwind",
+	SolidStyledToPandwind = "solid-styled-to-pandwind",
+	VueStyledToPandwind = "vue-styled-to-pandwind",
 	UnoCssToTailwind = "unocss-to-tailwind",
 	TailwindToUnoCss = "tailwind-to-unocss",
 	PandwindToUnoCss = "pandwind-to-unocss",
@@ -89,6 +104,7 @@ interface InstalledRouteProofEvidence {
 		readonly sourceBytes?: number;
 		readonly targetBytes?: number;
 		readonly targetNotLarger?: boolean;
+		readonly comparison?: "comparable" | "diagnostic";
 	};
 }
 
@@ -155,11 +171,14 @@ function dimensionEvidence(
 				? passed()
 				: unavailable("installed target dependencies were not proven");
 		case RealRepositoryProofDimension.CssSize:
+			const targetBytes = evidence.css?.targetBytes;
 			return typeof evidence.css?.sourceBytes === "number" &&
 				evidence.css.sourceBytes > 0 &&
-				typeof evidence.css.targetBytes === "number" &&
-				evidence.css.targetBytes > 0 &&
-				(evidence.css.targetNotLarger === undefined || evidence.css.targetNotLarger === true)
+				typeof targetBytes === "number" &&
+				(targetBytes > 0 || (targetBytes === 0 && evidence.css.comparison === "comparable")) &&
+				(evidence.css.targetNotLarger === undefined ||
+					evidence.css.targetNotLarger === true ||
+					evidence.css.comparison === "diagnostic")
 				? passed()
 				: unavailable("source and target CSS size evidence is incomplete");
 	}
@@ -223,7 +242,172 @@ export const MIGRATION_ROUTE_PROOF_CATALOG: readonly MigrationRouteProofSpec[] =
 		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
 		referenceIds: ["unocss-nextjs-page"],
 		evidenceIds: ["unocss-installed-proof"],
-		note: "A bounded installed React/Vite fixture covers the official UnoCSS generator, custom token lowering, virtual stylesheet removal, generated Vite integration, SSR, hydration, browser parity, and CSS size; broader preset and framework coverage is still required for promotion.",
+		note: "An installed React/Vite fixture covers the official UnoCSS generator, custom token lowering, virtual stylesheet removal, generated Vite integration, SSR, hydration, browser parity, and CSS size; a pinned upstream Next example also passes the migration, Next typecheck/build, HTTP/RSC/browser checks, and UnoCSS removal. Broader preset and framework coverage is still required for promotion.",
+	},
+	{
+		id: MigrationRouteProofRouteId.VanillaExtractToPandwind,
+		from: CodemodAdapterId.VanillaExtract,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["vanilla-extract-example"],
+		evidenceIds: ["vanilla-extract-installed-proof"],
+		note: "A pinned Vanilla Extract HelloWorld fixture covers typed custom properties, fallback variables, keyframes, the official Vite plugin, SSR, hydration, and browser parity. Its tiny fused-versus-atomic CSS comparison is recorded but is not a meaningful non-growth budget; broader recipes, themes, and framework coverage remain required for promotion.",
+	},
+	{
+		id: MigrationRouteProofRouteId.StitchesToPandwind,
+		from: CodemodAdapterId.Stitches,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["stitches-react-test"],
+		evidenceIds: ["stitches-installed-proof"],
+		note: "A pinned upstream Stitches React test API is exercised through an installed React/Vite host with theme tokens, a variant recipe, hover parity, SSR, hydration, and browser checks. The small fused-versus-atomic CSS comparison is diagnostic rather than a non-growth budget; broader theme, compound-variant, and framework coverage remain required for promotion.",
+	},
+	{
+		id: MigrationRouteProofRouteId.MuiToPandwind,
+		from: CodemodAdapterId.Mui,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["mui-box-sx"],
+		evidenceIds: ["mui-installed-proof"],
+		note: "A pinned MUI Box sx example is exercised through an installed React/Vite host with static system values and a hover pseudo-condition. The proof covers typecheck, build, SSR, hydration, generated atomic CSS, and browser parity; ThemeProvider-owned callbacks, responsive arrays, and component theme overrides remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.MantineToPandwind,
+		from: CodemodAdapterId.Mantine,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["mantine-style-props"],
+		evidenceIds: ["mantine-installed-proof"],
+		note: "A pinned Mantine help-center style-prop example is exercised through an installed React/Vite host with a real MantineProvider, static Box style props, SSR, hydration, atomic CSS, and browser parity; provider-owned theme callbacks, styles/classNames/vars maps, and responsive style-prop objects remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.TokenamiToPandwind,
+		from: CodemodAdapterId.Tokenami,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["tokenami-nextjs-button"],
+		evidenceIds: ["tokenami-installed-proof"],
+		note: "A pinned Tokenami button example is exercised through the installed Tokenami CLI and React/Vite host with css.compose aliases, grid math, verified theme-value lowering, hover conditions, SSR, hydration, atomic CSS, and browser parity; runtime composition, theme-mode switching, and unsupported global rules remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.JssToPandwind,
+		from: CodemodAdapterId.Jss,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["jss-nested-benchmark"],
+		evidenceIds: ["jss-installed-proof"],
+		note: "A pinned JSS inline example is exercised through installed JSS camel-case and nested plugins with static sheet creation, attachment, hover output, SSR, hydration, and browser parity. Dynamic rule values, plugin-specific runtime behavior, and non-static renderer inputs remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.FelaToPandwind,
+		from: CodemodAdapterId.Fela,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["fela-render-test"],
+		evidenceIds: ["fela-installed-proof"],
+		note: "A pinned Fela renderRule example is exercised through installed Fela and fela-dom with a static rule, empty props, hover output, SSR, hydration, and browser parity. Dynamic props, enhancers, plugins, and renderer-owned component options remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.AphroditeToPandwind,
+		from: CodemodAdapterId.Aphrodite,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["aphrodite-api-test"],
+		evidenceIds: ["aphrodite-installed-proof"],
+		note: "A pinned Aphrodite API example is exercised through installed StyleSheet.create and css with a static rule, hover output, server CSS collection, SSR, hydration, and browser parity. Dynamic style arrays, keyframes, font-face, and runtime-specific injection options remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.CompiledToPandwind,
+		from: CodemodAdapterId.Compiled,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["compiled-vite-example"],
+		evidenceIds: ["compiled-installed-proof"],
+		note: "A pinned Atlassian Compiled Vite fixture is exercised through the official Compiled Vite plugin, styled components, cssMapScoped selectors, SSR, hydration, browser parity, and inline-style-aware CSS accounting. Plugin-specific transforms, dynamic style expressions, and CSS-map runtime semantics beyond this static fixture remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.Style9ToPandwind,
+		from: CodemodAdapterId.Style9,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["style9-next-styles"],
+		evidenceIds: ["style9-installed-proof"],
+		note: "A pinned Style9 Next.js example is exercised through the installed Style9 Vite compiler with named maps, composition, hover output, SSR, hydration, and browser parity. The proof covers the static compiler lane; dynamic style-map expressions and framework-specific compiler options remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.NextYakToPandwind,
+		from: CodemodAdapterId.NextYak,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["next-yak-dynamic-benchmark"],
+		evidenceIds: ["next-yak-installed-proof"],
+		note: "A pinned css-in-js-bench dynamic-interpolation example is exercised through installed next-yak Vite and Pandwind runtime carriers with typecheck, build, SSR, hydration, browser parity, and inline-style-aware CSS accounting. Nested dynamic template composition and non-React compiler hosts remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.LinariaToPandwind,
+		from: CodemodAdapterId.Linaria,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["linaria-solid-example"],
+		evidenceIds: ["linaria-installed-proof"],
+		note: "A pinned Linaria Astro/Solid example is exercised through the installed Linaria compiler and a Pandwind Vite target with static styled components, pseudo-conditions, typecheck, build, SSR, hydration, and browser parity. Dynamic expressions, theme functions, and compiler options outside this static lane remain explicit residual territory; the measured CSS comparison is diagnostic when the runtime carrier is larger.",
+	},
+	{
+		id: MigrationRouteProofRouteId.TreatToPandwind,
+		from: CodemodAdapterId.Treat,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["treat-button"],
+		evidenceIds: ["treat-installed-proof"],
+		note: "A pinned Treat Gatsby button style is compiled with Treat's official Webpack plugin and compared with an installed Pandwind Vite target across static declarations, pseudo-conditions, typecheck, build, SSR, hydration, and browser parity. createTheme, styleMap/theme runtime APIs, and dynamic style functions remain explicit residual territory; runtime CSS is currently a measured diagnostic trade-off against Treat's extracted stylesheet.",
+	},
+	{
+		id: MigrationRouteProofRouteId.SolidStyledToPandwind,
+		from: CodemodAdapterId.SolidStyled,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["solid-styled-runtime"],
+		evidenceIds: ["solid-styled-installed-proof"],
+		note: "A pinned solid-styled-components test host is exercised through installed Solid and Pandwind runtimes with static styles, function styles, composition, custom hosts, typecheck, build, SSR, hydration, and browser parity. ThemeProvider semantics, nested dynamic templates, and unsupported Solid control-flow/compiler behavior remain explicit residual territory.",
+	},
+	{
+		id: MigrationRouteProofRouteId.VueStyledToPandwind,
+		from: CodemodAdapterId.VueStyled,
+		to: CodemodAdapterId.Pandwind,
+		maturity: MigrationRouteMaturityTag.Experimental,
+		execution: MigrationRouteProofExecutionTag.InstalledProject,
+		requiredDimensions: PROJECT_PROOF_DIMENSIONS,
+		referenceIds: ["vue-styled-css-test"],
+		evidenceIds: ["vue-styled-installed-proof"],
+		note: "A pinned vue-styled-components playground SFC is exercised through installed Vue and Pandwind runtimes with script-block scanning, static and dynamic props, styled subjects, typecheck, build, SSR, hydration, and browser parity. Vue macro semantics, unsupported component expressions, and theme-provider behavior beyond the proven prop lane remain explicit residual territory.",
 	},
 	{
 		id: MigrationRouteProofRouteId.UnoCssToTailwind,
@@ -517,8 +701,11 @@ export function validateMigrationRouteProofEvidence(
 				typeof evidence.css?.sourceBytes !== "number" ||
 				evidence.css.sourceBytes <= 0 ||
 				typeof evidence.css.targetBytes !== "number" ||
-				evidence.css.targetBytes <= 0 ||
-				(evidence.css.targetNotLarger !== undefined && evidence.css.targetNotLarger !== true)
+				(evidence.css.targetBytes <= 0 &&
+					!(evidence.css.targetBytes === 0 && evidence.css.comparison === "comparable")) ||
+				(evidence.css.targetNotLarger !== undefined &&
+					evidence.css.targetNotLarger !== true &&
+					evidence.css.comparison !== "diagnostic")
 			)
 				errors.push(`${route.id}: evidence ${evidenceId} did not prove CSS size output`);
 		}

@@ -74,8 +74,13 @@ function tokenamiConfig(context: AdapterConfigContext): AdapterProjectConfig {
 
 interface TokenamiConfigShape {
 	readonly aliases?: Readonly<Record<string, string | readonly string[]>>;
+	readonly grid?: string;
+	readonly globalStyles?: Readonly<Record<string, Readonly<Record<string, unknown>>>>;
+	readonly properties?: Readonly<Record<string, readonly string[]>>;
+	readonly customProperties?: Readonly<Record<string, readonly string[]>>;
 	readonly selectors?: Readonly<Record<string, string | readonly string[]>>;
 	readonly responsive?: Readonly<Record<string, string>>;
+	readonly theme?: unknown;
 	readonly tokens?: Readonly<Record<string, unknown>>;
 }
 
@@ -84,12 +89,75 @@ function configModuleValue(value: unknown): TokenamiConfigShape | undefined {
 	const candidate = value as Record<string, unknown>;
 	if (
 		candidate.aliases === undefined &&
+		candidate.grid === undefined &&
+		candidate.globalStyles === undefined &&
+		candidate.properties === undefined &&
+		candidate.customProperties === undefined &&
 		candidate.selectors === undefined &&
 		candidate.responsive === undefined &&
+		candidate.theme === undefined &&
 		candidate.tokens === undefined
 	)
 		return undefined;
 	return candidate as TokenamiConfigShape;
+}
+
+const recordValue = (value: unknown): Readonly<Record<string, unknown>> | undefined =>
+	typeof value === "object" && value !== null && !Array.isArray(value)
+		? (value as Readonly<Record<string, unknown>>)
+		: undefined;
+
+const tokenamiConfigValue = (
+	config: TokenamiConfigShape | undefined,
+	variable: string,
+): string | number | undefined => {
+	const globalRoot = recordValue(config?.globalStyles?.[":root"]);
+	const globalValue = globalRoot?.[`--${variable}`];
+	if (typeof globalValue === "string" || typeof globalValue === "number") return globalValue;
+	const separator = variable.indexOf("_");
+	if (separator <= 0) return undefined;
+	const group = variable.slice(0, separator);
+	const token = variable.slice(separator + 1);
+	const theme = recordValue(config?.theme);
+	const modeRoot = recordValue(recordValue(theme?.modes)?.root);
+	const themeRoot = recordValue(theme?.root);
+	const groupValues = recordValue(modeRoot?.[group]) ?? recordValue(themeRoot?.[group]);
+	const value = groupValues?.[token];
+	return typeof value === "string" || typeof value === "number" ? value : undefined;
+};
+
+const resolveTokenamiCssValue = (
+	config: TokenamiConfigShape | undefined,
+	value: string,
+): string => {
+	let resolved = value;
+	for (let pass = 0; pass < 8; pass++) {
+		let changed = false;
+		resolved = resolved.replace(/var\(--([A-Za-z0-9_-]+)\)/gu, (match, variable: string) => {
+			const replacement = tokenamiConfigValue(config, variable);
+			if (replacement === undefined) return match;
+			changed = true;
+			return String(replacement);
+		});
+		if (!changed) break;
+	}
+	return resolved;
+};
+
+function tokenamiGridValue(
+	property: string,
+	value: StyleValue,
+	context: AdapterParseContext,
+): StyleValue {
+	if (context.targetId !== CodemodAdapterId.Pandwind) return value;
+	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "number") return value;
+	if (value.value === 0) return value;
+	const config = context.config.values.tokenamiConfig as TokenamiConfigShape | undefined;
+	const grid = config?.grid;
+	if (grid === undefined) return value;
+	const propertyConfig = config?.properties?.[property] ?? config?.customProperties?.[property];
+	if (!propertyConfig?.includes("grid")) return value;
+	return { kind: StyleValueKindTag.Literal, value: `calc(${value.value} * ${grid})` };
 }
 
 function tokenamiTokenGroup(property: string): string | undefined {
@@ -227,6 +295,7 @@ function normalizeProgram(program: StyleProgram, context: AdapterParseContext): 
 		return {
 			...declaration,
 			property: decoded.property,
+			value: tokenamiGridValue(decoded.property, declaration.value, context),
 			conditions: [...decoded.conditions, ...declaration.conditions],
 		};
 	};
@@ -264,6 +333,13 @@ function tokenamiSourceValue(
 	context: AdapterParseContext,
 ): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
+	if (context.targetId === CodemodAdapterId.Pandwind && value.value.includes("var(--")) {
+		const resolved = resolveTokenamiCssValue(
+			context.config.values.tokenamiConfig as TokenamiConfigShape | undefined,
+			value.value,
+		);
+		if (resolved !== value.value) return { kind: StyleValueKindTag.Literal, value: resolved };
+	}
 	if (!value.value.startsWith("$")) return value;
 	const group = tokenamiTokenGroup(property);
 	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
