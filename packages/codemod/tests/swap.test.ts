@@ -624,6 +624,24 @@ describe("--sort: canonical property order", () => {
 	});
 });
 
+describe("--nearest-tokens: raw-literal diagnostics", () => {
+	test("adds a close token candidate to a preserved raw declaration", () => {
+		const result = runSwap(
+			`${WITH_CSS}const card = css.class({ outlineColor: "#3182cf" });`,
+			meta,
+			{
+				from: "auto",
+				to: "design",
+				file: "t.tsx",
+				metaDir: "examples/example/src",
+				nearestTokens: true,
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.unmappedTokens[0]?.reason).toContain("nearest token candidate");
+	});
+});
+
 describe("--dedup: repeated identical literals hoist to a constant", () => {
 	test("duplicate call sites collapse into one module constant", () => {
 		const code = dedupLiteralCallSites(

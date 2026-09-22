@@ -45,6 +45,7 @@ export interface MigrateCliArgs {
 	engine: boolean;
 	tokenize: boolean;
 	sort: boolean;
+	nearestTokens: boolean;
 	dedup: boolean;
 	hoistStaticStyles: boolean;
 	/** Output folder for --from=panda project migration (default "pandwind"). */
@@ -85,6 +86,7 @@ export function configureMigrateCommand(command: Command): void {
 		.option("--engine", "Resolve unknown Tailwind utilities through the engine")
 		.option("--tokenize", "Rewrite eligible raw values to token references")
 		.option("--sort", "Sort emitted declarations canonically")
+		.option("--nearest-tokens", "Suggest nearby preset tokens for raw literals")
 		.option("--dedup", "Hoist repeated literal style calls")
 		.option("--hoist-static-styles", "Hoist static Pandwind style calls to module scope");
 }
@@ -208,6 +210,7 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 		engine: optionBoolean(options, "engine"),
 		tokenize: optionBoolean(options, "tokenize"),
 		sort: optionBoolean(options, "sort"),
+		nearestTokens: optionBoolean(options, "nearestTokens"),
 		dedup: optionBoolean(options, "dedup"),
 		hoistStaticStyles: optionBoolean(options, "hoistStaticStyles"),
 		outDir: optionString(options, "out") ?? "",

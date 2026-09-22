@@ -18,8 +18,10 @@ import type { SwapEntry, SwapIR } from "./ir.ts";
 import {
 	authoredTokenRef,
 	formatTokenPath,
+	TokenCatalog,
 	TokenReferenceFormat,
 	TokenRefModeTag,
+	tokenGroupsForProperty,
 	type TokenReferenceFormat as TokenReferenceFormatValue,
 	type TokenRefMode,
 } from "./tokens.ts";
@@ -38,6 +40,8 @@ export interface EmitterContext {
 	tokenReferenceFormat?: TokenReferenceFormat;
 	/** Canonical CSS property-order sorting inside emitted scopes. */
 	sort?: boolean;
+	/** Add nearest preset-token candidates to raw-literal residual hints. */
+	nearestTokens?: boolean;
 	/** Versioned semantic view for adapters; flat emitters may use `SwapIR`. */
 	program?: StyleProgram;
 	/** Declared target contract and its check for the current program. */
@@ -704,6 +708,22 @@ function placeEntry(
 	}
 }
 
+const nearestTokenHint = (
+	catalog: TokenCatalog | undefined,
+	entry: SwapEntry,
+): string | undefined => {
+	if (catalog === undefined || typeof entry.value !== "string") return undefined;
+	const groups = tokenGroupsForProperty(entry.prop);
+	if (groups.length === 0) return undefined;
+	const matches = catalog.nearest(groups, entry.value, { maxDistance: 0.35, maxResults: 3 });
+	if (matches.length === 0) return undefined;
+	const bestDistance = matches[0]!.distance;
+	const best = matches.filter((match) => Math.abs(match.distance - bestDistance) < 0.000001);
+	return `nearest token candidate${best.length === 1 ? "" : "s"}: ${best
+		.map((match) => `${match.group}.${match.ref}`)
+		.join(", ")}`;
+};
+
 function emitDesignVocabWithCallee(
 	callee: "css.class" | "dss",
 	ir: SwapIR,
@@ -713,6 +733,8 @@ function emitDesignVocabWithCallee(
 	const residuals: SwapIR["residuals"] = [];
 	const mode: TokenRefMode = ctx.tokenRefs ?? "bare";
 	const format = ctx.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
+	const nearestCatalog =
+		ctx.nearestTokens === true ? TokenCatalog.fromAnyTokens(meta.tokens) : undefined;
 	const groups = groupByConditions(ir.entries);
 	const parts: string[] = [];
 	for (const groupEntries of groups.values()) {
@@ -745,7 +767,12 @@ function emitDesignVocabWithCallee(
 				residuals.push({
 					kind: SwapResidualKindTag.UnknownValue,
 					text: `${entry.prop}: ${String(entry.value)}`,
-					hint: "outside the designer vocabulary — placed in $raw",
+					hint: [
+						"outside the designer vocabulary — placed in $raw",
+						nearestTokenHint(nearestCatalog, entry),
+					]
+						.filter((hint): hint is string => hint !== undefined)
+						.join("; "),
 					preserved: true,
 				});
 			}

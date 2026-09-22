@@ -496,6 +496,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			engineResolver,
 			tokenize: args.tokenize,
 			sort: args.sort,
+			nearestTokens: args.nearestTokens,
 			dedup: args.dedup,
 			tokenReferenceFormat: args.tokenReferenceFormat,
 			hoistStaticStyles: args.hoistStaticStyles,

@@ -629,6 +629,8 @@ export interface SwapOptions {
 	}>;
 	/** Canonical property-order sorting in emitted scopes. */
 	sort?: boolean;
+	/** Add nearest preset-token candidates to raw-literal residual hints. */
+	nearestTokens?: boolean;
 	/** Hoist repeated identical literal call sites into module constants. */
 	dedup?: boolean;
 	/** Hoist all static Pandwind style calls to module scope when enabled. */
@@ -768,6 +770,7 @@ export function runSwap(
 			program,
 			capabilities,
 			capabilityReport,
+			nearestTokens: options.nearestTokens,
 			tokenReferenceFormat,
 		});
 		if (result.headers !== undefined && result.headers.length > 0) headers.push(...result.headers);

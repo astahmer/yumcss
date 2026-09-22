@@ -50,6 +50,16 @@ export interface TokenCatalogMatch {
 	readonly resolved: string;
 }
 
+export interface TokenCatalogNearestMatch extends TokenCatalogMatch {
+	/** Lower is closer; zero means an exact normalized value match. */
+	readonly distance: number;
+}
+
+export interface TokenCatalogNearestOptions {
+	readonly maxDistance?: number;
+	readonly maxResults?: number;
+}
+
 /** Return the statically resolved scalar carried by a StyleProgram value. */
 export function resolvedStyleValue(
 	value: StyleProgram["declarations"][number]["value"],
@@ -169,6 +179,74 @@ function normalizedTokenValue(value: unknown): string | undefined {
 	return typeof value === "string" || typeof value === "number" ? String(value) : undefined;
 }
 
+const HEX_COLOR = /^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/iu;
+const DIMENSION = /^(-?(?:\d+|\d*\.\d+))([a-z%]+)$/iu;
+
+const hexColorChannels = (value: string): readonly number[] | undefined => {
+	if (!HEX_COLOR.test(value)) return undefined;
+	const hex = value.slice(1);
+	const expanded =
+		hex.length === 3 || hex.length === 4 ? [...hex].map((part) => `${part}${part}`).join("") : hex;
+	const channels = [0, 2, 4].map((offset) =>
+		Number.parseInt(expanded.slice(offset, offset + 2), 16),
+	);
+	return channels.every(Number.isFinite) ? channels : undefined;
+};
+
+const levenshteinDistance = (left: string, right: string): number => {
+	const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+	for (let leftIndex = 0; leftIndex < left.length; leftIndex++) {
+		const current = [leftIndex + 1];
+		for (let rightIndex = 0; rightIndex < right.length; rightIndex++) {
+			current.push(
+				Math.min(
+					current[rightIndex]! + 1,
+					previous[rightIndex + 1]! + 1,
+					previous[rightIndex]! + (left[leftIndex] === right[rightIndex] ? 0 : 1),
+				),
+			);
+		}
+		previous.splice(0, previous.length, ...current);
+	}
+	return previous[right.length]!;
+};
+
+const tokenValueDistance = (left: string, right: string): number => {
+	const normalizedLeft = left.trim().toLowerCase().replace(/\s+/gu, " ");
+	const normalizedRight = right.trim().toLowerCase().replace(/\s+/gu, " ");
+	if (normalizedLeft === normalizedRight) return 0;
+	const leftColor = hexColorChannels(normalizedLeft);
+	const rightColor = hexColorChannels(normalizedRight);
+	if (leftColor !== undefined && rightColor !== undefined) {
+		const distance = Math.hypot(
+			leftColor[0]! - rightColor[0]!,
+			leftColor[1]! - rightColor[1]!,
+			leftColor[2]! - rightColor[2]!,
+		);
+		return Math.min(1, distance / Math.sqrt(3 * 255 ** 2));
+	}
+	const leftDimension = DIMENSION.exec(normalizedLeft);
+	const rightDimension = DIMENSION.exec(normalizedRight);
+	if (
+		leftDimension?.[1] !== undefined &&
+		leftDimension[2] !== undefined &&
+		rightDimension?.[1] !== undefined &&
+		rightDimension[2] !== undefined &&
+		leftDimension[2] === rightDimension[2]
+	) {
+		const leftNumber = Number(leftDimension[1]);
+		const rightNumber = Number(rightDimension[1]);
+		return Math.min(
+			1,
+			Math.abs(leftNumber - rightNumber) / Math.max(1, Math.abs(leftNumber), Math.abs(rightNumber)),
+		);
+	}
+	return (
+		levenshteinDistance(normalizedLeft, normalizedRight) /
+		Math.max(normalizedLeft.length, normalizedRight.length, 1)
+	);
+};
+
 /**
  * Neutral token catalog used by config-loading adapters. It intentionally
  * knows nothing about Tailwind, Chakra, Panda, UnoCSS, or a target emitter.
@@ -287,6 +365,41 @@ export class TokenCatalog {
 		return matches.length === 1 ? matches[0] : undefined;
 	}
 
+	nearest(
+		groups: readonly string[],
+		value: string | number,
+		options: TokenCatalogNearestOptions = {},
+	): readonly TokenCatalogNearestMatch[] {
+		const maxDistance = options.maxDistance ?? 0.35;
+		const maxResults = Math.max(1, options.maxResults ?? 3);
+		const matches: TokenCatalogNearestMatch[] = [];
+		const seenGroups = new Set<string>();
+		for (const group of groups) {
+			if (seenGroups.has(group)) continue;
+			seenGroups.add(group);
+			for (const [key, resolved] of Object.entries(this.catalog.groups[group] ?? {})) {
+				const distance = tokenValueDistance(String(value), resolved);
+				if (distance > maxDistance) continue;
+				matches.push({
+					group,
+					key,
+					authored: key,
+					ref: normalizeTokenKey(key),
+					resolved,
+					distance,
+				});
+			}
+		}
+		return matches
+			.toSorted(
+				(left, right) =>
+					left.distance - right.distance ||
+					left.group.localeCompare(right.group) ||
+					left.key.localeCompare(right.key),
+			)
+			.slice(0, maxResults);
+	}
+
 	preserveProgram(
 		program: StyleProgram,
 		groupForProperty: TokenGroupForProperty,
@@ -346,6 +459,36 @@ export class TokenCatalog {
 			rules: program.rules.map(preserveRule),
 		};
 	}
+}
+
+const camelTokenProperty = (property: string): string =>
+	property.replace(/-([a-z])/gu, (_match, character: string) => character.toUpperCase());
+
+export function tokenGroupsForProperty(property: string): readonly string[] {
+	const normalized = camelTokenProperty(property);
+	if (
+		/^(?:background|bg|color|textColor|borderColor|outlineColor|accentColor|fill|stroke)/u.test(
+			normalized,
+		)
+	)
+		return ["colors", "semantic"];
+	if (
+		/^(?:padding|margin|gap|rowGap|columnGap|inset|top|right|bottom|left|width|minWidth|maxWidth|height|minHeight|maxHeight|borderWidth)/u.test(
+			normalized,
+		)
+	)
+		return ["spacing"];
+	if (/^(?:borderRadius|radius)/u.test(normalized)) return ["radii"];
+	if (normalized.startsWith("fontSize")) return ["fontSizes"];
+	if (normalized.startsWith("fontWeight")) return ["fontWeights"];
+	if (normalized.startsWith("lineHeight")) return ["lineHeights"];
+	if (normalized.startsWith("letterSpacing")) return ["letterSpacings"];
+	if (/^(?:fontFamily|font)/u.test(normalized)) return ["fonts"];
+	if (/^(?:boxShadow|textShadow|shadow)/u.test(normalized)) return ["shadows"];
+	if (/^(?:transitionDuration|animationDuration|duration)/u.test(normalized)) return ["durations"];
+	if (/^(?:transitionTimingFunction|animationTimingFunction|easing)/u.test(normalized))
+		return ["easings"];
+	return [];
 }
 
 /** group -> lowercase resolved value -> normalized ref (WeakMap-cached). */
