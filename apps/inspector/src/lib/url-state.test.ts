@@ -18,6 +18,14 @@ describe("inspector URL state", () => {
 		});
 	});
 
+	test("opens the merged usage and cleanup view", () => {
+		expect(readInspectorUrlState({ search: "", hash: "#usage" })).toEqual({
+			tab: "usage",
+			query: "",
+			section: null,
+		});
+	});
+
 	test("serializes stable shareable state and preserves unrelated params", () => {
 		expect(
 			serializeInspectorUrlState(

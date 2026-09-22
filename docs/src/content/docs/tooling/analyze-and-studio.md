@@ -53,22 +53,24 @@ making you parse JSON:
 - **Stats** — how many style calls were eliminated at build time, how much CSS
   was generated, where the stylesheet is large, and where CSS may be missing.
 - **Token graph** — aliases, references, cycles, and provenance.
-- **Usage** — which properties and tokens are used most often.
-- **Governance** — candidates for cleanup, with boundaries called out before
-  anything is removed.
+- **Usage & cleanup** — which properties and tokens are used, plus candidates
+  for cleanup with the analysis boundaries shown before any removal preview.
 - **History** — compare saved inspector runs when history is enabled.
 
-The Usage view groups tokens by catalog category and shows catalog coverage,
-the hottest entries, and tokens not observed by the current scan. Authored
-shorthand such as `$blue-600` is normalized against its catalog group before
-it is compared with the preset, so an observed color is not reported as an
-unused `colors/$blue-600` entry. “Not observed” remains a conservative scan
-result; use the Governance view for removal safety.
+The Usage & cleanup view groups tokens by catalog category and shows catalog
+coverage, the hottest entries, and tokens not observed by the current scan.
+Authored shorthand such as `$blue-600` is normalized against its catalog group
+before it is compared with the preset, so an observed color is not reported as
+an unused `colors/$blue-600` entry. “Not observed” remains a conservative scan
+result. The cleanup assessment adds project-policy and reachability evidence,
+shows why some results need review, and can generate a read-only removal
+preview. Catalog coverage and cleanup counts use different scopes; a cleanup
+classification is not deletion approval.
 
 The header confidence badge explains how much to trust the current snapshot:
 `extraction-backed` means structured extraction and resolved project policy are
 available, `static source scan` means the view is based on source scanning
-without full governance context, and `conservative` calls out dynamic,
+without a fully resolved cleanup policy, and `conservative` calls out dynamic,
 runtime, unresolved-import, missing-CSS, or other coverage boundaries.
 
 Usage also includes a focused WCAG checker for one selected text/background
@@ -79,7 +81,7 @@ The Inspector is read-only. It is a lens over analyzer results, not another
 compiler or a second source of truth.
 
 Inspector views are deep-linkable: `#design`, `#graph`, `#stats`, `#usage`,
-`#governance`, and `#history` select a view, while a design-system section can
+and `#history` select a view, while a design-system section can
 be addressed as `#design/sec-colors` or `#design/sec-spacing`. The filter is
 stored in the `q` query parameter, so a link such as
 `?q=blue#design/sec-colors` opens the same filtered view after a refresh.

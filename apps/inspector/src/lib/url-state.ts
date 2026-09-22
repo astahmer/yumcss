@@ -1,11 +1,4 @@
-export const INSPECTOR_TABS = [
-	"design",
-	"graph",
-	"stats",
-	"usage",
-	"governance",
-	"history",
-] as const;
+export const INSPECTOR_TABS = ["design", "graph", "stats", "usage", "history"] as const;
 
 export type InspectorTab = (typeof INSPECTOR_TABS)[number];
 

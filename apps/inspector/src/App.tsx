@@ -1303,8 +1303,7 @@ const getAnalysisConfidence = (data: StudioPayload): AnalysisConfidence => {
 	return {
 		level: "scan",
 		label: "static source scan",
-		summary:
-			"Metrics come from static source scanning without a fully resolved governance context.",
+		summary: "Metrics come from static source scanning without a fully resolved cleanup policy.",
 		reasons: [],
 	};
 };
@@ -1436,9 +1435,7 @@ function UsageView(props: { data: StudioPayload }) {
 			<TokenUsageIntelligence data={props.data} />
 			<ContrastWarningsView warnings={props.data.contrastWarnings ?? []} />
 			<ContrastPairView data={props.data} />
-			<PruneChangesetView
-				unusedCount={props.data.governance?.summary.safeToRemove ?? a.unusedTokens.length}
-			/>
+			<CleanupReportView data={props.data} />
 			<AnalyticsHistoryChart />
 		</div>
 	);
@@ -1489,7 +1486,7 @@ function TokenUsageIntelligence({ data }: { data: StudioPayload }) {
 				<Card
 					label="not observed"
 					value={String(total - used)}
-					sub="before governance boundaries"
+					sub="catalog entries not seen in this scan"
 				/>
 			</div>
 			{groupStats.length > 0 && (
@@ -1571,13 +1568,6 @@ function TokenUsageIntelligence({ data }: { data: StudioPayload }) {
 						{usage.unknown.map((entry) => `${entry.name} (${entry.count})`).join(", ")}
 					</p>
 				</details>
-			)}
-			{data.governance !== undefined && (
-				<p className={ui.muted}>
-					{data.governance.summary.unusedCandidates} unused candidate(s) per governance —{" "}
-					{data.governance.summary.safeToRemove} safe · {data.governance.summary.reviewRequired}{" "}
-					review · {data.governance.summary.notRemovable} not removable.
-				</p>
 			)}
 		</section>
 	);
@@ -1724,7 +1714,7 @@ function ContrastPairView({ data }: { data: StudioPayload }) {
 	);
 }
 
-function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
+function RemovalPreviewView({ unusedCount }: { unusedCount: number }) {
 	const [content, setContent] = useState<string | null>(null);
 	const [busy, setBusy] = useState(false);
 	const [copied, setCopied] = useState(false);
@@ -1746,13 +1736,14 @@ function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
 	};
 	return (
 		<section>
-			<h2>prune changeset</h2>
+			<h2>removal preview</h2>
 			<p className={ui.muted}>
-				generates a .changeset file proposing removal of the {unusedCount} zero-use token(s).
-				read-only: nothing is written server-side.
+				Previews a .changeset file for {unusedCount} token(s) classified safe by reachability
+				analysis. The preview is read-only; nothing is written server-side, and it still needs human
+				review.
 			</p>
 			<button type="button" onClick={generate} disabled={busy || unusedCount === 0}>
-				{busy ? "generating…" : `generate changeset (${unusedCount})`}
+				{busy ? "generating…" : `generate removal preview (${unusedCount})`}
 			</button>{" "}
 			{error !== null && (
 				<div role="alert">
@@ -1799,20 +1790,17 @@ const BOUNDARY_ORDER: ReadonlyArray<GovernanceCoverageBoundary> = [
 	"unscanned-file",
 ];
 
-/** Token governance tab (plans/054) — report-first view of the shared
- * governance ledger: provenance, strictness, suggestions, and removal
- * candidates with their safety classification. Read-only by design; the only
- * write-shaped action generates a reviewable .changeset preview. */
-function GovernanceView(props: { data: StudioPayload }) {
+/** Cleanup evidence from the shared analysis report; all actions remain previews. */
+function CleanupReportView(props: { data: StudioPayload }) {
 	const g = props.data.governance;
 	if (g === undefined) {
 		return (
-			<div className={ui.emptyState}>
+			<section>
+				<h2>cleanup assessment</h2>
 				<p className={ui.muted}>
-					the current snapshot has no governance report — refresh to re-run the analysis with the
-					governance gather payload.
+					This snapshot has no cleanup report. Refresh to rerun the analysis.
 				</p>
-			</div>
+			</section>
 		);
 	}
 	const s = g.summary;
@@ -1826,27 +1814,34 @@ function GovernanceView(props: { data: StudioPayload }) {
 	const nonZeroBoundaries = BOUNDARY_ORDER.filter((b) => (s.boundaries[b] ?? 0) > 0);
 	return (
 		<div>
+			<section>
+				<h2>cleanup assessment</h2>
+				<p className={ui.muted}>
+					These counts use the analyzer’s reachable-token report, not the catalog coverage above. A
+					candidate is a review classification, not approval to delete it; scan boundaries are shown
+					before any removal preview.
+				</p>
+			</section>
 			{s.boundaries["configuration-failure"] > 0 && (
 				<section>
 					<h2>configuration incomplete</h2>
 					<p className={ui.muted}>
-						the project configuration could not be fully evaluated — usage claims are
-						provenance-linked but incomplete. wording: “not observed in the scanned graph”, not
-						“unused”.
+						The project configuration could not be fully evaluated, so usage evidence is incomplete.
+						Treat these tokens as “not observed” rather than “unused.”
 					</p>
 				</section>
 			)}
 			<section className={ui.cards}>
-				<Card label="defined" value={String(s.defined)} />
-				<Card label="used" value={String(s.used)} />
-				<Card label="unused candidates" value={String(s.unusedCandidates)} />
-				<Card label="safe to remove" value={String(s.safeToRemove)} />
-				<Card label="review required" value={String(s.reviewRequired)} />
-				<Card label="not removable" value={String(s.notRemovable)} />
-				<Card label="strict violations" value={String(s.strictViolations)} />
-				<Card label="raw allowed" value={String(s.rawAllowed)} />
-				<Card label="unknown strictness" value={String(s.unknownStrictness)} />
-				<Card label="suggestions" value={String(s.suggestions)} />
+				<Card label="in analyzer scope" value={String(s.defined)} />
+				<Card label="reachable" value={String(s.used)} />
+				<Card label="cleanup candidates" value={String(s.unusedCandidates)} />
+				<Card label="safe by analysis" value={String(s.safeToRemove)} />
+				<Card label="needs review" value={String(s.reviewRequired)} />
+				<Card label="kept" value={String(s.notRemovable)} />
+				<Card label="strict issues" value={String(s.strictViolations)} />
+				<Card label="raw values allowed" value={String(s.rawAllowed)} />
+				<Card label="policy unknown" value={String(s.unknownStrictness)} />
+				<Card label="exact suggestions" value={String(s.suggestions)} />
 			</section>
 			{nonZeroBoundaries.length > 0 && (
 				<section>
@@ -1865,7 +1860,7 @@ function GovernanceView(props: { data: StudioPayload }) {
 				</section>
 			)}
 			<section>
-				<h2>strict policy</h2>
+				<h2>resolved cleanup policy</h2>
 				{policy === null ? (
 					<p className={ui.muted}>
 						no policy resolved — strictness is report-only/fail-open (unknown).
@@ -1984,7 +1979,7 @@ function GovernanceView(props: { data: StudioPayload }) {
 					</table>
 				</section>
 			)}
-			<PruneChangesetView unusedCount={s.safeToRemove} />
+			<RemovalPreviewView unusedCount={s.safeToRemove} />
 		</div>
 	);
 }
@@ -2081,8 +2076,7 @@ const TAB_LABELS: Record<InspectorTab, string> = {
 	design: "Design system",
 	graph: "Token graph",
 	stats: "Stats",
-	usage: "Usage",
-	governance: "Governance",
+	usage: "Usage & cleanup",
 	history: "History",
 };
 
@@ -2207,8 +2201,6 @@ export function App() {
 				<TokenGraphView graph={data.tokenGraph} />
 			) : tab === "usage" ? (
 				<UsageView data={data} />
-			) : tab === "governance" ? (
-				<GovernanceView data={data} />
 			) : tab === "design" ? (
 				<DesignSystemView
 					data={data}
