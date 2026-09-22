@@ -61,6 +61,22 @@ making you parse JSON:
 The Inspector is read-only. It is a lens over analyzer results, not another
 compiler or a second source of truth.
 
+Inspector views are deep-linkable: `#design`, `#graph`, `#stats`, `#usage`,
+`#governance`, and `#history` select a view, while a design-system section can
+be addressed as `#design/sec-colors` or `#design/sec-spacing`. The filter is
+stored in the `q` query parameter, so a link such as
+`?q=blue#design/sec-colors` opens the same filtered view after a refresh.
+Use `/` to focus the filter, **clear** to reset it, and the live match count
+to see how much of the current view remains visible. Empty sections disappear
+while filtering, and the section links track the section currently in view.
+
+The Stats view groups build-time folding separately from stylesheet budget and
+shows per-file fold outcomes in a sortable, horizontally scrollable table. Its
+token/literal percentages describe statically classified authored values;
+dynamic expressions are reported separately and excluded from that percentage
+denominator. The export menu includes JSON, Markdown, self-contained HTML,
+and an optional per-file CSV report for CI or spreadsheet analysis.
+
 ## Analyzer: make the useful checks repeatable
 
 The analyzer is the command-line version of the questions above. Run the
