@@ -614,12 +614,17 @@ generator`, `feat(preset): generate the shadcn starter preset data`,
   test, and size revision that adds the preset itself.
   - The data is generated from the pinned `shadcn` 4.19.0 checkout by
     `scripts/promote-shadcn-preset.ts` (chained into `pnpm run
-presets:generate` / `presets:check`) into
+    presets:generate` / `presets:check`) into
     `packages/pandwind/src/preset/generated/shadcn-theme.ts`. The generator
     reads the registry's base-color properties, its theme accents, its font
     definitions, its radius styles, and the create page's own default
     configuration, so the preset tracks that revision instead of a transcribed
     list.
+  - The same generator writes `shadcn-default-theme.ts`, a default-only
+    projection consumed by the exported `shadcnPreset`. This keeps the public
+    default behavior identical to `createShadcnPreset()` with no options while
+    excluding configurable base colors, themes, and fonts from the starter
+    bundle. The configurable factory still uses the complete catalog.
   - `pandwind/preset/shadcn` exports `createShadcnPreset`,
     `resolveShadcnConfig`, `shadcnThemesForBaseColor`, `shadcnDeclarations`,
     `shadcnColorVariables`, `shadcnFontVariables`, the resolved
@@ -634,10 +639,14 @@ presets:generate` / `presets:check`) into
     (`CssVariableBlocks`) so the `:root` / `.dark` declarations a project's
     registry components read travel with the preset that resolves those same
     values.
-  - Measured lane `createCss(shadcnPreset)`: 85.08 KB min / 15.95 KB gzip,
-    the widest catalog Pandwind ships, budgeted at 85.9 KB / 16.1 KB. It ships
-    every base color's light and dark roles because the factory has to compose
-    them at runtime; the catalog is the cost, not the engine.
+  - Measured lane `createCss(shadcnPreset)`: 34,318 B min / 11,033 B gzip,
+    budgeted at 36,000 / 11,500. The generated starter projection carries
+    only the default registry roles; `createShadcnPreset(options)` remains the
+    full configurable catalog. The remaining Tailwind, Chakra, and Panda
+    starter objects still ship their complete catalogs on an uncompiled direct
+    import because those fixed presets must accept any authored token at
+    runtime; splitting their object literals without compiler usage evidence
+    would be a second source of truth rather than a safe size win.
   - `tests/helpers/shadcn-oracle.ts` resolves the same configuration through
     the generated data, so `tests/preset-shadcn.test.ts` compares each
     selection against the create page's own variable set rather than a second
