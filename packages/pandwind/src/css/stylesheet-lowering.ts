@@ -1,4 +1,4 @@
-import { splitSelectorList } from "./selector-scan.ts";
+import { splitSelectorList } from "./selector-list.ts";
 import { pairs } from "../lib/utils.ts";
 import type { AnyConditions } from "../types/typings.ts";
 import { getPropertyPriority } from "./property-priorities.ts";

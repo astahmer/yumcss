@@ -98,6 +98,19 @@ describe("iterative Oxc traversal", () => {
 		expect((css.match(/@layer /g) ?? []).length).toBe(depth);
 	});
 
+	test("shares selector-list parsing with the selector scanner", () => {
+		const rule: RuntimeSemanticRule = {
+			kind: RuntimeSemanticRuleKindTag.Style,
+			selector: '.item, [data-label="a,b"]',
+			conditions: [":hover"],
+			declarations: [{ property: "color", value: "red" }],
+		};
+
+		expect(new SemanticRuleSerializer().serialize(rule)).toBe(
+			'.item:hover, [data-label="a,b"]:hover{color:red}',
+		);
+	});
+
 	test("rejects cyclic runtime semantic rules instead of looping forever", () => {
 		const children: RuntimeSemanticRule[] = [];
 		const cyclic: RuntimeSemanticRule = {

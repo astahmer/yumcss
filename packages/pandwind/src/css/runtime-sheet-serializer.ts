@@ -6,6 +6,7 @@ import type {
 } from "./runtime-sheet-contracts.ts";
 import { dashCase } from "./hash.ts";
 import { serializeCssPropertySyntax } from "./css-variables.ts";
+import { splitSelectorList } from "./selector-list.ts";
 
 const hash = (input: string): string => {
 	let value = 2166136261;
@@ -18,10 +19,7 @@ const hash = (input: string): string => {
 
 const declarationValue = (value: RuntimeDeclaration["value"]): string =>
 	typeof value === "string" ? value : String(value);
-const declarations = (
-	items: readonly RuntimeDeclaration[] = [],
-	propertyRule = false,
-): string =>
+const declarations = (items: readonly RuntimeDeclaration[] = [], propertyRule = false): string =>
 	items
 		.map((item) => {
 			const value =
@@ -34,32 +32,6 @@ const declarations = (
 
 const condition = (value: string): string =>
 	value.startsWith("@") || value.startsWith(":") || value.startsWith("&") ? value : `&:${value}`;
-
-const splitSelectorList = (value: string): string[] => {
-	const selectors: string[] = [];
-	let start = 0;
-	let depth = 0;
-	let quote = "";
-	for (let index = 0; index < value.length; index++) {
-		const character = value[index]!;
-		if (quote !== "") {
-			if (character === quote && value[index - 1] !== "\\") quote = "";
-			continue;
-		}
-		if (character === '"' || character === "'") {
-			quote = character;
-			continue;
-		}
-		if (character === "(" || character === "[") depth++;
-		else if (character === ")" || character === "]") depth--;
-		else if (character === "," && depth === 0) {
-			selectors.push(value.slice(start, index).trim());
-			start = index + 1;
-		}
-	}
-	selectors.push(value.slice(start).trim());
-	return selectors.filter(Boolean);
-};
 
 const replaceParentSelector = (value: string, base: string): string => {
 	let output = "";
@@ -138,10 +110,7 @@ export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 				frames.push({
 					rule: child,
 					parts: [
-						declarations(
-							child.declarations,
-							child.kind === RuntimeSemanticRuleKindTag.Property,
-						),
+						declarations(child.declarations, child.kind === RuntimeSemanticRuleKindTag.Property),
 					],
 					index: 0,
 				});

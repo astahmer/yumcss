@@ -1,9 +1,12 @@
+import { splitSelectorList } from "./selector-list.ts";
+
+export { splitSelectorList } from "./selector-list.ts";
+
 /**
- * Minimal escape-aware selector scanning for the two operations Pandwind
- * performs on selectors: splitting a selector list on top-level commas and
- * locating class tokens. Selector text is preserved verbatim - no AST
- * normalization - so this stays a zero-dependency scanner instead of pulling
- * postcss-selector-parser into any bundle path.
+ * Minimal escape-aware selector scanning for locating class tokens. Selector
+ * text is preserved verbatim - no AST normalization - so this stays a
+ * zero-dependency scanner instead of pulling postcss-selector-parser into any
+ * bundle path.
  */
 
 const CLASS_NAME_TERMINATORS = new Set([
@@ -63,37 +66,6 @@ const decodeEscape = (
 	const next = selector[cursor];
 	if (next === undefined) return null;
 	return { value: next, end: cursor + 1 };
-};
-
-/** Split a selector list on commas that sit outside quotes and (…) / […] nesting. */
-export const splitSelectorList = (selector: string): string[] => {
-	const parts: string[] = [];
-	let depth = 0;
-	let quote: string | null = null;
-	let escaped = false;
-	let start = 0;
-	for (let index = 0; index < selector.length; index += 1) {
-		const character = selector[index]!;
-		if (escaped) {
-			escaped = false;
-		} else if (character === "\\") {
-			escaped = true;
-		} else if (quote) {
-			if (character === quote) quote = null;
-		} else if (character === '"' || character === "'") {
-			quote = character;
-		} else if (character === "(" || character === "[") {
-			depth += 1;
-		} else if (character === ")" || character === "]") {
-			depth = Math.max(0, depth - 1);
-		} else if (character === "," && depth === 0) {
-			parts.push(selector.slice(start, index).trim());
-			start = index + 1;
-		}
-	}
-	const tail = selector.slice(start).trim();
-	if (tail) parts.push(tail);
-	return parts;
 };
 
 export interface SelectorClassMatch {

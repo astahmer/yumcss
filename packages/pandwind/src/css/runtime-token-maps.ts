@@ -1,3 +1,4 @@
+import { tokenNameAliases } from "../lib/token-path.ts";
 import type { CssConfigReturn, TokenVariableNames } from "../types/typings.ts";
 import { createTokenVariableName } from "./token-variable-names.ts";
 
@@ -13,11 +14,6 @@ export interface RuntimeTokenMaps {
 	readonly groupByProp: Map<string, string>;
 	readonly flatTokens: Map<string, RuntimeToken>;
 }
-
-const tokenNameAliases = (name: string): readonly string[] => {
-	if (!name.startsWith("$")) return [name];
-	return [name, name.slice(1).replaceAll("-", ".")];
-};
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
