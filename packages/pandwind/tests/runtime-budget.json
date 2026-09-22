@@ -20,8 +20,8 @@
 		"gz": 15000
 	},
 	"createCss(shadcnPreset)": {
-		"min": 36000,
-		"gz": 11500
+		"min": 33000,
+		"gz": 11000
 	},
 	"createCss(pandaPreset)": {
 		"min": 47000,

@@ -6,8 +6,7 @@ import type { PandwindProperties } from "./properties.ts";
 import { createShadcnProperties } from "./shadcn-properties.ts";
 
 type ShadcnDefaultTheme = typeof shadcnDefaultTheme;
-type ShadcnDefaultBaseColorVariables =
-	ShadcnDefaultTheme["baseColors"][ShadcnDefaultTheme["baseColor"]]["light"];
+type ShadcnDefaultBaseColorVariables = ShadcnDefaultTheme["colorVariables"]["light"];
 type ShadcnDefaultColorRole = Exclude<keyof ShadcnDefaultBaseColorVariables, "radius">;
 type ShadcnDefaultColorToken = { readonly base: string; readonly _dark: string };
 type ShadcnDefaultColorTokens = Record<`$${ShadcnDefaultColorRole}`, ShadcnDefaultColorToken>;
@@ -20,26 +19,11 @@ type ShadcnDefaultTokenGroups = {
 
 type ShadcnDefaultTokenGroup = TokenGroupKey<ShadcnDefaultTokenGroups>;
 
-const chartRoles = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"] as const;
 const tokenConditions = { base: "", _dark: ".dark &" } as const;
 const shadcnCssConfig: PandwindProperties = {};
 
-const defaultBaseColor = shadcnDefaultTheme.baseColors[shadcnDefaultTheme.baseColor];
-const defaultTheme = shadcnDefaultTheme.themes[shadcnDefaultTheme.theme];
-const defaultChartTheme = shadcnDefaultTheme.themes[shadcnDefaultTheme.chartColor];
-const defaultLight: Record<string, string> = { ...defaultBaseColor.light, ...defaultTheme.light };
-const defaultDark: Record<string, string> = { ...defaultBaseColor.dark, ...defaultTheme.dark };
-
-for (const role of chartRoles) {
-	defaultLight[role] = defaultChartTheme.light[role];
-	defaultDark[role] = defaultChartTheme.dark[role];
-}
-
-const defaultRadius = shadcnDefaultTheme.radiusValues.default;
-defaultLight.radius =
-	defaultRadius !== ""
-		? defaultRadius
-		: (defaultLight.radius ?? shadcnDefaultTheme.defaultRadiusValue);
+const defaultLight = shadcnDefaultTheme.colorVariables.light;
+const defaultDark = shadcnDefaultTheme.colorVariables.dark;
 
 const readVariable = (variables: Readonly<Record<string, string>>, name: string): string => {
 	const value = variables[name];
@@ -86,12 +70,12 @@ const colorTokens: ShadcnDefaultColorTokens = {
 	"$sidebar-ring": pair("sidebar-ring"),
 };
 
-const defaultFont = shadcnDefaultTheme.fonts[shadcnDefaultTheme.font];
-const fontName = defaultFont.variable.slice("--".length).replace(/^font-/u, "");
-const fontTokens = {
-	[fontName]: defaultFont.family,
-	heading: "var(" + defaultFont.variable + ")",
-};
+const fontTokens = Object.fromEntries(
+	Object.entries(shadcnDefaultTheme.fontVariables).map(([name, value]) => [
+		name.replace(/^font-/u, ""),
+		value,
+	]),
+);
 
 const shadcnProperties = createShadcnProperties({
 	colors: "colors",
@@ -121,7 +105,7 @@ export const shadcnPreset = {
 		},
 	),
 	cssVariables: {
-		radius: defaultLight.radius ?? shadcnDefaultTheme.defaultRadiusValue,
+		radius: shadcnDefaultTheme.radius,
 	},
 	pointerCss: undefined,
 	tokenVariables: shadcnTokenVariables,

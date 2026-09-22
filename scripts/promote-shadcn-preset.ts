@@ -100,7 +100,10 @@ interface ShadcnVocabulary {
 	readonly DEFAULT_PRESET_CONFIG: Readonly<Record<string, string>>;
 }
 
-const assertUpstream = (condition: boolean, message: string): void => {
+const assertUpstream: (condition: boolean, message: string) => asserts condition = (
+	condition,
+	message,
+) => {
 	if (!condition) throw new Error(message);
 };
 
@@ -402,6 +405,66 @@ export const renderShadcnPresetModule = async (): Promise<{
 	const radiusValues = Object.fromEntries(
 		registry.RADII.map((radius) => [radius.name, radius.value] as const),
 	);
+	const defaultBaseColor = registry.BASE_COLORS.find(
+		(baseColor) => baseColor.name === defaults.baseColor,
+	);
+	assertUpstream(
+		defaultBaseColor !== undefined,
+		"the default base color is missing from the registry",
+	);
+	const defaultTheme = registry.THEMES.find((theme) => theme.name === defaults.theme);
+	assertUpstream(defaultTheme !== undefined, "the default theme is missing from the registry");
+	const defaultChartTheme = registry.THEMES.find((theme) => theme.name === defaults.chartColor);
+	assertUpstream(
+		defaultChartTheme !== undefined,
+		"the default chart color is missing from the registry",
+	);
+	const defaultFontName = defaults.font ?? "";
+	const defaultFont = fontFamilies[defaultFontName];
+	assertUpstream(defaultFont !== undefined, "the default font is missing from the registry");
+	const defaultLight: Record<string, string> = {
+		...defaultBaseColor.cssVars.light,
+		...defaultTheme.cssVars.light,
+	};
+	const defaultDark: Record<string, string> = {
+		...defaultBaseColor.cssVars.dark,
+		...defaultTheme.cssVars.dark,
+	};
+	for (const role of ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"]) {
+		defaultLight[role] = defaultChartTheme.cssVars.light[role] ?? "";
+		defaultDark[role] = defaultChartTheme.cssVars.dark[role] ?? "";
+	}
+	if (defaults.menuAccent === "bold") {
+		defaultLight.accent = defaultLight.primary ?? "";
+		defaultLight["accent-foreground"] = defaultLight["primary-foreground"] ?? "";
+		defaultDark.accent = defaultDark.primary ?? "";
+		defaultDark["accent-foreground"] = defaultDark["primary-foreground"] ?? "";
+	}
+	const defaultStyle = defaults.style ?? "";
+	const defaultRadiusName = defaults.radius ?? "";
+	const effectiveRadius =
+		defaultStyle === "lyra" || (defaultStyle === "sera" && defaultRadiusName !== "none")
+			? "none"
+			: defaultStyle === "rhea" && defaultRadiusName === "large"
+				? "default"
+				: defaultRadiusName;
+	const radius = radiusValues[effectiveRadius] || defaultRadiusValue(config);
+	defaultLight.radius = radius;
+	const defaultHeadingName = defaults.fontHeading ?? "inherit";
+	const normalizedHeading =
+		defaultHeadingName === defaultFontName || defaultHeadingName === "inherit"
+			? "inherit"
+			: defaultHeadingName;
+	const headingFont = normalizedHeading === "inherit" ? undefined : fontFamilies[normalizedHeading];
+	if (headingFont === undefined && normalizedHeading !== "inherit")
+		throw new Error("the default heading font is missing from the registry");
+	const defaultFontVariables = {
+		[defaultFont.variable.slice("--".length)]: defaultFont.family,
+		"font-heading":
+			normalizedHeading === "inherit"
+				? `var(${defaultFont.variable})`
+				: (headingFont?.family ?? ""),
+	};
 
 	const shadcnTheme = {
 		version,
@@ -444,32 +507,10 @@ export const renderShadcnPresetModule = async (): Promise<{
 		},
 	} as const;
 	const shadcnDefaultTheme = {
-		version,
-		registryCommit: shadcnReferenceCommit,
-		baseColor: defaults.baseColor,
-		theme: defaults.theme,
-		chartColor: defaults.chartColor,
-		font: defaults.font,
-		baseColors: Object.fromEntries(
-			registry.BASE_COLORS.filter((baseColor) => baseColor.name === defaults.baseColor).map(
-				(baseColor) => [
-					baseColor.name,
-					{ light: baseColor.cssVars.light, dark: baseColor.cssVars.dark },
-				],
-			),
-		),
-		themes: Object.fromEntries(
-			registry.THEMES.filter(
-				(theme) => theme.name === defaults.theme || theme.name === defaults.chartColor,
-			).map((theme) => [theme.name, { light: theme.cssVars.light, dark: theme.cssVars.dark }]),
-		),
-		radiusValues,
-		defaultRadiusValue: defaultRadiusValue(config),
+		colorVariables: { light: defaultLight, dark: defaultDark },
+		radius,
 		radiusMultipliers: radiusMultipliers(globals),
-		pointerSelector: registry.POINTER_CURSOR_SELECTOR,
-		fonts: Object.fromEntries(
-			Object.entries(fontFamilies).filter(([name]) => name === defaults.font),
-		),
+		fontVariables: defaultFontVariables,
 	} as const;
 
 	const banner = [
