@@ -16,13 +16,16 @@ parked with notes.
   of duplicating logic), corpus integration so `pandwind analyze` reproduces
   the vite-cx-coverage numbers on demand.
 
-## Parked — condition-bound semantic-token parity (007-B follow-through)
+## Completed — condition-bound semantic-token bridge
 
-- Real-Tailwind compilation proof for condition-bound tokens (dark-mode
-  utilities through the actual compiler) remains unbuilt. The current bridge
-  intentionally handles flat string tokens only; a condition-bound token needs
-  a verified `@theme`/custom-variant/CSS-variable mapping before it can be
-  implemented without inventing Tailwind semantics.
+- `generate-theme.ts` emits each token's base value in top-level `@theme` and
+  emits verified condition overrides as ordinary CSS selectors/at-rules. It
+  skips a token when its base or any condition cannot be resolved.
+- `tw-theme-codegen.test.ts` and `tw-theme-parity.test.ts` compile dark,
+  media, and compound-condition examples through real Tailwind 4.3.3 and check
+  cascade behavior, variable references, and conservative failure.
+- This is a generated build-time bridge; it does not nest `@theme` under
+  selectors or guess condition mappings.
 
 ## [NOW] 4. Inspiration mining → `plans/012-inspiration-report.md`
 
