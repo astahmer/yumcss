@@ -110,6 +110,62 @@ test("strict token bindings retain property-aware intrinsic CSS values", () => {
 	).type.toBe<Compiled>();
 });
 
+test("curated CSS values stay literal unions for editor suggestions", () => {
+	type NonNullish<Value> = Exclude<Value, null | undefined>;
+	type WidenedPropertyNames = {
+		[PropertyName in keyof PandwindProperties]-?: string extends NonNullish<
+			PandwindProperties[PropertyName]
+		>
+			? PropertyName
+			: never;
+	}[keyof PandwindProperties];
+
+	type ExampleStyle = Parameters<typeof css.class>[0];
+	type ExampleDisplay = NonNullish<ExampleStyle["display"]>;
+
+	const strictPreset = define.preset(
+		{
+			config: {} as PandwindProperties,
+			tokens: { display: { grid: "grid" } },
+		},
+		{
+			strict: true,
+			conditions: { _hover: "&:hover" },
+			properties: { display: { $tokens: "display" } },
+		},
+	);
+	const strictCss = createCss(strictPreset);
+	type StrictStyle = Parameters<typeof strictCss.class>[0];
+	type StrictDisplay = NonNullish<StrictStyle["display"]>;
+	expect(strictCss.class({ display: "flex", _hover: { display: "grid" } })).type.toBe<string>();
+
+	const openStrictPreset = define.preset(
+		{
+			config: {} as PandwindProperties,
+			tokens: { display: { grid: "grid" } },
+		},
+		{
+			strict: true,
+			conditions: {},
+			properties: { display: { $tokens: "display", $strict: false } },
+		},
+	);
+	const openStrictCss = createCss(openStrictPreset);
+	type OpenStrictStyle = Parameters<typeof openStrictCss.class>[0];
+	type OpenStrictDisplay = NonNullish<OpenStrictStyle["display"]>;
+	expect(openStrictCss.class({ display: "block" })).type.toBe<string>();
+
+	expect(undefined as unknown as WidenedPropertyNames).type.toBe<never>();
+	expect(undefined as unknown as string extends ExampleDisplay ? true : false).type.toBe<false>();
+	expect(undefined as unknown as string extends StrictDisplay ? true : false).type.toBe<false>();
+	expect(
+		undefined as unknown as string extends OpenStrictDisplay ? true : false,
+	).type.toBe<false>();
+	expect(undefined as unknown as Extract<ExampleDisplay, "flex">).type.toBe<"flex">();
+	expect(undefined as unknown as Extract<StrictDisplay, "flex">).type.toBe<"flex">();
+	expect(undefined as unknown as Extract<OpenStrictDisplay, "flex">).type.toBe<"flex">();
+});
+
 test("PandwindProperties exposes a curated CSS contract with an explicit csstype escape hatch", () => {
 	const common: PandwindProperties = {
 		display: "flex",
