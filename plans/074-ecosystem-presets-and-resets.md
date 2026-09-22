@@ -639,8 +639,8 @@ generator`, `feat(preset): generate the shadcn starter preset data`,
     (`CssVariableBlocks`) so the `:root` / `.dark` declarations a project's
     registry components read travel with the preset that resolves those same
     values.
-  - Measured lane `createCss(shadcnPreset)`: 34,318 B min / 11,033 B gzip,
-    budgeted at 36,000 / 11,500. The generated starter projection carries
+  - Measured lane `createCss(shadcnPreset)`: 31,530 B min / 10,680 B gzip,
+    budgeted at 33,000 / 11,000. The generated starter projection carries
     only the default registry roles; `createShadcnPreset(options)` remains the
     full configurable catalog. The remaining Tailwind, Chakra, and Panda
     starter objects still ship their complete catalogs on an uncompiled direct
