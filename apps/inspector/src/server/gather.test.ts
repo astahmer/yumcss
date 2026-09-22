@@ -6,7 +6,7 @@ import { gather } from "./gather.ts";
 const ROOT = resolve(import.meta.dirname, "../../../..");
 
 describe("gather (integration over examples/example)", { timeout: 60_000 }, () => {
-	test("returns a fully-populated studio payload", async () => {
+	test("returns a fully populated Inspector payload", async () => {
 		const data = await gather(ROOT);
 		expect(data.meta.root).toBe(ROOT);
 		expect(data.coverage.files.length).toBeGreaterThan(0);

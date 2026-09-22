@@ -1,9 +1,9 @@
 /**
- * Studio export serializers — pure functions over the studio payload so
+ * Inspector export serializers — pure functions over its payload so
  * they unit-test without DOM or server. The only DOM touchpoint is
  * `downloadFile`, called exclusively from UI event handlers.
  */
-import type { StudioPayload, ThemeVar, UtilityUnion } from "../types.ts";
+import type { InspectorPayload, ThemeVar, UtilityUnion } from "../types.ts";
 
 /** Best-effort DTCG token type from a value's shape. */
 const tokenTypeOf = (value: string): string => {
@@ -17,7 +17,7 @@ const tokenTypeOf = (value: string): string => {
  * (stored as JSON strings) keep their raw string form under `"type":
  * "other"` — DTCG has no conditional-value concept, so nothing is invented.
  */
-export function tokensToDtcg(data: StudioPayload): string {
+export function tokensToDtcg(data: InspectorPayload): string {
 	const doc: Record<string, Record<string, { value: string; type: string }>> = {};
 	for (const section of data.designSystem.tokenSections) {
 		const group: Record<string, { value: string; type: string }> = {};
@@ -30,7 +30,7 @@ export function tokensToDtcg(data: StudioPayload): string {
 }
 
 /** @theme vars as a plain `:root` custom-properties stylesheet. */
-export function themeVarsToCss(data: StudioPayload): string {
+export function themeVarsToCss(data: InspectorPayload): string {
 	const groups = new Map<string, Array<ThemeVar>>();
 	for (const variable of data.designSystem.themeVars) {
 		const scope = variable.scope ?? ":root";
@@ -47,7 +47,7 @@ export function themeVarsToCss(data: StudioPayload): string {
 }
 
 /** Utility unions summary (counts, samples, open-ended flags). */
-export function utilitiesToJson(data: StudioPayload): string {
+export function utilitiesToJson(data: InspectorPayload): string {
 	const doc = {
 		variantCount: data.designSystem.variantCount,
 		conflictUtilities: data.designSystem.conflictUtilities,
@@ -65,7 +65,7 @@ export function utilitiesToJson(data: StudioPayload): string {
 }
 
 /** The coverage/stats slice verbatim (machine-readable). */
-export function coverageToJson(data: StudioPayload): string {
+export function coverageToJson(data: InspectorPayload): string {
 	return `${JSON.stringify(data.coverage, null, "\t")}\n`;
 }
 
@@ -75,7 +75,7 @@ const csvCell = (value: string | number): string => {
 };
 
 /** Per-file fold and authored-value coverage for spreadsheets and CI artifacts. */
-export function coverageToCsv(data: StudioPayload): string {
+export function coverageToCsv(data: InspectorPayload): string {
 	const coverageByFile = new Map(
 		(data.analytics?.fileValueCoverage ?? []).map((coverage) => [coverage.file, coverage]),
 	);
@@ -110,9 +110,9 @@ export function coverageToCsv(data: StudioPayload): string {
 }
 
 /** Human-readable Markdown report: summary, per-file stats, warnings. */
-export function coverageToMarkdown(data: StudioPayload): string {
+export function coverageToMarkdown(data: InspectorPayload): string {
 	const c = data.coverage;
-	const lines: Array<string> = ["# pandwind studio report", ""];
+	const lines: Array<string> = ["# pandwind inspector report", ""];
 
 	lines.push("## Fold coverage", "");
 	lines.push("| metric | value |", "| --- | --- |");
@@ -173,10 +173,10 @@ const htmlEsc = (value: string): string =>
 	value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /**
- * Self-contained HTML report (wallace-style): the whole studio payload
+ * Self-contained HTML report (wallace-style): the whole Inspector payload
  * rendered into one static file — shareable offline, no server needed.
  */
-export function coverageToHtml(data: StudioPayload, generatedAt: string): string {
+export function coverageToHtml(data: InspectorPayload, generatedAt: string): string {
 	const c = data.coverage;
 	const row = (cells: Array<string>): string =>
 		`<tr>${cells.map((cell) => `<td>${htmlEsc(cell)}</td>`).join("")}</tr>`;

@@ -1,6 +1,6 @@
 /**
  * Token governance contracts (plans/054) — the versioned, neutral report
- * shape shared by the analyzer, Inspector/Studio, the lint plugin, and the
+ * shape shared by the analyzer, Inspector/Migration Preview, the lint plugin, and the
  * tokenization codemod. Tooling only: nothing here touches the frozen
  * runtime API surface.
  *

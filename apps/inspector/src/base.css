@@ -14,7 +14,7 @@
 	--warn: #f6ad55;
 	--bad: #fc8181;
 	--mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-	--studio-header-height: 74px;
+	--inspector-header-height: 74px;
 }
 
 * {
@@ -180,7 +180,7 @@ label {
 
 @media (max-width: 900px) {
 	:root {
-		--studio-header-height: 132px;
+		--inspector-header-height: 132px;
 	}
 
 	header {
@@ -220,7 +220,7 @@ label {
 
 @media (max-width: 560px) {
 	:root {
-		--studio-header-height: 142px;
+		--inspector-header-height: 142px;
 	}
 
 	h1 {

@@ -3,24 +3,40 @@ import { readInspectorUrlState, serializeInspectorUrlState } from "./url-state.t
 
 describe("inspector URL state", () => {
 	test("reads tab, query, and section deep links", () => {
-		expect(readInspectorUrlState({ search: "?q=blue%20100", hash: "#design/sec-colors" })).toEqual({
-			tab: "design",
+		expect(readInspectorUrlState({ search: "?q=blue%20100", hash: "#tokens/sec-colors" })).toEqual({
+			tab: "tokens",
 			query: "blue 100",
 			section: "sec-colors",
 		});
 	});
 
-	test("accepts a section-only hash", () => {
+	test("ignores retired section-only hashes", () => {
 		expect(readInspectorUrlState({ search: "", hash: "#sec-spacing" })).toEqual({
-			tab: "design",
+			tab: "tokens",
 			query: "",
-			section: "sec-spacing",
+			section: null,
 		});
 	});
 
-	test("opens the merged usage and cleanup view", () => {
-		expect(readInspectorUrlState({ search: "", hash: "#usage" })).toEqual({
-			tab: "usage",
+	test("opens token usage and cleanup as a section of the Tokens view", () => {
+		expect(readInspectorUrlState({ search: "", hash: "#tokens/usage" })).toEqual({
+			tab: "tokens",
+			query: "",
+			section: "usage",
+		});
+	});
+
+	test("opens token relationships as a section of the Tokens view", () => {
+		expect(readInspectorUrlState({ search: "", hash: "#tokens/relationships" })).toEqual({
+			tab: "tokens",
+			query: "",
+			section: "relationships",
+		});
+	});
+
+	test("opens the Build report", () => {
+		expect(readInspectorUrlState({ search: "", hash: "#build" })).toEqual({
+			tab: "build",
 			query: "",
 			section: null,
 		});
@@ -29,9 +45,16 @@ describe("inspector URL state", () => {
 	test("serializes stable shareable state and preserves unrelated params", () => {
 		expect(
 			serializeInspectorUrlState(
-				{ tab: "stats", query: "runtime", section: null },
-				"token=studio&tab=design",
+				{ tab: "build", query: "runtime", section: null },
+				"token=session&tab=design",
 			),
-		).toBe("?token=studio&q=runtime#stats");
+		).toBe("?token=session&q=runtime#build");
+	});
+	test("uses the URL hash instead of the retired tab query parameter", () => {
+		expect(readInspectorUrlState({ search: "?tab=history", hash: "" })).toEqual({
+			tab: "tokens",
+			query: "",
+			section: null,
+		});
 	});
 });

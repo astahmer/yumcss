@@ -1,7 +1,7 @@
 /**
  * Transitive css import crawler (plans/023 #3).
  *
- * The studio must see @theme tokens defined in css files REACHED via
+ * The Inspector must see @theme tokens defined in css files REACHED via
  * @import, not just the entry stylesheet: e.g.
  * `packages/geos/src/styles.css` does `@import 'shadcn/tailwind.css'` and
  * every token in that file was invisible before.

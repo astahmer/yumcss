@@ -2,7 +2,7 @@
  * Token governance service (plans/054) — compose the effective universe,
  * usage collection, suggestions, and reachability into one versioned
  * report. This is the single entry point the analyzer CLI, Inspector,
- * Studio, the lint plugin, and the codemod planners consume.
+ * Migration Preview, the lint plugin, and the codemod planners consume.
  */
 import type {
 	GovernanceCoverageBoundary,

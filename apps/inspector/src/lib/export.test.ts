@@ -9,9 +9,9 @@ import {
 	tokensToDtcg,
 	utilitiesToJson,
 } from "./export.ts";
-import type { StudioPayload } from "../types.ts";
+import type { InspectorPayload } from "../types.ts";
 
-const payload: StudioPayload = {
+const payload: InspectorPayload = {
 	meta: { root: "/repo" },
 	authoredCss: [],
 	cssSources: [],
@@ -165,7 +165,7 @@ describe("coverageToMarkdown", () => {
 	const md = coverageToMarkdown(payload);
 
 	test("contains summary, per-file table, warnings and budget", () => {
-		expect(md).toContain("# pandwind studio report");
+		expect(md).toContain("# pandwind inspector report");
 		expect(md).toContain("| eliminated | 46% (41% entry-level) |");
 		expect(md).toContain("| a.tsx | 100% |");
 		expect(md).toContain("`b.tsx:10` — `bg-surface`");

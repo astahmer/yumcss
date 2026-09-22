@@ -1,6 +1,6 @@
 /** History diff helpers — versioned snapshot runs, side-by-side deltas. */
 import { describe, expect, test } from "vitest";
-import type { StudioPayload } from "../types.ts";
+import type { InspectorPayload } from "../types.ts";
 import { diffRuns, type HistoryEntry } from "./history-diff.ts";
 
 function payload(overrides: {
@@ -9,7 +9,7 @@ function payload(overrides: {
 	cssBytes?: number;
 	deadSample?: string[];
 	totalMissingCss?: number;
-}): StudioPayload {
+}): InspectorPayload {
 	return {
 		meta: { root: "/repo" },
 		authoredCss: [],
@@ -54,7 +54,7 @@ function payload(overrides: {
 	};
 }
 
-const entry = (ts: string, p: StudioPayload): HistoryEntry => ({
+const entry = (ts: string, p: InspectorPayload): HistoryEntry => ({
 	timestamp: ts,
 	parent: null,
 	payload: p,

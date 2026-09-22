@@ -1,6 +1,6 @@
-import type { StudioPayload } from "../types.ts";
+import type { InspectorPayload } from "../types.ts";
 
-async function fetchData(forceRefresh = false): Promise<StudioPayload> {
+async function fetchData(forceRefresh = false): Promise<InspectorPayload> {
 	const res = await fetch(forceRefresh ? "/api/data?refresh=1" : "/api/data", {
 		cache: "no-store",
 	});
@@ -8,7 +8,7 @@ async function fetchData(forceRefresh = false): Promise<StudioPayload> {
 		const body = (await res.json().catch(() => ({}))) as { error?: string };
 		throw new Error(body.error ?? `inspector api failed: ${res.status}`);
 	}
-	return (await res.json()) as StudioPayload;
+	return (await res.json()) as InspectorPayload;
 }
 
 const vscodeLink = (root: string, file: string, line: number): string =>
@@ -31,10 +31,10 @@ async function fetchHistoryList(): Promise<Array<HistoryListItem>> {
 	return (await res.json()) as Array<HistoryListItem>;
 }
 
-async function fetchHistoryRun(timestamp: string): Promise<StudioPayload> {
+async function fetchHistoryRun(timestamp: string): Promise<InspectorPayload> {
 	const res = await fetch(`/api/history?run=${encodeURIComponent(timestamp)}`);
 	if (!res.ok) throw new Error(`history api failed: ${res.status}`);
-	const body = (await res.json()) as StudioPayload & { error?: string };
+	const body = (await res.json()) as InspectorPayload & { error?: string };
 	if (body.error !== undefined) throw new Error(body.error);
 	return body;
 }

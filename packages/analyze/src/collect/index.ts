@@ -1,6 +1,6 @@
 /**
  * Collection engine (plans/023 unification) — the shared layer between the
- * analyze CLI and apps/inspector's studio server.
+ * analyze CLI and the Inspector server.
  *
  * - payload assembly: {@link gather}
  * - generated-artifact parsers: parseThemeVars / parseUtilityUnions /

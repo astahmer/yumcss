@@ -11,7 +11,7 @@ import {
 	splitTokenValue,
 	type ThemeVarCategory,
 } from "pandwind-analyze/collect/browser";
-import type { StudioPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
+import type { InspectorPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
 import {
 	authoredTokenSpelling,
 	type GovernanceCoverageBoundary,
@@ -27,6 +27,11 @@ import {
 	serializeInspectorUrlState,
 	type InspectorTab,
 } from "./lib/url-state.ts";
+import {
+	getTokenRelationships,
+	mostConnectedTokenId,
+	presentTokenNode,
+} from "./lib/token-relationships.ts";
 
 /* ---------------------------------- helpers ---------------------------------- */
 
@@ -99,18 +104,18 @@ function SearchControl(props: {
 }) {
 	return (
 		<div className={ui.searchRow}>
-			<label className={ui.srOnly} htmlFor="studio-search">
+			<label className={ui.srOnly} htmlFor="inspector-search">
 				Filter visible inspector data
 			</label>
 			<input
-				id="studio-search"
+				id="inspector-search"
 				className={ui.search}
 				type="search"
 				placeholder="filter tokens & utilities…"
 				value={props.query}
 				aria-label="Filter visible inspector data"
-				aria-controls="studio-panel"
-				aria-describedby="studio-search-status studio-search-hint"
+				aria-controls="inspector-panel"
+				aria-describedby="inspector-search-status inspector-search-hint"
 				aria-keyshortcuts="/"
 				onChange={(event) => props.queryChange(event.target.value)}
 			/>
@@ -123,10 +128,10 @@ function SearchControl(props: {
 			>
 				clear
 			</button>
-			<span id="studio-search-status" className={ui.searchMeta} role="status" aria-live="polite">
+			<span id="inspector-search-status" className={ui.searchMeta} role="status" aria-live="polite">
 				{props.matchCount} of {props.totalCount} matches
 			</span>
-			<span id="studio-search-hint" className={ui.srOnly}>
+			<span id="inspector-search-hint" className={ui.srOnly}>
 				Press slash to focus search.
 			</span>
 		</div>
@@ -265,7 +270,7 @@ const categorizeColor = (v: ThemeVar): string | null =>
 const FONT_SIZE_SAMPLE = "The quick brown fox jumps over the lazy dog";
 
 function DesignSystemView(props: {
-	data: StudioPayload;
+	data: InspectorPayload;
 	query: string;
 	queryChange: (v: string) => void;
 	section: string | null;
@@ -405,7 +410,7 @@ function DesignSystemView(props: {
 						<a
 							key={link.id}
 							className={ui.sectionNavLink}
-							href={`#design/${link.id}`}
+							href={`#tokens/${link.id}`}
 							aria-current={activeSection === link.id ? "true" : undefined}
 							onClick={(event) => {
 								event.preventDefault();
@@ -479,7 +484,7 @@ function DesignSystemView(props: {
 								{visibleFamilyEntries.map((e) => (
 									<div className={ui.typeSizeRow} key={e.name}>
 										<span className={ui.typeSizeSample} style={{ fontFamily: e.value }}>
-											{e.name}: Pandwind studio preview 123
+											{e.name}: Ag 0123456789
 										</span>
 										<code>{e.value}</code>
 									</div>
@@ -630,7 +635,7 @@ function DesignSystemView(props: {
 
 /* ------------------------------ class drill-down ------------------------------ */
 
-function ClassDrillDown(props: { data: StudioPayload; query: string }) {
+function ClassDrillDown(props: { data: InspectorPayload; query: string }) {
 	const [open, setOpen] = useState<string | null>(null);
 	const q = props.query.toLowerCase();
 	const entries = props.data.classDrillDown.filter((d) => d.candidate.toLowerCase().includes(q));
@@ -678,8 +683,7 @@ function HistoryView(props: {
 					<div>
 						<p className={ui.error}>{props.error}</p>
 						<p className={ui.muted}>
-							History is optional and may be disabled for this project. Check the Inspector server,
-							then retry.
+							The Inspector could not read saved runs. Check the Inspector server, then retry.
 						</p>
 						<button type="button" onClick={props.retry}>
 							retry history
@@ -782,7 +786,7 @@ function HistoryView(props: {
 }
 
 function StatsView(props: {
-	data: StudioPayload;
+	data: InspectorPayload;
 	query: string;
 	queryChange: (value: string) => void;
 }) {
@@ -1035,130 +1039,179 @@ function StatsView(props: {
 
 /* --------------------------------- token graph --------------------------------- */
 
-const TIER_ORDER: Array<TokenTier> = ["component", "scope", "semantic", "raw"];
 const TIER_COLOR: Record<TokenTier, string> = {
 	component: "#7c5cff",
 	scope: "#d97706",
 	semantic: "#0ea5e9",
 	raw: "#64748b",
 };
-const NODE_W = 190;
-const NODE_H = 26;
-const COL_W = 250;
-const ROW_H = 38;
+function TokenGraphView({ data }: { data: InspectorPayload }) {
+	const graph = data.tokenGraph;
+	const initialId = mostConnectedTokenId(graph);
+	const initialNode = graph.nodes.find((node) => node.id === initialId);
+	const [focusedId, setFocusedId] = useState<string | null>(initialId);
+	const [searchValue, setSearchValue] = useState(
+		initialNode === undefined ? "" : presentTokenNode(initialNode).label,
+	);
+	const selectedId = graph.nodes.some((node) => node.id === focusedId) ? focusedId : initialId;
+	const selectedNode = graph.nodes.find((node) => node.id === selectedId);
+	const selectedPresentation =
+		selectedNode === undefined ? null : presentTokenNode(selectedNode);
+	const relationships =
+		selectedNode === undefined ? null : getTokenRelationships(graph, selectedNode.id);
+	const themeVar =
+		selectedPresentation === null
+			? undefined
+			: data.designSystem.themeVars.find(
+					(variable) =>
+						variable.name === selectedPresentation.variableName &&
+						(selectedPresentation.scope === null || variable.scope === selectedPresentation.scope),
+				);
+	const renderRelationList = (
+		title: string,
+		description: string,
+		nodes: TokenGraph["nodes"],
+		emptyMessage: string,
+	) => (
+		<section className={ui.relationshipColumn}>
+			<h3>{title}</h3>
+			<p className={ui.muted}>{description}</p>
+			{nodes.length > 0 ? (
+				<ul className={ui.relationshipList}>
+					{nodes.map((node) => {
+						const presentation = presentTokenNode(node);
+						return (
+							<li key={node.id}>
+								<button
+									type="button"
+									className={ui.relationshipNode}
+									style={{ borderColor: TIER_COLOR[node.tier] }}
+									aria-label={`Focus ${presentation.label}, ${node.tier} token`}
+									onClick={() => {
+										setFocusedId(node.id);
+										setSearchValue(presentation.label);
+									}}
+								>
+									<code>{presentation.label}</code>
+									<span className={ui.relationshipTier}>{node.tier}</span>
+								</button>
+							</li>
+						);
+					})}
+				</ul>
+			) : (
+				<p className={ui.relationshipEmpty}>{emptyMessage}</p>
+			)}
+		</section>
+	);
 
-function TokenGraphView({ graph }: { graph: TokenGraph }) {
-	const [selected, setSelected] = useState<string | null>(null);
 	if (graph.nodes.length === 0) {
 		return (
 			<div className={ui.wrap}>
-				<h2>token graph</h2>
-				<p className={ui.muted}>no theme variables found in the generated bridge.</p>
+				<h2>Token relationships</h2>
+				<p className={ui.muted}>No theme variables or component mappings were found.</p>
 			</div>
 		);
 	}
-	const columns = TIER_ORDER.map((tier) =>
-		graph.nodes.filter((n) => n.tier === tier).toSorted((a, b) => a.label.localeCompare(b.label)),
-	).filter((col) => col.length > 0);
-	const width = columns.length * COL_W + 80;
-	const height = Math.max(...columns.map((c) => c.length)) * ROW_H + 60;
-
-	const pos = new Map<string, { x: number; y: number }>();
-	columns.forEach((col, ci) => {
-		col.forEach((node, ri) => {
-			pos.set(node.id, { x: ci * COL_W + 40, y: (height - col.length * ROW_H) / 2 + ri * ROW_H });
-		});
-	});
-
-	const byId = new Map(graph.nodes.map((n) => [n.id, n]));
-	const cyclesSet = new Set(graph.cycles.flat());
-
 	return (
 		<div className={ui.wrap}>
-			<h2>token graph</h2>
+			<h2>Token relationships</h2>
 			<p className={ui.muted}>
-				{graph.nodes.length} nodes · {graph.edges.length} edges · {graph.cycles.length} cycle(s) ·{" "}
-				{graph.dangling.length} dangling · {graph.orphans.length} orphaned raws
+				Follow direct references for one token at a time. Choose another token in either column to
+				continue through the graph.
 			</p>
-			{selected !== null && byId.has(selected) ? (
-				<div className={ui.card}>
-					<div className={ui.cardValue}>{selected}</div>
-					<div className={ui.cardSub}>
-						tier: {byId.get(selected)!.tier}
-						{graph.reachability[selected] !== undefined
-							? ` · resolves to: ${graph.reachability[selected]!.join(", ")}`
-							: ""}
-						{cyclesSet.has(selected) ? " · ⚠ part of a cycle (skipped at emission)" : ""}
-						{graph.dangling.includes(selected) ? " · ⚠ dangling reference" : ""}
-					</div>
-				</div>
-			) : null}
-			<svg
-				width="100%"
-				viewBox={`0 0 ${width} ${height}`}
-				style={{ background: "transparent", minWidth: `${width}px` }}
-				role="img"
-				aria-label="token reference graph"
-			>
-				<defs>
-					<marker
-						id="tg-arrow"
-						viewBox="0 0 10 10"
-						refX="9"
-						refY="5"
-						markerWidth="6"
-						markerHeight="6"
-						orient="auto-start-reverse"
-					>
-						<path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
-					</marker>
-				</defs>
-				{graph.edges.map((e) => {
-					const a = pos.get(e.from);
-					const b = pos.get(e.to);
-					if (a === undefined || b === undefined) return null;
-					const x1 = a.x + NODE_W;
-					const y1 = a.y + NODE_H / 2;
-					const x2 = b.x;
-					const y2 = b.y + NODE_H / 2;
-					const isCycle = cyclesSet.has(e.from) && cyclesSet.has(e.to);
-					return (
-						<path
-							key={`${e.from}->${e.to}`}
-							d={`M ${x1} ${y1} C ${x1 + COL_W / 2} ${y1}, ${x2 - COL_W / 2} ${y2}, ${x2 - 4} ${y2}`}
-							fill="none"
-							stroke={isCycle ? "#ef4444" : "#94a3b8"}
-							strokeWidth={isCycle ? 1.8 : 1}
-							markerEnd="url(#tg-arrow)"
-							opacity={0.7}
-						/>
-					);
-				})}
-				{[...pos.entries()].map(([id, p]) => {
-					const node = byId.get(id)!;
-					const isCyc = cyclesSet.has(id);
-					return (
-						<g
-							key={id}
-							transform={`translate(${p.x}, ${p.y})`}
-							style={{ cursor: "pointer" }}
-							onClick={() => setSelected(id)}
+			<section className={ui.cards}>
+				<Card label="tokens and mappings" value={String(graph.nodes.length)} />
+				<Card label="direct references" value={String(graph.edges.length)} />
+				<Card
+					label="unlinked variables"
+					value={String(graph.orphans.length)}
+					sub="not referenced by another token here"
+				/>
+				{(graph.cycles.length > 0 || graph.dangling.length > 0) && (
+					<Card
+						label="cycles / missing references"
+						value={`${graph.cycles.length} / ${graph.dangling.length}`}
+					/>
+				)}
+			</section>
+			<div className={ui.relationshipSearch}>
+				<label htmlFor="token-relationship-search">Find a token</label>
+				<input
+					id="token-relationship-search"
+					className={ui.search}
+					type="search"
+					list="token-relationship-options"
+					placeholder={`Search ${graph.nodes.length} token nodes…`}
+						value={searchValue}
+					aria-describedby="token-relationship-hint"
+					onChange={(event) => {
+						const value = event.target.value;
+						setSearchValue(value);
+						const match = graph.nodes.find(
+							(node) => node.id === value || presentTokenNode(node).label === value,
+						);
+						if (match !== undefined) setFocusedId(match.id);
+					}}
+				/>
+				<datalist id="token-relationship-options">
+					{graph.nodes.map((node) => (
+						<option key={node.id} value={presentTokenNode(node).label} label={node.tier} />
+					))}
+				</datalist>
+				<p id="token-relationship-hint" className={ui.muted}>
+					Choose a suggestion to focus it. Each relationship link is also keyboard accessible.
+				</p>
+			</div>
+			{selectedNode !== undefined && relationships !== null && (
+				<div className={ui.relationshipLayout}>
+					{renderRelationList(
+						"Used by",
+						"Mappings and tokens that refer to this token.",
+						relationships.usedBy,
+						"Nothing in the generated graph refers to this token.",
+					)}
+					<article className={ui.relationshipCurrent}>
+						<span
+							className={ui.relationshipTier}
+							style={{ color: TIER_COLOR[selectedNode.tier] }}
 						>
-							<rect
-								width={NODE_W}
-								height={NODE_H}
-								rx={6}
-								fill={isCyc ? "#450a0a" : "#111827"}
-								stroke={TIER_COLOR[node.tier] ?? "#64748b"}
-								strokeWidth={isCyc ? 2 : 1}
-							/>
-							<text x={8} y={17} fill="#e5e7eb" fontSize={11} fontFamily="monospace">
-								{node.label.length > 28 ? `${node.label.slice(0, 27)}…` : node.label}
-							</text>
-						</g>
-					);
-				})}
-			</svg>
+							{selectedNode.tier} token
+						</span>
+						<h3>
+							<code>{selectedPresentation?.label}</code>
+						</h3>
+						{themeVar !== undefined && <code className={ui.relationshipValue}>{themeVar.value}</code>}
+						<p className={ui.cardSub}>
+							{relationships.usedBy.length} dependents · {relationships.references.length} references
+						</p>
+						{relationships.isCyclic && (
+							<p className={ui.warn}>Part of a cycle. The emitter skips cyclic references.</p>
+						)}
+						{relationships.isUnlinkedRaw && (
+							<p className={ui.muted}>
+								No other graph node references this raw variable. It may still be used in source code;
+								check Usage &amp; cleanup for application-level coverage.
+							</p>
+						)}
+						<CopyButton
+							text={
+								selectedNode.tier === "scope"
+									? selectedPresentation?.variableName ?? selectedNode.id
+									: selectedNode.tier === "component"
+										? selectedNode.label
+										: selectedNode.id
+							}
+						/>
+					</article>
+					{renderRelationList(
+						"References",
+						"Tokens this value or component mapping depends on.",
+						relationships.references,
+						"This token does not reference another graph node.",
+					)}
+				</div>
+			)}
 		</div>
 	);
 }
@@ -1188,7 +1241,7 @@ const tokenName = (name: string): string => (name.startsWith("$") ? name : `$${n
 const tokenLabel = (group: string, name: string): string =>
 	group === "" ? tokenName(name) : `${group}/${tokenName(name)}`;
 
-const buildTokenUsageData = (data: StudioPayload): TokenUsageData => {
+const buildTokenUsageData = (data: InspectorPayload): TokenUsageData => {
 	const sections = data.designSystem.tokenSections;
 	const rows: Array<TokenUsageRow> = sections.flatMap((section) =>
 		section.entries.map((entry) => ({
@@ -1266,7 +1319,7 @@ interface AnalysisConfidence {
 	reasons: Array<string>;
 }
 
-const getAnalysisConfidence = (data: StudioPayload): AnalysisConfidence => {
+const getAnalysisConfidence = (data: InspectorPayload): AnalysisConfidence => {
 	const governance = data.governance;
 	const reasons: Array<string> = [];
 	if (governance !== undefined) {
@@ -1308,7 +1361,7 @@ const getAnalysisConfidence = (data: StudioPayload): AnalysisConfidence => {
 	};
 };
 
-function AnalysisConfidenceBadge({ data }: { data: StudioPayload }) {
+function AnalysisConfidenceBadge({ data }: { data: InspectorPayload }) {
 	const confidence = getAnalysisConfidence(data);
 	const tone =
 		confidence.level === "verified"
@@ -1337,7 +1390,7 @@ function AnalysisConfidenceBadge({ data }: { data: StudioPayload }) {
 
 const pct = (n: number): string => `${n}`;
 
-function UsageView(props: { data: StudioPayload }) {
+function UsageView(props: { data: InspectorPayload }) {
 	const a = props.data.analytics;
 	const crawl = props.data.cssCrawl;
 	if (a === undefined) {
@@ -1448,7 +1501,7 @@ const TOKEN_USAGE_FILTERS: ReadonlyArray<{ id: TokenUsageFilter; label: string }
 	{ id: "unused", label: "not observed" },
 ];
 
-function TokenUsageIntelligence({ data }: { data: StudioPayload }) {
+function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 	const usage = buildTokenUsageData(data);
 	const [filter, setFilter] = useState<TokenUsageFilter>("all");
 	const total = usage.rows.length;
@@ -1578,7 +1631,7 @@ function TokenUsageIntelligence({ data }: { data: StudioPayload }) {
 function ContrastWarningsView({
 	warnings,
 }: {
-	warnings: NonNullable<StudioPayload["contrastWarnings"]>;
+	warnings: NonNullable<InspectorPayload["contrastWarnings"]>;
 }) {
 	if (warnings.length === 0) {
 		return (
@@ -1623,7 +1676,7 @@ function ContrastWarningsView({
 	);
 }
 
-function ContrastPairView({ data }: { data: StudioPayload }) {
+function ContrastPairView({ data }: { data: InspectorPayload }) {
 	const colorOptions = useMemo(
 		() =>
 			(
@@ -1791,7 +1844,7 @@ const BOUNDARY_ORDER: ReadonlyArray<GovernanceCoverageBoundary> = [
 ];
 
 /** Cleanup evidence from the shared analysis report; all actions remain previews. */
-function CleanupReportView(props: { data: StudioPayload }) {
+function CleanupReportView(props: { data: InspectorPayload }) {
 	const g = props.data.governance;
 	if (g === undefined) {
 		return (
@@ -2076,12 +2129,16 @@ function AnalyticsHistoryChart() {
 /* ------------------------------------- app ------------------------------------- */
 
 const TAB_LABELS: Record<InspectorTab, string> = {
-	design: "Design system",
-	graph: "Token graph",
-	stats: "Stats",
-	usage: "Usage & cleanup",
+	tokens: "Tokens",
+	build: "Build report",
 	history: "History",
 };
+
+const TOKEN_VIEWS: ReadonlyArray<{ section: string | null; label: string }> = [
+	{ section: null, label: "Catalog" },
+	{ section: "usage", label: "Usage & cleanup" },
+	{ section: "relationships", label: "Relationships" },
+];
 
 export function App() {
 	const [urlState, setUrlState] = useState(() =>
@@ -2090,7 +2147,7 @@ export function App() {
 	const tab = urlState.tab;
 	const query = urlState.query;
 	const section = urlState.section;
-	const [data, setData] = useState<StudioPayload | null>(null);
+	const [data, setData] = useState<InspectorPayload | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [historyList, setHistoryList] = useState<Array<HistoryListItem> | null>(null);
@@ -2131,7 +2188,9 @@ export function App() {
 				(target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
 			)
 				return;
-			const search = document.getElementById("studio-search");
+			const search =
+				document.getElementById("inspector-search") ??
+				document.getElementById("token-relationship-search");
 			if (!(search instanceof HTMLInputElement)) return;
 			event.preventDefault();
 			search.focus();
@@ -2162,7 +2221,11 @@ export function App() {
 		[updateUrlState],
 	);
 	const sectionChange = useCallback(
-		(next: string): void => updateUrlState({ tab: "design", section: next }),
+		(next: string): void => updateUrlState({ tab: "tokens", section: next }),
+		[updateUrlState],
+	);
+	const changeTokenView = useCallback(
+		(section: string | null): void => updateUrlState({ tab: "tokens", section }),
 		[updateUrlState],
 	);
 
@@ -2199,20 +2262,23 @@ export function App() {
 	} else if (data === null) {
 		body = <LoadingSkeleton />;
 	} else {
-		body =
-			tab === "graph" ? (
-				<TokenGraphView graph={data.tokenGraph} />
-			) : tab === "usage" ? (
-				<UsageView data={data} />
-			) : tab === "design" ? (
-				<DesignSystemView
-					data={data}
-					query={query}
-					queryChange={queryChange}
-					section={section}
-					sectionChange={sectionChange}
-				/>
-			) : tab === "history" ? (
+		if (tab === "tokens") {
+			body =
+				section === "usage" ? (
+					<UsageView data={data} />
+				) : section === "relationships" ? (
+					<TokenGraphView data={data} />
+				) : (
+					<DesignSystemView
+						data={data}
+						query={query}
+						queryChange={queryChange}
+						section={section}
+						sectionChange={sectionChange}
+					/>
+				);
+		} else if (tab === "history") {
+			body = (
 				<HistoryView
 					list={historyList}
 					error={historyError}
@@ -2222,9 +2288,8 @@ export function App() {
 					loadDiff={loadDiff}
 					retry={loadHistory}
 				/>
-			) : (
-				<StatsView data={data} query={query} queryChange={queryChange} />
 			);
+		} else body = <StatsView data={data} query={query} queryChange={queryChange} />;
 	}
 
 	return (
@@ -2232,7 +2297,7 @@ export function App() {
 			<header>
 				<h1>
 					<span className={ui.brandMark}>◆</span> pandwind{" "}
-					<span className={ui.brandThin}>studio</span>
+					<span className={ui.brandThin}>Inspector</span>
 				</h1>
 				<nav className={ui.tabList} aria-label="Inspector views" role="tablist">
 					{INSPECTOR_TABS.map((tabId, index) => (
@@ -2242,7 +2307,7 @@ export function App() {
 							id={`tab-${tabId}`}
 							role="tab"
 							aria-selected={tab === tabId}
-							aria-controls="studio-panel"
+							aria-controls="inspector-panel"
 							tabIndex={tab === tabId ? 0 : -1}
 							className={tab === tabId ? ui.active : undefined}
 							onClick={() => changeTab(tabId)}
@@ -2270,11 +2335,11 @@ export function App() {
 					<button type="button" onClick={() => refresh(true)} disabled={loading} title="re-run analysis">
 						{loading ? "…" : "⟳ refresh"}
 					</button>
-					{data !== null && !loading && (
+					{data !== null && !loading && tab !== "history" && (
 						<details className={ui.exportMenu}>
 							<summary aria-label="Open export menu">⬇ export</summary>
 							<div className={ui.exportItems}>
-								{tab === "design" ? (
+								{tab === "tokens" ? (
 									<>
 										<button
 											type="button"
@@ -2387,7 +2452,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 				</div>
 			</header>
 			<div
-				id="studio-panel"
+				id="inspector-panel"
 				className={ui.tabPanel}
 				role="tabpanel"
 				aria-labelledby={`tab-${tab}`}
@@ -2398,6 +2463,28 @@ ${InspectorExport.themeVarsToCss(data)}}
 					<div className={ui.refreshing} role="status">
 						refreshing analysis…
 					</div>
+				)}
+				{tab === "tokens" && error === null && (
+					<nav className={ui.tokenViewNav} aria-label="Token views">
+						{TOKEN_VIEWS.map((view) => (
+							<a
+								key={view.label}
+								href={view.section === null ? "#tokens" : `#tokens/${view.section}`}
+								aria-current={
+									(section === view.section ||
+										(view.section === null && section !== "usage" && section !== "relationships"))
+										? "page"
+										: undefined
+								}
+								onClick={(event) => {
+									event.preventDefault();
+									changeTokenView(view.section);
+								}}
+							>
+								{view.label}
+							</a>
+						))}
+					</nav>
 				)}
 				{body}
 			</div>

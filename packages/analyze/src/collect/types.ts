@@ -2,7 +2,7 @@
  * Shared collection-layer payload contract (plans/023 unification).
  *
  * `CollectPayload` is the neutral shape produced by gather() here and
- * consumed by apps/inspector (which aliases it as StudioPayload for its UI).
+ * consumed by apps/inspector (which adds InspectorPayload for its local graph).
  * Everything in this file moved verbatim from apps/inspector/src/types.ts —
  * signatures unchanged.
  */

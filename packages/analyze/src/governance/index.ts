@@ -1,6 +1,6 @@
 /**
  * Token governance (plans/054) — neutral, versioned report shared by the
- * analyzer, Inspector/Studio, the lint plugin, and the codemod planners.
+ * analyzer, Inspector/Migration Preview, the lint plugin, and the codemod planners.
  *
  * Entry points:
  * - contracts: the versioned report shape

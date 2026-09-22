@@ -1,4 +1,4 @@
-export const INSPECTOR_TABS = ["design", "graph", "stats", "usage", "history"] as const;
+export const INSPECTOR_TABS = ["tokens", "build", "history"] as const;
 
 export type InspectorTab = (typeof INSPECTOR_TABS)[number];
 
@@ -9,13 +9,14 @@ export interface InspectorUrlState {
 }
 
 const DEFAULT_STATE: InspectorUrlState = {
-	tab: "design",
+	tab: "tokens",
 	query: "",
 	section: null,
 };
 
-const isTab = (value: string): value is InspectorTab =>
-	(INSPECTOR_TABS as ReadonlyArray<string>).includes(value);
+const inspectorTabs: ReadonlySet<string> = new Set(INSPECTOR_TABS);
+
+const isTab = (value: string): value is InspectorTab => inspectorTabs.has(value);
 
 const decode = (value: string): string => {
 	try {
@@ -28,9 +29,7 @@ const decode = (value: string): string => {
 export function readInspectorUrlState(input: { hash: string; search: string }): InspectorUrlState {
 	const params = new URLSearchParams(input.search);
 	const query = params.get("q") ?? "";
-	const queryTab = params.get("tab");
-	const candidateQueryTab = queryTab ?? "";
-	let tab = isTab(candidateQueryTab) ? candidateQueryTab : DEFAULT_STATE.tab;
+	let tab = DEFAULT_STATE.tab;
 	let section: string | null = null;
 	const hash = input.hash.replace(/^#/, "");
 	if (hash !== "") {
@@ -39,8 +38,6 @@ export function readInspectorUrlState(input: { hash: string; search: string }): 
 		if (isTab(candidateTab)) {
 			tab = candidateTab;
 			section = hashSection === undefined ? null : hashSection;
-		} else if (hash.startsWith("sec-")) {
-			section = hash;
 		}
 	}
 	return { tab, query, section };

@@ -2,12 +2,12 @@
  * Run-history diff helpers — pure functions shared by the node server and
  * the browser UI. Entries are versioned snapshots with a parent pointer.
  */
-import type { StudioPayload } from "../types.ts";
+import type { InspectorPayload } from "../types.ts";
 
 export interface HistoryEntry {
 	timestamp: string;
 	parent: string | null;
-	payload: StudioPayload;
+	payload: InspectorPayload;
 }
 
 interface MetricDelta {

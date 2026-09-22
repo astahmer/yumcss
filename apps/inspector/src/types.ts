@@ -2,7 +2,7 @@
  * layer; re-exported here so UI imports stay unchanged. */
 import type { CollectPayload } from "pandwind-analyze/collect/browser";
 
-export type StudioPayload = Omit<CollectPayload, "tokenGraph"> & {
+export type InspectorPayload = Omit<CollectPayload, "tokenGraph"> & {
 	tokenGraph: TokenGraph;
 };
 
@@ -32,7 +32,7 @@ export interface TokenGraph {
 	dangling: Array<string>;
 }
 
-/** One persisted point of the studio analytics time series. */
+/** One persisted point in the Inspector analytics time series. */
 export interface AnalyticsHistoryPoint {
 	timestamp: string;
 	eliminatedPct: number;

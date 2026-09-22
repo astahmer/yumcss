@@ -1,4 +1,4 @@
-/** Shared text matcher for studio search: case-insensitive substring. */
+/** Shared text matcher for Inspector search: case-insensitive substring. */
 export type TextMatcher = (text: string) => boolean;
 
 export function makeTextMatcher(query: string): TextMatcher {

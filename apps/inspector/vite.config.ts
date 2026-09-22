@@ -34,20 +34,20 @@ const sendJson = (
 };
 
 /** Dev-server middleware: GET /api/data serves the current inspector snapshot. */
-const studioApi = (): Plugin => ({
+const inspectorApi = (): Plugin => ({
 	name: "inspector-api",
 	configureServer(server) {
-		let cachedPayload: import("./src/types.ts").StudioPayload | undefined;
-		let pendingPayload: Promise<import("./src/types.ts").StudioPayload> | undefined;
+		let cachedPayload: import("./src/types.ts").InspectorPayload | undefined;
+		let pendingPayload: Promise<import("./src/types.ts").InspectorPayload> | undefined;
 		const loadPayload = (
 			force = false,
-		): Promise<import("./src/types.ts").StudioPayload> => {
+		): Promise<import("./src/types.ts").InspectorPayload> => {
 			if (pendingPayload !== undefined) return pendingPayload;
 			if (!force && cachedPayload !== undefined) return Promise.resolve(cachedPayload);
 			if (force) cachedPayload = undefined;
 			const pending = gather()
 				.then((payload) => {
-					const inspectorPayload = payload as import("./src/types.ts").StudioPayload;
+					const inspectorPayload = payload as import("./src/types.ts").InspectorPayload;
 					persistRun(pkgRoot, inspectorPayload);
 					if (process.env.INSPECTOR_HISTORY === "1") {
 						persistAnalyticsSnapshot(pkgRoot, inspectorPayload);
@@ -122,5 +122,5 @@ const studioApi = (): Plugin => ({
 });
 
 export default defineConfig({
-	plugins: [react(), studioApi()],
+	plugins: [react(), inspectorApi()],
 });

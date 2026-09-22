@@ -1,18 +1,18 @@
 /**
  * Analytics time-series persistence (plans/023 follow-up): when enabled via
- * INSPECTOR_HISTORY=1, every studio refresh appends one compact point to
+ * INSPECTOR_HISTORY=1, every Inspector refresh appends one compact point to
  * .analytics-history/<timestamp>.json (gitignored). The series powers the
  * trending chart — deliberately separate from .studio-history, which keeps
  * full payloads for diffing.
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { AnalyticsHistoryPoint, StudioPayload } from "../types.ts";
+import type { AnalyticsHistoryPoint, InspectorPayload } from "../types.ts";
 
 const DIR = (root: string): string => join(root, ".analytics-history");
 
 /** Extract the compact point from a full payload. */
-function toHistoryPoint(payload: StudioPayload): AnalyticsHistoryPoint {
+function toHistoryPoint(payload: InspectorPayload): AnalyticsHistoryPoint {
 	return {
 		timestamp: new Date().toISOString(),
 		eliminatedPct: payload.coverage.eliminatedPct,
@@ -45,6 +45,6 @@ export function readAnalyticsSeries(root: string): Array<AnalyticsHistoryPoint> 
 		.filter((p): p is AnalyticsHistoryPoint => p !== null);
 }
 
-export function persistAnalyticsSnapshot(root: string, payload: StudioPayload): void {
+export function persistAnalyticsSnapshot(root: string, payload: InspectorPayload): void {
 	persistAnalyticsPoint(root, toHistoryPoint(payload));
 }

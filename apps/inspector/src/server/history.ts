@@ -1,11 +1,11 @@
 /**
- * Run-history persistence: every successful studio gather is written as a
+ * Run-history persistence: every successful Inspector gather is written as a
  * versioned snapshot (timestamp + payload + parent pointer) under <inspector
  * package dir>/.studio-history/ (gitignored).
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { StudioPayload } from "../types.ts";
+import type { InspectorPayload } from "../types.ts";
 import type { HistoryEntry } from "../lib/history-diff.ts";
 
 /**
@@ -14,7 +14,7 @@ import type { HistoryEntry } from "../lib/history-diff.ts";
  */
 const HISTORY_DIR = (root: string): string => join(root, ".studio-history");
 
-export function persistRun(root: string, payload: StudioPayload): string {
+export function persistRun(root: string, payload: InspectorPayload): string {
 	const dir = HISTORY_DIR(root);
 	mkdirSync(dir, { recursive: true });
 	// parent = the most recent snapshot before this one

@@ -45,6 +45,19 @@ describe("parseThemeVars", () => {
 		expect(scopes).toHaveLength(2);
 		expect(scopes.every((scope) => scope.scope === '[data-theme="dark"]')).toBe(true);
 	});
+	test("ignores comments before theme at-rules and scope selectors", () => {
+		const scopes = parseThemeScopes(`
+			/* generated stylesheet */ @theme { --color-base: #fff; }
+			/* condition-bound token overrides */ .dark { --color-base: #111; }
+		`);
+
+		expect(scopes).toEqual([{ name: "--color-base", value: "#111", scope: ".dark" }]);
+	});
+	test("preserves comment-like text inside a quoted selector value", () => {
+		expect(parseThemeScopes('[data-note="/* literal */"] { --color-base: #fff; }')).toEqual([
+			{ name: "--color-base", value: "#fff", scope: '[data-note="/* literal */"]' },
+		]);
+	});
 });
 
 describe("parseUtilityUnions", () => {

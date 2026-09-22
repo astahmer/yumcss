@@ -41,6 +41,34 @@ export const parseThemeVars = (bridgeCss: string): Array<ThemeVar> => {
 	return vars;
 };
 
+const stripCssComments = (source: string): string => {
+	let result = "";
+	let quote = "";
+	for (let index = 0; index < source.length; index += 1) {
+		const character = source[index]!;
+		if (quote !== "") {
+			result += character;
+			if (character === "\\") result += source[++index] ?? "";
+			else if (character === quote) quote = "";
+			continue;
+		}
+		if (character === "'" || character === '"') {
+			quote = character;
+			result += character;
+			continue;
+		}
+		if (character === "/" && source[index + 1] === "*") {
+			const end = source.indexOf("*/", index + 2);
+			if (end < 0) break;
+			result += " ";
+			index = end + 1;
+			continue;
+		}
+		result += character;
+	}
+	return result;
+};
+
 /**
  * Parse flat CSS custom-property scopes such as `[data-theme="dark"] {
  * --color-surface: #111; }`. The selector is preserved verbatim: theme
@@ -51,7 +79,7 @@ export const parseThemeVars = (bridgeCss: string): Array<ThemeVar> => {
 export const parseThemeScopes = (css: string): Array<ThemeVar> => {
 	const vars: Array<ThemeVar> = [];
 	for (const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-		const selector = match[1]?.trim();
+		const selector = match[1] === undefined ? undefined : stripCssComments(match[1]).trim();
 		const body = match[2] ?? "";
 		if (selector === undefined || selector === "" || selector.startsWith("@")) continue;
 		const declarations = body

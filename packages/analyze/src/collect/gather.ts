@@ -1,5 +1,5 @@
 /**
- * Node-side data gatherer for the studio. Reuses the analyze package's own
+ * Node-side data gatherer for the Inspector. Reuses the analyze package's own
  * entry points (runCli / createCssBudgetService / loadTwConfig) — no duplicated analysis
  * logic — plus pure parsers over the generated artifacts.
  */
@@ -34,9 +34,9 @@ import type { CollectPayload, ThemeVar, TokenSection } from "./types.ts";
 const DEFAULT_APP = "examples/example";
 
 /**
- * Build the full studio payload for the given repo root (default: this repo).
+ * Build the full Inspector payload for the given repo root (default: this repo).
  *
- * Override target via env vars to point the studio at an external project:
+ * Override target via env vars to point the Inspector at an external project:
  *   INSPECTOR_ROOT=/path/to/other-repo INSPECTOR_APP=packages/geos pnpm run dev
  * `INSPECTOR_APP` is resolved as `<root>/<app>/src`. Artifacts specific to the
  * pandwind dogfood app (examplePreset tokens, bridge.ts, pandwind-theme.css)
