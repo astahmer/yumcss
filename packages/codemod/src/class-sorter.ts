@@ -276,23 +276,26 @@ export interface ClassSourceSortResult {
 	readonly opaqueTokens: readonly string[];
 }
 
-export const sortStaticClassSource = (
+export interface StaticClassLiteral {
+	readonly start: number;
+	readonly end: number;
+	readonly value: string;
+}
+
+export const collectStaticClassLiterals = (
 	source: string,
-	meta: PandwindMeta,
 	file = "source.tsx",
-): ClassSourceSortResult => {
+): readonly StaticClassLiteral[] => {
 	const language = SOURCE_SCANNER_SERVICE.languageForFile(file);
-	if (language !== "tsx" && language !== "jsx" && language !== "ts" && language !== "js")
-		return { code: source, changed: false, edits: 0, opaqueTokens: [] };
+	if (language !== "tsx" && language !== "jsx" && language !== "ts" && language !== "js") return [];
 	let parsed: ReturnType<typeof SOURCE_SCANNER_SERVICE.parse>;
 	try {
 		parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
 	} catch {
-		return { code: source, changed: false, edits: 0, opaqueTokens: [] };
+		return [];
 	}
-	if (parsed.errors.length > 0) return { code: source, changed: false, edits: 0, opaqueTokens: [] };
-	const edits: SourceEdit[] = [];
-	const opaqueTokens: string[] = [];
+	if (parsed.errors.length > 0) return [];
+	const literals: StaticClassLiteral[] = [];
 	const seen = new Set<string>();
 	const add = (node: OxcNode | undefined, parent?: OxcNode): void => {
 		if (node === undefined) return;
@@ -301,29 +304,18 @@ export const sortStaticClassSource = (
 		const edit = classAttributeEdit(source, node) ?? propertyEdit(source, node, parent);
 		if (edit === undefined) return;
 		const original = source.slice(edit.start, edit.end);
-		const quote = original[0] ?? '"';
-		const content = original.slice(1, -1);
-		const result = sortClassListDetailed(content, meta);
-		if (!result.changed) return;
 		const key = `${edit.start}:${edit.end}`;
 		if (seen.has(key)) return;
 		seen.add(key);
-		opaqueTokens.push(...result.opaqueTokens);
-		edits.push({ ...edit, text: renderLiteral(result.value, quote) });
+		literals.push({ start: edit.start, end: edit.end, value: original.slice(1, -1) });
 	};
 	const addLiteral = (node: OxcNode): void => {
 		if (!isStringLiteral(node)) return;
 		const range = nodeRange(node);
 		if (range === undefined) return;
-		const result = sortClassListDetailed(node.value, meta);
-		if (!result.changed || seen.has(`${range.start}:${range.end}`)) return;
+		if (seen.has(`${range.start}:${range.end}`)) return;
 		seen.add(`${range.start}:${range.end}`);
-		opaqueTokens.push(...result.opaqueTokens);
-		edits.push({
-			start: range.start,
-			end: range.end,
-			text: renderLiteral(result.value, source[range.start] ?? '"'),
-		});
+		literals.push({ start: range.start, end: range.end, value: node.value });
 	};
 	walkWithParent(parsed.program, (node, parent) => {
 		if (node.type === NodeKind.JSXAttribute) add(node);
@@ -333,6 +325,27 @@ export const sortStaticClassSource = (
 		for (const argument of Array.isArray(node.arguments) ? node.arguments : [])
 			if (isStringLiteral(argument)) addLiteral(argument);
 	});
+	return literals;
+};
+
+export const sortStaticClassSource = (
+	source: string,
+	meta: PandwindMeta,
+	file = "source.tsx",
+): ClassSourceSortResult => {
+	const literals = collectStaticClassLiterals(source, file);
+	const edits: SourceEdit[] = [];
+	const opaqueTokens: string[] = [];
+	for (const literal of literals) {
+		const result = sortClassListDetailed(literal.value, meta);
+		if (!result.changed) continue;
+		opaqueTokens.push(...result.opaqueTokens);
+		edits.push({
+			start: literal.start,
+			end: literal.end,
+			text: renderLiteral(result.value, source[literal.start] ?? '"'),
+		});
+	}
 	const code = SourcePass.applyEdits(source, edits);
 	return { code, changed: code !== source, edits: edits.length, opaqueTokens };
 };

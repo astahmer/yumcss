@@ -22,6 +22,21 @@ export interface ParsedToken {
 	opacity: string | undefined;
 }
 
+export interface ParsedArbitraryToken {
+	/** Original token as written. */
+	readonly raw: string;
+	/** Known variant chain, outermost first. */
+	readonly variants: readonly string[];
+	readonly important: boolean;
+	readonly negative: boolean;
+	/** Utility prefix for forms such as `w-[37px]`. */
+	readonly prefix: string | undefined;
+	/** Explicit CSS property for forms such as `[width:37px]`. */
+	readonly property: string | undefined;
+	/** Decoded arbitrary value, without the surrounding brackets. */
+	readonly value: string;
+}
+
 /**
  * Split a raw class list into tokens. Top-level whitespace only — colons and
  * spaces inside arbitrary brackets are preserved.
@@ -180,6 +195,50 @@ export function parseToken(raw: string, meta: PandwindMeta): ParsedToken | null 
 	};
 }
 
+/** Parse an arbitrary-value escape hatch without attempting to rewrite it. */
+export function parseArbitraryToken(raw: string, meta: PandwindMeta): ParsedArbitraryToken | null {
+	const { variants, rest } = parseVariants(raw, meta);
+	let important = false;
+	let body = rest;
+	if (body.startsWith("!")) {
+		important = true;
+		body = body.slice(1);
+	}
+	let negative = false;
+	if (body.startsWith("-") && !body.startsWith("--")) {
+		negative = true;
+		body = body.slice(1);
+	}
+	if (!body.endsWith("]")) return null;
+	const arbitraryIndex = body.indexOf("[");
+	if (arbitraryIndex === -1) return null;
+	const prefixText = body.slice(0, arbitraryIndex).replace(/-$/u, "");
+	const content = decodeArbitraryValue(body.slice(arbitraryIndex + 1, -1));
+	if (prefixText === "") {
+		const separator = findTopLevelColon(content);
+		if (separator <= 0 || separator === content.length - 1) return null;
+		return {
+			raw,
+			variants,
+			important,
+			negative,
+			prefix: undefined,
+			property: content.slice(0, separator).trim(),
+			value: content.slice(separator + 1).trim(),
+		};
+	}
+	const prefix = splitPrefix(prefixText, meta)?.prefix ?? prefixText;
+	return {
+		raw,
+		variants,
+		important,
+		negative,
+		prefix,
+		property: undefined,
+		value: content,
+	};
+}
+
 function findTopLevelSlash(value: string): number {
 	let bracketDepth = 0;
 	for (let i = 0; i < value.length; i++) {
@@ -189,4 +248,22 @@ function findTopLevelSlash(value: string): number {
 		else if (char === "/" && bracketDepth === 0) return i;
 	}
 	return -1;
+}
+
+function findTopLevelColon(value: string): number {
+	let bracketDepth = 0;
+	let parenthesisDepth = 0;
+	for (let index = 0; index < value.length; index += 1) {
+		const char = value[index]!;
+		if (char === "[") bracketDepth += 1;
+		else if (char === "]") bracketDepth = Math.max(0, bracketDepth - 1);
+		else if (char === "(") parenthesisDepth += 1;
+		else if (char === ")") parenthesisDepth = Math.max(0, parenthesisDepth - 1);
+		else if (char === ":" && bracketDepth === 0 && parenthesisDepth === 0) return index;
+	}
+	return -1;
+}
+
+function decodeArbitraryValue(value: string): string {
+	return value.replace(/\\_/gu, "\u0000").replaceAll("_", " ").replaceAll("\u0000", "_");
 }
