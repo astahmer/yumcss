@@ -1,6 +1,11 @@
 /** Pure analytics tests — no I/O (plans/023 #6). */
 import { describe, expect, test } from "vitest";
-import { analyzeStyleUsage, buildPruneChangeset, computeContrastWarnings } from "./analytics.ts";
+import {
+	analyzeStyleUsage,
+	buildPruneChangeset,
+	computeContrastWarnings,
+	evaluateContrastPair,
+} from "./analytics.ts";
 
 const files = [
 	{
@@ -31,6 +36,23 @@ describe("analyzeStyleUsage", () => {
 	test("unused tokens reported when the universe is provided", () => {
 		const withUniverse = analyzeStyleUsage(files, ["blue-500", "blue-600", "red-900"]);
 		expect(withUniverse.unusedTokens).toEqual(["$red-900"]);
+	});
+
+	test("normalizes authored shorthand against grouped token ids", () => {
+		const grouped = analyzeStyleUsage(
+			[
+				{
+					file: "grouped.tsx",
+					content: `css.class({ color: "$blue-600", padding: "$4" })`,
+				},
+			],
+			["colors/$blue-600", "spacing/$4", "colors/$red-900"],
+		);
+		expect(grouped.tokenUsage).toEqual([
+			{ name: "colors/blue-600", count: 1 },
+			{ name: "spacing/4", count: 1 },
+		]);
+		expect(grouped.unusedTokens).toEqual(["colors/red-900"]);
 	});
 
 	test("top properties ranked by frequency", () => {
@@ -140,6 +162,13 @@ describe("contrast warnings", () => {
 			{ file: "c.tsx", content: `css.class({ backgroundColor: someVar, color: "currentColor" })` },
 		];
 		expect(computeContrastWarnings(fixtureFiles, tokens)).toEqual([]);
+	});
+
+	test("evaluates a selected color pair without scanning every combination", () => {
+		expect(evaluateContrastPair("$gray-800", "$gray-100", tokens)).toEqual({
+			ratio: expect.any(Number),
+			status: "pass",
+		});
 	});
 });
 

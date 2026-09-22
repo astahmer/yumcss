@@ -12,7 +12,12 @@
  *   (runCli, createCssBudgetService, collectFiles, loadTwConfig)
  */
 export { gather } from "./gather.ts";
-export { analyzeStyleUsage, buildPruneChangeset, computeContrastWarnings } from "./analytics.ts";
+export {
+	analyzeStyleUsage,
+	buildPruneChangeset,
+	computeContrastWarnings,
+	evaluateContrastPair,
+} from "./analytics.ts";
 export {
 	flattenTokenGroups,
 	groupThemeVars,
@@ -38,6 +43,8 @@ export type {
 	AuthoredCssImport,
 	CollectPayload,
 	ConditionUsage,
+	ContrastEvaluation,
+	ContrastStatus,
 	ContrastWarning,
 	CssCallSite,
 	CssDiagnostic,

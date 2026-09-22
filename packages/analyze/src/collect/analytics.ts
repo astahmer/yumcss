@@ -14,6 +14,7 @@
 
 import type {
 	ConditionUsage,
+	ContrastEvaluation,
 	StyleUsageReport,
 	StyleValueCoverage,
 	StyleValueCoverageSummary,
@@ -189,6 +190,50 @@ function topUsage(map: Map<string, number>, cap: number): UsageCount[] {
 		.slice(0, cap);
 }
 
+interface TokenUniverseEntry {
+	id: string;
+	leaf: string;
+}
+
+const stripTokenPrefix = (value: string): string => value.replace(/^\$+/, "");
+
+const tokenLeaf = (value: string): string => {
+	const segments = value.split("/");
+	return stripTokenPrefix(segments[segments.length - 1] ?? value);
+};
+
+const canonicalTokenId = (value: string): string => {
+	const segments = value.split("/");
+	const leaf = stripTokenPrefix(segments[segments.length - 1] ?? value);
+	const group = segments
+		.slice(0, -1)
+		.map(stripTokenPrefix)
+		.filter((segment) => segment !== "")
+		.join("/");
+	return group === "" ? `$${leaf}` : `${group}/${leaf}`;
+};
+
+const normalizeTokenUniverse = (
+	tokenUniverse: ReadonlyArray<string> | undefined,
+): ReadonlyArray<TokenUniverseEntry> | undefined =>
+	tokenUniverse?.map((token) => {
+		const id = canonicalTokenId(token);
+		return { id, leaf: tokenLeaf(id) };
+	});
+
+const normalizeObservedToken = (
+	rawToken: string,
+	byId: ReadonlyMap<string, TokenUniverseEntry>,
+	byLeaf: ReadonlyMap<string, ReadonlyArray<TokenUniverseEntry>>,
+): string => {
+	const canonical = canonicalTokenId(rawToken);
+	const direct = byId.get(canonical);
+	if (direct !== undefined) return direct.id;
+	const matches = byLeaf.get(tokenLeaf(canonical)) ?? [];
+	if (matches.length === 1) return matches[0]!.id;
+	return rawToken.startsWith("$") ? rawToken : `$${rawToken}`;
+};
+
 const toCoverage = (counts: ValueCoverageCounts): StyleValueCoverageSummary => {
 	const known = counts.tokenValues + counts.literalValues;
 	return {
@@ -218,16 +263,33 @@ export function analyzeStyleUsage(
 		fileValueCoverage.push({ file: file.file, ...toCoverage(fileCoverage) });
 	}
 
-	const tokenUsage = [...collected.tokens.entries()]
+	const normalizedUniverse = normalizeTokenUniverse(tokenUniverse);
+	const universeById = new Map(normalizedUniverse?.map((entry) => [entry.id, entry]));
+	const universeByLeaf = new Map<string, Array<TokenUniverseEntry>>();
+	for (const entry of normalizedUniverse ?? []) {
+		const entries = universeByLeaf.get(entry.leaf) ?? [];
+		entries.push(entry);
+		universeByLeaf.set(entry.leaf, entries);
+	}
+	const normalizedTokens = new Map<string, number>();
+	for (const [name, count] of collected.tokens) {
+		const normalized =
+			normalizedUniverse === undefined
+				? name
+				: normalizeObservedToken(name, universeById, universeByLeaf);
+		normalizedTokens.set(normalized, (normalizedTokens.get(normalized) ?? 0) + count);
+	}
+
+	const tokenUsage = [...normalizedTokens.entries()]
 		.map(([name, count]) => ({ name, count }))
 		.toSorted((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
 	const unusedTokens =
-		tokenUniverse === undefined
+		normalizedUniverse === undefined
 			? []
-			: [...tokenUniverse]
-					.map((token) => (token.startsWith("$") ? token : `$${token}`))
-					.filter((token) => !collected.tokens.has(token))
+			: normalizedUniverse
+					.map((entry) => entry.id)
+					.filter((token) => !normalizedTokens.has(token))
 					.toSorted();
 
 	const conditions: ConditionUsage[] = [...collected.conditions.entries()]
@@ -304,6 +366,39 @@ function contrastRatio(a: string, b: string): number | null {
 	return Math.round(ratio * 100) / 100;
 }
 
+const createColorResolver = (tokens: Record<string, string>) => {
+	const tokenColors = new Map<string, string>();
+	for (const [name, value] of Object.entries(tokens)) {
+		if (typeof value !== "string") continue;
+		const normalized = stripTokenPrefix(name).toLowerCase();
+		tokenColors.set(normalized, value);
+		tokenColors.set(`$${normalized}`, value);
+	}
+	return (value: string): string | null => {
+		const unquoted = value.replace(/^["']|["']$/g, "").split(/[\s/[\]]/)[0]!;
+		if (parseColor(unquoted) !== null) return unquoted;
+		const normalized = stripTokenPrefix(unquoted).toLowerCase();
+		return tokenColors.get(normalized) ?? tokenColors.get(`$${normalized}`) ?? null;
+	};
+};
+
+export function evaluateContrastPair(
+	fg: string,
+	bg: string,
+	tokens: Record<string, string>,
+): ContrastEvaluation | null {
+	const resolve = createColorResolver(tokens);
+	const foreground = resolve(fg);
+	const background = resolve(bg);
+	if (foreground === null || background === null) return null;
+	const ratio = contrastRatio(foreground, background);
+	if (ratio === null) return null;
+	return {
+		ratio,
+		status: ratio < 3 ? "fail-large" : ratio < 4.5 ? "fail-normal" : "pass",
+	};
+}
+
 const FG_PROPS = new Set(["color", "textColor"]);
 const BG_PROPS = new Set(["backgroundColor", "bg", "fill", "background", "bgColor"]);
 
@@ -325,40 +420,22 @@ export function computeContrastWarnings(
 	files: Array<{ file: string; content: string }>,
 	tokens: Record<string, string>,
 ): import("./types.ts").ContrastWarning[] {
-	// authored token name ($gray-100) -> resolved color
-	const tokenColors = new Map<string, string>();
-	for (const [name, value] of Object.entries(tokens)) {
-		if (typeof value === "string") {
-			tokenColors.set(name.toLowerCase(), value);
-			tokenColors.set(`$${name}`.toLowerCase(), value);
-		}
-	}
-
-	const resolve = (value: string): string | null => {
-		const unquoted = value.replace(/^["']|["']$/g, "").split(/[\s/[\]]/)[0]!;
-		if (!unquoted.startsWith("$")) return parseColor(unquoted) !== null ? unquoted : null;
-		return tokenColors.get(unquoted.toLowerCase()) ?? null;
-	};
-
 	const warnings: import("./types.ts").ContrastWarning[] = [];
 	for (const file of files) {
 		for (const match of file.content.matchAll(CALL_REGEX)) {
 			const open = (match.index ?? 0) + match[0].length - 1;
 			const body = matchBlock(file.content, open);
 			if (body === null) continue;
-			const pairs = collectPairs(body, resolve);
+			const pairs = collectPairs(body);
 			for (const { fg, bg } of pairs) {
-				const cf = resolve(fg);
-				const cb = resolve(bg);
-				if (cf === null || cb === null) continue;
-				const ratio = contrastRatio(cf, cb);
-				if (ratio === null || ratio >= 4.5) continue;
+				const evaluation = evaluateContrastPair(fg, bg, tokens);
+				if (evaluation === null || evaluation.status === "pass") continue;
 				warnings.push({
 					file: file.file,
 					fg: fg.replace(/^["']|["']$/g, ""),
 					bg: bg.replace(/^["']|["']$/g, ""),
-					ratio,
-					severity: ratio < 3 ? "fail-large" : "fail-normal",
+					ratio: evaluation.ratio,
+					severity: evaluation.status,
 				});
 			}
 		}
@@ -367,7 +444,7 @@ export function computeContrastWarnings(
 }
 
 /** Collect fg/bg authored values within ONE object-literal body. */
-function collectPairs(body: string, resolve: (value: string) => string | null): Array<FgBgPair> {
+function collectPairs(body: string): Array<FgBgPair> {
 	const fgs: string[] = [];
 	const bgs: string[] = [];
 	let segment = "";
@@ -423,7 +500,6 @@ function collectPairs(body: string, resolve: (value: string) => string | null): 
 		segment += ch;
 	}
 	consider(segment.trim());
-	void resolve;
 	const pairs: Array<FgBgPair> = [];
 	for (const fg of fgs) {
 		for (const bg of bgs) pairs.push({ fg, bg });

@@ -60,6 +60,13 @@ export interface ContrastWarning {
 	severity: "fail-normal" | "fail-large";
 }
 
+export type ContrastStatus = "pass" | "fail-normal" | "fail-large";
+
+export interface ContrastEvaluation {
+	ratio: number;
+	status: ContrastStatus;
+}
+
 export interface UtilityUnion {
 	key: string;
 	count: number;
