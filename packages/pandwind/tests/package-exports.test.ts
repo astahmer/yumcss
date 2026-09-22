@@ -45,6 +45,8 @@ const entries = [
 	"pandwind/stack/solid",
 	"pandwind/stack/vue",
 	"pandwind/stack/preact",
+	"pandwind/stack/svelte",
+	"pandwind/stack/astro",
 	"pandwind/types/typings",
 ] as const;
 

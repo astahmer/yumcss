@@ -73,5 +73,7 @@ export default defineConfig({
 	copy: [
 		{ from: "src/reset/*.css", to: "dist/reset" },
 		{ from: "src/prose/*.css", to: "dist/prose" },
+		{ from: "src/stack/Stack.svelte", to: "dist/stack" },
+		{ from: "src/stack/Stack.astro", to: "dist/stack" },
 	],
 });

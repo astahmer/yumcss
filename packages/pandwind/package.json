@@ -171,6 +171,16 @@
 			"import": "./dist/stack/preact.js",
 			"default": "./dist/stack/preact.js"
 		},
+		"./stack/svelte": {
+			"pandwind": "./src/stack/Stack.svelte",
+			"svelte": "./dist/stack/Stack.svelte",
+			"default": "./dist/stack/Stack.svelte"
+		},
+		"./stack/astro": {
+			"pandwind": "./src/stack/Stack.astro",
+			"astro": "./dist/stack/Stack.astro",
+			"default": "./dist/stack/Stack.astro"
+		},
 		"./design": {
 			"pandwind": "./src/design/index.ts",
 			"types": "./dist/design/index.d.ts",
@@ -442,11 +452,13 @@
 		"webpack": "5.110.3"
 	},
 	"peerDependencies": {
+		"astro": ">=5.0.0",
 		"oxc-parser": "0.148.0",
 		"postcss": "8.5.28",
 		"preact": ">=10.0.0",
 		"react": ">=18.0.0",
 		"solid-js": ">=1.8.0",
+		"svelte": ">=4.0.0",
 		"unplugin": "3.3.0",
 		"vite": ">=5.0.0",
 		"vue": ">=3.3.0"
@@ -465,6 +477,12 @@
 			"optional": true
 		},
 		"solid-js": {
+			"optional": true
+		},
+		"svelte": {
+			"optional": true
+		},
+		"astro": {
 			"optional": true
 		},
 		"unplugin": {

@@ -1,0 +1,23 @@
+---
+import { stackClasses, type StackProps } from "pandwind/stack";
+
+interface Props extends StackProps {
+	class?: string;
+}
+
+const {
+	direction,
+	gap,
+	padding,
+	align,
+	justify,
+	class: extraClass,
+	...attributes
+} = Astro.props;
+const mappedClass = stackClasses({ direction, gap, padding, align, justify });
+const mergedClass = extraClass === undefined ? mappedClass : `${mappedClass} ${extraClass}`;
+---
+
+<div {...attributes} class={mergedClass}>
+	<slot />
+</div>
