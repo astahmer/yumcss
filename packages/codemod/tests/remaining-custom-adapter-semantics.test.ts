@@ -117,7 +117,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			"src/Card.css.ts",
 		);
 
-		expect(result.converted).toBe(1);
+		expect(result.converted).toBe(2);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('const accent = "--pw-accent"');

@@ -230,6 +230,10 @@ export default {
 		const matches: AdapterMatch[] = [];
 		const residuals = [...parsed.residuals];
 		for (const match of parsed.matches) {
+			if (!/^renderer\.renderRule\b/u.test(match.sourceText.trimStart())) {
+				matches.push(match);
+				continue;
+			}
 			const open = source.indexOf("(", match.start);
 			const call = open === -1 ? undefined : balancedCall(source, open);
 			if (call === undefined) {

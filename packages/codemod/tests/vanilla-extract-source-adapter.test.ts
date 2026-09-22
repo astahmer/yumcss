@@ -265,7 +265,7 @@ describe("Vanilla Extract source adapter", () => {
 			adapterRegistry: catalog.registry,
 		});
 
-		expect(result.converted).toBe(1);
+		expect(result.converted).toBe(2);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("@vanilla-extract/css");
