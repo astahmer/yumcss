@@ -12,9 +12,10 @@ import {
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
 import { preserveUnsupportedRecipeFields, recipeSourceObjectOptions } from "./recipe-source.ts";
+import { literalValueToPlain, parseObjectLiteral } from "../parse.ts";
 
 const runtimeFallbackVar =
-	"const fallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
+	"const __pandwindFallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.VanillaExtract,
@@ -83,7 +84,7 @@ export default defineCodemodAdapter({
 		},
 		{
 			name: "create-var",
-			regex: /\bcreateVar\s*\(/g,
+			regex: /\bcreateVar\s*\(\s*(?:\{[^{}]*\})?\s*\)/g,
 			form: CodemodCallPatternFormTag.Residual,
 			residual: {
 				kind: StyleProgramResidualKindTag.Configuration,
@@ -132,24 +133,111 @@ export default defineCodemodAdapter({
 		}),
 		rewrite: ({ code, targetId }) => {
 			if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
-			if (!/\bcss\.(?:class|vars|group)\s*\(/u.test(code)) return { code, residuals: [] };
-			if (/\bfallbackVar\s*\(/u.test(code)) return { code, residuals: [] };
-			const handledResiduals = [...code.matchAll(/\bcreateVar\s*\(/g)].map((match) => ({
+			if (!/\bcss\.(?:class|vars|group)\s*\(/u.test(code) && !/\bcreateVar\s*\(/u.test(code))
+				return { code, residuals: [] };
+
+			type VariableDeclaration = {
+				readonly declaration: string;
+				readonly name: string;
+				readonly call: string;
+				readonly descriptor?: {
+					readonly syntax: string;
+					readonly inherits: boolean;
+					readonly initialValue: string;
+				};
+			};
+			const variables: VariableDeclaration[] = [];
+			for (const match of code.matchAll(
+				/\b(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:\/\/[^\n]*\n\s*)?createVar\s*\(/gu,
+			)) {
+				const start = match.index ?? 0;
+				const createVar = start + match[0].lastIndexOf("createVar");
+				const open = createVar === -1 ? -1 : code.indexOf("(", createVar);
+				const block = open === -1 ? undefined : balancedCall(code, open);
+				if (block === undefined) continue;
+				const semicolon = code.indexOf(";", block.end);
+				if (semicolon === -1) continue;
+				const call = code.slice(createVar, block.end);
+				const declaration = code.slice(start, semicolon + 1);
+				const argumentsText = block.body.trim();
+				const descriptorBody =
+					argumentsText.startsWith("{") && argumentsText.endsWith("}")
+						? argumentsText.slice(1, -1)
+						: argumentsText;
+				const parsed = parseObjectLiteral(descriptorBody);
+				const syntaxValue = parsed?.keys.find((entry) => entry.key === "syntax")?.value;
+				const inheritsValue = parsed?.keys.find((entry) => entry.key === "inherits")?.value;
+				const initialValue = parsed?.keys.find((entry) => entry.key === "initialValue")?.value;
+				const syntax = syntaxValue === undefined ? undefined : literalValueToPlain(syntaxValue);
+				const inherits =
+					inheritsValue === undefined ? undefined : literalValueToPlain(inheritsValue);
+				const initial = initialValue === undefined ? undefined : literalValueToPlain(initialValue);
+				variables.push({
+					declaration,
+					name: match[2]!,
+					call,
+					...(typeof syntax === "string" &&
+					typeof inherits === "boolean" &&
+					typeof initial === "string"
+						? { descriptor: { syntax, inherits, initialValue: initial } }
+						: {}),
+				});
+			}
+
+			const handledVariables = variables.filter(
+				(variable) => variable.descriptor !== undefined || variable.call.endsWith("()"),
+			);
+			const handledResiduals = handledVariables.map((variable) => ({
 				kind: StyleProgramResidualKindTag.Configuration,
-				text: match[0],
+				text: variable.call,
 				hint: "Vanilla Extract createVar requires contract-aware variable lowering",
 			}));
-			let rewritten = code.replace(
-				/\b(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:\/\/[^\n]*\n\s*)?createVar\s*\(\s*\)\s*;/g,
-				(_match, declaration, name: string) => `${declaration} ${name} = "--pw-${name}";`,
+			const unsupportedVariables = variables.filter(
+				(variable) => !handledVariables.includes(variable),
 			);
-			if (
-				rewritten.includes("fallbackVar(") &&
-				!/\b(?:const|let|var)\s+fallbackVar\b/.test(rewritten)
-			) {
-				rewritten = `${runtimeFallbackVar}\n${rewritten}`;
+			let rewritten = code;
+			for (const variable of handledVariables) {
+				rewritten = rewritten.replace(
+					variable.declaration,
+					`const ${variable.name} = "--pw-${variable.name}";`,
+				);
 			}
-			return { code: rewritten, residuals: [], handledResiduals };
+			if (/\bfallbackVar\s*\(/u.test(rewritten)) {
+				rewritten = rewritten.replace(/\bfallbackVar\s*\(/gu, "__pandwindFallbackVar(");
+				if (!/\b(?:const|let|var)\s+__pandwindFallbackVar\b/u.test(rewritten))
+					rewritten = `${runtimeFallbackVar}\n${rewritten}`;
+			}
+			const descriptors = handledVariables.flatMap((variable) =>
+				variable.descriptor === undefined
+					? []
+					: [{ name: `--pw-${variable.name}`, descriptor: variable.descriptor }],
+			);
+			let runtimeImports: readonly string[] | undefined;
+			if (descriptors.length > 0) {
+				const binding = /\bruntimeCss\./u.test(rewritten) ? "runtimeCss" : "css";
+				const registrations = descriptors
+					.map(
+						({ name, descriptor }) =>
+							`{ kind: "property", name: ${JSON.stringify(name)}, declarations: [{ property: "syntax", value: ${JSON.stringify(descriptor.syntax)} }, { property: "inherits", value: ${descriptor.inherits} }, { property: "initial-value", value: ${JSON.stringify(descriptor.initialValue)} }] }`,
+					)
+					.join(", ");
+				runtimeImports = [
+					'import { createRuntimeCss } from "pandwind/css/runtime";',
+					'import { defaultPreset } from "pandwind/preset/default";',
+					`const ${binding} = createRuntimeCss(defaultPreset);`,
+				];
+				rewritten = `${binding}.sheet.registerSemanticRules([${registrations}]);\n${rewritten}`;
+			}
+			return {
+				code: rewritten,
+				...(runtimeImports === undefined ? {} : { imports: runtimeImports }),
+				residuals: unsupportedVariables.map((variable) => ({
+					kind: StyleProgramResidualKindTag.Configuration,
+					text: variable.call,
+					hint: "Vanilla Extract createVar requires a static descriptor or contract-aware variable lowering",
+				})),
+				handledResiduals,
+			};
 		},
 	},
 	sourceObjectOptions: (source) => {
@@ -202,3 +290,28 @@ export default defineCodemodAdapter({
 		};
 	},
 });
+
+function balancedCall(
+	source: string,
+	open: number,
+): { readonly body: string; readonly end: number } | undefined {
+	let depth = 0;
+	let quote: string | undefined;
+	for (let index = open; index < source.length; index += 1) {
+		const character = source[index]!;
+		if (quote !== undefined) {
+			if (character === "\\") index += 1;
+			else if (character === quote) quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'" || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "(") depth += 1;
+		if (character !== ")") continue;
+		depth -= 1;
+		if (depth === 0) return { body: source.slice(open + 1, index), end: index + 1 };
+	}
+	return undefined;
+}

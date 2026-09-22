@@ -1730,18 +1730,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "vanilla-extract", to: "pandwind", file: "card.css.ts", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
-		expect(result.skipped).toBe(1);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([
-				expect.objectContaining({
-					kind: "configuration",
-					hint: expect.stringContaining("createVar requires contract-aware variable lowering"),
-				}),
-			]),
-		);
-		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).toContain('from "@vanilla-extract/css"');
-		expect(result.code).toContain('fallbackVar(color, "red")');
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain('from "@vanilla-extract/css"');
+		expect(result.code).toContain('const color = "--pw-color";');
+		expect(result.code).toContain('__pandwindFallbackVar(color, "red")');
 	});
 
 	test("lowers dynamic values into Pandwind vars and rewrites the host carrier", () => {

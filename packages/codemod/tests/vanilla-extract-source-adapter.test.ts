@@ -250,4 +250,27 @@ describe("Vanilla Extract source adapter", () => {
 		);
 		expect(result.code).toContain("createThemeContract");
 	});
+
+	test("lowers typed createVar descriptors into runtime @property registrations", () => {
+		const source = [
+			'import { createVar, style } from "@vanilla-extract/css";',
+			'const progress = createVar({ syntax: "<number>", inherits: false, initialValue: "0" });',
+			'export const meter = style({ vars: { [progress]: "1" }, transform: `scaleX(${progress})` });',
+		].join("\n");
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.VanillaExtract,
+			to: CodemodAdapterId.Pandwind,
+			file: "meter.css.ts",
+			mode: "safe",
+			adapterRegistry: catalog.registry,
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("@vanilla-extract/css");
+		expect(result.code).toContain('const progress = "--pw-progress";');
+		expect(result.code).toContain('kind: "property"');
+		expect(result.code).toContain('name: "--pw-progress"');
+	});
 });
