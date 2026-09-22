@@ -1,0 +1,11 @@
+{
+  "files": 100,
+  "samples": 3,
+  "coldOpenMs": 15.78,
+  "warmEvaluateMs": 56.09,
+  "warmP95Ms": 71.5,
+  "editMs": 146.04,
+  "filesPerSecond": 1398.6,
+  "outputBytes": 16879,
+  "rssDeltaMiB": 53.63
+}

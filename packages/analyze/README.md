@@ -10,8 +10,10 @@ for CI and editor tooling.
 - **Did a dynamic value leave CSS behind?** Ask for CSS provenance and
   diagnostics.
 - **Did the stylesheet grow past its budget?** Add a CSS ceiling for CI.
-- **Do I need to inspect a project without changing it?** Use the playground,
-  inspector, or read-only MCP server.
+- **Do I need to inspect generated styles and token use?** Open the project
+  Inspector with `pnpm run inspect` in this repository.
+- **Do I need to review a migration before editing files?** Use Migration
+  Preview to inspect a project workspace without writing to it.
 
 The shortest useful command is:
 
@@ -23,8 +25,21 @@ Add --json for a machine-readable report, --css for generated CSS
 measurements, or --governance for token-usage checks. The analyzer reads
 the project and reports what it found; it does not rewrite your source files.
 
+## Migration Preview
+
+Open a consumer project in a read-only migration workspace:
+
+```sh
+pnpm exec pandwind-migration-preview /path/to/project --no-open
+```
+
+The local browser UI lets you choose registered source and target adapters,
+inspect generated code and diagnostics, and try in-memory edits. It does not
+write to the project; use `pandwind-codemod migrate` when you are ready to
+review a real diff.
+
 For a visual explanation of the reports, start with the
-[playground, inspector, and Studio guide](../../docs/src/content/docs/tooling/analyze-and-studio.md).
+[tooling workflows guide](../../docs/src/content/docs/tooling/workflows.md).
 
 ## MCP tooling
 

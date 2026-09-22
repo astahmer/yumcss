@@ -443,7 +443,7 @@
 				"./collect/browser",
 				"./governance",
 				"./governance/browser",
-				"./studio",
+				"./migration-preview",
 				"./mcp",
 				"./mcp/http",
 				"./package.json"
@@ -457,7 +457,7 @@
 				"packages/analyze/README.md",
 				"plans/062-tooling-trust-and-agent-surfaces.md"
 			],
-			"note": "Analyzer, Studio, and MCP are host tooling rather than runtime authoring APIs."
+			"note": "Analyzer, Migration Preview, and MCP are host tooling rather than runtime authoring APIs."
 		},
 		{
 			"packageName": "pandwind-devtools",

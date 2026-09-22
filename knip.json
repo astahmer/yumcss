@@ -50,13 +50,13 @@
 				"src/governance/index.ts",
 				"src/mcp/http.ts",
 				"src/mcp/server.ts",
-				"src/studio/index.ts",
-				"src/studio/server.ts",
-				"studio-app/src/main.ts",
+				"src/migration-preview/index.ts",
+				"src/migration-preview/server.ts",
+				"migration-preview-app/src/main.ts",
 				"vite.config.ts",
 				"tests/**/*.test.ts"
 			],
-			"project": ["src/**/*.ts", "tests/**/*.ts", "studio-app/**/*.{ts,html}", "vite.config.ts"]
+			"project": ["src/**/*.ts", "tests/**/*.ts", "migration-preview-app/**/*.{ts,html}", "vite.config.ts"]
 		},
 		"packages/lint-plugin": {
 			"entry": ["src/index.ts"],

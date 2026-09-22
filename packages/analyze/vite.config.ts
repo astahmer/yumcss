@@ -1,12 +1,12 @@
 import { defineConfig } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 
-// The studio ships as one self-contained html artifact so the server stays a
+// The migration preview ships as one self-contained html artifact so the server stays a
 // static file transport with no runtime asset resolution.
 export default defineConfig({
-	root: "studio-app",
+	root: "migration-preview-app",
 	build: {
-		outDir: "../dist/studio-ui",
+		outDir: "../dist/migration-preview-ui",
 		emptyOutDir: true,
 	},
 	plugins: [viteSingleFile()],

@@ -16,7 +16,7 @@
 	},
 	"bin": {
 		"pandwind-analyze": "./dist/cli.js",
-		"pandwind-studio": "./dist/studio/cli.js"
+		"pandwind-migration-preview": "./dist/migration-preview/cli.js"
 	},
 	"files": [
 		"dist",
@@ -55,11 +55,11 @@
 			"import": "./dist/governance/browser.js",
 			"default": "./dist/governance/browser.js"
 		},
-		"./studio": {
-			"pandwind": "./src/studio/index.ts",
-			"types": "./dist/studio/index.d.ts",
-			"import": "./dist/studio/index.js",
-			"default": "./dist/studio/index.js"
+		"./migration-preview": {
+			"pandwind": "./src/migration-preview/index.ts",
+			"types": "./dist/migration-preview/index.d.ts",
+			"import": "./dist/migration-preview/index.js",
+			"default": "./dist/migration-preview/index.js"
 		},
 		"./mcp": {
 			"pandwind": "./src/mcp/server.ts",
@@ -87,7 +87,7 @@
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"cli": "node dist/cli.js",
-		"studio": "node dist/studio/cli.js",
+		"migration-preview": "node dist/migration-preview/cli.js",
 		"corpus": "pnpm run cli \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../../examples/example/src/tw.ts --root ../.."
 	},
 	"dependencies": {

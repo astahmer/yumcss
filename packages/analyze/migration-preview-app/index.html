@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Pandwind Migration Preview</title>
+	</head>
+	<body>
+		<header>
+			<h1>pandwind / migration preview</h1>
+			<input id="root" placeholder="project root" />
+			<button id="open">Open</button>
+			<span id="status" class="muted">connecting…</span>
+		</header>
+		<main>
+			<section>
+				<div class="heading">workspace</div>
+				<div class="body stack">
+					<select id="file"></select>
+					<pre id="tree">Open a project to inspect its source tree.</pre>
+				</div>
+			</section>
+			<section>
+				<div class="heading">source editor (memory only)</div>
+				<div class="body stack">
+					<textarea id="editor" spellcheck="false"></textarea>
+					<div class="row">
+						<button id="apply">Apply edit</button>
+						<button id="evaluate">Evaluate target</button>
+					</div>
+				</div>
+			</section>
+			<section>
+				<div class="heading">migration result</div>
+				<div class="body stack">
+					<div class="row">
+						<label for="source">source adapter</label>
+						<select id="source"></select>
+						<label for="target">target adapter</label>
+						<select id="target"></select>
+					</div>
+					<pre id="output">Open a project to load registered adapters.</pre>
+					<details>
+						<summary>semantic program</summary>
+						<pre id="semantic">No semantic program yet.</pre>
+					</details>
+					<details>
+						<summary>themes and tokens</summary>
+						<pre id="themes">No theme data yet.</pre>
+					</details>
+					<details>
+						<summary>canonical CSS</summary>
+						<pre id="css">No CSS validation yet.</pre>
+					</details>
+					<details>
+						<summary>artifacts and size</summary>
+						<pre id="artifacts">No artifacts yet.</pre>
+					</details>
+					<details>
+						<summary>execution evidence</summary>
+						<pre id="execution">No evaluation yet.</pre>
+					</details>
+					<details>
+						<summary>host preview</summary>
+						<pre id="preview">Static mode only.</pre>
+					</details>
+					<div id="diagnostics" class="muted"></div>
+				</div>
+			</section>
+		</main>
+		<script type="module" src="/src/main.ts"></script>
+	</body>
+</html>

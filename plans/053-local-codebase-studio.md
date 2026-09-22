@@ -57,7 +57,7 @@ observe a supported host preview update without modifying the source tree.
 Add a published tooling entry point, tentatively:
 
 ```sh
-pandwind studio [project-root]
+pandwind-migration-preview [project-root]
 ```
 
 The command starts a localhost-only studio server and opens or prints its URL.
@@ -327,13 +327,13 @@ sent to the browser.
   preview updates.
 - Add performance tests for cold open, warm edit, cache hit, files/sec, peak
   memory, and cancellation latency.
-- Document `pandwind studio`, read-only behavior, host configuration, and
+- Document `pandwind-migration-preview`, read-only behavior, host configuration, and
   limitations.
 - Add package/build/typecheck/lint/Knip gates and a release smoke test.
 
 ## Decisions still to implement
 
-- **Command ownership — decided.** Publish `pandwind-studio` from the analyze
+- **Command ownership — decided.** Publish `pandwind-migration-preview` from the analyze
   package and keep it separate from the shipped runtime. The repository root
   `studio` script is only a development convenience; the published binary is
   the documented interface.
@@ -355,7 +355,7 @@ sent to the browser.
 
 ## Acceptance criteria
 
-- [x] `pandwind studio` starts locally from a real repository and shuts down cleanly.
+- [x] `pandwind-migration-preview` starts locally from a real repository and shuts down cleanly.
 - [x] No browser bundle contains Node filesystem/path/module-loader code.
 - [x] The session uses the shared workspace/scanner and does not duplicate parser,
       glob, or extension logic.
@@ -375,15 +375,15 @@ sent to the browser.
 - [x] The studio never silently drops an unsupported semantic: it preserves the
       source representation or reports a typed residual.
 
-The real-host proof is reproducible with `pnpm studio:proof:host`; it starts an
+The real-host proof is reproducible with `pnpm migration-preview:proof:host`; it starts an
 isolated local page, injects the evaluated stylesheet, and asserts the browser
 computed color and padding. Static-only projects continue to expose the
 explicit `unavailable` preview state.
 
-The checked-in proof result is [studio-host-proof.json](evidence/studio-host-proof.json).
-The repository-scale baseline is [studio-benchmark.json](evidence/studio-benchmark.json);
-rerun it with `PANDWIND_STUDIO_BENCHMARK_OUTPUT=plans/evidence/studio-benchmark.json
-pnpm bench:studio -- --files 100 --samples 3` when the tooling changes.
+The checked-in proof result is [migration-preview-host-proof.json](evidence/migration-preview-host-proof.json).
+The repository-scale baseline is [migration-preview-benchmark.json](evidence/migration-preview-benchmark.json);
+rerun it with `PANDWIND_MIGRATION_PREVIEW_BENCHMARK_OUTPUT=plans/evidence/migration-preview-benchmark.json
+pnpm bench:migration-preview -- --files 100 --samples 3` when the tooling changes.
 
 ## Decisions log
 
