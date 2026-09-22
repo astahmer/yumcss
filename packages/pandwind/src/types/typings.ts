@@ -310,6 +310,45 @@ export type TokenVariables = Readonly<Record<string, Readonly<Record<string, str
 /** CSS-wide values remain available on every preset-bound CSS property. */
 export type CssWideValue = "inherit" | "initial" | "revert" | "revert-layer" | "unset";
 
+/** Scalar values accepted by build-time preset web declarations. */
+export type PresetWebValue = string | number | null | undefined;
+
+/** Flat declarations emitted for one preset-owned global selector or keyframe step. */
+export type PresetWebStyleObject = Readonly<Record<string, PresetWebValue>>;
+
+/** Named keyframe steps emitted by a preset's build-time web contract. */
+export type PresetWebKeyframeBody = Readonly<Record<string, PresetWebStyleObject>>;
+
+/** Typed descriptors for one preset-owned `@font-face` rule. */
+export interface PresetWebFontFace {
+	readonly family: string;
+	readonly src: string | readonly string[];
+	readonly style?: string;
+	readonly weight?: string | number;
+	readonly stretch?: string;
+	readonly display?: string;
+	readonly unicodeRange?: string;
+	readonly featureSettings?: string;
+	readonly variationSettings?: string;
+	readonly namedInstance?: string;
+	readonly sizeAdjust?: string;
+	readonly ascentOverride?: string;
+	readonly descentOverride?: string;
+	readonly lineGapOverride?: string;
+	readonly languageOverride?: string;
+	readonly palette?: string;
+}
+
+/** Build-time browser-global CSS owned by a preset. */
+export interface PresetWeb {
+	/** Flat selector-to-declaration rules. At-rules and nested selectors stay authored CSS. */
+	readonly globals?: Readonly<Record<string, PresetWebStyleObject>>;
+	/** Explicitly named `@keyframes` bodies. Names are emitted as authored CSS identifiers. */
+	readonly keyframes?: Readonly<Record<string, PresetWebKeyframeBody>>;
+	/** Named `@font-face` descriptor maps. The map key is a stable source label. */
+	readonly fontFaces?: Readonly<Record<string, PresetWebFontFace>>;
+}
+
 /** Runtime and typing metadata consumed by Pandwind CSS factories.
  *
  * @typeParam TConfig - The project's CSS property configuration.
@@ -353,6 +392,8 @@ export interface CssPreset<
 	 * CSS punctuation is escaped in emitted declarations and references.
 	 */
 	tokenVariables?: TokenVariables;
+	/** Optional build-time browser-global CSS owned by this preset. */
+	web?: PresetWeb;
 }
 
 /** Values portion passed to {@link define.preset}. */

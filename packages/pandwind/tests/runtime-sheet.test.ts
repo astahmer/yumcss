@@ -568,7 +568,7 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.css()).toContain("@font-face{font-family:Inter;src:url(inter.woff2)}");
 		expect(sheet.css()).toContain("@layer components{.card:hover{color:red}}");
 		expect(sheet.css()).toContain(
-			"@property --brand-hue{syntax:<number>;inherits:false;initial-value:0}",
+			'@property --brand-hue{syntax:"<number>";inherits:false;initial-value:0}',
 		);
 	});
 

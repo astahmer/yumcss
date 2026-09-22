@@ -21,6 +21,7 @@ const artifact = createPandwindLibArtifact({
 	compatibility,
 	sources: [{ path: "src/button.tsx", hash: "button" }],
 	tokens: [],
+	web: "",
 	atomic: [],
 	vars: [],
 });

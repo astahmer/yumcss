@@ -9,7 +9,7 @@ import type { CssConfigReturn, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./runtime-base.ts";
 import { createHashFn, dashCase, escapeIdentifier } from "./hash.ts";
-import { normalizeCssVariables } from "./css-variables.ts";
+import { normalizeCssVariables, serializeCssPropertySyntax } from "./css-variables.ts";
 import { createTokenVariableName } from "./token-variable-names.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import {
@@ -181,7 +181,7 @@ export const createRuntimeStylesheet = (
 	const cssVariableRegistrations = normalizedCssVariables.registrations
 		.map(
 			({ name, descriptor }) =>
-				`@property --${escapeIdentifier(name)}{syntax:${descriptor.syntax};inherits:${String(descriptor.inherits)};initial-value:${descriptor.initialValue}}`,
+				`@property --${escapeIdentifier(name)}{syntax:${serializeCssPropertySyntax(descriptor.syntax)};inherits:${String(descriptor.inherits)};initial-value:${descriptor.initialValue}}`,
 		)
 		.toSorted();
 

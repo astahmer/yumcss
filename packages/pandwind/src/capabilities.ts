@@ -41,21 +41,21 @@ export const CSS_IN_JS_CAPABILITIES = [
 	},
 	{
 		feature: "global-rules",
-		status: "runtime",
+		status: "partial",
 		detail:
-			"The DOM-optional runtime sheet registers deterministic global semantic rules; authored CSS imports remain observable through tooling.",
+			"Preset-owned flat selectors emit at build time, while the DOM-optional runtime sheet registers broader semantic rules and authored CSS imports remain observable through tooling.",
 	},
 	{
 		feature: "keyframes",
 		status: "partial",
 		detail:
-			"Literal css.keyframes({...}) bodies emit deterministic @keyframes rules at build time; non-literal bodies stay on the runtime call with an actionable diagnostic.",
+			"Literal css.keyframes({...}) bodies and explicitly named preset.web keyframes emit @keyframes rules at build time; non-literal bodies stay on the runtime call with an actionable diagnostic.",
 	},
 	{
 		feature: "font-face",
 		status: "runtime",
 		detail:
-			"The runtime sheet registers @font-face semantic rules with stable ordering; authored CSS imports remain observable through tooling.",
+			"Preset.web font faces emit at build time, while the runtime sheet registers @font-face semantic rules with stable ordering and authored CSS imports remain observable through tooling.",
 	},
 	{
 		feature: "layers-supports-property",

@@ -8,7 +8,7 @@ import {
 import murmurHash from "../lib/murmur-hash2.ts";
 import type { CssConfigReturn, TokenDeclaration } from "../types/typings.ts";
 
-export const PANDWIND_LIB_SCHEMA = "pandwind.lib/2" as const;
+export const PANDWIND_LIB_SCHEMA = "pandwind.lib/3" as const;
 export const PANDWIND_LIB_COMPILER = "pandwind-css/1" as const;
 export const PANDWIND_LIB_GENERATOR = "pandwind-codemod lib build" as const;
 
@@ -39,6 +39,7 @@ export interface PandwindLibArtifact {
 	readonly compatibility: PandwindLibCompatibility;
 	readonly sources: readonly PandwindLibSource[];
 	readonly tokens: readonly TokenDeclaration[];
+	readonly web: string;
 	readonly rules: {
 		readonly atomic: readonly PandwindLibRule[];
 		readonly vars: readonly PandwindLibRule[];
@@ -49,6 +50,7 @@ export interface PandwindLibArtifactInput {
 	readonly compatibility: PandwindLibCompatibility;
 	readonly sources: readonly PandwindLibSource[];
 	readonly tokens: readonly TokenDeclaration[];
+	readonly web: string;
 	readonly atomic: readonly PandwindLibRule[];
 	readonly vars: readonly PandwindLibRule[];
 }
@@ -83,22 +85,26 @@ type StableValue =
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
-const stableValue = (value: unknown): StableValue => {
+const stableValue = (value: unknown): StableValue | undefined => {
+	if (value === undefined) return;
 	if (value === null) return null;
 	if (typeof value === "string" || typeof value === "boolean" || typeof value === "number")
 		return value;
-	if (Array.isArray(value)) return value.map(stableValue);
+	if (Array.isArray(value)) return value.map((entry) => stableValue(entry) ?? null);
 	if (isRecord(value)) {
 		return Object.fromEntries(
 			Object.keys(value)
 				.toSorted()
-				.map((key) => [key, stableValue(value[key])] as const),
+				.flatMap((key) => {
+					const normalized = stableValue(value[key]);
+					return normalized === undefined ? [] : [[key, normalized]];
+				}),
 		);
 	}
 	throw new TypeError("Pandwind lib compatibility values must be JSON-serializable");
 };
 
-const stableStringify = (value: unknown): string => JSON.stringify(stableValue(value));
+const stableStringify = (value: unknown): string => JSON.stringify(stableValue(value) ?? null);
 
 const hashValue = (value: unknown): string => murmurHash(stableStringify(value));
 
@@ -123,6 +129,7 @@ export const createPandwindLibCompatibility = (
 			strict: preset.strict,
 			colorPalettes: preset.colorPalettes ?? null,
 			tokens: preset.tokens,
+			web: preset.web ?? null,
 		}),
 		className: "default",
 		namespace: options.namespace ?? "pw",
@@ -140,6 +147,7 @@ const artifactContent = (input: PandwindLibArtifactInput) => ({
 		const priority = left.priority - right.priority;
 		return priority === 0 ? left.declaration.localeCompare(right.declaration) : priority;
 	}),
+	web: input.web,
 	rules: {
 		atomic: input.atomic.toSorted((left, right) => {
 			const priority = left.priority - right.priority;
@@ -236,6 +244,7 @@ export const validatePandwindLibArtifact = (value: unknown): PandwindLibValidati
 	else
 		for (const [index, token] of value.tokens.entries())
 			errors.push(...validateToken(token, `tokens[${index}]`));
+	if (typeof value.web !== "string") errors.push("web must be a string");
 
 	if (!isRecord(value.rules)) errors.push("rules must be an object");
 	else {

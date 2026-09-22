@@ -222,7 +222,9 @@ adoption boundaries without expanding the frozen authoring API:
   combinations. Starter presets and reset/prose assets remain opt-in and are
   generated from pinned upstream sources with measured package-surface cost.
 - Component-local `css.keyframes()` is a static, deterministic, tree-shakeable
-  lane. Browser-global rules, fonts, resets, and arbitrary selectors remain
+  lane. Presets also provide a narrow build-time `web` contract for flat
+  selector rules, explicitly named keyframes, and typed font faces; resets,
+  layers, nesting, arbitrary at-rules, and host-owned selectors remain
   authored CSS. Named cascade layers use one validated outer layer across
   pure CSS, Vite, runtime sheets, and library artifacts.
 
@@ -238,8 +240,9 @@ These records must not be presented as shipped product commitments:
   polish remains optional.
 - Plan 019 is a point-in-time competitive research record, not a feature
   checklist.
-- A `definePreset({ web: ... })` surface remains deliberately deferred;
-  authored CSS remains the complete web-global escape hatch.
+- Plan 028's `define.preset({ web: ... })` contract is shipped for the narrow
+  build-time surface described in [Preset contracts](/api/presets/); authored
+  CSS remains the complete web-global escape hatch for broader syntax.
 - Canvas and build-time Metro support remain extension points without a
   validated consumer.
 - Tokenami and UnoCSS have documented token-bridge workflows but no dedicated

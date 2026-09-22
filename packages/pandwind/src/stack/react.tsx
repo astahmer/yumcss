@@ -27,6 +27,8 @@ export interface StackComponentProps
 	children?: ReactNode;
 }
 
+export type { StackProps } from "./index.ts";
+
 const createReactStack =
 	(classNameFor: StackClassName) =>
 	({ className, children, ...props }: StackComponentProps): JSX.Element => {

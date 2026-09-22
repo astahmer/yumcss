@@ -5,6 +5,7 @@ import type {
 	RuntimeSemanticRule,
 } from "./runtime-sheet-contracts.ts";
 import { dashCase } from "./hash.ts";
+import { serializeCssPropertySyntax } from "./css-variables.ts";
 
 const hash = (input: string): string => {
 	let value = 2166136261;
@@ -17,8 +18,19 @@ const hash = (input: string): string => {
 
 const declarationValue = (value: RuntimeDeclaration["value"]): string =>
 	typeof value === "string" ? value : String(value);
-const declarations = (items: readonly RuntimeDeclaration[] = []): string =>
-	items.map((item) => `${dashCase(item.property)}:${declarationValue(item.value)}`).join(";");
+const declarations = (
+	items: readonly RuntimeDeclaration[] = [],
+	propertyRule = false,
+): string =>
+	items
+		.map((item) => {
+			const value =
+				propertyRule && item.property === "syntax" && typeof item.value === "string"
+					? serializeCssPropertySyntax(item.value)
+					: declarationValue(item.value);
+			return `${dashCase(item.property)}:${value}`;
+		})
+		.join(";");
 
 const condition = (value: string): string =>
 	value.startsWith("@") || value.startsWith(":") || value.startsWith("&") ? value : `&:${value}`;
@@ -107,7 +119,13 @@ export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 			readonly parts: string[];
 			index: number;
 		};
-		const frames: Frame[] = [{ rule, parts: [declarations(rule.declarations)], index: 0 }];
+		const frames: Frame[] = [
+			{
+				rule,
+				parts: [declarations(rule.declarations, rule.kind === RuntimeSemanticRuleKindTag.Property)],
+				index: 0,
+			},
+		];
 		const activeRules = new WeakSet<object>();
 		activeRules.add(rule);
 		let output = "";
@@ -117,7 +135,16 @@ export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 			if (child !== undefined) {
 				if (activeRules.has(child)) throw new Error("Cyclic runtime semantic rule tree");
 				activeRules.add(child);
-				frames.push({ rule: child, parts: [declarations(child.declarations)], index: 0 });
+				frames.push({
+					rule: child,
+					parts: [
+						declarations(
+							child.declarations,
+							child.kind === RuntimeSemanticRuleKindTag.Property,
+						),
+					],
+					index: 0,
+				});
 				continue;
 			}
 			frames.pop();

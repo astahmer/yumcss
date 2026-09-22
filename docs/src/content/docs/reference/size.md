@@ -5,9 +5,9 @@ sidebar:
   order: 2
 ---
 
-Last measured: **2026-09-21** for the Pandwind runtime byte record. The
+Last measured: **2026-09-22** for the Pandwind runtime byte record. The
 competitor rows retain the supplied reference measurements for the named
-versions. The environment was local macOS (arm64), Node v24.19.0, esbuild
+versions. The environment was local macOS (arm64), Node v24.20.0, esbuild
 0.28.2. Pandwind numbers come from real browser-targeted esbuild bundles
 (bundle + minify, gzip level 6) and are rounded to two decimals here.
 
@@ -27,7 +27,7 @@ The compact snapshot-derived typecheck and size summary is in
 | `createCss(tailwindPreset)` runtime        | 42.22 KB | 13.83 KB |
 | `createCss(chakraPreset)` runtime          | 53.08 KB | 14.50 KB |
 | `createCss(pandaPreset)` runtime           | 46.34 KB | 13.46 KB |
-| `createCss(shadcnPreset)` runtime          | 87.21 KB | 16.68 KB |
+| `createCss(shadcnPreset)` runtime          | 31.53 KB | 10.68 KB |
 | `createCss(csstypePreset)` runtime         | 19.50 KB |  7.16 KB |
 | `createCss(minimal preset)` runtime        | 14.99 KB |  5.83 KB |
 | `createUnsafeCss()` fallback runtime       | 11.72 KB |  4.66 KB |
@@ -37,7 +37,7 @@ The compact snapshot-derived typecheck and size summary is in
 | `cx()` plain strings                       |  7.03 KB |  3.01 KB |
 | `cx()` + CSS atom registry                 | 18.66 KB |  7.24 KB |
 | all direct runtime entries                 | 21.35 KB |  8.21 KB |
-| stylesheet generator (**build-time only**) | 25.00 KB |  9.46 KB |
+| stylesheet generator (**build-time only**) | 28.62 KB | 10.55 KB |
 
 The combined direct runtime is measured at 21.35 KB min / 8.21 KB gzip in this
 record for `createUnsafeCss()` + `tw()` + `cx()`. The preset-bound
@@ -48,22 +48,31 @@ public method attachments and is included only to show the shared engine's base
 cost; applications should use `createCss()` or `createUnsafeCss()` instead.
 Fully extracted static calls remain below 100 bytes.
 
+The build-time stylesheet generator grew from 24.998 KB min / 9.459 KB gzip to
+28.617 KB / 10.547 KB when the typed `preset.web` serializer was added. That
+cost is isolated to the build-time entry; the browser runtime entries above do
+not import the serializer. The hard budget is now 30 KB min / 11.5 KB gzip.
+
 The preset-bound `css()` rows run the same engine with a different preset, and
 the preset is what moves the number: the minimal preset (open property catalog,
 no tokens) is the engine plus resolver floor, `csstypePreset` swaps in the
 structural CSS property vocabulary, and `defaultPreset` adds Pandwind's stock
 scale groups (spacing, sizes, radii, shadows, typography) on top of that while
-shipping no palette. A runtime lane ships its preset object whole (esbuild
-cannot drop token entries an application never reads), so the catalog, not the
-engine, is the heavy part of a `css()` bundle that imports a large preset. The
-runtime-sheet row uses the minimal preset fixture, so an application whose
+shipping no palette. A runtime lane normally ships its preset object whole
+(esbuild cannot drop token entries an application never reads), so the catalog,
+not the engine, is the heavy part of a `css()` bundle that imports a large
+preset. The generated shadcn starter export is a safe exception: its default
+configuration is fixed, so it uses a default-only catalog projection and
+excludes the configurable base colors, themes, and fonts. `createShadcnPreset(options)`
+still carries the full generated catalog when an application selects those
+options. The runtime-sheet row uses the minimal preset fixture, so an application whose
 preset carries a large catalog should read the `createCss(defaultPreset)` row as
 the closer analogue, a Tailwind v4 project should read the
 `createCss(tailwindPreset)` row, a Chakra UI v3 project the
 `createCss(chakraPreset)` row, and a Panda project the
 `createCss(pandaPreset)` row. A shadcn/ui project reads the
-`createCss(shadcnPreset)` row, which carries every base color's light and dark
-roles and is therefore the widest catalog in this record.
+`createCss(shadcnPreset)` row, which carries the generated default shadcn roles
+rather than every configurable base color.
 
 ## Pay-per-API and compiler pruning
 
@@ -77,7 +86,7 @@ same size gate checks these tree-shaken entry points:
 | `pandwind/css` — createCss(tailwindPreset) | 42.22 KB | 13.83 KB |
 | `pandwind/css` — createCss(chakraPreset)   | 53.08 KB | 14.50 KB |
 | `pandwind/css` — createCss(pandaPreset)    | 46.34 KB | 13.46 KB |
-| `pandwind/css` — createCss(shadcnPreset)   | 87.21 KB | 16.68 KB |
+| `pandwind/css` — createCss(shadcnPreset)   | 31.53 KB | 10.68 KB |
 | `pandwind/css` — createCss(csstypePreset)  | 19.50 KB |  7.16 KB |
 | `pandwind/css` — createCss(minimal preset) | 14.99 KB |  5.83 KB |
 | `pandwind/unsafe/css` — createUnsafeCss    | 11.72 KB |  4.66 KB |
@@ -169,11 +178,12 @@ engine, is what moves it: 14.99 KB min with the minimal preset, 19.50 KB once
 the structural `csstypePreset` supplies the CSS property vocabulary, 26.01 KB
 once `defaultPreset` adds Pandwind's stock scale groups and its property
 bindings, 42.22 KB with `tailwindPreset`, 53.08 KB with `chakraPreset`, 46.34
-KB with `pandaPreset`, and 87.21 KB with
-`shadcnPreset`, the widest catalog Pandwind ships: shadcn's color roles for
-every base color in both modes, its radius multipliers, and its font variables.
+KB with `pandaPreset`, and 31.53 KB with `shadcnPreset`, whose fixed starter
+projection carries only the default shadcn roles, radius multipliers, and font
+variables. `createShadcnPreset(options)` remains the full configurable lane.
 These standalone rows intentionally bundle the live preset without the Vite
-transform, so every authored catalog entry remains available. Under Vite, the
+transform, so every authored catalog entry remains available for that preset.
+Under Vite, the
 projected-preset lane avoids shipping unused entries when dynamic calls expose
 literal keys; fully static calls erase the preset entirely. An application that
 needs the smallest uncompiled `css()` runtime supplies its own preset and its
@@ -189,7 +199,7 @@ application importing a named-color preset ships.
 | pandwind `css()` (tailwindPreset)            | 42.22 KB | 13.83 KB | Tailwind v4 catalog + resolver + engine   |
 | pandwind `css()` (chakraPreset)              | 53.08 KB | 14.50 KB | Chakra v3 catalog + resolver + engine     |
 | pandwind `css()` (pandaPreset)               | 46.34 KB | 13.46 KB | Panda CSS catalog + resolver + engine     |
-| pandwind `css()` (shadcnPreset)              | 87.21 KB | 16.68 KB | shadcn registry roles + resolver + engine |
+| pandwind `css()` (shadcnPreset)              | 31.53 KB | 10.68 KB | shadcn default roles + resolver + engine  |
 | pandwind `css()` (csstypePreset)             | 19.50 KB |  7.16 KB | property vocabulary + resolver + engine   |
 | pandwind `css()` (minimal preset)            | 14.99 KB |  5.83 KB | resolver + atom engine only               |
 | pandwind `tw()`                              |  2.80 KB |  1.31 KB | variant join syntax alone                 |

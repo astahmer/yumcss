@@ -6,19 +6,22 @@
 
 pandwind now has the core shape of a strong CSS-in-JS system: typed atomic
 styles, deterministic static extraction, `css.vars()` for runtime values,
-`cx()` conflict composition, explicit authored CSS for browser-global rules,
-real browser hydration coverage, provenance/diagnostics, inspector payloads,
-and external CVA interoperability.
+`cx()` conflict composition, explicit authored CSS for full-fidelity
+browser-global rules, the narrow build-time `define.preset({ web: ... })`
+contract for preset-owned flat globals, real browser hydration coverage,
+provenance/diagnostics, inspector payloads, and external CVA interoperability.
 
 The remaining work is primarily contract proof, correctness hardening,
 framework confidence, performance evidence, and adoption documentation. The
-user-facing styling API remains deliberately small.
+user-facing styling API remains deliberately small; the preset web contract is
+intentionally not a general global-rule language.
 
 ## Goal
 
 Make pandwind a trustworthy CSS-in-JS choice across static styles, controlled
-runtime values, authored browser CSS, SSR/hydration, bundlers, diagnostics,
-and performance — without adding a built-in recipe or global-rule API.
+runtime values, authored browser CSS, preset-owned build-time web CSS,
+SSR/hydration, bundlers, diagnostics, and performance — without adding a
+built-in recipe or broad global-rule API.
 
 “Best overall” means the clearest combination of type safety, zero-runtime
 static output, explicit runtime behavior, CSS escape hatches, and verifiable
@@ -70,11 +73,11 @@ tooling — not supporting every CSS feature through one JavaScript syntax.
 
 ### 5. Improve adoption and migration
 
-- Document the recommended architecture: Pandwind atomic CSS + authored web
-  CSS + optional external CVA.
+- Document the recommended architecture: Pandwind atomic CSS + narrow preset
+  web CSS + authored web CSS + optional external CVA.
 - Add migration examples for Panda, StyleX, Emotion/Linaria, and Tailwind.
-- Document package-library patterns for exporting authored CSS assets and
-  token custom properties.
+- Document package-library patterns for exporting preset web CSS, authored CSS
+  assets, and token custom properties.
 - Make analyzer and inspector output understandable without reading internal
   implementation details.
 
@@ -99,21 +102,23 @@ The implementation should prefer tests and tooling over new authoring syntax:
 
 - static declarations continue through the existing extractor;
 - runtime values remain inline custom properties;
-- browser-global semantics remain ordinary CSS owned by the host bundler;
+- preset-owned flat globals, named keyframes, and font faces use the build-time
+  `preset.web` contract; broader browser-global semantics remain ordinary CSS
+  owned by the host bundler;
 - external CVA selects Pandwind-generated class strings;
 - provenance and diagnostics describe which lane owns each output.
 
 ### Tech choices
 
-| Choice          | Decision                                                | Rationale                                                                             |
-| --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Public API      | Keep `tw()` / `css()` / `cx()` / presets frozen         | Preserve a small surface and avoid recipe-style expansion                             |
-| Recipes         | External CVA-style libraries only for now               | CVA already composes Pandwind class strings without a Pandwind runtime feature        |
-| Browser globals | Explicit `.css` imports                                 | Full CSS fidelity and library sharing without inventing a partial TS DSL              |
-| Runtime values  | `css.vars()` and host-owned insertion                   | Serializable SSR behavior without one generated rule per value                        |
-| Framework proof | Vite reference plus one non-Vite unplugin fixture       | Establish a shared contract before expanding matrix breadth                           |
-| Tooling         | Import/rule provenance, diagnostics, inspector payloads | Make static/runtime/authored ownership observable                                     |
-| Release         | Implemented                                             | Publishable metadata, changeset workflow, preflight, provenance, and pack smoke gates |
+| Choice          | Decision                                                | Rationale                                                                                  |
+| --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Public API      | Keep `tw()` / `css()` / `cx()` / presets frozen         | Preserve a small surface and avoid recipe-style expansion                                  |
+| Recipes         | External CVA-style libraries only for now               | CVA already composes Pandwind class strings without a Pandwind runtime feature             |
+| Browser globals | Narrow `preset.web` plus explicit `.css` imports        | Typed preset-owned build output while authored CSS retains full fidelity and host ordering |
+| Runtime values  | `css.vars()` and host-owned insertion                   | Serializable SSR behavior without one generated rule per value                             |
+| Framework proof | Vite reference plus one non-Vite unplugin fixture       | Establish a shared contract before expanding matrix breadth                                |
+| Tooling         | Import/rule provenance, diagnostics, inspector payloads | Make static/runtime/authored ownership observable                                          |
+| Release         | Implemented                                             | Publishable metadata, changeset workflow, preflight, provenance, and pack smoke gates      |
 
 ## What this allows
 
@@ -127,8 +132,9 @@ The implementation should prefer tests and tooling over new authoring syntax:
 ## What this does not allow
 
 - No Pandwind recipes, slots, `styled()`, or composition DSL in this plan.
-- No first-class TypeScript globals, keyframes, font-face, layers, or at-rule
-  API; those remain authored CSS for the web.
+- No broad first-class TypeScript global, layer, or at-rule language. The
+  narrow `preset.web` contract covers flat preset-owned selectors, named
+  keyframes, and typed font faces; full-fidelity constructs remain authored CSS.
 - No arbitrary CSS scanning that reverse-engineers JavaScript APIs.
 - No hidden DOM stylesheet injection for native or non-DOM targets.
 - No release, publish, or compatibility promise before the gates pass.
@@ -191,9 +197,10 @@ interface AuthoredCssImport {
    snapshot gate, CSS/Vite/Rollup browser fixtures, parity/dedup suites, and
    the `cx()` smoke benchmark. Wall-clock build time is intentionally not a
    hard gate because it is machine- and dependency-sensitive.
-4. The adoption guide prioritizes the agreed lanes: Pandwind atoms, authored
-   web CSS, `css.vars()`, and external CVA. Recipe/composition API design and
-   authored TypeScript primitives are deferred to dedicated plans.
+4. The adoption guide prioritizes the agreed lanes: Pandwind atoms, narrow
+   preset web CSS, authored web CSS, `css.vars()`, and external CVA.
+   Recipe/composition API design and broader authored TypeScript primitives
+   remain deferred to dedicated plans.
 
 ## Acceptance criteria
 
@@ -210,8 +217,9 @@ interface AuthoredCssImport {
 - [x] Performance corpus records build, CSS, runtime, and composition costs
       with repeatable regression thresholds.
 - [x] Recommended architecture and migration patterns are documented.
-- [x] No built-in recipe/global-rule authoring API is introduced; release gates
-      are implemented separately in the pivot completion wave.
+- [x] No broad built-in recipe/global-rule authoring API is introduced; the
+      narrow preset web lane is covered by Plan 028, and release gates are
+      implemented separately in the pivot completion wave.
 
 ## Decisions log
 
@@ -219,6 +227,9 @@ interface AuthoredCssImport {
   deferred and external CVA-style packages are supported.
 - 2026-08-27: Browser-global CSS uses explicit `.css` imports; tooling observes
   imports but does not infer APIs from arbitrary CSS.
+- 2026-09-21: Ship the narrow `define.preset({ web: ... })` lane for
+  preset-owned flat globals, named keyframes, and typed font faces; keep broad
+  browser-global syntax in authored CSS.
 - 2026-08-27: Release and publishing use changesets plus explicit preflight and
   pack smoke gates; registry publication remains operator-controlled.
 - 2026-08-27: Use the existing isolated JJ workspace and focused revisions.

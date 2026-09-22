@@ -21,6 +21,10 @@ The current implementation already has useful escape hatches and diagnostics:
 - dynamic `css()` values can use runtime variables;
 - globals, keyframes, font-face rules, layers, and authored CSS are not all
   equivalent to declaration-first style objects;
+- the narrow build-time `define.preset({ web: ... })` lane now covers
+  preset-owned flat globals, named keyframes, and typed font faces, while the
+  broader browser-global surface remains authored CSS or an explicit runtime
+  rule;
 - framework and SSR semantics belong to the host integration;
 - adapter loaders may depend on unstable or optional ecosystem APIs.
 

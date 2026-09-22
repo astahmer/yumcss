@@ -70,8 +70,9 @@ step.
 
 Use pandwindCssVite() (or the equivalent bundler adapter) so literal calls
 are extracted during the build. Use css.vars() or css.input() when a value is
-genuinely known only at runtime. Keep browser-wide concerns such as fonts,
-keyframes, and global selectors in authored CSS.
+genuinely known only at runtime. Presets can also carry flat build-time web
+CSS through `define.preset({ web: ... })`; keep resets, layers, nesting,
+arbitrary at-rules, and host-ordered browser CSS in authored CSS.
 
 ## Learn more
 

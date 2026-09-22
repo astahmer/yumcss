@@ -85,9 +85,9 @@ export function Card() {
 ```
 
 Use `css.vars()` when a value is only known at runtime. Use `css.keyframes()`
-for a component-local animation, and keep global rules, fonts, and layers in
-ordinary authored CSS; they are part of the web platform, not a missing
-Pandwind feature.
+for a component-local animation. A preset can also own flat build-time globals,
+named keyframes, and typed font faces through `define.preset({ web: ... })`;
+keep resets, layers, nesting, and broader browser CSS in ordinary authored CSS.
 
 ## The Tailwind compatibility path
 

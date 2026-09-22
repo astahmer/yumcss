@@ -377,7 +377,7 @@ selectors emitted by the official engine.
 ## Boundaries
 
 The publishable CSS artifact is its own boundary: `vite/lib-artifact.ts` owns
-the `pandwind.lib/2` contract, compatibility fingerprint (including the
+the `pandwind.lib/3` contract, compatibility fingerprint (including the
 cascade layer), content validation,
 and rule-entry types; `packages/codemod/src/lib/` owns source scanning and
 artifact writing; `vite/css.ts` owns explicit package resolution; and
@@ -1130,9 +1130,9 @@ deliberate:
   representative `/` and `/showcase` browser rendering. The proof is recorded
   in `plans/evidence/panda-website-proof.md`.
 - `plans/021-multi-target-backends.md` keeps canvas and build-time Metro
-  intentionally deferred until a concrete consumer requires them, and
-  a `definePreset({ web: ... })` surface remains deliberately deferred rather
-  than becoming a second global-CSS language.
+  intentionally deferred until a concrete consumer requires them. Plan 028
+  ships a narrow `define.preset({ web: ... })` build-time surface without
+  turning the preset into a second global-CSS language.
 - Runtime-only lazy method accessors were rejected after measurement. The
   shipped compiler-aware runtime pruning removes unused attachments without
   imposing a first-access tax on every factory instance.

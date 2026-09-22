@@ -40,9 +40,10 @@ import {
 	normalizeFirstThatWorks,
 } from "./first-that-works.ts";
 import { normalizeCssValue } from "./value-normalization.ts";
-import { normalizeCssVariables } from "./css-variables.ts";
+import { normalizeCssVariables, serializeCssPropertySyntax } from "./css-variables.ts";
 import { createTokenVariableName } from "./token-variable-names.ts";
 import { expandRawStyle } from "./raw.ts";
+import { renderPresetWeb } from "./preset-web.ts";
 
 export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 export { getPropertyPriority } from "./property-priorities.ts";
@@ -167,6 +168,7 @@ export const createStylesheet = (
 
 	const cssVars = new Map<string, TokenDeclaration>();
 	const keyframesCache = new Map<string, Rule>();
+	let presetWebCache: string | undefined;
 
 	const tokenMaps = buildTokenMaps(preset, debug, options.tokenVariableNames);
 	const colorPaletteMaps = buildColorPaletteMaps(preset, tokenMaps.flatTokens, debug);
@@ -258,7 +260,7 @@ export const createStylesheet = (
 	const cssVariableRegistrations = normalizedCssVariables.registrations
 		.map(
 			({ name, descriptor }) =>
-				`@property --${escapeIdentifier(name)}{syntax:${descriptor.syntax};inherits:${String(descriptor.inherits)};initial-value:${descriptor.initialValue}}`,
+				`@property --${escapeIdentifier(name)}{syntax:${serializeCssPropertySyntax(descriptor.syntax)};inherits:${String(descriptor.inherits)};initial-value:${descriptor.initialValue}}`,
 		)
 		.toSorted();
 
@@ -330,6 +332,13 @@ export const createStylesheet = (
 			.toReversed()
 			.map((value) => resolveDeclaration(property, value, rawProperty))
 			.join(";");
+	};
+
+	const resolvePresetWebDeclarations = (property: string, value: string | number): string => {
+		const cssProperty = cssPropertyFromKey(property, preset.conditions);
+		if (cssProperty === "colorPalette")
+			throw new Error("pandwind: preset.web declarations cannot use colorPalette");
+		return resolveDeclarations(cssProperty, normalizeFirstThatWorks(cssProperty, value), property);
 	};
 
 	const processNormalizedStyle = (
@@ -475,6 +484,12 @@ export const createStylesheet = (
 		return name;
 	};
 
+	const web = (): string =>
+		(presetWebCache ??= renderPresetWeb({
+			web: preset.web,
+			resolveDeclarations: resolvePresetWebDeclarations,
+		}));
+
 	/**
 	 * Var-inline toggle rules (plans/014): one rule per flattened key, whose
 	 * declaration resolves the property through a fallback chain across all
@@ -535,8 +550,9 @@ export const createStylesheet = (
 		};
 	};
 
-	const tokenEntries = (): TokenDeclaration[] =>
-		Array.from(cssVars.entries())
+	const tokenEntries = (): TokenDeclaration[] => {
+		web();
+		return Array.from(cssVars.entries())
 			.filter(([path]) => {
 				if (tokenEmission === "all") return true;
 				if (path.startsWith("cssVariables.")) return true;
@@ -551,6 +567,7 @@ export const createStylesheet = (
 				if (prio === 0) return a.declaration.localeCompare(b.declaration);
 				return prio;
 			});
+	};
 
 	const gen = {
 		tokenEntries,
@@ -580,6 +597,8 @@ export const createStylesheet = (
 				.keyframesEntries()
 				.map((rule) => rule.css)
 				.join("\n"),
+		/** Build-time preset-owned globals, named keyframes, and font faces. */
+		web,
 		atomic: () => {
 			return orderedRuleSections()
 				.atomic.map((v) => v.css)
@@ -614,12 +633,13 @@ export const createStylesheet = (
 	const generate = (styles: Array<StyleObject>) => {
 		processStyles(styles);
 
+		const webCss = gen.web();
 		const tokensCss = gen.tokens();
 		const keyframesCss = gen.keyframes();
 		const atomicCss = gen.atomic();
 
 		return wrapCascadeLayer(
-			[tokensCss, keyframesCss, atomicCss].filter(Boolean).join("\n"),
+			[tokensCss, webCss, keyframesCss, atomicCss].filter(Boolean).join("\n"),
 			options.cascade,
 		);
 	};

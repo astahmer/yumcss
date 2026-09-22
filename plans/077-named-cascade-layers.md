@@ -155,3 +155,7 @@ semantic CSS feature and is intentionally not part of this change.
 | ---------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | 2026-09-21 | Use a structured `cascade` value with a legacy shorthand | Keeps mode and layer ownership explicit without adding a silently inert top-level option.      |
 | 2026-09-21 | Version artifacts as `pandwind.lib/2`                    | Layer identity is part of compatibility; old artifacts lack the field and must not be trusted. |
+
+The later `plans/028-define-preset-web-notes.md` completion wave supersedes
+the artifact envelope with `pandwind.lib/3` so generated preset-owned web CSS
+is carried and validated alongside the existing rule entries.

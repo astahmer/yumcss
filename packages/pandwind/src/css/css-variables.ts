@@ -16,6 +16,18 @@ export interface NormalizedCssVariables {
 	readonly registrations: readonly CssVariableRegistration[];
 }
 
+/** CSS grammar descriptors are string values in an `@property` rule. */
+export const serializeCssPropertySyntax = (syntax: string): string => {
+	const trimmed = syntax.trim();
+	if (
+		trimmed.length >= 2 &&
+		((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+			(trimmed.startsWith("'") && trimmed.endsWith("'")))
+	)
+		return trimmed;
+	return JSON.stringify(syntax);
+};
+
 const isDescriptor = (value: object): value is CssVariableDescriptor =>
 	"syntax" in value && "inherits" in value && "initialValue" in value;
 

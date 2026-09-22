@@ -25,7 +25,8 @@ sources.
 Repeat `--include` for source globs and `--css-source` for custom CSS factory
 module names. The command scans source with the shared workspace, compiles
 literal `css()`/`css.class()` calls, includes structural rules for
-`css.vars()`, and writes a deterministic `pandwind.lib/2` artifact.
+`css.vars()`, preset-owned `web` CSS, and writes a deterministic
+`pandwind.lib/3` artifact.
 
 The artifact records used token declarations, stable rule identities and
 priorities, source content hashes, and a compatibility fingerprint covering

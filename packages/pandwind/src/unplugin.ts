@@ -217,10 +217,18 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 			};
 		};
 		const publicId = options.virtualId ?? "pandwind:css";
-		const resolvedId = `\0${publicId}.css`;
 		const contextPath = realpathSync(webpackCompiler.options.context ?? process.cwd());
 		const prefix = resolve(contextPath, "_virtual_");
-		const virtualPath = prefix + encodeURIComponent(resolvedId);
+		const runtimePrefix = "pandwind:runtime/css?";
+		const virtualPathFor = (source: string): string | undefined => {
+			const resolved = core.resolveId(source);
+			if (resolved === null) return undefined;
+			return prefix + encodeURIComponent(resolved);
+		};
+		const virtualPath = virtualPathFor(publicId);
+		if (virtualPath === undefined) return;
+		const isVirtualSource = (source: string | undefined): boolean =>
+			source === publicId || source?.startsWith(runtimePrefix) === true;
 		const compilerWithFactory = compiler as {
 			hooks?: {
 				normalModuleFactory?: {
@@ -239,10 +247,12 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 					};
 				};
 				normalModuleFactory.hooks?.beforeResolve?.tap("pandwind:webpack-virtual-css", (data) => {
-					if (data.request !== publicId) return;
-					state.__vfs?.writeModule(virtualPath, "");
-					state.__vfsModules?.add(virtualPath);
-					data.request = virtualPath;
+					if (!isVirtualSource(data.request)) return;
+					const target = virtualPathFor(data.request!);
+					if (target === undefined) return;
+					state.__vfs?.writeModule(target, "");
+					state.__vfsModules?.add(target);
+					data.request = target;
 				});
 			},
 		);
@@ -274,10 +284,12 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 					.tapAsync(
 						"pandwind:webpack-virtual-css",
 						(request: { request?: string }, context: unknown, callback: WebpackCallback) => {
-							if (request.request !== publicId) return callback();
+							if (!isVirtualSource(request.request)) return callback();
+							const targetPath = virtualPathFor(request.request!);
+							if (targetPath === undefined) return callback();
 							webpackResolver.doResolve(
 								target,
-								{ ...request, request: virtualPath },
+								{ ...request, request: targetPath },
 								null,
 								context,
 								callback,

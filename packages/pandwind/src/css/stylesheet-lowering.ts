@@ -51,6 +51,7 @@ export const parseCondition = (
 	if (isSelectorList(selector)) conditions.selectorLists.push(selector);
 	else if (isSelfSelector(selector)) conditions.selfSelectors.push(selector.slice(1));
 	else if (isParentSelector(selector)) conditions.parentSelectors.push(selector.slice(0, -1));
+	else if (selector.includes("&")) conditions.selectorLists.push(selector);
 	else if (isAtRule(selector)) conditions.atRules.push(selector);
 	else return true;
 	return;
@@ -65,6 +66,14 @@ export const genCSSRule = (decls: string, conditions: ParsedConditions): string 
 				const selectors = splitSelectorList(list);
 				return selectors
 					.map((selector) => {
+						if (
+							selector.includes("&") &&
+							!isSelfSelector(selector) &&
+							!isParentSelector(selector)
+						) {
+							const base = scopedClassName(className, selfSelectors);
+							return `${parentSelectors.join("")}${selector.replaceAll("&", base)}${selfSelectors.join("")}`;
+						}
 						const selfs = [...selfSelectors];
 						const parents = [...parentSelectors];
 						if (isSelfSelector(selector)) selfs.push(selector.slice(1));

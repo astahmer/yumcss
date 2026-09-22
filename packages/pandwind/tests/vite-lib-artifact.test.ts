@@ -26,6 +26,7 @@ const makeArtifact = () => {
 		compatibility: createPandwindLibCompatibility(examplePreset),
 		sources: [{ path: "src/button.ts", hash: "source" }],
 		tokens: sheet.gen.tokenEntries(),
+		web: sheet.gen.web(),
 		atomic: sheet.gen.atomicEntries(),
 		vars: sheet.gen.varEntries(),
 	});
@@ -99,6 +100,7 @@ describe("Pandwind lib Vite consumption", () => {
 			compatibility: createPandwindLibCompatibility(examplePreset, { namespace: "library" }),
 			sources: base.sources,
 			tokens: base.tokens,
+			web: base.web,
 			atomic: base.rules.atomic,
 			vars: base.rules.vars,
 		});
@@ -117,6 +119,7 @@ describe("Pandwind lib Vite consumption", () => {
 			compatibility: createPandwindLibCompatibility(examplePreset, { cascade }),
 			sources: base.sources,
 			tokens: base.tokens,
+			web: base.web,
 			atomic: base.rules.atomic,
 			vars: base.rules.vars,
 		});

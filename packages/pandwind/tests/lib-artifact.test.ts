@@ -14,6 +14,7 @@ const artifactInput = () => ({
 		{ path: "src/a.ts", hash: "a" },
 	],
 	tokens: [{ declaration: ":root{--colors-blue-500:#3182ce}", priority: 2 }],
+	web: "",
 	atomic: [
 		{ id: "z", css: ".z{color:red}", priority: 2 },
 		{ id: "a", css: ".a{color:blue}", priority: 1 },

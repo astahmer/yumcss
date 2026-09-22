@@ -63,11 +63,12 @@ from what the build actually accepts.
 
 ### Keep browser-wide behavior in CSS
 
-Globals, fonts, layers, and complex selectors belong naturally in authored
-`.css` files. Pandwind can discover and report those files, but it does not
-force every browser primitive through a TypeScript API. A component-local
-animation is the one exception: `css.keyframes()` gives it a build-time
-carrier that emits a plain `@keyframes` rule.
+Broad globals, fonts, layers, and complex selectors belong naturally in
+authored `.css` files. A preset can also own flat build-time selectors, named
+keyframes, and typed font faces through `define.preset({ web: ... })`; Pandwind
+does not force every browser primitive through a TypeScript API. A
+component-local animation remains available through `css.keyframes()`, which
+emits a plain `@keyframes` rule.
 
 ### Be honest about migrations
 

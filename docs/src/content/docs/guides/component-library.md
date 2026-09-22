@@ -127,9 +127,10 @@ cascade mode and layer, and class-output strategy before its rules are merged. K
 same Pandwind preset semantics on both sides; token/property/condition or
 compiler mismatches fail the build with the differing compatibility fields.
 Use `pandwind-codemod lib build --check` in the library's CI to catch stale
-output. The artifact contains extracted atomic and variable-carrier rules plus
-used token declarations; it does not replace the library's JavaScript runtime,
-dynamic `css.vars()` values, or authored CSS imports.
+output. The artifact contains extracted atomic and variable-carrier rules,
+used token declarations, and the generated `preset.web` section; it does not
+replace the library's JavaScript runtime, dynamic `css.vars()` values, or
+authored CSS imports.
 
 Runtime pruning is a separate JavaScript-build concern. If the library ships
 unbundled modules that still import Pandwind factories, run its distributable
@@ -181,12 +182,13 @@ stylesheet without pretending they are static.
 
 ## Authored CSS and escape hatches
 
-Some components need global rules, fonts, or browser-specific features. Keep
-those in an explicit authored CSS file, export it as a named entry, and
-include it in the component's validation fixtures. A component-local
-animation is the exception: use `css.keyframes()` so the build emits the
-`@keyframes` rule with the rest of the generated CSS. The analyzer should be
-able to distinguish authored CSS from generated atoms.
+Some components need global rules, fonts, or browser-specific features. Use
+`preset.web` for flat preset-owned selectors, explicitly named keyframes, and
+typed font-face descriptors. Keep resets, layers, nesting, arbitrary at-rules,
+and browser-specific escape-hatch CSS in an explicit authored CSS file, export
+it as a named entry, and include it in the component's validation fixtures.
+The analyzer should distinguish authored CSS from generated atoms and preset
+web output.
 
 ## Test the library as a product
 

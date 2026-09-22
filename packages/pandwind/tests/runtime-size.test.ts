@@ -308,10 +308,9 @@ test("runtime entries stay stylex-sized", async () => {
 	if (updatingSnapshots()) writePerformanceSummary();
 
 	// The build-time generator must never ride along in the runtime entry.
-	// The postcss-selector-parser chain used to define the generator's
-	// scale, so a derived ratio worked; it now compiles to ~7KB gz, making
-	// ratios meaningless. The hard budget above is the direct ceiling proving
-	// the generator stays out of bundles.
+	// The build-time preset.web serializer is intentionally part of this
+	// generator. The hard budget above records its direct cost and proves the
+	// generator stays out of browser bundles.
 
 	// Root-barrel imports tree-shake down to the single engine: each one is
 	// within 300 gz bytes of its direct subpath import (no barrel overhead)…

@@ -377,16 +377,17 @@ pandwindCssVite(css, { namespace: "checkout" });
 
 ### At-rules: local conditions versus global CSS
 
-Pandwind has two deliberately different at-rule lanes. Use a typed style
-condition when the rule belongs to an element; use authored CSS or the
-explicit runtime sheet when it changes the stylesheet itself:
+Pandwind has deliberately different local, preset-web, authored-CSS, and
+runtime semantic lanes. Use a typed style condition when the rule belongs to
+an element; use `preset.web`, authored CSS, or the explicit runtime sheet when
+it changes the stylesheet itself:
 
-| Need                                                      | Use                                                       | What happens                                                                                                                            |
-| --------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                                                  |
-| Browser-global registration and definitions               | `cssVariables` or authored CSS                            | Preset `cssVariables` emits flat values, condition-aware values, and `@property` descriptors; the host still owns unrelated global CSS. |
-| A component-local animation body                          | `css.keyframes({ ... })`                                  | The build emits a deterministic `@keyframes` rule into the Pandwind stylesheet and returns the animation name; see below.               |
-| A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.                                          |
+| Need                                                      | Use                                                       | What happens                                                                                                                                                               |
+| --------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                                                                                     |
+| Browser-global registration and definitions               | `preset.web`, `cssVariables`, or authored CSS             | `preset.web` emits flat preset-owned selectors, named keyframes, and font faces; `cssVariables` emits values and `@property` descriptors; the host still owns broader CSS. |
+| A component-local animation body                          | `css.keyframes({ ... })`                                  | The build emits a deterministic `@keyframes` rule into the Pandwind stylesheet and returns the animation name; see below.                                                  |
+| A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.                                                                             |
 
 For example, `@container` is a normal typed condition on a local class:
 
@@ -467,9 +468,12 @@ inside one (`_hover`, `@media`) are rejected at build time rather than
 silently dropped; a body the extractor cannot prove literal stays on the
 runtime call and is reported as an unsupported construct.
 
-This lane is deliberately narrower than authored CSS. It covers
-component-local animations only; keep resets, `@font-face`, `@property`,
-cascade layers, and global selectors in the authored CSS lane above.
+This lane is deliberately narrower than authored CSS. For preset-owned
+build-time globals, `define.preset({ web: ... })` supports flat selector rules,
+explicitly named keyframes, and typed font-face descriptors. Keep resets,
+`@property`, cascade layers, nesting, arbitrary at-rules, and host-owned global
+CSS in the authored CSS lane above. The preset web section is build-only and
+does not add runtime stylesheet work.
 
 Pandwind does not provide a recipe API. If you need variant selection, use an
 external CVA-style package with the class strings returned by `css()` and

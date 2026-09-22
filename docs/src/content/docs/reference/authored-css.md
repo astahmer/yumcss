@@ -5,9 +5,9 @@ sidebar:
   order: 5
 ---
 
-pandwind keeps browser-global CSS in ordinary CSS files. Import those files
-through your application or package entrypoint and let the host bundler own
-their parsing, ordering, and emission:
+pandwind keeps full-fidelity browser-global CSS in ordinary CSS files. Import
+those files through your application or package entrypoint and let the host
+bundler own their parsing, ordering, and emission:
 
 ```tsx
 // src/main.tsx
@@ -16,18 +16,50 @@ import "@acme/brand/animations.css";
 import "./app";
 ```
 
-Use this lane for things that are not element-local atomic declarations:
+Use this lane for things that are not supported by the narrow build-time
+`define.preset({ web: ... })` contract, including:
 
 - global selectors and resets;
 - `@font-face` declarations;
-- cascade layers, `@supports`, and other authored at-rules;
+- cascade layers, `@supports`, `@property`, and other authored at-rules;
 - complex selectors or vendor-specific CSS that should remain recognizable as
   CSS.
 
-A component-local animation is the exception: `css.keyframes({ ... })` returns
-a deterministic animation name and lets the build emit the matching
+For preset-owned, build-time globals that only need flat declarations, use the
+typed web section instead of an additional CSS import:
+
+```ts
+import { define } from "pandwind/preset";
+
+export const preset = define.preset(
+	{ config: {}, tokens: { colors: { "$brand-900": "#172554" } } },
+	{
+		conditions: {},
+		properties: { color: { $tokens: "colors" } },
+		web: {
+			globals: { ":root": { color: "$brand-900" } },
+			keyframes: {
+				fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+			},
+			fontFaces: {
+				body: { family: "Brand", src: 'url("/fonts/brand.woff2") format("woff2")' },
+			},
+		},
+	},
+);
+```
+
+The Vite/Unplugin build emits these rules in the generated stylesheet and
+`pandwind.lib/3` carries them for registered component-library artifacts.
+`web.globals` accepts selector-to-flat-declaration rules only; keyframe names
+are explicit CSS identifiers and font-face descriptor values remain authored
+CSS values. The runtime stylesheet does not consume this section, so the
+contract adds no browser runtime work.
+
+A component-local animation is a separate exception: `css.keyframes({ ... })`
+returns a deterministic animation name and lets the build emit the matching
 `@keyframes` rule into the Pandwind stylesheet, so the body never ships as a
-runtime call. Everything above stays authored CSS. See
+runtime call. See
 [`css.keyframes`](/api/css/#component-local-keyframes).
 
 ### Registering a typed custom property
@@ -94,14 +126,9 @@ const className = css.class({
 ```
 
 Do not try to express a global rule as `css.global(...)`. Global selectors are
-intentionally not part of the frozen Pandwind API. An authored CSS import is
-explicit, portable across the web toolchain, and also usable by a library
-consumer without requiring a runtime stylesheet registry.
-
-`definePreset` likewise has no `web` section for globals, fonts, or keyframes.
-Keeping browser-global authoring in CSS preserves the platform's full syntax,
-ordering, and bundler behavior without creating a second CSS language inside
-design-token configuration.
+not runtime CSS-factory calls. Use `preset.web` for the small typed build-time
+contract, or an authored CSS import when the rule needs the platform's full
+syntax, native ordering, or host-bundler behavior.
 
 ## Sharing tokens with authored CSS
 

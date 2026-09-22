@@ -301,6 +301,7 @@ const artifact = createPandwindLibArtifact({
 	compatibility,
 	sources: [{ path: "runtime-api.ts", hash: "runtime-api" }],
 	tokens: [],
+	web: "",
 	atomic: [],
 	vars: [],
 });
@@ -812,6 +813,7 @@ const SCENARIOS: readonly RuntimeScenarioDefinition[] = [
 				compatibility,
 				sources: artifact.sources,
 				tokens: artifact.tokens,
+				web: artifact.web,
 				atomic: artifact.rules.atomic,
 				vars: artifact.rules.vars,
 			}),

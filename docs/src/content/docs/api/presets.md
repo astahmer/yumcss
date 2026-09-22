@@ -65,6 +65,53 @@ Authored mappings omit the leading `--`; CSS punctuation is escaped when the
 declaration and its `var(...)` reference are emitted. Mappings may be partial,
 so an unmapped token keeps its hashed fallback.
 
+## Build-time web CSS
+
+Use `web` when a design-system preset owns a small amount of browser-global CSS
+that should be emitted with the preset's generated stylesheet:
+
+```ts
+const preset = define.preset(
+	{ config: {}, tokens: { colors: { "$brand-900": "#172554" } } },
+	{
+		conditions: {},
+		properties: { color: { $tokens: "colors" } },
+		web: {
+			globals: {
+				":root": { color: "$brand-900" },
+				"[data-theme='dark']": { color: "#f8fafc" },
+			},
+			keyframes: {
+				fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+			},
+			fontFaces: {
+				body: {
+					family: "Brand",
+					src: ['url("/fonts/brand.woff2") format("woff2")'],
+					display: "swap",
+				},
+			},
+		},
+	},
+);
+```
+
+`web.globals` is a sorted selector-to-flat-declaration map. Its scalar values
+use the same token-variable resolution as ordinary stylesheet declarations;
+nullish values are omitted. `web.keyframes` names are explicit CSS identifiers
+so application code can reference `fadeIn` without a registry or generated
+counter. `web.fontFaces` uses typed descriptor fields and preserves the source
+fallback order.
+
+The build-time stylesheet compiler and Vite/Unplugin output include this CSS;
+route splitting keeps it in the common bucket, and `pandwind.lib/3` artifacts
+carry it for registered component libraries. The runtime stylesheet does not
+consume `web`, so importing a preset does not create a browser-global side
+effect. This is intentionally not a second CSS language: use authored CSS for
+resets, nesting, cascade layers, `@supports`, `@property`, arbitrary at-rules,
+vendor syntax, or host-controlled import ordering. See [Authored CSS on the
+web](/reference/authored-css/).
+
 Use `define.theme` when a theme is named, exported, or composed independently.
 When the theme is only passed to one `define.preset` call, inline the
 `{ config, tokens }` object. Both forms are equivalent at runtime; the direct
@@ -82,7 +129,7 @@ contract does not silently become a design-token contract:
 | `tailwindPreset`     | `pandwind/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`                          |
 | `chakraPreset`       | `pandwind/preset/chakra`      | Chakra UI v3's vocabulary and color modes, widest catalog    |
 | `pandaPreset`        | `pandwind/preset/panda`       | Panda CSS's token scales, conditions, and color paths        |
-| `shadcnPreset`       | `pandwind/preset/shadcn`      | shadcn/ui's registry roles, radii, and fonts, widest catalog |
+| `shadcnPreset`       | `pandwind/preset/shadcn`      | shadcn/ui's default registry roles, radii, and fonts         |
 | `createShadcnPreset` | `pandwind/preset/shadcn`      | the same preset, parameterized by the create-page selections |
 | `examplePreset`      | `@pandwind/example-preset`    | the repository's rich semantic-token and palette showcase    |
 
@@ -182,11 +229,13 @@ literal, while punctuation such as `.` or `/` is CSS-escaped in declarations
 and `var(...)` references. Whitespace, NUL characters, leading `--`, and
 duplicate names fail closed; tokens without a mapping keep their hashed
 fallback.
-Because the preset carries every base color's light and dark roles rather than
-one resolved theme, it is the widest catalog Pandwind publishes: a
-`createCss(shadcnPreset)` bundle is 85.08 KB min / 15.95 KB gzip against
-51.17 KB / 13.81 KB for `createCss(chakraPreset)`. Reach for it when a
-shadcn/ui project's registry variables are the migration target.
+The exported `shadcnPreset` uses a generated default-only projection, so a
+`createCss(shadcnPreset)` bundle is 31.53 KB min / 10.68 KB gzip. It keeps the
+same resolved behavior as `createShadcnPreset()` with no options while leaving
+configurable base colors, themes, and fonts out of the starter bundle. An
+application that calls `createShadcnPreset(options)` pays for the complete
+catalog needed to resolve those selections. Reach for it when a shadcn/ui
+project's registry variables are the migration target.
 
 ## A complete typed preset
 

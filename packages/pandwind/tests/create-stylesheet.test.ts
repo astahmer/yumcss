@@ -56,10 +56,10 @@ test("emits flat cssVariables through preset conditions and registrations", () =
 	expect(build).toContain(":root {--radius: 1rem;}");
 	expect(build).toContain(".dark {--accent: blue;}");
 	expect(build).toContain("@media (min-width: 768px)");
-	expect(build).toContain("@property --progress{syntax:<number>;inherits:false;initial-value:0}");
+	expect(build).toContain('@property --progress{syntax:"<number>";inherits:false;initial-value:0}');
 	expect(runtime).toContain(":root {--radius: 1rem;}");
 	expect(runtime).toContain(".dark {--accent: blue;}");
-	expect(runtime).toContain("@property --progress{syntax:<number>;inherits:false;initial-value:0}");
+	expect(runtime).toContain('@property --progress{syntax:"<number>";inherits:false;initial-value:0}');
 });
 
 test("authored token names are opt-in and collisions fail closed", () => {
@@ -257,7 +257,23 @@ test("css gen prop preserves class specificity inside zero-specificity selectors
         "priority": 3040,
       },
     }
-  `);
+	`);
+});
+
+test("css gen prop supports self selectors inside zero-specificity functions", () => {
+	const sheet = createStylesheet(examplePreset, { debug: false });
+	const css = createUnsafeCss({ debug: false });
+	const rules = sheet.process([
+		css.raw({
+			":where(&)": {
+				color: "$red-800",
+			},
+		}),
+	]);
+
+	expect([...rules.values()][0]?.css).toMatchInlineSnapshot(
+		`":where(.\\31 yu2dzo){color:#822727}"`,
+	);
 });
 
 test("css gen prop in arbitrary descendant selector", () => {

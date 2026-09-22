@@ -14,13 +14,15 @@ Use each lane for the job it is good at:
 | Typed local styles and variants already known at build time | `css()` / `createDesignCss()` | Pandwind extraction                      |
 | Tailwind utilities or an existing Tailwind theme            | `tw()`                        | Tailwind compilation                     |
 | Runtime values such as user-selected colors                 | `css.vars()`                  | Inline custom properties, host rendering |
-| Globals, fonts, layers, and complex selectors               | Explicit `.css` imports       | The web bundler                          |
+| Preset-owned flat globals, named keyframes, and font faces  | `define.preset({ web: ... })` | Pandwind build output                    |
+| Resets, layers, and complex selectors                       | Explicit `.css` imports       | The web bundler                          |
 | A component-local animation body                            | `css.keyframes()`             | Pandwind extraction                      |
 | Variant selection and compound conditions                   | External CVA-style package    | Class-string selection                   |
 
 This keeps the public Pandwind API small while making every output lane
-visible in build output and tooling. See [Authored CSS on the web](/reference/authored-css/)
-for the browser-global boundary.
+visible in build output and tooling. See [Preset contracts](/api/presets/) for
+the typed build-time web lane and [Authored CSS on the web](/reference/authored-css/)
+for the complete browser-global boundary.
 
 ## Variants without a Pandwind recipe API
 
@@ -62,11 +64,12 @@ A component library can ship both lanes without a runtime registry:
 }
 ```
 
-The library documents `import "@acme/components/styles.css"` for resets,
-fonts, layers, and other authored rules. Its component modules use
-Pandwind class strings. If authored CSS consumes design tokens, export a
-token CSS entry containing stable `--pw-*` custom properties and reference
-those variables from the authored stylesheet.
+The library can publish a `pandwind.lib.json` artifact, which carries extracted
+rules, used tokens, and generated `preset.web` CSS. Document
+`import "@acme/components/styles.css"` for resets, layers, and other authored
+rules. Its component modules use Pandwind class strings. If authored CSS
+consumes design tokens, export a token CSS entry containing stable `--pw-*`
+custom properties and reference those variables from the authored stylesheet.
 
 ## Migration map
 
