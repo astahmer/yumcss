@@ -58,6 +58,23 @@ making you parse JSON:
   anything is removed.
 - **History** — compare saved inspector runs when history is enabled.
 
+The Usage view groups tokens by catalog category and shows catalog coverage,
+the hottest entries, and tokens not observed by the current scan. Authored
+shorthand such as `$blue-600` is normalized against its catalog group before
+it is compared with the preset, so an observed color is not reported as an
+unused `colors/$blue-600` entry. “Not observed” remains a conservative scan
+result; use the Governance view for removal safety.
+
+The header confidence badge explains how much to trust the current snapshot:
+`extraction-backed` means structured extraction and resolved project policy are
+available, `static source scan` means the view is based on source scanning
+without full governance context, and `conservative` calls out dynamic,
+runtime, unresolved-import, missing-CSS, or other coverage boundaries.
+
+Usage also includes a focused WCAG checker for one selected text/background
+palette pair. It reports the ratio and AA status without generating a noisy
+all-colors matrix; source pairs that fail contrast remain listed separately.
+
 The Inspector is read-only. It is a lens over analyzer results, not another
 compiler or a second source of truth.
 
