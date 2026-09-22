@@ -17,7 +17,7 @@ import type { PandwindEngineContext } from "./engine-context.ts";
 export interface StackFoldOptions {
 	/** Shared engine used by `createStack(css)` and `pandwindCssVite`. */
 	readonly engine?: PandwindEngineContext;
-	/** JSX attribute spelling for the selected renderer. Defaults to `className`. */
+	/** Attribute spelling for the selected renderer. Defaults to `className`. */
 	readonly classAttribute?: "className" | "class";
 }
 
@@ -41,6 +41,15 @@ interface FoldTarget {
 	selfClosing: boolean;
 	attrsText: string;
 	classes: string | null;
+}
+
+interface NativeFoldTarget {
+	openingStart: number;
+	openingEnd: number;
+	closingStart: number;
+	closingEnd: number;
+	selfClosing: boolean;
+	classes: string;
 }
 
 function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } {
@@ -82,6 +91,92 @@ const sourceId = (id: string): string => id.split(/[?#]/u, 1)[0]!;
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const attributeName = (part: string): string => /^([A-Za-z_][\w:.-]*)/u.exec(part)?.[1] ?? "";
+
+const splitTopLevelAttributes = (openingText: string): readonly string[] => {
+	const withoutTag = openingText
+		.replace(/^<Stack/u, "")
+		.replace(/\s*\/?>(?:$)/u, "")
+		.trim();
+	let depth = 0;
+	let quote: '"' | "'" | undefined;
+	let current = "";
+	const parts: string[] = [];
+	for (const character of withoutTag) {
+		if (quote !== undefined) {
+			current += character;
+			if (character === quote) quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'") {
+			quote = character;
+			current += character;
+			continue;
+		}
+		if ("([{".includes(character)) depth++;
+		if (character === ")" || character === "]" || character === "}") depth--;
+		if (depth === 0 && /\s/u.test(character) && current.trim() !== "") {
+			parts.push(current.trim());
+			current = "";
+			continue;
+		}
+		current += character;
+	}
+	if (current.trim() !== "") parts.push(current.trim());
+	return parts;
+};
+
+const evaluateStaticExpression = (expression: string): unknown => {
+	try {
+		const parsed = SOURCE_SCANNER_SERVICE.parse({
+			file: "/pandwind/stack-expression.tsx",
+			source: `const value = ${expression};`,
+		});
+		const program = parsed.program as unknown as {
+			body?: readonly {
+				type?: string;
+				declarations?: readonly { init?: OxcNode }[];
+			}[];
+		};
+		const declaration = program.body?.[0];
+		if (declaration?.type !== NodeKind.VariableDeclaration) return undefined;
+		return evalLiteral(declaration.declarations?.[0]?.init as never);
+	} catch {
+		return undefined;
+	}
+};
+
+const readNativeAttributes = (openingText: string): { attrs: JsxAttr[] } => {
+	const attrs: JsxAttr[] = [];
+	for (const part of splitTopLevelAttributes(openingText)) {
+		const name = attributeName(part);
+		if (name === "") {
+			attrs.push({ name: "", value: undefined, dynamic: true, raw: part });
+			continue;
+		}
+		const assignment = part.slice(name.length).trim();
+		if (!assignment.startsWith("=")) {
+			attrs.push({ name, value: undefined, dynamic: true, raw: part });
+			continue;
+		}
+		const rawValue = assignment.slice(1).trim();
+		if (
+			(rawValue.startsWith('"') && rawValue.endsWith('"')) ||
+			(rawValue.startsWith("'") && rawValue.endsWith("'"))
+		) {
+			attrs.push({ name, value: rawValue.slice(1, -1), dynamic: false, raw: part });
+			continue;
+		}
+		if (rawValue.startsWith("{") && rawValue.endsWith("}")) {
+			const value = evaluateStaticExpression(rawValue.slice(1, -1).trim());
+			attrs.push({ name, value, dynamic: value === undefined, raw: part });
+			continue;
+		}
+		attrs.push({ name, value: undefined, dynamic: true, raw: part });
+	}
+	return { attrs };
+};
 
 const STACK_DIRECTIONS = new Set(["row", "column", "row-reverse", "column-reverse"]);
 const STACK_ALIGNS = new Set(["start", "center", "end", "stretch", "baseline"]);
@@ -238,6 +333,165 @@ export function foldStackElements(
 	return { code: out, folded: targets.length };
 }
 
+const NATIVE_STACK_TAG = /<\/?Stack(?=\s|\/?>)/gu;
+
+const findNativeTagEnd = (code: string, start: number): number => {
+	let depth = 0;
+	let quote: '"' | "'" | undefined;
+	for (let index = start; index < code.length; index++) {
+		const character = code[index]!;
+		if (quote !== undefined) {
+			if (character === quote) quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'") {
+			quote = character;
+			continue;
+		}
+		if (character === "{") depth++;
+		if (character === "}") depth--;
+		if (character === ">" && depth === 0) return index + 1;
+	}
+	return -1;
+};
+
+const isInsideNativeCodeBlock = (code: string, index: number): boolean => {
+	const scriptStart = code.lastIndexOf("<script", index);
+	const scriptEnd = code.lastIndexOf("</script>", index);
+	const styleStart = code.lastIndexOf("<style", index);
+	const styleEnd = code.lastIndexOf("</style>", index);
+	return scriptStart > scriptEnd || styleStart > styleEnd;
+};
+
+const findNativeClosingTag = (
+	code: string,
+	openingEnd: number,
+): { start: number; end: number } | undefined => {
+	let depth = 1;
+	for (const match of code.matchAll(NATIVE_STACK_TAG)) {
+		const start = match.index!;
+		if (start < openingEnd) continue;
+		if (code[start + 1] === "/") {
+			depth--;
+			if (depth === 0) {
+				const end = code.indexOf(">", start);
+				return end === -1 ? undefined : { start, end: end + 1 };
+			}
+			continue;
+		}
+		const end = findNativeTagEnd(code, start);
+		if (end === -1) return undefined;
+		if (!code.slice(start, end).trimEnd().endsWith("/>")) depth++;
+	}
+	return undefined;
+};
+
+const foldNativeStackElements = (
+	code: string,
+	id: string,
+	options: StackFoldOptions = {},
+): { code: string; folded: number } => {
+	const source = sourceId(id);
+	options.engine?.clearPreparedStyles(source);
+	if (!code.includes("<Stack")) return { code, folded: 0 };
+
+	const targets: NativeFoldTarget[] = [];
+	for (const match of code.matchAll(NATIVE_STACK_TAG)) {
+		const start = match.index!;
+		if (code[start + 1] === "/" || isInsideNativeCodeBlock(code, start)) continue;
+		const openingEnd = findNativeTagEnd(code, start);
+		if (openingEnd === -1) continue;
+		const openingText = code.slice(start, openingEnd);
+		const { attrs } = readNativeAttributes(openingText);
+		const known = attrs.filter((attribute) => STACK_PROPS.has(attribute.name));
+		const classAttr = attrs.find((attribute) => attribute.name === "class");
+		if (
+			known.some((attribute) => attribute.dynamic) ||
+			attrs.some(
+				(attribute) => attribute.dynamic && (attribute.name === "" || attribute.name === "class"),
+			) ||
+			(classAttr !== undefined &&
+				classAttr.value !== undefined &&
+				typeof classAttr.value !== "string" &&
+				typeof classAttr.value !== "number")
+		)
+			continue;
+
+		const props: Record<string, unknown> = {};
+		for (const attribute of known) {
+			if (attribute.value === undefined) continue;
+			props[attribute.name] = attribute.value;
+		}
+		if (!isStackProps(props)) continue;
+		const classes =
+			options.engine === undefined
+				? stackClasses(props)
+				: options.engine.foldLiteralStyle(stackStyle(props), source);
+		if (classes === null) continue;
+		const extraClass = classAttr?.value;
+		const mergedClasses =
+			typeof extraClass === "string" || typeof extraClass === "number"
+				? `${classes}${String(extraClass) === "" ? "" : ` ${extraClass}`}`
+				: classes;
+		const selfClosing = openingText.trimEnd().endsWith("/>");
+		let closingStart = -1;
+		let closingEnd = -1;
+		if (!selfClosing) {
+			const closing = findNativeClosingTag(code, openingEnd);
+			if (closing === undefined) continue;
+			if (/<Stack(?=\s|\/?>)/u.test(code.slice(openingEnd, closing.start))) continue;
+			closingStart = closing.start;
+			closingEnd = closing.end;
+		}
+		targets.push({
+			openingStart: start,
+			openingEnd,
+			closingStart,
+			closingEnd,
+			selfClosing,
+			classes: mergedClasses,
+		});
+	}
+
+	if (targets.length === 0) return { code, folded: 0 };
+
+	type Edit = { start: number; end: number; text: string };
+	const edits: Edit[] = [];
+	for (const target of targets) {
+		const passthrough = passthroughAttrs(
+			code.slice(target.openingStart, target.openingEnd),
+			"class",
+		);
+		const inner = passthrough === "" ? "" : ` ${passthrough}`;
+		if (target.selfClosing) {
+			edits.push({
+				start: target.openingStart,
+				end: target.openingEnd,
+				text: `<div class="${target.classes}"${inner}></div>`,
+			});
+			continue;
+		}
+		edits.push({
+			start: target.openingStart,
+			end: target.openingEnd,
+			text: `<div class="${target.classes}"${inner}>`,
+		});
+		edits.push({ start: target.closingStart, end: target.closingEnd, text: "</div>" });
+	}
+
+	let out = code;
+	for (const edit of edits.toSorted((left, right) => right.start - left.start)) {
+		out = out.slice(0, edit.start) + edit.text + out.slice(edit.end);
+	}
+	if (!/<Stack(?=\s|\/?>)/u.test(out)) {
+		out = out.replace(
+			/\n?import\s+Stack\s+from\s+["']pandwind\/stack\/(?:svelte|astro)["'];?\n/gu,
+			"\n",
+		);
+	}
+	return { code: out, folded: targets.length };
+};
+
 function stripImportLines(code: string): string {
 	return code.replace(/^import[^\n]*\n/gm, "");
 }
@@ -294,9 +548,14 @@ export function stackFoldVite(options: StackFoldOptions = {}): {
 		name: "pandwind:stack-fold",
 		enforce: "pre",
 		transform(code: string, id: string) {
-			if (/[?#]/u.test(id) || !/\.[cm]?[jt]sx$/.test(id)) return null;
-			const result = foldStackElements(code, id, options);
-			if (result.folded === 0) return null;
+			const source = sourceId(id);
+			if (/[?#]/u.test(id)) return null;
+			const result = /\.(?:svelte|astro)$/u.test(source)
+				? foldNativeStackElements(code, id, options)
+				: /\.[cm]?[jt]sx$/u.test(source)
+					? foldStackElements(code, id, options)
+					: null;
+			if (result === null || result.folded === 0) return null;
 			return { code: result.code, map: null };
 		},
 		handleHotUpdate(context) {

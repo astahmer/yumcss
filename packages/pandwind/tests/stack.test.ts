@@ -294,6 +294,36 @@ describe("foldStackElements — vite fold pass", () => {
 		});
 	});
 
+	test("Stack folding handles static Svelte and Astro markup", () => {
+		const plugin = stackFoldVite();
+		const svelte = plugin.transform(
+			`<script>\nimport Stack from "pandwind/stack/svelte";\n</script>\n` +
+				`<Stack direction={{ base: "column", md: "row" }} ` +
+				`gap={{ base: 2, md: 4 }} class="custom with spaces">\n` +
+				`<span>content</span>\n</Stack>`,
+			"/src/App.svelte",
+		);
+		expect(svelte?.code).toContain(
+			`<div class="flex flex-col md:flex-row gap-2 md:gap-4 custom with spaces">`,
+		);
+		expect(svelte?.code).toContain("</div>");
+		expect(svelte?.code).not.toContain("pandwind/stack/svelte");
+
+		const astro = plugin.transform(
+			`---\nimport Stack from "pandwind/stack/astro";\n---\n` +
+				`<Stack gap={4} data-kind="demo" />`,
+			"/src/App.astro",
+		);
+		expect(astro?.code).toContain(`<div class="flex gap-4" data-kind="demo"></div>`);
+		expect(astro?.code).not.toContain("pandwind/stack/astro");
+	});
+
+	test("native Stack folding leaves dynamic props on the component", () => {
+		const source = `<Stack gap={dynamicGap} />`;
+
+		expect(stackFoldVite().transform(source, "/src/App.svelte")).toBeNull();
+	});
+
 	test("configured folding supports the renderer's `class` attribute spelling", () => {
 		const out = foldStackElements(`<Stack gap={4} />`, "solid.tsx", {
 			classAttribute: "class",
