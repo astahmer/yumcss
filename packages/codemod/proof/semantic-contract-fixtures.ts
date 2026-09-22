@@ -5,7 +5,6 @@ import {
 	StyleDynamicExpressionKind,
 	StyleProgramBuilder,
 	StyleProgramCompositionKind,
-	StyleRuleKindTag,
 	StyleValueKindTag,
 	StyleProgramEmissionHint,
 	type AdapterCapability,

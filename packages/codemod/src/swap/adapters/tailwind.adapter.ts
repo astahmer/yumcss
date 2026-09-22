@@ -1215,8 +1215,7 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 		if (relative === "&") return [];
 		return [{ kind: "selector", name: relative, value: relative }];
 	}
-	if (normalized.includes("&"))
-		return [{ kind: "selector", name: normalized, value: normalized }];
+	if (normalized.includes("&")) return [{ kind: "selector", name: normalized, value: normalized }];
 	const conditions: StyleCondition[] = [];
 	for (const match of selector.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
 		const name = match[1];

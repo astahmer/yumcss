@@ -443,14 +443,13 @@ const packageJson = (scenario: Scenario, includePandwind: boolean): Record<strin
 	}
 	const devDependencies: Record<string, string> = {
 		"@types/node": versions["@types/node"],
-		typescript:
-			scenario.framework === "vue" ? versions["vue-typescript"] : versions.typescript,
+		typescript: scenario.framework === "vue" ? versions["vue-typescript"] : versions.typescript,
 		vite: versions.vite,
-		...(scenario.sourceDevDependencies ?? {}),
 	};
+	if (scenario.sourceDevDependencies !== undefined)
+		Object.assign(devDependencies, scenario.sourceDevDependencies);
 	if (includePandwind) devDependencies["oxc-parser"] = versions["oxc-parser"];
-	if (scenario.framework === "vue")
-		devDependencies["vue-tsc"] = versions["vue-tsc"];
+	if (scenario.framework === "vue") devDependencies["vue-tsc"] = versions["vue-tsc"];
 	return {
 		name: `pandwind-${scenario.id}-proof`,
 		private: true,
@@ -538,8 +537,8 @@ const proofIsComplete = (report: FrameworkInstalledProof, scenario: Scenario): b
 	report.browser.equivalent &&
 	report.css.sourceBytes > 0 &&
 	report.css.targetBytes > 0 &&
-		(report.css.targetNotLarger ||
-			(scenario.allowDiagnosticCssSize === true && report.css.comparison === "diagnostic"));
+	(report.css.targetNotLarger ||
+		(scenario.allowDiagnosticCssSize === true && report.css.comparison === "diagnostic"));
 
 const runScenario = async (scenario: Scenario): Promise<FrameworkInstalledProof> => {
 	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
