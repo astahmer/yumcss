@@ -1,5 +1,6 @@
 import type { CSSProperties, PropsWithChildren } from "react";
 import type { AtomicStyleProps } from "pandwind/css";
+import { createStack } from "pandwind/stack/react";
 import { css } from "../css";
 import { cx } from "../cx";
 import { tw } from "../tw";
@@ -23,6 +24,8 @@ type PanelProps = PropsWithChildren<
 		style?: CSSProperties;
 	}
 >;
+
+const Stack = createStack(css);
 
 function Panel({ children, className, style, xcss, ...styleProps }: PanelProps) {
 	const generated = css.props(css(styleProps), xcss);
@@ -67,6 +70,24 @@ export function TypedComponentsApp() {
 					contract.
 				</p>
 			</Panel>
+
+			<Stack
+				direction={{ base: "column", md: "row" }}
+				gap={{ base: 4, md: 8 }}
+				padding={4}
+				align={{ base: "stretch", md: "center" }}
+				className="mt-4 rounded-lg border border-gray-200 bg-gray-50"
+			>
+				<div>
+					<strong className={tw({ textColor: "gray-900" })}>Responsive Stack</strong>
+					<p className={tw({ mt: "1", textSize: "sm", textColor: "gray-600" })}>
+						The Vite fold turns these literal props into configured classes and CSS media rules.
+					</p>
+				</div>
+				<code className={tw({ shrink: "0", rounded: "md", bg: "white", p: "2", textSize: "xs" })}>
+					base: column → md: row
+				</code>
+			</Stack>
 		</section>
 	);
 }
