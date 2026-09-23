@@ -1640,6 +1640,34 @@ test("finite ternary members register every combination in the sheet", () => {
 	}
 });
 
+test("css.class extracts multiple finite conditional declarations", () => {
+	const dir = makeProject({
+		"src/design.ts": "export const css = (x: unknown) => x;",
+		"src/app.ts": `
+			import { css } from "./design";
+			const compact = Math.random() > 0.5;
+			const selected = Math.random() > 0.5;
+			const cls = css.class({
+				color: compact ? "$red-300" : "$blue-600",
+				backgroundColor: selected ? "$red-300" : "$blue-600",
+				borderColor: selected ? "$red-300" : undefined,
+			});
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		expect(generated).toContain("color:#FC8181");
+		expect(generated).toContain("color:#2b6cb0");
+		expect(generated).toContain("background-color:#FC8181");
+		expect(generated).toContain("background-color:#2b6cb0");
+		expect(generated).toContain("border-color:#FC8181");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 test("mixed literal and finite dynamic members enumerate combinations", () => {
 	const dir = makeProject({
 		"src/design.ts": "export const css = (x: unknown) => x;",

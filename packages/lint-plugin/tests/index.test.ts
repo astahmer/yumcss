@@ -411,6 +411,21 @@ utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" :
 			]
 		`);
 	});
+
+	test("leaves finite CSS declaration branches to style extraction", () => {
+		const reports = runRule(
+			"no-multiple-conditionals",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+css.class({
+	borderColor: editing ? "accent.solid" : "border.muted",
+	borderWidth: editing ? "thick" : "thin",
+	backgroundColor: active ? "bg.emphasized" : "bg.panel",
+});`,
+		);
+
+		expect(reports).toEqual([]);
+	});
 });
 
 describe("Pandwind Oxlint static safety rules", () => {
@@ -906,6 +921,17 @@ css.class({ ...runtimeLayout });`,
 			data: { bad: "spread argument", name: "css.class" },
 			nodeType: "SpreadElement",
 		});
+	});
+
+	test("accepts undefined as a static optional style branch", () => {
+		const reports = runRule(
+			"no-dynamic-values",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+css.class({ backgroundColor: selected ? "bg.subtle" : undefined });`,
+		);
+
+		expect(reports).toEqual([]);
 	});
 
 	test("uses the Tw compiler's module-constant scope", () => {

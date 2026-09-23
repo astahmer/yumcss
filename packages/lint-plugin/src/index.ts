@@ -250,7 +250,7 @@ const findDynamicExpression = (options: {
 			case NodeKind.Literal:
 				continue;
 			case NodeKind.Identifier:
-				if (options.staticBindings.has(value.name)) continue;
+				if (value.name === "undefined" || options.staticBindings.has(value.name)) continue;
 				return { node: value, bad: "unresolved identifier" };
 			case NodeKind.MemberExpression:
 				return { node: value, bad: "member expression value" };
@@ -276,7 +276,7 @@ const findDynamicExpression = (options: {
 			case NodeKind.SpreadElement:
 				if (
 					(value.argument?.type === NodeKind.Identifier &&
-						staticBindings.has(value.argument.name)) ||
+						options.staticBindings.has(value.argument.name)) ||
 					value.argument?.type === NodeKind.ObjectExpression ||
 					value.argument?.type === NodeKind.ArrayExpression
 				) {
@@ -1741,7 +1741,7 @@ const rules: Record<string, RuleDefinition> = {
 			};
 		},
 	},
-	"no-multiple-conditionals": {
+		"no-multiple-conditionals": {
 		create(context) {
 			let resolver: ReturnType<typeof createApiResolver> | undefined;
 			let compilerAnalysis: CompilerStaticAnalysis | undefined;
@@ -1771,7 +1771,7 @@ const rules: Record<string, RuleDefinition> = {
 						message:
 							"pandwind: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
 						data: { n: count, name: callName(api) },
-					});
+				});
 				},
 			};
 		},

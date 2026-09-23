@@ -265,6 +265,7 @@ function evalSetNode(
 			if (consts !== undefined && typeof name === "string" && consts.has(name)) {
 				return { single: consts.get(name) };
 			}
+			if (name === "undefined") return { single: undefined };
 			return { sets: [] };
 		}
 		case NodeKind.CallExpression: {

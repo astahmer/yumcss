@@ -67,6 +67,9 @@ settings. Every rule that resolves style calls uses this mapping:
 | `no-dynamic-carrier-fallback` | Finds dynamic JSX carriers that cannot use direct build-time lowering.     | —                                     |
 | `no-dynamic-keyframes`        | Requires `css.keyframes()` bodies to be statically extractable.            | —                                     |
 
+`no-multiple-conditionals` applies to `cx()` class composition. Finite
+property branches in `css.class()` are extracted independently.
+
 `no-dynamic-values` follows statically resolved identifiers through extraction
 calls and accepts object spreads whose values are proven static. Runtime spread
 inputs remain reported.
