@@ -93,6 +93,7 @@ type SourceComment = {
 };
 type RuleContext = {
 	readonly options?: readonly unknown[];
+	readonly settings?: Readonly<Record<string, unknown>>;
 	readonly sourceCode?: {
 		readonly text: string;
 		readonly getAllComments?: () => readonly SourceComment[];
@@ -720,6 +721,7 @@ const literalValueForCall = (
 	evalLiteral(node as never, literalScopeForCall(analysis, call), analysis.evaluateCall);
 
 const withResolver = (
+	context: RuleContext,
 	onCall: (
 		node: AstNode,
 		api: ApiReference | undefined,
@@ -728,7 +730,7 @@ const withResolver = (
 	) => void,
 	options: { readonly useLiteralScopes?: boolean } = {},
 ): RuleListener => {
-	const resolver = createApiResolver();
+	const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
 	let literalAnalysis: LiteralScopeAnalysis | undefined;
 	return {
 		Program(node) {
