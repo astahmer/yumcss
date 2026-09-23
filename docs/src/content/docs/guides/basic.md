@@ -2,7 +2,7 @@
 title: Tailwind component patterns
 description: Use generated tw() styles for reusable components and finite runtime choices.
 sidebar:
-	order: 3
+  order: 3
 ---
 
 This guide assumes your app already has a generated `tw()` helper and the
