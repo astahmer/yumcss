@@ -477,6 +477,7 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 			if (resolvedConfig !== undefined) core.configResolved(resolvedConfig);
 		},
 		transform(this: Pick<PluginContext, "resolve"> | null | undefined, code: string, id: string) {
+			if (id.includes("node_modules")) return core.transform(code, id);
 			const kinds = findCssFactoryKinds(code, id);
 			const normalizedId = normalizeFilePath(id);
 			if (kinds.size === 0) compositionModules.delete(normalizedId);
