@@ -13,6 +13,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cac, type CAC, type Command } from "cac";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import type { createPandwindEngineContext } from "pandwind/vite";
 import { collectFiles, type FoldSummary } from "./analyze.ts";
 import {
 	createAnalysisWorkspace,
@@ -51,6 +52,10 @@ export interface BudgetCaps {
 	css?: number;
 	gzip?: number;
 	rules?: number;
+}
+
+export interface AnalyzeCliDependencies {
+	readonly cssPreset?: Parameters<typeof createPandwindEngineContext>[0]["preset"];
 }
 
 /** Parse a budgets json file; unknown lanes are ignored, values must be positive numbers. */
@@ -207,7 +212,10 @@ async function computeCssBudget(args: CliArgs, files: Array<string>) {
  * document). Pure apart from filesystem reads — tests assert on the return
  * value instead of spying on console.log.
  */
-async function runAnalysis(args: CliArgs): Promise<string> {
+async function runAnalysis(
+	args: CliArgs,
+	dependencies: AnalyzeCliDependencies = {},
+): Promise<string> {
 	if (args.governance) return runGovernanceLane(args);
 	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"];
 	const workspace = createAnalysisWorkspace();
@@ -219,23 +227,46 @@ async function runAnalysis(args: CliArgs): Promise<string> {
 	const files = workspace
 		.collectFiles(patterns, args.root)
 		.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
-	const stats: ReturnType<typeof analysis.analyze>[] = [];
+	const sources: Array<{
+		absoluteFile: string;
+		content: string;
+		scan: NonNullable<Parameters<typeof analysis.analyze>[2]["sourceScan"]>;
+	}> = [];
 	const cssCollector = createCssReportCollector();
 	workspace.forEachFile(files, ({ path: absoluteFile, source: content, scan }) => {
+		sources.push({ absoluteFile, content, scan });
 		const file = absoluteFile.startsWith(`${args.root}/`)
 			? absoluteFile.slice(args.root.length + 1)
 			: absoluteFile;
-		stats.push(
-			analysis.analyze(content, file, {
+		cssCollector.add({ file, content });
+	});
+	const cssReport = cssCollector.finish();
+	let cxEngine: ReturnType<typeof createPandwindEngineContext> | undefined;
+	if (dependencies.cssPreset !== undefined) {
+		const vite = await import("pandwind/vite");
+		cxEngine = vite.createPandwindEngineContext({ preset: dependencies.cssPreset });
+	}
+	const stats: ReturnType<typeof analysis.analyze>[] = sources.map(
+		({ absoluteFile, content, scan }) => {
+			const file = absoluteFile.startsWith(`${args.root}/`)
+				? absoluteFile.slice(args.root.length + 1)
+				: absoluteFile;
+			return analysis.analyze(content, file, {
 				config,
 				importedConstants,
 				sourceScan: scan,
-			}),
-		);
-		cssCollector.add({ file, content });
-	});
+				...(cxEngine === undefined
+					? {}
+					: {
+							cxFold: {
+								cssNames: cssReport.cssNamesByFile.get(file) ?? new Set<string>(),
+								engine: cxEngine,
+							},
+						}),
+			});
+		},
+	);
 	const summary: FoldSummary = analysis.summarize(stats);
-	const cssReport = cssCollector.finish();
 	const { authoredCss, cssSources, cssDiagnostics } = cssReport;
 
 	if (args.json) {
@@ -284,8 +315,11 @@ async function runAnalysis(args: CliArgs): Promise<string> {
 	return [report, authoredCssReport, formattedCssReport].filter(Boolean).join("\n\n");
 }
 
-export async function runCli(argv: Array<string>): Promise<string> {
-	return runAnalysis(parseArgs(argv));
+export async function runCli(
+	argv: Array<string>,
+	dependencies: AnalyzeCliDependencies = {},
+): Promise<string> {
+	return runAnalysis(parseArgs(argv), dependencies);
 }
 
 async function runAnalyzeCommand(args: CliArgs): Promise<void> {

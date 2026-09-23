@@ -59,14 +59,10 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		.map(({ path: file, source: content }) => ({ file, content }));
 
 	// --- coverage: the CLI is the single interface to fold analysis.
-	const summaryJson = await runCli([
-		`${APP}/src/**/*.{ts,tsx}`,
-		"--tw",
-		appSrc("tw.ts"),
-		"--root",
-		root,
-		"--json",
-	]);
+	const summaryJson = await runCli(
+		[`${APP}/src/**/*.{ts,tsx}`, "--tw", appSrc("tw.ts"), "--root", root, "--json"],
+		isDogfoodApp ? { cssPreset: examplePreset } : {},
+	);
 	const summary = JSON.parse(summaryJson) as {
 		eliminatedPct: number;
 		entryEliminatedPct: number;

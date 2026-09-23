@@ -219,6 +219,7 @@ type DynamicExpression = { node: AstNode; bad: string };
 const findDynamicExpression = (
 	root: AstValue,
 	staticBindings: ReadonlySet<string>,
+	resolveCall?: (call: AstNode) => ApiReference | undefined,
 ): DynamicExpression | undefined => {
 	const stack: AstValue[] = [root];
 	const seen = new Set<AstNode>();
@@ -247,7 +248,14 @@ const findDynamicExpression = (
 			case NodeKind.FunctionExpression:
 			case NodeKind.FunctionDeclaration:
 				return { node: value, bad: "function argument" };
-			case NodeKind.CallExpression:
+			case NodeKind.CallExpression: {
+				const api = resolveCall?.(value);
+				if ((api?.kind === API.tw || api?.kind === API.style) && isExtractionLane(api)) {
+					for (const argument of value.arguments ?? []) stack.push(argument);
+					continue;
+				}
+				return { node: value, bad: "dynamic helper call" };
+			}
 			case NodeKind.NewExpression:
 			case NodeKind.TaggedTemplateExpression:
 				return { node: value, bad: "dynamic helper call" };
@@ -361,7 +369,10 @@ const createApiResolver = () => {
 		});
 		for (let pass = 0; pass < declarations.size; pass += 1) {
 			for (const [name, value] of declarations) {
-				if (staticBindings.has(name) || findDynamicExpression(value, staticBindings) === undefined)
+				if (
+					staticBindings.has(name) ||
+					findDynamicExpression(value, staticBindings, resolve) === undefined
+				)
 					staticBindings.add(name);
 			}
 		}
@@ -703,6 +714,7 @@ const withResolver = (
 		node: AstNode,
 		api: ApiReference | undefined,
 		staticBindings: ReadonlySet<string>,
+		resolveCall: (call: AstNode) => ApiReference | undefined,
 	) => void,
 	options: { readonly useLiteralScopes?: boolean } = {},
 ): RuleListener => {
@@ -718,7 +730,7 @@ const withResolver = (
 				literalAnalysis === undefined
 					? resolver.staticBindings
 					: staticBindingsForCall(literalAnalysis, node, resolver.staticBindings);
-			onCall(node, resolver.resolve(node), staticBindings);
+			onCall(node, resolver.resolve(node), staticBindings, resolver.resolve);
 		},
 	};
 };
@@ -879,7 +891,9 @@ const migrationAnalysis = (program: AstNode): CallAnalysis[] => {
 		const staticBindings = staticBindingsForCall(literalAnalysis, node, resolver.staticBindings);
 		const dynamic = isExtractionLane(api)
 			? node.arguments
-					.map((argument: AstNode) => findDynamicExpression(argument, staticBindings))
+					.map((argument: AstNode) =>
+						findDynamicExpression(argument, staticBindings, resolver.resolve),
+					)
 					.find(
 						(issue: DynamicExpression | undefined): issue is DynamicExpression =>
 							issue !== undefined,
@@ -1068,10 +1082,10 @@ const rules: Record<string, RuleDefinition> = {
 	"no-dynamic-values": {
 		create(context) {
 			return withResolver(
-				(node, api, staticBindings) => {
+				(node, api, staticBindings, resolveCall) => {
 					if (!isStaticLane(api)) return;
 					for (const arg of node.arguments) {
-						const dynamic = findDynamicExpression(arg, staticBindings);
+						const dynamic = findDynamicExpression(arg, staticBindings, resolveCall);
 						if (dynamic === undefined) continue;
 						context.report({
 							node: dynamic.node,

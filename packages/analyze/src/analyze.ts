@@ -21,7 +21,12 @@ import { dirname, resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
-import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwind/vite/cx-inline";
+import {
+	collectModuleConstants,
+	evalStaticCx,
+	type ConstantScope,
+	type CxFoldContext,
+} from "pandwind/vite/cx-inline";
 import { extractTwConfigFromSources, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
 import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
 import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";
@@ -54,6 +59,8 @@ export interface AnalyzeOptions {
 	missingCssIgnore?: ReadonlySet<string>;
 	/** Parsed document supplied by the shared workspace scanner when available. */
 	sourceScan?: Pick<SourceScanResult, "program">;
+	/** Same preset-backed CSS fold context used by the Vite cx() pass. */
+	cxFold?: CxFoldContext;
 }
 
 interface CallSite {
@@ -144,6 +151,7 @@ function parseModule(
 	config: TwConfig,
 	importedConstants?: Readonly<Record<string, string>>,
 	parsedProgram?: OxcNode,
+	cxFold?: CxFoldContext,
 ): ParsedModule {
 	const program =
 		parsedProgram ?? (SOURCE_SCANNER_SERVICE.parse({ file, source }).program as unknown as OxcNode);
@@ -176,7 +184,7 @@ function parseModule(
 		"tw",
 		...[...imported.entries()].filter(([, v]) => v === "tw").map(([k]) => k),
 	]);
-	const localScope = collectModuleConstants(program);
+	const localScope = collectModuleConstants(program, cxFold);
 	// Imported cross-module constants merge UNDER the module's own scope —
 	// same-module declarations always win — and bindings that are shadowed
 	// or written anywhere stay dynamic (mirrors inlineCxCalls/mergeImported).
@@ -216,7 +224,15 @@ function parseModule(
 			});
 			return;
 		}
-		const clsfy = classify(call.arguments ?? [], consts, call.start ?? 0, name, twNames, config);
+		const clsfy = classify(
+			call.arguments ?? [],
+			consts,
+			call.start ?? 0,
+			name,
+			twNames,
+			config,
+			cxFold,
+		);
 		calls.push(clsfy);
 	});
 
@@ -228,34 +244,44 @@ function parseModule(
  * partially folded? Ternaries require both branches; `&&` requires only the
  * right side (the left is the kept-dynamic test). Nested conditionals recurse.
  */
-function isSkeletonable(node: unknown, consts: ConstantScope): boolean {
+function isSkeletonable(
+	node: unknown,
+	consts: ConstantScope,
+	twNames: ReadonlySet<string>,
+	config: TwConfig,
+	cxFold?: CxFoldContext,
+): boolean {
 	const t = (node as { type?: string })?.type;
 	if (t === "ConditionalExpression") {
 		return (
-			branchFolds((node as { consequent?: unknown }).consequent, consts) &&
-			branchFolds((node as { alternate?: unknown }).alternate, consts)
+			branchFolds((node as { consequent?: unknown }).consequent, consts, twNames, config, cxFold) &&
+			branchFolds((node as { alternate?: unknown }).alternate, consts, twNames, config, cxFold)
 		);
 	}
 	if (t === "LogicalExpression" && (node as { operator?: string }).operator === "&&") {
-		return branchFolds((node as { right?: unknown }).right, consts);
+		return branchFolds((node as { right?: unknown }).right, consts, twNames, config, cxFold);
 	}
 	return false;
 }
 
-function branchFolds(branch: unknown, consts: ConstantScope): boolean {
+function branchFolds(
+	branch: unknown,
+	consts: ConstantScope,
+	twNames: ReadonlySet<string>,
+	config: TwConfig,
+	cxFold?: CxFoldContext,
+): boolean {
+	const resolved = resolveTwArg(branch, twNames, config, consts);
 	return (
-		isStatic(evalStaticCx(branch as never, undefined, consts)) || isSkeletonable(branch, consts)
+		isStatic(evalStaticCx(resolved as never, cxFold, consts)) ||
+		isSkeletonable(resolved, consts, twNames, config, cxFold)
 	);
 }
 
 /**
- * The real vite pipeline inlines `tw({ ... })` calls to plain string
- * literals BEFORE the cx() pass runs (see pandwindVite's transform order),
- * so a `cx(tw({...}), "str")` argument is only a foldable string to the
- * production build. `evalStaticCx` itself never resolves tw() calls (only
- * css() ones) — mirror the inlining decision here, on the untouched AST, so
- * classification matches the build without re-parsing shifted text (which
- * would throw off every reported line number after the fold point).
+ * Resolve `tw({ ... })` calls on the original AST before evaluating cx()
+ * arguments. This mirrors Vite's earlier tw pass while preserving source
+ * offsets for Inspector diagnostics, including calls nested in conditionals.
  */
 function resolveTwArg(
 	node: unknown,
@@ -263,25 +289,67 @@ function resolveTwArg(
 	config: TwConfig,
 	consts: ConstantScope,
 ): unknown {
-	const call = node as { type?: string; callee?: OxcNode; arguments?: unknown[] } | undefined;
-	if (call?.type !== NodeKind.CallExpression) return node;
-	const callee = call.callee as { type?: string; name?: string } | undefined;
-	if (callee?.type !== NodeKind.Identifier || !twNames.has(callee.name ?? "")) return node;
-	if ((call.arguments?.length ?? 0) !== 1) return node;
-	const literalScope = new Map([...consts].map(([n, known]) => [n, known.value]));
-	const styles = evalLiteral(call.arguments![0] as never, literalScope);
-	if (typeof styles !== "object" || styles === null || Array.isArray(styles)) return node;
-	try {
-		const compiled = compileStyles(
-			styles as TwNestedStyles,
-			config.variants,
-			config.conflicts,
-			config.compose,
-		);
-		return { type: NodeKind.Literal, value: compiled };
-	} catch {
-		return node; // Invalid style object — stays dynamic, same as inlineTwCalls.
+	const expression = node as
+		| {
+				type?: string;
+				callee?: OxcNode;
+				arguments?: unknown[];
+				test?: unknown;
+				consequent?: unknown;
+				alternate?: unknown;
+				left?: unknown;
+				right?: unknown;
+				expression?: unknown;
+		  }
+		| undefined;
+	if (expression?.type === NodeKind.CallExpression) {
+		const callee = expression.callee as { type?: string; name?: string } | undefined;
+		if (callee?.type === NodeKind.Identifier && twNames.has(callee.name ?? "")) {
+			if ((expression.arguments?.length ?? 0) !== 1) return node;
+			const literalScope = new Map([...consts].map(([name, known]) => [name, known.value]));
+			const styles = evalLiteral(expression.arguments?.[0] as never, literalScope);
+			if (typeof styles !== "object" || styles === null || Array.isArray(styles)) return node;
+			try {
+				const compiled = compileStyles(
+					styles as TwNestedStyles,
+					config.variants,
+					config.conflicts,
+					config.compose,
+				);
+				return { type: NodeKind.Literal, value: compiled };
+			} catch {
+				return node;
+			}
+		}
 	}
+	if (expression?.type === "ConditionalExpression") {
+		return {
+			...expression,
+			test: resolveTwArg(expression.test, twNames, config, consts),
+			consequent: resolveTwArg(expression.consequent, twNames, config, consts),
+			alternate: resolveTwArg(expression.alternate, twNames, config, consts),
+		};
+	}
+	if (expression?.type === "LogicalExpression") {
+		return {
+			...expression,
+			left: resolveTwArg(expression.left, twNames, config, consts),
+			right: resolveTwArg(expression.right, twNames, config, consts),
+		};
+	}
+	if (
+		expression !== undefined &&
+		(expression.type === NodeKind.ParenthesizedExpression ||
+			expression.type === NodeKind.TSAsExpression ||
+			expression.type === NodeKind.TSSatisfiesExpression ||
+			expression.type === NodeKind.TSTypeAssertion)
+	) {
+		return {
+			...expression,
+			expression: resolveTwArg(expression.expression, twNames, config, consts),
+		};
+	}
+	return node;
 }
 
 /** Mirror of inlineCxCalls' per-call decision. */
@@ -292,11 +360,12 @@ function classify(
 	name: string,
 	twNames: ReadonlySet<string>,
 	config: TwConfig,
+	cxFold?: CxFoldContext,
 ): CallInfo & { name: string } {
 	const args = rawArgs.map((arg) => resolveTwArg(arg, twNames, config, consts));
 	let dynamicConditional: { index: number; arg: unknown } | undefined;
 	for (let i = 0; i < args.length; i++) {
-		const value = evalStaticCx(args[i] as never, undefined, consts);
+		const value = evalStaticCx(args[i] as never, cxFold, consts);
 		if (isStatic(value)) continue;
 		const t = (args[i] as { type?: string })?.type;
 		if (
@@ -306,14 +375,14 @@ function classify(
 			dynamicConditional = { index: i, arg: args[i] };
 			continue;
 		}
-		return { start, kind: FoldKindTag.Runtime, reason: explain(args), args, name };
+		return { start, kind: FoldKindTag.Runtime, reason: explain(args, i), args, name };
 	}
 	if (dynamicConditional !== undefined) {
 		// Partial folding mirrors buildSkeleton exactly: ternaries need
 		// both BRANCHES skeletonizable (the test may stay dynamic); an
 		// `&&` chain needs only its RIGHT side (the left is the kept-
 		// dynamic test). `||` / `??` never partially fold.
-		if (!isSkeletonable(dynamicConditional.arg, consts)) {
+		if (!isSkeletonable(dynamicConditional.arg, consts, twNames, config, cxFold)) {
 			return {
 				start,
 				kind: FoldKindTag.Runtime,
@@ -324,24 +393,10 @@ function classify(
 		}
 		return { start, kind: FoldKindTag.Partial, reason: "", args, name };
 	}
-	// All args static: full fold — unless a css()/unknown helper call is
-	// among them without a fold context (the pass leaves those alone).
-	const hasUnknownCall = args.some(
-		(a) => (a as { type?: string })?.type === NodeKind.CallExpression,
-	);
-	if (hasUnknownCall) {
-		return {
-			start,
-			kind: FoldKindTag.Runtime,
-			reason: "unresolved helper call argument",
-			args,
-			name,
-		};
-	}
 	return { start, kind: FoldKindTag.Full, reason: "", args, name };
 }
 
-function explain(args: unknown[]): string {
+function explain(args: unknown[], dynamicIndex: number): string {
 	for (const arg of args) {
 		if ((arg as { type?: string })?.type === NodeKind.SpreadElement) return "spread argument";
 	}
@@ -351,21 +406,13 @@ function explain(args: unknown[]): string {
 		if (t === "ConditionalExpression" || t === "LogicalExpression") conditionals++;
 	}
 	if (conditionals > 1) return "multiple dynamic conditionals";
-	if (args.some((a) => (a as { type?: string })?.type === NodeKind.ArrowFunctionExpression))
-		return "function argument";
-	if (
-		args.some(
-			(a) =>
-				(a as { type?: string })?.type === NodeKind.TemplateLiteral &&
-				(a as { expressions?: unknown[] }).expressions?.length,
-		)
-	) {
+	const dynamic = args[dynamicIndex] as { type?: string; expressions?: unknown[] } | undefined;
+	if (dynamic?.type === NodeKind.ArrowFunctionExpression) return "function argument";
+	if (dynamic?.type === NodeKind.TemplateLiteral && dynamic.expressions?.length) {
 		return "runtime template interpolation";
 	}
-	if (args.some((a) => (a as { type?: string })?.type === NodeKind.MemberExpression))
-		return "member expression value";
-	if (args.some((a) => (a as { type?: string })?.type === NodeKind.CallExpression))
-		return "dynamic helper call";
+	if (dynamic?.type === NodeKind.MemberExpression) return "member expression value";
+	if (dynamic?.type === NodeKind.CallExpression) return "dynamic helper call";
 	return "unknown runtime value";
 }
 
@@ -384,6 +431,7 @@ export function analyzeSource(
 		options.config,
 		options.importedConstants,
 		options.sourceScan?.program,
+		options.cxFold,
 	);
 
 	const runtimeSites: Array<CallSite> = [];
@@ -425,7 +473,7 @@ export function analyzeSource(
 		// static arguments of partial folds — dynamic conditionals keep their
 		// branches out of scope here).
 		if (call.kind !== FoldKindTag.Runtime) {
-			const values = call.args.map((arg) => evalStaticCx(arg as never, undefined, mod.consts));
+			const values = call.args.map((arg) => evalStaticCx(arg as never, options.cxFold, mod.consts));
 			missingCss.push(
 				...residuals.missingCss(values, mod.lineStarts, call.start, options.config, ignore),
 			);
