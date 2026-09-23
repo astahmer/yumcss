@@ -668,45 +668,203 @@ function DesignSystemView(props: {
 function ClassDrillDown(props: { data: InspectorPayload }) {
 	const [open, setOpen] = useState<string | null>(null);
 	const [query, setQuery] = useState("");
-	const entries = props.data.classDrillDown.filter((entry) =>
-		entry.candidate.toLowerCase().includes(query.trim().toLowerCase()),
+	const normalizedQuery = query.trim().toLocaleLowerCase();
+	const entries = props.data.classDrillDown.filter(
+		(entry) =>
+			normalizedQuery === "" ||
+			entry.candidate.toLocaleLowerCase().includes(normalizedQuery) ||
+			entry.rules.some((rule) =>
+				`${rule.selector} ${rule.declarations}`.toLocaleLowerCase().includes(normalizedQuery),
+			),
 	);
 
 	if (props.data.classDrillDown.length === 0) return null;
 
+	const categoryForProperty = (property: string) => {
+		if (property.startsWith("--tw-space-") || /^(margin|padding|inset)(-|$)/.test(property)) {
+			return "Spacing";
+		}
+		if (
+			property === "gap" ||
+			property === "row-gap" ||
+			property === "column-gap" ||
+			property.startsWith("scroll-margin") ||
+			property.startsWith("scroll-padding")
+		) {
+			return "Spacing";
+		}
+		if (property === "--tw-font-weight" || property === "--tw-leading") return "Typography";
+		if (
+			property === "color" ||
+			property.startsWith("background-") ||
+			property === "accent-color" ||
+			property === "caret-color" ||
+			property === "fill" ||
+			property === "stroke" ||
+			property === "border-color" ||
+			property === "outline-color" ||
+			property === "text-decoration-color" ||
+			property === "--tw-ring-color"
+		) {
+			return "Color";
+		}
+		if (/^(border|border-radius|outline)(-|$)/.test(property)) return "Borders & shape";
+		if (
+			property.startsWith("--tw-border-") ||
+			property.startsWith("font-") ||
+			property.startsWith("text-") ||
+			property === "line-height" ||
+			property === "letter-spacing" ||
+			property === "word-spacing" ||
+			property === "white-space" ||
+			property === "word-break" ||
+			property === "hyphens"
+		) {
+			return property.startsWith("--tw-border-") ? "Borders & shape" : "Typography";
+		}
+		if (
+			property.startsWith("--tw-shadow") ||
+			property.startsWith("--tw-ring-") ||
+			property === "box-shadow" ||
+			property === "text-shadow" ||
+			property === "opacity" ||
+			property === "filter" ||
+			property.startsWith("backdrop-") ||
+			property === "mix-blend-mode"
+		) {
+			return "Effects";
+		}
+		if (property.startsWith("transition-") || property === "animation") return "Motion";
+		if (
+			property === "cursor" ||
+			property === "pointer-events" ||
+			property === "user-select" ||
+			property === "resize" ||
+			property === "touch-action"
+		) {
+			return "Interaction";
+		}
+		if (
+			property === "display" ||
+			property.startsWith("flex-") ||
+			property.startsWith("grid-") ||
+			property.startsWith("align-") ||
+			property.startsWith("justify-") ||
+			property.startsWith("place-") ||
+			property === "position" ||
+			property === "z-index" ||
+			property.startsWith("overflow") ||
+			/^(width|height|min-width|max-width|min-height|max-height)$/.test(property) ||
+			property === "aspect-ratio" ||
+			property === "object-fit"
+		) {
+			return "Layout";
+		}
+		return "Other";
+	};
+	const groupsByCategory = new Map<string, Array<(typeof entries)[number]>>();
+	const categoryOrder = [
+		"Spacing",
+		"Layout",
+		"Color",
+		"Typography",
+		"Borders & shape",
+		"Effects",
+		"Motion",
+		"Interaction",
+		"Other",
+	];
+	for (const entry of entries) {
+		const properties = new Set<string>();
+		for (const rule of entry.rules) {
+			for (const line of rule.declarations.split("\n")) {
+				const declaration = line.trim();
+				const separator = declaration.indexOf(":");
+				if (!declaration.endsWith(";") || separator < 1) continue;
+				const property = declaration.slice(0, separator).trim();
+				if (/^[-\w]+$/.test(property)) properties.add(property);
+			}
+		}
+		const categoryCounts = new Map<string, number>();
+		for (const property of properties) {
+			const category = categoryForProperty(property);
+			categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
+		}
+		const category =
+			[...categoryCounts.entries()].toSorted(
+				(left, right) =>
+					right[1] - left[1] || categoryOrder.indexOf(left[0]) - categoryOrder.indexOf(right[0]),
+			)[0]?.[0] ?? "Other";
+		const group = groupsByCategory.get(category) ?? [];
+		group.push(entry);
+		groupsByCategory.set(category, group);
+	}
+	const groups = [...groupsByCategory.entries()]
+		.map(([key, groupEntries]) => ({ key, entries: groupEntries }))
+		.toSorted(
+			(left, right) =>
+				right.entries.length - left.entries.length || left.key.localeCompare(right.key),
+		);
+
 	return (
 		<section>
-			<h2>class drill-down — rules per candidate</h2>
-			<p>every rule the real Tailwind compiler emitted for a scanned class. click to expand.</p>
+			<h2>class drill-down — grouped by CSS concern</h2>
+			<p>related utilities share a group. select a class to inspect the CSS rules it emits.</p>
 			<label className={ui.tableSearch}>
 				<span className={ui.srOnly}>Search class candidates</span>
 				<input
 					className={ui.search}
 					type="search"
 					value={query}
-					placeholder="Search class candidates…"
-					aria-label="Search class candidates"
+					placeholder="Search classes, properties, or CSS…"
+					aria-label="Search classes, CSS properties, or emitted rules"
 					onChange={(event) => setQuery(event.target.value)}
 				/>
 			</label>
 			<p className={ui.muted} role="status" aria-live="polite">
-				{entries.length} of {props.data.classDrillDown.length} candidates
+				{entries.length} of {props.data.classDrillDown.length} candidates · {groups.length} CSS
+				groups
 			</p>
-			<ul className={ui.sites}>
-				{entries.map((d) => (
-					<li key={d.candidate}>
-						<button
-							type="button"
-							onClick={() => setOpen(open === d.candidate ? null : d.candidate)}
-						>
-							<code>{d.candidate}</code> — {d.rules.length} rule(s)
-						</button>
-						{open === d.candidate && (
-							<pre>{d.rules.map((r) => `${r.selector} {\n  ${r.declarations}\n}`).join("\n")}</pre>
-						)}
-					</li>
-				))}
-			</ul>
+			<div className={ui.drillGroups}>
+				{groups.map((group) => {
+					const groupEntries = group.entries.toSorted((left, right) =>
+						left.candidate.localeCompare(right.candidate),
+					);
+					const selectedEntry = groupEntries.find((entry) => entry.candidate === open);
+					const ruleCount = group.entries.reduce((total, entry) => total + entry.rules.length, 0);
+					return (
+						<details key={group.key} className={ui.drillGroup} open={group.key === groups[0]?.key}>
+							<summary className={ui.drillGroupSummary}>
+								<strong>{group.key}</strong>
+								<span className={ui.drillGroupMeta}>
+									{group.entries.length} classes · {ruleCount} rules
+								</span>
+							</summary>
+							<div className={ui.drillCandidateGrid}>
+								{groupEntries.map((entry) => (
+									<button
+										key={entry.candidate}
+										type="button"
+										className={ui.drillCandidate}
+										aria-expanded={open === entry.candidate}
+										onClick={() => setOpen(open === entry.candidate ? null : entry.candidate)}
+									>
+										<code>{entry.candidate}</code>
+										<span>{entry.rules.length} rules</span>
+									</button>
+								))}
+							</div>
+							{selectedEntry !== undefined && (
+								<pre className={ui.drillRules}>
+									{selectedEntry.rules
+										.map((rule) => `${rule.selector} {\n  ${rule.declarations}\n}`)
+										.join("\n")}
+								</pre>
+							)}
+						</details>
+					);
+				})}
+			</div>
 		</section>
 	);
 }
