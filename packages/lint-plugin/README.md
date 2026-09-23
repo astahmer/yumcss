@@ -36,20 +36,47 @@ codemod adapters and official loaders.
 
 ## Rules
 
-| Rule                          | Default intent                                                             | Fix                 |
-| ----------------------------- | -------------------------------------------------------------------------- | ------------------- |
-| `no-spreads`                  | Finds spread arguments that cannot be statically folded.                   | —                   |
-| `no-dynamic-values`           | Finds dynamic values in static extraction lanes.                           | —                   |
-| `no-multiple-conditionals`    | Finds calls with more than one partially foldable conditional.             | —                   |
-| `no-dollar-raw`               | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                   |
-| `no-arbitrary-values`         | Finds arbitrary class values such as `w-[13px]`.                           | —                   |
-| `design-tokens-only`          | Checks design values against an explicit project policy.                   | —                   |
-| `migration-skip-reason`       | Requires every `pandwind:migrate-skip` marker to explain its residual.     | —                   |
-| `no-stale-migration-skip`     | Finds skip markers that now precede a statically foldable call.            | Safe: remove marker |
-| `require-migration-residual`  | Requires an explicit skip marker when a static-lane value remains dynamic. | Safe: add marker    |
-| `no-conflicting-style-props`  | Finds explicit `className`/`style` props that conflict with `css.props()`. | —                   |
-| `no-dynamic-carrier-fallback` | Finds dynamic JSX carriers that cannot use direct build-time lowering.     | —                   |
-| `no-dynamic-keyframes`        | Requires `css.keyframes()` bodies to be statically extractable.            | —                   |
+| Rule                          | Default intent                                                             | Fix                                    |
+| ----------------------------- | -------------------------------------------------------------------------- | -------------------------------------- |
+| `no-spreads`                  | Finds spread arguments that cannot be statically folded.                   | —                                      |
+| `no-dynamic-values`           | Finds dynamic values in static extraction lanes.                           | —                                      |
+| `no-multiple-conditionals`    | Finds calls with more than one partially foldable conditional.             | —                                      |
+| `no-dollar-raw`               | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                                      |
+| `prefer-intrinsic-auto`       | Finds CSS `auto` values that no longer need `$raw`.                        | Safe: unwraps static `auto` properties |
+| `no-arbitrary-values`         | Finds arbitrary class values such as `w-[13px]`.                           | —                                      |
+| `design-tokens-only`          | Checks design values against an explicit project policy.                   | —                                      |
+| `migration-skip-reason`       | Requires every `pandwind:migrate-skip` marker to explain its residual.     | —                                      |
+| `no-stale-migration-skip`     | Finds skip markers that now precede a statically foldable call.            | Safe: remove marker                    |
+| `require-migration-residual`  | Requires an explicit skip marker when a static-lane value remains dynamic. | Safe: add marker                       |
+| `no-conflicting-style-props`  | Finds explicit `className`/`style` props that conflict with `css.props()`. | —                                      |
+| `no-dynamic-carrier-fallback` | Finds dynamic JSX carriers that cannot use direct build-time lowering.     | —                                      |
+| `no-dynamic-keyframes`        | Requires `css.keyframes()` bodies to be statically extractable.            | —                                      |
+
+`prefer-intrinsic-auto` recognizes only properties whose Pandwind CSS value
+types explicitly include the intrinsic `"auto"` keyword, and it applies only
+to preset-bound `createCss(...)` instances. Its fixer unwraps a whole `$raw`
+object or a contiguous leading/trailing group when it can preserve property
+order and avoid duplicate keys. It also unwraps static condition objects when
+every leaf is `"auto"`; mixed responsive values are reported but left
+report-only because their other values depend on the project's preset. The
+rule follows module-scope static objects spread into a resolved CSS call.
+Interleaved, computed, spread-containing, or comment-sensitive `$raw` objects
+stay report-only. For a local module that re-exports a `createCss` instance,
+configure the exact import source and export name so the rule can resolve it
+without guessing:
+
+```json
+{
+	"rules": {
+		"pandwind-extraction/prefer-intrinsic-auto": [
+			"error",
+			{
+				"cssModules": [{ "source": "../pandwind/css", "exports": ["css"] }]
+			}
+		]
+	}
+}
+```
 
 The extraction rules are normally warnings. The carrier-boundary rule is shown
 as an error because it marks the small set of shapes that cannot receive the
@@ -120,6 +147,7 @@ Oxlint loads JavaScript plugins:
 		"pandwind-extraction/no-dynamic-values": "warn",
 		"pandwind-extraction/no-multiple-conditionals": "warn",
 		"pandwind-extraction/no-dollar-raw": "error",
+		"pandwind-extraction/prefer-intrinsic-auto": "error",
 		"pandwind-extraction/no-arbitrary-values": "error",
 		"pandwind-extraction/migration-skip-reason": "error",
 		"pandwind-extraction/no-stale-migration-skip": "error",

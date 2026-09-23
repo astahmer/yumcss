@@ -84,7 +84,7 @@ const AST_IDENTITY_VALUES = new Set(Object.values(NodeKind));
 type AstNode = { type: string; [key: string]: any };
 type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
 type AstVisitor = (node: AstNode) => void;
-type ApiReference = { kind: string; name: string; method?: string };
+type ApiReference = { kind: string; name: string; method?: string; factory?: string };
 type SourceComment = {
 	type: string;
 	value: string;
@@ -114,7 +114,7 @@ type RuleListener = {
 };
 type RuleDefinition = {
 	create(context: RuleContext): RuleListener;
-	meta?: { fixable?: "code" | "whitespace" };
+	meta?: { fixable?: "code" | "whitespace"; schema?: readonly unknown[] };
 };
 /** Type-only import discriminators (`importKind`). */
 const IMPORT_KIND = { type: "type" } as const;
@@ -199,11 +199,8 @@ const apiFromImport = (
 	imported: string | undefined,
 ): string | undefined => {
 	if (source === SOURCE.core && imported !== undefined && CORE_APIS.has(imported)) return imported;
-	if (
-		(source === SOURCE.css && imported === API.cssFactory) ||
-		(source === SOURCE.unsafeCss && imported === API.unsafeCssFactory)
-	)
-		return API.cssFactory;
+	if (source === SOURCE.css && imported === API.cssFactory) return API.cssFactory;
+	if (source === SOURCE.unsafeCss && imported === API.unsafeCssFactory) return API.unsafeCssFactory;
 	if (source === SOURCE.design && imported === API.designFactory) return API.designFactory;
 	return undefined;
 };
@@ -303,11 +300,13 @@ const findDynamicExpression = (
  * local functions named `cx`, `tw`, or `css`; aliases and namespace imports
  * remain fully supported without putting ecosystem checks in every rule.
  */
-const createApiResolver = () => {
+const createApiResolver = (
+	cssModuleExports: ReadonlyMap<string, ReadonlySet<string>> = new Map(),
+) => {
 	const direct = new Map<string, string>();
 	const namespaces = new Map<string, string>();
 	const factories = new Map<string, string>();
-	const instances = new Set();
+	const instances = new Map<string, string>();
 	const declarations = new Map<string, AstNode>();
 	const staticBindings = new Set<string>();
 	const shadowedCalls = new WeakSet<AstNode>();
@@ -315,11 +314,14 @@ const createApiResolver = () => {
 	const registerImport = (node: AstNode): void => {
 		if (node.importKind === IMPORT_KIND.type) return;
 		const source = sourceName(node.source);
+		if (source === undefined) return;
+		const configuredCssExports = cssModuleExports.get(source ?? "");
 		if (
 			source !== SOURCE.core &&
 			source !== SOURCE.css &&
 			source !== SOURCE.unsafeCss &&
-			source !== SOURCE.design
+			source !== SOURCE.design &&
+			configuredCssExports === undefined
 		)
 			return;
 		for (const specifier of node.specifiers ?? []) {
@@ -330,10 +332,11 @@ const createApiResolver = () => {
 			}
 			const imported = importedName(specifier);
 			const api = apiFromImport(source, imported);
-			if (api === undefined) continue;
-			if (api === API.cssFactory || api === API.designFactory)
+			if (api === API.cssFactory || api === API.unsafeCssFactory || api === API.designFactory)
 				factories.set(specifier.local.name, api);
-			else direct.set(specifier.local.name, api);
+			else if (imported !== undefined && configuredCssExports?.has(imported))
+				instances.set(specifier.local.name, API.cssFactory);
+			else if (api !== undefined) direct.set(specifier.local.name, api);
 		}
 	};
 
@@ -365,7 +368,12 @@ const createApiResolver = () => {
 				return;
 			if (node.init !== undefined) declarations.set(node.id.name, node.init);
 			const factory = resolveFactory(node.init);
-			if (factory === API.cssFactory || factory === API.designFactory) instances.add(node.id.name);
+			if (
+				factory === API.cssFactory ||
+				factory === API.unsafeCssFactory ||
+				factory === API.designFactory
+			)
+				instances.set(node.id.name, factory);
 		});
 		for (let pass = 0; pass < declarations.size; pass += 1) {
 			for (const [name, value] of declarations) {
@@ -439,16 +447,18 @@ const createApiResolver = () => {
 		if (call.callee?.type === NodeKind.Identifier) {
 			const kind = direct.get(call.callee.name);
 			if (kind !== undefined) return { kind, name: call.callee.name };
-			if (instances.has(call.callee.name)) return { kind: API.style, name: call.callee.name };
+			const factory = instances.get(call.callee.name);
+			if (factory !== undefined) return { kind: API.style, name: call.callee.name, factory };
 			return undefined;
 		}
 		const kind = resolveMember(call.callee);
 		if (kind === undefined) return undefined;
 		const method = memberName(call.callee);
+		const factory = instances.get(call.callee.object.name);
 		return {
 			kind,
 			name: `${call.callee.object.name}.${method}`,
-			...(instances.has(call.callee.object.name) ? { method } : {}),
+			...(factory !== undefined ? { method, factory } : {}),
 		};
 	};
 
@@ -931,6 +941,273 @@ const markerForAnyCall = (
 	return undefined;
 };
 
+const AUTO_INTRINSIC_PROPERTIES = new Set([
+	"alignSelf",
+	"appearance",
+	"aspectRatio",
+	"backgroundSize",
+	"justifySelf",
+	"placeSelf",
+	"margin",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
+	"marginInline",
+	"marginInlineStart",
+	"marginInlineEnd",
+	"marginBlock",
+	"marginBlockStart",
+	"marginBlockEnd",
+	"width",
+	"minWidth",
+	"maxWidth",
+	"height",
+	"minHeight",
+	"maxHeight",
+	"top",
+	"right",
+	"bottom",
+	"left",
+	"inset",
+	"insetInline",
+	"insetInlineStart",
+	"insetInlineEnd",
+	"insetBlock",
+	"insetBlockStart",
+	"insetBlockEnd",
+	"outlineStyle",
+	"overflow",
+	"overflowX",
+	"overflowY",
+	"overscrollBehavior",
+	"pointerEvents",
+	"scrollbarWidth",
+	"textUnderlineOffset",
+	"userSelect",
+	"zIndex",
+]);
+
+type CssModuleExports = ReadonlyMap<string, ReadonlySet<string>>;
+type RawAutoFixPlan = {
+	readonly insertions: readonly { readonly node: AstNode; readonly text: string }[];
+	readonly removals: readonly (readonly [number, number])[];
+};
+
+const configuredCssModuleExports = (options: readonly unknown[] | undefined): CssModuleExports => {
+	const configured = new Map<string, ReadonlySet<string>>();
+	const option = options?.[0];
+	if (
+		typeof option !== "object" ||
+		option === null ||
+		Array.isArray(option) ||
+		!("cssModules" in option)
+	)
+		return configured;
+	const cssModules = option.cssModules;
+	if (!Array.isArray(cssModules)) return configured;
+	for (const cssModule of cssModules) {
+		if (
+			typeof cssModule !== "object" ||
+			cssModule === null ||
+			Array.isArray(cssModule) ||
+			!("source" in cssModule) ||
+			typeof cssModule.source !== "string" ||
+			!("exports" in cssModule) ||
+			!Array.isArray(cssModule.exports)
+		)
+			continue;
+		const exports = new Set<string>(
+			cssModule.exports.filter((name: unknown): name is string => typeof name === "string"),
+		);
+		if (exports.size > 0) configured.set(cssModule.source, exports);
+	}
+	return configured;
+};
+
+const hasComment = (source: string): boolean => source.includes("/*") || source.includes("//");
+
+const hasCommentBetweenProperties = (
+	properties: readonly AstNode[],
+	firstIndex: number,
+	lastIndex: number,
+	source: string,
+): boolean => {
+	for (let index = firstIndex; index < lastIndex; index += 1) {
+		const current = properties[index];
+		const next = properties[index + 1];
+		if (
+			current === undefined ||
+			next === undefined ||
+			typeof current.end !== "number" ||
+			typeof next.start !== "number" ||
+			hasComment(source.slice(current.end, next.start))
+		)
+			return true;
+	}
+	return false;
+};
+
+type IntrinsicAutoValueInfo = { readonly hasAuto: boolean; readonly onlyAuto: boolean };
+
+const intrinsicAutoValueInfo = (value: AstNode | undefined): IntrinsicAutoValueInfo => {
+	if (value?.type === NodeKind.Literal)
+		return value.value === "auto"
+			? { hasAuto: true, onlyAuto: true }
+			: { hasAuto: false, onlyAuto: false };
+	if (value?.type !== NodeKind.ObjectExpression || !Array.isArray(value.properties))
+		return { hasAuto: false, onlyAuto: false };
+	let hasAuto = false;
+	let onlyAuto = value.properties.length > 0;
+	for (const property of value.properties) {
+		if (property?.type !== NodeKind.Property || property.computed === true) {
+			onlyAuto = false;
+			continue;
+		}
+		const child = intrinsicAutoValueInfo(property.value);
+		hasAuto ||= child.hasAuto;
+		onlyAuto &&= child.onlyAuto;
+	}
+	return { hasAuto, onlyAuto: hasAuto && onlyAuto };
+};
+
+const rawAutoFixPlan = (
+	property: AstNode,
+	parent: AstNode | undefined,
+	source: string,
+): RawAutoFixPlan | undefined => {
+	if (
+		property.computed === true ||
+		property.value?.type !== NodeKind.ObjectExpression ||
+		parent?.type !== NodeKind.ObjectExpression ||
+		!Array.isArray(property.value.properties) ||
+		!Array.isArray(parent.properties) ||
+		typeof property.start !== "number" ||
+		typeof property.end !== "number"
+	)
+		return undefined;
+
+	const rawProperties: AstNode[] = property.value.properties;
+	const parentProperties: AstNode[] = parent.properties;
+	if (
+		rawProperties.length === 0 ||
+		rawProperties.some((item) => item.type !== NodeKind.Property || item.computed === true) ||
+		parentProperties.some((item) => item.type !== NodeKind.Property)
+	)
+		return undefined;
+	const rawKeyCounts = new Map<string, number>();
+	for (const item of rawProperties) {
+		const name = propertyName(item);
+		if (name === undefined) return undefined;
+		rawKeyCounts.set(name, (rawKeyCounts.get(name) ?? 0) + 1);
+	}
+	const autoIndices: number[] = [];
+	const autoNames = new Set<string>();
+	for (let index = 0; index < rawProperties.length; index += 1) {
+		const candidate = rawProperties[index];
+		if (
+			candidate?.type !== NodeKind.Property ||
+			candidate.computed === true ||
+			!intrinsicAutoValueInfo(candidate.value).onlyAuto
+		)
+			continue;
+		const name = propertyName(candidate);
+		if (name === undefined || !AUTO_INTRINSIC_PROPERTIES.has(name)) continue;
+		autoIndices.push(index);
+		autoNames.add(name);
+	}
+	if (autoIndices.length === 0) return undefined;
+	for (const name of autoNames) if (rawKeyCounts.get(name) !== 1) return undefined;
+
+	for (const sibling of parentProperties) {
+		if (sibling === property) continue;
+		if (sibling.computed === true) return undefined;
+		const name = propertyName(sibling);
+		if (name === undefined || autoNames.has(name)) return undefined;
+	}
+
+	const firstIndex = autoIndices[0];
+	const lastIndex = autoIndices.at(-1);
+	if (firstIndex === undefined || lastIndex === undefined) return undefined;
+	const first = rawProperties[firstIndex];
+	const last = rawProperties[lastIndex];
+	if (
+		first === undefined ||
+		last === undefined ||
+		typeof first.start !== "number" ||
+		typeof first.end !== "number" ||
+		typeof last.start !== "number" ||
+		typeof last.end !== "number"
+	)
+		return undefined;
+
+	const allAuto = autoIndices.length === rawProperties.length;
+	if (allAuto) {
+		if (
+			hasComment(source.slice(property.start, first.start)) ||
+			hasComment(source.slice(last.end, property.end))
+		)
+			return undefined;
+		return {
+			insertions: [],
+			removals: [
+				[property.start, first.start],
+				[last.end, property.end],
+			],
+		};
+	}
+
+	const isPrefix =
+		firstIndex === 0 &&
+		autoIndices.every((index, offset) => index === offset) &&
+		autoIndices.length < rawProperties.length;
+	if (isPrefix) {
+		const next = rawProperties[autoIndices.length];
+		if (
+			next === undefined ||
+			typeof next.start !== "number" ||
+			hasCommentBetweenProperties(rawProperties, firstIndex, autoIndices.length, source)
+		)
+			return undefined;
+		const movedText = autoIndices
+			.map((index) => rawProperties[index])
+			.filter(isNode)
+			.map((item) => source.slice(item.start, item.end))
+			.join(", ");
+		return {
+			insertions: [{ node: property, text: `${movedText}, ` }],
+			removals: [[first.start, next.start]],
+		};
+	}
+
+	const isSuffix =
+		lastIndex === rawProperties.length - 1 &&
+		autoIndices.every((index, offset) => index === firstIndex + offset) &&
+		firstIndex > 0;
+	if (!isSuffix || hasCommentBetweenProperties(rawProperties, firstIndex - 1, lastIndex, source))
+		return undefined;
+	const previous = rawProperties[firstIndex - 1];
+	const rawPropertyIndex = parentProperties.indexOf(property);
+	const nextSibling = parentProperties[rawPropertyIndex + 1];
+	if (
+		previous === undefined ||
+		typeof previous.end !== "number" ||
+		nextSibling === undefined ||
+		typeof nextSibling.start !== "number" ||
+		hasComment(source.slice(property.end, nextSibling.start))
+	)
+		return undefined;
+	const movedText = autoIndices
+		.map((index) => rawProperties[index])
+		.filter(isNode)
+		.map((item) => source.slice(item.start, item.end))
+		.join(", ");
+	return {
+		insertions: [{ node: nextSibling, text: `${movedText}, ` }],
+		removals: [[previous.end, last.end]],
+	};
+};
+
 const rules: Record<string, RuleDefinition> = {
 	"no-dynamic-carrier-fallback": {
 		create(context) {
@@ -982,6 +1259,152 @@ const rules: Record<string, RuleDefinition> = {
 					});
 				}
 			});
+		},
+	},
+	"prefer-intrinsic-auto": {
+		meta: {
+			fixable: "code",
+			schema: [
+				{
+					type: "object",
+					properties: {
+						cssModules: {
+							type: "array",
+							items: {
+								type: "object",
+								properties: {
+									source: { type: "string" },
+									exports: { type: "array", items: { type: "string" }, minItems: 1 },
+								},
+								required: ["source", "exports"],
+								additionalProperties: false,
+							},
+						},
+					},
+					additionalProperties: false,
+				},
+			],
+		},
+		create(context) {
+			const resolver = createApiResolver(configuredCssModuleExports(context.options));
+			return {
+				Program(program) {
+					const source = context.sourceCode?.text;
+					if (source === undefined) return;
+					resolver.scan(program);
+					const reported = new Set<AstNode>();
+					const styleSpreadBindings = new Set<string>();
+					const declarations = new Map<string, AstNode>();
+					const reportRawProperty = (property: AstNode, ancestors: readonly AstNode[]): void => {
+						if (
+							property.type !== NodeKind.Property ||
+							propertyName(property) !== "$raw" ||
+							property.value?.type !== NodeKind.ObjectExpression ||
+							!Array.isArray(property.value.properties) ||
+							reported.has(property)
+						)
+							return;
+						const names = new Set<string>();
+						for (const candidate of property.value.properties) {
+							if (candidate?.type !== NodeKind.Property || candidate.computed === true) continue;
+							const name = propertyName(candidate);
+							if (
+								name !== undefined &&
+								AUTO_INTRINSIC_PROPERTIES.has(name) &&
+								intrinsicAutoValueInfo(candidate.value).hasAuto
+							)
+								names.add(name);
+						}
+						if (names.size === 0) return;
+						reported.add(property);
+						const parent = ancestors[ancestors.length - 1];
+						const plan = rawAutoFixPlan(property, parent, source);
+						context.report({
+							node: property,
+							message:
+								'pandwind: CSS "auto" is an intrinsic value for {{properties}} — move it outside $raw',
+							data: { properties: [...names].join(", ") },
+							...(plan === undefined
+								? {}
+								: {
+										fix: (fixer: RuleFixer) => [
+											...plan.insertions.map((insertion) =>
+												fixer.insertTextBefore(insertion.node, insertion.text),
+											),
+											...plan.removals.map((range) => fixer.removeRange(range)),
+										],
+									}),
+						});
+					};
+					for (const statement of program.body ?? []) {
+						const declaration = Array.isArray(statement.declarations)
+							? statement
+							: isNode(statement.declaration) && Array.isArray(statement.declaration.declarations)
+								? statement.declaration
+								: undefined;
+						if (declaration === undefined) continue;
+						for (const declarator of declaration.declarations ?? []) {
+							if (declarator.id?.type === NodeKind.Identifier && declarator.init !== undefined)
+								declarations.set(declarator.id.name, declarator.init);
+						}
+					}
+					walkWithAncestors(program, (current, ancestors) => {
+						if (current.type === NodeKind.CallExpression) {
+							const api = resolver.resolve(current);
+							const insideFunction = ancestors.some(
+								(ancestor) =>
+									ancestor.type === NodeKind.FunctionDeclaration ||
+									ancestor.type === NodeKind.FunctionExpression ||
+									ancestor.type === NodeKind.ArrowFunctionExpression,
+							);
+							if (api?.kind === API.style && api.factory === API.cssFactory && !insideFunction) {
+								for (const argument of current.arguments ?? []) {
+									walkWithAncestors(argument, (inner, innerAncestors) => {
+										if (
+											inner.type === NodeKind.SpreadElement &&
+											inner.argument?.type === NodeKind.Identifier &&
+											innerAncestors[innerAncestors.length - 1]?.type === NodeKind.ObjectExpression
+										)
+											styleSpreadBindings.add(inner.argument.name);
+									});
+								}
+							}
+						}
+						if (current.type !== NodeKind.Property || propertyName(current) !== "$raw") return;
+						for (let index = ancestors.length - 1; index >= 0; index -= 1) {
+							const ancestor = ancestors[index];
+							if (ancestor?.type !== NodeKind.CallExpression) continue;
+							const api = resolver.resolve(ancestor);
+							if (api?.kind === API.style && api.factory === API.cssFactory)
+								reportRawProperty(current, ancestors);
+							break;
+						}
+					});
+					const pendingBindings = [...styleSpreadBindings];
+					const scannedBindings = new Set<string>();
+					while (pendingBindings.length > 0) {
+						const name = pendingBindings.pop();
+						if (
+							name === undefined ||
+							scannedBindings.has(name) ||
+							!resolver.staticBindings.has(name)
+						)
+							continue;
+						scannedBindings.add(name);
+						const initializer = declarations.get(name);
+						if (initializer === undefined) continue;
+						walkWithAncestors(initializer, (current, ancestors) => {
+							if (current.type === NodeKind.Property && propertyName(current) === "$raw")
+								reportRawProperty(current, ancestors);
+							if (
+								current.type === NodeKind.SpreadElement &&
+								current.argument?.type === NodeKind.Identifier
+							)
+								pendingBindings.push(current.argument.name);
+						});
+					}
+				},
+			};
 		},
 	},
 	"no-arbitrary-values": {
