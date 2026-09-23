@@ -1,7 +1,7 @@
 import type {
 	MigrationPreviewHostPort,
 	MigrationPreviewRequest,
-	MigrationPreviewSnapshot,
+	MigrationPreviewHostSnapshot,
 } from "./contracts.ts";
 
 export const MigrationPreviewHostId = {
@@ -79,7 +79,7 @@ export const createBrowserMigrationPreviewHost = (
 	const render = async (
 		request: MigrationPreviewRequest,
 		status: "starting" | "ready",
-	): Promise<MigrationPreviewSnapshot> => {
+	): Promise<MigrationPreviewHostSnapshot> => {
 		if (page === undefined) page = await options.browser.newPage();
 		await page.goto(options.url);
 		const result = await applyEvaluation(page, request, probeClass);

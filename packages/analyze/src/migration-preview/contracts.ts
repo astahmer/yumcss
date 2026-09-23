@@ -152,7 +152,7 @@ export interface MigrationPreviewRequest {
 
 export type MigrationPreviewStatus = "unavailable" | "starting" | "ready" | "error";
 
-export interface MigrationPreviewSnapshot {
+export interface MigrationPreviewHostSnapshot {
 	readonly host: string;
 	readonly status: MigrationPreviewStatus;
 	readonly message?: string;
@@ -178,7 +178,7 @@ export interface MigrationPreviewSnapshot {
 	readonly theme: MigrationPreviewThemeSelection;
 	readonly evaluation: MigrationPreviewEvaluationResult | null;
 	readonly adapters?: MigrationPreviewAdapterCatalogSnapshot;
-	readonly preview?: MigrationPreviewSnapshot;
+	readonly preview?: MigrationPreviewHostSnapshot;
 }
 
 export interface MigrationPreviewWorkspacePort {
@@ -202,8 +202,8 @@ export interface MigrationPreviewSessionDependencies {
 export interface MigrationPreviewHostPort {
 	readonly id: string;
 	readonly available: boolean;
-	start?(request: MigrationPreviewRequest): Promise<MigrationPreviewSnapshot>;
-	update?(request: MigrationPreviewRequest): Promise<MigrationPreviewSnapshot>;
+	start?(request: MigrationPreviewRequest): Promise<MigrationPreviewHostSnapshot>;
+	update?(request: MigrationPreviewRequest): Promise<MigrationPreviewHostSnapshot>;
 	stop?(): Promise<void>;
 }
 

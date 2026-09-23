@@ -20,6 +20,7 @@ export {
 	type MigrationPreviewGeneratedFile,
 	type MigrationPreviewOpenRequest,
 	type MigrationPreviewHostPort,
+	type MigrationPreviewHostSnapshot,
 	type MigrationPreviewRequest,
 	type MigrationPreviewSnapshot,
 	type MigrationPreviewStatus,
