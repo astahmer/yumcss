@@ -15,10 +15,8 @@ import type { InspectorPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } 
 import {
 	authoredTokenSpelling,
 	type GovernanceCoverageBoundary,
-	type RawTokenSuggestion,
 	type RemovalSafety,
 	type TokenPolicySnapshot,
-	type UnusedTokenCandidate,
 } from "pandwind-analyze/governance/browser";
 
 import {
@@ -32,6 +30,7 @@ import {
 	mostConnectedTokenId,
 	presentTokenNode,
 } from "./lib/token-relationships.ts";
+import { InspectorTable } from "./lib/inspector-table.tsx";
 
 /* ---------------------------------- helpers ---------------------------------- */
 
@@ -494,35 +493,49 @@ function DesignSystemView(props: {
 					)}
 
 					{(visibleLineHeightEntries.length > 0 || visibleTrackingEntries.length > 0) && (
-						<>
-							<h3>line heights & letter spacings</h3>
-							<table>
-								<tbody>
-									{[
-										...visibleLineHeightEntries.map((x) => ({ ...x, _k: "lh-" + x.name })),
-										...visibleTrackingEntries.map((x) => ({ ...x, _k: "ls-" + x.name })),
-									].map((e) => (
-										<tr key={e._k}>
-											<td>
-												<code>{e.name}</code>
-											</td>
-											<td>{e.value}</td>
-											<td className={ui.sample}>
-												<span
-													style={
-														e.value.includes("em")
-															? { letterSpacing: e.value }
-															: { lineHeight: e.value }
-													}
-												>
-													Hamburgefonstiv 0123
-												</span>
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</>
+						<InspectorTable
+							title="line heights & letter spacings"
+							rows={[
+								...visibleLineHeightEntries.map((entry) => ({
+									...entry,
+									id: `line-height:${entry.name}`,
+									kind: "line height",
+								})),
+								...visibleTrackingEntries.map((entry) => ({
+									...entry,
+									id: `letter-spacing:${entry.name}`,
+									kind: "letter spacing",
+								})),
+							]}
+							rowKey={(row) => row.id}
+							columns={[
+								{ id: "kind", label: "kind", value: (row) => row.kind },
+								{
+									id: "name",
+									label: "token",
+									value: (row) => row.name,
+									render: (row) => <code>{row.name}</code>,
+								},
+								{ id: "value", label: "value", value: (row) => row.value },
+								{
+									id: "sample",
+									label: "sample",
+									value: (row) => "Hamburgefonstiv 0123",
+									render: (row) => (
+										<span
+											style={
+												row.kind === "letter spacing"
+													? { letterSpacing: row.value }
+													: { lineHeight: row.value }
+											}
+										>
+											Hamburgefonstiv 0123
+										</span>
+									),
+								},
+							]}
+							filters={[{ id: "kind", label: "kind", value: (row) => row.kind }]}
+						/>
 					)}
 				</section>
 			)}
@@ -569,27 +582,33 @@ function DesignSystemView(props: {
 
 			{visibleUtilities.length > 0 && (
 				<section id="sec-utilities">
-					<h2>typed utility unions</h2>
-					<table>
-						<thead>
-							<tr>
-								<th>key</th>
-								<th>values</th>
-								<th>sample</th>
-								<th>open</th>
-							</tr>
-						</thead>
-						<tbody>
-							{visibleUtilities.map((u) => (
-								<tr key={u.key}>
-									<td>{u.key}</td>
-									<td>{u.count}</td>
-									<td className={ui.sample}>{u.sample.join(", ")}</td>
-									<td>{u.openEnded ? "∞" : ""}</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
+					<InspectorTable
+						title="typed utility unions"
+						rows={visibleUtilities}
+						rowKey={(utility) => utility.key}
+						columns={[
+							{ id: "key", label: "key", value: (utility) => utility.key },
+							{ id: "values", label: "values", value: (utility) => utility.count },
+							{
+								id: "sample",
+								label: "sample",
+								value: (utility) => utility.sample.join(", "),
+							},
+							{
+								id: "open",
+								label: "open",
+								value: (utility) => (utility.openEnded ? "open ended" : "fixed"),
+								render: (utility) => (utility.openEnded ? "∞" : "—"),
+							},
+						]}
+						filters={[
+							{
+								id: "open",
+								label: "values",
+								value: (utility) => (utility.openEnded ? "open ended" : "fixed"),
+							},
+						]}
+					/>
 				</section>
 			)}
 
@@ -600,28 +619,39 @@ function DesignSystemView(props: {
 						.filter(([, vars]) => vars.length > 0)
 						.map(([category, vars]) => (
 							<div key={category}>
-								<h3>
-									{category} · {vars.length}
-								</h3>
-								<table>
-									<tbody>
-										{vars.map((v: ThemeVar) => (
-											<tr key={`${v.scope ?? ":root"}:${v.name}`}>
-												<td>
-													{categorizeColor(v) !== null ? (
+								<InspectorTable
+									title={`${category} · ${vars.length}`}
+									rows={vars}
+									rowKey={(variable) => `${variable.scope ?? ":root"}:${variable.name}`}
+									columns={[
+										{
+											id: "name",
+											label: "variable",
+											value: (variable) => variable.name,
+											render: (variable) => (
+												<>
+													{categorizeColor(variable) !== null && (
 														<span
 															className={ui.miniSwatch}
-															style={{ background: categorizeColor(v) ?? "" }}
+															style={{ background: categorizeColor(variable) ?? "" }}
 														/>
-													) : null}
-													<code>{v.name}</code>
-													{v.scope !== undefined ? <small> · {v.scope}</small> : null}
-												</td>
-												<td>{v.value}</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
+													)}
+													<code>{variable.name}</code>
+													{variable.scope !== undefined && <small> · {variable.scope}</small>}
+												</>
+											),
+										},
+										{ id: "scope", label: "scope", value: (variable) => variable.scope ?? ":root" },
+										{ id: "value", label: "value", value: (variable) => variable.value },
+									]}
+									filters={[
+										{
+											id: "scope",
+											label: "scope",
+											value: (variable) => variable.scope ?? ":root",
+										},
+									]}
+								/>
 							</div>
 						))}
 				</section>
@@ -635,17 +665,33 @@ function DesignSystemView(props: {
 
 /* ------------------------------ class drill-down ------------------------------ */
 
-function ClassDrillDown(props: { data: InspectorPayload; query: string }) {
+function ClassDrillDown(props: { data: InspectorPayload }) {
 	const [open, setOpen] = useState<string | null>(null);
-	const q = props.query.toLowerCase();
-	const entries = props.data.classDrillDown.filter((d) => d.candidate.toLowerCase().includes(q));
+	const [query, setQuery] = useState("");
+	const entries = props.data.classDrillDown.filter((entry) =>
+		entry.candidate.toLowerCase().includes(query.trim().toLowerCase()),
+	);
 
-	if (entries.length === 0) return null;
+	if (props.data.classDrillDown.length === 0) return null;
 
 	return (
 		<section>
 			<h2>class drill-down — rules per candidate</h2>
 			<p>every rule the real Tailwind compiler emitted for a scanned class. click to expand.</p>
+			<label className={ui.tableSearch}>
+				<span className={ui.srOnly}>Search class candidates</span>
+				<input
+					className={ui.search}
+					type="search"
+					value={query}
+					placeholder="Search class candidates…"
+					aria-label="Search class candidates"
+					onChange={(event) => setQuery(event.target.value)}
+				/>
+			</label>
+			<p className={ui.muted} role="status" aria-live="polite">
+				{entries.length} of {props.data.classDrillDown.length} candidates
+			</p>
 			<ul className={ui.sites}>
 				{entries.map((d) => (
 					<li key={d.candidate}>
@@ -734,41 +780,49 @@ function HistoryView(props: {
 					const d = diffRuns(props.diffData.a, props.diffData.b);
 					return (
 						<section>
-							<h2>
-								diff — older ({props.diffData.a.timestamp}) → newer ({props.diffData.b.timestamp})
-							</h2>
-							<table>
-								<thead>
-									<tr>
-										<th>metric</th>
-										<th>before</th>
-										<th>after</th>
-										<th>delta</th>
-									</tr>
-								</thead>
-								<tbody>
-									{[...d.coverage, ...d.budget].map((m) => (
-										<tr key={m.label}>
-											<td>{m.label}</td>
-											<td>{m.before}</td>
-											<td>{m.after}</td>
-											<td>
-												{m.delta > 0 ? "+" : ""}
-												{m.delta}
-											</td>
-										</tr>
-									))}
-									<tr>
-										<td>missing-css delta</td>
-										<td />
-										<td />
-										<td>
-											{d.missingCssDelta > 0 ? "+" : ""}
-											{d.missingCssDelta}
-										</td>
-									</tr>
-								</tbody>
-							</table>
+							<InspectorTable
+								title={`diff — older (${props.diffData.a.timestamp}) → newer (${props.diffData.b.timestamp})`}
+								rows={[
+									...d.coverage.map((metric) => ({
+										id: `coverage:${metric.label}`,
+										group: "coverage",
+										label: metric.label,
+										before: metric.before,
+										after: metric.after,
+										delta: metric.delta,
+									})),
+									...d.budget.map((metric) => ({
+										id: `budget:${metric.label}`,
+										group: "budget",
+										label: metric.label,
+										before: metric.before,
+										after: metric.after,
+										delta: metric.delta,
+									})),
+									{
+										id: "missing-css",
+										group: "missing css",
+										label: "missing-css delta",
+										before: null,
+										after: null,
+										delta: d.missingCssDelta,
+									},
+								]}
+								rowKey={(metric) => metric.id}
+								columns={[
+									{ id: "metric", label: "metric", value: (metric) => metric.label },
+									{ id: "before", label: "before", value: (metric) => metric.before },
+									{ id: "after", label: "after", value: (metric) => metric.after },
+									{
+										id: "delta",
+										label: "delta",
+										value: (metric) => metric.delta,
+										render: (metric) => `${metric.delta > 0 ? "+" : ""}${metric.delta}`,
+									},
+								]}
+								filters={[{ id: "group", label: "group", value: (metric) => metric.group }]}
+								defaultSort={{ columnId: "metric", direction: "ascending" }}
+							/>
 							{(d.resolvedDead.length > 0 || d.newDead.length > 0) && (
 								<>
 									<h3>dead candidates</h3>
@@ -785,15 +839,8 @@ function HistoryView(props: {
 	);
 }
 
-function StatsView(props: {
-	data: InspectorPayload;
-	query: string;
-	queryChange: (value: string) => void;
-}) {
+function StatsView(props: { data: InspectorPayload }) {
 	const c = props.data.coverage;
-	const [sortKey, setSortKey] = useState<"file" | "eliminatedPct" | "cxRuntime">("eliminatedPct");
-	const [asc, setAsc] = useState(true);
-	const q = props.query.toLowerCase();
 	const valueCoverageByFile = new Map(
 		(props.data.analytics?.fileValueCoverage ?? []).map((coverage) => [coverage.file, coverage]),
 	);
@@ -803,34 +850,7 @@ function StatsView(props: {
 		runtime: c.files.filter((file) => file.cxRuntime > 0).length,
 	};
 	const valueCoverage = props.data.analytics?.valueCoverage;
-
-	const sortedFiles = [...c.files]
-		.filter((f) => f.file.toLowerCase().includes(q))
-		.toSorted((a, b) => {
-			const dir = asc ? 1 : -1;
-			if (sortKey === "file") return a.file.localeCompare(b.file) * dir;
-			return (a[sortKey] - b[sortKey]) * dir;
-		});
 	const maxPrefix = Math.max(...c.budget.perPrefix.map((p) => p.rules), 1);
-
-	const sortHeader = (key: "file" | "eliminatedPct" | "cxRuntime", label: string) => (
-		<th aria-sort={sortKey === key ? (asc ? "ascending" : "descending") : "none"}>
-			<button
-				type="button"
-				className={ui.sortButton}
-				onClick={() => {
-					if (sortKey === key) setAsc(!asc);
-					else {
-						setSortKey(key);
-						setAsc(key === "file");
-					}
-				}}
-			>
-				{label}
-				{sortKey === key ? (asc ? " ▲" : " ▼") : ""}
-			</button>
-		</th>
-	);
 
 	return (
 		<>
@@ -879,13 +899,6 @@ function StatsView(props: {
 				</section>
 			</div>
 
-			<SearchControl
-				query={props.query}
-				queryChange={props.queryChange}
-				matchCount={sortedFiles.length}
-				totalCount={c.files.length}
-			/>
-
 			<section>
 				<h2>css budget — rule distribution by prefix</h2>
 				{c.budget.perPrefix.slice(0, 12).map((p) => (
@@ -930,41 +943,55 @@ function StatsView(props: {
 				</section>
 			)}
 
-			<section>
-				<h2>per-file fold coverage</h2>
-				<table className={ui.stickyTable}>
-					<thead>
-						<tr>
-							{sortHeader("file", "file")}
-							{sortHeader("eliminatedPct", "eliminated %")}
-							<th>full/part/runtime</th>
-							{sortHeader("cxRuntime", "runtime")}
-							<th>token / literal</th>
-							<th>missing-css</th>
-						</tr>
-					</thead>
-					<tbody>
-						{sortedFiles.map((f) => (
-							<tr key={f.file}>
-								<td>{f.file}</td>
-								<td>
-									<span className={ui.pct}>{f.eliminatedPct}%</span>
-								</td>
-								<td>{`${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`}</td>
-								<td>{f.cxRuntime}</td>
-								<td>
-									{valueCoverageByFile.get(f.file) === undefined
-										? "—"
-										: `${valueCoverageByFile.get(f.file)!.tokenPct}% / ${valueCoverageByFile.get(f.file)!.literalPct}%`}
-								</td>
-								<td>{f.missingCssCount}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</section>
+			<InspectorTable
+				title="per-file fold coverage"
+				rows={c.files}
+				rowKey={(file) => file.file}
+				columns={[
+					{ id: "file", label: "file", value: (file) => file.file },
+					{
+						id: "eliminatedPct",
+						label: "eliminated %",
+						value: (file) => file.eliminatedPct,
+						render: (file) => <span className={ui.pct}>{file.eliminatedPct}%</span>,
+					},
+					{
+						id: "foldCounts",
+						label: "full / part / runtime",
+						value: (file) => `${file.cxFoldedFull}/${file.cxFoldedPartial}/${file.cxRuntime}`,
+					},
+					{ id: "runtime", label: "runtime", value: (file) => file.cxRuntime },
+					{
+						id: "tokenLiteral",
+						label: "token / literal",
+						value: (file) => {
+							const coverage = valueCoverageByFile.get(file.file);
+							return coverage === undefined
+								? "—"
+								: `${coverage.tokenPct}% / ${coverage.literalPct}%`;
+						},
+					},
+					{ id: "missingCss", label: "missing CSS", value: (file) => file.missingCssCount },
+				]}
+				filters={[
+					{
+						id: "fold",
+						label: "fold outcome",
+						value: (file) =>
+							file.cxRuntime > 0 ? "runtime" : file.cxFoldedPartial > 0 ? "partial" : "full",
+					},
+					{
+						id: "missingCss",
+						label: "missing CSS",
+						value: (file) => (file.missingCssCount > 0 ? "present" : "none"),
+					},
+				]}
+				defaultSort={{ columnId: "eliminatedPct", direction: "ascending" }}
+				defaultOpen={false}
+				tableClassName={ui.stickyTable}
+			/>
 
-			<ClassDrillDown data={props.data} query={props.query} />
+			<ClassDrillDown data={props.data} />
 
 			{props.data.cssSources.length > 0 && (
 				<section>
@@ -1217,7 +1244,6 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 
 /* ---------------------------------- usage tab ---------------------------------- */
 
-type TokenUsageFilter = "all" | "hot" | "used" | "unused";
 type TokenUsageStatus = "hot" | "used" | "unused";
 
 interface TokenUsageRow {
@@ -1410,79 +1436,65 @@ function UsageView(props: { data: InspectorPayload }) {
 						crawl.unresolved.length > 0 &&
 						` · ${crawl.unresolved.length} unresolved import(s)`}
 				</p>
-				<table>
-					<tbody>
-						<tr>
-							<th>responsive</th>
-							<td>{pct(a.conditionBreakdown.responsive)}</td>
-							<th>pseudo</th>
-							<td>{pct(a.conditionBreakdown.pseudo)}</td>
-							<th>media</th>
-							<td>{pct(a.conditionBreakdown.media)}</td>
-							<th>other</th>
-							<td>{pct(a.conditionBreakdown.other)}</td>
-						</tr>
-					</tbody>
-				</table>
+				<div className={ui.cards}>
+					<Card label="responsive" value={pct(a.conditionBreakdown.responsive)} />
+					<Card label="pseudo" value={pct(a.conditionBreakdown.pseudo)} />
+					<Card label="media" value={pct(a.conditionBreakdown.media)} />
+					<Card label="other" value={pct(a.conditionBreakdown.other)} />
+				</div>
 			</section>
 			<section>
-				<h2>top properties</h2>
-				<table>
-					<thead>
-						<tr>
-							<th>property</th>
-							<th>uses</th>
-						</tr>
-					</thead>
-					<tbody>
-						{a.topProperties.map((p) => (
-							<tr key={p.name}>
-								<td>{p.name}</td>
-								<td>{p.count}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+				<InspectorTable
+					title="top properties"
+					rows={a.topProperties}
+					rowKey={(property) => property.name}
+					columns={[
+						{ id: "property", label: "property", value: (property) => property.name },
+						{ id: "uses", label: "uses", value: (property) => property.count },
+					]}
+					filters={[
+						{
+							id: "frequency",
+							label: "frequency",
+							value: (property) =>
+								property.count >= 10 ? "10+" : property.count >= 3 ? "3–9" : "1–2",
+						},
+					]}
+					defaultSort={{ columnId: "uses", direction: "descending" }}
+				/>
 			</section>
 			<section>
-				<h2>property + value combos</h2>
-				<table>
-					<thead>
-						<tr>
-							<th>combo</th>
-							<th>uses</th>
-						</tr>
-					</thead>
-					<tbody>
-						{a.topPropertyValues.map((c) => (
-							<tr key={c.combo}>
-								<td>{c.combo}</td>
-								<td>{c.count}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+				<InspectorTable
+					title="property + value combos"
+					rows={a.topPropertyValues}
+					rowKey={(combo) => combo.combo}
+					columns={[
+						{ id: "combo", label: "combo", value: (combo) => combo.combo },
+						{ id: "uses", label: "uses", value: (combo) => combo.count },
+					]}
+					filters={[
+						{
+							id: "frequency",
+							label: "frequency",
+							value: (combo) => (combo.count >= 10 ? "10+" : combo.count >= 3 ? "3–9" : "1–2"),
+						},
+					]}
+					defaultSort={{ columnId: "uses", direction: "descending" }}
+				/>
 			</section>
 			<section>
-				<h2>conditions</h2>
-				<table>
-					<thead>
-						<tr>
-							<th>condition</th>
-							<th>kind</th>
-							<th>uses</th>
-						</tr>
-					</thead>
-					<tbody>
-						{a.conditions.map((c) => (
-							<tr key={c.name}>
-								<td>{c.name}</td>
-								<td>{c.kind}</td>
-								<td>{c.count}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+				<InspectorTable
+					title="conditions"
+					rows={a.conditions}
+					rowKey={(condition) => condition.name}
+					columns={[
+						{ id: "condition", label: "condition", value: (condition) => condition.name },
+						{ id: "kind", label: "kind", value: (condition) => condition.kind },
+						{ id: "uses", label: "uses", value: (condition) => condition.count },
+					]}
+					filters={[{ id: "kind", label: "kind", value: (condition) => condition.kind }]}
+					defaultSort={{ columnId: "uses", direction: "descending" }}
+				/>
 			</section>
 			<TokenUsageIntelligence data={props.data} />
 			<ContrastWarningsView warnings={props.data.contrastWarnings ?? []} />
@@ -1493,22 +1505,11 @@ function UsageView(props: { data: InspectorPayload }) {
 	);
 }
 
-const TOKEN_USAGE_FILTERS: ReadonlyArray<{ id: TokenUsageFilter; label: string }> = [
-	{ id: "all", label: "all" },
-	{ id: "hot", label: "hot" },
-	{ id: "used", label: "used" },
-	{ id: "unused", label: "not observed" },
-];
-
 function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 	const usage = buildTokenUsageData(data);
-	const [filter, setFilter] = useState<TokenUsageFilter>("all");
 	const total = usage.rows.length;
 	const used = usage.rows.filter((row) => row.count > 0).length;
 	const hot = usage.rows.filter((row) => row.status === "hot");
-	const visible = usage.rows.filter(
-		(row) => filter === "all" || (filter === "used" ? row.count > 0 : row.status === filter),
-	);
 	const maxHotUses = Math.max(...hot.map((row) => row.count), 1);
 	const groupStats = data.designSystem.tokenSections
 		.map((section) => {
@@ -1567,52 +1568,41 @@ function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 					))}
 				</div>
 			)}
-			<div className={ui.usageFilters} role="group" aria-label="Filter token usage">
-				{TOKEN_USAGE_FILTERS.map((option) => (
-					<button
-						key={option.id}
-						type="button"
-						className={filter === option.id ? ui.active : undefined}
-						aria-pressed={filter === option.id}
-						onClick={() => setFilter(option.id)}
-					>
-						{option.label}
-					</button>
-				))}
-			</div>
-			{visible.length > 0 ? (
-				<table>
-					<thead>
-						<tr>
-							<th>category</th>
-							<th>token</th>
-							<th>uses</th>
-							<th>status</th>
-						</tr>
-					</thead>
-					<tbody>
-						{visible
-							.toSorted((a, b) => b.count - a.count || a.id.localeCompare(b.id))
-							.slice(0, 80)
-							.map((row) => (
-								<tr key={row.id}>
-									<td>{row.groupLabel}</td>
-									<td title={row.value}>
-										<code>{tokenLabel(row.group, row.name)}</code>
-									</td>
-									<td>{row.count}</td>
-									<td>
-										<span className={row.status === "unused" ? ui.muted : ui.good}>
-											{row.status === "unused" ? "not observed" : row.status}
-										</span>
-									</td>
-								</tr>
-							))}
-					</tbody>
-				</table>
-			) : (
-				<p className={ui.muted}>No catalog tokens match this view.</p>
-			)}
+			<InspectorTable
+				title="token usage"
+				rows={usage.rows}
+				rowKey={(row) => row.id}
+				columns={[
+					{ id: "category", label: "category", value: (row) => row.groupLabel },
+					{
+						id: "token",
+						label: "token",
+						value: (row) => tokenLabel(row.group, row.name),
+						render: (row) => <code title={row.value}>{tokenLabel(row.group, row.name)}</code>,
+					},
+					{ id: "uses", label: "uses", value: (row) => row.count },
+					{
+						id: "status",
+						label: "status",
+						value: (row) => (row.status === "unused" ? "not observed" : row.status),
+						render: (row) => (
+							<span className={row.status === "unused" ? ui.muted : ui.good}>
+								{row.status === "unused" ? "not observed" : row.status}
+							</span>
+						),
+					},
+				]}
+				filters={[
+					{
+						id: "activity",
+						label: "activity",
+						value: (row) =>
+							row.count === 0 ? "not observed" : row.status === "hot" ? "hot" : "used",
+					},
+					{ id: "category", label: "category", value: (row) => row.groupLabel },
+				]}
+				defaultSort={{ columnId: "uses", direction: "descending" }}
+			/>
 			{usage.unknown.length > 0 && (
 				<details className={ui.unknownTokens}>
 					<summary>observed outside the loaded catalog ({usage.unknown.length})</summary>
@@ -1647,30 +1637,37 @@ function ContrastWarningsView({
 				text/background pairs within one call site. &lt;4.5 fails normal text; &lt;3 also fails
 				large text.
 			</p>
-			<table>
-				<thead>
-					<tr>
-						<th>ratio</th>
-						<th>severity</th>
-						<th>text</th>
-						<th>background</th>
-						<th>file</th>
-					</tr>
-				</thead>
-				<tbody>
-					{warnings.map((w, i) => (
-						<tr key={i}>
-							<td style={{ color: w.severity === "fail-large" ? "#ef4444" : "#d97706" }}>
-								{w.ratio.toFixed(2)}
-							</td>
-							<td>{w.severity}</td>
-							<td>{w.fg}</td>
-							<td>{w.bg}</td>
-							<td>{w.file}</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
+			<InspectorTable
+				title="contrast warnings"
+				rows={warnings.map((warning, index) => ({ id: `${warning.file}:${index}`, warning }))}
+				rowKey={(row) => row.id}
+				columns={[
+					{
+						id: "ratio",
+						label: "ratio",
+						value: (row) => row.warning.ratio,
+						render: (row) => (
+							<span
+								style={{ color: row.warning.severity === "fail-large" ? "#ef4444" : "#d97706" }}
+							>
+								{row.warning.ratio.toFixed(2)}
+							</span>
+						),
+					},
+					{ id: "severity", label: "severity", value: (row) => row.warning.severity },
+					{ id: "text", label: "text", value: (row) => row.warning.fg },
+					{ id: "background", label: "background", value: (row) => row.warning.bg },
+					{ id: "file", label: "file", value: (row) => row.warning.file },
+				]}
+				filters={[
+					{
+						id: "severity",
+						label: "severity",
+						value: (row) => row.warning.severity,
+					},
+				]}
+				defaultSort={{ columnId: "ratio", direction: "ascending" }}
+			/>
 		</section>
 	);
 }
@@ -1918,28 +1915,30 @@ function CleanupReportView(props: { data: InspectorPayload }) {
 						no policy resolved — strictness is report-only/fail-open (unknown).
 					</p>
 				) : policy.resolved ? (
-					<table>
-						<tbody>
-							<tr>
-								<th>owner</th>
-								<td>{policy.owner}</td>
-								<th>origin</th>
-								<td>{policy.origin ?? "—"}</td>
-							</tr>
-							<tr>
-								<th>strict properties</th>
-								<td>{(policy.strictProperties ?? []).join(", ") || "—"}</td>
-								<th>allowed raw values</th>
-								<td>{(policy.allowedRawValues ?? []).join(", ") || "—"}</td>
-							</tr>
-							{policy.allowedRawPrefixes !== undefined && policy.allowedRawPrefixes.length > 0 && (
-								<tr>
-									<th>allowed raw prefixes</th>
-									<td>{policy.allowedRawPrefixes.join(", ")}</td>
-								</tr>
-							)}
-						</tbody>
-					</table>
+					<dl className={ui.definitionGrid}>
+						<div>
+							<dt>owner</dt>
+							<dd>{policy.owner}</dd>
+						</div>
+						<div>
+							<dt>origin</dt>
+							<dd>{policy.origin ?? "—"}</dd>
+						</div>
+						<div>
+							<dt>strict properties</dt>
+							<dd>{(policy.strictProperties ?? []).join(", ") || "—"}</dd>
+						</div>
+						<div>
+							<dt>allowed raw values</dt>
+							<dd>{(policy.allowedRawValues ?? []).join(", ") || "—"}</dd>
+						</div>
+						{policy.allowedRawPrefixes !== undefined && policy.allowedRawPrefixes.length > 0 && (
+							<div>
+								<dt>allowed raw prefixes</dt>
+								<dd>{policy.allowedRawPrefixes.join(", ")}</dd>
+							</div>
+						)}
+					</dl>
 				) : (
 					<p className={ui.muted}>
 						policy for {policy.owner} could not be resolved — all strictness is unknown.
@@ -1947,91 +1946,124 @@ function CleanupReportView(props: { data: InspectorPayload }) {
 				)}
 			</section>
 			<section>
-				<h2>unused candidates ({unused.length})</h2>
 				<p className={ui.muted}>
 					zero reachable usage after alias/composition/generated-artifact/export analysis — safety
 					is a classification, not a deletion approval.
 				</p>
-				<details className={ui.unknownTokens}>
-					<summary>show {unused.length} cleanup candidates</summary>
-					<table>
-						<thead>
-							<tr>
-								<th>token</th>
-								<th>safety</th>
-								<th>reasons / boundaries</th>
-							</tr>
-						</thead>
-						<tbody>
-							{unused.map((c: UnusedTokenCandidate) => (
-								<tr key={c.tokenId}>
-									<td>{stripDollar(authoredTokenSpelling(c.tokenId))}</td>
-									<td style={{ color: SAFETY_COLOR[c.safety] }}>{c.safety}</td>
-									<td>{c.reasons.join("; ") || "—"}</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</details>
+				<InspectorTable
+					title={`cleanup candidates · ${unused.length}`}
+					rows={unused}
+					rowKey={(candidate) => candidate.tokenId}
+					columns={[
+						{
+							id: "token",
+							label: "token",
+							value: (candidate) => stripDollar(authoredTokenSpelling(candidate.tokenId)),
+						},
+						{
+							id: "safety",
+							label: "safety",
+							value: (candidate) => candidate.safety,
+							render: (candidate) => (
+								<span style={{ color: SAFETY_COLOR[candidate.safety] }}>{candidate.safety}</span>
+							),
+						},
+						{
+							id: "reasons",
+							label: "reasons / boundaries",
+							value: (candidate) => candidate.reasons.join("; ") || "—",
+						},
+					]}
+					filters={[{ id: "safety", label: "safety", value: (candidate) => candidate.safety }]}
+					defaultOpen={false}
+				/>
 			</section>
 			{suggestions.length > 0 && (
 				<section>
-					<h2>raw value suggestions ({suggestions.length}) — exact matches only</h2>
 					<p className={ui.muted}>
 						each suggestion is an exact resolved-value match with a legal spelling for the property;
 						ambiguous matches are rejected, not ranked.
 					</p>
-					<table>
-						<thead>
-							<tr>
-								<th>file</th>
-								<th>property</th>
-								<th>raw</th>
-								<th>replacement</th>
-								<th>confidence</th>
-								<th>reason</th>
-							</tr>
-						</thead>
-						<tbody>
-							{suggestions.map((sg: RawTokenSuggestion, i) => (
-								<tr key={`${sg.file}:${sg.start}:${i}`}>
-									<td>{sg.file}</td>
-									<td>{sg.property ?? "—"}</td>
-									<td>{sg.rawValue}</td>
-									<td>{stripDollar(sg.replacement)}</td>
-									<td>{sg.confidence}</td>
-									<td>{sg.reason}</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
+					<InspectorTable
+						title={`raw value suggestions · ${suggestions.length}`}
+						rows={suggestions.map((suggestion, index) => ({
+							id: `${suggestion.file}:${suggestion.start}:${index}`,
+							suggestion,
+						}))}
+						rowKey={(row) => row.id}
+						columns={[
+							{ id: "file", label: "file", value: (row) => row.suggestion.file },
+							{
+								id: "property",
+								label: "property",
+								value: (row) => row.suggestion.property ?? "—",
+							},
+							{ id: "raw", label: "raw", value: (row) => row.suggestion.rawValue },
+							{
+								id: "replacement",
+								label: "replacement",
+								value: (row) => stripDollar(row.suggestion.replacement),
+							},
+							{ id: "confidence", label: "confidence", value: (row) => row.suggestion.confidence },
+							{ id: "reason", label: "reason", value: (row) => row.suggestion.reason },
+						]}
+						filters={[
+							{
+								id: "confidence",
+								label: "confidence",
+								value: (row) => row.suggestion.confidence,
+							},
+							{
+								id: "property",
+								label: "property",
+								value: (row) => row.suggestion.property ?? "unknown",
+							},
+						]}
+						defaultSort={{ columnId: "file", direction: "ascending" }}
+					/>
 				</section>
 			)}
 			{g.diagnostics.length > 0 && (
 				<section>
-					<h2>diagnostics</h2>
-					<table>
-						<tbody>
-							{g.diagnostics.map((d, i) => (
-								<tr key={i}>
-									<td
+					<InspectorTable
+						title="diagnostics"
+						rows={g.diagnostics.map((diagnostic, index) => ({
+							id: `${diagnostic.code}:${index}`,
+							diagnostic,
+						}))}
+						rowKey={(row) => row.id}
+						columns={[
+							{
+								id: "severity",
+								label: "severity",
+								value: (row) => row.diagnostic.severity,
+								render: (row) => (
+									<span
 										style={{
 											color:
-												d.severity === "error"
+												row.diagnostic.severity === "error"
 													? "#ef4444"
-													: d.severity === "warning"
+													: row.diagnostic.severity === "warning"
 														? "#d97706"
 														: "#64748b",
 										}}
 									>
-										{d.severity}
-									</td>
-									<td>{d.code}</td>
-									<td>{d.message}</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
+										{row.diagnostic.severity}
+									</span>
+								),
+							},
+							{ id: "code", label: "code", value: (row) => row.diagnostic.code },
+							{ id: "message", label: "message", value: (row) => row.diagnostic.message },
+						]}
+						filters={[
+							{
+								id: "severity",
+								label: "severity",
+								value: (row) => row.diagnostic.severity,
+							},
+						]}
+						defaultSort={{ columnId: "severity", direction: "ascending" }}
+					/>
 				</section>
 			)}
 			<RemovalPreviewView unusedCount={s.safeToRemove} />
@@ -2288,7 +2320,7 @@ export function App() {
 					retry={loadHistory}
 				/>
 			);
-		} else body = <StatsView data={data} query={query} queryChange={queryChange} />;
+		} else body = <StatsView data={data} />;
 	}
 
 	return (
