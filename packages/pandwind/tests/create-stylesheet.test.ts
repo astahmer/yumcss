@@ -59,7 +59,9 @@ test("emits flat cssVariables through preset conditions and registrations", () =
 	expect(build).toContain('@property --progress{syntax:"<number>";inherits:false;initial-value:0}');
 	expect(runtime).toContain(":root {--radius: 1rem;}");
 	expect(runtime).toContain(".dark {--accent: blue;}");
-	expect(runtime).toContain('@property --progress{syntax:"<number>";inherits:false;initial-value:0}');
+	expect(runtime).toContain(
+		'@property --progress{syntax:"<number>";inherits:false;initial-value:0}',
+	);
 });
 
 test("authored token names are opt-in and collisions fail closed", () => {
@@ -297,6 +299,27 @@ test("css gen prop in arbitrary descendant selector", () => {
       },
     }
   `);
+});
+
+test("nested self selectors remain on the ancestor of descendant selectors", () => {
+	const sheet = createStylesheet(examplePreset, { debug: false });
+	const css = createUnsafeCss({ debug: false });
+	const rules = sheet.process([
+		css.raw({
+			"&.is-open": {
+				"& .child": { color: "red" },
+			},
+		}),
+	]);
+	const generated = [...rules.values()].map((rule) => rule.css);
+
+	expect(generated).toMatchInlineSnapshot(`
+		[
+		  ".\\31 fdd2r0.is-open .child{color:red}",
+		]
+	`);
+	expect(generated[0]).toContain(".is-open .child{color:red}");
+	expect(generated[0]).not.toContain(".child.is-open");
 });
 
 test("css gen prop in known at rule", () => {

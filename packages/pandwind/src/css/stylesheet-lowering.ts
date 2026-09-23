@@ -34,9 +34,40 @@ const scopedClassName = (className: string, selectors: readonly string[]): strin
 		? `${className}${className}`
 		: className;
 const isParentSelector = (condition: string): boolean =>
-	condition.charCodeAt(condition.length - 1) === 38;
+	condition.charCodeAt(condition.length - 1) === 38 &&
+	condition.indexOf("&") === condition.length - 1;
 const isAtRule = (condition: string): boolean => condition.charCodeAt(0) === 64;
 const isSelectorList = (selector: string): boolean => splitSelectorList(selector).length > 1;
+
+const hasTopLevelCombinator = (selector: string): boolean => {
+	let depth = 0;
+	let quote: string | null = null;
+	let escaped = false;
+	for (let index = 1; index < selector.length; index += 1) {
+		const character = selector[index]!;
+		if (escaped) escaped = false;
+		else if (character === "\\") escaped = true;
+		else if (quote) {
+			if (character === quote) quote = null;
+		} else if (character === '"' || character === "'") quote = character;
+		else if (character === "(" || character === "[") depth += 1;
+		else if (character === ")" || character === "]") depth = Math.max(0, depth - 1);
+		else if (
+			depth === 0 &&
+			(/[\s]/u.test(character) ||
+				character === ">" ||
+				character === "+" ||
+				character === "~" ||
+				(character === "|" && selector[index + 1] === "|"))
+		) {
+			return true;
+		}
+	}
+	return false;
+};
+
+const isSimpleSelfSelector = (selector: string): boolean =>
+	isSelfSelector(selector) && !hasTopLevelCombinator(selector);
 
 export const parseCondition = (
 	selector: string,
@@ -49,7 +80,7 @@ export const parseCondition = (
 ): true | undefined => {
 	if (!selector) return;
 	if (isSelectorList(selector)) conditions.selectorLists.push(selector);
-	else if (isSelfSelector(selector)) conditions.selfSelectors.push(selector.slice(1));
+	else if (isSimpleSelfSelector(selector)) conditions.selfSelectors.push(selector.slice(1));
 	else if (isParentSelector(selector)) conditions.parentSelectors.push(selector.slice(0, -1));
 	else if (selector.includes("&")) conditions.selectorLists.push(selector);
 	else if (isAtRule(selector)) conditions.atRules.push(selector);
@@ -68,15 +99,18 @@ export const genCSSRule = (decls: string, conditions: ParsedConditions): string 
 					.map((selector) => {
 						if (
 							selector.includes("&") &&
-							!isSelfSelector(selector) &&
+							!isSimpleSelfSelector(selector) &&
 							!isParentSelector(selector)
 						) {
 							const base = scopedClassName(className, selfSelectors);
-							return `${parentSelectors.join("")}${selector.replaceAll("&", base)}${selfSelectors.join("")}`;
+							const scopedSelector = selector.startsWith("&")
+								? selector.replaceAll("&", `${base}${selfSelectors.join("")}`)
+								: `${selector.replaceAll("&", base)}${selfSelectors.join("")}`;
+							return `${parentSelectors.join("")}${scopedSelector}`;
 						}
 						const selfs = [...selfSelectors];
 						const parents = [...parentSelectors];
-						if (isSelfSelector(selector)) selfs.push(selector.slice(1));
+						if (isSimpleSelfSelector(selector)) selfs.push(selector.slice(1));
 						else if (isParentSelector(selector)) parents.push(selector.slice(0, -1));
 						return `${parents.join("")}${scopedClassName(className, selfs)}${selfs.join("")}`;
 					})

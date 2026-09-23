@@ -260,6 +260,7 @@ describe("runtime CSS-in-JS sheet", () => {
 			color: "$blue-500",
 			padding: 4,
 			_hover: { color: "$red-500" },
+			"&.is-open": { "& .child": { color: "red" } },
 		};
 		const full = createStylesheet(examplePreset);
 		full.process([styles]);
@@ -272,6 +273,11 @@ describe("runtime CSS-in-JS sheet", () => {
 			tokens: full.gen.tokens(),
 			rules: full.gen.atomicEntries(),
 		});
+		const nestedRule = [...full.gen.atomicEntries().values()].find((rule) =>
+			rule.css.includes(".child"),
+		);
+		expect(nestedRule?.css).toContain(".is-open .child{color:red}");
+		expect(nestedRule?.css).not.toContain(".child.is-open");
 	});
 
 	test("deduplicates repeated declarations and preserves generated ordering", () => {
