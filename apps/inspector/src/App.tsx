@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { ui } from "./ui-css.ts";
 import { InspectorApi, type AnalyticsHistoryPoint, type HistoryListItem } from "./lib/api.ts";
 import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
@@ -23,7 +23,11 @@ import {
 	INSPECTOR_TABS,
 	readInspectorUrlState,
 	serializeInspectorUrlState,
+	type BuildAuthoredValueFilter,
+	type BuildFileFilter,
+	type InspectorBuildFilters,
 	type InspectorTab,
+	type InspectorUrlState,
 } from "./lib/url-state.ts";
 import {
 	getTokenRelationships,
@@ -37,6 +41,24 @@ import { InspectorTable } from "./lib/inspector-table.tsx";
 const stripDollar = (name: string): string => (name.startsWith("$") ? name.slice(1) : name);
 
 const isHex = (value: string): boolean => /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value.trim());
+
+const projectRelativeFile = (root: string, file: string): string => {
+	const normalizedRoot = root.replaceAll("\\", "/").replace(/\/+$/, "");
+	const normalizedFile = file.replaceAll("\\", "/");
+	const rootPrefix = `${normalizedRoot}/`;
+	return normalizedFile.startsWith(rootPrefix)
+		? normalizedFile.slice(rootPrefix.length)
+		: normalizedFile;
+};
+
+type BuildFileStatus = Exclude<BuildFileFilter, "eliminated">;
+
+const buildFileStatus = (file: InspectorPayload["coverage"]["files"][number]): BuildFileStatus => {
+	if (file.cxCalls === 0) return "no-calls";
+	if (file.cxRuntime > 0) return "runtime";
+	if (file.cxFoldedPartial > 0) return "partial";
+	return "full";
+};
 
 function CopyButton(props: { text: string; className?: string }) {
 	const [copied, setCopied] = useState(false);
@@ -174,13 +196,52 @@ function LoadingSkeleton() {
 	);
 }
 
-function Card(props: { label: string; value: string; sub?: string }) {
+function Card(props: { label: string; value: ReactNode; sub?: ReactNode }) {
 	return (
 		<div className={ui.card}>
 			<div className={ui.cardValue}>{props.value}</div>
 			<div className={ui.cardLabel}>{props.label}</div>
 			{props.sub !== undefined && <div className={ui.cardSub}>{props.sub}</div>}
 		</div>
+	);
+}
+
+function BuildReportLink(props: {
+	state: InspectorUrlState;
+	section: string;
+	filters?: InspectorBuildFilters;
+	navigateTo: (state: InspectorUrlState) => void;
+	label: string;
+	children: ReactNode;
+}) {
+	const nextState: InspectorUrlState = {
+		tab: "build",
+		query: props.state.query,
+		section: props.section,
+		...(props.filters === undefined ? {} : { buildFilters: props.filters }),
+	};
+	const href = `${window.location.pathname}${serializeInspectorUrlState(nextState, window.location.search)}`;
+	return (
+		<a
+			href={href}
+			className={ui.metricLink}
+			aria-label={props.label}
+			onClick={(event) => {
+				if (
+					event.defaultPrevented ||
+					event.button !== 0 ||
+					event.metaKey ||
+					event.ctrlKey ||
+					event.shiftKey ||
+					event.altKey
+				)
+					return;
+				event.preventDefault();
+				props.navigateTo(nextState);
+			}}
+		>
+			{props.children}
+		</a>
 	);
 }
 
@@ -520,7 +581,7 @@ function DesignSystemView(props: {
 								{
 									id: "sample",
 									label: "sample",
-									value: (row) => "Hamburgefonstiv 0123",
+									value: () => "Hamburgefonstiv 0123",
 									render: (row) => (
 										<span
 											style={
@@ -997,18 +1058,84 @@ function HistoryView(props: {
 	);
 }
 
-function StatsView(props: { data: InspectorPayload }) {
+function StatsView(props: {
+	data: InspectorPayload;
+	state: InspectorUrlState;
+	navigateTo: (state: InspectorUrlState) => void;
+	buildFiltersChange: (filters: InspectorBuildFilters | undefined) => void;
+}) {
 	const c = props.data.coverage;
 	const valueCoverageByFile = new Map(
-		(props.data.analytics?.fileValueCoverage ?? []).map((coverage) => [coverage.file, coverage]),
+		(props.data.analytics?.fileValueCoverage ?? []).map((coverage) => [
+			projectRelativeFile(props.data.meta.root, coverage.file),
+			coverage,
+		]),
 	);
 	const fileGroups = {
-		full: c.files.filter((file) => file.cxRuntime === 0 && file.cxFoldedPartial === 0).length,
-		partial: c.files.filter((file) => file.cxRuntime === 0 && file.cxFoldedPartial > 0).length,
-		runtime: c.files.filter((file) => file.cxRuntime > 0).length,
+		full: c.files.filter((file) => buildFileStatus(file) === "full").length,
+		partial: c.files.filter((file) => buildFileStatus(file) === "partial").length,
+		runtime: c.files.filter((file) => buildFileStatus(file) === "runtime").length,
+		noCalls: c.files.filter((file) => buildFileStatus(file) === "no-calls").length,
+		eliminated: c.files.filter((file) => file.cxCalls > 0 && file.cxRuntime === 0).length,
+		withCalls: c.files.filter((file) => file.cxCalls > 0).length,
 	};
 	const valueCoverage = props.data.analytics?.valueCoverage;
 	const maxPrefix = Math.max(...c.budget.perPrefix.map((p) => p.rules), 1);
+	const filtersFor = (values: Partial<InspectorBuildFilters> = {}): InspectorBuildFilters => ({
+		fold: values.fold ?? null,
+		missingCss: values.missingCss ?? null,
+		authoredValue: values.authoredValue ?? null,
+	});
+	const activeFilters = props.state.buildFilters;
+	const tableFilterValues: Record<string, string> = {};
+	if (activeFilters?.fold !== null && activeFilters?.fold !== undefined)
+		tableFilterValues.fold = activeFilters.fold;
+	if (activeFilters?.missingCss !== null && activeFilters?.missingCss !== undefined)
+		tableFilterValues.missingCss = activeFilters.missingCss;
+	if (activeFilters?.authoredValue !== null && activeFilters?.authoredValue !== undefined)
+		tableFilterValues.authoredValue = activeFilters.authoredValue;
+	const hasActiveTableFilters = Object.keys(tableFilterValues).length > 0;
+	const foldLink = (outcome: BuildFileFilter, count: number, unit: "calls" | "files" = "files") => {
+		const noun = unit === "calls" ? "call" : "file";
+		const callKind =
+			outcome === "has-full" ? "full" : outcome === "has-partial" ? "partial" : outcome;
+		const quantity =
+			unit === "calls"
+				? `${count} ${callKind} ${count === 1 ? noun : `${noun}s`}`
+				: outcome === "no-calls"
+					? `${count} ${count === 1 ? noun : `${noun}s`} without cx() calls`
+					: outcome === "eliminated"
+						? `${count} ${count === 1 ? noun : `${noun}s`} without runtime cx()`
+						: `${count} ${outcome} ${count === 1 ? noun : `${noun}s`}`;
+		const label =
+			unit === "files" && (outcome === "no-calls" || outcome === "eliminated")
+				? `Show ${quantity}`
+				: unit === "calls"
+					? `Show files containing ${callKind} calls (${quantity})`
+					: `Show file rows with ${outcome} folding (${quantity})`;
+		return (
+			<BuildReportLink
+				state={props.state}
+				section="per-file-fold-coverage"
+				filters={filtersFor({ fold: outcome })}
+				navigateTo={props.navigateTo}
+				label={label}
+			>
+				{quantity}
+			</BuildReportLink>
+		);
+	};
+	const authoredLink = (kind: BuildAuthoredValueFilter, count: number) => (
+		<BuildReportLink
+			state={props.state}
+			section="per-file-fold-coverage"
+			filters={filtersFor({ authoredValue: kind })}
+			navigateTo={props.navigateTo}
+			label={`Show files with ${kind} authored values (${count})`}
+		>
+			{count} {kind}
+		</BuildReportLink>
+	);
 
 	return (
 		<>
@@ -1018,18 +1145,68 @@ function StatsView(props: { data: InspectorPayload }) {
 					<div className={ui.cards}>
 						<Card
 							label="cx eliminated"
-							value={`${c.eliminatedPct}%`}
-							sub={`${c.fullFolded} full · ${c.partialFolded} partial · ${c.runtimeCalls} runtime`}
+							value={
+								<BuildReportLink
+									state={props.state}
+									section="per-file-fold-coverage"
+									navigateTo={props.navigateTo}
+									label={`View cx elimination by file (${c.eliminatedPct}%)`}
+								>
+									{c.eliminatedPct}%
+								</BuildReportLink>
+							}
+							sub={
+								<>
+									{foldLink("has-full", c.fullFolded, "calls")} ·{" "}
+									{foldLink("has-partial", c.partialFolded, "calls")} ·{" "}
+									{foldLink("runtime", c.runtimeCalls, "calls")}
+								</>
+							}
 						/>
 						<Card
-							label="files fully eliminated"
-							value={`${c.entryEliminatedPct}%`}
-							sub={`${c.totalCxCalls} cx calls across ${c.files.length} files`}
+							label="files without runtime cx()"
+							value={
+								<BuildReportLink
+									state={props.state}
+									section="per-file-fold-coverage"
+									filters={filtersFor({ fold: "eliminated" })}
+									navigateTo={props.navigateTo}
+									label={`Show files without runtime cx() (${c.entryEliminatedPct}%)`}
+								>
+									{c.entryEliminatedPct}%
+								</BuildReportLink>
+							}
+							sub={
+								<BuildReportLink
+									state={props.state}
+									section="per-file-fold-coverage"
+									filters={filtersFor({ fold: "eliminated" })}
+									navigateTo={props.navigateTo}
+									label={`Show ${fileGroups.eliminated} of ${fileGroups.withCalls} files with cx calls and no runtime cx()`}
+								>
+									{fileGroups.eliminated} of {fileGroups.withCalls} files with cx calls
+								</BuildReportLink>
+							}
 						/>
 						<Card
 							label="file outcomes"
-							value={String(c.files.length)}
-							sub={`${fileGroups.full} full · ${fileGroups.partial} partial · ${fileGroups.runtime} runtime`}
+							value={
+								<BuildReportLink
+									state={props.state}
+									section="per-file-fold-coverage"
+									navigateTo={props.navigateTo}
+									label={`Show all ${c.files.length} file outcomes`}
+								>
+									{c.files.length}
+								</BuildReportLink>
+							}
+							sub={
+								<>
+									{foldLink("full", fileGroups.full)} · {foldLink("partial", fileGroups.partial)} ·{" "}
+									{foldLink("runtime", fileGroups.runtime)} ·{" "}
+									{foldLink("no-calls", fileGroups.noCalls)}
+								</>
+							}
 						/>
 					</div>
 				</section>
@@ -1038,26 +1215,89 @@ function StatsView(props: { data: InspectorPayload }) {
 					<div className={ui.cards}>
 						<Card
 							label="css budget"
-							value={InspectorApi.kb(c.budget.cssBytes)}
-							sub={`${InspectorApi.kb(c.budget.cssGzipBytes)} gzip · ${c.budget.rules} rules`}
+							value={
+								<BuildReportLink
+									state={props.state}
+									section="css-budget"
+									navigateTo={props.navigateTo}
+									label={`View stylesheet budget (${InspectorApi.kb(c.budget.cssBytes)})`}
+								>
+									{InspectorApi.kb(c.budget.cssBytes)}
+								</BuildReportLink>
+							}
+							sub={
+								<>
+									<BuildReportLink
+										state={props.state}
+										section="css-budget"
+										navigateTo={props.navigateTo}
+										label={`View gzip stylesheet size (${InspectorApi.kb(c.budget.cssGzipBytes)})`}
+									>
+										{InspectorApi.kb(c.budget.cssGzipBytes)} gzip
+									</BuildReportLink>
+									{" · "}
+									<BuildReportLink
+										state={props.state}
+										section="css-budget"
+										navigateTo={props.navigateTo}
+										label={`View ${c.budget.rules} generated CSS rules`}
+									>
+										{c.budget.rules} rules
+									</BuildReportLink>
+								</>
+							}
 						/>
 						<Card
 							label="missing-css warnings"
-							value={String(c.totalMissingCss)}
-							sub={`dead candidates: ${c.budget.deadCandidates}`}
+							value={
+								<BuildReportLink
+									state={props.state}
+									section="missing-css-sites"
+									navigateTo={props.navigateTo}
+									label={`View ${c.totalMissingCss} missing CSS warnings`}
+								>
+									{c.totalMissingCss}
+								</BuildReportLink>
+							}
+							sub={
+								<BuildReportLink
+									state={props.state}
+									section="dead-candidates"
+									navigateTo={props.navigateTo}
+									label={`View ${c.budget.deadCandidates} dead CSS candidates`}
+								>
+									dead candidates: {c.budget.deadCandidates}
+								</BuildReportLink>
+							}
 						/>
 						{valueCoverage !== undefined && (
 							<Card
 								label="tokenized authored values"
-								value={`${valueCoverage.tokenPct}%`}
-								sub={`${valueCoverage.tokenValues} token · ${valueCoverage.literalValues} literal · ${valueCoverage.dynamicValues} dynamic`}
+								value={
+									<BuildReportLink
+										state={props.state}
+										section="per-file-fold-coverage"
+										filters={filtersFor({ authoredValue: "token" })}
+										navigateTo={props.navigateTo}
+										label={`Show files with tokenized authored values (${valueCoverage.tokenPct}%)`}
+									>
+										{valueCoverage.tokenPct}%
+									</BuildReportLink>
+								}
+								sub={
+									<>
+										{authoredLink("token", valueCoverage.tokenValues)} ·{" "}
+										{authoredLink("literal", valueCoverage.literalValues)} ·{" "}
+										{authoredLink("dynamic", valueCoverage.dynamicValues)}
+									</>
+								}
 							/>
 						)}
 					</div>
 				</section>
 			</div>
 
-			<section>
+			<section id="css-budget">
 				<h2>css budget — rule distribution by prefix</h2>
 				{c.budget.perPrefix.slice(0, 12).map((p) => (
 					<Bar key={p.prefix} label={p.prefix} value={p.rules} max={maxPrefix} />
@@ -1102,6 +1342,7 @@ function StatsView(props: { data: InspectorPayload }) {
 			)}
 
 			<InspectorTable
+				id="per-file-fold-coverage"
 				title="per-file fold coverage"
 				rows={c.files}
 				rowKey={(file) => file.file}
@@ -1120,13 +1361,13 @@ function StatsView(props: { data: InspectorPayload }) {
 					},
 					{ id: "runtime", label: "runtime", value: (file) => file.cxRuntime },
 					{
-						id: "tokenLiteral",
-						label: "token / literal",
+						id: "tokenLiteralDynamic",
+						label: "token / literal / dynamic",
 						value: (file) => {
 							const coverage = valueCoverageByFile.get(file.file);
 							return coverage === undefined
 								? "—"
-								: `${coverage.tokenPct}% / ${coverage.literalPct}%`;
+								: `${coverage.tokenValues} / ${coverage.literalValues} / ${coverage.dynamicValues}`;
 						},
 					},
 					{ id: "missingCss", label: "missing CSS", value: (file) => file.missingCssCount },
@@ -1134,18 +1375,85 @@ function StatsView(props: { data: InspectorPayload }) {
 				filters={[
 					{
 						id: "fold",
-						label: "fold outcome",
-						value: (file) =>
-							file.cxRuntime > 0 ? "runtime" : file.cxFoldedPartial > 0 ? "partial" : "full",
+						label: "file status",
+						options: [
+							"eliminated",
+							"full",
+							"has-full",
+							"partial",
+							"has-partial",
+							"runtime",
+							"no-calls",
+						],
+						optionLabels: {
+							eliminated: "without runtime cx()",
+							full: "fully folded files",
+							"has-full": "contains full folds",
+							partial: "partially folded files",
+							"has-partial": "contains partial folds",
+							runtime: "runtime files",
+							"no-calls": "no cx() calls",
+						},
+						value: (file) => buildFileStatus(file),
+						matches: (file, selected) =>
+							selected === "eliminated"
+								? file.cxCalls > 0 && file.cxRuntime === 0
+								: selected === "has-full"
+									? file.cxFoldedFull > 0
+									: selected === "has-partial"
+										? file.cxFoldedPartial > 0
+										: buildFileStatus(file) === selected,
 					},
 					{
 						id: "missingCss",
 						label: "missing CSS",
 						value: (file) => (file.missingCssCount > 0 ? "present" : "none"),
 					},
+					{
+						id: "authoredValue",
+						label: "authored value",
+						options: ["token", "literal", "dynamic"],
+						value: () => null,
+						matches: (file, selected) => {
+							const coverage = valueCoverageByFile.get(file.file);
+							if (coverage === undefined) return false;
+							if (selected === "token") return coverage.tokenValues > 0;
+							if (selected === "literal") return coverage.literalValues > 0;
+							if (selected === "dynamic") return coverage.dynamicValues > 0;
+							return false;
+						},
+					},
 				]}
+				filterValues={tableFilterValues}
+				onFilterValuesChange={(values) => {
+					const fold = values.fold;
+					const missingCss = values.missingCss;
+					const authoredValue = values.authoredValue;
+					const nextFilters: InspectorBuildFilters = {
+						fold:
+							fold === "full" ||
+							fold === "partial" ||
+							fold === "runtime" ||
+							fold === "no-calls" ||
+							fold === "eliminated" ||
+							fold === "has-full" ||
+							fold === "has-partial"
+								? fold
+								: null,
+						missingCss: missingCss === "present" || missingCss === "none" ? missingCss : null,
+						authoredValue:
+							authoredValue === "token" ||
+							authoredValue === "literal" ||
+							authoredValue === "dynamic"
+								? authoredValue
+								: null,
+					};
+					props.buildFiltersChange(
+						Object.values(nextFilters).some((value) => value !== null) ? nextFilters : undefined,
+					);
+				}}
 				defaultSort={{ columnId: "eliminatedPct", direction: "ascending" }}
-				defaultOpen={false}
+				defaultOpen={hasActiveTableFilters || props.state.section === "per-file-fold-coverage"}
 				tableClassName={ui.stickyTable}
 			/>
 
@@ -1187,9 +1495,11 @@ function StatsView(props: { data: InspectorPayload }) {
 				</section>
 			)}
 
-			{c.missingCssSites.length > 0 && (
-				<section>
-					<h2>missing-css sites</h2>
+			<section id="missing-css-sites">
+				<h2>missing-css sites</h2>
+				{c.missingCssSites.length === 0 ? (
+					<p className={ui.muted}>No missing-css sites found.</p>
+				) : (
 					<ul className={ui.sites}>
 						{c.missingCssSites.map((s) => (
 							<li key={`${s.file}:${s.line}:${s.token}`}>
@@ -1200,8 +1510,29 @@ function StatsView(props: { data: InspectorPayload }) {
 							</li>
 						))}
 					</ul>
-				</section>
-			)}
+				)}
+			</section>
+
+			<section id="dead-candidates">
+				<h2>dead CSS candidates</h2>
+				{c.budget.deadSample.length === 0 ? (
+					<p className={ui.muted}>No dead CSS candidates found.</p>
+				) : (
+					<>
+						<p className={ui.muted}>
+							{c.budget.deadCandidates} candidates · showing {c.budget.deadSample.length} sample
+							{c.budget.deadSample.length === 1 ? "" : "s"}
+						</p>
+						<ul className={ui.sites}>
+							{c.budget.deadSample.map((candidate) => (
+								<li key={candidate}>
+									<code>{candidate}</code>
+								</li>
+							))}
+						</ul>
+					</>
+				)}
+			</section>
 
 			{c.runtimeSites.length > 0 && (
 				<section>
@@ -2369,6 +2700,17 @@ export function App() {
 	}, []);
 
 	useEffect(() => {
+		if (tab !== "build" || section === null) return;
+		const target = document.getElementById(section);
+		if (target === null) return;
+		if (target instanceof HTMLDetailsElement) target.open = true;
+		const frame = window.requestAnimationFrame(() =>
+			target.scrollIntoView({ behavior: "smooth", block: "start" }),
+		);
+		return () => window.cancelAnimationFrame(frame);
+	}, [data, section, tab]);
+
+	useEffect(() => {
 		const focusSearch = (event: KeyboardEvent): void => {
 			if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
 			const target = event.target;
@@ -2401,8 +2743,21 @@ export function App() {
 		},
 		[urlState],
 	);
+	const navigateTo = useCallback((state: InspectorUrlState): void => {
+		setUrlState(state);
+		window.history.pushState(
+			null,
+			"",
+			`${window.location.pathname}${serializeInspectorUrlState(state, window.location.search)}`,
+		);
+	}, []);
 	const changeTab = useCallback(
-		(next: InspectorTab): void => updateUrlState({ tab: next, section: null }),
+		(next: InspectorTab): void =>
+			updateUrlState({
+				tab: next,
+				section: null,
+				...(next === "build" ? {} : { buildFilters: undefined }),
+			}),
 		[updateUrlState],
 	);
 	const queryChange = useCallback(
@@ -2410,11 +2765,13 @@ export function App() {
 		[updateUrlState],
 	);
 	const sectionChange = useCallback(
-		(next: string): void => updateUrlState({ tab: "tokens", section: next }),
+		(next: string): void =>
+			updateUrlState({ tab: "tokens", section: next, buildFilters: undefined }),
 		[updateUrlState],
 	);
 	const changeTokenView = useCallback(
-		(section: string | null): void => updateUrlState({ tab: "tokens", section }),
+		(section: string | null): void =>
+			updateUrlState({ tab: "tokens", section, buildFilters: undefined }),
 		[updateUrlState],
 	);
 
@@ -2478,7 +2835,15 @@ export function App() {
 					retry={loadHistory}
 				/>
 			);
-		} else body = <StatsView data={data} />;
+		} else
+			body = (
+				<StatsView
+					data={data}
+					state={urlState}
+					navigateTo={navigateTo}
+					buildFiltersChange={(buildFilters) => updateUrlState({ buildFilters })}
+				/>
+			);
 	}
 
 	return (

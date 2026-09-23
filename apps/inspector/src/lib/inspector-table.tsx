@@ -14,6 +14,9 @@ export interface InspectorTableFilter<Row> {
 	id: string;
 	label: string;
 	value: (row: Row) => string | null;
+	options?: readonly string[];
+	optionLabels?: Readonly<Record<string, string>>;
+	matches?: (row: Row, selected: string) => boolean;
 }
 
 export interface InspectorTableSort {
@@ -22,11 +25,14 @@ export interface InspectorTableSort {
 }
 
 export interface InspectorTableProps<Row> {
+	id?: string;
 	title: string;
 	rows: readonly Row[];
 	columns: readonly InspectorTableColumn<Row>[];
 	rowKey: (row: Row) => string;
 	filters: readonly InspectorTableFilter<Row>[];
+	filterValues?: Readonly<Record<string, string>>;
+	onFilterValuesChange?: (values: Record<string, string>) => void;
 	defaultSort?: InspectorTableSort;
 	defaultOpen?: boolean;
 	tableClassName?: string;
@@ -41,15 +47,22 @@ const compare = (left: TableValue, right: TableValue): number => {
 
 export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 	const [query, setQuery] = useState("");
-	const [filterValues, setFilterValues] = useState<Record<string, string>>({});
+	const [internalFilterValues, setInternalFilterValues] = useState<Record<string, string>>({});
+	const filterValues = props.filterValues ?? internalFilterValues;
 	const [sort, setSort] = useState<InspectorTableSort | null>(props.defaultSort ?? null);
 	const normalizedQuery = query.trim().toLocaleLowerCase();
 	const filterOptions = props.filters.map((filter) => ({
 		filter,
-		values: [
-			...new Set(props.rows.map((row) => filter.value(row)).filter((value) => value !== null)),
-		].toSorted((left, right) => collator.compare(left, right)),
+		values:
+			filter.options ??
+			[
+				...new Set(props.rows.map((row) => filter.value(row)).filter((value) => value !== null)),
+			].toSorted((left, right) => collator.compare(left, right)),
 	}));
+	const updateFilterValues = (values: Record<string, string>): void => {
+		if (props.filterValues === undefined) setInternalFilterValues(values);
+		props.onFilterValuesChange?.(values);
+	};
 	const filteredRows = props.rows
 		.map((row, index) => ({ row, index }))
 		.filter(({ row }) => {
@@ -63,7 +76,10 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 			if (!matchesQuery) return false;
 			return props.filters.every((filter) => {
 				const selected = filterValues[filter.id];
-				return selected === undefined || filter.value(row) === selected;
+				return (
+					selected === undefined ||
+					(selected !== "" && (filter.matches?.(row, selected) ?? filter.value(row) === selected))
+				);
 			});
 		});
 	const sortedRows =
@@ -81,7 +97,11 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 	const hasActiveControls = normalizedQuery !== "" || Object.values(filterValues).some(Boolean);
 
 	return (
-		<details className={ui.tableDetails} open={props.defaultOpen ?? props.rows.length <= 12}>
+		<details
+			id={props.id}
+			className={ui.tableDetails}
+			open={props.defaultOpen ?? props.rows.length <= 12}
+		>
 			<summary className={ui.tableSummary}>
 				<strong>{props.title}</strong>
 				<span className={ui.tableCount}>{props.rows.length} rows</span>
@@ -104,17 +124,17 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 						<select
 							value={filterValues[filter.id] ?? ""}
 							aria-label={`Filter ${props.title} by ${filter.label.toLocaleLowerCase()}`}
-							onChange={(event) =>
-								setFilterValues((current) => ({
-									...current,
-									[filter.id]: event.target.value,
-								}))
-							}
+							onChange={(event) => {
+								const next = { ...filterValues };
+								if (event.target.value === "") delete next[filter.id];
+								else next[filter.id] = event.target.value;
+								updateFilterValues(next);
+							}}
 						>
 							<option value="">All</option>
 							{values.map((value) => (
 								<option key={value} value={value}>
-									{value}
+									{filter.optionLabels?.[value] ?? value}
 								</option>
 							))}
 						</select>
@@ -126,7 +146,7 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 						className={ui.searchClear}
 						onClick={() => {
 							setQuery("");
-							setFilterValues({});
+							updateFilterValues({});
 						}}
 					>
 						clear filters

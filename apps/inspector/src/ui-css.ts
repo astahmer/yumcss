@@ -90,6 +90,15 @@ export const ui = {
 		padding: "15px 17px",
 	}),
 	cardValue: css.class({ fontSize: 26, fontWeight: 650, letterSpacing: "-0.02em" }),
+	metricLink: css.class({
+		color: "var(--accent)",
+		textDecoration: "underline",
+		textDecorationColor: "color-mix(in srgb, var(--accent) 42%, transparent)",
+		textUnderlineOffset: 3,
+		borderRadius: 2,
+		"&:hover": { textDecorationColor: "currentColor" },
+		"&:focus-visible": { outline: "2px solid var(--accent)", outlineOffset: 3 },
+	}),
 	cardLabel: css.class({ color: "var(--muted)", marginTop: 2 }),
 	cardSub: css.class({ color: "var(--muted)", fontSize: 12, marginTop: 4 }),
 	searchRow: css.class({
