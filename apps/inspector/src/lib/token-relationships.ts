@@ -79,7 +79,10 @@ export const mostConnectedTokenId = (graph: TokenGraph): string | null => {
 	);
 };
 
-export const getTokenRelationships = (graph: TokenGraph, selectedId: string): TokenRelationships => {
+export const getTokenRelationships = (
+	graph: TokenGraph,
+	selectedId: string,
+): TokenRelationships => {
 	const nodeById = new Map(graph.nodes.map((node) => [node.id, node]));
 	const usedBy = graph.edges
 		.filter((edge) => edge.to === selectedId)

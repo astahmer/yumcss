@@ -73,7 +73,9 @@ describe("migration-preview codemod evaluator", () => {
 	});
 
 	test("detects a source adapter and returns the target source without writing files", async () => {
-		const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-evaluator-"));
+		const root = mkdtempSync(
+			join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-evaluator-"),
+		);
 		mkdirSync(join(root, "src"));
 		const file = join(root, "src", "Card.tsx");
 		writeFileSync(
@@ -86,7 +88,9 @@ describe("migration-preview codemod evaluator", () => {
 		);
 		roots.push(root);
 
-		const workspace = createMigrationPreviewWorkspace({ watcher: { watch: () => () => undefined } });
+		const workspace = createMigrationPreviewWorkspace({
+			watcher: { watch: () => () => undefined },
+		});
 		const opened = await workspace.open({ root, patterns: ["src/**/*"] });
 		const request: MigrationPreviewEvaluationRequest = {
 			workspace: opened,
@@ -168,10 +172,14 @@ describe("migration-preview codemod evaluator", () => {
 	});
 
 	test("returns a visible diagnostic when no target has been selected", async () => {
-		const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-empty-"));
+		const root = mkdtempSync(
+			join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-empty-"),
+		);
 		writeFileSync(join(root, "Card.tsx"), "export const Card = () => null;");
 		roots.push(root);
-		const workspace = createMigrationPreviewWorkspace({ watcher: { watch: () => () => undefined } });
+		const workspace = createMigrationPreviewWorkspace({
+			watcher: { watch: () => () => undefined },
+		});
 		const opened = await workspace.open({ root });
 
 		const result = await createMigrationPreviewCodemodEvaluator().evaluate({

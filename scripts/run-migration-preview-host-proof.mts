@@ -51,7 +51,9 @@ try {
 	const snapshot = await host.start!(request);
 	const color = snapshot.computedStyles?.color;
 	if (color !== "rgb(239, 68, 68)")
-		throw new Error(`Migration preview host proof expected computed color, received ${color ?? "<missing>"}`);
+		throw new Error(
+			`Migration preview host proof expected computed color, received ${color ?? "<missing>"}`,
+		);
 	const report = {
 		schema: "pandwind.migration-preview-host-proof/1",
 		host: snapshot.host,

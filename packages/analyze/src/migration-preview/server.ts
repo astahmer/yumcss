@@ -49,7 +49,9 @@ const listen = (server: ListenableServer, host: string, port: number): Promise<v
  * Node transport for the migration-preview HTTP contract. All routing and session policy
  * live in the pure app so alternate runtimes can reuse it without Node.
  */
-export async function createMigrationPreviewServer(options: MigrationPreviewServerOptions): Promise<MigrationPreviewServer> {
+export async function createMigrationPreviewServer(
+	options: MigrationPreviewServerOptions,
+): Promise<MigrationPreviewServer> {
 	const host = options.host ?? DEFAULT_HOST;
 	const token = options.token ?? randomBytes(24).toString("hex");
 	const ui = options.ui ?? createNodeMigrationPreviewUiProvider();

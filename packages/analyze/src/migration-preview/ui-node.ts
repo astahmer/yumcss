@@ -12,11 +12,15 @@ let cached: string | null = null;
 export const createNodeMigrationPreviewUiProvider = (): MigrationPreviewUiPort => ({
 	loadIndexHtml: async () => {
 		if (cached !== null) return cached;
-		const artifact = fileURLToPath(new URL("../../dist/migration-preview-ui/index.html", import.meta.url));
+		const artifact = fileURLToPath(
+			new URL("../../dist/migration-preview-ui/index.html", import.meta.url),
+		);
 		try {
 			cached = await readFile(artifact, "utf8");
 		} catch {
-			throw new Error("Migration Preview UI is not built; run the pandwind-analyze package build first");
+			throw new Error(
+				"Migration Preview UI is not built; run the pandwind-analyze package build first",
+			);
 		}
 		return cached;
 	},

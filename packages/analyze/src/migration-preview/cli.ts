@@ -58,13 +58,18 @@ const main = async (argv: readonly string[] = process.argv.slice(2)): Promise<vo
 		const root = resolve(cli.args[0] ?? process.cwd());
 		await runMigrationPreview(root, cli.options.open !== false);
 	} catch (error) {
-		console.error(`pandwind migration preview: ${error instanceof Error ? error.message : String(error)}`);
+		console.error(
+			`pandwind migration preview: ${error instanceof Error ? error.message : String(error)}`,
+		);
 		cli.outputHelp();
 		process.exitCode = 1;
 	}
 };
 
-if (process.argv[1]?.endsWith("migration-preview/cli.ts") || process.argv[1]?.endsWith("migration-preview/cli.js"))
+if (
+	process.argv[1]?.endsWith("migration-preview/cli.ts") ||
+	process.argv[1]?.endsWith("migration-preview/cli.js")
+)
 	void main();
 
 export { main as runMigrationPreviewCli };

@@ -42,14 +42,24 @@ const measure = async (run: () => Promise<number>): Promise<number> => {
 try {
 	const rssBefore = process.memoryUsage().rss;
 	const coldOpenMs = await measure(async () => {
-		const workspace = createMigrationPreviewWorkspace({ watcher: { watch: () => () => undefined } });
-		const session = createMigrationPreviewSession({ workspace, evaluation: evaluator, adapters: evaluator });
+		const workspace = createMigrationPreviewWorkspace({
+			watcher: { watch: () => () => undefined },
+		});
+		const session = createMigrationPreviewSession({
+			workspace,
+			evaluation: evaluator,
+			adapters: evaluator,
+		});
 		await session.open({ root, patterns: ["**/*.tsx"] });
 		await session.close();
 	});
 
 	const workspace = createMigrationPreviewWorkspace({ watcher: { watch: () => () => undefined } });
-	const session = createMigrationPreviewSession({ workspace, evaluation: evaluator, adapters: evaluator });
+	const session = createMigrationPreviewSession({
+		workspace,
+		evaluation: evaluator,
+		adapters: evaluator,
+	});
 	await session.open({ root, patterns: ["**/*.tsx"] });
 	await session.switchTarget({ source: "emotion", target: "css.class" });
 	const warmSamples: number[] = [];

@@ -69,7 +69,9 @@ const themeRequest = (body: Record<string, unknown>): MigrationPreviewThemeSelec
  * serialized session operations; project filesystem and module-loader ports
  * stay on the server side of this boundary.
  */
-export const createMigrationPreviewApp = (options: MigrationPreviewAppOptions): MigrationPreviewAppHandle => {
+export const createMigrationPreviewApp = (
+	options: MigrationPreviewAppOptions,
+): MigrationPreviewAppHandle => {
 	const maxBodyBytes = options.maxBodyBytes ?? DEFAULT_MAX_BODY_BYTES;
 	const app = new Hono();
 	let current: MigrationPreviewSnapshot | null = null;
@@ -100,7 +102,8 @@ export const createMigrationPreviewApp = (options: MigrationPreviewAppOptions): 
 	app.get("/migration-preview", async (context) => context.html(await options.ui.loadIndexHtml()));
 
 	app.get("/api/migration-preview/snapshot", (context) => {
-		if (current === null) return context.json({ error: "Migration Preview session is not open" }, 409);
+		if (current === null)
+			return context.json({ error: "Migration Preview session is not open" }, 409);
 		return context.json(current);
 	});
 
@@ -131,9 +134,15 @@ export const createMigrationPreviewApp = (options: MigrationPreviewAppOptions): 
 
 	postSnapshot("/api/migration-preview/open", (body) => options.session.open(openRequest(body)));
 	postSnapshot("/api/migration-preview/edit", (body) => options.session.edit(editRequest(body)));
-	postSnapshot("/api/migration-preview/select", (body) => options.session.select(selectionRequest(body)));
-	postSnapshot("/api/migration-preview/target", (body) => options.session.switchTarget(targetRequest(body)));
-	postSnapshot("/api/migration-preview/theme", (body) => options.session.switchTheme(themeRequest(body)));
+	postSnapshot("/api/migration-preview/select", (body) =>
+		options.session.select(selectionRequest(body)),
+	);
+	postSnapshot("/api/migration-preview/target", (body) =>
+		options.session.switchTarget(targetRequest(body)),
+	);
+	postSnapshot("/api/migration-preview/theme", (body) =>
+		options.session.switchTheme(themeRequest(body)),
+	);
 
 	app.notFound((context) => context.json({ error: "Migration Preview route not found" }, 404));
 	app.onError((error, context) =>

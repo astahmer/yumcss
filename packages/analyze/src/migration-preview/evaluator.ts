@@ -131,7 +131,8 @@ const adapterOption = (adapter: StyleAdapter): MigrationPreviewAdapterOption => 
 	role: "both",
 });
 
-export const createMigrationPreviewCodemodEvaluator = (): MigrationPreviewEvaluationPort & MigrationPreviewAdapterCatalogPort => {
+export const createMigrationPreviewCodemodEvaluator = (): MigrationPreviewEvaluationPort &
+	MigrationPreviewAdapterCatalogPort => {
 	const catalog = createBuiltinCodemodCatalog();
 	const configWorkspace = createSourceWorkspace();
 	const options = (): MigrationPreviewAdapterCatalogSnapshot => {
@@ -153,7 +154,9 @@ export const createMigrationPreviewCodemodEvaluator = (): MigrationPreviewEvalua
 		async list() {
 			return options();
 		},
-		async evaluate(request: MigrationPreviewEvaluationRequest): Promise<MigrationPreviewEvaluationResult> {
+		async evaluate(
+			request: MigrationPreviewEvaluationRequest,
+		): Promise<MigrationPreviewEvaluationResult> {
 			const target = request.target;
 			const selected = request.selection?.file;
 			const documents = request.workspace.files.filter(
@@ -164,7 +167,8 @@ export const createMigrationPreviewCodemodEvaluator = (): MigrationPreviewEvalua
 				diagnostics.push({
 					kind: "workspace",
 					file,
-					message: "Disk changed while this file has an in-memory migration preview edit; reopen to reload",
+					message:
+						"Disk changed while this file has an in-memory migration preview edit; reopen to reload",
 				});
 			if (target === null) {
 				return {
@@ -287,14 +291,17 @@ export const createMigrationPreviewCodemodEvaluator = (): MigrationPreviewEvalua
 			return {
 				execution: {
 					lane: MIGRATION_PREVIEW_EXECUTION_LANE.InProcess,
-					verified: [MIGRATION_PREVIEW_EVIDENCE_CHECK.Migration, MIGRATION_PREVIEW_EVIDENCE_CHECK.CanonicalCss],
+					verified: [
+						MIGRATION_PREVIEW_EVIDENCE_CHECK.Migration,
+						MIGRATION_PREVIEW_EVIDENCE_CHECK.CanonicalCss,
+					],
 					unavailable: [
 						MIGRATION_PREVIEW_EVIDENCE_CHECK.ProjectTypecheck,
 						MIGRATION_PREVIEW_EVIDENCE_CHECK.ProjectBuild,
 						MIGRATION_PREVIEW_EVIDENCE_CHECK.BrowserHost,
 						MIGRATION_PREVIEW_EVIDENCE_CHECK.SsrHydration,
 					],
-						note: "Migration preview runs registered adapters in process; host build and browser checks require an explicit preview host.",
+					note: "Migration preview runs registered adapters in process; host build and browser checks require an explicit preview host.",
 				},
 				diagnostics,
 				tree: { roots: sourceTree(request.workspace, migrations) },

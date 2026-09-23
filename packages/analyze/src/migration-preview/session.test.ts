@@ -7,7 +7,9 @@ import type {
 	MigrationPreviewWorkspaceSnapshot,
 } from "./contracts.ts";
 
-function workspacePort(): MigrationPreviewWorkspacePort & { emit(snapshot: MigrationPreviewWorkspaceSnapshot): void } {
+function workspacePort(): MigrationPreviewWorkspacePort & {
+	emit(snapshot: MigrationPreviewWorkspaceSnapshot): void;
+} {
 	let listener: ((snapshot: MigrationPreviewWorkspaceSnapshot) => void) | undefined;
 	let current: MigrationPreviewWorkspaceSnapshot = {
 		revision: 0,

@@ -56,7 +56,12 @@
 				"vite.config.ts",
 				"tests/**/*.test.ts"
 			],
-			"project": ["src/**/*.ts", "tests/**/*.ts", "migration-preview-app/**/*.{ts,html}", "vite.config.ts"]
+			"project": [
+				"src/**/*.ts",
+				"tests/**/*.ts",
+				"migration-preview-app/**/*.{ts,html}",
+				"vite.config.ts"
+			]
 		},
 		"packages/lint-plugin": {
 			"entry": ["src/index.ts"],

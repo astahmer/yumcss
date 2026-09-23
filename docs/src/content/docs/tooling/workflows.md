@@ -8,12 +8,12 @@ sidebar:
 These tools answer different questions. You do not need to run all of them to
 use Pandwind:
 
-| You want to know…                              | Use…                         |
-| ---------------------------------------------- | ---------------------------- |
-| “What does this style object do?”              | the **Playground**           |
-| “What did this project generate or use?”       | the **Inspector**            |
-| “Can CI repeat the same checks?”               | the **analyzer CLI**         |
-| “What will this migration change?”             | **Migration Preview**        |
+| You want to know…                        | Use…                  |
+| ---------------------------------------- | --------------------- |
+| “What does this style object do?”        | the **Playground**    |
+| “What did this project generate or use?” | the **Inspector**     |
+| “Can CI repeat the same checks?”         | the **analyzer CLI**  |
+| “What will this migration change?”       | **Migration Preview** |
 
 ## Playground: learn by changing code
 

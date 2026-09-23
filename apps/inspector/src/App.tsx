@@ -1055,8 +1055,7 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 	);
 	const selectedId = graph.nodes.some((node) => node.id === focusedId) ? focusedId : initialId;
 	const selectedNode = graph.nodes.find((node) => node.id === selectedId);
-	const selectedPresentation =
-		selectedNode === undefined ? null : presentTokenNode(selectedNode);
+	const selectedPresentation = selectedNode === undefined ? null : presentTokenNode(selectedNode);
 	const relationships =
 		selectedNode === undefined ? null : getTokenRelationships(graph, selectedNode.id);
 	const themeVar =
@@ -1143,7 +1142,7 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 					type="search"
 					list="token-relationship-options"
 					placeholder={`Search ${graph.nodes.length} token nodes…`}
-						value={searchValue}
+					value={searchValue}
 					aria-describedby="token-relationship-hint"
 					onChange={(event) => {
 						const value = event.target.value;
@@ -1172,32 +1171,32 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 						"Nothing in the generated graph refers to this token.",
 					)}
 					<article className={ui.relationshipCurrent}>
-						<span
-							className={ui.relationshipTier}
-							style={{ color: TIER_COLOR[selectedNode.tier] }}
-						>
+						<span className={ui.relationshipTier} style={{ color: TIER_COLOR[selectedNode.tier] }}>
 							{selectedNode.tier} token
 						</span>
 						<h3>
 							<code>{selectedPresentation?.label}</code>
 						</h3>
-						{themeVar !== undefined && <code className={ui.relationshipValue}>{themeVar.value}</code>}
+						{themeVar !== undefined && (
+							<code className={ui.relationshipValue}>{themeVar.value}</code>
+						)}
 						<p className={ui.cardSub}>
-							{relationships.usedBy.length} dependents · {relationships.references.length} references
+							{relationships.usedBy.length} dependents · {relationships.references.length}{" "}
+							references
 						</p>
 						{relationships.isCyclic && (
 							<p className={ui.warn}>Part of a cycle. The emitter skips cyclic references.</p>
 						)}
 						{relationships.isUnlinkedRaw && (
 							<p className={ui.muted}>
-								No other graph node references this raw variable. It may still be used in source code;
-								check Usage &amp; cleanup for application-level coverage.
+								No other graph node references this raw variable. It may still be used in source
+								code; check Usage &amp; cleanup for application-level coverage.
 							</p>
 						)}
 						<CopyButton
 							text={
 								selectedNode.tier === "scope"
-									? selectedPresentation?.variableName ?? selectedNode.id
+									? (selectedPresentation?.variableName ?? selectedNode.id)
 									: selectedNode.tier === "component"
 										? selectedNode.label
 										: selectedNode.id
@@ -2332,7 +2331,12 @@ export function App() {
 				</nav>
 				<div className={ui.headerActions}>
 					{data !== null && <AnalysisConfidenceBadge data={data} />}
-					<button type="button" onClick={() => refresh(true)} disabled={loading} title="re-run analysis">
+					<button
+						type="button"
+						onClick={() => refresh(true)}
+						disabled={loading}
+						title="re-run analysis"
+					>
 						{loading ? "…" : "⟳ refresh"}
 					</button>
 					{data !== null && !loading && tab !== "history" && (
@@ -2471,8 +2475,8 @@ ${InspectorExport.themeVarsToCss(data)}}
 								key={view.label}
 								href={view.section === null ? "#tokens" : `#tokens/${view.section}`}
 								aria-current={
-									(section === view.section ||
-										(view.section === null && section !== "usage" && section !== "relationships"))
+									section === view.section ||
+									(view.section === null && section !== "usage" && section !== "relationships")
 										? "page"
 										: undefined
 								}

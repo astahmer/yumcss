@@ -19,7 +19,9 @@ afterEach(() => {
 
 describe("migration-preview integration", () => {
 	test("evaluates a real adapter through the authenticated HTTP session", async () => {
-		const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-http-"));
+		const root = mkdtempSync(
+			join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-http-"),
+		);
 		mkdirSync(join(root, "src"));
 		const file = join(root, "src", "Card.tsx");
 		writeFileSync(
@@ -28,9 +30,15 @@ describe("migration-preview integration", () => {
 		);
 		roots.push(root);
 
-		const workspace = createMigrationPreviewWorkspace({ watcher: { watch: () => () => undefined } });
+		const workspace = createMigrationPreviewWorkspace({
+			watcher: { watch: () => () => undefined },
+		});
 		const evaluator = createMigrationPreviewCodemodEvaluator();
-		const session = createMigrationPreviewSession({ workspace, evaluation: evaluator, adapters: evaluator });
+		const session = createMigrationPreviewSession({
+			workspace,
+			evaluation: evaluator,
+			adapters: evaluator,
+		});
 		const server = await createMigrationPreviewServer({ session, token: "integration-token", ui });
 		const origin = new URL(server.address.url).origin;
 		const request = (path: string, body: unknown) =>

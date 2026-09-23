@@ -16,7 +16,11 @@ const ui = createInMemoryMigrationPreviewUiProvider(
 );
 const evaluator = createMigrationPreviewCodemodEvaluator();
 const workspace = createMigrationPreviewWorkspace({ watcher: { watch: () => () => undefined } });
-const session = createMigrationPreviewSession({ workspace, evaluation: evaluator, adapters: evaluator });
+const session = createMigrationPreviewSession({
+	workspace,
+	evaluation: evaluator,
+	adapters: evaluator,
+});
 const server = await createMigrationPreviewServer({
 	session,
 	host: "127.0.0.1",

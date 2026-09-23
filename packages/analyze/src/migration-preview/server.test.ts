@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { MIGRATION_PREVIEW_SESSION_SCHEMA, MIGRATION_PREVIEW_SNAPSHOT_SCHEMA, type MigrationPreviewSession } from "./contracts.ts";
+import {
+	MIGRATION_PREVIEW_SESSION_SCHEMA,
+	MIGRATION_PREVIEW_SNAPSHOT_SCHEMA,
+	type MigrationPreviewSession,
+} from "./contracts.ts";
 import { createMigrationPreviewServer } from "./server.ts";
 import { createInMemoryMigrationPreviewUiProvider } from "./ui-provider.ts";
 
@@ -8,7 +12,9 @@ const ui = createInMemoryMigrationPreviewUiProvider(
 );
 
 function session(): MigrationPreviewSession {
-	let listener: ((snapshot: Awaited<ReturnType<MigrationPreviewSession["open"]>>) => void) | undefined;
+	let listener:
+		| ((snapshot: Awaited<ReturnType<MigrationPreviewSession["open"]>>) => void)
+		| undefined;
 	const snapshot = (root: string) => ({
 		schema: MIGRATION_PREVIEW_SNAPSHOT_SCHEMA,
 		revision: 1,
@@ -59,7 +65,11 @@ function session(): MigrationPreviewSession {
 
 describe("createMigrationPreviewServer", () => {
 	test("protects the session and routes authorized operations", async () => {
-		const server = await createMigrationPreviewServer({ session: session(), token: "test-token", ui });
+		const server = await createMigrationPreviewServer({
+			session: session(),
+			token: "test-token",
+			ui,
+		});
 		const origin = new URL(server.address.url).origin;
 		try {
 			const unauthorized = await fetch(`${origin}/api/migration-preview/snapshot`);
@@ -100,7 +110,9 @@ describe("createMigrationPreviewServer", () => {
 				body: JSON.stringify({}),
 			});
 			expect(malformed.status).toBe(400);
-			expect(await malformed.json()).toMatchObject({ error: "Migration Preview field 'root' is required" });
+			expect(await malformed.json()).toMatchObject({
+				error: "Migration Preview field 'root' is required",
+			});
 		} finally {
 			await server.close();
 		}

@@ -1,10 +1,16 @@
 import { describe, expect, test } from "vitest";
-import { MIGRATION_PREVIEW_SESSION_SCHEMA, MIGRATION_PREVIEW_SNAPSHOT_SCHEMA, type MigrationPreviewSession } from "./contracts.ts";
+import {
+	MIGRATION_PREVIEW_SESSION_SCHEMA,
+	MIGRATION_PREVIEW_SNAPSHOT_SCHEMA,
+	type MigrationPreviewSession,
+} from "./contracts.ts";
 import { createMigrationPreviewApp } from "./app.ts";
 import { createInMemoryMigrationPreviewUiProvider } from "./ui-provider.ts";
 
 function session(): MigrationPreviewSession {
-	let listener: ((snapshot: Awaited<ReturnType<MigrationPreviewSession["open"]>>) => void) | undefined;
+	let listener:
+		| ((snapshot: Awaited<ReturnType<MigrationPreviewSession["open"]>>) => void)
+		| undefined;
 	const snapshot = (root: string) => ({
 		schema: MIGRATION_PREVIEW_SNAPSHOT_SCHEMA,
 		revision: 1,
@@ -73,7 +79,9 @@ describe("createMigrationPreviewApp", () => {
 					})
 				).status,
 			).toBe(409);
-			expect((await app.request("/api/migration-preview/snapshot?token=app-token")).status).toBe(409);
+			expect((await app.request("/api/migration-preview/snapshot?token=app-token")).status).toBe(
+				409,
+			);
 		} finally {
 			handle.dispose();
 		}
@@ -83,7 +91,9 @@ describe("createMigrationPreviewApp", () => {
 		const handle = makeApp();
 		const { app } = handle;
 		try {
-			const page = await app.request("/", { headers: { "x-pandwind-migration-preview-token": "app-token" } });
+			const page = await app.request("/", {
+				headers: { "x-pandwind-migration-preview-token": "app-token" },
+			});
 			expect(page.status).toBe(200);
 			expect(await page.text()).toContain("Migration Preview app");
 
@@ -101,7 +111,9 @@ describe("createMigrationPreviewApp", () => {
 				body: JSON.stringify({}),
 			});
 			expect(malformed.status).toBe(400);
-			expect(await malformed.json()).toMatchObject({ error: "Migration Preview field 'root' is required" });
+			expect(await malformed.json()).toMatchObject({
+				error: "Migration Preview field 'root' is required",
+			});
 
 			expect((await app.request("/nope?token=app-token")).status).toBe(404);
 		} finally {

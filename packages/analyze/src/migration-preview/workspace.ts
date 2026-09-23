@@ -98,7 +98,8 @@ class DefaultMigrationPreviewWorkspace implements MigrationPreviewWorkspacePort 
 
 	async open(request: MigrationPreviewOpenRequest): Promise<MigrationPreviewWorkspaceSnapshot> {
 		const root = resolve(request.root);
-		if (!statSync(root).isDirectory()) throw new Error(`Migration Preview root is not a directory: ${root}`);
+		if (!statSync(root).isDirectory())
+			throw new Error(`Migration Preview root is not a directory: ${root}`);
 		this.stopWatching?.();
 		this.stopWatching = undefined;
 		this.root = root;
@@ -122,7 +123,9 @@ class DefaultMigrationPreviewWorkspace implements MigrationPreviewWorkspacePort 
 		if (!isInside(this.root, file))
 			throw new Error(`Migration Preview edit is outside the workspace: ${request.file}`);
 		if (!this.files.some((entry) => entry.path === file))
-			throw new Error(`Migration Preview edit target is not an opened source document: ${request.file}`);
+			throw new Error(
+				`Migration Preview edit target is not an opened source document: ${request.file}`,
+			);
 		if (!this.overlayBases.has(file))
 			this.overlayBases.set(file, this.files.find((entry) => entry.path === file)!.source);
 		this.overlays.set(file, request.source);
@@ -189,5 +192,6 @@ class DefaultMigrationPreviewWorkspace implements MigrationPreviewWorkspacePort 
 	}
 }
 
-export const createMigrationPreviewWorkspace = (options: MigrationPreviewWorkspaceOptions = {}): MigrationPreviewWorkspacePort =>
-	new DefaultMigrationPreviewWorkspace(options);
+export const createMigrationPreviewWorkspace = (
+	options: MigrationPreviewWorkspaceOptions = {},
+): MigrationPreviewWorkspacePort => new DefaultMigrationPreviewWorkspace(options);

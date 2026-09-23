@@ -1,7 +1,10 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
-import { createMigrationPreviewWorkspace, type MigrationPreviewWorkspaceWatcher } from "./workspace.ts";
+import {
+	createMigrationPreviewWorkspace,
+	type MigrationPreviewWorkspaceWatcher,
+} from "./workspace.ts";
 
 const roots: string[] = [];
 
@@ -133,7 +136,9 @@ describe("migration-preview workspace", () => {
 
 	test("rejects edits outside the opened source workspace", async () => {
 		const root = createProject();
-		const workspace = createMigrationPreviewWorkspace({ watcher: { watch: () => () => undefined } });
+		const workspace = createMigrationPreviewWorkspace({
+			watcher: { watch: () => () => undefined },
+		});
 		await workspace.open({ root, patterns: ["src/**/*"] });
 
 		await expect(workspace.edit({ file: "../outside.ts", source: "export {};" })).rejects.toThrow(

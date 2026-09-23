@@ -39,9 +39,7 @@ const inspectorApi = (): Plugin => ({
 	configureServer(server) {
 		let cachedPayload: import("./src/types.ts").InspectorPayload | undefined;
 		let pendingPayload: Promise<import("./src/types.ts").InspectorPayload> | undefined;
-		const loadPayload = (
-			force = false,
-		): Promise<import("./src/types.ts").InspectorPayload> => {
+		const loadPayload = (force = false): Promise<import("./src/types.ts").InspectorPayload> => {
 			if (pendingPayload !== undefined) return pendingPayload;
 			if (!force && cachedPayload !== undefined) return Promise.resolve(cachedPayload);
 			if (force) cachedPayload = undefined;
@@ -108,9 +106,13 @@ const inspectorApi = (): Plugin => ({
 			void (async () => {
 				const startedAt = performance.now();
 				try {
-					const refresh = new URL(req.url ?? "/", "http://localhost").searchParams.get("refresh") === "1";
+					const refresh =
+						new URL(req.url ?? "/", "http://localhost").searchParams.get("refresh") === "1";
 					const payload = await loadPayload(refresh);
-					res.setHeader("server-timing", `analysis;dur=${(performance.now() - startedAt).toFixed(1)}`);
+					res.setHeader(
+						"server-timing",
+						`analysis;dur=${(performance.now() - startedAt).toFixed(1)}`,
+					);
 					sendJson(req, res, payload);
 				} catch (error) {
 					res.statusCode = 500;
