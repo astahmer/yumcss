@@ -958,7 +958,9 @@ export const createRuntimePruningTransform = (
 				};
 				replacements.set(`${replacement.start}:${replacement.end}`, replacement);
 				if (presetSource !== undefined) {
-					runtimePresetSources.set(`\0${virtualId}`, presetSource);
+					const resolvedVirtualId = `\0${virtualId}`;
+					if (!runtimeModuleCache.has(resolvedVirtualId))
+						runtimePresetSources.set(resolvedVirtualId, presetSource);
 					for (const edit of argumentRewrite!.edits) {
 						replacements.set(`${edit.start}:${edit.end}`, edit);
 					}
@@ -986,16 +988,20 @@ export const createRuntimePruningTransform = (
 		load(id) {
 			if (!id.startsWith(`\0${VIRTUAL_PREFIX}?`)) return null;
 			const cached = runtimeModuleCache.get(id);
-			if (cached !== undefined) return cached;
-			if (runtimeModuleCache.size >= runtimeModuleCacheLimit) {
-				runtimeModuleCache.clear();
-				runtimePresetSources.clear();
+			if (cached !== undefined) {
+				runtimeModuleCache.delete(id);
+				runtimeModuleCache.set(id, cached);
+				return cached;
 			}
+			const presetSource = runtimePresetSources.get(id);
+			runtimePresetSources.delete(id);
 			const parsed = parseRuntimeModule(id);
 			const module = renderCssRuntimeModule(parsed.methods, {
 				factory: parsed.factory,
-				presetSource: runtimePresetSources.get(id),
+				presetSource,
 			});
+			if (runtimeModuleCache.size >= runtimeModuleCacheLimit)
+				runtimeModuleCache.delete(runtimeModuleCache.keys().next().value!);
 			runtimeModuleCache.set(id, module);
 			return module;
 		},

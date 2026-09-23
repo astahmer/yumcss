@@ -118,6 +118,47 @@ describe("runtime pruning", () => {
 		expect(loaded).toContain('"$blue-600"');
 	});
 
+	test("retains pending preset projections after the runtime module cache fills", () => {
+		const pruner = createRuntimePruningTransform({ preset: examplePreset });
+		const extraMethods = ["vars", "raw", "props", "input", "keyframes"];
+		const virtualIds = new Set<string>();
+		const loadVariant = (index: number, calls: readonly string[]) => {
+			const source =
+				'import { createCss } from "pandwind/css";\n' +
+				'import { examplePreset } from "@pandwind/example-preset";\n' +
+				"const css = createCss(examplePreset);\n" +
+				calls.join("\n");
+			const transformed = pruner.transform(source, `/project/src/variant-${index}.ts`);
+			const importId = transformed?.code.match(/pandwind:runtime\/css\?[^"']+/u)?.[0];
+			if (importId === undefined) throw new Error(`variant ${index} was not pruned`);
+			const virtualId = pruner.resolveId(importId);
+			if (virtualId === null) throw new Error(`variant ${index} did not resolve`);
+			virtualIds.add(virtualId);
+			return pruner.load(virtualId);
+		};
+
+		let index = 0;
+		for (const token of ["$red-500", "$blue-600"]) {
+			for (let mask = 0; mask < 32; mask++) {
+				const calls = [
+					`export const styles${index} = css.class({ color: "${token}" });`,
+					...extraMethods
+						.filter((_, bit) => (mask & (1 << bit)) !== 0)
+						.map((method) => `css.${method}({ color: "${token}" });`),
+				];
+				const loaded = loadVariant(index, calls);
+				expect(loaded).toContain(`"${token}"`);
+				index++;
+			}
+		}
+
+		const overflow = loadVariant(64, ['export const callable = css({ color: "$green-500" });']);
+
+		expect(virtualIds.size).toBe(65);
+		expect(overflow).toContain("createPresetCssRuntime({");
+		expect(overflow).toContain('"$green-500"');
+	});
+
 	test("projects design presets to the used token group and literal entry", () => {
 		const pruner = createRuntimePruningTransform({ preset: examplePreset });
 		const source =
