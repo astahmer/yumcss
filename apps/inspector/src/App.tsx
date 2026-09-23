@@ -20,11 +20,15 @@ import {
 } from "pandwind-analyze/governance/browser";
 
 import {
+	CLEANUP_SAFETIES,
 	INSPECTOR_TABS,
+	TOKEN_CONDITION_KINDS,
+	TOKEN_USAGE_ACTIVITIES,
 	readInspectorUrlState,
 	serializeInspectorUrlState,
 	type BuildAuthoredValueFilter,
 	type BuildFileFilter,
+	type CleanupSafetyFilter,
 	type InspectorBuildFilters,
 	type InspectorTab,
 	type InspectorUrlState,
@@ -206,21 +210,13 @@ function Card(props: { label: string; value: ReactNode; sub?: ReactNode }) {
 	);
 }
 
-function BuildReportLink(props: {
-	state: InspectorUrlState;
-	section: string;
-	filters?: InspectorBuildFilters;
+function InspectorLink(props: {
+	target: InspectorUrlState;
 	navigateTo: (state: InspectorUrlState) => void;
 	label: string;
 	children: ReactNode;
 }) {
-	const nextState: InspectorUrlState = {
-		tab: "build",
-		query: props.state.query,
-		section: props.section,
-		...(props.filters === undefined ? {} : { buildFilters: props.filters }),
-	};
-	const href = `${window.location.pathname}${serializeInspectorUrlState(nextState, window.location.search)}`;
+	const href = `${window.location.pathname}${serializeInspectorUrlState(props.target, window.location.search)}`;
 	return (
 		<a
 			href={href}
@@ -237,7 +233,7 @@ function BuildReportLink(props: {
 				)
 					return;
 				event.preventDefault();
-				props.navigateTo(nextState);
+				props.navigateTo(props.target);
 			}}
 		>
 			{props.children}
@@ -245,8 +241,35 @@ function BuildReportLink(props: {
 	);
 }
 
+function BuildReportLink(props: {
+	state: InspectorUrlState;
+	section: string;
+	filters?: InspectorBuildFilters;
+	navigateTo: (state: InspectorUrlState) => void;
+	label: string;
+	children: ReactNode;
+}) {
+	const target: InspectorUrlState = {
+		tab: "build",
+		query: props.state.query,
+		section: props.section,
+		...(props.filters === undefined ? {} : { buildFilters: props.filters }),
+	};
+	return (
+		<InspectorLink target={target} navigateTo={props.navigateTo} label={props.label}>
+			{props.children}
+		</InspectorLink>
+	);
+}
+
 /** Horizontal bar scaled against the max value in its set. */
-function Bar(props: { label: string; value: number; max: number; suffix?: string }) {
+function Bar(props: {
+	label: ReactNode;
+	value: number;
+	max: number;
+	suffix?: string;
+	renderValue?: ReactNode;
+}) {
 	const pct = props.max > 0 ? Math.max(2, Math.round((props.value / props.max) * 100)) : 2;
 	return (
 		<div className={ui.barRow}>
@@ -255,8 +278,12 @@ function Bar(props: { label: string; value: number; max: number; suffix?: string
 				<span className={ui.barFill} style={{ width: `${pct}%` }} />
 			</span>
 			<span className={ui.barValue}>
-				{props.value}
-				{props.suffix ?? ""}
+				{props.renderValue ?? (
+					<>
+						{props.value}
+						{props.suffix ?? ""}
+					</>
+				)}
 			</span>
 		</div>
 	);
@@ -335,6 +362,7 @@ function DesignSystemView(props: {
 	queryChange: (v: string) => void;
 	section: string | null;
 	sectionChange: (section: string) => void;
+	navigateTo: (state: InspectorUrlState) => void;
 }) {
 	const d = props.data.designSystem;
 	const matchText = makeTextMatcher(props.query);
@@ -382,14 +410,20 @@ function DesignSystemView(props: {
 		visibleLineHeightEntries.length > 0 ||
 		visibleTrackingEntries.length > 0;
 	const themeVisible = visibleThemeGroups.some(([, vars]) => vars.length > 0);
+	const showEmptyThemeSection = props.query === "" && d.themeVars.length === 0;
+	const showEmptyUtilitiesSection = props.query === "" && d.utilities.length === 0;
 	const sectionLinks = [
 		{ id: "sec-colors", label: "colors", visible: visibleColorEntries.length > 0 },
 		{ id: "sec-semantic", label: "semantic", visible: visibleSemanticEntries.length > 0 },
 		{ id: "sec-typography", label: "typography", visible: typographyVisible },
 		{ id: "sec-spacing", label: "spacing", visible: visibleSpacingEntries.length > 0 },
 		{ id: "sec-radii", label: "radii", visible: visibleRadiiEntries.length > 0 },
-		{ id: "sec-utilities", label: "utilities", visible: visibleUtilities.length > 0 },
-		{ id: "sec-theme-vars", label: "theme vars", visible: themeVisible },
+		{
+			id: "sec-utilities",
+			label: "utilities",
+			visible: visibleUtilities.length > 0 || showEmptyUtilitiesSection,
+		},
+		{ id: "sec-theme-vars", label: "theme vars", visible: themeVisible || showEmptyThemeSection },
 	].filter((link) => link.visible);
 	const visibleSectionIds = sectionLinks.map((link) => link.id);
 	const visibleSectionKey = visibleSectionIds.join("|");
@@ -409,6 +443,19 @@ function DesignSystemView(props: {
 		visibleRadiiEntries.length +
 		visibleUtilities.length +
 		visibleThemeGroups.reduce((count, [, vars]) => count + vars.length, 0);
+	const sectionTarget = (section: string): InspectorUrlState => ({
+		tab: "tokens",
+		query: "",
+		section,
+	});
+	const componentNode = props.data.tokenGraph.nodes.find((node) => node.tier === "component");
+	const graphNode = componentNode?.id ?? mostConnectedTokenId(props.data.tokenGraph) ?? undefined;
+	const relationshipsTarget: InspectorUrlState = {
+		tab: "tokens",
+		query: "",
+		section: "relationships",
+		...(graphNode === undefined ? {} : { relationshipNode: graphNode }),
+	};
 	const [activeSection, setActiveSection] = useState(props.section ?? visibleSectionIds[0] ?? null);
 
 	useEffect(() => {
@@ -444,16 +491,80 @@ function DesignSystemView(props: {
 	return (
 		<>
 			<section className={ui.cards}>
-				<Card label="@theme variables" value={String(d.themeVars.length)} />
-				<Card label="typed utility unions" value={String(d.utilities.length)} />
+				<Card
+					label="@theme variables"
+					value={
+						<InspectorLink
+							target={sectionTarget("sec-theme-vars")}
+							navigateTo={props.navigateTo}
+							label={`Show ${d.themeVars.length} theme variables`}
+						>
+							{d.themeVars.length}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="typed utility unions"
+					value={
+						<InspectorLink
+							target={sectionTarget("sec-utilities")}
+							navigateTo={props.navigateTo}
+							label={`Show ${d.utilities.length} typed utility unions`}
+						>
+							{d.utilities.length}
+						</InspectorLink>
+					}
+				/>
 				<Card
 					label="variants / conflicts / compose"
-					value={`${d.variantCount}/${d.conflictUtilities}/${d.composeUtilities}`}
+					value={
+						<>
+							<InspectorLink
+								target={sectionTarget("sec-utilities")}
+								navigateTo={props.navigateTo}
+								label={`Show utility unions; ${d.variantCount} variants`}
+							>
+								{d.variantCount}
+							</InspectorLink>
+							/
+							<InspectorLink
+								target={sectionTarget("sec-utilities")}
+								navigateTo={props.navigateTo}
+								label={`Show utility unions; ${d.conflictUtilities} conflict utilities`}
+							>
+								{d.conflictUtilities}
+							</InspectorLink>
+							/
+							<InspectorLink
+								target={sectionTarget("sec-utilities")}
+								navigateTo={props.navigateTo}
+								label={`Show utility unions; ${d.composeUtilities} compose utilities`}
+							>
+								{d.composeUtilities}
+							</InspectorLink>
+						</>
+					}
 				/>
 				<Card
 					label="bridge"
-					value={String(d.bridgeProperties)}
-					sub={`${d.bridgeMappings} value mappings`}
+					value={
+						<InspectorLink
+							target={relationshipsTarget}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${d.bridgeProperties} bridge properties`}
+						>
+							{d.bridgeProperties}
+						</InspectorLink>
+					}
+					sub={
+						<InspectorLink
+							target={relationshipsTarget}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${d.bridgeMappings} bridge value mappings`}
+						>
+							{d.bridgeMappings} value mappings
+						</InspectorLink>
+					}
 				/>
 			</section>
 
@@ -641,80 +752,92 @@ function DesignSystemView(props: {
 				</section>
 			)}
 
-			{visibleUtilities.length > 0 && (
+			{(visibleUtilities.length > 0 || showEmptyUtilitiesSection) && (
 				<section id="sec-utilities">
-					<InspectorTable
-						title="typed utility unions"
-						rows={visibleUtilities}
-						rowKey={(utility) => utility.key}
-						columns={[
-							{ id: "key", label: "key", value: (utility) => utility.key },
-							{ id: "values", label: "values", value: (utility) => utility.count },
-							{
-								id: "sample",
-								label: "sample",
-								value: (utility) => utility.sample.join(", "),
-							},
-							{
-								id: "open",
-								label: "open",
-								value: (utility) => (utility.openEnded ? "open ended" : "fixed"),
-								render: (utility) => (utility.openEnded ? "∞" : "—"),
-							},
-						]}
-						filters={[
-							{
-								id: "open",
-								label: "values",
-								value: (utility) => (utility.openEnded ? "open ended" : "fixed"),
-							},
-						]}
-					/>
+					{visibleUtilities.length === 0 ? (
+						<p className={ui.muted}>No typed utility unions were found.</p>
+					) : (
+						<InspectorTable
+							title="typed utility unions"
+							rows={visibleUtilities}
+							rowKey={(utility) => utility.key}
+							columns={[
+								{ id: "key", label: "key", value: (utility) => utility.key },
+								{ id: "values", label: "values", value: (utility) => utility.count },
+								{
+									id: "sample",
+									label: "sample",
+									value: (utility) => utility.sample.join(", "),
+								},
+								{
+									id: "open",
+									label: "open",
+									value: (utility) => (utility.openEnded ? "open ended" : "fixed"),
+									render: (utility) => (utility.openEnded ? "∞" : "—"),
+								},
+							]}
+							filters={[
+								{
+									id: "open",
+									label: "values",
+									value: (utility) => (utility.openEnded ? "open ended" : "fixed"),
+								},
+							]}
+						/>
+					)}
 				</section>
 			)}
 
-			{themeVisible && (
+			{(themeVisible || showEmptyThemeSection) && (
 				<section id="sec-theme-vars">
 					<h2>@theme variables by category</h2>
-					{visibleThemeGroups
-						.filter(([, vars]) => vars.length > 0)
-						.map(([category, vars]) => (
-							<div key={category}>
-								<InspectorTable
-									title={`${category} · ${vars.length}`}
-									rows={vars}
-									rowKey={(variable) => `${variable.scope ?? ":root"}:${variable.name}`}
-									columns={[
-										{
-											id: "name",
-											label: "variable",
-											value: (variable) => variable.name,
-											render: (variable) => (
-												<>
-													{categorizeColor(variable) !== null && (
-														<span
-															className={ui.miniSwatch}
-															style={{ background: categorizeColor(variable) ?? "" }}
-														/>
-													)}
-													<code>{variable.name}</code>
-													{variable.scope !== undefined && <small> · {variable.scope}</small>}
-												</>
-											),
-										},
-										{ id: "scope", label: "scope", value: (variable) => variable.scope ?? ":root" },
-										{ id: "value", label: "value", value: (variable) => variable.value },
-									]}
-									filters={[
-										{
-											id: "scope",
-											label: "scope",
-											value: (variable) => variable.scope ?? ":root",
-										},
-									]}
-								/>
-							</div>
-						))}
+					{showEmptyThemeSection ? (
+						<p className={ui.muted}>No @theme variables were found.</p>
+					) : (
+						visibleThemeGroups
+							.filter(([, vars]) => vars.length > 0)
+							.map(([category, vars]) => (
+								<div key={category}>
+									<InspectorTable
+										title={`${category} · ${vars.length}`}
+										rows={vars}
+										rowKey={(variable) => `${variable.scope ?? ":root"}:${variable.name}`}
+										columns={[
+											{
+												id: "name",
+												label: "variable",
+												value: (variable) => variable.name,
+												render: (variable) => (
+													<>
+														{categorizeColor(variable) !== null && (
+															<span
+																className={ui.miniSwatch}
+																style={{ background: categorizeColor(variable) ?? "" }}
+															/>
+														)}
+														<code>{variable.name}</code>
+														{variable.scope !== undefined && <small> · {variable.scope}</small>}
+													</>
+												),
+											},
+											{
+												id: "scope",
+												label: "scope",
+												value: (variable) => variable.scope ?? ":root",
+											},
+											{ id: "value", label: "value", value: (variable) => variable.value },
+										]}
+										filters={[
+											{
+												id: "scope",
+												label: "scope",
+												value: (variable) => variable.scope ?? ":root",
+											},
+										]}
+									/>
+								</div>
+							))
+					)}
 				</section>
 			)}
 			{props.query !== "" && matchCount === 0 && (
@@ -1561,14 +1684,44 @@ const TIER_COLOR: Record<TokenTier, string> = {
 	semantic: "#0ea5e9",
 	raw: "#64748b",
 };
-function TokenGraphView({ data }: { data: InspectorPayload }) {
+function TokenGraphView(props: {
+	data: InspectorPayload;
+	state: InspectorUrlState;
+	navigateTo: (state: InspectorUrlState) => void;
+}) {
+	const data = props.data;
 	const graph = data.tokenGraph;
-	const initialId = mostConnectedTokenId(graph);
+	const requestedNode = graph.nodes.find((node) => node.id === props.state.relationshipNode);
+	const initialId = requestedNode?.id ?? mostConnectedTokenId(graph);
 	const initialNode = graph.nodes.find((node) => node.id === initialId);
 	const [focusedId, setFocusedId] = useState<string | null>(initialId);
 	const [searchValue, setSearchValue] = useState(
 		initialNode === undefined ? "" : presentTokenNode(initialNode).label,
 	);
+	useEffect(() => {
+		setFocusedId(initialId);
+		setSearchValue(initialNode === undefined ? "" : presentTokenNode(initialNode).label);
+	}, [initialId, initialNode]);
+	const focusNode = (node: TokenGraph["nodes"][number]): void => {
+		setFocusedId(node.id);
+		setSearchValue(presentTokenNode(node).label);
+		props.navigateTo({
+			tab: "tokens",
+			query: "",
+			section: "relationships",
+			anchor: "token-relationship-search-section",
+			relationshipNode: node.id,
+		});
+	};
+	const relationshipTarget = (
+		options: { node?: string; anchor?: string } = {},
+	): InspectorUrlState => ({
+		tab: "tokens",
+		query: "",
+		section: "relationships",
+		anchor: options.anchor ?? "token-relationship-search-section",
+		...(options.node === undefined ? {} : { relationshipNode: options.node }),
+	});
 	const selectedId = graph.nodes.some((node) => node.id === focusedId) ? focusedId : initialId;
 	const selectedNode = graph.nodes.find((node) => node.id === selectedId);
 	const selectedPresentation = selectedNode === undefined ? null : presentTokenNode(selectedNode);
@@ -1583,12 +1736,13 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 						(selectedPresentation.scope === null || variable.scope === selectedPresentation.scope),
 				);
 	const renderRelationList = (
+		id: string,
 		title: string,
 		description: string,
 		nodes: TokenGraph["nodes"],
 		emptyMessage: string,
 	) => (
-		<section className={ui.relationshipColumn}>
+		<section id={id} className={ui.relationshipColumn}>
 			<h3>{title}</h3>
 			<p className={ui.muted}>{description}</p>
 			{nodes.length > 0 ? (
@@ -1602,10 +1756,7 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 									className={ui.relationshipNode}
 									style={{ borderColor: TIER_COLOR[node.tier] }}
 									aria-label={`Focus ${presentation.label}, ${node.tier} token`}
-									onClick={() => {
-										setFocusedId(node.id);
-										setSearchValue(presentation.label);
-									}}
+									onClick={() => focusNode(node)}
 								>
 									<code>{presentation.label}</code>
 									<span className={ui.relationshipTier}>{node.tier}</span>
@@ -1622,35 +1773,73 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 
 	if (graph.nodes.length === 0) {
 		return (
-			<div className={ui.wrap}>
+			<div id="relationships" className={ui.wrap}>
 				<h2>Token relationships</h2>
 				<p className={ui.muted}>No theme variables or component mappings were found.</p>
 			</div>
 		);
 	}
 	return (
-		<div className={ui.wrap}>
+		<div id="relationships" className={ui.wrap}>
 			<h2>Token relationships</h2>
 			<p className={ui.muted}>
 				Follow direct references for one token at a time. Choose another token in either column to
 				continue through the graph.
 			</p>
 			<section className={ui.cards}>
-				<Card label="tokens and mappings" value={String(graph.nodes.length)} />
-				<Card label="direct references" value={String(graph.edges.length)} />
+				<Card
+					label="tokens and mappings"
+					value={
+						<InspectorLink
+							target={relationshipTarget({ node: initialId ?? undefined })}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${graph.nodes.length} tokens and mappings`}
+						>
+							{graph.nodes.length}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="direct references"
+					value={
+						<InspectorLink
+							target={relationshipTarget({ node: initialId ?? undefined })}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${graph.edges.length} direct references`}
+						>
+							{graph.edges.length}
+						</InspectorLink>
+					}
+				/>
 				<Card
 					label="unlinked variables"
-					value={String(graph.orphans.length)}
+					value={
+						<InspectorLink
+							target={relationshipTarget({ node: graph.orphans[0] })}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${graph.orphans.length} unlinked variables`}
+						>
+							{graph.orphans.length}
+						</InspectorLink>
+					}
 					sub="not referenced by another token here"
 				/>
 				{(graph.cycles.length > 0 || graph.dangling.length > 0) && (
 					<Card
 						label="cycles / missing references"
-						value={`${graph.cycles.length} / ${graph.dangling.length}`}
+						value={
+							<InspectorLink
+								target={relationshipTarget({ anchor: "token-graph-issues" })}
+								navigateTo={props.navigateTo}
+								label={`Inspect ${graph.cycles.length} cycles and ${graph.dangling.length} missing references`}
+							>
+								{graph.cycles.length} / {graph.dangling.length}
+							</InspectorLink>
+						}
 					/>
 				)}
 			</section>
-			<div className={ui.relationshipSearch}>
+			<div id="token-relationship-search-section" className={ui.relationshipSearch}>
 				<label htmlFor="token-relationship-search">Find a token</label>
 				<input
 					id="token-relationship-search"
@@ -1666,7 +1855,7 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 						const match = graph.nodes.find(
 							(node) => node.id === value || presentTokenNode(node).label === value,
 						);
-						if (match !== undefined) setFocusedId(match.id);
+						if (match !== undefined) focusNode(match);
 					}}
 				/>
 				<datalist id="token-relationship-options">
@@ -1681,6 +1870,7 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 			{selectedNode !== undefined && relationships !== null && (
 				<div className={ui.relationshipLayout}>
 					{renderRelationList(
+						"token-graph-used-by",
 						"Used by",
 						"Mappings and tokens that refer to this token.",
 						relationships.usedBy,
@@ -1697,8 +1887,27 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 							<code className={ui.relationshipValue}>{themeVar.value}</code>
 						)}
 						<p className={ui.cardSub}>
-							{relationships.usedBy.length} dependents · {relationships.references.length}{" "}
-							references
+							<InspectorLink
+								target={relationshipTarget({
+									node: selectedNode.id,
+									anchor: "token-graph-used-by",
+								})}
+								navigateTo={props.navigateTo}
+								label={`Show ${relationships.usedBy.length} dependents for ${selectedPresentation?.label ?? selectedNode.id}`}
+							>
+								{relationships.usedBy.length} dependents
+							</InspectorLink>
+							{" · "}
+							<InspectorLink
+								target={relationshipTarget({
+									node: selectedNode.id,
+									anchor: "token-graph-references",
+								})}
+								navigateTo={props.navigateTo}
+								label={`Show ${relationships.references.length} references for ${selectedPresentation?.label ?? selectedNode.id}`}
+							>
+								{relationships.references.length} references
+							</InspectorLink>
 						</p>
 						{relationships.isCyclic && (
 							<p className={ui.warn}>Part of a cycle. The emitter skips cyclic references.</p>
@@ -1720,6 +1929,7 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 						/>
 					</article>
 					{renderRelationList(
+						"token-graph-references",
 						"References",
 						"Tokens this value or component mapping depends on.",
 						relationships.references,
@@ -1727,6 +1937,25 @@ function TokenGraphView({ data }: { data: InspectorPayload }) {
 					)}
 				</div>
 			)}
+			<section id="token-graph-issues">
+				<h3>Graph issues</h3>
+				{graph.cycles.length === 0 && graph.dangling.length === 0 ? (
+					<p className={ui.muted}>No cycles or missing references found.</p>
+				) : (
+					<ul className={ui.sites}>
+						{graph.cycles.map((cycle, index) => (
+							<li key={`cycle:${index}`}>
+								cycle · <code>{cycle.join(" → ")}</code>
+							</li>
+						))}
+						{graph.dangling.map((reference) => (
+							<li key={`missing:${reference}`}>
+								missing reference · <code>{reference}</code>
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
 		</div>
 	);
 }
@@ -1904,18 +2133,23 @@ function AnalysisConfidenceBadge({ data }: { data: InspectorPayload }) {
 
 const pct = (n: number): string => `${n}`;
 
-function UsageView(props: { data: InspectorPayload }) {
+function UsageView(props: {
+	data: InspectorPayload;
+	state: InspectorUrlState;
+	navigateTo: (state: InspectorUrlState) => void;
+	urlStateChange: (state: Partial<InspectorUrlState>) => void;
+}) {
 	const a = props.data.analytics;
 	const crawl = props.data.cssCrawl;
 	if (a === undefined) {
 		return (
-			<div>
+			<div id="usage">
 				<p className={ui.muted}>no analytics in this snapshot — hit refresh.</p>
 			</div>
 		);
 	}
 	return (
-		<div>
+		<div id="usage">
 			<section>
 				<h2>usage overview</h2>
 				<p className={ui.muted}>
@@ -1926,10 +2160,27 @@ function UsageView(props: { data: InspectorPayload }) {
 						` · ${crawl.unresolved.length} unresolved import(s)`}
 				</p>
 				<div className={ui.cards}>
-					<Card label="responsive" value={pct(a.conditionBreakdown.responsive)} />
-					<Card label="pseudo" value={pct(a.conditionBreakdown.pseudo)} />
-					<Card label="media" value={pct(a.conditionBreakdown.media)} />
-					<Card label="other" value={pct(a.conditionBreakdown.other)} />
+					{TOKEN_CONDITION_KINDS.map((kind) => (
+						<Card
+							key={kind}
+							label={kind}
+							value={
+								<InspectorLink
+									target={{
+										tab: "tokens",
+										query: "",
+										section: "usage",
+										anchor: "usage-conditions",
+										conditionKind: kind,
+									}}
+									navigateTo={props.navigateTo}
+									label={`Show ${kind} conditions (${a.conditionBreakdown[kind]})`}
+								>
+									{pct(a.conditionBreakdown[kind])}
+								</InspectorLink>
+							}
+						/>
+					))}
 				</div>
 			</section>
 			<section>
@@ -1973,6 +2224,7 @@ function UsageView(props: { data: InspectorPayload }) {
 			</section>
 			<section>
 				<InspectorTable
+					id="usage-conditions"
 					title="conditions"
 					rows={a.conditions}
 					rowKey={(condition) => condition.name}
@@ -1981,20 +2233,56 @@ function UsageView(props: { data: InspectorPayload }) {
 						{ id: "kind", label: "kind", value: (condition) => condition.kind },
 						{ id: "uses", label: "uses", value: (condition) => condition.count },
 					]}
-					filters={[{ id: "kind", label: "kind", value: (condition) => condition.kind }]}
+					filters={[
+						{
+							id: "kind",
+							label: "kind",
+							options: TOKEN_CONDITION_KINDS,
+							value: (condition) => condition.kind,
+						},
+					]}
+					filterValues={
+						props.state.conditionKind === undefined ? {} : { kind: props.state.conditionKind }
+					}
+					onFilterValuesChange={(values) => {
+						const kind = values.kind;
+						props.urlStateChange({
+							conditionKind: TOKEN_CONDITION_KINDS.find((candidate) => candidate === kind),
+						});
+					}}
 					defaultSort={{ columnId: "uses", direction: "descending" }}
+					defaultOpen={props.state.conditionKind !== undefined}
 				/>
 			</section>
-			<TokenUsageIntelligence data={props.data} />
-			<ContrastWarningsView warnings={props.data.contrastWarnings ?? []} />
+			<TokenUsageIntelligence
+				data={props.data}
+				state={props.state}
+				navigateTo={props.navigateTo}
+				urlStateChange={props.urlStateChange}
+			/>
+			<ContrastWarningsView
+				warnings={props.data.contrastWarnings ?? []}
+				navigateTo={props.navigateTo}
+			/>
 			<ContrastPairView data={props.data} />
-			<CleanupReportView data={props.data} />
+			<CleanupReportView
+				data={props.data}
+				state={props.state}
+				navigateTo={props.navigateTo}
+				urlStateChange={props.urlStateChange}
+			/>
 			<AnalyticsHistoryChart />
 		</div>
 	);
 }
 
-function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
+function TokenUsageIntelligence(props: {
+	data: InspectorPayload;
+	state: InspectorUrlState;
+	navigateTo: (state: InspectorUrlState) => void;
+	urlStateChange: (state: Partial<InspectorUrlState>) => void;
+}) {
+	const data = props.data;
 	const usage = buildTokenUsageData(data);
 	const total = usage.rows.length;
 	const used = usage.rows.filter((row) => row.count > 0).length;
@@ -2004,6 +2292,7 @@ function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 		.map((section) => {
 			const rows = usage.rows.filter((row) => row.group === section.id);
 			return {
+				id: section.id,
 				label: section.label,
 				used: rows.filter((row) => row.count > 0).length,
 				total: rows.length,
@@ -2011,8 +2300,23 @@ function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 		})
 		.filter((group) => group.total > 0);
 	const coverage = total === 0 ? 0 : Math.round((used / total) * 100);
+	const usageTarget = (
+		filters: Pick<InspectorUrlState, "tokenActivity" | "tokenCategory" | "tokenSearch"> = {},
+	): InspectorUrlState => ({
+		tab: "tokens",
+		query: "",
+		section: "usage",
+		anchor: "token-usage",
+		...filters,
+	});
+	const categoryLabels = Object.fromEntries(
+		data.designSystem.tokenSections.map((section) => [section.id, section.label]),
+	);
+	const filterValues: Record<string, string> = {};
+	if (props.state.tokenActivity !== undefined) filterValues.activity = props.state.tokenActivity;
+	if (props.state.tokenCategory !== undefined) filterValues.category = props.state.tokenCategory;
 	return (
-		<section>
+		<section id="token-intelligence">
 			<h2>token intelligence</h2>
 			<p className={ui.muted}>
 				Authored shorthand is normalized to its catalog group before usage is compared. “Not
@@ -2021,13 +2325,41 @@ function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 			<div className={ui.cards}>
 				<Card
 					label="catalog coverage"
-					value={total === 0 ? "—" : `${used}/${total}`}
+					value={
+						<InspectorLink
+							target={usageTarget()}
+							navigateTo={props.navigateTo}
+							label={`Inspect token usage for ${used} of ${total} catalog entries`}
+						>
+							{total === 0 ? "—" : `${used}/${total}`}
+						</InspectorLink>
+					}
 					sub={total === 0 ? "no token catalog loaded" : `${coverage}% observed`}
 				/>
-				<Card label="hot tokens" value={String(hot.length)} sub="most-used catalog entries" />
+				<Card
+					label="hot tokens"
+					value={
+						<InspectorLink
+							target={usageTarget({ tokenActivity: "hot" })}
+							navigateTo={props.navigateTo}
+							label={`Show ${hot.length} hot tokens`}
+						>
+							{hot.length}
+						</InspectorLink>
+					}
+					sub="most-used catalog entries"
+				/>
 				<Card
 					label="not observed"
-					value={String(total - used)}
+					value={
+						<InspectorLink
+							target={usageTarget({ tokenActivity: "not-observed" })}
+							navigateTo={props.navigateTo}
+							label={`Show ${total - used} unobserved tokens`}
+						>
+							{total - used}
+						</InspectorLink>
+					}
 					sub="catalog entries not seen in this scan"
 				/>
 			</div>
@@ -2039,7 +2371,15 @@ function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 							label={group.label}
 							value={group.used}
 							max={group.total}
-							suffix={` / ${group.total}`}
+							renderValue={
+								<InspectorLink
+									target={usageTarget({ tokenCategory: group.id })}
+									navigateTo={props.navigateTo}
+									label={`Show token usage for ${group.label}: ${group.used} of ${group.total}`}
+								>
+									{group.used} / {group.total}
+								</InspectorLink>
+							}
 						/>
 					))}
 				</div>
@@ -2053,11 +2393,24 @@ function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 							label={tokenLabel(row.group, row.name)}
 							value={row.count}
 							max={maxHotUses}
+							renderValue={
+								<InspectorLink
+									target={usageTarget({
+										tokenActivity: "hot",
+										tokenSearch: tokenLabel(row.group, row.name),
+									})}
+									navigateTo={props.navigateTo}
+									label={`Show ${row.count} uses of ${tokenLabel(row.group, row.name)}`}
+								>
+									{row.count}
+								</InspectorLink>
+							}
 						/>
 					))}
 				</div>
 			)}
 			<InspectorTable
+				id="token-usage"
 				title="token usage"
 				rows={usage.rows}
 				rowKey={(row) => row.id}
@@ -2085,12 +2438,48 @@ function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 					{
 						id: "activity",
 						label: "activity",
+						options: TOKEN_USAGE_ACTIVITIES,
+						optionLabels: { "not-observed": "not observed" },
 						value: (row) =>
-							row.count === 0 ? "not observed" : row.status === "hot" ? "hot" : "used",
+							row.count === 0 ? "not-observed" : row.status === "hot" ? "hot" : "used",
 					},
-					{ id: "category", label: "category", value: (row) => row.groupLabel },
+					{
+						id: "category",
+						label: "category",
+						optionLabels: categoryLabels,
+						value: (row) => row.group,
+					},
 				]}
+				filterValues={filterValues}
+				onFilterValuesChange={(values) => {
+					const activity = values.activity;
+					const category = values.category;
+					props.urlStateChange({
+						tokenActivity:
+							activity === "hot" || activity === "used" || activity === "not-observed"
+								? activity
+								: undefined,
+						tokenCategory: category === undefined || category === "" ? undefined : category,
+					});
+				}}
+				searchValue={props.state.tokenSearch ?? ""}
+				onSearchValueChange={(tokenSearch) =>
+					props.urlStateChange({ tokenSearch: tokenSearch === "" ? undefined : tokenSearch })
+				}
+				onClearFilters={() =>
+					props.urlStateChange({
+						tokenActivity: undefined,
+						tokenCategory: undefined,
+						tokenSearch: undefined,
+					})
+				}
 				defaultSort={{ columnId: "uses", direction: "descending" }}
+				defaultOpen={
+					props.state.tokenActivity !== undefined ||
+					props.state.tokenCategory !== undefined ||
+					props.state.tokenSearch !== undefined ||
+					usage.rows.length <= 12
+				}
 			/>
 			{usage.unknown.length > 0 && (
 				<details className={ui.unknownTokens}>
@@ -2108,25 +2497,43 @@ function TokenUsageIntelligence({ data }: { data: InspectorPayload }) {
 
 function ContrastWarningsView({
 	warnings,
+	navigateTo,
 }: {
 	warnings: NonNullable<InspectorPayload["contrastWarnings"]>;
+	navigateTo: (state: InspectorUrlState) => void;
 }) {
 	if (warnings.length === 0) {
 		return (
-			<section>
+			<section id="contrast-warnings">
 				<h2>wcag contrast</h2>
 				<p className={ui.muted}>no text/background pairs below 4.5:1 found.</p>
 			</section>
 		);
 	}
 	return (
-		<section>
-			<h2>wcag contrast — {warnings.length} warning(s)</h2>
+		<section id="contrast-warnings">
+			<h2>
+				wcag contrast —{" "}
+				<InspectorLink
+					target={{
+						tab: "tokens",
+						query: "",
+						section: "usage",
+						anchor: "contrast-warning-table",
+					}}
+					navigateTo={navigateTo}
+					label={`Inspect ${warnings.length} contrast warnings`}
+				>
+					{warnings.length}
+				</InspectorLink>{" "}
+				warning(s)
+			</h2>
 			<p className={ui.muted}>
 				text/background pairs within one call site. &lt;4.5 fails normal text; &lt;3 also fails
 				large text.
 			</p>
 			<InspectorTable
+				id="contrast-warning-table"
 				title="contrast warnings"
 				rows={warnings.map((warning, index) => ({ id: `${warning.file}:${index}`, warning }))}
 				rowKey={(row) => row.id}
@@ -2329,7 +2736,12 @@ const BOUNDARY_ORDER: ReadonlyArray<GovernanceCoverageBoundary> = [
 ];
 
 /** Cleanup evidence from the shared analysis report; all actions remain previews. */
-function CleanupReportView(props: { data: InspectorPayload }) {
+function CleanupReportView(props: {
+	data: InspectorPayload;
+	state: InspectorUrlState;
+	navigateTo: (state: InspectorUrlState) => void;
+	urlStateChange: (state: Partial<InspectorUrlState>) => void;
+}) {
 	const g = props.data.governance;
 	if (g === undefined) {
 		return (
@@ -2350,6 +2762,18 @@ function CleanupReportView(props: { data: InspectorPayload }) {
 		(a, b) => a.file.localeCompare(b.file) || a.start - b.start,
 	);
 	const nonZeroBoundaries = BOUNDARY_ORDER.filter((b) => (s.boundaries[b] ?? 0) > 0);
+	const cleanupTarget = (
+		anchor: string,
+		cleanupSafety?: CleanupSafetyFilter,
+	): InspectorUrlState => ({
+		tab: "tokens",
+		query: "",
+		section: "usage",
+		anchor,
+		...(cleanupSafety === undefined ? {} : { cleanupSafety }),
+	});
+	const cleanupFilterValues: Record<string, string> =
+		props.state.cleanupSafety === undefined ? {} : { safety: props.state.cleanupSafety };
 	return (
 		<div>
 			<section>
@@ -2372,17 +2796,109 @@ function CleanupReportView(props: { data: InspectorPayload }) {
 			<section className={ui.cards}>
 				<Card label="in analyzer scope" value={String(s.defined)} />
 				<Card label="reachable" value={String(s.used)} />
-				<Card label="cleanup candidates" value={String(s.unusedCandidates)} />
-				<Card label="safe by analysis" value={String(s.safeToRemove)} />
-				<Card label="needs review" value={String(s.reviewRequired)} />
-				<Card label="kept" value={String(s.notRemovable)} />
-				<Card label="strict issues" value={String(s.strictViolations)} />
-				<Card label="raw values allowed" value={String(s.rawAllowed)} />
-				<Card label="policy unknown" value={String(s.unknownStrictness)} />
-				<Card label="exact suggestions" value={String(s.suggestions)} />
+				<Card
+					label="cleanup candidates"
+					value={
+						<InspectorLink
+							target={cleanupTarget("cleanup-candidates")}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${s.unusedCandidates} cleanup candidates`}
+						>
+							{s.unusedCandidates}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="safe by analysis"
+					value={
+						<InspectorLink
+							target={cleanupTarget("cleanup-candidates", "safe-to-remove")}
+							navigateTo={props.navigateTo}
+							label={`Show ${s.safeToRemove} safe cleanup candidates`}
+						>
+							{s.safeToRemove}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="needs review"
+					value={
+						<InspectorLink
+							target={cleanupTarget("cleanup-candidates", "review-required")}
+							navigateTo={props.navigateTo}
+							label={`Show ${s.reviewRequired} candidates needing review`}
+						>
+							{s.reviewRequired}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="kept"
+					value={
+						<InspectorLink
+							target={cleanupTarget("cleanup-candidates", "not-removable")}
+							navigateTo={props.navigateTo}
+							label={`Show ${s.notRemovable} candidates kept by policy`}
+						>
+							{s.notRemovable}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="strict issues"
+					value={
+						<InspectorLink
+							target={cleanupTarget(
+								g.diagnostics.length > 0 ? "cleanup-diagnostics-table" : "cleanup-diagnostics",
+							)}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${s.strictViolations} strict issues`}
+						>
+							{s.strictViolations}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="raw values allowed"
+					value={
+						<InspectorLink
+							target={cleanupTarget("resolved-cleanup-policy")}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${s.rawAllowed} allowed raw values`}
+						>
+							{s.rawAllowed}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="policy unknown"
+					value={
+						<InspectorLink
+							target={cleanupTarget("resolved-cleanup-policy")}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${s.unknownStrictness} unresolved policy values`}
+						>
+							{s.unknownStrictness}
+						</InspectorLink>
+					}
+				/>
+				<Card
+					label="exact suggestions"
+					value={
+						<InspectorLink
+							target={cleanupTarget(
+								suggestions.length > 0 ? "raw-value-suggestions-table" : "raw-value-suggestions",
+							)}
+							navigateTo={props.navigateTo}
+							label={`Inspect ${s.suggestions} exact value suggestions`}
+						>
+							{s.suggestions}
+						</InspectorLink>
+					}
+				/>
 			</section>
 			{nonZeroBoundaries.length > 0 && (
-				<section>
+				<section id="cleanup-boundaries">
 					<h2>coverage boundaries</h2>
 					<p className={ui.muted}>
 						conditions that prevent a definitive usage claim — nothing behind these is classified as
@@ -2397,7 +2913,7 @@ function CleanupReportView(props: { data: InspectorPayload }) {
 					</div>
 				</section>
 			)}
-			<section>
+			<section id="resolved-cleanup-policy">
 				<h2>resolved cleanup policy</h2>
 				{policy === null ? (
 					<p className={ui.muted}>
@@ -2440,6 +2956,7 @@ function CleanupReportView(props: { data: InspectorPayload }) {
 					is a classification, not a deletion approval.
 				</p>
 				<InspectorTable
+					id="cleanup-candidates"
 					title={`cleanup candidates · ${unused.length}`}
 					rows={unused}
 					rowKey={(candidate) => candidate.tokenId}
@@ -2463,98 +2980,142 @@ function CleanupReportView(props: { data: InspectorPayload }) {
 							value: (candidate) => candidate.reasons.join("; ") || "—",
 						},
 					]}
-					filters={[{ id: "safety", label: "safety", value: (candidate) => candidate.safety }]}
-					defaultOpen={false}
+					filters={[
+						{
+							id: "safety",
+							label: "safety",
+							options: CLEANUP_SAFETIES,
+							optionLabels: {
+								"safe-to-remove": "safe by analysis",
+								"review-required": "needs review",
+								"not-removable": "kept",
+							},
+							value: (candidate) => candidate.safety,
+						},
+					]}
+					filterValues={cleanupFilterValues}
+					onFilterValuesChange={(values) => {
+						const safety = values.safety;
+						props.urlStateChange({
+							cleanupSafety:
+								safety === "safe-to-remove" ||
+								safety === "review-required" ||
+								safety === "not-removable"
+									? safety
+									: undefined,
+						});
+					}}
+					defaultOpen={props.state.cleanupSafety !== undefined}
 				/>
 			</section>
-			{suggestions.length > 0 && (
-				<section>
-					<p className={ui.muted}>
-						each suggestion is an exact resolved-value match with a legal spelling for the property;
-						ambiguous matches are rejected, not ranked.
-					</p>
-					<InspectorTable
-						title={`raw value suggestions · ${suggestions.length}`}
-						rows={suggestions.map((suggestion, index) => ({
-							id: `${suggestion.file}:${suggestion.start}:${index}`,
-							suggestion,
-						}))}
-						rowKey={(row) => row.id}
-						columns={[
-							{ id: "file", label: "file", value: (row) => row.suggestion.file },
-							{
-								id: "property",
-								label: "property",
-								value: (row) => row.suggestion.property ?? "—",
-							},
-							{ id: "raw", label: "raw", value: (row) => row.suggestion.rawValue },
-							{
-								id: "replacement",
-								label: "replacement",
-								value: (row) => stripDollar(row.suggestion.replacement),
-							},
-							{ id: "confidence", label: "confidence", value: (row) => row.suggestion.confidence },
-							{ id: "reason", label: "reason", value: (row) => row.suggestion.reason },
-						]}
-						filters={[
-							{
-								id: "confidence",
-								label: "confidence",
-								value: (row) => row.suggestion.confidence,
-							},
-							{
-								id: "property",
-								label: "property",
-								value: (row) => row.suggestion.property ?? "unknown",
-							},
-						]}
-						defaultSort={{ columnId: "file", direction: "ascending" }}
-					/>
-				</section>
-			)}
-			{g.diagnostics.length > 0 && (
-				<section>
-					<InspectorTable
-						title="diagnostics"
-						rows={g.diagnostics.map((diagnostic, index) => ({
-							id: `${diagnostic.code}:${index}`,
-							diagnostic,
-						}))}
-						rowKey={(row) => row.id}
-						columns={[
-							{
-								id: "severity",
-								label: "severity",
-								value: (row) => row.diagnostic.severity,
-								render: (row) => (
-									<span
-										style={{
-											color:
-												row.diagnostic.severity === "error"
-													? "#ef4444"
-													: row.diagnostic.severity === "warning"
-														? "#d97706"
-														: "#64748b",
-										}}
-									>
-										{row.diagnostic.severity}
-									</span>
-								),
-							},
-							{ id: "code", label: "code", value: (row) => row.diagnostic.code },
-							{ id: "message", label: "message", value: (row) => row.diagnostic.message },
-						]}
-						filters={[
-							{
-								id: "severity",
-								label: "severity",
-								value: (row) => row.diagnostic.severity,
-							},
-						]}
-						defaultSort={{ columnId: "severity", direction: "ascending" }}
-					/>
-				</section>
-			)}
+			<section id="raw-value-suggestions">
+				{suggestions.length === 0 ? (
+					<>
+						<h2>raw value suggestions · 0</h2>
+						<p className={ui.muted}>No exact raw value replacements were found.</p>
+					</>
+				) : (
+					<>
+						<p className={ui.muted}>
+							each suggestion is an exact resolved-value match with a legal spelling for the
+							property; ambiguous matches are rejected, not ranked.
+						</p>
+						<InspectorTable
+							id="raw-value-suggestions-table"
+							title={`raw value suggestions · ${suggestions.length}`}
+							rows={suggestions.map((suggestion, index) => ({
+								id: `${suggestion.file}:${suggestion.start}:${index}`,
+								suggestion,
+							}))}
+							rowKey={(row) => row.id}
+							columns={[
+								{ id: "file", label: "file", value: (row) => row.suggestion.file },
+								{
+									id: "property",
+									label: "property",
+									value: (row) => row.suggestion.property ?? "—",
+								},
+								{ id: "raw", label: "raw", value: (row) => row.suggestion.rawValue },
+								{
+									id: "replacement",
+									label: "replacement",
+									value: (row) => stripDollar(row.suggestion.replacement),
+								},
+								{
+									id: "confidence",
+									label: "confidence",
+									value: (row) => row.suggestion.confidence,
+								},
+								{ id: "reason", label: "reason", value: (row) => row.suggestion.reason },
+							]}
+							filters={[
+								{
+									id: "confidence",
+									label: "confidence",
+									value: (row) => row.suggestion.confidence,
+								},
+								{
+									id: "property",
+									label: "property",
+									value: (row) => row.suggestion.property ?? "unknown",
+								},
+							]}
+							defaultSort={{ columnId: "file", direction: "ascending" }}
+						/>
+					</>
+				)}
+			</section>
+			<section id="cleanup-diagnostics">
+				{g.diagnostics.length === 0 ? (
+					<>
+						<h2>diagnostics · 0</h2>
+						<p className={ui.muted}>No cleanup diagnostics were reported.</p>
+					</>
+				) : (
+					<>
+						<InspectorTable
+							id="cleanup-diagnostics-table"
+							title="diagnostics"
+							rows={g.diagnostics.map((diagnostic, index) => ({
+								id: `${diagnostic.code}:${index}`,
+								diagnostic,
+							}))}
+							rowKey={(row) => row.id}
+							columns={[
+								{
+									id: "severity",
+									label: "severity",
+									value: (row) => row.diagnostic.severity,
+									render: (row) => (
+										<span
+											style={{
+												color:
+													row.diagnostic.severity === "error"
+														? "#ef4444"
+														: row.diagnostic.severity === "warning"
+															? "#d97706"
+															: "#64748b",
+											}}
+										>
+											{row.diagnostic.severity}
+										</span>
+									),
+								},
+								{ id: "code", label: "code", value: (row) => row.diagnostic.code },
+								{ id: "message", label: "message", value: (row) => row.diagnostic.message },
+							]}
+							filters={[
+								{
+									id: "severity",
+									label: "severity",
+									value: (row) => row.diagnostic.severity,
+								},
+							]}
+							defaultSort={{ columnId: "severity", direction: "ascending" }}
+						/>
+					</>
+				)}
+			</section>
 			<RemovalPreviewView unusedCount={s.safeToRemove} />
 		</div>
 	);
@@ -2700,15 +3261,20 @@ export function App() {
 	}, []);
 
 	useEffect(() => {
-		if (tab !== "build" || section === null) return;
-		const target = document.getElementById(section);
+		const targetId =
+			urlState.anchor ??
+			(tab === "build" || (tab === "tokens" && (section === "usage" || section === "relationships"))
+				? section
+				: null);
+		if (targetId === null) return;
+		const target = document.getElementById(targetId);
 		if (target === null) return;
 		if (target instanceof HTMLDetailsElement) target.open = true;
 		const frame = window.requestAnimationFrame(() =>
 			target.scrollIntoView({ behavior: "smooth", block: "start" }),
 		);
 		return () => window.cancelAnimationFrame(frame);
-	}, [data, section, tab]);
+	}, [data, section, tab, urlState.anchor]);
 
 	useEffect(() => {
 		const focusSearch = (event: KeyboardEvent): void => {
@@ -2732,7 +3298,7 @@ export function App() {
 	}, []);
 
 	const updateUrlState = useCallback(
-		(next: Partial<typeof urlState>): void => {
+		(next: Partial<InspectorUrlState>): void => {
 			const state = { ...urlState, ...next };
 			setUrlState(state);
 			window.history.replaceState(
@@ -2756,7 +3322,18 @@ export function App() {
 			updateUrlState({
 				tab: next,
 				section: null,
+				anchor: undefined,
 				...(next === "build" ? {} : { buildFilters: undefined }),
+				...(next === "tokens"
+					? {}
+					: {
+							tokenActivity: undefined,
+							tokenCategory: undefined,
+							tokenSearch: undefined,
+							conditionKind: undefined,
+							cleanupSafety: undefined,
+							relationshipNode: undefined,
+						}),
 			}),
 		[updateUrlState],
 	);
@@ -2766,12 +3343,34 @@ export function App() {
 	);
 	const sectionChange = useCallback(
 		(next: string): void =>
-			updateUrlState({ tab: "tokens", section: next, buildFilters: undefined }),
+			updateUrlState({
+				tab: "tokens",
+				section: next,
+				anchor: undefined,
+				buildFilters: undefined,
+				tokenActivity: undefined,
+				tokenCategory: undefined,
+				tokenSearch: undefined,
+				conditionKind: undefined,
+				cleanupSafety: undefined,
+				relationshipNode: undefined,
+			}),
 		[updateUrlState],
 	);
 	const changeTokenView = useCallback(
 		(section: string | null): void =>
-			updateUrlState({ tab: "tokens", section, buildFilters: undefined }),
+			updateUrlState({
+				tab: "tokens",
+				section,
+				anchor: undefined,
+				buildFilters: undefined,
+				tokenActivity: undefined,
+				tokenCategory: undefined,
+				tokenSearch: undefined,
+				conditionKind: undefined,
+				cleanupSafety: undefined,
+				relationshipNode: undefined,
+			}),
 		[updateUrlState],
 	);
 
@@ -2811,9 +3410,14 @@ export function App() {
 		if (tab === "tokens") {
 			body =
 				section === "usage" ? (
-					<UsageView data={data} />
+					<UsageView
+						data={data}
+						state={urlState}
+						navigateTo={navigateTo}
+						urlStateChange={updateUrlState}
+					/>
 				) : section === "relationships" ? (
-					<TokenGraphView data={data} />
+					<TokenGraphView data={data} state={urlState} navigateTo={navigateTo} />
 				) : (
 					<DesignSystemView
 						data={data}
@@ -2821,6 +3425,7 @@ export function App() {
 						queryChange={queryChange}
 						section={section}
 						sectionChange={sectionChange}
+						navigateTo={navigateTo}
 					/>
 				);
 		} else if (tab === "history") {

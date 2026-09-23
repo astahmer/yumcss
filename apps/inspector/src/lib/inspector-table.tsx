@@ -33,6 +33,9 @@ export interface InspectorTableProps<Row> {
 	filters: readonly InspectorTableFilter<Row>[];
 	filterValues?: Readonly<Record<string, string>>;
 	onFilterValuesChange?: (values: Record<string, string>) => void;
+	searchValue?: string;
+	onSearchValueChange?: (value: string) => void;
+	onClearFilters?: () => void;
 	defaultSort?: InspectorTableSort;
 	defaultOpen?: boolean;
 	tableClassName?: string;
@@ -46,11 +49,12 @@ const compare = (left: TableValue, right: TableValue): number => {
 };
 
 export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
-	const [query, setQuery] = useState("");
+	const [internalSearchValue, setInternalSearchValue] = useState("");
 	const [internalFilterValues, setInternalFilterValues] = useState<Record<string, string>>({});
 	const filterValues = props.filterValues ?? internalFilterValues;
+	const searchValue = props.searchValue ?? internalSearchValue;
 	const [sort, setSort] = useState<InspectorTableSort | null>(props.defaultSort ?? null);
-	const normalizedQuery = query.trim().toLocaleLowerCase();
+	const normalizedQuery = searchValue.trim().toLocaleLowerCase();
 	const filterOptions = props.filters.map((filter) => ({
 		filter,
 		values:
@@ -62,6 +66,10 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 	const updateFilterValues = (values: Record<string, string>): void => {
 		if (props.filterValues === undefined) setInternalFilterValues(values);
 		props.onFilterValuesChange?.(values);
+	};
+	const updateSearchValue = (value: string): void => {
+		if (props.searchValue === undefined) setInternalSearchValue(value);
+		props.onSearchValueChange?.(value);
 	};
 	const filteredRows = props.rows
 		.map((row, index) => ({ row, index }))
@@ -112,10 +120,10 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 					<input
 						className={ui.search}
 						type="search"
-						value={query}
+						value={searchValue}
 						placeholder={`Search ${props.title.toLocaleLowerCase()}…`}
 						aria-label={`Search ${props.title}`}
-						onChange={(event) => setQuery(event.target.value)}
+						onChange={(event) => updateSearchValue(event.target.value)}
 					/>
 				</label>
 				{filterOptions.map(({ filter, values }) => (
@@ -145,7 +153,11 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 						type="button"
 						className={ui.searchClear}
 						onClick={() => {
-							setQuery("");
+							if (props.onClearFilters !== undefined) {
+								props.onClearFilters();
+								return;
+							}
+							updateSearchValue("");
 							updateFilterValues({});
 						}}
 					>
