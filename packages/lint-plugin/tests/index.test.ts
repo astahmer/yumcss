@@ -1,5 +1,7 @@
 import { parseSync } from "oxc-parser";
 import { describe, expect, test } from "vitest";
+import { inlineCxCalls } from "pandwind/vite/cx-inline";
+import { inlineTwCalls } from "pandwind/vite/inline";
 import { NodeKind } from "../src/ast-node-kind.ts";
 import plugin from "../src/index.ts";
 import { CSS_PROPERTY_VALUES, CSS_WIDE_VALUES } from "../src/typed-css-values.ts";
@@ -45,6 +47,12 @@ type Report = {
 };
 
 const typedPlugin = plugin as unknown as Plugin;
+
+const inlineCx = (source: string) =>
+	inlineCxCalls(source, "fixture.tsx", { variants: {} }, new Set(["cx"]));
+
+const inlineTw = (source: string) =>
+	inlineTwCalls(source, "fixture.tsx", { variants: {} }, new Set(["tw"]));
 
 const visitCalls = (program: AstValue, visit: (node: AstNode) => void): void => {
 	const stack: AstValue[] = [program];
@@ -349,7 +357,7 @@ merge(
 	test("reports more than one partially foldable conditional", () => {
 		const reports = runRule(
 			"no-multiple-conditionals",
-			`import { tw as utility } from "pandwind";
+			`import { cx as utility } from "pandwind";
 utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" : "cursor-pointer");`,
 		);
 
@@ -795,14 +803,13 @@ dss.class({
 		`);
 	});
 
-	test("accepts local static constants and keeps explicit runtime carriers quiet", () => {
+	test("keeps explicit runtime carriers quiet", () => {
 		const reports = runRule(
 			"no-dynamic-values",
 			`import { tw } from "pandwind";
 import { createUnsafeCss } from "pandwind/unsafe/css";
 const css = createUnsafeCss();
 const card = { color: "red", padding: "1rem" };
-tw(card);
 css.class(card);
 css.vars({ color: theme.color });
 css.props({ color: theme.color });
@@ -815,39 +822,47 @@ css.raw({ color: theme.color });`,
 		expect(reports).toMatchInlineSnapshot(`[]`);
 	});
 
-	test("uses call-specific lexical scopes for static values", () => {
+	test("uses the Tw compiler's module-constant scope", () => {
 		const reports = runRule(
 			"no-dynamic-values",
 			`import { tw } from "pandwind";
-	const color = "red";
-	tw({ color });
-	function Card() {
-	  const color = getColor();
-	  tw({ color });
-	  {
-	    const padding = 2;
-	    tw({ padding });
-	  }
+const moduleColor = "red";
+tw({ color: moduleColor });
+function Card() {
+	  const localColor = "blue";
+	  tw({ color: localColor });
+	  const dynamicColor = getColor();
+	  tw({ color: dynamicColor });
 	}`,
 		);
 
-		expect(reports).toHaveLength(1);
-		expect(reports[0]).toMatchObject({
-			data: { bad: "unresolved identifier", name: "tw" },
-			nodeType: "Identifier",
-		});
+		expect(inlineTw(`const moduleColor = "red";\ntw({ color: moduleColor });`).inlined).toBe(1);
+		expect(reports).toHaveLength(2);
+		expect(reports.map(({ data, nodeType }) => ({ data, nodeType }))).toEqual([
+			{ data: { bad: "unresolved identifier", name: "tw" }, nodeType: "Identifier" },
+			{ data: { bad: "unresolved identifier", name: "tw" }, nodeType: "Identifier" },
+		]);
 	});
 
-	test("reports nested dynamic values while allowing one conditional", () => {
+	test("matches Tw compiler behavior for object constants and finite dynamic values", () => {
+		const objectConstant = `import { tw } from "pandwind";
+const card = { color: "red" };
+tw(card);`;
+		const conditionalValue = `import { tw } from "pandwind";
+tw({ color: active ? "red" : "blue" });`;
+
+		expect(inlineTw(objectConstant).inlined).toBe(0);
+		expect(runRule("no-dynamic-values", objectConstant)).toHaveLength(1);
+		expect(inlineTw(conditionalValue).inlined).toBe(0);
+		expect(inlineTw(conditionalValue).candidates).toContain("color-red");
+		expect(runRule("no-dynamic-values", conditionalValue)).toHaveLength(1);
+	});
+
+	test("reports nested dynamic values", () => {
 		const dynamicReports = runRule(
 			"no-dynamic-values",
 			`import { tw } from "pandwind";
 tw({ md: { hover: { color: theme.colors.brand } } });`,
-		);
-		const conditionalReports = runRule(
-			"no-multiple-conditionals",
-			`import { tw } from "pandwind";
-tw({ color: active ? "red" : "blue" }, disabled ? "opacity-50" : "opacity-100");`,
 		);
 
 		expect(dynamicReports).toHaveLength(1);
@@ -863,8 +878,77 @@ tw({ color: active ? "red" : "blue" }, disabled ? "opacity-50" : "opacity-100");
 			  },
 			]
 		`);
-		expect(conditionalReports).toHaveLength(1);
-		expect(conditionalReports[0]?.data).toEqual({ n: 2, name: "tw" });
+	});
+
+	test("matches cx compiler cases for partial folding", () => {
+		const cases = [
+			{
+				name: "one dynamic conditional",
+				expression: 'cx(active ? "grid" : "block")',
+				inlined: 1,
+				dynamicValues: 0,
+				conditions: 0,
+			},
+			{
+				name: "nested conditions inside one foldable argument",
+				expression: 'cx(active ? compact ? "px-2" : "px-4" : "p-6")',
+				inlined: 1,
+				dynamicValues: 0,
+				conditions: 0,
+			},
+			{
+				name: "logical and partial fold",
+				expression: 'cx(active && "hidden")',
+				inlined: 1,
+				dynamicValues: 0,
+				conditions: 0,
+			},
+			{
+				name: "two dynamic arguments",
+				expression: 'cx(active ? "grid" : "block", compact ? "flex" : "hidden")',
+				inlined: 0,
+				dynamicValues: 0,
+				conditions: 2,
+			},
+			{
+				name: "conditional nested in an array",
+				expression: 'cx([active ? "grid" : "block"])',
+				inlined: 0,
+				dynamicValues: 1,
+				conditions: 0,
+			},
+			{
+				name: "unsupported logical or remains runtime",
+				expression: 'cx(active || "grid")',
+				inlined: 0,
+				dynamicValues: 1,
+				conditions: 0,
+			},
+			{
+				name: "constant conditional tests fold statically",
+				expression: 'cx(true ? "grid" : "block", false ? "flex" : "hidden")',
+				inlined: 1,
+				dynamicValues: 0,
+				conditions: 0,
+			},
+		];
+
+		for (const { name, expression, inlined, dynamicValues, conditions } of cases) {
+			const source = `import { cx } from "pandwind";\n${expression};`;
+			expect(inlineCx(expression).inlined, name).toBe(inlined);
+			expect(runRule("no-dynamic-values", source), name).toHaveLength(dynamicValues);
+			const reports = runRule("no-multiple-conditionals", source);
+			expect(reports, name).toHaveLength(conditions === 0 ? 0 : 1);
+			if (conditions > 0) expect(reports[0]?.data, name).toEqual({ n: conditions, name: "cx" });
+		}
+
+		const namespaceSource = `import * as pandwind from "pandwind";
+pandwind.cx(active ? "grid" : "block", compact ? "flex" : "hidden");`;
+		expect(
+			inlineCxCalls(namespaceSource, "fixture.tsx", { variants: {} }, new Set(["cx"])).inlined,
+		).toBe(0);
+		expect(runRule("no-dynamic-values", namespaceSource)).toHaveLength(2);
+		expect(runRule("no-multiple-conditionals", namespaceSource)).toEqual([]);
 	});
 
 	test("ignores type-only imports and preserves namespace method identity", () => {

@@ -7,8 +7,8 @@
  *
  * Rules:
  * - no-spreads: spread arguments that cannot be statically folded
- * - no-dynamic-values: runtime-only argument shapes
- * - no-multiple-conditionals: more than one partially foldable conditional
+ * - no-dynamic-values: compiler-backed runtime-only argument shapes
+ * - no-multiple-conditionals: multiple compiler-foldable cx() arguments
  * - no-dollar-raw: explicit escape hatches from the token lane
  * - no-arbitrary-values: arbitrary class values in static lanes
  * - design-tokens-only: verified project token policy violations
@@ -34,6 +34,14 @@ import {
 	findCssFallbackValueNames,
 	isLiteralKeyframeBody,
 } from "pandwind/vite/css-inline-analysis";
+import {
+	collectModuleConstants,
+	defaultCxCompilerPorts,
+	evalStaticCx,
+} from "pandwind/vite/cx-inline";
+import { evalLiteral as evalTwLiteral } from "pandwind/tw/literal";
+
+const CX_NOT_STATIC_VALUE = evalStaticCx(undefined);
 
 const SOURCE = Object.freeze({
 	core: "pandwind",
@@ -210,17 +218,17 @@ const apiFromImport = (
 type DynamicExpression = { node: AstNode; bad: string };
 
 /**
- * Check the same value shapes the static compiler can fold. The walk is
- * iterative because generated style objects can be much deeper than normal
- * authored code. Conditional branches are inspectable; their runtime test is
- * handled separately by the conditional-count rule.
+ * Locate the dynamic expression after the owning compiler evaluator rejects
+ * the argument. Generated style objects can be much deeper than authored code,
+ * so the diagnostic walk is iterative.
  */
-const findDynamicExpression = (
-	root: AstValue,
-	staticBindings: Pick<ReadonlySet<string>, "has">,
-	resolveCall?: (call: AstNode) => ApiReference | undefined,
-): DynamicExpression | undefined => {
-	const stack: AstValue[] = [root];
+const findDynamicExpression = (options: {
+	readonly root: AstValue;
+	readonly staticBindings: Pick<ReadonlySet<string>, "has">;
+	readonly resolveCall?: (call: AstNode) => ApiReference | undefined;
+	readonly inspectConditionalTests?: boolean;
+}): DynamicExpression | undefined => {
+	const stack: AstValue[] = [options.root];
 	const seen = new Set<AstNode>();
 	while (stack.length > 0) {
 		const value = stack.pop();
@@ -235,7 +243,7 @@ const findDynamicExpression = (
 			case NodeKind.Literal:
 				continue;
 			case NodeKind.Identifier:
-				if (staticBindings.has(value.name)) continue;
+				if (options.staticBindings.has(value.name)) continue;
 				return { node: value, bad: "unresolved identifier" };
 			case NodeKind.MemberExpression:
 				return { node: value, bad: "member expression value" };
@@ -248,7 +256,7 @@ const findDynamicExpression = (
 			case NodeKind.FunctionDeclaration:
 				return { node: value, bad: "function argument" };
 			case NodeKind.CallExpression: {
-				const api = resolveCall?.(value);
+				const api = options.resolveCall?.(value);
 				if ((api?.kind === API.tw || api?.kind === API.style) && isExtractionLane(api)) {
 					for (const argument of value.arguments ?? []) stack.push(argument);
 					continue;
@@ -269,6 +277,7 @@ const findDynamicExpression = (
 				for (const child of value.properties ?? value.elements ?? []) stack.push(child);
 				continue;
 			case NodeKind.ConditionalExpression:
+				if (options.inspectConditionalTests) stack.push(value.test);
 				stack.push(value.alternate, value.consequent);
 				continue;
 			case NodeKind.LogicalExpression:
@@ -296,7 +305,6 @@ const findDynamicExpression = (
 	}
 	return undefined;
 };
-
 /**
  * Resolve only real Pandwind bindings. This intentionally rejects unrelated
  * local functions named `cx`, `tw`, or `css`; aliases and namespace imports
@@ -400,7 +408,7 @@ const createApiResolver = (
 			for (const [name, value] of declarations) {
 				if (
 					staticBindings.has(name) ||
-					findDynamicExpression(value, staticBindings, resolve) === undefined
+					findDynamicExpression({ root: value, staticBindings, resolveCall: resolve }) === undefined
 				)
 					staticBindings.add(name);
 			}
@@ -489,27 +497,6 @@ const createApiResolver = (
 	resolvers.set(cacheKey, resolver);
 	apiResolverCache.set(program, resolvers);
 	return resolver;
-};
-const countDynamicConditionals = (args: readonly AstNode[]): number => {
-	let count = 0;
-	const stack: AstValue[] = [...args];
-	while (stack.length > 0) {
-		const value = stack.pop();
-		if (Array.isArray(value)) {
-			for (let index = value.length - 1; index >= 0; index -= 1) stack.push(value[index]);
-			continue;
-		}
-		if (!isNode(value)) continue;
-		if (
-			value.type === NodeKind.ConditionalExpression ||
-			(value.type === NodeKind.LogicalExpression && ["||", "??"].includes(value.operator))
-		)
-			count += 1;
-		for (const key of Object.keys(value)) {
-			if (key !== "parent" && key !== "type") stack.push(value[key]);
-		}
-	}
-	return count;
 };
 
 /** Arbitrary-value class token: `w-[13px]`, `[margin-top:7px]`. */
@@ -714,6 +701,24 @@ type LiteralScopeAnalysis = {
 
 const literalScopeAnalysisCache = new WeakMap<AstNode, LiteralScopeAnalysis>();
 
+type CompilerStaticAnalysis = {
+	readonly cxConstants: ReturnType<typeof collectModuleConstants>;
+	readonly twConstants: Map<string, unknown>;
+};
+
+const compilerStaticAnalysisCache = new WeakMap<AstNode, CompilerStaticAnalysis>();
+
+const compilerStaticAnalysisForProgram = (program: AstNode): CompilerStaticAnalysis => {
+	const cached = compilerStaticAnalysisCache.get(program);
+	if (cached !== undefined) return cached;
+	const cxConstants = collectModuleConstants(program as never);
+	const twConstants = new Map<string, unknown>();
+	for (const [name, known] of cxConstants) twConstants.set(name, known.value);
+	const analysis = { cxConstants, twConstants };
+	compilerStaticAnalysisCache.set(program, analysis);
+	return analysis;
+};
+
 const createLiteralScopeAnalysis = (program: AstNode): LiteralScopeAnalysis => {
 	const cached = literalScopeAnalysisCache.get(program);
 	if (cached !== undefined) return cached;
@@ -748,6 +753,61 @@ const literalValueForCall = (
 	node: AstNode | undefined,
 ): unknown =>
 	evalLiteral(node as never, literalScopeForCall(analysis, call), analysis.evaluateCall);
+
+const isCompilerStaticArgument = (options: {
+	readonly api: ApiReference | undefined;
+	readonly call: AstNode;
+	readonly argument: AstNode;
+	readonly compilerAnalysis: CompilerStaticAnalysis | undefined;
+	readonly literalAnalysis: LiteralScopeAnalysis | undefined;
+	readonly source: string;
+}): boolean => {
+	if (options.api?.kind === API.tw && options.compilerAnalysis !== undefined)
+		return (
+			evalTwLiteral(options.argument as never, options.compilerAnalysis.twConstants) !== undefined
+		);
+	if (options.api?.kind === API.cx && options.compilerAnalysis !== undefined) {
+		if (
+			evalStaticCx(options.argument as never, undefined, options.compilerAnalysis.cxConstants) !==
+			CX_NOT_STATIC_VALUE
+		)
+			return true;
+		if (options.call.callee?.type !== NodeKind.Identifier) return false;
+		return (
+			defaultCxCompilerPorts.buildSkeleton(
+				options.argument as never,
+				options.compilerAnalysis.cxConstants,
+				options.source,
+			) !== null
+		);
+	}
+	if (options.api?.kind === API.style && options.literalAnalysis !== undefined) {
+		const value = literalValueForCall(options.literalAnalysis, options.call, options.argument);
+		return typeof value === "object" && value !== null;
+	}
+	return false;
+};
+
+const countPartialCxArguments = (options: {
+	readonly argumentsList: readonly AstNode[];
+	readonly compilerAnalysis: CompilerStaticAnalysis;
+	readonly source: string;
+}): number => {
+	let count = 0;
+	for (const argument of options.argumentsList) {
+		if (
+			evalStaticCx(argument as never, undefined, options.compilerAnalysis.cxConstants) ===
+				CX_NOT_STATIC_VALUE &&
+			defaultCxCompilerPorts.buildSkeleton(
+				argument as never,
+				options.compilerAnalysis.cxConstants,
+				options.source,
+			) !== null
+		)
+			count += 1;
+	}
+	return count;
+};
 
 const withResolver = (
 	context: RuleContext,
@@ -938,7 +998,7 @@ const migrationAnalysis = (program: AstNode, context: RuleContext): CallAnalysis
 		const dynamic = isExtractionLane(api)
 			? node.arguments
 					.map((argument: AstNode) =>
-						findDynamicExpression(argument, staticBindings, resolver.resolve),
+						findDynamicExpression({ root: argument, staticBindings, resolveCall: resolver.resolve }),
 					)
 					.find(
 						(issue: DynamicExpression | undefined): issue is DynamicExpression =>
@@ -1585,12 +1645,44 @@ const rules: Record<string, RuleDefinition> = {
 	},
 	"no-dynamic-values": {
 		create(context) {
-			return withResolver(
-				context,
-				(node, api, staticBindings, resolveCall) => {
-					if (!isStaticLane(api)) return;
-					for (const arg of node.arguments) {
-						const dynamic = findDynamicExpression(arg, staticBindings, resolveCall);
+			let resolver: ReturnType<typeof createApiResolver> | undefined;
+			let compilerAnalysis: CompilerStaticAnalysis | undefined;
+			let literalAnalysis: LiteralScopeAnalysis | undefined;
+			let program: AstNode | undefined;
+			return {
+				Program(node) {
+					program = node;
+					resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
+				},
+				CallExpression(node) {
+					const api = resolver?.resolve(node);
+					if (api === undefined || !isStaticLane(api) || program === undefined) return;
+					if ((api.kind === API.tw || api.kind === API.cx) && compilerAnalysis === undefined)
+						compilerAnalysis = compilerStaticAnalysisForProgram(program);
+					if (api.kind === API.style && literalAnalysis === undefined)
+						literalAnalysis = createLiteralScopeAnalysis(program);
+					const source = context.sourceCode?.text ?? "";
+					for (const argument of node.arguments) {
+						if (
+							isCompilerStaticArgument({
+							api,
+							call: node,
+							argument,
+							compilerAnalysis,
+							literalAnalysis,
+							source,
+						})
+						)
+							continue;
+						const dynamic = findDynamicExpression({
+							root: argument,
+							staticBindings:
+								api.kind === API.style && literalAnalysis !== undefined
+									? staticBindingsForCall(literalAnalysis, node, resolver.staticBindings)
+									: EMPTY_STATIC_BINDINGS,
+							resolveCall: resolver.resolve,
+							inspectConditionalTests: true,
+						});
 						if (dynamic === undefined) continue;
 						context.report({
 							node: dynamic.node,
@@ -1600,23 +1692,42 @@ const rules: Record<string, RuleDefinition> = {
 						});
 					}
 				},
-				{ useLiteralScopes: true },
-			);
+			};
 		},
 	},
 	"no-multiple-conditionals": {
 		create(context) {
-			return withResolver(context, (node, api) => {
-				if (!isStaticLane(api)) return;
-				const count = countDynamicConditionals(node.arguments);
-				if (count <= 1) return;
-				context.report({
-					node,
-					message:
-						"pandwind: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
-					data: { n: count, name: callName(api) },
-				});
-			});
+			let resolver: ReturnType<typeof createApiResolver> | undefined;
+			let compilerAnalysis: CompilerStaticAnalysis | undefined;
+			let program: AstNode | undefined;
+			return {
+				Program(node) {
+					program = node;
+					resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
+				},
+				CallExpression(node) {
+					const api = resolver?.resolve(node);
+					if (
+						api?.kind !== API.cx ||
+						node.callee?.type !== NodeKind.Identifier ||
+						program === undefined
+					)
+						return;
+					compilerAnalysis ??= compilerStaticAnalysisForProgram(program);
+					const count = countPartialCxArguments({
+						argumentsList: node.arguments,
+						compilerAnalysis,
+						source: context.sourceCode?.text ?? "",
+					});
+					if (count <= 1) return;
+					context.report({
+						node,
+						message:
+							"pandwind: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
+						data: { n: count, name: callName(api) },
+					});
+				},
+			};
 		},
 	},
 	"migration-skip-reason": {

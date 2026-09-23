@@ -106,36 +106,46 @@ const topLevelCandidates = (program: OxcNode): Map<string, Candidate> => {
 	return candidates;
 };
 
-const isBinding = (node: OxcNode | null | undefined, name: string): boolean =>
-	(node as { type?: string; name?: string } | undefined)?.type === NodeKind.Identifier &&
-	(node as { name?: string }).name === name;
-
-const risky = (program: OxcNode, name: string, own: ReadonlySet<OxcNode>): boolean => {
-	for (const node of nodes(program)) {
+const collectRiskyBindings = (options: {
+	readonly program: OxcNode;
+	readonly candidates: ReadonlyMap<string, Candidate>;
+}): ReadonlySet<string> => {
+	const own = new Set([...options.candidates.values()].map(({ decl }) => decl));
+	const names = new Set<string>();
+	const addBindingName = (binding: OxcNode | null | undefined): void => {
+		if (binding?.type !== NodeKind.Identifier) return;
+		const name = (binding as { name?: string }).name;
+		if (name !== undefined) names.add(name);
+	};
+	for (const node of nodes(options.program)) {
 		switch (node.type) {
-			case NodeKind.VariableDeclarator:
-				if (!own.has(node) && isBinding((node as { id?: OxcNode }).id, name)) return true;
+			case NodeKind.VariableDeclarator: {
+				if (!own.has(node)) addBindingName((node as { id?: OxcNode }).id);
 				break;
+			}
 			case NodeKind.FunctionDeclaration:
 			case NodeKind.ClassDeclaration:
-				if (isBinding((node as { id?: OxcNode }).id, name)) return true;
+				addBindingName((node as { id?: OxcNode }).id);
 				break;
-			case NodeKind.ImportSpecifier:
-				if (isBinding((node as { local?: OxcNode }).local, name)) return true;
+			case NodeKind.ImportSpecifier: {
+				addBindingName((node as { local?: OxcNode }).local);
 				break;
-			case NodeKind.CatchClause:
-				if (isBinding((node as { param?: OxcNode }).param, name)) return true;
+			}
+			case NodeKind.CatchClause: {
+				addBindingName((node as { param?: OxcNode }).param);
 				break;
+			}
 			case NodeKind.AssignmentExpression: {
 				let target = (node as { left?: OxcNode }).left;
 				while (target?.type === NodeKind.MemberExpression)
 					target = (target as { object?: OxcNode }).object;
-				if (isBinding(target, name)) return true;
+				addBindingName(target);
 				break;
 			}
-			case NodeKind.UpdateExpression:
-				if (isBinding((node as { argument?: OxcNode }).argument, name)) return true;
+			case NodeKind.UpdateExpression: {
+				addBindingName((node as { argument?: OxcNode }).argument);
 				break;
+			}
 		}
 		if (
 			node.type === NodeKind.FunctionDeclaration ||
@@ -143,20 +153,22 @@ const risky = (program: OxcNode, name: string, own: ReadonlySet<OxcNode>): boole
 			node.type === NodeKind.ArrowFunctionExpression
 		) {
 			for (const parameter of (node as { params?: OxcNode[] }).params ?? []) {
-				if ([...nodes(parameter)].some((inner) => isBinding(inner, name))) return true;
+				for (const inner of nodes(parameter)) addBindingName(inner);
 			}
 		}
 	}
-	return false;
+	return names;
 };
 
 export function collectModuleConstants(program: OxcNode, fold?: CxFoldContext): ConstantScope {
 	// Resolve in source order so `const B = A + "-x"` can use an earlier A.
 	// Forward references, cycles, shadowing, and writes remain dynamic.
 	const scope: ConstantScope = new Map();
-	for (const [name, candidate] of topLevelCandidates(program)) {
+	const candidates = topLevelCandidates(program);
+	const riskyBindings = collectRiskyBindings({ program, candidates });
+	for (const [name, candidate] of candidates) {
 		const value = evalStaticCx(candidate.init, fold, scope);
-		if (value === NOT_STATIC || risky(program, name, new Set([candidate.decl]))) continue;
+		if (value === NOT_STATIC || riskyBindings.has(name)) continue;
 		scope.set(name, {
 			value,
 			declStart: (candidate.decl as { start?: number }).start ?? Number.POSITIVE_INFINITY,

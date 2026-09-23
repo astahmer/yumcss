@@ -16,6 +16,7 @@ import {
 	renderFoldSkeleton,
 	type ConstantScope,
 	type CxFoldContext,
+	type FoldSkeleton,
 	type KnownConstant,
 	type StaticEval,
 } from "./cx-static-evaluator.ts";
@@ -45,6 +46,21 @@ export const defaultCxCompilerPorts: CxCompilerPorts = {
 	buildSkeleton: buildFoldSkeleton,
 	renderSkeleton: renderFoldSkeleton,
 	mergeConstants: mergeImportedConstants,
+};
+
+const buildPartialFoldSkeleton = (options: {
+	readonly node: Expression;
+	readonly constants: ConstantScope;
+	readonly code: string;
+	readonly buildSkeleton?: CxCompilerPorts["buildSkeleton"];
+}): FoldSkeleton | null => {
+	const type = (options.node as { type?: string }).type;
+	if (type !== NodeKind.ConditionalExpression && type !== NodeKind.LogicalExpression) return null;
+	return (options.buildSkeleton ?? buildFoldSkeleton)(
+		options.node,
+		options.constants,
+		options.code,
+	);
 };
 
 export interface CxCompilerOptions {
@@ -272,7 +288,7 @@ export class CxCallRewriter {
 		walkCalls(program, (call) => {
 			if (call.callee?.type !== NodeKind.Identifier || !cxNames.has(call.callee.name ?? "")) return;
 			const inputs: StaticEval[] = [];
-			let conditional: { index: number; node: Expression } | undefined;
+			let conditional: { index: number; skeleton: FoldSkeleton } | undefined;
 			for (let index = 0; index < call.arguments.length; index++) {
 				const value = this.ports.evaluate(call.arguments[index], fold, constants);
 				if (value !== CX_NOT_STATIC) {
@@ -280,13 +296,17 @@ export class CxCallRewriter {
 					continue;
 				}
 				const argument = call.arguments[index]!;
-				const type = (argument as { type?: string }).type;
-				if (
-					partial &&
-					conditional === undefined &&
-					(type === "ConditionalExpression" || type === "LogicalExpression")
-				) {
-					conditional = { index, node: argument };
+				const skeleton =
+					partial && conditional === undefined
+						? buildPartialFoldSkeleton({
+								node: argument,
+								constants,
+								code,
+								buildSkeleton: this.ports.buildSkeleton,
+							})
+						: null;
+				if (skeleton !== null) {
+					conditional = { index, skeleton };
 					inputs.push(CX_NOT_STATIC);
 					continue;
 				}
@@ -306,9 +326,12 @@ export class CxCallRewriter {
 			} else {
 				// The emitted branches are each merged with the static siblings;
 				// only the original condition remains in application code.
-				const skeleton = this.ports.buildSkeleton(conditional.node, constants, code);
-				if (skeleton !== null)
-					replacement = this.ports.renderSkeleton(skeleton, conditional.index, inputs, merge);
+				replacement = this.ports.renderSkeleton(
+					conditional.skeleton,
+					conditional.index,
+					inputs,
+					merge,
+				);
 			}
 			if (replacement !== null) edits.push({ start: call.start, end: call.end, text: replacement });
 			else {

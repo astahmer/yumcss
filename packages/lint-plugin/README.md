@@ -53,8 +53,8 @@ settings. Every rule that resolves style calls uses this mapping:
 | Rule                          | Default intent                                                             | Fix                                   |
 | ----------------------------- | -------------------------------------------------------------------------- | ------------------------------------- |
 | `no-spreads`                  | Finds spread arguments that cannot be statically folded.                   | —                                     |
-| `no-dynamic-values`           | Finds dynamic values in static extraction lanes.                           | —                                     |
-| `no-multiple-conditionals`    | Finds calls with more than one partially foldable conditional.             | —                                     |
+| `no-dynamic-values`           | Uses the compiler evaluators to find values that stay on the runtime path. | —                   |
+| `no-multiple-conditionals`    | Finds `cx()` calls with multiple compiler-foldable conditional arguments.  | —                   |
 | `no-dollar-raw`               | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                                     |
 | `prefer-typed-css-values`     | Finds values already covered by Pandwind's CSS value types.                | Safe: unwraps static supported values |
 | `no-arbitrary-values`         | Finds arbitrary class values such as `w-[13px]`.                           | —                                     |
@@ -148,11 +148,13 @@ The lint plugin itself stays synchronous and does not load arbitrary packages.
 
 ## Wiring
 
-Build Pandwind and then the TypeScript source before running Oxlint. The lint
-rule reuses Pandwind's published carrier analyzer, so the workspace build
-order matters; installed consumers receive it through the `pandwind` runtime
-dependency. The generated JavaScript file is the runtime plugin entry because
-Oxlint loads JavaScript plugins:
+Build Pandwind and then the TypeScript source before running Oxlint. The rules
+reuse Pandwind's published carrier analyzer, Tw literal evaluator, and `cx()`
+partial-fold analysis, so the workspace build order matters. Lint tests run
+the same static, dynamic, and conditional inputs through the compiler inliners
+and the corresponding rules. Installed consumers receive the compiler
+analysis through the `pandwind` runtime dependency. The generated JavaScript
+file is the runtime plugin entry because Oxlint loads JavaScript plugins:
 
 ```json
 {
