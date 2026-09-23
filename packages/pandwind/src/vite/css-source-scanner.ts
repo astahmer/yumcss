@@ -328,7 +328,12 @@ export class CssSourceScannerService implements CssSourceScanner {
 
 	private parseProgram(code: string, id: string): OxcNode {
 		const cached = this.programs.get(id);
-		if (cached?.source === code) return cached.program;
+		if (cached?.source === code) {
+			this.programs.delete(id);
+			this.programs.set(id, cached);
+			return cached.program;
+		}
+		if (cached !== undefined) this.programs.delete(id);
 		const program = this.sourceScanner.parse({
 			file: id,
 			source: code,

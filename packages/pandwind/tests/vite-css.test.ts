@@ -329,6 +329,31 @@ test("shares one parsed document across CSS inspection operations", () => {
 	expect(parseCount).toBe(2);
 });
 
+test("retains recently used parsed programs when the bounded cache grows", () => {
+	let parseCount = 0;
+	const sharedScanner = {
+		...SOURCE_SCANNER_SERVICE,
+		parse: (document: Parameters<typeof SOURCE_SCANNER_SERVICE.parse>[0]) => {
+			parseCount++;
+			return SOURCE_SCANNER_SERVICE.parse(document);
+		},
+	};
+	const scanner = new CssSourceScannerService([], sharedScanner);
+	const parse = (index: number): void => {
+		scanner.parse(`const value = ${index};`, `src/module-${index}.ts`);
+	};
+
+	for (let index = 0; index < 256; index++) parse(index);
+	parse(0);
+	parse(256);
+	const parseCountAfterGrowth = parseCount;
+	parse(0);
+	parse(1);
+
+	expect(parseCountAfterGrowth).toBe(257);
+	expect(parseCount).toBe(258);
+});
+
 test("css extraction façade accepts substituted policy ports", () => {
 	const scanner: CssSourceScanner = {
 		matches: () => true,
