@@ -91,6 +91,13 @@ export interface SourceBindingIndex {
 	hasInlineAttributeUse(offset: number): boolean;
 }
 
+/** Project binding resolution often revisits the same barrel once per consumer file. */
+const SOURCE_BINDING_INDEX_CACHE_LIMIT = 512;
+const sourceBindingIndexCache = new Map<
+	string,
+	{ readonly source: string; readonly index: SourceBindingIndex }
+>();
+
 interface AstNode extends OxcNode {
 	readonly start?: number;
 	readonly end?: number;
@@ -578,16 +585,30 @@ export class SourceBindings {
 	}
 
 	static fromDocument(document: SourceDocument): SourceBindingIndex {
+		const language = document.language ?? SOURCE_SCANNER_SERVICE.languageForFile(document.file);
+		const cacheKey = `${document.file}\0${language}`;
+		const cached = sourceBindingIndexCache.get(cacheKey);
+		if (cached?.source === document.source) {
+			sourceBindingIndexCache.delete(cacheKey);
+			sourceBindingIndexCache.set(cacheKey, cached);
+			return cached.index;
+		}
+		sourceBindingIndexCache.delete(cacheKey);
+		let index: SourceBindingIndex;
 		try {
-			return SourceBindings.fromParseResult(recoverableParse(document));
+			index = SourceBindings.fromParseResult(recoverableParse({ ...document, language }));
 		} catch {
 			const embedded = embeddedPrograms(document);
 			if (embedded.length === 0) throw new Error(`unable to parse ${document.file}`);
-			return SourceBindings.fromPrograms(
+			index = SourceBindings.fromPrograms(
 				embedded.map(({ program }) => program),
 				embedded.flatMap(({ hostUses }) => hostUses),
 			);
 		}
+		if (sourceBindingIndexCache.size >= SOURCE_BINDING_INDEX_CACHE_LIMIT)
+			sourceBindingIndexCache.delete(sourceBindingIndexCache.keys().next().value!);
+		sourceBindingIndexCache.set(cacheKey, { source: document.source, index });
+		return index;
 	}
 
 	static parse(document: SourceDocument): SourceBindingIndex {

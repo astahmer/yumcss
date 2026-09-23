@@ -4,9 +4,23 @@ import {
 	createSourceProjectBindingIndex,
 	type SourceProjectBindingLoader,
 } from "../src/source-project.ts";
-import { SourceBindingKind } from "../src/source-bindings.ts";
+import { SourceBindingKind, SourceBindings } from "../src/source-bindings.ts";
 
 describe("source project bindings", () => {
+	test("reuses unchanged binding indexes and replaces them when source changes", () => {
+		const document = {
+			file: "/virtual/binding-cache.ts",
+			source: 'import { css } from "@emotion/css"; css({ color: "red" });',
+		};
+		const first = SourceBindings.fromDocument(document);
+		expect(SourceBindings.fromDocument(document)).toBe(first);
+		const changedDocument = { ...document, source: document.source.replace("red", "blue") };
+		const changed = SourceBindings.fromDocument(changedDocument);
+
+		expect(changed).not.toBe(first);
+		expect(SourceBindings.fromDocument(changedDocument)).toBe(changed);
+	});
+
 	test("resolves aliased imports through multiple relative re-export barrels", () => {
 		const files = new Map([
 			[

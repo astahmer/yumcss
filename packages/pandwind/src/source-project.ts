@@ -40,6 +40,27 @@ function readIndex(
 	}
 }
 
+/** Shared barrel indexes should build this lookup only once across consumer files. */
+const reexportsByIndex = new WeakMap<
+	SourceBindingIndex,
+	ReadonlyMap<string, SourceBindingIndex["reexports"][number]>
+>();
+
+function reexportFor(
+	index: SourceBindingIndex,
+	exportedName: string,
+): SourceBindingIndex["reexports"][number] | undefined {
+	let byName = reexportsByIndex.get(index);
+	if (byName === undefined) {
+		const next = new Map<string, SourceBindingIndex["reexports"][number]>();
+		for (const reexport of index.reexports)
+			if (!next.has(reexport.exportedName)) next.set(reexport.exportedName, reexport);
+		reexportsByIndex.set(index, next);
+		byName = next;
+	}
+	return byName.get(exportedName);
+}
+
 function resolveExport(
 	file: string,
 	exportedName: string,
@@ -51,7 +72,7 @@ function resolveExport(
 	if (visited.has(visitKey)) return undefined;
 	const index = readIndex(file, loader, cache);
 	if (index === undefined) return undefined;
-	const reexport = index.reexports.find((entry) => entry.exportedName === exportedName);
+	const reexport = reexportFor(index, exportedName);
 	if (reexport !== undefined) {
 		const resolvedFile = loader.resolve(file, reexport.source);
 		if (resolvedFile === undefined)
