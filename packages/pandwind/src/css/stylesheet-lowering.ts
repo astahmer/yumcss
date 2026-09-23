@@ -28,6 +28,18 @@ export const createConditionsBucket = (
 	...partial,
 });
 
+export const ensureTokenRootSelector = (
+	conditions: Pick<ParsedConditions, "parentSelectors" | "selfSelectors" | "selectorLists">,
+): void => {
+	if (
+		conditions.parentSelectors.length ||
+		conditions.selfSelectors.length ||
+		conditions.selectorLists.length
+	)
+		return;
+	conditions.parentSelectors.push(":root ");
+};
+
 export const isSelfSelector = (condition: string): boolean => condition.charCodeAt(0) === 38;
 const scopedClassName = (className: string, selectors: readonly string[]): string =>
 	selectors.some((selector) => selector.includes(":where(")) && className.startsWith(".")

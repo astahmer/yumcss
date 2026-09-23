@@ -64,6 +64,27 @@ test("emits flat cssVariables through preset conditions and registrations", () =
 	);
 });
 
+test("media-conditioned tokens and CSS variables stay scoped to the root", () => {
+	const preset = {
+		conditions: { _osDark: "@media (prefers-color-scheme: dark)" },
+		properties: { $all: true },
+		strict: true,
+		tokens: { colors: { surface: { base: "white", _osDark: "black" } } },
+		tokenVariables: { colors: { surface: "colors-surface" } },
+		cssVariables: { accent: { base: "red", _osDark: "blue" } },
+	} as never;
+	const options = { tokenVariableNames: "authored" as const };
+	const build = createStylesheet(preset, options).gen.tokens();
+	const runtime = createRuntimeStylesheet(preset, options).gen.tokens();
+	const osDark = "@media (prefers-color-scheme: dark){:root {--colors-surface: black;}}";
+	const customProperty = "@media (prefers-color-scheme: dark){:root {--accent: blue;}}";
+
+	expect(build).toContain(osDark);
+	expect(runtime).toContain(osDark);
+	expect(build).toContain(customProperty);
+	expect(runtime).toContain(customProperty);
+});
+
 test("authored token names are opt-in and collisions fail closed", () => {
 	const preset = {
 		conditions: {},

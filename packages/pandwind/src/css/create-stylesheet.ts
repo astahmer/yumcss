@@ -22,7 +22,7 @@ import {
 	assertColorPaletteConfigured,
 	assertColorPaletteResolved,
 } from "./color-palette-validation.ts";
-import { isSelfSelector } from "./stylesheet-lowering.ts";
+import { ensureTokenRootSelector, isSelfSelector } from "./stylesheet-lowering.ts";
 import { decorateCascadeRules, wrapCascadeLayer } from "./cascade.ts";
 import {
 	defaultAtomicPathDecoder,
@@ -210,6 +210,7 @@ export const createStylesheet = (
 					resolvedList.forEach((selector) => {
 						conditionPolicy.parse(selector, conditions);
 					});
+					ensureTokenRootSelector(conditions);
 
 					const priorities = resolvedList.map((part) =>
 						getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
@@ -248,6 +249,7 @@ export const createStylesheet = (
 			parentSelectors: resolvedList.length ? [] : [":root "],
 		});
 		resolvedList.forEach((selector) => conditionPolicy.parse(selector, conditions));
+		ensureTokenRootSelector(conditions);
 		const priorities = resolvedList.map((part) =>
 			getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
 		);

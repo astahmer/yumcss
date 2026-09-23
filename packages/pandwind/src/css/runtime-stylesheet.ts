@@ -31,6 +31,7 @@ import { normalizeCssValue } from "./value-normalization.ts";
 import {
 	createConditionsBucket,
 	decodeAtomicPath,
+	ensureTokenRootSelector,
 	genCSSRule,
 	isSelfSelector,
 	parseCondition,
@@ -130,6 +131,7 @@ export const createRuntimeStylesheet = (
 					resolvedList.forEach((selector) => {
 						parseCondition(selector, conditions);
 					});
+					ensureTokenRootSelector(conditions);
 
 					const priorities = resolvedList.map((part) =>
 						getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
@@ -169,6 +171,7 @@ export const createRuntimeStylesheet = (
 			parentSelectors: resolvedList.length ? [] : [":root "],
 		});
 		resolvedList.forEach((selector) => parseCondition(selector, conditions));
+		ensureTokenRootSelector(conditions);
 		const priorities = resolvedList.map((part) =>
 			getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
 		);
