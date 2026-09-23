@@ -191,19 +191,28 @@ export function createCrossModuleConstResolver(
 	const sourceReader = options.sourceReader ?? new NodeModuleSourceReader();
 	const pathResolver = options.pathResolver ?? new NodeModulePathResolver();
 
+	const cacheAnalysis = (absPath: string, entry: CacheEntry): void => {
+		cache.delete(absPath);
+		if (cache.size >= cacheLimit) cache.delete(cache.keys().next().value!);
+		cache.set(absPath, entry);
+	};
+
 	const analyze = (absPath: string): ModuleExportAnalysis | null => {
 		try {
 			const mtimeMs = sourceReader.mtime(absPath);
 			const cached = cache.get(absPath);
-			if (cached !== undefined && cached.mtimeMs === mtimeMs) return cached.analysis;
+			if (cached !== undefined && cached.mtimeMs === mtimeMs) {
+				cache.delete(absPath);
+				cache.set(absPath, cached);
+				return cached.analysis;
+			}
+			if (cached !== undefined) cache.delete(absPath);
 			const code = sourceReader.read(absPath);
 			const analysis = analyzeModuleExports(parseProgram(code, absPath));
-			if (cache.size >= cacheLimit) cache.clear();
-			cache.set(absPath, { mtimeMs, analysis });
+			cacheAnalysis(absPath, { mtimeMs, analysis });
 			return analysis;
 		} catch {
-			if (cache.size >= cacheLimit) cache.clear();
-			cache.set(absPath, { mtimeMs: -1, analysis: null });
+			cacheAnalysis(absPath, { mtimeMs: -1, analysis: null });
 			return null;
 		}
 	};

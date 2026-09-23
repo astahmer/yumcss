@@ -43,4 +43,41 @@ describe("cross-module resolver ports", () => {
 			declStart: 0,
 		});
 	});
+
+	test("keeps recently used modules through large cache growth", () => {
+		const modules = new Map<string, string>();
+		const reads = new Map<string, number>();
+		const reader: ModuleSourceReader = {
+			read: (path) => {
+				reads.set(path, (reads.get(path) ?? 0) + 1);
+				return modules.get(path) ?? "";
+			},
+			mtime: () => 1,
+		};
+		const paths: ModulePathResolver = {
+			resolve: (source) => (source.startsWith("./module-") ? `${source.slice(2)}.ts` : undefined),
+		};
+		const resolver = createCrossModuleConstResolver({
+			sourceReader: reader,
+			pathResolver: paths,
+		});
+		const importedScope = (index: number) => {
+			const path = `module-${index}.ts`;
+			modules.set(path, `export const VALUE = "value-${index}";`);
+			const document = {
+				file: "app.ts",
+				source: `import { VALUE } from "./module-${index}"; export const cls = VALUE;`,
+			};
+			return resolver.importedScope("app.ts", parseSourceProgram(document).program as never);
+		};
+
+		for (let index = 0; index < 2048; index++) importedScope(index);
+		importedScope(0);
+		importedScope(2048);
+		importedScope(0);
+
+		expect(reads.get("module-0.ts")).toBe(1);
+		importedScope(1);
+		expect(reads.get("module-1.ts")).toBe(2);
+	});
 });
