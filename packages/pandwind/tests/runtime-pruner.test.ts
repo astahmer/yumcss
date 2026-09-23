@@ -1,8 +1,9 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
 import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
 import { createInlineTwPluginCore } from "../src/vite/index.ts";
 import { renderCssRuntimeModule } from "../src/css/runtime-codegen.ts";
+import { SOURCE_SCANNER_SERVICE } from "../src/source-scanner.ts";
 import {
 	createRuntimePruningTransform,
 	explainRuntimePruning,
@@ -11,6 +12,17 @@ import {
 const ID = "/project/src/styles.ts";
 
 describe("runtime pruning", () => {
+	test("skips parsing modules that cannot import a CSS factory", () => {
+		const pruner = createRuntimePruningTransform();
+		const parse = vi.spyOn(SOURCE_SCANNER_SERVICE, "parse");
+		try {
+			expect(pruner.transform("export const value = 1;", ID)).toBeNull();
+			expect(parse).not.toHaveBeenCalled();
+		} finally {
+			parse.mockRestore();
+		}
+	});
+
 	test("explains projected methods, keys, and token entries", () => {
 		const explanations = explainRuntimePruning({
 			code:

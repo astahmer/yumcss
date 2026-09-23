@@ -20,7 +20,11 @@ import type { StyleObject, TokenVariableNames } from "../types/typings.ts";
 import { NodeKind } from "../ast-node-kind.ts";
 import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
 import { findFirstThatWorksBindings } from "./css-source-scanner.ts";
-import { findCssFactoryBindings } from "./css-factory-source.ts";
+import {
+	findCssFactoryBindings,
+	findCssFactoryBindingsInProgram,
+	mayContainCssFactoryImport,
+} from "./css-factory-source.ts";
 import { createCssLiteralScopeResolver } from "./css-literal-scope.ts";
 import {
 	analyzeCssInlineArguments,
@@ -709,10 +713,15 @@ const literalGroup = (
 };
 
 export const markCssFactoryCallsPure = (code: string, id: string): string => {
-	const bindings = findCssFactoryBindings(code, id);
+	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssFactoryImport(code)) return code;
+	const program = SOURCE_SCANNER_SERVICE.parse({
+		file: id,
+		source: code,
+		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+	}).program as unknown as OxcNode;
+	const bindings = findCssFactoryBindingsInProgram(program);
 	if (bindings.length === 0) return code;
 	const factoryNames = new Set(bindings.map((binding) => binding.local));
-	const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program;
 	const starts: number[] = [];
 	walk(program, (node) => {
 		if (node.type !== NodeKind.CallExpression) return;

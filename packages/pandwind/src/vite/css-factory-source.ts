@@ -6,6 +6,16 @@ import {
 	type CssFactoryKind as CssFactoryKindType,
 } from "../css/factory-metadata.ts";
 
+const CSS_FACTORY_IMPORT_NAMES = [
+	"createCss",
+	"createGeneratedCss",
+	"createUnsafeCss",
+	"createDesignCss",
+] as const;
+
+export const mayContainCssFactoryImport = (code: string): boolean =>
+	CSS_FACTORY_IMPORT_NAMES.some((name) => code.includes(name));
+
 interface ImportNode extends OxcNode {
 	source?: { value?: string };
 	specifiers?: OxcSpecifier[];
@@ -68,7 +78,7 @@ export const findCssFactoryBindingsInProgram = (program: OxcNode): readonly CssF
 };
 
 export const findCssFactoryBindings = (code: string, id: string): readonly CssFactoryBinding[] => {
-	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return [];
+	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssFactoryImport(code)) return [];
 	const program = SOURCE_SCANNER_SERVICE.parse({
 		file: id,
 		source: code,

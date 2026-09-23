@@ -14,6 +14,7 @@ import {
 } from "../css/runtime-codegen.ts";
 import { identifierName, memberName as genericMemberName } from "./ast-walk.ts";
 import { markCssFactoryCallsPure } from "./css-call-rewriter.ts";
+import { mayContainCssFactoryImport } from "./css-factory-source.ts";
 import type { CssPreset } from "./css-extract.ts";
 
 const VIRTUAL_PREFIX = "pandwind:runtime/css";
@@ -922,6 +923,7 @@ export const createRuntimePruningTransform = (
 	return {
 		transform(code, id) {
 			if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return null;
+			if (!mayContainCssFactoryImport(code)) return null;
 			const pureCode = markCssFactoryCallsPure(code, id);
 			const pureChanged = pureCode !== code;
 			code = pureCode;
