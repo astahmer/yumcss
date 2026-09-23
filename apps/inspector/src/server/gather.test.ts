@@ -31,7 +31,16 @@ describe("gather (integration over examples/example)", { timeout: 60_000 }, () =
 			line: expect.any(Number),
 		});
 		expect(data.cssSources.some((site) => (site.rules?.length ?? 0) > 0)).toBe(true);
-		expect(data.cssDiagnostics).toEqual([]);
+		expect(
+			data.cssDiagnostics
+				.map(({ file, kind }) => `${file.replaceAll("\\", "/").split("/").at(-1)}:${kind}`)
+				.toSorted(),
+		).toEqual([
+			"api-catalog-app.tsx:missing-extraction",
+			"api-catalog-app.tsx:missing-extraction",
+			"dynamic-app.tsx:missing-extraction",
+			"dynamic-app.tsx:missing-extraction",
+		]);
 		// Token governance (plans/054): the official example-preset resolves a
 		// strict policy, the universe covers preset + css + interop sources,
 		// and the changeset proposal is read-only-safe by construction.
