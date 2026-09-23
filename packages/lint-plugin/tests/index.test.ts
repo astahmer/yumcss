@@ -7,6 +7,7 @@ type AstNode = { type: string; [key: string]: any };
 type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
 type RuleContext = {
 	readonly options?: readonly unknown[];
+	readonly settings?: Readonly<Record<string, unknown>>;
 	readonly sourceCode?: {
 		readonly text: string;
 		readonly getAllComments?: () => readonly {
@@ -63,6 +64,7 @@ const runRule = (
 	ruleName: string,
 	code: string | AstNode,
 	options: readonly unknown[] = [],
+	settings: Readonly<Record<string, unknown>> = {},
 ): Report[] => {
 	const reports: Report[] = [];
 	const parsed =
@@ -71,6 +73,7 @@ const runRule = (
 			: undefined;
 	const context = {
 		options,
+		settings,
 		sourceCode:
 			typeof code === "string"
 				? {
@@ -213,6 +216,26 @@ css.class(...items);
 rootCss(...items);`,
 		);
 		expect(reports).toEqual([]);
+	});
+
+	test("resolves configured CSS modules for extraction and JSX rules", () => {
+		const settings = {
+			"pandwind-extraction": {
+				cssModules: [{ source: "../pandwind/css", exports: ["css"] }],
+			},
+		};
+		const code = `import { css } from "../pandwind/css";
+const className = css.class({ color: theme.colors.brand });
+const element = <div {...css.props({ color: "red" })} className="custom" />;`;
+
+		const unconfiguredDynamicReports = runRule("no-dynamic-values", code);
+		const dynamicReports = runRule("no-dynamic-values", code, [], settings);
+		const propReports = runRule("no-conflicting-style-props", code, [], settings);
+
+		expect(unconfiguredDynamicReports).toEqual([]);
+		expect(dynamicReports).toHaveLength(1);
+		expect(dynamicReports[0]?.data).toEqual({ bad: "member expression value", name: "css.class" });
+		expect(propReports.map(({ data }) => data.prop)).toEqual(["className"]);
 	});
 
 	test("limits arbitrary-value checks to class-string lanes", () => {

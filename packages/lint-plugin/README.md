@@ -34,6 +34,20 @@ It does not treat an unrelated local function named `cx`, `tw`, or `css` as a
 Pandwind API. Project configuration and ecosystem semantics remain owned by
 codemod adapters and official loaders.
 
+For application-local modules that re-export a preset-bound `createCss`
+instance, provide the exact import source and exported instance once in plugin
+settings. Every rule that resolves style calls uses this mapping:
+
+```json
+{
+	"settings": {
+		"pandwind-extraction": {
+			"cssModules": [{ "source": "../app/css", "exports": ["css"] }]
+		}
+	}
+}
+```
+
 ## Rules
 
 | Rule                          | Default intent                                                             | Fix                                    |
@@ -61,9 +75,8 @@ every leaf is `"auto"`; mixed responsive values are reported but left
 report-only because their other values depend on the project's preset. The
 rule follows module-scope static objects spread into a resolved CSS call.
 Interleaved, computed, spread-containing, or comment-sensitive `$raw` objects
-stay report-only. For a local module that re-exports a `createCss` instance,
-configure the exact import source and export name so the rule can resolve it
-without guessing:
+stay report-only. A per-rule option remains available for a narrow override;
+shared application mappings should use the plugin setting above:
 
 ```json
 {

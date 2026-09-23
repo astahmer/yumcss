@@ -802,7 +802,7 @@ const carrierTarget = (
 };
 
 const reportCarrierResiduals = (program: AstNode, context: RuleContext): void => {
-	const resolver = createApiResolver();
+	const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
 	resolver.scan(program);
 	const literalAnalysis = createLiteralScopeAnalysis(program);
 	const fallbackNames = firstThatWorksImports(program);
@@ -891,8 +891,8 @@ const migrationMarkers = (context: RuleContext): MigrationMarker[] => {
 const hasMigrationReason = (marker: MigrationMarker): boolean =>
 	marker.reason !== "" && marker.reason !== "()";
 
-const migrationAnalysis = (program: AstNode): CallAnalysis[] => {
-	const resolver = createApiResolver();
+const migrationAnalysis = (program: AstNode, context: RuleContext): CallAnalysis[] => {
+	const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
 	resolver.scan(program);
 	const literalAnalysis = createLiteralScopeAnalysis(program);
 	const calls: CallAnalysis[] = [];
@@ -996,9 +996,8 @@ type RawAutoFixPlan = {
 	readonly removals: readonly (readonly [number, number])[];
 };
 
-const configuredCssModuleExports = (options: readonly unknown[] | undefined): CssModuleExports => {
+const configuredCssModuleExports = (option: unknown): CssModuleExports => {
 	const configured = new Map<string, ReadonlySet<string>>();
-	const option = options?.[0];
 	if (
 		typeof option !== "object" ||
 		option === null ||
@@ -1025,6 +1024,13 @@ const configuredCssModuleExports = (options: readonly unknown[] | undefined): Cs
 		if (exports.size > 0) configured.set(cssModule.source, exports);
 	}
 	return configured;
+};
+
+const configuredCssModuleExportsForContext = (context: RuleContext): CssModuleExports => {
+	const settings = context.settings?.["pandwind-extraction"];
+	const settingsExports = configuredCssModuleExports(settings);
+	if (settingsExports.size > 0) return settingsExports;
+	return configuredCssModuleExports(context.options?.[0]);
 };
 
 const hasComment = (source: string): boolean => source.includes("/*") || source.includes("//");
@@ -1224,7 +1230,7 @@ const rules: Record<string, RuleDefinition> = {
 		create(context) {
 			return {
 				Program(node) {
-					const resolver = createApiResolver();
+					const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
 					resolver.scan(node);
 					const literalAnalysis = createLiteralScopeAnalysis(node);
 					walkWithAncestors(node, (current) => {
@@ -1247,7 +1253,7 @@ const rules: Record<string, RuleDefinition> = {
 	},
 	"no-dollar-raw": {
 		create(context) {
-			return withResolver((node, api) => {
+			return withResolver(context, (node, api) => {
 				if (!isTokenLane(api)) return;
 				for (const arg of node.arguments) {
 					walkNode(arg, (inner) => {
@@ -1288,7 +1294,7 @@ const rules: Record<string, RuleDefinition> = {
 			],
 		},
 		create(context) {
-			const resolver = createApiResolver(configuredCssModuleExports(context.options));
+			const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
 			return {
 				Program(program) {
 					const source = context.sourceCode?.text;
@@ -1411,7 +1417,7 @@ const rules: Record<string, RuleDefinition> = {
 	},
 	"no-arbitrary-values": {
 		create(context) {
-			return withResolver((node, api) => {
+			return withResolver(context, (node, api) => {
 				if (!isClassLane(api)) return;
 				for (const arg of node.arguments) {
 					walkNode(arg, (inner) => {
@@ -1436,7 +1442,7 @@ const rules: Record<string, RuleDefinition> = {
 		create(context) {
 			const governance = governancePolicy(context);
 			const configuredPolicy = governance === undefined ? tokenPolicy(context) : undefined;
-			return withResolver((node, api) => {
+			return withResolver(context, (node, api) => {
 				if (!isTokenLane(api)) return;
 				if (governance !== undefined) {
 					// Unresolved governance policy stays report-only (fail-open):
@@ -1490,7 +1496,7 @@ const rules: Record<string, RuleDefinition> = {
 	},
 	"no-spreads": {
 		create(context) {
-			return withResolver((node, api) => {
+			return withResolver(context, (node, api) => {
 				if (!isStaticLane(api)) return;
 				for (const arg of node.arguments) {
 					if (arg.type !== NodeKind.SpreadElement) continue;
@@ -1507,6 +1513,7 @@ const rules: Record<string, RuleDefinition> = {
 	"no-dynamic-values": {
 		create(context) {
 			return withResolver(
+				context,
 				(node, api, staticBindings, resolveCall) => {
 					if (!isStaticLane(api)) return;
 					for (const arg of node.arguments) {
@@ -1526,7 +1533,7 @@ const rules: Record<string, RuleDefinition> = {
 	},
 	"no-multiple-conditionals": {
 		create(context) {
-			return withResolver((node, api) => {
+			return withResolver(context, (node, api) => {
 				if (!isStaticLane(api)) return;
 				const count = countDynamicConditionals(node.arguments);
 				if (count <= 1) return;
@@ -1563,7 +1570,7 @@ const rules: Record<string, RuleDefinition> = {
 				Program(node) {
 					const source = context.sourceCode?.text ?? "";
 					const markers = migrationMarkers(context);
-					for (const call of migrationAnalysis(node)) {
+					for (const call of migrationAnalysis(node, context)) {
 						if (!isExtractionLane(call.api)) continue;
 						if (call.dynamic !== undefined) continue;
 						const marker = markerForAnyCall(markers, call.node, source);
@@ -1590,7 +1597,7 @@ const rules: Record<string, RuleDefinition> = {
 				Program(node) {
 					const source = context.sourceCode?.text ?? "";
 					const markers = migrationMarkers(context);
-					for (const call of migrationAnalysis(node)) {
+					for (const call of migrationAnalysis(node, context)) {
 						const dynamic = call.dynamic;
 						if (dynamic === undefined) continue;
 						if (markerForAnyCall(markers, call.node, source) !== undefined) continue;
@@ -1618,7 +1625,7 @@ const rules: Record<string, RuleDefinition> = {
 		create(context) {
 			return {
 				Program(node) {
-					const resolver = createApiResolver();
+					const resolver = createApiResolver(configuredCssModuleExportsForContext(context));
 					resolver.scan(node);
 					walkNode(node, (opening) => {
 						if (opening.type !== NodeKind.JSXOpeningElement) return;
