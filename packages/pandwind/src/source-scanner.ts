@@ -189,12 +189,32 @@ interface EmbeddedScriptSource {
 	readonly language: SourceLanguage;
 }
 
+const maskOutsideRanges = (source: string, ranges: readonly SourceRange[]): string => {
+	const characters = source.split("");
+	for (let index = 0; index < characters.length; index++) {
+		if (ranges.some((range) => index >= range.start && index < range.end)) continue;
+		if (characters[index] !== "\n" && characters[index] !== "\r") characters[index] = " ";
+	}
+	return characters.join("");
+};
+
+const languageForScriptRanges = (ranges: readonly { language: SourceLanguage }[]) =>
+	ranges.some((range) => range.language === "tsx" || range.language === "jsx")
+		? "tsx"
+		: ranges.some((range) => range.language === "typescript")
+			? "typescript"
+			: "javascript";
+
 const embeddedScriptSource = (document: SourceDocument): EmbeddedScriptSource | undefined => {
 	const language = document.language ?? sourceLanguageForFile(document.file);
-	if (language !== "vue") return undefined;
+	if (language !== "vue" && language !== "svelte") return undefined;
 	const blocks = [...document.source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/giu)];
 	if (blocks.length === 0) {
-		if (/<(?:template|style)\b/iu.test(document.source)) return undefined;
+		if (
+			(language === "vue" && /<(?:template|style)\b/iu.test(document.source)) ||
+			(language === "svelte" && /<[a-z][\w:.-]*(?:\s|\/?>)/iu.test(document.source))
+		)
+			return undefined;
 		return {
 			source: document.source,
 			language: scriptLanguageFromFile(document.file) ?? "typescript",
@@ -209,24 +229,40 @@ const embeddedScriptSource = (document: SourceDocument): EmbeddedScriptSource | 
 			language: scriptLanguageFromText(block[1] ?? ""),
 		};
 	});
-	const characters = document.source.split("");
-	for (let index = 0; index < characters.length; index++) {
-		if (ranges.some((range) => index >= range.start && index < range.end)) continue;
-		if (characters[index] !== "\n" && characters[index] !== "\r") characters[index] = " ";
+	return {
+		source: maskOutsideRanges(document.source, ranges),
+		language: languageForScriptRanges(ranges),
+	};
+};
+
+const embeddedAstroSource = (document: SourceDocument): EmbeddedScriptSource | undefined => {
+	const frontmatter = /^---[ \t]*\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/u.exec(document.source);
+	if (frontmatter === null) return undefined;
+	const content = frontmatter[1] ?? "";
+	const contentStart = (frontmatter.index ?? 0) + frontmatter[0].indexOf("\n") + 1;
+	const script = content.split("");
+	const excluded = lexicalExcludedRanges(content);
+	// Astro permits top-level return inside its render function; blanking the keyword preserves OXC offsets.
+	for (const match of content.matchAll(/\breturn\b/gu)) {
+		const start = match.index ?? 0;
+		if (excluded.some((range) => start >= range.start && start < range.end)) continue;
+		for (let index = start; index < start + match[0].length; index++) script[index] = " ";
 	}
-	const parserLanguage = ranges.some(
-		(range) => range.language === "tsx" || range.language === "jsx",
-	)
-		? "tsx"
-		: ranges.some((range) => range.language === "typescript")
-			? "typescript"
-			: "javascript";
-	return { source: characters.join(""), language: parserLanguage };
+	const ranges = [{ start: contentStart, end: contentStart + content.length }];
+	const source = maskOutsideRanges(document.source, ranges).split("");
+	for (let index = 0; index < script.length; index++) source[contentStart + index] = script[index]!;
+	return { source: source.join(""), language: "typescript" };
 };
 
 const parserDocument = (document: SourceDocument): SourceDocument | undefined => {
 	const language = document.language ?? sourceLanguageForFile(document.file);
 	if (isOxcLanguage(language)) return { ...document, language };
+	if (language === "astro") {
+		const embedded = embeddedAstroSource(document);
+		return embedded === undefined
+			? undefined
+			: { ...document, source: embedded.source, language: embedded.language };
+	}
 	const embedded = embeddedScriptSource(document);
 	return embedded === undefined
 		? undefined
@@ -391,7 +427,11 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 	let excluded: SourceRange[] = [];
 	if (parserDocument(document) !== undefined) {
 		try {
-			program = parseSourceProgram({ ...document, language }).program as unknown as OxcNode;
+			const parsed = parseSourceProgram({ ...document, language });
+			program = parsed.program as unknown as OxcNode;
+			diagnostics.push(
+				...parsed.errors.map((error) => ({ kind: "parse" as const, message: error.message })),
+			);
 			excluded = computeExcludedRanges(document.source, document.file).excluded.map(
 				([start, end]) => ({ start, end }),
 			);

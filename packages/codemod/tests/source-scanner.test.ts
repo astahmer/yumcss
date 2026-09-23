@@ -3,6 +3,7 @@ import {
 	SOURCE_SCANNER_SCHEMA,
 	SourceLanguageAdapterId,
 	SourceRuntimeBoundary,
+	SourceBindings,
 	createSourceScannerContractSuite,
 	createSourceScannerRegistry,
 	type SourceLanguageAdapter,
@@ -82,6 +83,57 @@ describe("language-neutral source scanner registry", () => {
 			expect(result.isExcluded(8)).toBe(true);
 			expect(result.isExcluded(result.document.source.lastIndexOf("tw({"))).toBe(false);
 		}
+	});
+
+	test("parses Svelte scripts and Astro frontmatter without scanning their markup", () => {
+		const registry = createSourceScannerRegistry();
+		const vueSource = [
+			'<script lang="ts">',
+			'import { css } from "pandwind/css";',
+			'const card = css({ color: "red" });',
+			"</script>",
+			"<template><div title=\"css({ color: 'blue' })\" /></template>",
+		].join("\n");
+		const svelteSource = [
+			'<script lang="ts">',
+			'import { css } from "pandwind/css";',
+			'const card = css({ color: "red" });',
+			"</script>",
+			'<div title="css({ color: \'blue\' })">css({ color: "green" })</div>',
+		].join("\n");
+		const astroSource = [
+			"---",
+			'import { css } from "pandwind/css";',
+			"if (!Astro.props.active) return null;",
+			'const card = css({ color: "red" });',
+			"---",
+			'<div title="css({ color: \'blue\' })">css({ color: "green" })</div>',
+		].join("\n");
+
+		for (const [file, source, framework] of [
+			["Card.vue", vueSource, "vue"],
+			["Card.svelte", svelteSource, "svelte"],
+			["Card.astro", astroSource, "astro"],
+		] as const) {
+			const result = registry.scan({ file, source });
+			const bindings = SourceBindings.fromDocument(result.document);
+			expect(result.framework).toBe(framework);
+			expect(result.program?.type).toBe("Program");
+			expect(result.diagnostics).toEqual([]);
+			expect(bindings.callSites.map((site) => source.slice(site.start, site.end))).toEqual([
+				'css({ color: "red" })',
+			]);
+		}
+	});
+
+	test("reports malformed Astro frontmatter without aborting the source scan", () => {
+		const result = createSourceScannerRegistry().scan({
+			file: "Broken.astro",
+			source: "---\nconst card: =;\n---\n<div />",
+		});
+
+		expect(result.program?.type).toBe("Program");
+		expect(result.diagnostics).toEqual([expect.objectContaining({ kind: "parse" })]);
 	});
 
 	test("accepts a project-defined file language without changing scanner callers", () => {
