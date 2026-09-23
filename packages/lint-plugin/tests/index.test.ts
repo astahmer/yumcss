@@ -1058,4 +1058,38 @@ describe("Pandwind Oxlint scaling", () => {
 			24,
 		);
 	});
+
+	test("scales with many calls that share module constants", () => {
+		const measure = (size: number): number => {
+			const source = [
+				'import { tw } from "pandwind";',
+				...Array.from({ length: size }, (_, index) => `const value${index} = "${index}";`),
+				"function Component() {",
+				...Array.from({ length: size }, (_, index) => `tw({ color: value${index} });`),
+				"}",
+			].join("\n");
+			const programs = Array.from(
+				{ length: 3 },
+				() =>
+					parseSync("fixture.tsx", source, { sourceType: "module", lang: "tsx" })
+						.program as AstNode,
+			);
+			const started = Date.now();
+			for (const program of programs) expect(runRule("no-dynamic-values", program)).toEqual([]);
+			return Date.now() - started;
+		};
+		const measureMedian = (size: number): number => {
+			const samples = [measure(size), measure(size), measure(size)].toSorted(
+				(left, right) => left - right,
+			);
+			return samples[1] ?? Number.POSITIVE_INFINITY;
+		};
+		measure(100);
+		measure(800);
+		const smallMs = measureMedian(100);
+		const largeMs = measureMedian(800);
+		expect(largeMs / smallMs, `${smallMs.toFixed(1)}ms -> ${largeMs.toFixed(1)}ms`).toBeLessThan(
+			24,
+		);
+	});
 });

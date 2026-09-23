@@ -31,6 +31,104 @@ interface ModuleConstant {
 	readonly declStart: number;
 }
 
+interface BlockScopeData {
+	readonly bindings: ReadonlySet<string>;
+	readonly declarations: readonly VariableDeclarationNode[];
+}
+
+interface ScopeLayer {
+	readonly bindings: ReadonlySet<string>;
+	readonly values: Map<string, unknown>;
+}
+
+const blockScopeDataCache = new WeakMap<OxcNode, BlockScopeData>();
+const functionScopeBindingsCache = new WeakMap<OxcNode, ReadonlySet<string>>();
+const declarationBindingsCache = new WeakMap<OxcNode, ReadonlySet<string>>();
+
+class CssLiteralConstantScope implements ReadonlyMap<string, unknown> {
+	readonly #layers: ScopeLayer[] = [];
+	readonly #moduleConstants: ReadonlyMap<string, ModuleConstant>;
+	readonly #useStart: number;
+
+	constructor(moduleConstants: ReadonlyMap<string, ModuleConstant>, useStart: number) {
+		this.#moduleConstants = moduleConstants;
+		this.#useStart = useStart;
+	}
+
+	pushLayer(bindings: ReadonlySet<string>): void {
+		this.#layers.push({ bindings, values: new Map() });
+	}
+
+	set(name: string, value: unknown): void {
+		const layer = this.#layers.at(-1);
+		if (layer === undefined) throw new Error("literal scope has no active layer");
+		layer.values.set(name, value);
+	}
+
+	get(name: string): unknown {
+		for (let index = this.#layers.length - 1; index >= 0; index -= 1) {
+			const layer = this.#layers[index];
+			if (layer === undefined) continue;
+			if (layer.values.has(name)) return layer.values.get(name);
+			if (layer.bindings.has(name)) return undefined;
+		}
+		const constant = this.#moduleConstants.get(name);
+		return constant !== undefined && constant.declStart < this.#useStart
+			? constant.value
+			: undefined;
+	}
+
+	has(name: string): boolean {
+		for (let index = this.#layers.length - 1; index >= 0; index -= 1) {
+			const layer = this.#layers[index];
+			if (layer === undefined) continue;
+			if (layer.values.has(name)) return true;
+			if (layer.bindings.has(name)) return false;
+		}
+		const constant = this.#moduleConstants.get(name);
+		return constant !== undefined && constant.declStart < this.#useStart;
+	}
+
+	get size(): number {
+		return this.#materialize().size;
+	}
+
+	entries() {
+		return this.#materialize().entries();
+	}
+
+	keys() {
+		return this.#materialize().keys();
+	}
+
+	values() {
+		return this.#materialize().values();
+	}
+
+	[Symbol.iterator]() {
+		return this.entries();
+	}
+
+	forEach(
+		callback: (value: unknown, key: string, map: ReadonlyMap<string, unknown>) => void,
+		thisArg?: unknown,
+	): void {
+		for (const [key, value] of this) callback.call(thisArg, value, key, this);
+	}
+
+	#materialize(): Map<string, unknown> {
+		const scope = new Map<string, unknown>();
+		for (const [name, constant] of this.#moduleConstants) {
+			if (constant.declStart < this.#useStart) scope.set(name, constant.value);
+		}
+		for (const layer of this.#layers) {
+			for (const name of layer.bindings) scope.delete(name);
+			for (const [name, value] of layer.values) scope.set(name, value);
+		}
+		return scope;
+	}
+}
+
 const isFunction = (node: OxcNode): boolean =>
 	node.type === NodeKind.FunctionDeclaration ||
 	node.type === NodeKind.FunctionExpression ||
@@ -80,34 +178,30 @@ const declarationFromStatement = (statement: OxcNode): OxcNode | undefined =>
 		? ((statement as { declaration?: OxcNode | null }).declaration ?? undefined)
 		: statement;
 
-const directVariableDeclarations = (container: OxcNode): readonly VariableDeclarationNode[] => {
-	const body = (container as { body?: readonly OxcNode[] }).body;
-	if (body === undefined) return [];
-	return body.flatMap((statement) => {
-		const declaration = declarationFromStatement(statement);
-		return declaration?.type === NodeKind.VariableDeclaration
-			? [declaration as VariableDeclarationNode]
-			: [];
-	});
-};
-
-const directBindings = (container: OxcNode): Set<string> => {
-	const names = new Set<string>();
+const blockScopeData = (container: OxcNode): BlockScopeData => {
+	const cached = blockScopeDataCache.get(container);
+	if (cached !== undefined) return cached;
+	const bindings = new Set<string>();
+	const declarations: VariableDeclarationNode[] = [];
 	const body = (container as { body?: readonly OxcNode[] }).body ?? [];
 	for (const statement of body) {
 		const declaration = declarationFromStatement(statement);
 		if (declaration?.type === NodeKind.VariableDeclaration) {
-			for (const variable of (declaration as VariableDeclarationNode).declarations ?? [])
-				bindingNames((variable as VariableDeclaratorNode).id, names);
+			const variableDeclaration = declaration as VariableDeclarationNode;
+			declarations.push(variableDeclaration);
+			for (const variable of variableDeclaration.declarations ?? [])
+				bindingNames((variable as VariableDeclaratorNode).id, bindings);
 			continue;
 		}
 		if (
 			declaration?.type === NodeKind.FunctionDeclaration ||
 			declaration?.type === NodeKind.ClassDeclaration
 		)
-			bindingNames((declaration as { id?: OxcNode }).id, names);
+			bindingNames((declaration as { id?: OxcNode }).id, bindings);
 	}
-	return names;
+	const result = { bindings, declarations };
+	blockScopeDataCache.set(container, result);
+	return result;
 };
 
 const collectVarBindings = (root: OxcNode, names: Set<string>): void => {
@@ -148,7 +242,7 @@ const collectModuleConstants = (
 ): ReadonlyMap<string, ModuleConstant> => {
 	const values = new Map<string, unknown>();
 	const constants = new Map<string, ModuleConstant>();
-	for (const declaration of directVariableDeclarations(program)) {
+	for (const declaration of blockScopeData(program).declarations) {
 		if (declaration.kind !== VariableDeclarationKindTag.Const) continue;
 		for (const variable of declaration.declarations ?? []) {
 			const binding = variable as VariableDeclaratorNode;
@@ -167,16 +261,23 @@ const collectModuleConstants = (
 };
 
 const applyVariableScope = (
-	scope: Map<string, unknown>,
+	scope: CssLiteralConstantScope,
 	declaration: VariableDeclarationNode | undefined,
 	useStart: number,
 	evaluateCall: LiteralCallEvaluator,
 ): void => {
 	if (declaration === undefined) return;
 	const declarations = declaration.declarations ?? [];
-	const names = new Set<string>();
-	for (const variable of declarations) bindingNames((variable as VariableDeclaratorNode).id, names);
-	for (const name of names) scope.delete(name);
+	const cachedNames = declarationBindingsCache.get(declaration);
+	if (cachedNames !== undefined) {
+		scope.pushLayer(cachedNames);
+	} else {
+		const names = new Set<string>();
+		for (const variable of declarations)
+			bindingNames((variable as VariableDeclaratorNode).id, names);
+		declarationBindingsCache.set(declaration, names);
+		scope.pushLayer(names);
+	}
 	if (declaration.kind !== VariableDeclarationKindTag.Const) return;
 	for (const variable of declarations) {
 		const binding = variable as VariableDeclaratorNode;
@@ -190,27 +291,31 @@ const applyVariableScope = (
 };
 
 const applyBlockScope = (
-	scope: Map<string, unknown>,
+	scope: CssLiteralConstantScope,
 	block: OxcNode,
 	useStart: number,
 	evaluateCall: LiteralCallEvaluator,
 ): void => {
-	for (const name of directBindings(block)) scope.delete(name);
-	for (const declaration of directVariableDeclarations(block))
+	const data = blockScopeData(block);
+	scope.pushLayer(data.bindings);
+	for (const declaration of data.declarations)
 		applyVariableScope(scope, declaration, useStart, evaluateCall);
 };
 
-const applyFunctionScope = (scope: Map<string, unknown>, functionNode: FunctionNode): void => {
+const functionScopeBindings = (functionNode: FunctionNode): ReadonlySet<string> => {
+	const cached = functionScopeBindingsCache.get(functionNode);
+	if (cached !== undefined) return cached;
 	const names = new Set<string>();
 	bindingNames(functionNode.id, names);
 	for (const parameter of functionNode.params ?? []) bindingNames(parameter, names);
 	if (functionNode.body !== null && functionNode.body !== undefined)
 		collectVarBindings(functionNode.body, names);
-	for (const name of names) scope.delete(name);
+	functionScopeBindingsCache.set(functionNode, names);
+	return names;
 };
 
 const applyForScope = (
-	scope: Map<string, unknown>,
+	scope: CssLiteralConstantScope,
 	node: OxcNode,
 	useStart: number,
 	evaluateCall: LiteralCallEvaluator,
@@ -235,13 +340,10 @@ export const createCssLiteralScopeResolver = (
 	const moduleConstants = collectModuleConstants(program, evaluateCall);
 	return (node, ancestors) => {
 		const useStart = nodeStart(node);
-		const scope = new Map<string, unknown>();
-		for (const [name, constant] of moduleConstants) {
-			if (constant.declStart < useStart) scope.set(name, constant.value);
-		}
+		const scope = new CssLiteralConstantScope(moduleConstants, useStart);
 		for (const ancestor of ancestors) {
 			if (isFunction(ancestor)) {
-				applyFunctionScope(scope, ancestor as FunctionNode);
+				scope.pushLayer(functionScopeBindings(ancestor as FunctionNode));
 				continue;
 			}
 			if (ancestor.type === NodeKind.BlockStatement) {
@@ -251,7 +353,7 @@ export const createCssLiteralScopeResolver = (
 			if (ancestor.type === NodeKind.CatchClause) {
 				const names = new Set<string>();
 				bindingNames((ancestor as { param?: OxcNode | null }).param, names);
-				for (const name of names) scope.delete(name);
+				scope.pushLayer(names);
 				continue;
 			}
 			if (
