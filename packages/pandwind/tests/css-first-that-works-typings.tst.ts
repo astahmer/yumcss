@@ -1,5 +1,5 @@
 import { expect, test } from "tstyche";
-import { createCss, firstThatWorks } from "../src/css/index.ts";
+import { createCss, firstThatWorks } from "pandwind/css";
 import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);

@@ -18,7 +18,7 @@ import {
 	type SourceScannerPlugin,
 	type SourceScanResult,
 	type SourceScannerService,
-} from "../src/source-scanner.ts";
+} from "pandwind/source";
 import {
 	createSourceWorkspace,
 	SOURCE_WORKSPACE_SCHEMA,
@@ -26,12 +26,12 @@ import {
 	type SourceWorkspaceFile,
 	type SourceWorkspaceFileSystem,
 	type SourceWorkspaceQuery,
-} from "../src/source-workspace.ts";
+} from "pandwind/source/workspace";
 import {
 	selectorClassMatches,
 	splitSelectorList,
 	type SelectorClassMatch,
-} from "../src/css/selector-scan.ts";
+} from "pandwind/css/selector-scan";
 import {
 	collectTwClasses,
 	createTwClassCollector,
@@ -40,7 +40,7 @@ import {
 	type TwCollectResult,
 	type TwScanOptions,
 	type TwScanResult,
-} from "../src/tw/collect.ts";
+} from "pandwind/tw/collect";
 import {
 	createInlineTwPluginCore,
 	createPandwindEngineContext,
@@ -53,7 +53,7 @@ import {
 	type PandwindEngineContext,
 	type PandwindViteOptions,
 	type Resolver,
-} from "../src/vite/index.ts";
+} from "pandwind/vite";
 import {
 	pandwindRollup,
 	pandwindRollupCss,
@@ -63,9 +63,9 @@ import {
 	pandwindWebpackCss,
 	type PandwindUnpluginCssOptions,
 	type PandwindUnpluginOptions,
-} from "../src/unplugin.ts";
-import { createCss } from "../src/css/create-css.ts";
-import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
+} from "pandwind/unplugin";
+import { createCss } from "pandwind/css";
+import { createNamedAtomsStrategy } from "pandwind/css/named";
 import { examplePreset } from "@pandwind/example-preset";
 
 test("source scanner registry contracts support custom language adapters", () => {

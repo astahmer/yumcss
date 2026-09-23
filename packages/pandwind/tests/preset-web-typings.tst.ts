@@ -1,5 +1,5 @@
 import { expect, test } from "tstyche";
-import { define } from "../src/preset/index.ts";
+import { define } from "pandwind/preset";
 
 test("define.preset preserves the typed build-time web contract", () => {
 	const preset = define.preset(

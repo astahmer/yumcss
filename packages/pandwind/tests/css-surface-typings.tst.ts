@@ -1,8 +1,8 @@
 import { expect, test } from "tstyche";
-import { createStylesheet, type PreparedStyle } from "../src/css/create-stylesheet.ts";
-import { createCss } from "../src/css/create-css.ts";
-import { createDesignCss } from "../src/design/index.ts";
-import type { StyleObject } from "../src/types/typings.ts";
+import { createStylesheet, type PreparedStyle } from "pandwind/css/create-stylesheet";
+import { createCss } from "pandwind/css";
+import { createDesignCss } from "pandwind/design";
+import type { StyleObject } from "pandwind/types/typings";
 import {
 	createRuntimeCss,
 	createRuntimeDesignCss,
@@ -15,7 +15,7 @@ import {
 	type RuntimeSheet,
 	type RuntimeSheetOptions,
 	type RuntimeSheetSnapshot,
-} from "../src/css/runtime.ts";
+} from "pandwind/css/runtime";
 import { examplePreset } from "@pandwind/example-preset";
 
 const css = createCss(examplePreset);

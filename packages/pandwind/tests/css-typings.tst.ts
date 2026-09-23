@@ -1,7 +1,7 @@
 import { expect, test } from "tstyche";
-import { createCss, type AtomicStyleProps, type ClassNameStrategy } from "../src/css/index.ts";
-import { createUnsafeCss } from "../src/unsafe/css.ts";
-import { define, type AnyCssConfig, type PandwindProperties } from "../src/preset/index.ts";
+import { createCss, type AtomicStyleProps, type ClassNameStrategy } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
+import { define, type AnyCssConfig, type PandwindProperties } from "pandwind/preset";
 import type { StandardProperties as CsstypeStandardProperties } from "csstype";
 import { examplePreset } from "@pandwind/example-preset";
 

@@ -4,18 +4,18 @@
  * to the same tstyche gate as tw/css/cx.
  */
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/create-css.ts";
-import { createUnsafeCss } from "../src/unsafe/css.ts";
-import { createDesignCss } from "../src/design/index.ts";
-import type { StackComponentProps as PreactStackProps } from "../src/stack/preact.ts";
-import type { StackComponentProps as ReactStackProps } from "../src/stack/react.tsx";
-import type { StackComponentProps as SolidStackProps } from "../src/stack/solid.tsx";
-import type { StackComponentProps as VueStackProps } from "../src/stack/vue.ts";
-import { createStack as createPreactStack } from "../src/stack/preact.ts";
-import { createStack as createReactStack } from "../src/stack/react.tsx";
-import { createStack as createSolidStack } from "../src/stack/solid.tsx";
-import { createStack as createVueStack } from "../src/stack/vue.ts";
-import { createStackClassName, stackClasses, type StackProps } from "../src/stack/index.ts";
+import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
+import { createDesignCss } from "pandwind/design";
+import type { StackComponentProps as PreactStackProps } from "pandwind/stack/preact";
+import type { StackComponentProps as ReactStackProps } from "pandwind/stack/react";
+import type { StackComponentProps as SolidStackProps } from "pandwind/stack/solid";
+import type { StackComponentProps as VueStackProps } from "pandwind/stack/vue";
+import { createStack as createPreactStack } from "pandwind/stack/preact";
+import { createStack as createReactStack } from "pandwind/stack/react";
+import { createStack as createSolidStack } from "pandwind/stack/solid";
+import { createStack as createVueStack } from "pandwind/stack/vue";
+import { createStackClassName, stackClasses, type StackProps } from "pandwind/stack";
 import { examplePreset } from "@pandwind/example-preset";
 
 const css = createUnsafeCss();

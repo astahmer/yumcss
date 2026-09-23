@@ -1,7 +1,7 @@
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/create-css.ts";
-import { csstypePreset } from "../src/preset/csstype.ts";
-import { defaultPreset } from "../src/preset/default.ts";
+import { createCss } from "pandwind/css";
+import { csstypePreset } from "pandwind/preset/csstype";
+import { defaultPreset } from "pandwind/preset/default";
 import { fixturePreset } from "./fixtures/fixture-preset.ts";
 
 test("csstype preset exposes raw structural CSS without a stock token catalog", () => {

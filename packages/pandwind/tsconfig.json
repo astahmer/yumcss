@@ -6,5 +6,5 @@
 		"jsx": "react-jsx"
 	},
 	"include": ["src", "tests"],
-	"exclude": ["tests/fixtures/tsc/real-world-*.ts"]
+	"exclude": ["tests/fixtures/tsc/real-world-*.ts", "tests/public-api"]
 }

@@ -3,8 +3,8 @@
  * maps, nested arrays and falsey values; always returns a class string.
  */
 import { expect, test } from "tstyche";
-import { createUnsafeCss } from "../src/unsafe/css.ts";
-import { createCx } from "../src/cx/index.ts";
+import { createUnsafeCss } from "pandwind/unsafe/css";
+import { createCx } from "pandwind/cx";
 
 const css = createUnsafeCss();
 const cx = createCx({ css });

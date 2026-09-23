@@ -1,9 +1,9 @@
 import { expect, test } from "tstyche";
-import { createCss, ReactStrictDomPlatform } from "../src/react-strict-dom.ts";
+import { createCss, ReactStrictDomPlatform } from "pandwind/react-strict-dom";
 import type {
 	ReactStrictDomCompiledStyle,
 	ReactStrictDomNativeStyle,
-} from "../src/backends/react-strict-dom.ts";
+} from "pandwind/react-strict-dom";
 
 const web = createCss();
 const native = createCss({ platform: ReactStrictDomPlatform.Native });

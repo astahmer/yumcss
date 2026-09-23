@@ -1,11 +1,11 @@
 /** Type-checks the examples in the public API JSDoc. */
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/index.ts";
-import { createUnsafeCss } from "../src/unsafe/css.ts";
-import { createCx } from "../src/cx/index.ts";
-import { createDesignCss } from "../src/design/index.ts";
-import { createTw, type TwOptions } from "../src/tw/index.ts";
-import { define, type PandwindProperties } from "../src/preset/index.ts";
+import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
+import { createCx } from "pandwind/cx";
+import { createDesignCss } from "pandwind/design";
+import { createTw, type TwOptions } from "pandwind/tw";
+import { define, type PandwindProperties } from "pandwind/preset";
 import { examplePreset } from "@pandwind/example-preset";
 
 test("createCss JSDoc examples use the preset for token references", () => {

@@ -5,8 +5,8 @@
  * error" rules.
  */
 import { expect, test } from "tstyche";
-import { createDesignCss } from "../src/design/index.ts";
-import type { DesignStyleObject } from "../src/design/types.ts";
+import { createDesignCss } from "pandwind/design";
+import type { DesignStyleObject } from "pandwind/design";
 import { examplePreset } from "@pandwind/example-preset";
 
 const dss = createDesignCss(examplePreset);

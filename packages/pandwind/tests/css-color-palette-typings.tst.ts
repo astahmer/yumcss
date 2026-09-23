@@ -1,8 +1,9 @@
 import { expect, test } from "tstyche";
-import { createCss, createUnsafeCss } from "../src/css/create-css.ts";
-import { createRuntimeCss, createRuntimeDesignCss } from "../src/css/runtime.ts";
-import { createDesignCss } from "../src/design/index.ts";
-import { define } from "../src/preset/index.ts";
+import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
+import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
+import { createDesignCss } from "pandwind/design";
+import { define } from "pandwind/preset";
 
 const tokens = define.tokens({
 	colors: {

@@ -1,17 +1,17 @@
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/create-css.ts";
-import { createUnsafeCss } from "../src/unsafe/css.ts";
-import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
-import { createPandaAdapter } from "../src/css/panda-adapter.ts";
-import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
-import { createUnoCssAdapter } from "../src/css/unocss-adapter.ts";
-import type { ClassNameStrategy } from "../src/css/class-name-strategy.ts";
-import { createCx, type CxOptions } from "../src/cx/index.ts";
+import { createCss } from "pandwind/css";
+import { createUnsafeCss } from "pandwind/unsafe/css";
+import { createNamedAtomsStrategy } from "pandwind/css/named";
+import { createPandaAdapter } from "pandwind/css/panda";
+import { createStyleXAdapter } from "pandwind/css/stylex";
+import { createUnoCssAdapter } from "pandwind/css/unocss";
+import type { ClassNameStrategy } from "pandwind/css";
+import { createCx, type CxOptions } from "pandwind/cx";
 import {
 	createHostStyleRegistry,
 	type HostStyleAdapter,
 	type HostStylePlugin,
-} from "../src/host/index.ts";
+} from "pandwind/host";
 import {
 	createCssBackend,
 	createObjectBackend,
@@ -28,30 +28,25 @@ import {
 	type StyleBackend,
 	type StyleBackendFactory,
 	type StyleBackendRegistry,
-} from "../src/backends/index.ts";
-import { createDesignCss as createOpenTuiDesignCss } from "../src/opentui.ts";
+} from "pandwind/backends";
+import { createDesignCss as createOpenTuiDesignCss } from "pandwind/opentui";
 import {
 	createCx as createRsdCx,
 	createDesignCss as createRsdDesignCss,
-} from "../src/react-strict-dom.ts";
-import { createDesignCss as createRnDesignCss } from "../src/rn.ts";
-import {
-	createStackClassName,
-	stackClasses,
-	stackStyle,
-	type StackStyle,
-} from "../src/stack/index.ts";
-import { createTw, createTwAdapter, tw, type TwOptions } from "../src/tw/index.ts";
+} from "pandwind/react-strict-dom";
+import { createDesignCss as createRnDesignCss } from "pandwind/react-native";
+import { createStackClassName, stackClasses, stackStyle, type StackStyle } from "pandwind/stack";
+import { createTw, createTwAdapter, tw, type TwOptions } from "pandwind/tw";
 import {
 	compileStyles,
 	type TwConflictsMeta,
 	type TwNestedStyles,
 	type TwValueTokensMeta,
 	type TwVariantsMeta,
-} from "../src/tw/compile.ts";
-import { resolveVar, simplifyCalc, themeVariables } from "../src/tw/theme.ts";
-import { define } from "../src/preset/index.ts";
-import type { StyleObject } from "../src/types/typings.ts";
+} from "pandwind/tw/compile";
+import { resolveVar, simplifyCalc, themeVariables } from "pandwind/tw";
+import { define } from "pandwind/preset";
+import type { StyleObject } from "pandwind/types/typings";
 import type { Root } from "postcss";
 import { examplePreset } from "@pandwind/example-preset";
 

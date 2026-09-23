@@ -5,7 +5,7 @@
  * (`cellSize`) on the surface entry point.
  */
 import { expect, test } from "tstyche";
-import { createCx, createDesignCss } from "../src/opentui.ts";
+import { createCx, createDesignCss } from "pandwind/opentui";
 import { examplePreset } from "@pandwind/example-preset";
 
 const dss = createDesignCss(examplePreset);

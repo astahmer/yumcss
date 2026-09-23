@@ -7,7 +7,7 @@
  * structurally-typed style object instead of a class string).
  */
 import { expect, test } from "tstyche";
-import { createCx, createDesignCss } from "../src/rn.ts";
+import { createCx, createDesignCss } from "pandwind/react-native";
 import { examplePreset } from "@pandwind/example-preset";
 
 const dss = createDesignCss(examplePreset);

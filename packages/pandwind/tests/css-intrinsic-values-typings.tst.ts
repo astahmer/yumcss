@@ -1,7 +1,8 @@
 import { expect, test } from "tstyche";
-import { createCss } from "../src/css/create-css.ts";
-import type { CssWideValue, PandwindPropertyValue } from "../src/types/css-values.ts";
-import { define, type PandwindProperties } from "../src/preset/index.ts";
+import { createCss } from "pandwind/css";
+import type { PandwindPropertyValue } from "../src/types/css-values.ts";
+import { define, type PandwindProperties } from "pandwind/preset";
+import type { CssWideValue } from "pandwind/preset";
 
 type IntrinsicCases = {
 	color: "transparent" | "currentColor";

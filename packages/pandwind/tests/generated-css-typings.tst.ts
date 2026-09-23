@@ -1,7 +1,7 @@
 import { expect, test } from "tstyche";
-import { firstThatWorks } from "../src/css/index.ts";
-import { createGeneratedCss } from "../src/css/generated.ts";
-import { createCx } from "../src/cx/index.ts";
+import { firstThatWorks } from "pandwind/css";
+import { createGeneratedCss } from "pandwind/css/generated";
+import { createCx } from "pandwind/cx";
 import { examplePreset } from "@pandwind/example-preset";
 import {
 	css,
@@ -9,7 +9,7 @@ import {
 	type GeneratedDynamicStyle,
 	type GeneratedStyle,
 } from "./fixtures/generated-css.ts";
-import type { StyleObject } from "../src/types/typings.ts";
+import type { StyleObject } from "pandwind/types/typings";
 
 type Compiled = Record<string, string>;
 type PropsResult = {
