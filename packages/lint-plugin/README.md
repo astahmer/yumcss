@@ -67,6 +67,10 @@ settings. Every rule that resolves style calls uses this mapping:
 | `no-dynamic-carrier-fallback` | Finds dynamic JSX carriers that cannot use direct build-time lowering.     | —                                     |
 | `no-dynamic-keyframes`        | Requires `css.keyframes()` bodies to be statically extractable.            | —                                     |
 
+`no-dynamic-values` follows statically resolved identifiers through extraction
+calls and accepts object spreads whose values are proven static. Runtime spread
+inputs remain reported.
+
 `prefer-typed-css-values` recognizes CSS-wide keywords, numeric values, and
 the property-specific keywords from Pandwind's CSS value types. It applies only
 to preset-bound `createCss(...)` instances. The fixer unwraps a whole `$raw`

@@ -891,6 +891,23 @@ css.raw({ color: theme.color });`,
 		expect(reports).toMatchInlineSnapshot(`[]`);
 	});
 
+	test("accepts static object spreads and reports runtime spread inputs", () => {
+		const reports = runRule(
+			"no-dynamic-values",
+			`import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+const layout = { flex: "1", overflow: "hidden" } as const;
+css.class({ ...layout, display: compact ? "flex" : "block" });
+css.class({ ...runtimeLayout });`,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]).toMatchObject({
+			data: { bad: "spread argument", name: "css.class" },
+			nodeType: "SpreadElement",
+		});
+	});
+
 	test("uses the Tw compiler's module-constant scope", () => {
 		const reports = runRule(
 			"no-dynamic-values",

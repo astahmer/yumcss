@@ -274,6 +274,15 @@ const findDynamicExpression = (options: {
 			case NodeKind.TaggedTemplateExpression:
 				return { node: value, bad: "dynamic helper call" };
 			case NodeKind.SpreadElement:
+				if (
+					(value.argument?.type === NodeKind.Identifier &&
+						staticBindings.has(value.argument.name)) ||
+					value.argument?.type === NodeKind.ObjectExpression ||
+					value.argument?.type === NodeKind.ArrayExpression
+				) {
+					stack.push(value.argument);
+					continue;
+				}
 				return { node: value, bad: "spread argument" };
 			case NodeKind.Property:
 				if (value.computed) stack.push(value.key);
