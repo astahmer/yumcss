@@ -1,6 +1,7 @@
+import { untypedCss } from "./css";
 import { dss } from "./design";
 import { cx } from "./cx";
-import { CARD_BASE, MUTED_TEXT } from "./styles/constants";
+import { CARD_BASE, CARD_SURFACE, MUTED_TEXT } from "./styles/constants";
 
 /**
  * Dogfood surface for the full compiler pipeline:
@@ -22,11 +23,10 @@ export function DogfoodApp() {
 			<div
 				className={cx(
 					CARD_BASE,
+					CARD_SURFACE,
 					dss.class({ $text: { color: "$green-500", weight: "semibold" }, $frame: { pad: 24 } }),
 					emphasized
-						? dss.class({
-								$raw: { outline: "2px solid rgba(14,165,233,0.4)", outlineOffset: "2px" },
-							})
+						? untypedCss.class({ outline: "2px solid rgba(14,165,233,0.4)", outlineOffset: "2px" })
 						: undefined,
 				)}
 			>

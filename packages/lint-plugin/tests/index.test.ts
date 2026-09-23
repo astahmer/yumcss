@@ -249,6 +249,18 @@ dss.class({ $raw: { color: "blue" } });`,
 		`);
 	});
 
+	test("resolves explicitly configured local CSS instances", () => {
+		const reports = runRule(
+			"no-dollar-raw",
+			`import { css } from "./css";
+css.class({ $raw: { color: "red" } });`,
+			[{ cssModules: [{ source: "./css", exports: ["css"] }] }],
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.data.name).toBe("css.class");
+	});
+
 	test("does not invent a root css export or classify an unrelated factory", () => {
 		const reports = runRule(
 			"no-spreads",
@@ -465,6 +477,28 @@ css({ $raw: { background: "var(--image)", backgroundColor: "transparent", border
 		const conflictingReports = runRule("prefer-typed-css-values", conflictingCode);
 		expect(conflictingReports).toHaveLength(1);
 		expect(conflictingReports[0]?.fixes).toBeUndefined();
+	});
+
+	test("autofixes intrinsic auto in a configured local CSS module", () => {
+		const code = `import { css } from "./css";
+css.class({ $raw: { width: "auto" } });`;
+		const options = [{ cssModules: [{ source: "./css", exports: ["css"] }] }];
+		const reports = runRule("prefer-intrinsic-auto", code, options);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.data.properties).toBe("width");
+		expect(applyFixes(code, reports[0]?.fixes ?? [])).toBe(
+			`import { css } from "./css";
+css.class({ width: "auto" });`,
+		);
+		expect(
+			runRule(
+				"prefer-intrinsic-auto",
+				`import { css } from "./css";
+css.class({ $raw: { width: "$width-1" } });`,
+				options,
+			),
+		).toHaveLength(0);
 	});
 
 	test("shares the Vite carrier analysis and accepts inlineable nested conditions", () => {

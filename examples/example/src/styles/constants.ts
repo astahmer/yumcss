@@ -1,3 +1,4 @@
+import { untypedCss } from "../css";
 import { dss } from "../design";
 
 /** Shared design atoms used by the cross-module composition demo. */
@@ -8,7 +9,11 @@ export const CARD_BASE = dss.class({
 		border: { color: "$gray-200", width: 1 },
 		pad: 24,
 	},
-	$raw: { marginInline: "auto", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" },
+});
+
+export const CARD_SURFACE = untypedCss.class({
+	marginInline: "auto",
+	boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
 });
 
 export const MUTED_TEXT = dss.class({
