@@ -103,11 +103,12 @@ evidence:
 pnpm run bench:tsc:styling -- --update
 ```
 
-The styling and generated-types benchmarks refresh the compact root
-[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md) when their
-snapshots are updated. Package/example TSC and Pandwind runtime-size snapshot
-updates do the same. `bench:summary:check` verifies that the report matches
-all committed source snapshots.
+The styling and generated-types benchmarks refresh the root
+[`PERF-SUMMARY.md`](https://github.com/astahmer/pandwind/blob/main/PERF-SUMMARY.md)
+and detailed [`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md)
+when their snapshots are updated. Package/example TSC and Pandwind runtime-size
+snapshot updates do the same. `bench:summary:check` verifies both reports
+against all committed source snapshots.
 
 ### Pivot proof matrix
 

@@ -1,12 +1,12 @@
 {
 	"schema": "pandwind.styling-tsc/1",
 	"source": "runner/generate-fixtures.mts",
-	"updatedAt": "2026-09-16",
+	"updatedAt": "2026-09-23",
 	"samples": 5,
 	"environment": {
 		"platform": "darwin",
 		"arch": "arm64",
-		"node": "v24.19.0",
+		"node": "v24.20.0",
 		"typescript": "7.0.2"
 	},
 	"packages": {
@@ -53,9 +53,9 @@
 				"symbols": 33145,
 				"types": 2115,
 				"instantiations": 31,
-				"memoryUsedKiB": 26043,
-				"checkTimeSeconds": 0.003,
-				"totalTimeSeconds": 0.022
+				"memoryUsedKiB": 26055,
+				"checkTimeSeconds": 0.002,
+				"totalTimeSeconds": 0.019
 			}
 		},
 		{
@@ -69,9 +69,9 @@
 				"symbols": 52636,
 				"types": 9417,
 				"instantiations": 10867,
-				"memoryUsedKiB": 41458,
-				"checkTimeSeconds": 0.036,
-				"totalTimeSeconds": 0.057
+				"memoryUsedKiB": 41548,
+				"checkTimeSeconds": 0.034,
+				"totalTimeSeconds": 0.053
 			}
 		},
 		{
@@ -85,9 +85,9 @@
 				"symbols": 45537,
 				"types": 3050,
 				"instantiations": 2601,
-				"memoryUsedKiB": 36701,
-				"checkTimeSeconds": 0.011,
-				"totalTimeSeconds": 0.035
+				"memoryUsedKiB": 36756,
+				"checkTimeSeconds": 0.009,
+				"totalTimeSeconds": 0.028
 			}
 		},
 		{
@@ -101,9 +101,9 @@
 				"symbols": 39313,
 				"types": 1555,
 				"instantiations": 234,
-				"memoryUsedKiB": 32344,
-				"checkTimeSeconds": 0.007,
-				"totalTimeSeconds": 0.027
+				"memoryUsedKiB": 32350,
+				"checkTimeSeconds": 0.005,
+				"totalTimeSeconds": 0.024
 			}
 		},
 		{
@@ -117,9 +117,9 @@
 				"symbols": 38652,
 				"types": 8708,
 				"instantiations": 1700,
-				"memoryUsedKiB": 34484,
-				"checkTimeSeconds": 0.031,
-				"totalTimeSeconds": 0.061
+				"memoryUsedKiB": 34538,
+				"checkTimeSeconds": 0.019,
+				"totalTimeSeconds": 0.037
 			}
 		},
 		{
@@ -133,9 +133,9 @@
 				"symbols": 44355,
 				"types": 2658,
 				"instantiations": 3125,
-				"memoryUsedKiB": 37003,
-				"checkTimeSeconds": 0.024,
-				"totalTimeSeconds": 0.062
+				"memoryUsedKiB": 36958,
+				"checkTimeSeconds": 0.012,
+				"totalTimeSeconds": 0.032
 			}
 		},
 		{
@@ -149,9 +149,9 @@
 				"symbols": 39480,
 				"types": 3428,
 				"instantiations": 1798,
-				"memoryUsedKiB": 32200,
-				"checkTimeSeconds": 0.009,
-				"totalTimeSeconds": 0.028
+				"memoryUsedKiB": 32236,
+				"checkTimeSeconds": 0.008,
+				"totalTimeSeconds": 0.026
 			}
 		},
 		{
@@ -165,9 +165,9 @@
 				"symbols": 41186,
 				"types": 712,
 				"instantiations": 115,
-				"memoryUsedKiB": 34617,
-				"checkTimeSeconds": 0.002,
-				"totalTimeSeconds": 0.024
+				"memoryUsedKiB": 34616,
+				"checkTimeSeconds": 0.001,
+				"totalTimeSeconds": 0.021
 			}
 		},
 		{
@@ -181,9 +181,9 @@
 				"symbols": 40359,
 				"types": 708,
 				"instantiations": 129,
-				"memoryUsedKiB": 33919,
-				"checkTimeSeconds": 0.003,
-				"totalTimeSeconds": 0.032
+				"memoryUsedKiB": 33965,
+				"checkTimeSeconds": 0.001,
+				"totalTimeSeconds": 0.02
 			}
 		},
 		{
@@ -197,9 +197,9 @@
 				"symbols": 73275,
 				"types": 4760,
 				"instantiations": 3846,
-				"memoryUsedKiB": 61343,
-				"checkTimeSeconds": 0.025,
-				"totalTimeSeconds": 0.062
+				"memoryUsedKiB": 61309,
+				"checkTimeSeconds": 0.016,
+				"totalTimeSeconds": 0.045
 			}
 		},
 		{
@@ -209,13 +209,13 @@
 			"project": ".generated/pandwind/natural/tsconfig.json",
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind/natural/tsconfig.json",
 			"metrics": {
-				"files": 90,
-				"symbols": 52359,
-				"types": 5700,
-				"instantiations": 22321,
-				"memoryUsedKiB": 40509,
-				"checkTimeSeconds": 0.011,
-				"totalTimeSeconds": 0.052
+				"files": 89,
+				"symbols": 47286,
+				"types": 8466,
+				"instantiations": 23534,
+				"memoryUsedKiB": 39499,
+				"checkTimeSeconds": 0.009,
+				"totalTimeSeconds": 0.031
 			}
 		},
 		{
@@ -226,12 +226,12 @@
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind-generated/natural/tsconfig.json",
 			"metrics": {
 				"files": 91,
-				"symbols": 51197,
-				"types": 3648,
-				"instantiations": 7144,
-				"memoryUsedKiB": 39419,
-				"checkTimeSeconds": 0.002,
-				"totalTimeSeconds": 0.026
+				"symbols": 46073,
+				"types": 3451,
+				"instantiations": 7578,
+				"memoryUsedKiB": 37581,
+				"checkTimeSeconds": 0.003,
+				"totalTimeSeconds": 0.024
 			}
 		},
 		{
@@ -245,9 +245,9 @@
 				"symbols": 43630,
 				"types": 3630,
 				"instantiations": 357,
-				"memoryUsedKiB": 35535,
+				"memoryUsedKiB": 35543,
 				"checkTimeSeconds": 0.01,
-				"totalTimeSeconds": 0.03
+				"totalTimeSeconds": 0.031
 			}
 		},
 		{
@@ -261,9 +261,9 @@
 				"symbols": 46699,
 				"types": 3646,
 				"instantiations": 12543,
-				"memoryUsedKiB": 38593,
-				"checkTimeSeconds": 0.018,
-				"totalTimeSeconds": 0.056
+				"memoryUsedKiB": 38613,
+				"checkTimeSeconds": 0.008,
+				"totalTimeSeconds": 0.03
 			}
 		},
 		{
@@ -277,9 +277,9 @@
 				"symbols": 48437,
 				"types": 33990,
 				"instantiations": 32260,
-				"memoryUsedKiB": 48849,
-				"checkTimeSeconds": 0.041,
-				"totalTimeSeconds": 0.062
+				"memoryUsedKiB": 48816,
+				"checkTimeSeconds": 0.033,
+				"totalTimeSeconds": 0.05
 			}
 		},
 		{
@@ -293,9 +293,9 @@
 				"symbols": 53398,
 				"types": 7298,
 				"instantiations": 72261,
-				"memoryUsedKiB": 42074,
-				"checkTimeSeconds": 0.034,
-				"totalTimeSeconds": 0.053
+				"memoryUsedKiB": 42097,
+				"checkTimeSeconds": 0.033,
+				"totalTimeSeconds": 0.052
 			}
 		},
 		{
@@ -309,9 +309,9 @@
 				"symbols": 39367,
 				"types": 2135,
 				"instantiations": 2708,
-				"memoryUsedKiB": 32093,
-				"checkTimeSeconds": 0.008,
-				"totalTimeSeconds": 0.036
+				"memoryUsedKiB": 32062,
+				"checkTimeSeconds": 0.005,
+				"totalTimeSeconds": 0.023
 			}
 		},
 		{
@@ -325,9 +325,9 @@
 				"symbols": 50946,
 				"types": 3991,
 				"instantiations": 11330,
-				"memoryUsedKiB": 39972,
-				"checkTimeSeconds": 0.026,
-				"totalTimeSeconds": 0.062
+				"memoryUsedKiB": 39981,
+				"checkTimeSeconds": 0.018,
+				"totalTimeSeconds": 0.038
 			}
 		},
 		{
@@ -341,9 +341,9 @@
 				"symbols": 37408,
 				"types": 3655,
 				"instantiations": 9541,
-				"memoryUsedKiB": 28793,
+				"memoryUsedKiB": 28798,
 				"checkTimeSeconds": 0.007,
-				"totalTimeSeconds": 0.026
+				"totalTimeSeconds": 0.024
 			}
 		},
 		{
@@ -357,9 +357,9 @@
 				"symbols": 41957,
 				"types": 1526,
 				"instantiations": 357,
-				"memoryUsedKiB": 33441,
-				"checkTimeSeconds": 0.019,
-				"totalTimeSeconds": 0.051
+				"memoryUsedKiB": 33473,
+				"checkTimeSeconds": 0.012,
+				"totalTimeSeconds": 0.031
 			}
 		},
 		{
@@ -373,9 +373,9 @@
 				"symbols": 38862,
 				"types": 1911,
 				"instantiations": 257,
-				"memoryUsedKiB": 31428,
+				"memoryUsedKiB": 31476,
 				"checkTimeSeconds": 0.004,
-				"totalTimeSeconds": 0.024
+				"totalTimeSeconds": 0.022
 			}
 		},
 		{
@@ -389,9 +389,9 @@
 				"symbols": 42769,
 				"types": 12387,
 				"instantiations": 13178,
-				"memoryUsedKiB": 38328,
-				"checkTimeSeconds": 0.049,
-				"totalTimeSeconds": 0.08
+				"memoryUsedKiB": 38349,
+				"checkTimeSeconds": 0.033,
+				"totalTimeSeconds": 0.051
 			}
 		},
 		{
@@ -406,8 +406,8 @@
 				"types": 4635,
 				"instantiations": 31,
 				"memoryUsedKiB": 28773,
-				"checkTimeSeconds": 0.014,
-				"totalTimeSeconds": 0.035
+				"checkTimeSeconds": 0.011,
+				"totalTimeSeconds": 0.029
 			}
 		},
 		{
@@ -421,9 +421,9 @@
 				"symbols": 62996,
 				"types": 12217,
 				"instantiations": 10867,
-				"memoryUsedKiB": 45334,
-				"checkTimeSeconds": 0.147,
-				"totalTimeSeconds": 0.177
+				"memoryUsedKiB": 45281,
+				"checkTimeSeconds": 0.104,
+				"totalTimeSeconds": 0.123
 			}
 		},
 		{
@@ -437,9 +437,9 @@
 				"symbols": 53545,
 				"types": 6914,
 				"instantiations": 2601,
-				"memoryUsedKiB": 39790,
-				"checkTimeSeconds": 0.083,
-				"totalTimeSeconds": 0.111
+				"memoryUsedKiB": 39810,
+				"checkTimeSeconds": 0.061,
+				"totalTimeSeconds": 0.081
 			}
 		},
 		{
@@ -453,9 +453,9 @@
 				"symbols": 46201,
 				"types": 3627,
 				"instantiations": 1242,
-				"memoryUsedKiB": 36136,
-				"checkTimeSeconds": 0.038,
-				"totalTimeSeconds": 0.059
+				"memoryUsedKiB": 36146,
+				"checkTimeSeconds": 0.035,
+				"totalTimeSeconds": 0.053
 			}
 		},
 		{
@@ -469,9 +469,9 @@
 				"symbols": 44308,
 				"types": 11956,
 				"instantiations": 1700,
-				"memoryUsedKiB": 37051,
-				"checkTimeSeconds": 0.118,
-				"totalTimeSeconds": 0.155
+				"memoryUsedKiB": 37019,
+				"checkTimeSeconds": 0.061,
+				"totalTimeSeconds": 0.08
 			}
 		},
 		{
@@ -485,9 +485,9 @@
 				"symbols": 53763,
 				"types": 5122,
 				"instantiations": 4805,
-				"memoryUsedKiB": 40807,
-				"checkTimeSeconds": 0.089,
-				"totalTimeSeconds": 0.114
+				"memoryUsedKiB": 40858,
+				"checkTimeSeconds": 0.082,
+				"totalTimeSeconds": 0.102
 			}
 		},
 		{
@@ -501,9 +501,9 @@
 				"symbols": 49168,
 				"types": 14852,
 				"instantiations": 15798,
-				"memoryUsedKiB": 36178,
-				"checkTimeSeconds": 0.07,
-				"totalTimeSeconds": 0.089
+				"memoryUsedKiB": 36222,
+				"checkTimeSeconds": 0.069,
+				"totalTimeSeconds": 0.086
 			}
 		},
 		{
@@ -517,7 +517,7 @@
 				"symbols": 41186,
 				"types": 712,
 				"instantiations": 115,
-				"memoryUsedKiB": 34717,
+				"memoryUsedKiB": 34722,
 				"checkTimeSeconds": 0.002,
 				"totalTimeSeconds": 0.025
 			}
@@ -533,9 +533,9 @@
 				"symbols": 40359,
 				"types": 708,
 				"instantiations": 129,
-				"memoryUsedKiB": 34053,
-				"checkTimeSeconds": 0.003,
-				"totalTimeSeconds": 0.047
+				"memoryUsedKiB": 34070,
+				"checkTimeSeconds": 0.002,
+				"totalTimeSeconds": 0.02
 			}
 		},
 		{
@@ -549,9 +549,9 @@
 				"symbols": 78483,
 				"types": 6773,
 				"instantiations": 3846,
-				"memoryUsedKiB": 63985,
-				"checkTimeSeconds": 0.179,
-				"totalTimeSeconds": 0.206
+				"memoryUsedKiB": 63984,
+				"checkTimeSeconds": 0.156,
+				"totalTimeSeconds": 0.182
 			}
 		},
 		{
@@ -561,13 +561,13 @@
 			"project": ".generated/pandwind/stress/tsconfig.json",
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind/stress/tsconfig.json",
 			"metrics": {
-				"files": 90,
-				"symbols": 58631,
-				"types": 11524,
-				"instantiations": 38897,
-				"memoryUsedKiB": 44731,
-				"checkTimeSeconds": 0.122,
-				"totalTimeSeconds": 0.143
+				"files": 89,
+				"symbols": 53558,
+				"types": 20338,
+				"instantiations": 40110,
+				"memoryUsedKiB": 43694,
+				"checkTimeSeconds": 0.094,
+				"totalTimeSeconds": 0.117
 			}
 		},
 		{
@@ -578,12 +578,12 @@
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind-generated/stress/tsconfig.json",
 			"metrics": {
 				"files": 91,
-				"symbols": 57021,
-				"types": 12664,
-				"instantiations": 15432,
-				"memoryUsedKiB": 42948,
-				"checkTimeSeconds": 0.023,
-				"totalTimeSeconds": 0.05
+				"symbols": 51897,
+				"types": 7091,
+				"instantiations": 15866,
+				"memoryUsedKiB": 41130,
+				"checkTimeSeconds": 0.018,
+				"totalTimeSeconds": 0.039
 			}
 		},
 		{
@@ -597,9 +597,9 @@
 				"symbols": 53374,
 				"types": 18694,
 				"instantiations": 357,
-				"memoryUsedKiB": 39549,
-				"checkTimeSeconds": 0.087,
-				"totalTimeSeconds": 0.109
+				"memoryUsedKiB": 39515,
+				"checkTimeSeconds": 0.079,
+				"totalTimeSeconds": 0.097
 			}
 		},
 		{
@@ -613,9 +613,9 @@
 				"symbols": 62379,
 				"types": 8406,
 				"instantiations": 57905,
-				"memoryUsedKiB": 46083,
-				"checkTimeSeconds": 0.083,
-				"totalTimeSeconds": 0.119
+				"memoryUsedKiB": 46113,
+				"checkTimeSeconds": 0.031,
+				"totalTimeSeconds": 0.053
 			}
 		},
 		{
@@ -629,9 +629,9 @@
 				"symbols": 54597,
 				"types": 36286,
 				"instantiations": 32708,
-				"memoryUsedKiB": 51523,
-				"checkTimeSeconds": 0.072,
-				"totalTimeSeconds": 0.092
+				"memoryUsedKiB": 51507,
+				"checkTimeSeconds": 0.067,
+				"totalTimeSeconds": 0.086
 			}
 		},
 		{
@@ -645,9 +645,9 @@
 				"symbols": 156942,
 				"types": 13682,
 				"instantiations": 777189,
-				"memoryUsedKiB": 73349,
-				"checkTimeSeconds": 0.328,
-				"totalTimeSeconds": 0.349
+				"memoryUsedKiB": 73396,
+				"checkTimeSeconds": 0.284,
+				"totalTimeSeconds": 0.304
 			}
 		},
 		{
@@ -661,9 +661,9 @@
 				"symbols": 46367,
 				"types": 3255,
 				"instantiations": 2708,
-				"memoryUsedKiB": 34592,
-				"checkTimeSeconds": 0.032,
-				"totalTimeSeconds": 0.06
+				"memoryUsedKiB": 34625,
+				"checkTimeSeconds": 0.027,
+				"totalTimeSeconds": 0.045
 			}
 		},
 		{
@@ -677,9 +677,9 @@
 				"symbols": 58954,
 				"types": 8197,
 				"instantiations": 11330,
-				"memoryUsedKiB": 43411,
-				"checkTimeSeconds": 0.224,
-				"totalTimeSeconds": 0.33
+				"memoryUsedKiB": 43462,
+				"checkTimeSeconds": 0.101,
+				"totalTimeSeconds": 0.12
 			}
 		},
 		{
@@ -693,9 +693,9 @@
 				"symbols": 46760,
 				"types": 7351,
 				"instantiations": 32893,
-				"memoryUsedKiB": 33386,
-				"checkTimeSeconds": 0.033,
-				"totalTimeSeconds": 0.06
+				"memoryUsedKiB": 33367,
+				"checkTimeSeconds": 0.02,
+				"totalTimeSeconds": 0.037
 			}
 		},
 		{
@@ -709,9 +709,9 @@
 				"symbols": 49629,
 				"types": 3318,
 				"instantiations": 917,
-				"memoryUsedKiB": 36805,
-				"checkTimeSeconds": 0.097,
-				"totalTimeSeconds": 0.123
+				"memoryUsedKiB": 36844,
+				"checkTimeSeconds": 0.081,
+				"totalTimeSeconds": 0.101
 			}
 		},
 		{
@@ -725,9 +725,9 @@
 				"symbols": 44966,
 				"types": 2751,
 				"instantiations": 817,
-				"memoryUsedKiB": 33721,
-				"checkTimeSeconds": 0.038,
-				"totalTimeSeconds": 0.082
+				"memoryUsedKiB": 33733,
+				"checkTimeSeconds": 0.02,
+				"totalTimeSeconds": 0.037
 			}
 		},
 		{
@@ -741,9 +741,9 @@
 				"symbols": 49097,
 				"types": 13955,
 				"instantiations": 13178,
-				"memoryUsedKiB": 41118,
-				"checkTimeSeconds": 0.098,
-				"totalTimeSeconds": 0.12
+				"memoryUsedKiB": 41140,
+				"checkTimeSeconds": 0.094,
+				"totalTimeSeconds": 0.113
 			}
 		}
 	],

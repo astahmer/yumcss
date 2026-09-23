@@ -448,6 +448,8 @@ for measured boundaries.
   playground, Inspector, analysis CLI, Migration Preview, codegen, and Vite.
 - [Reference](./docs/src/content/docs/reference/limitations.md) — technical
   contracts, support boundaries, benchmarks, and architecture.
+- [Performance overview](./PERF-SUMMARY.md) — current real-world comparisons
+  with per-category rankings and refresh cadence.
 
 ## Working on pandwind
 

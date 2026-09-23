@@ -1,12 +1,12 @@
 {
 	"schema": "pandwind.generated-types-poc/1",
 	"source": "runner/generated-types-poc.mts",
-	"updatedAt": "2026-09-16",
+	"updatedAt": "2026-09-23",
 	"samples": 3,
 	"environment": {
 		"platform": "darwin",
 		"arch": "arm64",
-		"node": "v24.19.0",
+		"node": "v24.20.0",
 		"typescript": "7.0.2"
 	},
 	"workloads": [
@@ -18,12 +18,12 @@
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/huge/tsconfig.json",
 			"metrics": {
 				"files": 81,
-				"symbols": 47665,
-				"types": 6757,
-				"instantiations": 215,
-				"memoryUsedKiB": 32760,
-				"checkTimeSeconds": 0.186,
-				"totalTimeSeconds": 0.225
+				"symbols": 47829,
+				"types": 6763,
+				"instantiations": 250,
+				"memoryUsedKiB": 33000,
+				"checkTimeSeconds": 0.077,
+				"totalTimeSeconds": 0.096
 			},
 			"generatedDeclarationBytes": 35250
 		},
@@ -34,13 +34,13 @@
 			"project": ".generated/generated-types-poc/inferred/huge/tsconfig.json",
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/huge/tsconfig.json",
 			"metrics": {
-				"files": 90,
-				"symbols": 80746,
-				"types": 54082,
-				"instantiations": 171509,
-				"memoryUsedKiB": 64060,
-				"checkTimeSeconds": 3.062,
-				"totalTimeSeconds": 3.093
+				"files": 89,
+				"symbols": 75738,
+				"types": 74857,
+				"instantiations": 172744,
+				"memoryUsedKiB": 63154,
+				"checkTimeSeconds": 1.269,
+				"totalTimeSeconds": 1.288
 			}
 		},
 		{
@@ -51,12 +51,12 @@
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/large/tsconfig.json",
 			"metrics": {
 				"files": 81,
-				"symbols": 36721,
-				"types": 2149,
-				"instantiations": 215,
-				"memoryUsedKiB": 27632,
-				"checkTimeSeconds": 0.019,
-				"totalTimeSeconds": 0.053
+				"symbols": 36885,
+				"types": 2155,
+				"instantiations": 250,
+				"memoryUsedKiB": 27830,
+				"checkTimeSeconds": 0.008,
+				"totalTimeSeconds": 0.026
 			},
 			"generatedDeclarationBytes": 9858
 		},
@@ -67,13 +67,13 @@
 			"project": ".generated/generated-types-poc/inferred/large/tsconfig.json",
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/large/tsconfig.json",
 			"metrics": {
-				"files": 90,
-				"symbols": 59050,
-				"types": 17218,
-				"instantiations": 57845,
-				"memoryUsedKiB": 46310,
-				"checkTimeSeconds": 0.209,
-				"totalTimeSeconds": 0.241
+				"files": 89,
+				"symbols": 54042,
+				"types": 24169,
+				"instantiations": 59080,
+				"memoryUsedKiB": 45271,
+				"checkTimeSeconds": 0.105,
+				"totalTimeSeconds": 0.124
 			}
 		},
 		{
@@ -84,12 +84,12 @@
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/medium/tsconfig.json",
 			"metrics": {
 				"files": 81,
-				"symbols": 33985,
-				"types": 997,
-				"instantiations": 215,
-				"memoryUsedKiB": 26304,
-				"checkTimeSeconds": 0.006,
-				"totalTimeSeconds": 0.048
+				"symbols": 34149,
+				"types": 1003,
+				"instantiations": 250,
+				"memoryUsedKiB": 26507,
+				"checkTimeSeconds": 0.002,
+				"totalTimeSeconds": 0.019
 			},
 			"generatedDeclarationBytes": 3522
 		},
@@ -100,13 +100,13 @@
 			"project": ".generated/generated-types-poc/inferred/medium/tsconfig.json",
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/medium/tsconfig.json",
 			"metrics": {
-				"files": 90,
-				"symbols": 53626,
-				"types": 8002,
-				"instantiations": 29429,
-				"memoryUsedKiB": 41814,
-				"checkTimeSeconds": 0.048,
-				"totalTimeSeconds": 0.087
+				"files": 89,
+				"symbols": 48618,
+				"types": 11497,
+				"instantiations": 30664,
+				"memoryUsedKiB": 40826,
+				"checkTimeSeconds": 0.02,
+				"totalTimeSeconds": 0.039
 			}
 		},
 		{
@@ -117,12 +117,12 @@
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/minimal/tsconfig.json",
 			"metrics": {
 				"files": 81,
-				"symbols": 33301,
-				"types": 709,
-				"instantiations": 215,
-				"memoryUsedKiB": 25940,
+				"symbols": 33465,
+				"types": 715,
+				"instantiations": 250,
+				"memoryUsedKiB": 26137,
 				"checkTimeSeconds": 0.001,
-				"totalTimeSeconds": 0.032
+				"totalTimeSeconds": 0.019
 			},
 			"generatedDeclarationBytes": 1938
 		},
@@ -133,13 +133,13 @@
 			"project": ".generated/generated-types-poc/inferred/minimal/tsconfig.json",
 			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/minimal/tsconfig.json",
 			"metrics": {
-				"files": 90,
-				"symbols": 52270,
-				"types": 5698,
-				"instantiations": 22325,
-				"memoryUsedKiB": 40558,
-				"checkTimeSeconds": 0.017,
-				"totalTimeSeconds": 0.042
+				"files": 89,
+				"symbols": 47262,
+				"types": 8329,
+				"instantiations": 23560,
+				"memoryUsedKiB": 39506,
+				"checkTimeSeconds": 0.008,
+				"totalTimeSeconds": 0.028
 			}
 		}
 	],

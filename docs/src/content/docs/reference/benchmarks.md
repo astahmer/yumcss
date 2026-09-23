@@ -15,9 +15,27 @@ versions. See
 [BENCH.md](https://github.com/astahmer/pandwind/blob/main/BENCH.md) in the
 repo for the complete methodology and caveats.
 
-The compact snapshot-derived typecheck and bundle-size summary is in
-[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md). It keeps
+The short, main-API comparison is in
+[`PERF-SUMMARY.md`](https://github.com/astahmer/pandwind/blob/main/PERF-SUMMARY.md).
+The detailed snapshot-derived typecheck, runtime, and bundle-size report is in
+[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md). Both keep
 rankings per workload and metric instead of inventing one composite score.
+
+The external [CSS-in-JS Bench](https://github.com/jantimon/css-in-js-bench)
+comparison runs the shared 400-tile product-grid workload through server
+rendering, payload, browser mount, hydration, and interaction measurements.
+Its normalized source snapshot is
+[`benchmarks/css-in-js-bench/snapshot.json`](https://github.com/astahmer/pandwind/blob/main/benchmarks/css-in-js-bench/snapshot.json).
+The Pandwind lane measures the Vite `tw()` literal-folding path; its benchmark-specific
+atom stylesheet adapter uses the shared CSS extraction core.
+CSS-in-JS Arena has no Pandwind lane yet; its six-page visual-parity gate must
+pass before we publish a comparable rank.
+
+Run focused regression measurements when changing the compiler, runtime, or
+bundler paths they cover. Refresh the complete local matrix before releases
+and monthly during active performance work. Refresh cross-project comparisons
+quarterly, or sooner after a benchmarked library changes major version.
+Individual JJ revisions do not need a full benchmark sweep.
 
 ## Competitor table
 

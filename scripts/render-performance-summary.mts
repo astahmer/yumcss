@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
 export const PERFORMANCE_SUMMARY = resolve(ROOT, "PERF.md");
+export const PERFORMANCE_OVERVIEW = resolve(ROOT, "PERF-SUMMARY.md");
 
 type Metrics = {
 	readonly files?: number;
@@ -97,6 +98,47 @@ type EcosystemBundleSnapshot = {
 	}[];
 };
 
+type ExternalBenchmarkResult = {
+	readonly tech: string;
+	readonly label: string;
+	readonly value: number;
+	readonly spread?: number;
+	readonly p95Ms?: number;
+	readonly payload?: {
+		readonly js: number;
+		readonly css: number;
+		readonly html: number;
+	};
+};
+
+type ExternalBenchmarkWorkload = {
+	readonly id: string;
+	readonly label: string;
+	readonly unit: string;
+	readonly direction: "higher" | "lower";
+	readonly caseId: string;
+	readonly results: readonly ExternalBenchmarkResult[];
+};
+
+type CssInJsBenchSnapshot = {
+	readonly schemaVersion: 1;
+	readonly source: {
+		readonly repository: string;
+		readonly url: string;
+		readonly cssInJsBenchRevision: string;
+		readonly pandwindRevision: string;
+		readonly wpdCompletedAt: string;
+		readonly host: string;
+		readonly node: string;
+		readonly gitSha: string;
+		readonly wpdVersion: string;
+		readonly browsers: { readonly chrome?: string; readonly firefox?: string };
+		readonly laneCount: number;
+		readonly caseCount: number;
+	};
+	readonly workloads: readonly ExternalBenchmarkWorkload[];
+};
+
 type RankingMetric = "checkTimeSeconds" | "instantiations";
 
 const stylingSnapshotPath = resolve(ROOT, "benchmarks/styling-tsc/snapshots/tsc.json");
@@ -123,6 +165,7 @@ const ecosystemBundleSizeSnapshotPath = resolve(
 	ROOT,
 	"benchmarks/styling-size/snapshots/bundle-size.json",
 );
+const cssInJsBenchSnapshotPath = resolve(ROOT, "benchmarks/css-in-js-bench/snapshot.json");
 
 const readJson = <T,>(path: string): T | undefined => {
 	if (!existsSync(path)) return undefined;
@@ -218,7 +261,7 @@ const renderPandwindBaselines = (
 	const add = (label: string, snapshot: TscSnapshot | undefined): void => {
 		if (snapshot === undefined) return;
 		rows.push([
-			label,
+			`${label} (${snapshot.updatedAt})`,
 			integer(snapshot.metrics.instantiations),
 			integer(snapshot.metrics.memoryUsedKiB),
 			seconds(snapshot.metrics.checkTimeSeconds),
@@ -241,7 +284,7 @@ const renderPandwindBaselines = (
 			const scenario = apiSnapshot.scenarios.find((candidate) => candidate.name === name);
 			if (scenario === undefined) continue;
 			rows.push([
-				`API ${name}`,
+				`API ${name} (${apiSnapshot.updatedAt})`,
 				integer(scenario.metrics.instantiations),
 				integer(scenario.metrics.memoryUsedKiB),
 				seconds(scenario.metrics.checkTimeSeconds),
@@ -546,6 +589,188 @@ const renderRuntimeApiRanking = (snapshot: RuntimeApiSnapshot | undefined): stri
 	];
 };
 
+const formatExternalMetric = (value: number, unit: string): string => {
+	if (unit === "tiles/s") return `${integer(value)} ${unit}`;
+	if (unit === "gzip bytes") return `${kilobytes(value)} KB`;
+	return `${value.toFixed(2)} ${unit}`;
+};
+
+const renderRankedExternalWorkload = (
+	workload: ExternalBenchmarkWorkload,
+	targetTech: string,
+): string[][] => {
+	if (workload.id === "inp") {
+		const medians = workload.results.map((result) => result.value);
+		const p95Values = workload.results.flatMap((result) =>
+			result.p95Ms === undefined ? [] : [result.p95Ms],
+		);
+		const targetResult = workload.results.find((result) => result.tech === targetTech);
+		const mediansRange = `${Math.min(...medians).toFixed(1)}–${Math.max(...medians).toFixed(1)} ms`;
+		const p95Range =
+			p95Values.length === 0
+				? ""
+				: `; p95 ${Math.min(...p95Values).toFixed(1)}–${Math.max(...p95Values).toFixed(1)} ms`;
+		return [
+			[
+				workload.label,
+				workload.caseId,
+				`Unranked: medians cluster at ${mediansRange}${p95Range}; this frame-timed range does not support a useful rank`,
+				targetResult === undefined
+					? "not measured"
+					: `unranked — ${formatExternalMetric(targetResult.value, workload.unit)}`,
+			],
+		];
+	}
+	const ranked = workload.results.toSorted((left, right) =>
+		workload.direction === "higher"
+			? right.value - left.value || left.label.localeCompare(right.label)
+			: left.value - right.value || left.label.localeCompare(right.label),
+	);
+	const targetIndex = ranked.findIndex((result) => result.tech === targetTech);
+	const topFive = ranked
+		.slice(0, 5)
+		.map((result, index) => `${index + 1}. ${result.label} (${formatExternalMetric(result.value, workload.unit)})`)
+		.join("<br>");
+	const target =
+		targetIndex < 0
+			? "not measured"
+			: `#${targetIndex + 1}/${ranked.length} — ${formatExternalMetric(ranked[targetIndex]!.value, workload.unit)}${
+					ranked[targetIndex]!.payload === undefined
+						? ""
+						: ` (JS ${kilobytes(ranked[targetIndex]!.payload.js)} KB; CSS ${kilobytes(ranked[targetIndex]!.payload.css)} KB; HTML ${kilobytes(ranked[targetIndex]!.payload.html)} KB)`
+				}`;
+	return [[workload.label, workload.caseId, topFive, target]];
+};
+
+const renderCssInJsBenchComparison = (
+	snapshot: CssInJsBenchSnapshot | undefined,
+): string[] => {
+	if (snapshot === undefined) return [];
+	const rows = snapshot.workloads.flatMap((workload) =>
+		renderRankedExternalWorkload(workload, "pandwind-buildtime"),
+	);
+	if (rows.length === 0) return [];
+	return [
+		"## [CSS-in-JS Bench](https://github.com/jantimon/css-in-js-bench): real-world product grid",
+		"",
+		`A 400-tile shop page; WPD finished ${snapshot.source.wpdCompletedAt} on ${snapshot.source.host} with Node ${snapshot.source.node}, WPD ${snapshot.source.wpdVersion}, Chrome ${snapshot.source.browsers.chrome ?? "unknown"}, and Firefox ${snapshot.source.browsers.firefox ?? "unknown"}. The snapshot covers ${snapshot.source.laneCount} lanes and ${snapshot.source.caseCount} workloads. Pandwind source: ${snapshot.source.pandwindRevision}; CSS-in-JS Bench source: ${snapshot.source.cssInJsBenchRevision}. Payload is gzipped JS + CSS + HTML; browser figures are Chrome medians. Lower is better except SSR throughput. Pandwind uses the build-time extraction lane; each row ranks only that metric across the same workload.`,
+		"",
+		markdownTable(
+			["Measure", "Workload", "Top five", "Pandwind build-time"],
+			rows,
+			new Set(),
+		),
+		"",
+		"This page combines static styles, variants, dynamic values, composition, responsive rules, and accessibility behavior. The Pandwind lane uses Vite's literal `tw()` folding path; its benchmark-specific atom stylesheet adapter uses the shared CSS extraction core. Values are per-metric rankings; there is no cross-category score. The normalized source data is [snapshot.json](benchmarks/css-in-js-bench/snapshot.json).",
+		"",
+	];
+};
+
+const renderNaturalTypecheckRanking = (snapshot: StylingSnapshot | undefined): string[] => {
+	if (snapshot === undefined) return [];
+	const ranked = snapshot.workloads
+		.filter((workload) => workload.scenario === "natural")
+		.toSorted(
+			(left, right) =>
+				left.metrics.instantiations - right.metrics.instantiations ||
+				left.library.localeCompare(right.library),
+		);
+	if (ranked.length === 0) return [];
+	const topFive = ranked
+		.slice(0, 5)
+		.map(
+			(workload, index) =>
+				`${index + 1}. ${displayLibrary(workload.library)} (${integer(workload.metrics.instantiations)} inst.; ${seconds(workload.metrics.checkTimeSeconds)} s)`,
+		)
+		.join("<br>");
+	const pandwindIndex = ranked.findIndex((workload) => workload.library === "pandwind");
+	const pandwind =
+		pandwindIndex < 0
+			? "not measured"
+			: `#${pandwindIndex + 1}/${ranked.length} — ${integer(ranked[pandwindIndex]!.metrics.instantiations)} inst.; ${seconds(ranked[pandwindIndex]!.metrics.checkTimeSeconds)} s`;
+	return [
+		"## Consumer typecheck: natural CSS usage",
+		"",
+		`TypeScript ${snapshot.environment.typescript}, snapshot updated ${snapshot.updatedAt}; this is the natural-use fixture, not the synthetic stress case. Ranked by instantiations because the short check times are close to process overhead; check time remains visible for context.`,
+		"",
+		markdownTable(
+			["Measure", "Top five", "Pandwind (inferred)"],
+			[["TypeScript instantiations (check time)", topFive, pandwind]],
+			new Set(),
+		),
+		"",
+	];
+};
+
+const renderStaticBundleRanking = (snapshot: EcosystemBundleSnapshot | undefined): string[] => {
+	if (snapshot === undefined) return [];
+	const ranked = snapshot.workloads
+		.filter((workload) => workload.category === "static")
+		.toSorted(
+			(left, right) =>
+				left.delta.total.gz - right.delta.total.gz || left.library.localeCompare(right.library),
+		);
+	if (ranked.length === 0) return [];
+	const topFive = ranked
+		.slice(0, 5)
+		.map(
+			(workload, index) =>
+				`${index + 1}. ${ecosystemLibrary(workload.library)} (${signedKilobytes(workload.delta.total.gz)})`,
+		)
+		.join("<br>");
+	const pandwindIndex = ranked.findIndex((workload) => workload.library === "pandwind");
+	const pandwind =
+		pandwindIndex < 0
+			? "not measured"
+			: `#${pandwindIndex + 1}/${ranked.length} — ${signedKilobytes(ranked[pandwindIndex]!.delta.total.gz)}`;
+	return [
+		"## Static production output size",
+		"",
+		`Styled app minus unstyled app baseline, gzip total, snapshot updated ${snapshot.updatedAt}. Lower is smaller.`,
+		"",
+		markdownTable(
+			["Measure", "Top five", "Pandwind"],
+			[["Static output delta", topFive, pandwind]],
+			new Set(),
+		),
+		"",
+	];
+};
+
+export const renderPerformanceOverview = (): string => {
+	const styling = readJson<StylingSnapshot>(stylingSnapshotPath);
+	const ecosystemBundleSizes = readJson<EcosystemBundleSnapshot>(ecosystemBundleSizeSnapshotPath);
+	const cssInJsBench = readJson<CssInJsBenchSnapshot>(cssInJsBenchSnapshotPath);
+	if (cssInJsBench === undefined) {
+		throw new Error(`missing ${cssInJsBenchSnapshotPath}; import a CSS-in-JS Bench report first`);
+	}
+	return [
+		"<!-- Generated by scripts/render-performance-summary.mts; do not edit. -->",
+		"",
+		"# Pandwind performance overview",
+		"",
+		"Quick view of the main API and real-world workload comparisons. For complete measurements, synthetic stress cases, snapshots, and methodology, see [PERF.md](PERF.md). Rankings are per metric; there is no single score across unlike workloads.",
+		"",
+		...renderNaturalTypecheckRanking(styling),
+		...renderStaticBundleRanking(ecosystemBundleSizes),
+		...renderCssInJsBenchComparison(cssInJsBench),
+		"## [CSS-in-JS Arena](https://github.com/gajus/css-in-js-arena) coverage",
+		"",
+		"The latest upstream run is dated 2026-09-03 and has Bamboo, StyleX, and Panda, with no Pandwind lane. Arena requires its six-page app to match the existing implementations before results are comparable, so there is no valid Pandwind rank to report.",
+		"",
+		"## Benchmark cadence",
+		"",
+		"Run focused regression benchmarks with changes to the compiler, runtime, public API, or bundler plugin paths they cover. Refresh the full local comparison before releases and monthly while performance work is active. Refresh external CSS-in-JS Bench/Arena comparisons quarterly, or sooner when a benchmarked library or its major version changes. A JJ revision by itself is not a reason to rerun the full matrix.",
+		"",
+		"## Refresh",
+		"",
+		"1. Run the local commands listed at the end of [PERF.md](PERF.md).",
+		"2. In a separate CSS-in-JS Bench checkout, run `pnpm gen:samples --measure=microbench,payload,buildtime`, then `pnpm gen:wpd`, `pnpm verify`, and `pnpm report`.",
+		"3. Import the generated `BENCHMARK.json` with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`, then run `pnpm run bench:summary` and `pnpm run bench:summary:check`.",
+		"",
+	].join("\n");
+};
+
 export const renderPerformanceSummary = (): string => {
 	const styling = readJson<StylingSnapshot>(stylingSnapshotPath);
 	const generated = readJson<GeneratedSnapshot>(generatedSnapshotPath);
@@ -561,9 +786,9 @@ export const renderPerformanceSummary = (): string => {
 	const lines = [
 		"<!-- Generated by scripts/render-performance-summary.mts; do not edit. -->",
 		"",
-		"# Pandwind performance summary",
+		"# Pandwind performance details",
 		"",
-		"This compact report is derived from the committed typecheck, runtime-throughput, and bundle-size snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.",
+		"For the concise real-world comparison, see [PERF-SUMMARY.md](PERF-SUMMARY.md). This detailed report is derived from the committed typecheck, runtime-throughput, and bundle-size snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.",
 		"",
 		"TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-throughput measurements are local in-process calls. Runtime-size measurements are minified browser bundles with gzip level 6.",
 		"",
@@ -592,6 +817,12 @@ export const renderPerformanceSummary = (): string => {
 	lines.push(...renderGeneratedRuntimeSizes(generatedRuntimeSizes));
 	lines.push(...renderEcosystemBundleComparison(ecosystemBundleSizes));
 	lines.push(
+		"## External benchmark import",
+		"",
+		"After refreshing CSS-in-JS Bench in a separate checkout, import its generated report with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`. This updates the normalized ranking source used by PERF-SUMMARY.md.",
+		"",
+	);
+	lines.push(
 		"## Sources and refresh commands",
 		"",
 		"- Typecheck ecosystem: `pnpm run bench:tsc:styling -- --update`",
@@ -609,6 +840,7 @@ export const renderPerformanceSummary = (): string => {
 
 export const writePerformanceSummary = (): void => {
 	writeFileSync(PERFORMANCE_SUMMARY, renderPerformanceSummary());
+	writeFileSync(PERFORMANCE_OVERVIEW, renderPerformanceOverview());
 };
 
 const checkPerformanceSummary = (): void => {
@@ -619,6 +851,14 @@ const checkPerformanceSummary = (): void => {
 	const actual = readFileSync(PERFORMANCE_SUMMARY, "utf8");
 	if (actual !== expected) {
 		throw new Error("PERF.md is stale; run pnpm run bench:summary");
+	}
+	if (!existsSync(PERFORMANCE_OVERVIEW)) {
+		throw new Error(`missing ${PERFORMANCE_OVERVIEW}; run pnpm run bench:summary`);
+	}
+	const expectedOverview = renderPerformanceOverview();
+	const actualOverview = readFileSync(PERFORMANCE_OVERVIEW, "utf8");
+	if (actualOverview !== expectedOverview) {
+		throw new Error("PERF-SUMMARY.md is stale; run pnpm run bench:summary");
 	}
 };
 
