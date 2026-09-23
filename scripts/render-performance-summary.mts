@@ -139,6 +139,37 @@ type CssInJsBenchSnapshot = {
 	readonly workloads: readonly ExternalBenchmarkWorkload[];
 };
 
+type ArenaLibrary = "bamboo" | "stylex" | "panda" | "pandwind";
+
+type ArenaMetric = {
+	readonly category: string;
+	readonly label: string;
+	readonly unit: "B" | "ms";
+	readonly values: Readonly<Record<ArenaLibrary, number>>;
+};
+
+type ArenaSnapshot = {
+	readonly schemaVersion: 1;
+	readonly source: {
+		readonly url: string;
+		readonly arenaRevision: string;
+		readonly pandwindRevision: string;
+		readonly measuredAt: string;
+		readonly environment: string;
+		readonly parity: {
+			readonly geometryPassed: number;
+			readonly geometryTotal: number;
+			readonly geometryThresholdPx: number;
+			readonly screenshotsPassed: number;
+			readonly screenshotsTotal: number;
+			readonly screenshotThresholdPercent: number;
+			readonly pandwindMaxImageDifferencePercent: number;
+			readonly maxImageDifferencePercent: number;
+		};
+	};
+	readonly metrics: readonly ArenaMetric[];
+};
+
 type RankingMetric = "checkTimeSeconds" | "instantiations";
 
 const stylingSnapshotPath = resolve(ROOT, "benchmarks/styling-tsc/snapshots/tsc.json");
@@ -166,6 +197,7 @@ const ecosystemBundleSizeSnapshotPath = resolve(
 	"benchmarks/styling-size/snapshots/bundle-size.json",
 );
 const cssInJsBenchSnapshotPath = resolve(ROOT, "benchmarks/css-in-js-bench/snapshot.json");
+const arenaSnapshotPath = resolve(ROOT, "benchmarks/css-in-js-arena/snapshot.json");
 
 const readJson = <T,>(path: string): T | undefined => {
 	if (!existsSync(path)) return undefined;
@@ -204,6 +236,53 @@ const markdownTable = (
 			: "-".repeat(Math.max(3, width)),
 	);
 	return [formatRow(headers), formatRow(separator), ...rows.map(formatRow)].join("\n");
+};
+
+const arenaLibraries: readonly { readonly id: ArenaLibrary; readonly label: string }[] = [
+	{ id: "bamboo", label: "Bamboo" },
+	{ id: "stylex", label: "StyleX" },
+	{ id: "panda", label: "Panda" },
+	{ id: "pandwind", label: "Pandwind" },
+];
+
+const formatArenaValue = (value: number, unit: ArenaMetric["unit"]): string =>
+	`${value.toLocaleString("en-US", { maximumFractionDigits: unit === "ms" ? 1 : 0 })} ${unit}`;
+
+const renderArenaComparison = (snapshot: ArenaSnapshot | undefined): string[] => {
+	if (snapshot === undefined) {
+		throw new Error(`missing ${arenaSnapshotPath}; refresh the CSS-in-JS Arena comparison first`);
+	}
+	const { parity } = snapshot.source;
+	const rows = snapshot.metrics.map((metric) => {
+		const ranked = arenaLibraries
+			.map((library) => ({ ...library, value: metric.values[library.id] }))
+			.toSorted((left, right) => left.value - right.value || left.label.localeCompare(right.label));
+		const topThree = ranked
+			.slice(0, 3)
+			.map(
+				(entry, index) =>
+					`${index + 1}. ${entry.label} (${formatArenaValue(entry.value, metric.unit)})`,
+			)
+			.join("<br>");
+		const pandwindIndex = ranked.findIndex((entry) => entry.id === "pandwind");
+		const pandwind = ranked[pandwindIndex]!;
+		return [
+			metric.category,
+			metric.label,
+			topThree,
+			`#${pandwindIndex + 1}/4 — ${formatArenaValue(pandwind.value, metric.unit)}`,
+		];
+	});
+	return [
+		"## [CSS-in-JS Arena](https://github.com/gajus/css-in-js-arena) six-page comparison",
+		"",
+		`Pandwind's six-page lane passed parity: ${parity.geometryPassed}/${parity.geometryTotal} route geometry checks stayed within ${parity.geometryThresholdPx} px; ${parity.screenshotsPassed}/${parity.screenshotsTotal} screenshots stayed below ${parity.screenshotThresholdPercent}%. Measured ${snapshot.source.measuredAt} on ${snapshot.source.environment}. Lower is better; each row ranks the four engines independently, with no combined score.`,
+		"",
+		markdownTable(["Category", "Measure", "Top three", "Pandwind"], rows, new Set()),
+		"",
+		`Pandwind's maximum screenshot difference was ${parity.pandwindMaxImageDifferencePercent}%; maximum across all lanes was ${parity.maxImageDifferencePercent}%. The Arena worktree records full methods and stress results in revision ${snapshot.source.arenaRevision}; normalized inputs are in the [local comparison snapshot](benchmarks/css-in-js-arena/snapshot.json). Pandwind source revision ${snapshot.source.pandwindRevision}.`,
+		"",
+	];
 };
 
 const displayLibrary = (library: string): string => {
@@ -629,7 +708,10 @@ const renderRankedExternalWorkload = (
 	const targetIndex = ranked.findIndex((result) => result.tech === targetTech);
 	const topFive = ranked
 		.slice(0, 5)
-		.map((result, index) => `${index + 1}. ${result.label} (${formatExternalMetric(result.value, workload.unit)})`)
+		.map(
+			(result, index) =>
+				`${index + 1}. ${result.label} (${formatExternalMetric(result.value, workload.unit)})`,
+		)
 		.join("<br>");
 	const target =
 		targetIndex < 0
@@ -642,9 +724,7 @@ const renderRankedExternalWorkload = (
 	return [[workload.label, workload.caseId, topFive, target]];
 };
 
-const renderCssInJsBenchComparison = (
-	snapshot: CssInJsBenchSnapshot | undefined,
-): string[] => {
+const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined): string[] => {
 	if (snapshot === undefined) return [];
 	const rows = snapshot.workloads.flatMap((workload) =>
 		renderRankedExternalWorkload(workload, "pandwind-buildtime"),
@@ -655,11 +735,7 @@ const renderCssInJsBenchComparison = (
 		"",
 		`A 400-tile shop page; WPD finished ${snapshot.source.wpdCompletedAt} on ${snapshot.source.host} with Node ${snapshot.source.node}, WPD ${snapshot.source.wpdVersion}, Chrome ${snapshot.source.browsers.chrome ?? "unknown"}, and Firefox ${snapshot.source.browsers.firefox ?? "unknown"}. The snapshot covers ${snapshot.source.laneCount} lanes and ${snapshot.source.caseCount} workloads. Pandwind source: ${snapshot.source.pandwindRevision}; CSS-in-JS Bench source: ${snapshot.source.cssInJsBenchRevision}. Payload is gzipped JS + CSS + HTML; browser figures are Chrome medians. Lower is better except SSR throughput. Pandwind uses the build-time extraction lane; each row ranks only that metric across the same workload.`,
 		"",
-		markdownTable(
-			["Measure", "Workload", "Top five", "Pandwind build-time"],
-			rows,
-			new Set(),
-		),
+		markdownTable(["Measure", "Workload", "Top five", "Pandwind build-time"], rows, new Set()),
 		"",
 		"This page combines static styles, variants, dynamic values, composition, responsive rules, and accessibility behavior. The Pandwind lane uses Vite's literal `tw()` folding path; its benchmark-specific atom stylesheet adapter uses the shared CSS extraction core. Values are per-metric rankings; there is no cross-category score. The normalized source data is [snapshot.json](benchmarks/css-in-js-bench/snapshot.json).",
 		"",
@@ -741,6 +817,7 @@ export const renderPerformanceOverview = (): string => {
 	const styling = readJson<StylingSnapshot>(stylingSnapshotPath);
 	const ecosystemBundleSizes = readJson<EcosystemBundleSnapshot>(ecosystemBundleSizeSnapshotPath);
 	const cssInJsBench = readJson<CssInJsBenchSnapshot>(cssInJsBenchSnapshotPath);
+	const arena = readJson<ArenaSnapshot>(arenaSnapshotPath);
 	if (cssInJsBench === undefined) {
 		throw new Error(`missing ${cssInJsBenchSnapshotPath}; import a CSS-in-JS Bench report first`);
 	}
@@ -754,10 +831,7 @@ export const renderPerformanceOverview = (): string => {
 		...renderNaturalTypecheckRanking(styling),
 		...renderStaticBundleRanking(ecosystemBundleSizes),
 		...renderCssInJsBenchComparison(cssInJsBench),
-		"## [CSS-in-JS Arena](https://github.com/gajus/css-in-js-arena) coverage",
-		"",
-		"The latest upstream run is dated 2026-09-03 and has Bamboo, StyleX, and Panda, with no Pandwind lane. Arena requires its six-page app to match the existing implementations before results are comparable, so there is no valid Pandwind rank to report.",
-		"",
+		...renderArenaComparison(arena),
 		"## Benchmark cadence",
 		"",
 		"Run focused regression benchmarks with changes to the compiler, runtime, public API, or bundler plugin paths they cover. Refresh the full local comparison before releases and monthly while performance work is active. Refresh external CSS-in-JS Bench/Arena comparisons quarterly, or sooner when a benchmarked library or its major version changes. A JJ revision by itself is not a reason to rerun the full matrix.",
@@ -766,7 +840,8 @@ export const renderPerformanceOverview = (): string => {
 		"",
 		"1. Run the local commands listed at the end of [PERF.md](PERF.md).",
 		"2. In a separate CSS-in-JS Bench checkout, run `pnpm gen:samples --measure=microbench,payload,buildtime`, then `pnpm gen:wpd`, `pnpm verify`, and `pnpm report`.",
-		"3. Import the generated `BENCHMARK.json` with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`, then run `pnpm run bench:summary` and `pnpm run bench:summary:check`.",
+		"3. In CSS-in-JS Arena, refresh the pinned Pandwind tarball, pass the six-route geometry and screenshot gates, then run the byte, build, dev-start, and four-sweep HMR measurements. Keep parity and source revisions with the results.",
+		"4. Import `BENCHMARK.json` with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`, update `benchmarks/css-in-js-arena/snapshot.json`, then run `pnpm run bench:summary` and `pnpm run bench:summary:check`.",
 		"",
 	].join("\n");
 };
@@ -817,9 +892,9 @@ export const renderPerformanceSummary = (): string => {
 	lines.push(...renderGeneratedRuntimeSizes(generatedRuntimeSizes));
 	lines.push(...renderEcosystemBundleComparison(ecosystemBundleSizes));
 	lines.push(
-		"## External benchmark import",
+		"## External benchmark refresh",
 		"",
-		"After refreshing CSS-in-JS Bench in a separate checkout, import its generated report with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`. This updates the normalized ranking source used by PERF-SUMMARY.md.",
+		"After refreshing CSS-in-JS Bench in a separate checkout, import its generated report with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`. Update the [CSS-in-JS Arena snapshot](benchmarks/css-in-js-arena/snapshot.json) only after its Pandwind lane passes the six-page parity gates; that snapshot drives the Arena rankings in PERF-SUMMARY.md.",
 		"",
 	);
 	lines.push(

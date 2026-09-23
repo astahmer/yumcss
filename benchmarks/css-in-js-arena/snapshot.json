@@ -1,0 +1,82 @@
+{
+	"schemaVersion": 1,
+	"source": {
+		"url": "https://github.com/gajus/css-in-js-arena",
+		"arenaRevision": "6ebaff4466dff20f32f5e5d7fa788a0da1305a8de",
+		"pandwindRevision": "ef4c7993ed36db6a5ae991ce140161bffee06926",
+		"measuredAt": "2026-09-23",
+		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1",
+		"parity": {
+			"geometryPassed": 18,
+			"geometryTotal": 18,
+			"geometryThresholdPx": 0.5,
+			"screenshotsPassed": 72,
+			"screenshotsTotal": 72,
+			"screenshotThresholdPercent": 0.05,
+			"pandwindMaxImageDifferencePercent": 0.0153,
+			"maxImageDifferencePercent": 0.0187
+		}
+	},
+	"metrics": [
+		{
+			"category": "Output",
+			"label": "Browser CSS, raw",
+			"unit": "B",
+			"values": { "bamboo": 43420, "stylex": 40430, "panda": 54007, "pandwind": 31732 }
+		},
+		{
+			"category": "Output",
+			"label": "Browser CSS, Brotli",
+			"unit": "B",
+			"values": { "bamboo": 7357, "stylex": 7008, "panda": 9518, "pandwind": 8724 }
+		},
+		{
+			"category": "Output",
+			"label": "Client JavaScript, Brotli",
+			"unit": "B",
+			"values": { "bamboo": 97104, "stylex": 97845, "panda": 102731, "pandwind": 111623 }
+		},
+		{
+			"category": "Output",
+			"label": "Mean SSR HTML, gzip, six routes",
+			"unit": "B",
+			"values": { "bamboo": 5533, "stylex": 5529, "panda": 5537, "pandwind": 5468 }
+		},
+		{
+			"category": "Output",
+			"label": "Full first load",
+			"unit": "B",
+			"values": { "bamboo": 109994, "stylex": 110382, "panda": 117786, "pandwind": 125815 }
+		},
+		{
+			"category": "Output",
+			"label": "HTML class attributes, six routes",
+			"unit": "B",
+			"values": { "bamboo": 93036, "stylex": 70843, "panda": 92738, "pandwind": 59980 }
+		},
+		{
+			"category": "Build and dev",
+			"label": "Cold production build, median of five",
+			"unit": "ms",
+			"values": { "bamboo": 1519, "stylex": 2919, "panda": 2094, "pandwind": 1284 }
+		},
+		{
+			"category": "Build and dev",
+			"label": "Dev server cold start, median of three",
+			"unit": "ms",
+			"values": { "bamboo": 1551, "stylex": 1657, "panda": 1670, "pandwind": 1383 }
+		},
+		{
+			"category": "HMR",
+			"label": "Shared style edit to correct paint",
+			"unit": "ms",
+			"values": { "bamboo": 232.3, "stylex": 199.5, "panda": 154.1, "pandwind": 135.9 }
+		},
+		{
+			"category": "HMR",
+			"label": "Component edit to correct paint",
+			"unit": "ms",
+			"values": { "bamboo": 164.2, "stylex": 356.9, "panda": 208.3, "pandwind": 227.4 }
+		}
+	]
+}

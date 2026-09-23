@@ -324,9 +324,9 @@ Static production output ships extracted CSS. Runtime/dynamic output keeps style
 
 Full styled/baseline metrics, pinned versions, and the fixture methodology: [bundle-size.md](benchmarks/styling-size/snapshots/bundle-size.md).
 
-## External benchmark import
+## External benchmark refresh
 
-After refreshing CSS-in-JS Bench in a separate checkout, import its generated report with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`. This updates the normalized ranking source used by PERF-SUMMARY.md.
+After refreshing CSS-in-JS Bench in a separate checkout, import its generated report with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`. Update the [CSS-in-JS Arena snapshot](benchmarks/css-in-js-arena/snapshot.json) only after its Pandwind lane passes the six-page parity gates; that snapshot drives the Arena rankings in PERF-SUMMARY.md.
 
 ## Sources and refresh commands
 
