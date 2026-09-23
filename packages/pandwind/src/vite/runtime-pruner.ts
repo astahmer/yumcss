@@ -16,6 +16,7 @@ import { identifierName, memberName as genericMemberName } from "./ast-walk.ts";
 import { markCssFactoryCallsPure } from "./css-call-rewriter.ts";
 import { mayContainCssFactoryImport } from "./css-factory-source.ts";
 import type { CssPreset } from "./css-extract.ts";
+import { applySourceEdits } from "./source-edits.ts";
 
 const VIRTUAL_PREFIX = "pandwind:runtime/css";
 const CSS_RUNTIME_SOURCES =
@@ -973,13 +974,7 @@ export const createRuntimePruningTransform = (
 				}
 			}
 			if (replacements.size === 0) return pureChanged ? { code, map: null } : null;
-			let output = code;
-			for (const replacement of [...replacements.values()].toSorted(
-				(left, right) => right.start - left.start,
-			)) {
-				output =
-					output.slice(0, replacement.start) + replacement.text + output.slice(replacement.end);
-			}
+			const output = applySourceEdits(code, [...replacements.values()]);
 			return { code: output, map: null };
 		},
 		resolveId(source) {

@@ -12,6 +12,7 @@ import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
  */
 import { type Expression } from "oxc-parser";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
+import { applySourceEdits } from "./source-edits.ts";
 import {
 	compileStyles,
 	type TwComposeMeta,
@@ -446,9 +447,6 @@ export function inlineTwCalls(
 			...(unresolved.length > 0 && { unresolved }),
 		};
 	}
-	let output = code;
-	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {
-		output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
-	}
+	const output = applySourceEdits(code, edits);
 	return { code: output, inlined, unresolved, candidates };
 }

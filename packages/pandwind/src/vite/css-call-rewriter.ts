@@ -20,6 +20,7 @@ import type { StyleObject, TokenVariableNames } from "../types/typings.ts";
 import { NodeKind } from "../ast-node-kind.ts";
 import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
 import { findFirstThatWorksBindings } from "./css-source-scanner.ts";
+import { applySourceEdits } from "./source-edits.ts";
 import {
 	findCssFactoryBindings,
 	findCssFactoryBindingsInProgram,
@@ -484,9 +485,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				/* dynamic/unrepresentable calls stay on the runtime path */
 			}
 		});
-		let output = code;
-		for (const edit of edits.toReversed())
-			output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
+		let output = applySourceEdits(code, edits);
 		if (directTokenMaps.size > 0) {
 			const declarations = [...directTokenMaps.entries()]
 				.map(([serialized, name]) => `const ${name} = ${serialized};`)
@@ -739,7 +738,8 @@ export const markCssFactoryCallsPure = (code: string, id: string): string => {
 		if (prefix.includes("@__PURE__")) return;
 		starts.push(call.start);
 	});
-	for (const start of starts.toReversed())
-		code = code.slice(0, start) + "/* @__PURE__ */ " + code.slice(start);
-	return code;
+	return applySourceEdits(
+		code,
+		starts.map((start) => ({ start, end: start, text: "/* @__PURE__ */ " })),
+	);
 };

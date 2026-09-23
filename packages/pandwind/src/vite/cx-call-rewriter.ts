@@ -20,6 +20,7 @@ import {
 	type StaticEval,
 } from "./cx-static-evaluator.ts";
 import { NodeKind } from "../ast-node-kind.ts";
+import { applySourceEdits } from "./source-edits.ts";
 
 /** Rewrites only provably equivalent cx() calls; all other calls stay runtime. */
 export interface CxCompilerPorts {
@@ -315,9 +316,7 @@ export class CxCallRewriter {
 			}
 		});
 
-		let output = code;
-		for (const edit of edits.toSorted((a, b) => b.start - a.start))
-			output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
+		const output = applySourceEdits(code, edits);
 		if (edits.length === 0)
 			return {
 				code,

@@ -14,6 +14,7 @@ import { evalLiteral, walk, type OxcNode } from "../tw/literal.ts";
 import { stackClasses, stackStyle, type StackProps } from "../stack/index.ts";
 import { isResponsiveValue } from "../stack/responsive.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
+import { applySourceEdits, type SourceTextEdit } from "./source-edits.ts";
 
 export interface StackFoldOptions {
 	/** Shared engine used by `createStack(css)` and `pandwindCssVite`. */
@@ -287,9 +288,7 @@ export function foldStackElements(
 
 	if (targets.length === 0) return { code, folded: 0 };
 
-	// Apply edits back-to-front so ranges stay valid.
-	type Edit = { start: number; end: number; text: string };
-	const edits: Edit[] = [];
+	const edits: SourceTextEdit[] = [];
 	for (const t of targets) {
 		const passthrough = passthroughAttrs(code.slice(t.openingStart, t.openingEnd), classAttribute);
 		if (t.selfClosing) {
@@ -310,10 +309,7 @@ export function foldStackElements(
 		}
 	}
 	// import removal when no other Stack reference remains
-	let out = code;
-	for (const e of [...edits].toSorted((a, b) => b.start - a.start)) {
-		out = out.slice(0, e.start) + e.text + out.slice(e.end);
-	}
+	let out = applySourceEdits(code, edits);
 	if (!/(?<![A-Za-z0-9_])Stack(?![A-Za-z0-9_])/.test(stripImportLines(out))) {
 		out = out.replace(
 			/\n?import\s+\{[^}]*\bStack\b[^}]*\}\s+from\s+["'][^"']*pandwind\/stack[^"']*["'];?\n/g,
@@ -445,8 +441,7 @@ const foldNativeStackElements = (
 
 	if (targets.length === 0) return { code, folded: 0 };
 
-	type Edit = { start: number; end: number; text: string };
-	const edits: Edit[] = [];
+	const edits: SourceTextEdit[] = [];
 	for (const target of targets) {
 		const passthrough = passthroughAttrs(
 			code.slice(target.openingStart, target.openingEnd),
@@ -469,10 +464,7 @@ const foldNativeStackElements = (
 		edits.push({ start: target.closingStart, end: target.closingEnd, text: "</div>" });
 	}
 
-	let out = code;
-	for (const edit of edits.toSorted((left, right) => right.start - left.start)) {
-		out = out.slice(0, edit.start) + edit.text + out.slice(edit.end);
-	}
+	let out = applySourceEdits(code, edits);
 	if (!/<Stack(?=\s|\/?>)/u.test(out)) {
 		out = out.replace(
 			/\n?import\s+Stack\s+from\s+["']pandwind\/stack\/(?:svelte|astro)["'];?\n/gu,
