@@ -22,6 +22,7 @@
  */
 
 import { NodeKind } from "./ast-node-kind.ts";
+import { cssPropertiesMayConflict, isTypedCssStringValue } from "./typed-css-values.ts";
 import {
 	analyzeCssInlineArguments,
 	canonicalStyleKey,
@@ -943,55 +944,8 @@ const markerForAnyCall = (
 	return undefined;
 };
 
-const AUTO_INTRINSIC_PROPERTIES = new Set([
-	"alignSelf",
-	"appearance",
-	"aspectRatio",
-	"backgroundSize",
-	"justifySelf",
-	"placeSelf",
-	"margin",
-	"marginTop",
-	"marginRight",
-	"marginBottom",
-	"marginLeft",
-	"marginInline",
-	"marginInlineStart",
-	"marginInlineEnd",
-	"marginBlock",
-	"marginBlockStart",
-	"marginBlockEnd",
-	"width",
-	"minWidth",
-	"maxWidth",
-	"height",
-	"minHeight",
-	"maxHeight",
-	"top",
-	"right",
-	"bottom",
-	"left",
-	"inset",
-	"insetInline",
-	"insetInlineStart",
-	"insetInlineEnd",
-	"insetBlock",
-	"insetBlockStart",
-	"insetBlockEnd",
-	"outlineStyle",
-	"overflow",
-	"overflowX",
-	"overflowY",
-	"overscrollBehavior",
-	"pointerEvents",
-	"scrollbarWidth",
-	"textUnderlineOffset",
-	"userSelect",
-	"zIndex",
-]);
-
 type CssModuleExports = ReadonlyMap<string, ReadonlySet<string>>;
-type RawAutoFixPlan = {
+type RawTypedCssValueFixPlan = {
 	readonly insertions: readonly { readonly node: AstNode; readonly text: string }[];
 	readonly removals: readonly (readonly [number, number])[];
 };
@@ -1056,34 +1010,123 @@ const hasCommentBetweenProperties = (
 	return false;
 };
 
-type IntrinsicAutoValueInfo = { readonly hasAuto: boolean; readonly onlyAuto: boolean };
+const rawIndependentFixPlan = (
+	property: AstNode,
+	rawProperties: readonly AstNode[],
+	typedValueIndices: readonly number[],
+	typedValueNames: ReadonlySet<string>,
+	source: string,
+): RawTypedCssValueFixPlan | undefined => {
+	const typedIndices = new Set(typedValueIndices);
+	for (const typedName of typedValueNames) {
+		for (let index = 0; index < rawProperties.length; index += 1) {
+			if (typedIndices.has(index)) continue;
+			const sibling = rawProperties[index];
+			if (sibling === undefined) return undefined;
+			const name = propertyName(sibling);
+			if (name === undefined || cssPropertiesMayConflict(typedName, name)) return undefined;
+		}
+	}
 
-const intrinsicAutoValueInfo = (value: AstNode | undefined): IntrinsicAutoValueInfo => {
-	if (value?.type === NodeKind.Literal)
-		return value.value === "auto"
-			? { hasAuto: true, onlyAuto: true }
-			: { hasAuto: false, onlyAuto: false };
-	if (value?.type !== NodeKind.ObjectExpression || !Array.isArray(value.properties))
-		return { hasAuto: false, onlyAuto: false };
-	let hasAuto = false;
-	let onlyAuto = value.properties.length > 0;
-	for (const property of value.properties) {
-		if (property?.type !== NodeKind.Property || property.computed === true) {
-			onlyAuto = false;
+	const removals: (readonly [number, number])[] = [];
+	let index = 0;
+	while (index < rawProperties.length) {
+		if (!typedIndices.has(index)) {
+			index += 1;
 			continue;
 		}
-		const child = intrinsicAutoValueInfo(property.value);
-		hasAuto ||= child.hasAuto;
-		onlyAuto &&= child.onlyAuto;
+		const firstIndex = index;
+		while (typedIndices.has(index + 1)) index += 1;
+		const lastIndex = index;
+		const first = rawProperties[firstIndex];
+		const last = rawProperties[lastIndex];
+		const previous = rawProperties[firstIndex - 1];
+		const next = rawProperties[lastIndex + 1];
+		if (
+			first === undefined ||
+			last === undefined ||
+			typeof first.start !== "number" ||
+			typeof last.end !== "number"
+		)
+			return undefined;
+
+		if (firstIndex === 0) {
+			if (
+				next === undefined ||
+				typeof next.start !== "number" ||
+				typeof first.end !== "number" ||
+				hasCommentBetweenProperties(rawProperties, firstIndex, lastIndex + 1, source)
+			)
+				return undefined;
+			removals.push([first.start, next.start]);
+		} else if (lastIndex === rawProperties.length - 1) {
+			if (
+				previous === undefined ||
+				typeof previous.end !== "number" ||
+				hasCommentBetweenProperties(rawProperties, firstIndex - 1, lastIndex, source)
+			)
+				return undefined;
+			removals.push([previous.end, last.end]);
+		} else {
+			if (
+				next === undefined ||
+				typeof next.start !== "number" ||
+				hasCommentBetweenProperties(rawProperties, firstIndex, lastIndex + 1, source)
+			)
+				return undefined;
+			removals.push([first.start, next.start]);
+		}
+		index += 1;
 	}
-	return { hasAuto, onlyAuto: hasAuto && onlyAuto };
+
+	const movedText = typedValueIndices
+		.map((itemIndex) => rawProperties[itemIndex])
+		.filter(isNode)
+		.map((item) => source.slice(item.start, item.end))
+		.join(", ");
+	return {
+		insertions: [{ node: property, text: `${movedText}, ` }],
+		removals,
+	};
 };
 
-const rawAutoFixPlan = (
+type TypedCssValueInfo = { readonly hasTypedValue: boolean; readonly onlyTypedValues: boolean };
+
+const typedCssValueInfo = (value: AstNode | undefined, property: string): TypedCssValueInfo => {
+	if (value?.type === NodeKind.Literal) {
+		if (typeof value.value === "number") return { hasTypedValue: true, onlyTypedValues: true };
+		return typeof value.value === "string" && isTypedCssStringValue(property, value.value)
+			? { hasTypedValue: true, onlyTypedValues: true }
+			: { hasTypedValue: false, onlyTypedValues: false };
+	}
+	if (
+		value?.type === NodeKind.UnaryExpression &&
+		(value.operator === "-" || value.operator === "+") &&
+		value.argument?.type === NodeKind.Literal &&
+		typeof value.argument.value === "number"
+	)
+		return { hasTypedValue: true, onlyTypedValues: true };
+	if (value?.type !== NodeKind.ObjectExpression || !Array.isArray(value.properties))
+		return { hasTypedValue: false, onlyTypedValues: false };
+	let hasTypedValue = false;
+	let onlyTypedValues = value.properties.length > 0;
+	for (const condition of value.properties) {
+		if (condition?.type !== NodeKind.Property || condition.computed === true) {
+			onlyTypedValues = false;
+			continue;
+		}
+		const child = typedCssValueInfo(condition.value, property);
+		hasTypedValue ||= child.hasTypedValue;
+		onlyTypedValues &&= child.onlyTypedValues;
+	}
+	return { hasTypedValue, onlyTypedValues: hasTypedValue && onlyTypedValues };
+};
+
+const rawTypedCssValueFixPlan = (
 	property: AstNode,
 	parent: AstNode | undefined,
 	source: string,
-): RawAutoFixPlan | undefined => {
+): RawTypedCssValueFixPlan | undefined => {
 	if (
 		property.computed === true ||
 		property.value?.type !== NodeKind.ObjectExpression ||
@@ -1109,33 +1152,28 @@ const rawAutoFixPlan = (
 		if (name === undefined) return undefined;
 		rawKeyCounts.set(name, (rawKeyCounts.get(name) ?? 0) + 1);
 	}
-	const autoIndices: number[] = [];
-	const autoNames = new Set<string>();
+	const typedValueIndices: number[] = [];
+	const typedValueNames = new Set<string>();
 	for (let index = 0; index < rawProperties.length; index += 1) {
 		const candidate = rawProperties[index];
-		if (
-			candidate?.type !== NodeKind.Property ||
-			candidate.computed === true ||
-			!intrinsicAutoValueInfo(candidate.value).onlyAuto
-		)
-			continue;
+		if (candidate?.type !== NodeKind.Property || candidate.computed === true) continue;
 		const name = propertyName(candidate);
-		if (name === undefined || !AUTO_INTRINSIC_PROPERTIES.has(name)) continue;
-		autoIndices.push(index);
-		autoNames.add(name);
+		if (name === undefined || !typedCssValueInfo(candidate.value, name).onlyTypedValues) continue;
+		typedValueIndices.push(index);
+		typedValueNames.add(name);
 	}
-	if (autoIndices.length === 0) return undefined;
-	for (const name of autoNames) if (rawKeyCounts.get(name) !== 1) return undefined;
+	if (typedValueIndices.length === 0) return undefined;
+	for (const name of typedValueNames) if (rawKeyCounts.get(name) !== 1) return undefined;
 
 	for (const sibling of parentProperties) {
 		if (sibling === property) continue;
 		if (sibling.computed === true) return undefined;
 		const name = propertyName(sibling);
-		if (name === undefined || autoNames.has(name)) return undefined;
+		if (name === undefined || typedValueNames.has(name)) return undefined;
 	}
 
-	const firstIndex = autoIndices[0];
-	const lastIndex = autoIndices.at(-1);
+	const firstIndex = typedValueIndices[0];
+	const lastIndex = typedValueIndices.at(-1);
 	if (firstIndex === undefined || lastIndex === undefined) return undefined;
 	const first = rawProperties[firstIndex];
 	const last = rawProperties[lastIndex];
@@ -1149,8 +1187,8 @@ const rawAutoFixPlan = (
 	)
 		return undefined;
 
-	const allAuto = autoIndices.length === rawProperties.length;
-	if (allAuto) {
+	const allTypedValues = typedValueIndices.length === rawProperties.length;
+	if (allTypedValues) {
 		if (
 			hasComment(source.slice(property.start, first.start)) ||
 			hasComment(source.slice(last.end, property.end))
@@ -1167,17 +1205,17 @@ const rawAutoFixPlan = (
 
 	const isPrefix =
 		firstIndex === 0 &&
-		autoIndices.every((index, offset) => index === offset) &&
-		autoIndices.length < rawProperties.length;
+		typedValueIndices.every((index, offset) => index === offset) &&
+		typedValueIndices.length < rawProperties.length;
 	if (isPrefix) {
-		const next = rawProperties[autoIndices.length];
+		const next = rawProperties[typedValueIndices.length];
 		if (
 			next === undefined ||
 			typeof next.start !== "number" ||
-			hasCommentBetweenProperties(rawProperties, firstIndex, autoIndices.length, source)
+			hasCommentBetweenProperties(rawProperties, firstIndex, typedValueIndices.length, source)
 		)
 			return undefined;
-		const movedText = autoIndices
+		const movedText = typedValueIndices
 			.map((index) => rawProperties[index])
 			.filter(isNode)
 			.map((item) => source.slice(item.start, item.end))
@@ -1190,30 +1228,32 @@ const rawAutoFixPlan = (
 
 	const isSuffix =
 		lastIndex === rawProperties.length - 1 &&
-		autoIndices.every((index, offset) => index === firstIndex + offset) &&
+		typedValueIndices.every((index, offset) => index === firstIndex + offset) &&
 		firstIndex > 0;
-	if (!isSuffix || hasCommentBetweenProperties(rawProperties, firstIndex - 1, lastIndex, source))
-		return undefined;
-	const previous = rawProperties[firstIndex - 1];
-	const rawPropertyIndex = parentProperties.indexOf(property);
-	const nextSibling = parentProperties[rawPropertyIndex + 1];
-	if (
-		previous === undefined ||
-		typeof previous.end !== "number" ||
-		nextSibling === undefined ||
-		typeof nextSibling.start !== "number" ||
-		hasComment(source.slice(property.end, nextSibling.start))
-	)
-		return undefined;
-	const movedText = autoIndices
-		.map((index) => rawProperties[index])
-		.filter(isNode)
-		.map((item) => source.slice(item.start, item.end))
-		.join(", ");
-	return {
-		insertions: [{ node: nextSibling, text: `${movedText}, ` }],
-		removals: [[previous.end, last.end]],
-	};
+	if (isSuffix && !hasCommentBetweenProperties(rawProperties, firstIndex - 1, lastIndex, source)) {
+		const previous = rawProperties[firstIndex - 1];
+		const rawPropertyIndex = parentProperties.indexOf(property);
+		const nextSibling = parentProperties[rawPropertyIndex + 1];
+		if (
+			previous !== undefined &&
+			typeof previous.end === "number" &&
+			nextSibling !== undefined &&
+			typeof nextSibling.start === "number" &&
+			!hasComment(source.slice(property.end, nextSibling.start))
+		) {
+			const movedText = typedValueIndices
+				.map((index) => rawProperties[index])
+				.filter(isNode)
+				.map((item) => source.slice(item.start, item.end))
+				.join(", ");
+			return {
+				insertions: [{ node: nextSibling, text: `${movedText}, ` }],
+				removals: [[previous.end, last.end]],
+			};
+		}
+	}
+
+	return rawIndependentFixPlan(property, rawProperties, typedValueIndices, typedValueNames, source);
 };
 
 const rules: Record<string, RuleDefinition> = {
@@ -1269,7 +1309,7 @@ const rules: Record<string, RuleDefinition> = {
 			});
 		},
 	},
-	"prefer-intrinsic-auto": {
+	"prefer-typed-css-values": {
 		meta: {
 			fixable: "code",
 			schema: [
@@ -1316,21 +1356,17 @@ const rules: Record<string, RuleDefinition> = {
 						for (const candidate of property.value.properties) {
 							if (candidate?.type !== NodeKind.Property || candidate.computed === true) continue;
 							const name = propertyName(candidate);
-							if (
-								name !== undefined &&
-								AUTO_INTRINSIC_PROPERTIES.has(name) &&
-								intrinsicAutoValueInfo(candidate.value).hasAuto
-							)
+							if (name !== undefined && typedCssValueInfo(candidate.value, name).hasTypedValue)
 								names.add(name);
 						}
 						if (names.size === 0) return;
 						reported.add(property);
 						const parent = ancestors[ancestors.length - 1];
-						const plan = rawAutoFixPlan(property, parent, source);
+						const plan = rawTypedCssValueFixPlan(property, parent, source);
 						context.report({
 							node: property,
 							message:
-								'pandwind: CSS "auto" is an intrinsic value for {{properties}} — move it outside $raw',
+								"pandwind: values for {{properties}} are covered by Pandwind's CSS types — move them into the style object",
 							data: { properties: [...names].join(", ") },
 							...(plan === undefined
 								? {}

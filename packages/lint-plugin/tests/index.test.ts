@@ -2,6 +2,7 @@ import { parseSync } from "oxc-parser";
 import { describe, expect, test } from "vitest";
 import { NodeKind } from "../src/ast-node-kind.ts";
 import plugin from "../src/index.ts";
+import { CSS_PROPERTY_VALUES, CSS_WIDE_VALUES } from "../src/typed-css-values.ts";
 
 type AstNode = { type: string; [key: string]: any };
 type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
@@ -24,9 +25,10 @@ type RuleContext = {
 		fix?: (fixer: RuleFixer) => unknown;
 	}): void;
 };
+type FixEdit = { readonly range: readonly [number, number]; readonly text?: string };
 type RuleFixer = {
-	insertTextBefore(node: AstNode, text: string): { text: string };
-	removeRange(range: readonly [number, number]): { range: readonly [number, number] };
+	insertTextBefore(node: AstNode, text: string): FixEdit;
+	removeRange(range: readonly [number, number]): FixEdit;
 };
 type RuleListeners = {
 	Program?: (node: AstNode) => void;
@@ -39,6 +41,7 @@ type Report = {
 	nodeType?: string;
 	fixRange?: readonly [number, number];
 	fixText?: string;
+	fixes?: readonly FixEdit[];
 };
 
 const typedPlugin = plugin as unknown as Plugin;
@@ -88,23 +91,25 @@ const runRule = (
 			fix?: (fixer: RuleFixer) => unknown;
 		}): void {
 			const fix = payload.fix?.({
-				insertTextBefore(_node, text) {
-					return { text };
+				insertTextBefore(node, text) {
+					const start = typeof node.start === "number" ? node.start : 0;
+					return { range: [start, start], text };
 				},
 				removeRange(range) {
 					return { range };
 				},
 			});
+			const edits = Array.isArray(fix) ? fix.filter(isFixEdit) : [];
+			const singleEdit = !Array.isArray(fix) && isFixEdit(fix) ? fix : undefined;
 			reports.push({
 				data: payload.data ?? {},
 				message: payload.message,
 				nodeType: payload.node?.type,
-				...(typeof fix === "object" && fix !== null && "range" in fix
-					? { fixRange: (fix as { range: readonly [number, number] }).range }
-					: {}),
-				...(typeof fix === "object" && fix !== null && "text" in fix
-					? { fixText: (fix as { text: string }).text }
-					: {}),
+				...(singleEdit?.text !== undefined || singleEdit === undefined
+					? {}
+					: { fixRange: singleEdit.range }),
+				...(singleEdit?.text === undefined ? {} : { fixText: singleEdit.text }),
+				...(edits.length === 0 ? {} : { fixes: edits }),
 			});
 		},
 	};
@@ -116,6 +121,28 @@ const runRule = (
 	listeners.Program?.(sourceProgram);
 	visitCalls(sourceProgram, (node) => listeners.CallExpression?.(node));
 	return reports;
+};
+
+const isFixEdit = (value: unknown): value is FixEdit => {
+	if (
+		typeof value !== "object" ||
+		value === null ||
+		!("range" in value) ||
+		!Array.isArray(value.range) ||
+		value.range.length !== 2 ||
+		typeof value.range[0] !== "number" ||
+		typeof value.range[1] !== "number"
+	)
+		return false;
+	return !("text" in value) || typeof value.text === "string";
+};
+
+const applyFixes = (source: string, fixes: readonly FixEdit[]): string => {
+	let fixed = source;
+	for (const fix of [...fixes].sort((left, right) => right.range[0] - left.range[0])) {
+		fixed = `${fixed.slice(0, fix.range[0])}${fix.text ?? ""}${fixed.slice(fix.range[1])}`;
+	}
+	return fixed;
 };
 
 describe("Pandwind Oxlint API binding resolution", () => {
@@ -336,6 +363,94 @@ utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" :
 });
 
 describe("Pandwind Oxlint static safety rules", () => {
+	test("recognizes and unwraps all values in the typed CSS vocabulary", () => {
+		const cases = [
+			...Array.from(CSS_WIDE_VALUES, (value) => ({ property: "color", value })),
+			...[...CSS_PROPERTY_VALUES].flatMap(([property, values]) =>
+				Array.from(values, (value) => ({ property, value })),
+			),
+			{ property: "width", value: 12 },
+			{ property: "height", value: -0.5 },
+			{ property: "fontWeight", value: 700 },
+		];
+		const code = `import { createCss } from "pandwind/css";\nconst css = createCss(preset);\n${cases
+			.map(({ property, value }) => `css({ $raw: { ${property}: ${JSON.stringify(value)} } });`)
+			.join("\n")}`;
+		const reports = runRule("prefer-typed-css-values", code);
+
+		expect(reports).toHaveLength(cases.length);
+		expect(reports.map(({ data }) => data.properties)).toEqual(
+			cases.map(({ property }) => property),
+		);
+		expect(reports.every(({ fixes }) => fixes?.length === 2)).toBe(true);
+
+		const fixed = applyFixes(
+			code,
+			reports.flatMap(({ fixes }) => fixes ?? []),
+		);
+		expect(fixed).not.toContain("$raw");
+		for (const { property, value } of cases)
+			expect(fixed).toContain(`${property}: ${JSON.stringify(value)}`);
+	});
+
+	test("keeps property-specific mismatches quiet and mixed values report-only", () => {
+		const mismatchReports = runRule(
+			"prefer-typed-css-values",
+			`import { createCss } from "pandwind/css";
+const css = createCss(preset);
+css({ $raw: { width: "transparent", color: "auto", display: "auto", padding: "grid", fontWeight: "700" } });`,
+		);
+		const mixedReports = runRule(
+			"prefer-typed-css-values",
+			`import { createCss } from "pandwind/css";
+const css = createCss(preset);
+css({ $raw: { width: { _hover: "auto", _focus: "var(--runtime-width)" } } });`,
+		);
+
+		expect(mismatchReports).toEqual([]);
+		expect(mixedReports).toHaveLength(1);
+		expect(mixedReports[0]?.data.properties).toBe("width");
+		expect(mixedReports[0]?.fixes).toBeUndefined();
+	});
+
+	test("unwraps independent typed properties from the middle of a raw object", () => {
+		const code = `import { createCss } from "pandwind/css";
+const css = createCss(preset);
+css({ $raw: { height: "0.5rem", left: 0, right: 0, top: "-0.5rem" } });`;
+		const reports = runRule("prefer-typed-css-values", code);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.data.properties).toBe("left, right");
+		expect(reports[0]?.fixes).toHaveLength(2);
+		expect(
+			applyFixes(
+				code,
+				reports.flatMap(({ fixes }) => fixes ?? []),
+			),
+		).toContain("left: 0, right: 0, $raw:");
+
+		const mixedCode = `import { createCss } from "pandwind/css";
+const css = createCss(preset);
+css({ $raw: { fontWeight: "700", background: { base: "transparent", xl: "transparent" }, borderColor: { base: "transparent", xl: "nav.fg" }, boxShadow: { base: "none", xl: "none" } } });`;
+		const mixedReports = runRule("prefer-typed-css-values", mixedCode);
+		expect(mixedReports).toHaveLength(1);
+		expect(mixedReports[0]?.fixes).toHaveLength(3);
+
+		const tokenDependentCode = `import { createCss } from "pandwind/css";
+const css = createCss(preset);
+css.class({ _current: { color: { base: "nav.fg", xl: "component.nav.activeText" }, $raw: { fontWeight: "700", background: { base: "transparent", xl: "component.nav.activeBg" }, borderColor: { base: "transparent", xl: "nav.fg" }, boxShadow: { base: "none", xl: "chip" } } } });`;
+		const tokenDependentReports = runRule("prefer-typed-css-values", tokenDependentCode);
+		expect(tokenDependentReports).toHaveLength(1);
+		expect(tokenDependentReports[0]?.fixes).toBeUndefined();
+
+		const conflictingCode = `import { createCss } from "pandwind/css";
+const css = createCss(preset);
+css({ $raw: { background: "var(--image)", backgroundColor: "transparent", borderRadius: "0" } });`;
+		const conflictingReports = runRule("prefer-typed-css-values", conflictingCode);
+		expect(conflictingReports).toHaveLength(1);
+		expect(conflictingReports[0]?.fixes).toBeUndefined();
+	});
+
 	test("shares the Vite carrier analysis and accepts inlineable nested conditions", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",
