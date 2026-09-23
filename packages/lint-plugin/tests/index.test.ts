@@ -261,6 +261,29 @@ css.class({ $raw: { color: "red" } });`,
 		expect(reports[0]?.data.name).toBe("css.class");
 	});
 
+	test("discovers local style facades by Vite source basename", () => {
+		const reports = runRule(
+			"no-dollar-raw",
+			`import { css as styles } from "../pandwind/css";
+import { dss as design } from "../pandwind/design";
+import * as cssModule from "../pandwind/css";
+import { css as unrelated } from "../helpers/styles";
+styles.class({ $raw: { color: "red" } });
+design.class({ $raw: { color: "blue" } });
+cssModule.css.class({ $raw: { color: "yellow" } });
+cssModule.css({ $raw: { color: "purple" } });
+unrelated.class({ $raw: { color: "green" } });`,
+		);
+
+		expect(reports).toHaveLength(4);
+		expect(reports.map(({ data }) => data.name)).toEqual([
+			"styles.class",
+			"design.class",
+			"cssModule.css.class",
+			"cssModule.css",
+		]);
+	});
+
 	test("does not invent a root css export or classify an unrelated factory", () => {
 		const reports = runRule(
 			"no-spreads",
@@ -479,11 +502,11 @@ css({ $raw: { background: "var(--image)", backgroundColor: "transparent", border
 		expect(conflictingReports[0]?.fixes).toBeUndefined();
 	});
 
-	test("autofixes intrinsic auto in a configured local CSS module", () => {
+	test("recognizes typed values in a configured local CSS module", () => {
 		const code = `import { css } from "./css";
 css.class({ $raw: { width: "auto" } });`;
 		const options = [{ cssModules: [{ source: "./css", exports: ["css"] }] }];
-		const reports = runRule("prefer-intrinsic-auto", code, options);
+		const reports = runRule("prefer-typed-css-values", code, options);
 
 		expect(reports).toHaveLength(1);
 		expect(reports[0]?.data.properties).toBe("width");
@@ -493,7 +516,7 @@ css.class({ width: "auto" });`,
 		);
 		expect(
 			runRule(
-				"prefer-intrinsic-auto",
+				"prefer-typed-css-values",
 				`import { css } from "./css";
 css.class({ $raw: { width: "$width-1" } });`,
 				options,
@@ -501,6 +524,18 @@ css.class({ $raw: { width: "$width-1" } });`,
 		).toHaveLength(0);
 	});
 
+	test("recognizes typed values in an automatically discovered CSS facade", () => {
+		const code = `import { css as styles } from "../pandwind/css";
+styles.class({ $raw: { width: "auto" } });`;
+		const reports = runRule("prefer-typed-css-values", code);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.data.properties).toBe("width");
+		expect(applyFixes(code, reports[0]?.fixes ?? [])).toBe(
+			`import { css as styles } from "../pandwind/css";
+styles.class({ width: "auto" });`,
+		);
+	});
 	test("shares the Vite carrier analysis and accepts inlineable nested conditions", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",

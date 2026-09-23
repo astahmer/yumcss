@@ -29,10 +29,11 @@ namespace imports:
 - `pandwind/css`: preset-bound `createCss(...)` instances
 - `pandwind/unsafe/css`: `createUnsafeCss()` instances
 - `pandwind/design`: `createDesignCss()` instances
+- local CSS/design facades whose source basename is `css` or `design`
 
-It does not treat an unrelated local function named `cx`, `tw`, or `css` as a
-Pandwind API. Project configuration and ecosystem semantics remain owned by
-codemod adapters and official loaders.
+It does not identify unrelated local functions named `cx`, `tw`, or `css`.
+Direct Pandwind APIs resolve from their package source. Local facades use the
+same `css` and `design` basename convention as the Vite plugin.
 
 For application-local modules that re-export a preset-bound `createCss`
 instance, provide the exact import source and exported instance once in plugin
@@ -92,6 +93,10 @@ plugin setting above:
 	}
 }
 ```
+
+By default, the rule also recognizes local facades with `css` or `design`
+source basenames. Use a `cssModules` mapping for a differently named local
+module that re-exports a preset-bound instance.
 
 The extraction rules are normally warnings. The carrier-boundary rule is shown
 as an error because it marks the small set of shapes that cannot receive the

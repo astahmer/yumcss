@@ -215,6 +215,13 @@ const apiFromImport = (
 	return undefined;
 };
 
+const conventionalStyleModuleFactory = (source: string): string | undefined => {
+	const basename = source.split(/[\\/]/u).at(-1)?.split(".")[0];
+	if (basename === "css") return API.cssFactory;
+	if (basename === "design") return API.designFactory;
+	return undefined;
+};
+
 type DynamicExpression = { node: AstNode; bad: string };
 
 /**
@@ -306,9 +313,8 @@ const findDynamicExpression = (options: {
 	return undefined;
 };
 /**
- * Resolve only real Pandwind bindings. This intentionally rejects unrelated
- * local functions named `cx`, `tw`, or `css`; aliases and namespace imports
- * remain fully supported without putting ecosystem checks in every rule.
+ * Resolve package APIs and local CSS/design facades by their import sources.
+ * Unrelated local functions remain outside this identity map.
  */
 type ApiResolver = {
 	readonly resolve: (call: AstNode) => ApiReference | undefined;
@@ -334,6 +340,7 @@ const createApiResolver = (
 
 	const direct = new Map<string, string>();
 	const namespaces = new Map<string, string>();
+	const localNamespaces = new Map<string, string>();
 	const factories = new Map<string, string>();
 	const instances = new Map<string, string>();
 	const declarations = new Map<string, AstNode>();
@@ -345,18 +352,19 @@ const createApiResolver = (
 		const source = sourceName(node.source);
 		if (source === undefined) return;
 		const configuredCssExports = cssModuleExports.get(source);
-		if (
-			source !== SOURCE.core &&
-			source !== SOURCE.css &&
-			source !== SOURCE.unsafeCss &&
-			source !== SOURCE.design &&
-			configuredCssExports === undefined
-		)
+		const isPandwindSource =
+			source === SOURCE.core ||
+			source === SOURCE.css ||
+			source === SOURCE.unsafeCss ||
+			source === SOURCE.design;
+		const localFactory = isPandwindSource ? undefined : conventionalStyleModuleFactory(source);
+		if (!isPandwindSource && configuredCssExports === undefined && localFactory === undefined)
 			return;
 		for (const specifier of node.specifiers ?? []) {
 			if (specifier.importKind === IMPORT_KIND.type) continue;
 			if (specifier.type === NodeKind.ImportNamespaceSpecifier) {
 				namespaces.set(specifier.local.name, source);
+				if (localFactory !== undefined) localNamespaces.set(specifier.local.name, localFactory);
 				continue;
 			}
 			const imported = importedName(specifier);
@@ -365,19 +373,33 @@ const createApiResolver = (
 				factories.set(specifier.local.name, api);
 			else if (imported !== undefined && configuredCssExports?.has(imported))
 				instances.set(specifier.local.name, API.cssFactory);
+			else if (imported !== undefined && localFactory !== undefined)
+				instances.set(specifier.local.name, localFactory);
 			else if (api !== undefined) direct.set(specifier.local.name, api);
 		}
 	};
 
 	const resolveMember = (expression: unknown): string | undefined => {
 		if (!isNode(expression) || expression.type !== NodeKind.MemberExpression) return undefined;
-		if (expression.object?.type !== NodeKind.Identifier) return undefined;
-		const object = expression.object.name;
 		const property = memberName(expression);
 		if (property === undefined) return undefined;
-		const namespace = namespaces.get(object);
-		if (namespace !== undefined) return apiFromImport(namespace, property);
-		if (instances.has(object) && STYLE_METHODS.has(property)) return API.style;
+		if (expression.object?.type === NodeKind.Identifier) {
+			const object = expression.object.name;
+			const namespace = namespaces.get(object);
+			if (namespace !== undefined) {
+				const api = apiFromImport(namespace, property);
+				if (api !== undefined) return api;
+				if (localNamespaces.has(object)) return API.style;
+			}
+			if (instances.has(object) && STYLE_METHODS.has(property)) return API.style;
+		}
+		if (
+			expression.object?.type === NodeKind.MemberExpression &&
+			expression.object.object?.type === NodeKind.Identifier &&
+			localNamespaces.has(expression.object.object.name) &&
+			STYLE_METHODS.has(property)
+		)
+			return API.style;
 		return undefined;
 	};
 
@@ -483,10 +505,25 @@ const createApiResolver = (
 		const kind = resolveMember(call.callee);
 		if (kind === undefined) return undefined;
 		const method = memberName(call.callee);
-		const factory = instances.get(call.callee.object.name);
+		const calleeObject = call.callee.object;
+		const objectName =
+			calleeObject?.type === NodeKind.Identifier
+				? calleeObject.name
+				: calleeObject?.type === NodeKind.MemberExpression &&
+					  calleeObject.object?.type === NodeKind.Identifier
+					? calleeObject.object.name + "." + memberName(calleeObject)
+					: undefined;
+		if (objectName === undefined || method === undefined) return undefined;
+		const factory =
+			calleeObject?.type === NodeKind.Identifier
+				? (instances.get(calleeObject.name) ?? localNamespaces.get(calleeObject.name))
+				: calleeObject?.type === NodeKind.MemberExpression &&
+					  calleeObject.object?.type === NodeKind.Identifier
+					? localNamespaces.get(calleeObject.object.name)
+					: undefined;
 		return {
 			kind,
-			name: call.callee.object.name + "." + method,
+			name: objectName + "." + method,
 			...(factory !== undefined ? { method, factory } : {}),
 		};
 	};
