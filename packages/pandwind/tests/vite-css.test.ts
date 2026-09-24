@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { expect, test } from "vitest";
+import { build } from "vite";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCss } from "../src/css/create-css.ts";
@@ -938,6 +939,45 @@ test("pandwindCssVite generates the stylesheet from scanned files", () => {
 		 * keeps this test focused on scanned source and the assertions above still
 		 * verify the complete artifact's inclusion/exclusion behavior.
 		 */
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("production CSS excludes styles from source files absent from the bundle graph", async () => {
+	const dir = makeProject({
+		"index.html": '<script type="module" src="/src/main.ts"></script>',
+		"src/design.ts": "export const css = { class: (styles: unknown) => styles };",
+		"src/main.ts": `
+			import { used } from "./used";
+			document.body.textContent = used;
+		`,
+		"src/used.ts": `
+			import { css } from "./design";
+			export const used = css.class({ color: "red" });
+		`,
+		"src/__orphan.ts": `
+			import { css } from "./design";
+			export const orphan = css.class({ color: "hotpink" });
+		`,
+	});
+
+	try {
+		const result = await build({
+			configFile: false,
+			root: dir,
+			plugins: [pandwindCssVite(examplePreset, { root: dir })],
+			build: { write: false },
+		});
+		const outputs = (Array.isArray(result) ? result : [result]).flatMap((item) => item.output);
+		const css = outputs
+			.filter((output) => output.type === "asset" && output.fileName.endsWith(".css"))
+			.map((output) => (typeof output.source === "string" ? output.source : ""))
+			.join("\n");
+
+		expect(css).toContain("color:red");
+		expect(css).not.toContain("hotpink");
+		expect(css).not.toContain("pandwind-css-anchor");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

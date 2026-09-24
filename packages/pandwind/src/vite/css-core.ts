@@ -546,7 +546,7 @@ ${split.routes.get(route.name) ?? ""}`;
 			const isStylesheet =
 				id === resolvedVirtualId ||
 				(routes.length > 0 && id.startsWith(`\0${virtualId}.css?route=`));
-			return loadForFiles(id, isStylesheet ? workspace.files() : []);
+			return this.loadForFiles(id, isStylesheet ? workspace.files() : []);
 		},
 		loadForFiles(id: string, sourceFiles: Array<string>) {
 			const runtime = runtimePruner.load(id);

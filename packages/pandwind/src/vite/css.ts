@@ -17,13 +17,11 @@
  * import "pandwind:css";
  * ```
  *
- * Source files are scanned directly (like Tailwind's own scanner, and like
- * `pandwind-codemod tw scan` for the safelist) rather than collected from transforms — module
- * load order varies between dev and build, and the virtual stylesheet must be
- * complete no matter when it is requested. Every `css({ ... })` call with a
- * literal object is resolved through the design layer and its atomic rule is
- * added to a shared stylesheet; the virtual module serves the deduped CSS
- * (tokens + rules), and the transform replaces the call with its final carrier.
+ * Build output is finalized against the bundler's emitted module graph, so
+ * unreachable files do not contribute rules. Dev requests retain the
+ * include-based scan because Vite serves modules on demand. Every static
+ * `css({ ... })` call is resolved through the design layer and the generated
+ * stylesheet serves deduped CSS (tokens + rules).
  * The runtime hashes the same calls deterministically, so runtime class names
  * always match. Calls with dynamic arguments keep the runtime fallback unless
  * they are a provably safe flat JSX carrier; those carriers are emitted as
@@ -40,8 +38,8 @@ import type {
 	DefinePresetOptions,
 } from "../types/typings.ts";
 import { readFileSync, realpathSync } from "node:fs";
-import { relative, resolve } from "node:path";
-import type { PluginContext } from "rollup";
+import { isAbsolute, relative, resolve } from "node:path";
+import type { OutputBundle, PluginContext } from "rollup";
 import type { HmrContext, ModuleNode, ViteDevServer } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import { refreshPandwindEngineContext, type PandwindEngineContext } from "./engine-context.ts";
@@ -368,6 +366,13 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 	const compositionModules = new Map<string, ReadonlySet<CssFactoryKind>>();
 	const compositionConsumers = new Map<string, Set<string>>();
 	const consumerCompositions = new Map<string, Set<string>>();
+	const stylesheetPrefix = `\0${options.virtualId ?? "pandwind:css"}.css`;
+	const buildCssMarkers = new Map<
+		string,
+		{ readonly selector: string; readonly property: string; readonly value: number }
+	>();
+	const builtSourceFiles = new Set<string>();
+	let nextCssMarker = 0;
 
 	const forgetCompositionConsumer = (consumer: string): void => {
 		const compositions = consumerCompositions.get(consumer);
@@ -464,6 +469,11 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 		name: "pandwind:extract-css",
 		enforce: "pre" as const,
 		async buildStart(this: Pick<PluginContext, "resolve">) {
+			if (resolvedConfig?.command === "build") {
+				buildCssMarkers.clear();
+				builtSourceFiles.clear();
+				nextCssMarker = 0;
+			}
 			if (options.libraries === undefined || options.libraries.length === 0) return;
 			const effectiveOptions = { ...factoryOptions(activeMetadata), ...options };
 			libraryArtifacts = await loadLibraryArtifacts({
@@ -492,13 +502,64 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 			core.configResolved(config);
 		},
 		closeBundle() {
-			core.closeBundle();
+			core.closeBundle([...builtSourceFiles].toSorted());
 		},
 		resolveId(source: string) {
 			return core.resolveId(source);
 		},
 		load(id: string) {
+			if (resolvedConfig?.command === "build" && id.startsWith(stylesheetPrefix)) {
+				let marker = buildCssMarkers.get(id);
+				if (marker === undefined) {
+					const value = nextCssMarker++;
+					const selector = `.pandwind-css-anchor-${value}`;
+					const property = `--pandwind-css-anchor-${value}`;
+					marker = { selector, property, value };
+					buildCssMarkers.set(id, marker);
+				}
+				return `${marker.selector}{${marker.property}:${marker.value}}`;
+			}
 			return core.load(id);
+		},
+		generateBundle: {
+			order: "post" as const,
+			handler(
+				this: PluginContext,
+				_outputOptions: unknown,
+				bundle: OutputBundle,
+			) {
+				if (resolvedConfig?.command !== "build" || buildCssMarkers.size === 0) return;
+				const sourceFiles = new Set<string>();
+				for (const output of Object.values(bundle)) {
+					if (output.type !== "chunk") continue;
+					for (const moduleId of output.moduleIds) {
+						if (moduleId.startsWith("\0")) continue;
+						const file = withoutQuery(moduleId);
+						if (!isAbsolute(file)) continue;
+						sourceFiles.add(resolve(file));
+					}
+				}
+				const sortedSourceFiles = [...sourceFiles].toSorted();
+				for (const file of sortedSourceFiles) builtSourceFiles.add(file);
+
+				for (const [id, marker] of buildCssMarkers) {
+					const escapedSelector = marker.selector.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+					const escapedProperty = marker.property.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+					const markerRule = new RegExp(
+						`${escapedSelector}\\s*\\{\\s*${escapedProperty}\\s*:\\s*${marker.value}\\s*;?\\s*\\}`,
+						"u",
+					);
+					const css = core.loadForFiles(id, sortedSourceFiles) ?? "";
+					let replaced = false;
+					for (const output of Object.values(bundle)) {
+						if (output.type !== "asset" || typeof output.source !== "string") continue;
+						if (!markerRule.test(output.source)) continue;
+						output.source = output.source.replace(markerRule, css);
+						replaced = true;
+					}
+					if (!replaced) this.error(`Pandwind stylesheet anchor was not emitted for ${id}`);
+				}
+			},
 		},
 		async handleHotUpdate(ctx: CssHmrContext): Promise<ModuleNode[] | undefined> {
 			const server = ctx.server;
