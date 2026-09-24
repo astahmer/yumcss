@@ -29,10 +29,31 @@ const toResults = (items, valueOf) =>
 			value: valueOf(item),
 			...(item.spread === undefined ? {} : { spread: item.spread }),
 			...(item.p95Ms === undefined ? {} : { p95Ms: item.p95Ms }),
+			...(item.payload === undefined ? {} : { payload: item.payload }),
 		}))
 		.filter(({ value }) => Number.isFinite(value) && value > 0);
 
-const wpdResults = (group) => toResults(group?.wpd ?? [], ({ medianMs }) => medianMs ?? Number.NaN);
+const mainLane = "pandwind-css";
+const twBonusLane = "pandwind-buildtime";
+const namedStrategyLane = "pandwind-css-named";
+const nonPrimaryLanes = new Set(["pandwind", twBonusLane, namedStrategyLane, "vanilla"]);
+const splitResults = (items, valueOf) => {
+	const results = toResults(items, valueOf);
+	return {
+		results: results.filter(({ tech }) => !nonPrimaryLanes.has(tech)),
+		bonusResults: results.filter(({ tech }) => tech === twBonusLane),
+		strategyResults: results.filter(({ tech }) => tech === namedStrategyLane),
+	};
+};
+
+const payloadRows = (productGrid.payload ?? [])
+	.map(({ tech, label, total, values }) => ({
+		tech,
+		label,
+		value: total,
+		payload: { js: values[0], css: values[1], html: values[2] },
+	}))
+	.filter(({ value }) => Number.isFinite(value) && value > 0);
 
 const workloads = [
 	{
@@ -41,7 +62,7 @@ const workloads = [
 		unit: "tiles/s",
 		direction: "higher",
 		caseId: "product-grid",
-		results: toResults(productGrid.microbench ?? [], ({ value }) => value),
+		...splitResults(productGrid.microbench ?? [], ({ value }) => value),
 	},
 	{
 		id: "payload",
@@ -49,14 +70,7 @@ const workloads = [
 		unit: "gzip bytes",
 		direction: "lower",
 		caseId: "product-grid",
-		results: (productGrid.payload ?? [])
-			.map(({ tech, label, total, values }) => ({
-				tech,
-				label,
-				value: total,
-				payload: { js: values[0], css: values[1], html: values[2] },
-			}))
-			.filter(({ value }) => Number.isFinite(value) && value > 0),
+		...splitResults(payloadRows, ({ value }) => value),
 	},
 	{
 		id: "mount",
@@ -64,7 +78,7 @@ const workloads = [
 		unit: "ms",
 		direction: "lower",
 		caseId: "product-grid",
-		results: wpdResults(productGrid.mount),
+		...splitResults(productGrid.mount?.wpd ?? [], ({ medianMs }) => medianMs ?? Number.NaN),
 	},
 	{
 		id: "hydrate",
@@ -72,7 +86,7 @@ const workloads = [
 		unit: "ms",
 		direction: "lower",
 		caseId: "product-grid",
-		results: wpdResults(productGrid.hydrate),
+		...splitResults(productGrid.hydrate?.wpd ?? [], ({ medianMs }) => medianMs ?? Number.NaN),
 	},
 	{
 		id: "inp",
@@ -80,7 +94,7 @@ const workloads = [
 		unit: "ms",
 		direction: "lower",
 		caseId: "product-grid",
-		results: wpdResults(productGrid.inp),
+		...splitResults(productGrid.inp?.wpd ?? [], ({ medianMs }) => medianMs ?? Number.NaN),
 	},
 	{
 		id: "cold-build",
@@ -88,26 +102,37 @@ const workloads = [
 		unit: "ms",
 		direction: "lower",
 		caseId: "all cases",
-		results: toResults(report.buildtime ?? [], ({ coldMs }) => coldMs),
+		...splitResults(report.buildtime ?? [], ({ coldMs }) => coldMs),
 	},
 ];
 
 for (const workload of workloads) {
-	if (!workload.results.some(({ tech }) => tech === "pandwind-buildtime")) {
-		throw new Error(`required Pandwind build-time lane missing from ${workload.id}`);
+	if (!workload.results.some(({ tech }) => tech === mainLane)) {
+		throw new Error(`required Pandwind createCss lane missing from ${workload.id}`);
+	}
+	if (!workload.bonusResults.some(({ tech }) => tech === twBonusLane)) {
+		throw new Error(`required Pandwind tw() bonus lane missing from ${workload.id}`);
 	}
 	if (workload.results.length < 5) {
-		throw new Error(`fewer than five benchmark lanes have valid ${workload.id} results`);
+		throw new Error(`fewer than five primary lanes have valid ${workload.id} results`);
 	}
 }
 
+const payloadWorkload = workloads.find(({ id }) => id === "payload");
+if (!payloadWorkload?.strategyResults.some(({ tech }) => tech === namedStrategyLane)) {
+	throw new Error("required named-atom strategy diagnostic missing from payload");
+}
+
 const snapshot = {
-	schemaVersion: 1,
+	schemaVersion: 2,
 	source: {
 		repository: "jantimon/css-in-js-bench",
 		url: "https://github.com/jantimon/css-in-js-bench",
 		cssInJsBenchRevision: report.meta.gitSha,
 		pandwindRevision,
+		pandwindMainLane: mainLane,
+		pandwindTwBonusLane: twBonusLane,
+		pandwindNamedStrategyDiagnostic: namedStrategyLane,
 		wpdCompletedAt: report.meta.timestamp,
 		host: report.meta.host,
 		node: report.meta.node,

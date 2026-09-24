@@ -118,15 +118,20 @@ type ExternalBenchmarkWorkload = {
 	readonly direction: "higher" | "lower";
 	readonly caseId: string;
 	readonly results: readonly ExternalBenchmarkResult[];
+	readonly bonusResults: readonly ExternalBenchmarkResult[];
+	readonly strategyResults: readonly ExternalBenchmarkResult[];
 };
 
 type CssInJsBenchSnapshot = {
-	readonly schemaVersion: 1;
+	readonly schemaVersion: 2;
 	readonly source: {
 		readonly repository: string;
 		readonly url: string;
 		readonly cssInJsBenchRevision: string;
 		readonly pandwindRevision: string;
+		readonly pandwindMainLane: string;
+		readonly pandwindTwBonusLane: string;
+		readonly pandwindNamedStrategyDiagnostic: string;
 		readonly wpdCompletedAt: string;
 		readonly host: string;
 		readonly node: string;
@@ -727,17 +732,75 @@ const renderRankedExternalWorkload = (
 const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined): string[] => {
 	if (snapshot === undefined) return [];
 	const rows = snapshot.workloads.flatMap((workload) =>
-		renderRankedExternalWorkload(workload, "pandwind-buildtime"),
+		renderRankedExternalWorkload(workload, snapshot.source.pandwindMainLane),
 	);
 	if (rows.length === 0) return [];
+	const twBonusRows = snapshot.workloads.flatMap((workload) => {
+		const peerResults = workload.results.filter(
+			({ tech }) => tech !== snapshot.source.pandwindMainLane,
+		);
+		if (workload.bonusResults.length === 0) return [];
+		return renderRankedExternalWorkload(
+			{ ...workload, results: [...peerResults, ...workload.bonusResults] },
+			snapshot.source.pandwindTwBonusLane,
+		);
+	});
+	const payload = snapshot.workloads.find(({ id }) => id === "payload");
+	const primaryPayload = payload?.results.find(
+		({ tech }) => tech === snapshot.source.pandwindMainLane,
+	);
+	const namedPayload = payload?.strategyResults.find(
+		({ tech }) => tech === snapshot.source.pandwindNamedStrategyDiagnostic,
+	);
+	const namedStrategyRows =
+		primaryPayload?.payload === undefined || namedPayload?.payload === undefined
+			? []
+			: [
+					[
+						"Hash (default)",
+						`${integer(primaryPayload.value)} B`,
+						`${integer(primaryPayload.payload.js)} B`,
+						`${integer(primaryPayload.payload.css)} B`,
+						`${integer(primaryPayload.payload.html)} B`,
+					],
+					[
+						"Named atoms",
+						`${integer(namedPayload.value)} B`,
+						`${integer(namedPayload.payload.js)} B`,
+						`${integer(namedPayload.payload.css)} B`,
+						`${integer(namedPayload.payload.html)} B`,
+					],
+				];
 	return [
-		"## [CSS-in-JS Bench](https://github.com/jantimon/css-in-js-bench): real-world product grid",
+		"## [CSS-in-JS Bench](https://github.com/jantimon/css-in-js-bench): primary `createCss` lane",
 		"",
-		`A 400-tile shop page; WPD finished ${snapshot.source.wpdCompletedAt} on ${snapshot.source.host} with Node ${snapshot.source.node}, WPD ${snapshot.source.wpdVersion}, Chrome ${snapshot.source.browsers.chrome ?? "unknown"}, and Firefox ${snapshot.source.browsers.firefox ?? "unknown"}. The snapshot covers ${snapshot.source.laneCount} lanes and ${snapshot.source.caseCount} workloads. Pandwind source: ${snapshot.source.pandwindRevision}; CSS-in-JS Bench source: ${snapshot.source.cssInJsBenchRevision}. Payload is gzipped JS + CSS + HTML; browser figures are Chrome medians. Lower is better except SSR throughput. Pandwind uses the build-time extraction lane; each row ranks only that metric across the same workload.`,
+		`A 400-tile shop page; WPD finished ${snapshot.source.wpdCompletedAt} on ${snapshot.source.host} with Node ${snapshot.source.node}, WPD ${snapshot.source.wpdVersion}, Chrome ${snapshot.source.browsers.chrome ?? "unknown"}, and Firefox ${snapshot.source.browsers.firefox ?? "unknown"}. The snapshot covers ${snapshot.source.laneCount} harness lanes and ${snapshot.source.caseCount} workloads. Pandwind source: ${snapshot.source.pandwindRevision}; CSS-in-JS Bench source: ${snapshot.source.cssInJsBenchRevision}. The primary score uses ${snapshot.source.pandwindMainLane} and non-Pandwind peers; utility and strategy diagnostics do not change that denominator. Payload is gzipped JS + CSS + HTML; browser figures are Chrome medians. Lower is better except SSR throughput.`,
 		"",
-		markdownTable(["Measure", "Workload", "Top five", "Pandwind build-time"], rows, new Set()),
+		markdownTable(["Measure", "Workload", "Top five", "Pandwind `css()`"], rows, new Set()),
 		"",
-		"This page combines static styles, variants, dynamic values, composition, responsive rules, and accessibility behavior. The Pandwind lane uses Vite's literal `tw()` folding path; its benchmark-specific atom stylesheet adapter uses the shared CSS extraction core. Values are per-metric rankings; there is no cross-category score. The normalized source data is [snapshot.json](benchmarks/css-in-js-bench/snapshot.json).",
+		"The primary lane uses `createCss(preset)` with `css.class(...)` for class-string hosts and a static multi-map `css(...)` + `css.props(...)` tile host, compiled by the shipped `pandwindCssVite(css)` plugin. The only runtime style value is the rating percentage custom property. Values are per-metric rankings; there is no cross-category score.",
+		"",
+		"### Separate `tw()` bonus lane",
+		"",
+		"This uses the same peer set with the primary `css()` row swapped for the literal `tw()` lane. It is shown separately and never changes the primary rank.",
+		"",
+		markdownTable(["Measure", "Workload", "Top five", "Pandwind `tw()` bonus"], twBonusRows, new Set()),
+		...(namedStrategyRows.length === 0
+			? []
+			: [
+					"",
+					"### Hash versus named atoms",
+					"",
+					"Both rows use the same `createCss` page and compiler; named atoms are a strategy diagnostic, not another library score.",
+					"",
+					markdownTable(
+						["Strategy", "Total gzip", "JS", "CSS", "HTML"],
+						namedStrategyRows,
+						new Set(),
+					),
+				]),
+		"",
+		"The normalized source data is [snapshot.json](benchmarks/css-in-js-bench/snapshot.json).",
 		"",
 	];
 };
