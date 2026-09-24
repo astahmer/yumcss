@@ -48,3 +48,7 @@ test("raw styles accept preset properties and literal CSS values on every typed 
 	expect(runtimeDesign.class({ $raw: rawDeclarations })).type.toBe<string>();
 	expect(css.class({ _hover: { $raw: rawDeclarations } })).type.toBe<string>();
 });
+
+test("raw styles stay open for declarations outside the preset vocabulary", () => {
+	expect(css.class({ $raw: { animation: "spin 1s linear infinite" } })).type.toBe<string>();
+});
