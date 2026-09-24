@@ -200,11 +200,28 @@ function LoadingSkeleton() {
 	);
 }
 
-function Card(props: { label: string; value: ReactNode; sub?: ReactNode }) {
+function HelpPopover(props: { title: string; children: ReactNode }) {
+	return (
+		<details className={ui.cardHelp}>
+			<summary className={ui.cardHelpTrigger} aria-label={`About ${props.title}`}>
+				?
+			</summary>
+			<div className={ui.cardHelpPopover} role="note">
+				<strong>{props.title}</strong>
+				<div>{props.children}</div>
+			</div>
+		</details>
+	);
+}
+
+function Card(props: { label: string; value: ReactNode; sub?: ReactNode; help?: ReactNode }) {
 	return (
 		<div className={ui.card}>
 			<div className={ui.cardValue}>{props.value}</div>
-			<div className={ui.cardLabel}>{props.label}</div>
+			<div className={ui.cardLabel}>
+				<span>{props.label}</span>
+				{props.help !== undefined && <HelpPopover title={props.label}>{props.help}</HelpPopover>}
+			</div>
 			{props.sub !== undefined && <div className={ui.cardSub}>{props.sub}</div>}
 		</div>
 	);
@@ -423,7 +440,7 @@ function DesignSystemView(props: {
 			label: "utilities",
 			visible: visibleUtilities.length > 0 || showEmptyUtilitiesSection,
 		},
-		{ id: "sec-theme-vars", label: "theme vars", visible: themeVisible || showEmptyThemeSection },
+		{ id: "sec-theme-vars", label: "CSS tokens", visible: themeVisible || showEmptyThemeSection },
 	].filter((link) => link.visible);
 	const visibleSectionIds = sectionLinks.map((link) => link.id);
 	const visibleSectionKey = visibleSectionIds.join("|");
@@ -492,66 +509,108 @@ function DesignSystemView(props: {
 		<>
 			<section className={ui.cards}>
 				<Card
-					label="@theme variables"
+					label="CSS tokens"
+					help={
+						<p>
+							CSS custom properties found in the project’s stylesheets, including imported theme
+							files and scoped overrides. This is separate from the named token groups provided by
+							the preset.
+						</p>
+					}
 					value={
 						<InspectorLink
 							target={sectionTarget("sec-theme-vars")}
 							navigateTo={props.navigateTo}
-							label={`Show ${d.themeVars.length} theme variables`}
+							label={`Show ${d.themeVars.length} CSS tokens`}
 						>
 							{d.themeVars.length}
 						</InspectorLink>
 					}
 				/>
 				<Card
-					label="typed utility unions"
+					label="Style utilities"
+					help={
+						<p>
+							The generated TypeScript definitions describe which values each styling utility
+							accepts, providing editor completions and catching unsupported values. Some utilities
+							also allow custom CSS values.
+						</p>
+					}
 					value={
 						<InspectorLink
 							target={sectionTarget("sec-utilities")}
 							navigateTo={props.navigateTo}
-							label={`Show ${d.utilities.length} typed utility unions`}
+							label={`Show ${d.utilities.length} style utilities`}
 						>
 							{d.utilities.length}
 						</InspectorLink>
 					}
 				/>
 				<Card
-					label="variants / conflicts / compose"
+					label="Utility behavior"
+					help={
+						<ul>
+							<li>
+								<strong>Conditions</strong> add context such as hover or responsive breakpoints.
+							</li>
+							<li>
+								<strong>Conflict groups</strong> tell <code>cx()</code> which utilities override
+								each other.
+							</li>
+							<li>
+								<strong>Compositions</strong> group related utilities, such as translate or scale
+								directions.
+							</li>
+						</ul>
+					}
 					value={
-						<>
-							<InspectorLink
-								target={sectionTarget("sec-utilities")}
-								navigateTo={props.navigateTo}
-								label={`Show utility unions; ${d.variantCount} variants`}
-							>
-								{d.variantCount}
-							</InspectorLink>
-							/
-							<InspectorLink
-								target={sectionTarget("sec-utilities")}
-								navigateTo={props.navigateTo}
-								label={`Show utility unions; ${d.conflictUtilities} conflict utilities`}
-							>
-								{d.conflictUtilities}
-							</InspectorLink>
-							/
-							<InspectorLink
-								target={sectionTarget("sec-utilities")}
-								navigateTo={props.navigateTo}
-								label={`Show utility unions; ${d.composeUtilities} compose utilities`}
-							>
-								{d.composeUtilities}
-							</InspectorLink>
-						</>
+						<div className={ui.metricBreakdown}>
+							<div>
+								<InspectorLink
+									target={sectionTarget("sec-utilities")}
+									navigateTo={props.navigateTo}
+									label={`Show utility definitions for ${d.variantCount} conditions`}
+								>
+									{d.variantCount}
+								</InspectorLink>
+								<span>conditions</span>
+							</div>
+							<div>
+								<InspectorLink
+									target={sectionTarget("sec-utilities")}
+									navigateTo={props.navigateTo}
+									label={`Show utility definitions for ${d.conflictUtilities} conflict groups`}
+								>
+									{d.conflictUtilities}
+								</InspectorLink>
+								<span>conflict groups</span>
+							</div>
+							<div>
+								<InspectorLink
+									target={sectionTarget("sec-utilities")}
+									navigateTo={props.navigateTo}
+									label={`Show utility definitions for ${d.composeUtilities} compositions`}
+								>
+									{d.composeUtilities}
+								</InspectorLink>
+								<span>compositions</span>
+							</div>
+						</div>
 					}
 				/>
 				<Card
-					label="bridge"
+					label="Tailwind mappings"
+					help={
+						<p>
+							An optional generated mapping connects a CSS property and resolved value to a Tailwind
+							class. It is used only when a project selects the Tailwind adapter.
+						</p>
+					}
 					value={
 						<InspectorLink
 							target={relationshipsTarget}
 							navigateTo={props.navigateTo}
-							label={`Inspect ${d.bridgeProperties} bridge properties`}
+							label={`Inspect ${d.bridgeProperties} Tailwind CSS property mappings`}
 						>
 							{d.bridgeProperties}
 						</InspectorLink>
@@ -560,9 +619,9 @@ function DesignSystemView(props: {
 						<InspectorLink
 							target={relationshipsTarget}
 							navigateTo={props.navigateTo}
-							label={`Inspect ${d.bridgeMappings} bridge value mappings`}
+							label={`Inspect ${d.bridgeMappings} Tailwind property and value mappings`}
 						>
-							{d.bridgeMappings} value mappings
+							{d.bridgeMappings.toLocaleString()} property/value mappings
 						</InspectorLink>
 					}
 				/>
@@ -755,10 +814,10 @@ function DesignSystemView(props: {
 			{(visibleUtilities.length > 0 || showEmptyUtilitiesSection) && (
 				<section id="sec-utilities">
 					{visibleUtilities.length === 0 ? (
-						<p className={ui.muted}>No typed utility unions were found.</p>
+						<p className={ui.muted}>No style utilities were found.</p>
 					) : (
 						<InspectorTable
-							title="typed utility unions"
+							title="style utilities"
 							rows={visibleUtilities}
 							rowKey={(utility) => utility.key}
 							columns={[
@@ -790,9 +849,9 @@ function DesignSystemView(props: {
 
 			{(themeVisible || showEmptyThemeSection) && (
 				<section id="sec-theme-vars">
-					<h2>@theme variables by category</h2>
+					<h2>CSS tokens by category</h2>
 					{showEmptyThemeSection ? (
-						<p className={ui.muted}>No @theme variables were found.</p>
+						<p className={ui.muted}>No CSS tokens were found.</p>
 					) : (
 						visibleThemeGroups
 							.filter(([, vars]) => vars.length > 0)
@@ -1775,7 +1834,7 @@ function TokenGraphView(props: {
 		return (
 			<div id="relationships" className={ui.wrap}>
 				<h2>Token relationships</h2>
-				<p className={ui.muted}>No theme variables or component mappings were found.</p>
+				<p className={ui.muted}>No CSS tokens or component mappings were found.</p>
 			</div>
 		);
 	}
@@ -3521,11 +3580,11 @@ export function App() {
 										</button>
 										<button
 											type="button"
-											aria-label="Download theme variables as CSS"
-											title="Download theme variables as CSS"
+											aria-label="Download CSS tokens as CSS"
+											title="Download CSS tokens as CSS"
 											onClick={() => {
 												InspectorExport.downloadFile(
-													"pandwind-theme-vars.css",
+													"pandwind-css-tokens.css",
 													`:root {
 ${InspectorExport.themeVarsToCss(data)}}
 `,
@@ -3533,21 +3592,21 @@ ${InspectorExport.themeVarsToCss(data)}}
 												);
 											}}
 										>
-											theme vars — CSS
+											CSS tokens — CSS
 										</button>
 										<button
 											type="button"
-											aria-label="Download utility unions as JSON"
-											title="Download utility unions as JSON"
+											aria-label="Download style utilities as JSON"
+											title="Download style utilities as JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
-													"pandwind-unions.json",
+													"pandwind-style-utilities.json",
 													InspectorExport.utilitiesToJson(data),
 													"application/json",
 												)
 											}
 										>
-											unions — JSON
+											style utilities — JSON
 										</button>
 									</>
 								) : (
