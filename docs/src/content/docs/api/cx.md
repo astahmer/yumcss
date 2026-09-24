@@ -13,6 +13,12 @@ Reach for `cx(...)` when the inputs are genuinely mixed or unknown — raw class
 strings, compiled maps, variable carriers, falsey conditionals, or output from
 more than one styling system.
 
+Do not pass `css.class(...)` to `css.props(...)` to combine authored styles.
+The class string no longer carries declaration information, so `css.props()`
+can only concatenate it. Keep authored styles mergeable with `css(...)`, then
+pass their maps through `css.props(base, override)`; use `css.class(...)` when
+the host already wants one final class string.
+
 This is the same kind of host boundary that makes StyleX's
 [`stylex.props(...)`](https://stylexjs.com/docs/api/javascript/props/) useful:
 the host projection receives compiled style values. Pandwind lets the caller

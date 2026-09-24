@@ -41,6 +41,13 @@ test("createCss rejects properties and token values outside the preset", () => {
 	expect(
 		css({
 			// @ts-expect-error does not exist in type
+			padingBlock: "8px",
+		}),
+	).type.toBe<Compiled>();
+
+	expect(
+		css({
+			// @ts-expect-error does not exist in type
 			boxShadow: "lg",
 		}),
 	).type.toBe<Compiled>();
@@ -94,12 +101,19 @@ test("strict token bindings retain property-aware intrinsic CSS values", () => {
 			marginLeft: "auto",
 		}),
 	).type.toBe<Compiled>();
+	expect(strictCss({ backgroundColor: "brand" })).type.toBe<Compiled>();
 	expect(strictCss({ fontWeight: "semibold" })).type.toBe<Compiled>();
 
 	expect(
 		strictCss({
 			// @ts-expect-error not assignable
 			backgroundColor: "auto",
+		}),
+	).type.toBe<Compiled>();
+	expect(
+		strictCss({
+			// @ts-expect-error not assignable
+			backgroundColor: "acent",
 		}),
 	).type.toBe<Compiled>();
 	expect(
@@ -242,10 +256,20 @@ test("an open preset config keeps arbitrary CSS properties typed", () => {
 	);
 	const generated = createCss(preset);
 	expect(generated.class({ backgroundColor: "var(--brand)", color: "white" })).type.toBe<string>();
+	expect(generated.class({ padingBlock: "8px" })).type.toBe<string>();
 	generated.class({
 		// @ts-expect-error not assignable
 		colorPalette: "brand",
 	});
+
+	const permissivePreset = define.preset(
+		{ config: {} as AnyCssConfig, tokens: {} },
+		{ strict: false, conditions: {}, properties: { $all: true } },
+	);
+	const permissive = createCss(permissivePreset);
+	expect(
+		permissive.class({ padingBlock: "8px", color: "acent" }),
+	).type.toBe<string>();
 });
 
 test("semantic token references are checked against the supplied catalog", () => {

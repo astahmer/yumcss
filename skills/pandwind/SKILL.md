@@ -29,20 +29,28 @@ description: Work with Pandwind's typed styling APIs in this repository. Use whe
 - Prefer static, literal arguments. Literal `tw()`/`css()`/`cx()` calls fold
   at build time via the vite plugins. Dynamic values keep the runtime but
   must be covered by the scan/safelist.
-- Use `cx()` to merge class sources (raw strings, `tw()`, css atoms) — never
+- Compose authored CSS style objects with `css()` and `css.props()`. The
+  declaration map preserves property-level, last-wins composition; avoid
+  `css.props(css.class(...), ...)` because `css.class()` has already collapsed
+  the styles to an opaque class string that `css.props()` can only concatenate.
+  A component that accepts caller-authored overrides can expose an
+  `xcss?: ReturnType<typeof css>` prop and compose `css.props(base, xcss)`.
+- Use `cx()` when inputs are genuinely mixed or opaque class strings from
+  `tw()`, CSS modules, or another styling system need conflict resolution.
+  Keep it off the path for already-authored Pandwind style maps; never
   concatenate class strings manually.
 - Pick the right css() return shape (all methods take the same style object,
   differ only in what they return):
-  - `css.class({ ... })` -> joined class string. Default choice for styling
-    an element.
-  - `css({ ... })` -> `{ prop: className }` per-declaration map. Only when
-    you need individual declarations later (conditional composition).
+  - `css.class({ ... })` -> joined class string. Use when the host directly
+    needs one final class string.
+  - `css({ ... })` -> `{ prop: className }` per-declaration map. Use when
+    authored styles or an `xcss` override will be composed through `css.props()`.
   - `css.vars({ ... })` -> `{ class, style }`. The ONLY path for
     runtime-dynamic values; nothing enters the generated stylesheet.
   - `css.raw({ ... })` -> plain style object, skips atoms/extraction. For
     inline-style targets (RN/opentui) or extractor-invisible calls.
-  - `css.props` / `css.group` / `css.input`: spread-helper, named-group and
-    `$input` marker for dynamic groups — rarely needed directly.
+  - `css.props` / `css.group` / `css.input`: host-prop composer, named-group,
+    and `$input` marker for dynamic groups.
 - For overloaded utilities prefer the semantic sub-keys (`textSize`,
   `textColor`, `textAlign`) over array spellings when the intent is single-
   concern.

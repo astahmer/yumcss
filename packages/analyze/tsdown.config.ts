@@ -9,6 +9,7 @@ export default defineConfig({
 		"src/governance/browser.ts",
 		"src/migration-preview/index.ts",
 		"src/migration-preview/cli.ts",
+		"src/compiler-preview/cli.ts",
 		"src/mcp/server.ts",
 		"src/mcp/http.ts",
 	],

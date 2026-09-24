@@ -969,10 +969,17 @@ test("production CSS excludes styles from source files absent from the bundle gr
 			plugins: [pandwindCssVite(examplePreset, { root: dir })],
 			build: { write: false },
 		});
-		const outputs = (Array.isArray(result) ? result : [result]).flatMap((item) => item.output);
+		const outputs = Array.isArray(result)
+			? result.flatMap((item) => item.output)
+			: "output" in result
+				? result.output
+				: [];
 		const css = outputs
-			.filter((output) => output.type === "asset" && output.fileName.endsWith(".css"))
-			.map((output) => (typeof output.source === "string" ? output.source : ""))
+			.flatMap((output) =>
+				output.type === "asset" && output.fileName.endsWith(".css")
+					? [typeof output.source === "string" ? output.source : ""]
+					: [],
+			)
 			.join("\n");
 
 		expect(css).toContain("color:red");

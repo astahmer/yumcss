@@ -1895,6 +1895,37 @@ const rules: Record<string, RuleDefinition> = {
 			};
 		},
 	},
+	"prefer-css-map-in-props": {
+		create(context) {
+			const reported = new Set<AstNode>();
+			return withResolver(context, (node, api, _staticBindings, resolveCall) => {
+				if (
+					api?.kind !== API.style ||
+					api.method !== STYLE_METHOD.props ||
+					api.factory === API.designFactory
+				)
+					return;
+				for (const argument of node.arguments ?? []) {
+					walkNode(argument, (inner) => {
+						if (inner.type !== NodeKind.CallExpression || reported.has(inner)) return;
+						const innerApi = resolveCall(inner);
+						if (
+							innerApi?.kind !== API.style ||
+							innerApi.method !== STYLE_METHOD.class ||
+							innerApi.factory === API.designFactory
+						)
+							return;
+						reported.add(inner);
+						context.report({
+							node: inner,
+							message:
+								"pandwind: css.class() returns an opaque string; use css() inside css.props() to preserve authored style composition and support xcss overrides",
+						});
+					});
+				}
+			});
+		},
+	},
 	"no-raw-ast-identities": {
 		create(context) {
 			return {

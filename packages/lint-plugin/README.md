@@ -64,6 +64,7 @@ settings. Every rule that resolves style calls uses this mapping:
 | `no-stale-migration-skip`     | Finds skip markers that now precede a statically foldable call.            | Safe: remove marker                   |
 | `require-migration-residual`  | Requires an explicit skip marker when a static-lane value remains dynamic. | Safe: add marker                      |
 | `no-conflicting-style-props`  | Finds explicit `className`/`style` props that conflict with `css.props()`. | —                                     |
+| `prefer-css-map-in-props`     | Finds `css.class()` strings passed into `css.props()`.                     | —                                     |
 | `no-dynamic-carrier-fallback` | Finds dynamic JSX carriers that cannot use direct build-time lowering.     | —                                     |
 | `no-dynamic-keyframes`        | Requires `css.keyframes()` bodies to be statically extractable.            | —                                     |
 
@@ -73,6 +74,12 @@ property branches in `css.class()` are extracted independently.
 `no-dynamic-values` follows statically resolved identifiers through extraction
 calls and accepts object spreads whose values are proven static. Runtime spread
 inputs remain reported.
+
+`prefer-css-map-in-props` keeps authored styles mergeable at component
+boundaries. `css.class()` returns an opaque class string, so `css.props()` can
+only concatenate it; pass `css(...)` maps to `css.props()` instead. Components
+that accept caller-authored overrides can expose an `xcss` prop typed as
+`ReturnType<typeof css>` and compose it after their base map.
 
 `prefer-typed-css-values` recognizes CSS-wide keywords, numeric values, and
 the property-specific keywords from Pandwind's CSS value types. It applies only

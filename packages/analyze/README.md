@@ -41,6 +41,27 @@ review a real diff.
 For a visual explanation of the reports, start with the
 [tooling workflows guide](../../docs/src/content/docs/tooling/workflows.md).
 
+## Compiler Preview
+
+Run the project's Vite config and inspect the source modules after its real
+plugin transforms, including Pandwind's compile-time optimizations:
+
+```sh
+pnpm exec pandwind-compiler-preview /path/to/project
+```
+
+The browser UI compares each supported source file with Vite's transformed
+module and reports transform errors. It is read-only and serves only on
+localhost. If the Vite config is not named conventionally, pass it explicitly:
+
+```sh
+pnpm exec pandwind-compiler-preview /path/to/project --config vite.config.ts
+```
+
+Vite and the project's config are loaded from the selected project, so the
+preview uses its installed Vite version and plugin options. Vite config code
+executes as part of starting the preview.
+
 ## MCP tooling
 
 The existing `pandwind-analyze` CLI also exposes an MCP server over stdio using

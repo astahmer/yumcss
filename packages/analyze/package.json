@@ -16,7 +16,8 @@
 	},
 	"bin": {
 		"pandwind-analyze": "./dist/cli.js",
-		"pandwind-migration-preview": "./dist/migration-preview/cli.js"
+		"pandwind-migration-preview": "./dist/migration-preview/cli.js",
+		"pandwind-compiler-preview": "./dist/compiler-preview/cli.js"
 	},
 	"files": [
 		"dist",
@@ -82,12 +83,14 @@
 	},
 	"scripts": {
 		"build:ui": "pnpm exec vite build",
-		"build": "pnpm exec tsdown && pnpm run build:ui",
+		"build:compiler-preview-ui": "pnpm exec vite build --config vite.compiler-preview.config.ts",
+		"build": "pnpm exec tsdown && pnpm run build:ui && pnpm run build:compiler-preview-ui",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"cli": "node dist/cli.js",
 		"migration-preview": "node dist/migration-preview/cli.js",
+		"compiler-preview": "node dist/compiler-preview/cli.js",
 		"corpus": "pnpm run cli \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../../examples/example/src/tw.ts --root ../.."
 	},
 	"dependencies": {
