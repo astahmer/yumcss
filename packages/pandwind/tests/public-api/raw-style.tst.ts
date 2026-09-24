@@ -51,4 +51,8 @@ test("raw styles accept preset properties and literal CSS values on every typed 
 
 test("raw styles stay open for declarations outside the preset vocabulary", () => {
 	expect(css.class({ $raw: { animation: "spin 1s linear infinite" } })).type.toBe<string>();
+	css.class({
+		// @ts-expect-error may only specify known properties
+		animation: "spin 1s linear infinite",
+	});
 });

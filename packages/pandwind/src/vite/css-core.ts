@@ -28,12 +28,14 @@ export interface CssExtractorCore {
 	/** Vite hook: capture the command so closeBundle only runs on builds. */
 	configResolved(config: { command?: "build" | "serve" }): void;
 	/** Build-only: inline route critical chunks into configured HTML entries. */
-	closeBundle(): void;
+	closeBundle(sourceFiles?: Array<string>): void;
 	name: string;
 	/** Rewrite statically representable css() calls before bundling. */
 	transform(code: string, id: string): { code: string; map: null } | null;
 	resolveId(source: string): string | null;
 	load(id: string): string | null;
+	/** Render a virtual stylesheet from the host bundler's reachable source files. */
+	loadForFiles(id: string, sourceFiles: Array<string>): string | null;
 	invalidate(file: string): void;
 }
 
@@ -238,8 +240,7 @@ export function createCssExtractorPluginCore(
 	};
 
 	/** Render the full single-sheet body (default mode / debug manifest). */
-	const collectBody = (): string => {
-		const files = workspace.files();
+	const collectBody = (files: Array<string> = workspace.files()): string => {
 		if (bodyCache !== undefined && workspace.isFresh(files, bodyCache.files))
 			return bodyCache.value;
 		const sheet = collect(files);
@@ -382,8 +383,9 @@ export function createCssExtractorPluginCore(
 	 * every common-bucket rule); the rest stay route-exclusive. Tokens are
 	 * preset-derived and identical everywhere -> common chunk.
 	 */
-	const collectSplit = (): { common: string; routes: Map<string, string> } => {
-		const files = workspace.files();
+	const collectSplit = (
+		files: Array<string> = workspace.files(),
+	): { common: string; routes: Map<string, string> } => {
 		if (splitCache !== undefined && workspace.isFresh(files, splitCache.files))
 			return splitCache.value;
 		const commonFiles: Array<string> = [];
@@ -497,7 +499,7 @@ export function createCssExtractorPluginCore(
 		configResolved(config) {
 			command = config.command;
 		},
-		closeBundle() {
+		closeBundle(sourceFiles?: Array<string>) {
 			if (!isBuild()) return;
 			if (inlineCritical === undefined) return; // off by default
 			const cap =
@@ -515,7 +517,7 @@ export function createCssExtractorPluginCore(
 				} catch {
 					continue; // no such entry — nothing to inline into
 				}
-				const split = collectSplit();
+				const split = collectSplit(sourceFiles);
 				const css = `${split.common}
 ${split.routes.get(route.name) ?? ""}`;
 				const result = renderCriticalHtml({
@@ -541,6 +543,12 @@ ${split.routes.get(route.name) ?? ""}`;
 			return null;
 		},
 		load(id: string) {
+			const isStylesheet =
+				id === resolvedVirtualId ||
+				(routes.length > 0 && id.startsWith(`\0${virtualId}.css?route=`));
+			return loadForFiles(id, isStylesheet ? workspace.files() : []);
+		},
+		loadForFiles(id: string, sourceFiles: Array<string>) {
 			const runtime = runtimePruner.load(id);
 			if (runtime !== null) return runtime;
 			// External-compiler modes serve empty CSS; sheet-backed strategies
@@ -549,8 +557,8 @@ ${split.routes.get(route.name) ?? ""}`;
 
 			if (id === resolvedVirtualId) {
 				if (emptyMode) return collectWebBody();
-				if (routes.length === 0) return collectBody();
-				return collectSplit().common;
+				if (routes.length === 0) return collectBody(sourceFiles);
+				return collectSplit(sourceFiles).common;
 			}
 
 			if (routes.length > 0 && id === resolvedManifestId) {
@@ -565,7 +573,7 @@ ${split.routes.get(route.name) ?? ""}`;
 			if (routes.length > 0 && id.startsWith(`\0${virtualId}.css?route=`)) {
 				if (emptyMode) return "";
 				const name = decodeURIComponent(id.slice(`\0${virtualId}.css?route=`.length));
-				return collectSplit().routes.get(name) ?? "";
+				return collectSplit(sourceFiles).routes.get(name) ?? "";
 			}
 			return null;
 		},
