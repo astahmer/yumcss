@@ -56,3 +56,20 @@ test("raw styles stay open for declarations outside the preset vocabulary", () =
 		animation: "spin 1s linear infinite",
 	});
 });
+
+test("raw keys stay open and preset-specific value types stay outside the escape hatch", () => {
+	expect(
+		css.class({
+			$raw: {
+				color: "not-a-preset-token",
+				colorPalette: "not-a-declared-palette",
+				"--arbitrary-raw-property": { nested: "accepted" },
+			},
+		}),
+	).type.toBe<string>();
+
+	css.class({
+		// @ts-expect-error not assignable to type 'undefined'
+		colorPalette: "not-a-declared-palette",
+	});
+});

@@ -492,21 +492,14 @@ type PresetStyleObject<TPreset extends CssPreset, TAdditionalValue> = {
 	readonly colorPalette?: ColorPaletteReference<TPreset>;
 };
 
-type RawPresetStylePropertyNames<TPreset extends CssPreset> =
-	| Exclude<Extract<keyof TPreset["properties"], string>, "$all" | "colorPalette">
-	| (TPreset extends { _config: infer TConfig }
-			? TPreset["properties"] extends { $all: true }
-				? Exclude<ConfigPropertyNames<TConfig>, "colorPalette">
-				: never
-			: never);
-
 type RawPresetStyleProperties<TPreset extends CssPreset> = {
-	readonly [PropName in RawPresetStylePropertyNames<TPreset>]?: PresetStyleValue<TPreset, never>;
+	readonly [PropName in PresetStyleSuggestionNames<TPreset & TypedStylePreset>]?: StyleValue;
 };
 
-/** Raw CSS declarations with preset property completions and palette validation. */
-export type TypedRawStyleObject<TPreset extends CssPreset> = PresetStyleObject<TPreset, never> &
-	RawPresetStyleProperties<TPreset>;
+/** Raw declarations reuse preset property suggestions without property-specific value constraints. */
+export type TypedRawStyleObject<TPreset extends CssPreset> = {
+	readonly [property: string]: StyleValue;
+} & RawPresetStyleProperties<TPreset>;
 
 /** Dynamic style objects with preset palette assignments checked when present. */
 export type TypedDynamicStyleObject<TPreset extends CssPreset> = PresetStyleObject<
@@ -602,6 +595,10 @@ type PresetPaletteProperty<TPreset extends TypedStylePreset> = [
 ] extends [never]
 	? { colorPalette?: never }
 	: {};
+
+type PresetStyleSuggestionNames<TPreset extends TypedStylePreset> =
+	| PresetStylePropertyNames<TPreset>
+	| keyof PresetPaletteProperty<TPreset>;
 
 declare const ErrorSymbol: unique symbol;
 

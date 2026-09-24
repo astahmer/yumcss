@@ -4,6 +4,7 @@ import { createUnsafeCss } from "pandwind/unsafe/css";
 import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
 import { createDesignCss } from "pandwind/design";
 import { define } from "pandwind/preset";
+import type { StyleObject } from "pandwind/types/typings";
 
 const tokens = define.tokens({
 	colors: {
@@ -63,6 +64,10 @@ test("color palettes expose only declared palette and virtual token names", () =
 	});
 });
 
+test("raw palette values do not inherit the preset palette vocabulary", () => {
+	expect(css.class({ $raw: { colorPalette: "not-a-declared-palette" } })).type.toBe<string>();
+});
+
 test("color palette sources are checked against the preset color tokens", () => {
 	const valid = tokens.defineColorPalettes({
 		brand: "colors.blue",
@@ -78,7 +83,7 @@ test("color palette sources are checked against the preset color tokens", () => 
 	});
 });
 
-test("preset-bound surfaces reserve colorPalette without configured palettes", () => {
+test("preset-bound style surfaces reserve colorPalette without configured palettes", () => {
 	noPaletteCss({
 		// @ts-expect-error not assignable
 		colorPalette: "brand",
@@ -88,10 +93,6 @@ test("preset-bound surfaces reserve colorPalette without configured palettes", (
 		colorPalette: "brand",
 	});
 	noPaletteCss.vars({
-		// @ts-expect-error not assignable
-		colorPalette: "brand",
-	});
-	noPaletteCss.raw({
 		// @ts-expect-error not assignable
 		colorPalette: "brand",
 	});
@@ -107,26 +108,6 @@ test("preset-bound surfaces reserve colorPalette without configured palettes", (
 			colorPalette: "brand",
 		},
 	});
-	noPaletteDesignCss.raw({
-		$raw: {
-			// @ts-expect-error not assignable
-			colorPalette: "brand",
-		},
-	});
-	noPaletteDesignCss.raw({
-		$raw: {
-			// @ts-expect-error not assignable
-			_dark: {
-				colorPalette: "brand",
-			},
-		},
-	});
-	noPaletteDesignCss.vars({
-		$raw: {
-			// @ts-expect-error not assignable
-			colorPalette: "brand",
-		},
-	});
 	noPaletteRuntimeCss.class({
 		// @ts-expect-error not assignable
 		colorPalette: "brand",
@@ -135,16 +116,20 @@ test("preset-bound surfaces reserve colorPalette without configured palettes", (
 		// @ts-expect-error not assignable
 		colorPalette: "brand",
 	});
-	noPaletteRuntimeCss.raw({
-		// @ts-expect-error not assignable
-		colorPalette: "brand",
-	});
-	noPaletteRuntimeDesignCss.raw({
-		$raw: {
-			// @ts-expect-error not assignable
-			colorPalette: "brand",
-		},
-	});
+});
+
+test("raw style surfaces leave palette-like names and values open", () => {
+	expect(noPaletteCss.raw({ colorPalette: "brand" })).type.toBe<StyleObject>();
+	expect(
+		noPaletteDesignCss.raw({
+			$raw: { colorPalette: "brand", _dark: { colorPalette: "brand" } },
+		}),
+	).type.toBe<StyleObject>();
+	noPaletteDesignCss.vars({ $raw: { colorPalette: "brand" } });
+	expect(noPaletteRuntimeCss.raw({ colorPalette: "brand" })).type.toBe<StyleObject>();
+	expect(
+		noPaletteRuntimeDesignCss.raw({ $raw: { colorPalette: "brand" } }),
+	).type.toBe<StyleObject>();
 });
 
 test("unsafe CSS keeps the intentionally open palette escape hatch", () => {
