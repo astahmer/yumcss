@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { tokenizeSnippet } from "./snippet-highlighter.ts";
+import {
+	File as PierreFile,
+	FileDiff,
+	type FileDiffOptions,
+	type FileOptions,
+} from "@pierre/diffs";
+import { createCompilerDiff } from "./compiler-diff.ts";
 import { vscodeFileUri } from "./vscode-link.ts";
 import "./styles.css";
 
@@ -24,6 +30,13 @@ const errorSchema = z.object({ error: z.string() });
 
 type PreviewFile = z.infer<typeof fileSchema>;
 type TransformResult = z.infer<typeof transformSchema>;
+type PreviewMode = "diff" | "side-by-side";
+type DiffLayout = "unified" | "split";
+
+type ActiveRenderer =
+	| { kind: "diff"; renderer: FileDiff }
+	| { kind: "side-by-side"; source: PierreFile; output: PierreFile | null }
+	| null;
 
 const token = new URL(location.href).searchParams.get("token") ?? "";
 const requiredElement = (id: string): HTMLElement => {
@@ -59,6 +72,15 @@ const ui = {
 	compileTime: requiredElement("compile-time"),
 	openSourceInEditor: requiredAnchor("open-source-in-editor"),
 	errorPanel: requiredElement("error-panel"),
+	viewDiff: requiredElement("view-diff"),
+	viewSideBySide: requiredElement("view-side-by-side"),
+	diffLayoutControls: requiredElement("diff-layout-controls"),
+	layoutUnified: requiredElement("layout-unified"),
+	layoutSplit: requiredElement("layout-split"),
+	diffPane: requiredElement("diff-pane"),
+	diffSummary: requiredElement("diff-summary"),
+	diffCode: requiredElement("diff-code"),
+	codePanes: requiredElement("code-panes"),
 	sourceLines: requiredElement("source-lines"),
 	outputLines: requiredElement("output-lines"),
 	sourceCode: requiredElement("source-code"),
@@ -114,26 +136,158 @@ const formatBytes = (bytes: number): string => {
 
 const lineCount = (code: string): number => code.split("\n").length;
 
-const renderSnippet = (element: HTMLElement, source: string, file: string): void => {
-	const fragment = document.createDocumentFragment();
-	for (const token of tokenizeSnippet(source, file)) {
-		if (token.kind === null) {
-			fragment.append(document.createTextNode(token.text));
-			continue;
-		}
-		const span = document.createElement("span");
-		span.className = `syntax-${token.kind}`;
-		span.textContent = token.text;
-		fragment.append(span);
-	}
-	element.replaceChildren(fragment);
+const setPreviewMessage = (element: HTMLElement, message: string): void => {
+	element.classList.add("is-placeholder");
+	element.textContent = message;
 };
+
+const rendererCSS = `
+:host {
+	background: var(--code);
+	color: var(--ink);
+	font-family: var(--mono);
+}
+
+pre {
+	font-family: var(--mono);
+	font-size: 11px;
+	line-height: 1.72;
+}
+`;
+
+const fileOptions = {
+	theme: "github-dark",
+	themeType: "dark",
+	overflow: "scroll",
+	disableFileHeader: true,
+	unsafeCSS: rendererCSS,
+} satisfies FileOptions<undefined, undefined>;
+
+const diffOptions = (diffStyle: DiffLayout): FileDiffOptions<undefined, undefined> => ({
+	...fileOptions,
+	diffStyle,
+	diffIndicators: "bars",
+	hunkSeparators: "line-info-basic",
+	lineDiffType: "word",
+});
 
 let previewFiles: readonly PreviewFile[] = [];
 let selectedFile = "";
 let workspaceRoot = "";
 let activeCompile = 0;
 let pandwindPluginActive = false;
+let previewMode: PreviewMode = "diff";
+let diffLayout: DiffLayout = "unified";
+let activeRenderer: ActiveRenderer = null;
+let pendingSource: { file: string; source: string } | null = null;
+let latestResult: TransformResult | null = null;
+let previewMessages = {
+	diff: "Choose a source file from the workspace.",
+	source: "Choose a source file from the workspace.",
+	output: "Transformed output appears here.",
+};
+let pendingOutputMessage = "Transformed output appears here.";
+
+const clearActiveRenderer = (): void => {
+	if (activeRenderer?.kind === "diff") activeRenderer.renderer.cleanUp();
+	if (activeRenderer?.kind === "side-by-side") {
+		activeRenderer.source.cleanUp();
+		activeRenderer.output?.cleanUp();
+	}
+	activeRenderer = null;
+	ui.diffCode.replaceChildren();
+	ui.sourceCode.replaceChildren();
+	ui.compiledCode.replaceChildren();
+};
+
+const updatePreviewControls = (): void => {
+	const isDiff = previewMode === "diff";
+	ui.diffPane.hidden = !isDiff;
+	ui.codePanes.hidden = isDiff;
+	ui.diffLayoutControls.hidden = !isDiff;
+	ui.viewDiff.setAttribute("aria-pressed", String(isDiff));
+	ui.viewSideBySide.setAttribute("aria-pressed", String(!isDiff));
+	ui.layoutUnified.setAttribute("aria-pressed", String(diffLayout === "unified"));
+	ui.layoutSplit.setAttribute("aria-pressed", String(diffLayout === "split"));
+};
+
+const renderDiff = (result: TransformResult): void => {
+	const fileDiff = createCompilerDiff(result);
+	const additions = fileDiff.hunks.reduce((total, hunk) => total + hunk.additionCount, 0);
+	const deletions = fileDiff.hunks.reduce((total, hunk) => total + hunk.deletionCount, 0);
+	ui.diffSummary.textContent =
+		fileDiff.hunks.length === 0 ? "No changes" : `+${additions} / −${deletions} lines`;
+	if (fileDiff.hunks.length === 0) {
+		setPreviewMessage(ui.diffCode, "The compiler left this module unchanged.");
+		return;
+	}
+	const renderer = new FileDiff(diffOptions(diffLayout));
+	ui.diffCode.classList.remove("is-placeholder");
+	renderer.render({ fileDiff, containerWrapper: ui.diffCode });
+	activeRenderer = { kind: "diff", renderer };
+};
+
+const renderSideBySide = (result: TransformResult): void => {
+	const source = new PierreFile(fileOptions);
+	const output = new PierreFile(fileOptions);
+	ui.sourceCode.classList.remove("is-placeholder");
+	ui.compiledCode.classList.remove("is-placeholder");
+	source.render({
+		file: { name: result.file, contents: result.source },
+		containerWrapper: ui.sourceCode,
+	});
+	output.render({
+		file: { name: result.file, contents: result.code },
+		containerWrapper: ui.compiledCode,
+	});
+	activeRenderer = { kind: "side-by-side", source, output };
+};
+
+const renderSourceOnly = (
+	source: { file: string; source: string },
+	outputMessage: string,
+): void => {
+	const renderer = new PierreFile(fileOptions);
+	ui.sourceCode.classList.remove("is-placeholder");
+	renderer.render({
+		file: { name: source.file, contents: source.source },
+		containerWrapper: ui.sourceCode,
+	});
+	setPreviewMessage(ui.compiledCode, outputMessage);
+	ui.sourceLines.textContent = `${lineCount(source.source)} lines`;
+	ui.outputLines.textContent = "—";
+	activeRenderer = { kind: "side-by-side", source: renderer, output: null };
+};
+
+const renderPreview = (): void => {
+	clearActiveRenderer();
+	updatePreviewControls();
+	if (latestResult !== null) {
+		if (previewMode === "diff") renderDiff(latestResult);
+		else renderSideBySide(latestResult);
+		return;
+	}
+	if (previewMode === "side-by-side" && pendingSource !== null) {
+		renderSourceOnly(pendingSource, pendingOutputMessage);
+		return;
+	}
+	ui.diffSummary.textContent = "—";
+	setPreviewMessage(ui.diffCode, previewMessages.diff);
+	setPreviewMessage(ui.sourceCode, previewMessages.source);
+	setPreviewMessage(ui.compiledCode, previewMessages.output);
+};
+
+const setPreviewMode = (mode: PreviewMode): void => {
+	if (previewMode === mode) return;
+	previewMode = mode;
+	renderPreview();
+};
+
+const setDiffLayout = (layout: DiffLayout): void => {
+	if (diffLayout === layout) return;
+	diffLayout = layout;
+	renderPreview();
+};
 
 const renderFileList = (): void => {
 	const filter = ui.fileFilter.value.trim().toLowerCase();
@@ -174,14 +328,15 @@ const renderFileList = (): void => {
 const renderResult = (result: TransformResult): void => {
 	ui.fileName.textContent = result.file;
 	ui.fileDetail.textContent = `${formatBytes(result.sourceBytes)} source · ${formatBytes(result.outputBytes)} output`;
-	renderSnippet(ui.sourceCode, result.source, result.file);
-	renderSnippet(ui.compiledCode, result.code, result.file);
 	ui.sourceLines.textContent = `${lineCount(result.source)} lines`;
 	ui.outputLines.textContent = `${lineCount(result.code)} lines`;
 	ui.compileTime.textContent = `${result.durationMs.toFixed(1)} ms`;
 	const changed = result.source !== result.code;
 	ui.changeBadge.textContent = changed ? "Transformed" : "Unchanged";
 	ui.changeBadge.className = `change-badge is-${changed ? "changed" : "unchanged"}`;
+	pendingSource = { file: result.file, source: result.source };
+	latestResult = result;
+	renderPreview();
 	setError("");
 	setReadyStatus();
 };
@@ -193,17 +348,25 @@ const compileFile = async (file: string): Promise<void> => {
 	ui.openSourceInEditor.title = `Open ${file} in Visual Studio Code`;
 	ui.openSourceInEditor.hidden = workspaceRoot === "";
 	const requestId = ++activeCompile;
-	let sourceLoaded = false;
+	let loadedSource: { file: string; source: string } | null = null;
+	pendingSource = null;
+	latestResult = null;
+	previewMessages = {
+		diff: "Compiling module…",
+		source: "Reading source…",
+		output: "Compiling module…",
+	};
+	pendingOutputMessage = "Compiling module…";
 	ui.refresh.setAttribute("disabled", "true");
 	ui.changeBadge.textContent = "Compiling";
 	ui.changeBadge.className = "change-badge";
 	ui.compileTime.textContent = "…";
 	ui.fileName.textContent = file;
 	ui.fileDetail.textContent = "Running Vite plugin transforms…";
-	ui.sourceCode.textContent = "Reading source…";
 	ui.sourceLines.textContent = "…";
-	ui.compiledCode.textContent = "Compiling module…";
+	ui.outputLines.textContent = "…";
 	setError("");
+	renderPreview();
 	renderFileList();
 	try {
 		const source = await request(
@@ -211,9 +374,11 @@ const compileFile = async (file: string): Promise<void> => {
 			sourceSchema,
 		);
 		if (requestId !== activeCompile) return;
-		renderSnippet(ui.sourceCode, source.source, source.file);
+		loadedSource = { file: source.file, source: source.source };
+		pendingSource = loadedSource;
+		pendingOutputMessage = "Running Vite plugin transforms…";
 		ui.sourceLines.textContent = `${lineCount(source.source)} lines`;
-		sourceLoaded = true;
+		if (previewMode === "side-by-side") renderPreview();
 		const result = await request(
 			`/api/compiler-preview/transform?file=${encodeURIComponent(file)}`,
 			transformSchema,
@@ -221,12 +386,25 @@ const compileFile = async (file: string): Promise<void> => {
 		if (requestId === activeCompile) renderResult(result);
 	} catch (error) {
 		if (requestId !== activeCompile) return;
-		if (!sourceLoaded) {
-			ui.sourceCode.textContent = "Source could not be read.";
+		if (loadedSource === null) {
+			previewMessages = {
+				diff: "Source could not be read.",
+				source: "Source could not be read.",
+				output: "No transformed output.",
+			};
 			ui.sourceLines.textContent = "—";
+			ui.outputLines.textContent = "—";
+			renderPreview();
+		} else {
+			previewMode = "side-by-side";
+			pendingOutputMessage = "No transformed output.";
+			previewMessages = {
+				diff: "The transform failed. Source remains available beside the empty output.",
+				source: "",
+				output: "No transformed output.",
+			};
+			renderPreview();
 		}
-		ui.compiledCode.textContent = "No transformed output.";
-		ui.outputLines.textContent = "—";
 		ui.compileTime.textContent = "failed";
 		ui.changeBadge.textContent = "Compile error";
 		ui.changeBadge.className = "change-badge";
@@ -265,6 +443,10 @@ const start = async (): Promise<void> => {
 };
 
 ui.fileFilter.addEventListener("input", renderFileList);
+ui.viewDiff.addEventListener("click", () => setPreviewMode("diff"));
+ui.viewSideBySide.addEventListener("click", () => setPreviewMode("side-by-side"));
+ui.layoutUnified.addEventListener("click", () => setDiffLayout("unified"));
+ui.layoutSplit.addEventListener("click", () => setDiffLayout("split"));
 ui.refresh.addEventListener("click", () => {
 	if (selectedFile !== "") void compileFile(selectedFile);
 });

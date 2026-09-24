@@ -81,7 +81,49 @@
 
 					<div id="error-panel" class="error-panel" role="alert" hidden></div>
 
-					<div class="code-panes">
+					<div class="preview-toolbar">
+						<div class="view-switcher" role="group" aria-label="Preview mode">
+							<button id="view-diff" class="preview-button" type="button" aria-pressed="true">
+								Diff
+							</button>
+							<button
+								id="view-side-by-side"
+								class="preview-button"
+								type="button"
+								aria-pressed="false"
+							>
+								Source + output
+							</button>
+						</div>
+						<div
+							id="diff-layout-controls"
+							class="layout-switcher"
+							role="group"
+							aria-label="Diff layout"
+						>
+							<button id="layout-unified" class="preview-button" type="button" aria-pressed="true">
+								Unified
+							</button>
+							<button id="layout-split" class="preview-button" type="button" aria-pressed="false">
+								Split
+							</button>
+						</div>
+					</div>
+
+					<section id="diff-pane" class="diff-pane" aria-label="Compiler output diff">
+						<div class="pane-heading">
+							<div class="pane-label">
+								<span class="pane-index" aria-hidden="true">Δ</span>
+								<h3>Source → Vite output</h3>
+							</div>
+							<span id="diff-summary" class="line-count">—</span>
+						</div>
+						<div id="diff-code" class="diff-code is-placeholder">
+							Choose a source file from the workspace.
+						</div>
+					</section>
+
+					<div id="code-panes" class="code-panes" hidden>
 						<section class="code-pane" aria-labelledby="source-heading">
 							<div class="pane-heading">
 								<div class="pane-label">
@@ -90,9 +132,11 @@
 								</div>
 								<span id="source-lines" class="line-count">—</span>
 							</div>
-							<pre
-								class="code-view"
-							><code id="source-code">Choose a source file from the workspace.</code></pre>
+							<div class="code-view">
+								<div id="source-code" class="code-renderer is-placeholder" aria-label="Source code">
+									Choose a source file from the workspace.
+								</div>
+							</div>
 						</section>
 						<section class="code-pane compiled-pane" aria-labelledby="compiled-heading">
 							<div class="pane-heading">
@@ -102,9 +146,15 @@
 								</div>
 								<span id="output-lines" class="line-count">—</span>
 							</div>
-							<pre
-								class="code-view"
-							><code id="compiled-code">Transformed output appears here.</code></pre>
+							<div class="code-view">
+								<div
+									id="compiled-code"
+									class="code-renderer is-placeholder"
+									aria-label="Vite output code"
+								>
+									Transformed output appears here.
+								</div>
+							</div>
 						</section>
 					</div>
 
