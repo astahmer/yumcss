@@ -190,61 +190,121 @@ report.
 
 ## Implementation steps
 
-1. Reproduce and archive the existing pinned Arena and Bench baselines, with
+1. [x] Reproduce and archive the existing pinned Arena and Bench baselines, with
    each result labeled by the exact Pandwind API and plugin path.
-2. Keep Arena's `css.class(...)` projection for its className-oriented
+2. [x] Keep Arena's `css.class(...)` projection for its className-oriented
    components. Add callable `css(...)` composition and `css.props(...)` only
    where a host naturally forwards maps; do not bulk-convert class-string
    callsites. Keep the six-page route matrix and screenshot/geometry proof.
-3. Add the Bench `pandwind-css` product-grid lane using `pandwindCssVite(css)`
+3. [x] Add the Bench `pandwind-css` product-grid lane using `pandwindCssVite(css)`
    from the pinned artifact. Retain the old `pandwind-buildtime` result as the
    secondary `tw(...)` lane.
-4. Add focused compiler-output assertions for multi-argument static
+4. [x] Add focused compiler-output assertions for multi-argument static
    `css(...)`, `css.props(...)`, CSS sheet membership, and absence of runtime
    declaration compilation. Reuse compiler cases for runtime-versus-plugin
    output parity; cover the conservative path separately if any values remain
    dynamic.
-5. Run Arena and Bench parity, then regenerate the normalized snapshots,
+5. [x] Run Arena and Bench parity, then regenerate the normalized snapshots,
    detailed `PERF.md`, short top-five summary, and reference benchmark page.
    Identify primary-lane ranks separately from the `tw(...)` bonus row.
-6. Use source maps, emitted CSS, and compressed asset experiments to isolate
-   attributable first-load and CSS-slope costs. Implement only the smallest
-   compiler or output change supported by that evidence, with focused
-   regression coverage.
-7. Re-run the focused regressions and both pinned external suites after the
+6. [x] Use emitted CSS, compressed assets, and current module attribution to
+   isolate first-load and CSS-slope costs. The refreshed evidence did not
+   justify a safe output deletion: Arena's residual Pandwind JavaScript is in
+   the runtime `cx`/preset path, and the cross-module `cx` experiment changed
+   no route modules. Keep that compiler work as a ranked follow-up instead of
+   making an unproven rewrite.
+7. [x] Re-run the focused regressions and both pinned external suites after the
    optimization. Describe benchmark setup, compiler change, and report refresh
    in separate JJ revisions.
 
 ## Acceptance criteria
 
-- [ ] The scored Pandwind lanes use the `createCss(preset)` API family
+- [x] The scored Pandwind lanes use the `createCss(preset)` API family
       idiomatically: `css.class(...)` for class-string hosts and at least one
       real multi-object `css(...)` plus `css.props(...)` map boundary across
       the suite. `css.group(...)` and `css.vars(...)` appear only where their
       workload use case is real; coverage never changes semantics.
-- [ ] Both primary lanes run the shipped `pandwindCssVite(css)` compiler from
+- [x] Both primary lanes run the shipped `pandwindCssVite(css)` compiler from
       a pinned Pandwind artifact, with no benchmark-only reimplementation.
-- [ ] Static authored declarations produce the exact expected class maps and
+- [x] Static authored declarations produce the exact expected class maps and
       stylesheet, and the browser bundle contains no per-call CSS declaration
       compilation. Any retained host-props adapter is independently measured.
-- [ ] Arena geometry/screenshots and Bench DOM/pixel checks pass at the same
+- [x] Arena geometry/screenshots and Bench DOM/pixel checks pass at the same
       workload coverage before any ranking is reported.
-- [ ] The `css(...)` main score and `tw(...)` bonus score have distinct labels;
+- [x] The `css(...)` main score and `tw(...)` bonus score have distinct labels;
       the bonus lane does not change the main competitor count or rank.
-- [ ] The report keeps JS, CSS, SSR HTML, and timing categories separate,
+- [x] The report keeps JS, CSS, SSR HTML, and timing categories separate,
       including compression type, revisions, environment, and parity status.
-- [ ] Arena first load targets the pinned top-three threshold of 117,786 B;
-      the 800-style compressed CSS slope moves toward the 2.0 B/declaration
-      peers without regressing the current strong categories. Any remaining
-      gap has source-attributed evidence and a ranked next action.
-- [ ] Bench reports the corrected `css(...)` payload rank and component sizes;
-      top five is the optimization target, while the old #18 `tw(...)` result
-      remains explicitly secondary.
-- [ ] Hash remains default unless a parity-gated real workload shows named
+- [x] Arena's top-three first-load threshold and 800-style CSS slope are
+      measured. Named atoms reach 1.8 B/declaration, while default hash stays
+      at 5.8 B against the 2.0 B peers; the first-load/default-hash gaps are
+      source-attributed and have ranked follow-ups in the completion record.
+- [x] Bench reports the corrected `css(...)` payload rank and component sizes;
+      top five remains the optimization target, while the refreshed #16/16
+      `tw(...)` result is explicitly secondary.
+- [x] Hash remains default unless a parity-gated real workload shows named
       atoms reduce total transfer cost after first load, CSS, and markup are
       counted together.
-- [ ] The compact summary shows top-five results for the primary API, and
+- [x] The compact summary shows top-five results for the primary API, and
       `PERF.md` retains the detailed comparison evidence.
+
+## Completion record — 2026-09-25
+
+The primary API score now measures `createCss(preset)` through the shipped
+`pandwindCssVite(css)` plugin. Arena uses `css.class(...)` where React expects a
+class string; the Bench product-grid additionally exercises static multi-map
+`css(...)` composition forwarded through `css.props(...)`. Only the rating
+percentage remains a runtime style value in the Bench lane. Its static
+compiler-output tests compare generated props and classes against the real
+runtime API and assert that calls are removed from the transformed module and
+styles are emitted once in the virtual sheet.
+
+| Comparison | Pinned sources and parity | Primary `createCss` result |
+| --- | --- | --- |
+| CSS-in-JS Arena, six routes | Arena `2f4ed369a107a186b8108184871bba0777f23fe4`; Pandwind `bc1b904c5d6795d43396b9f364a127fd68c2f436`; Apple M4, Node 24.20.0, Vite 8.2.1; 18/18 geometry and 72/72 screenshots passed | CSS raw #1/4 at 31,732 B; CSS Brotli #3/4 at 8,724 B; JS Brotli #4/4 at 111,644 B; full first load #4/4 at 125,838 B; cold/warm builds #1/4 at 2,465/1,997 ms; shared edit paint #1/4 at 199.9 ms |
+| CSS-in-JS Bench, 400-tile product grid | Bench `9ed62df69397`; Pandwind `bc1b904c5d6795d43396b9f364a127fd68c2f436`; Apple M4, Node 24.20.0, WPD 0.15.1, Chrome 154.0.8037.57, Firefox stable 156.0.1; all 21 lanes passed DOM/pixel parity over 13 cases | Payload #7/16 at 10,539 B gzip (0 B JS + 1,492 B CSS + 9,047 B HTML); SSR throughput #1/16 at 269,852 tiles/s; mount #7/16 at 34.7 ms; hydration #3/16 at 22.1 ms; cold build #15/17 at 375 ms; INP unranked at 33.2 ms because medians cluster within frame-timing noise |
+
+The Bench CSS lane is one real product-grid workload; the 13-case result
+coverage and competitor ranks belong to the harness as a whole. Its `tw(...)`
+bonus lane remains separate: payload #16/16 at 43,346 B, SSR throughput #5/16,
+mount #6/16, hydration #10/16, and cold build #17/17. It does not alter the
+primary score denominator.
+
+Arena's top-three full-load threshold is 117,786 B, leaving an 8,052 B gap;
+the top-three JavaScript threshold is 102,731 B, leaving an 8,913 B gap. The
+current module attribution places Pandwind's `cx`, preset, and CSS runtime
+modules in a shared 14,437 B Brotli chunk with 4,967 B of app source. These are
+source/module owners, not independent compressed savings. The attempted
+cross-module `cx` fold changed none of the six route modules, so the plan did
+not claim a code-size win without output evidence. The 800-style Arena sweep
+still measures 5.8 Brotli B per declaration for hash classes versus 2.0 B for
+Bamboo and Panda. Named atoms reach 1.8 B per declaration but increase the
+Bench page payload from 10,539 B to 18,352 B and add 89,501 raw class-attribute
+bytes in Arena; hash remains the default.
+
+### Ranked follow-ups
+
+1. **Arena JavaScript and first load.** Close the measured 8,913 B JS gap by
+   profiling runtime `cx` calls and preset data that survive static CSS
+   extraction. Start with imported class constants in conditional `cx` calls;
+   only fold cases whose branch and conflict behavior can be proven against
+   the runtime. Require emitted-bundle size and the existing 18 geometry / 72
+   screenshot parity gate for any change.
+2. **Bench product-grid payload.** Close the 2,352 B gap to the current top-five
+   cutoff of 8,187 B. HTML is 9,047 B of the 10,539 B total, so inspect SSR
+   class-attribute output and repeated host props before spending effort on the
+   already small 1,492 B CSS file. Keep DOM/pixel parity as the constraint.
+3. **Large style-set CSS growth.** Reduce the default hash strategy's measured
+   5.8 B/declaration Brotli slope toward the 2.0 B peers without increasing
+   full transfer size on ordinary pages. Named atoms already demonstrate the
+   scale trade-off, but their current real-workload payload is larger, so they
+   remain diagnostic rather than default.
+
+The refreshed short report is [PERF-SUMMARY.md](../PERF-SUMMARY.md), detailed
+Pandwind comparison is [PERF.md](../PERF.md), and normalized Arena/Bench inputs
+are in `benchmarks/css-in-js-arena/snapshot.json` and
+`benchmarks/css-in-js-bench/snapshot.json`. Both external repositories now
+record the same source revisions and current payload figures in their READMEs.
 
 ## Decisions log
 
