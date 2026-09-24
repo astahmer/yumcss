@@ -380,10 +380,6 @@ input:focus-visible,
 	font-size: 10px;
 	text-decoration: none;
 	white-space: nowrap;
-	transition:
-		color 120ms ease,
-		border-color 120ms ease,
-		background-color 120ms ease;
 }
 .editor-link:hover {
 	border-color: var(--accent-dim);

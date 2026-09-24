@@ -123,7 +123,7 @@ const javascriptTokenPattern =
 	/\/\*[\s\S]*?(?:\*\/|$)|\/\/[^\r\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|(?:0[xX][\da-fA-F]+|0[bB][01]+|0[oO][0-7]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?n?)|[$_\p{ID_Start}][$_\p{ID_Continue}]*|===|!==|=>|==|!=|<=|>=|\?\?=|\?\?|\?\.|&&|\|\||\+\+|--|\+=|-=|\*=|\/=|\*\*|[=+\-*/%<>!&|^~?:@#]|(?:\x5B|\x5D|[{}().,;])/uy;
 
 const cssTokenPattern =
-	/\/\*[\s\S]*?(?:\*\/|$)|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|(?:0[xX][\da-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?(?:%|[a-zA-Z]+)?)|--[$_\p{ID_Start}][$_\p{ID_Continue}-]*|\.[-$_\p{ID_Start}][$_\p{ID_Continue}-]*|#[-$_\p{ID_Start}][$_\p{ID_Continue}-]*|[-$_\p{ID_Start}][$_\p{ID_Continue}-]*|\?\.|&&|\|\||[=+\-*/%<>!&|^~?:@#]|(?:\x5B|\x5D|[{}().,;])/uy;
+	/\/\*[\s\S]*?(?:\*\/|$)|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|(?:0[xX][\da-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?(?:%|[a-zA-Z]+)?)|#[\da-fA-F]{3,8}(?![$_\p{ID_Continue}-])|--[$_\p{ID_Start}][$_\p{ID_Continue}-]*|\.[-$_\p{ID_Start}][$_\p{ID_Continue}-]*|#[-$_\p{ID_Start}][$_\p{ID_Continue}-]*|[-$_\p{ID_Start}][$_\p{ID_Continue}-]*|\?\.|&&|\|\||[=+\-*/%<>!&|^~?:@#]|(?:\x5B|\x5D|[{}().,;])/uy;
 
 const pushToken = (tokens: SnippetToken[], text: string, kind: SnippetTokenKind | null): void => {
 	if (text === "") return;
@@ -153,7 +153,9 @@ const classifyToken = (
 	if (text.startsWith('"') || text.startsWith("'") || text.startsWith("`")) return "string";
 	if (/^\d/u.test(text)) return "number";
 	if (mode === "css" && text.startsWith("--")) return "property";
-	if (mode === "css" && /^[.#]/u.test(text)) return "selector";
+	if (mode === "css" && text.startsWith("#"))
+		return previousSignificant === ":" ? "literal" : "selector";
+	if (mode === "css" && text.startsWith(".")) return "selector";
 	if (/^[=+\-*/%<>!&|^~?:@#]/u.test(text)) return "operator";
 
 	const nextCharacter = nextVisibleCharacter(source, end);

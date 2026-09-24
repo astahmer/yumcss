@@ -15,13 +15,15 @@ describe("tokenizeSnippet", () => {
 	});
 
 	test("highlights CSS selectors, properties, values, and comments", () => {
-		const source = ".card { color: red; gap: var(--space-2); /* tuned */ }";
+		const source = ".card { color: #f00; gap: var(--space-2); /* tuned */ }";
 		const tokens = tokenizeSnippet(source, "card.css");
 
 		expect(tokens.map((token) => token.text).join("")).toBe(source);
 		expect(tokens).toContainEqual({ text: ".card", kind: "selector" });
 		expect(tokens).toContainEqual({ text: "color", kind: "property" });
+		expect(tokens).toContainEqual({ text: "#f00", kind: "literal" });
 		expect(tokens).toContainEqual({ text: "var", kind: "function" });
+		expect(tokens).toContainEqual({ text: "--space-2", kind: "property" });
 		expect(tokens).toContainEqual({ text: "/* tuned */", kind: "comment" });
 	});
 

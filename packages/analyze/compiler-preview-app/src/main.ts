@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { tokenizeSnippet } from "./snippet-highlighter.ts";
-import "./styles.css";
 import { vscodeFileUri } from "./vscode-link.ts";
+import "./styles.css";
 
 const runtimeInfoSchema = z.object({
 	root: z.string(),
