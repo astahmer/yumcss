@@ -15,7 +15,7 @@
 		"inspect": "pnpm --filter inspector run dev",
 		"playground": "pnpm --filter playground run dev",
 		"tw:generate": "pnpm --filter example run tw:generate",
-		"analyze": "pnpm --filter pandwind-analyze run cli --root \"$PWD\" --tw examples/example/src/tw.ts 'examples/example/src/**/*.ts' 'examples/example/src/**/*.tsx'",
+		"analyze": "pnpm --filter pandwind-analyze run cli --root \"$PWD\" --tw examples/example/src/tw.ts 'examples/example/src/**/*'",
 		"mcp": "pnpm --filter pandwind-analyze run cli mcp",
 		"migration-preview": "pnpm --filter pandwind-analyze run migration-preview",
 		"compiler-preview": "pnpm --filter pandwind-analyze run compiler-preview",

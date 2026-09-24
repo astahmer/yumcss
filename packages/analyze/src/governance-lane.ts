@@ -6,7 +6,6 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createAnalysisWorkspace } from "./analysis-service.ts";
 import { parseThemeVars } from "./collect/parsers.ts";
 import {
@@ -75,10 +74,8 @@ export async function runGovernanceLane(args: CliArgs): Promise<string> {
 	const workspace = createAnalysisWorkspace();
 	const presetLoad = await loadOfficialPresetModule(args.preset, args.root);
 	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);
-	const patternList = args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"];
-	const paths = workspace
-		.collectFiles(patternList, args.root)
-		.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
+	const patternList = args.patterns.length > 0 ? args.patterns : ["src/**/*"];
+	const paths = workspace.collectFiles(patternList, args.root);
 	const readFiles = workspace.readFiles(paths);
 	const files = readFiles.map(({ file, content }) => ({
 		file: file.startsWith(args.root + "/") ? file.slice(args.root.length + 1) : file,

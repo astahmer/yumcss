@@ -12,7 +12,6 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cac, type CAC, type Command } from "cac";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import type { createPandwindEngineContext } from "pandwind/vite";
 import { createCrossModuleConstResolver } from "pandwind/vite/cross-module-consts";
 import { collectFiles, type FoldSummary } from "./analyze.ts";
@@ -218,7 +217,7 @@ async function runAnalysis(
 	dependencies: AnalyzeCliDependencies = {},
 ): Promise<string> {
 	if (args.governance) return runGovernanceLane(args);
-	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"];
+	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*"];
 	const workspace = createAnalysisWorkspace();
 	const analysis = createFoldAnalysisService();
 	const config = workspace.loadConfig(args.twPath);
@@ -226,9 +225,7 @@ async function runAnalysis(
 		? (JSON.parse(readFileSync(args.constantsPath, "utf8")) as Record<string, string>)
 		: undefined;
 	const crossModuleResolver = createCrossModuleConstResolver();
-	const files = workspace
-		.collectFiles(patterns, args.root)
-		.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
+	const files = [...workspace.collectFiles(patterns, args.root)];
 	const sources: Array<{
 		absoluteFile: string;
 		content: string;
@@ -339,9 +336,9 @@ async function runAnalyzeCommand(args: CliArgs): Promise<void> {
 	// running the CLI twice (base + head) in the workflow layer.
 	if ((args.failOverBytes !== undefined || args.budgetsPath !== undefined) && args.css) {
 		const workspace = createAnalysisWorkspace();
-		const files = workspace
-			.collectFiles(args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"], args.root)
-			.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
+		const files = [
+			...workspace.collectFiles(args.patterns.length > 0 ? args.patterns : ["src/**/*"], args.root),
+		];
 		const measured = await computeCssBudget(args, files);
 		const caps =
 			args.budgetsPath !== undefined ? parseBudgets(readFileSync(args.budgetsPath!, "utf8")) : {};

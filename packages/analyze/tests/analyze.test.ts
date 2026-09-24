@@ -4,7 +4,7 @@
  */
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
 import {
 	analyzeSource,
@@ -111,28 +111,43 @@ describe("collectFiles + summarize + formatReport", () => {
 		rmSync(root, { recursive: true, force: true });
 	});
 
-	test("globs collect only ts/tsx sources, skipping node_modules", () => {
+	test("collects compiler script sources, skipping unsupported and dependency files", () => {
 		mkdirSync(resolve(root, "src"), { recursive: true });
 		mkdirSync(resolve(root, "node_modules/some-pkg"), { recursive: true });
 		writeFileSync(resolve(root, "src/comp.tsx"), `export const a = cx("p-4");`);
 		writeFileSync(resolve(root, "src/util.ts"), `export const b = cx("m-2");`);
+		writeFileSync(resolve(root, "src/util.js"), `export const c = cx("gap-2");`);
+		writeFileSync(resolve(root, "src/view.jsx"), `export const d = cx("grid");`);
+		writeFileSync(
+			resolve(root, "src/Button.vue"),
+			`<template><button /></template>\n<script setup>\nexport const e = cx("items-center");\n</script>`,
+		);
+		writeFileSync(resolve(root, "src/static.vue"), `<template><button /></template>`);
+		writeFileSync(resolve(root, "src/view.svelte"), `<script>cx("hidden");</script>`);
+		writeFileSync(resolve(root, "src/view.astro"), `---\ncx("block");\n---`);
 		writeFileSync(resolve(root, "src/style.css"), `.x { color: red }`);
 		writeFileSync(resolve(root, "node_modules/some-pkg/index.js"), `cx("p-1")`);
 
-		const files = collectFiles(["src/**/*.{ts,tsx}", "**/*.js"], root);
-		expect(files).toHaveLength(2);
+		const files = collectFiles(["src/**/*", "**/*.js"], root);
+		expect(files.map((file) => relative(root, file))).toEqual([
+			"src/Button.vue",
+			"src/comp.tsx",
+			"src/util.js",
+			"src/util.ts",
+			"src/view.jsx",
+		]);
 		stats = files.map((file) => analyzeSource(readFileSync(file, "utf8"), file, { config }));
 		summary = summarize(stats);
 	});
 
 	test("summary aggregates across files", () => {
-		expect(summary.totalCxCalls).toBe(2);
+		expect(summary.totalCxCalls).toBe(5);
 		expect(summary.eliminatedPct).toBe(100);
 	});
 
 	test("report contains table rows, runtime reasons and totals", () => {
 		const report = formatReport(summary);
 		expect(report).toContain("pandwind analyze — fold coverage");
-		expect(report).toContain("cx(): 100% of 2 calls eliminated at build time");
+		expect(report).toContain("cx(): 100% of 5 calls eliminated at build time");
 	});
 });

@@ -546,9 +546,14 @@ export function loadTwConfig(twPath: string): TwConfig {
 	return config;
 }
 
-/** Collect unique TypeScript files through the shared source workspace. */
+/** Collect unique compiler-analyzable script files through the shared source workspace. */
 export function collectFiles(patterns: Array<string>, root: string): Array<string> {
-	return [...createSourceWorkspace().files(patterns, root)].filter((file) =>
-		SOURCE_SCANNER_SERVICE.isTypeScriptFile(file),
-	);
+	const workspace = createSourceWorkspace();
+	const files = workspace
+		.files(patterns, root)
+		.filter((file) => SOURCE_SCANNER_SERVICE.isScriptFile(file));
+	return workspace
+		.read(files)
+		.filter(({ scan }) => scan.program !== undefined)
+		.map(({ path }) => path);
 }

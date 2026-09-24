@@ -115,7 +115,7 @@ For a consumer project, the published command can emit JSON for CI:
 pnpm exec pandwind-analyze \
 	--root . \
 	--tw src/tw.ts \
-	"src/**/*.{ts,tsx}"
+	"src/**/*"
 ```
 
 When `src/tw.ts` comes from codegen, the analyzer also reads adjacent

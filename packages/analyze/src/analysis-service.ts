@@ -131,9 +131,13 @@ class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 	}
 
 	collectFiles(patterns: readonly string[], root: string): readonly string[] {
-		return this.sourceWorkspace
+		const files = this.sourceWorkspace
 			.files(patterns, root)
-			.filter((file) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(file));
+			.filter((file) => SOURCE_SCANNER_SERVICE.isScriptFile(file));
+		return this.sourceWorkspace
+			.read(files)
+			.filter(({ scan }) => scan.program !== undefined)
+			.map(({ path }) => path);
 	}
 
 	forEachFile(

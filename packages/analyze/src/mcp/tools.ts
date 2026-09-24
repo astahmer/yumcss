@@ -1338,7 +1338,7 @@ async function analyzeProject(
 ): Promise<McpToolResult> {
 	const input = asRecord(arguments_, MCP_TOOL.AnalyzeProject);
 	const patterns =
-		input.patterns === undefined ? ["src/**/*.{ts,tsx}"] : stringArray(input.patterns, "patterns");
+		input.patterns === undefined ? ["src/**/*"] : stringArray(input.patterns, "patterns");
 	for (const pattern of patterns) projectPattern(pattern);
 	const twPath = input.twPath === undefined ? "src/tw.ts" : stringValue(input.twPath, "twPath");
 	const argv = [

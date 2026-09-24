@@ -264,7 +264,9 @@ pnpm exec pandwind-analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root 
 - `--constants <path>` — JSON file of imported constants
   (`Record<string, string>`) so cross-module constants fold.
 - `--github-annotations` — emit GitHub annotations.
-- Default patterns when none given: `src/**/*.{ts,tsx}`.
+- Default patterns when none given: `src/**/*`, filtered through the shared
+  compiler source scanner. This includes TS, TSX, JS, JSX, and Vue files with
+  script blocks; Svelte and Astro are not part of the compiler analysis lane.
 
 The Inspector (`pnpm run inspect`) renders these same reports read-only — extend the
 CLI, not the app.

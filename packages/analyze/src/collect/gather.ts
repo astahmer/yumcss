@@ -51,16 +51,20 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	const cssBudgetService = createCssBudgetService();
 	const cssExtraction = createCssExtractionService({ matchers: [], preset: examplePreset });
 	const appSrc = (p: string): string => resolve(root, APP, "src", p);
+	const appSourceRoot = resolve(root, APP, "src");
 	const readSourceArtifact = (file: string): string | undefined =>
 		sourceWorkspace.read([file])[0]?.source;
+	const appSourcePaths = sourceWorkspace
+		.files(["**/*"], appSourceRoot)
+		.filter((file) => SOURCE_SCANNER_SERVICE.isScriptFile(file));
 	const appSourceFiles = sourceWorkspace
-		.collect(["**/*.{ts,tsx}"], resolve(root, APP, "src"))
-		.filter(({ path: file }) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(file))
+		.read(appSourcePaths)
+		.filter(({ scan }) => scan.program !== undefined)
 		.map(({ path: file, source: content }) => ({ file, content }));
 
 	// --- coverage: the CLI is the single interface to fold analysis.
 	const summaryJson = await runCli(
-		[`${APP}/src/**/*.{ts,tsx}`, "--tw", appSrc("tw.ts"), "--root", root, "--json"],
+		[`${APP}/src/**/*`, "--tw", appSrc("tw.ts"), "--root", root, "--json"],
 		isDogfoodApp ? { cssPreset: examplePreset } : {},
 	);
 	const summary = JSON.parse(summaryJson) as {
