@@ -73,13 +73,18 @@ const resolveViteEntry = (root: string): string => {
 		try {
 			return packageRequire.resolve("vite");
 		} catch {
-			throw new Error(`Vite is not installed from the project root or pandwind-analyze package: ${root}`);
+			throw new Error(
+				`Vite is not installed from the project root or pandwind-analyze package: ${root}`,
+			);
 		}
 	}
 };
 
 const viteUrl = (file: string): string =>
-	`/${file.split("/").map((segment) => encodeURIComponent(segment)).join("/")}`;
+	`/${file
+		.split("/")
+		.map((segment) => encodeURIComponent(segment))
+		.join("/")}`;
 
 export const createCompilerPreviewRuntime = async (
 	options: CompilerPreviewRuntimeOptions,
@@ -89,7 +94,9 @@ export const createCompilerPreviewRuntime = async (
 	const vite: ViteModule = await import(pathToFileURL(viteUrlPath).href);
 	const server = await vite.createServer({
 		root: workspace.root,
-		...(options.configFile === undefined ? {} : { configFile: resolve(workspace.root, options.configFile) }),
+		...(options.configFile === undefined
+			? {}
+			: { configFile: resolve(workspace.root, options.configFile) }),
 		server: { middlewareMode: true, hmr: false },
 		appType: "custom",
 		logLevel: "error",
@@ -110,17 +117,22 @@ export const createCompilerPreviewRuntime = async (
 			const sourceFile = workspace.read(file);
 			const sourceBytes = Buffer.byteLength(sourceFile.source, "utf8");
 			if (sourceBytes > MAX_SOURCE_BYTES)
-				throw new Error(`Source file exceeds the ${MAX_SOURCE_BYTES.toLocaleString()} byte preview limit`);
+				throw new Error(
+					`Source file exceeds the ${MAX_SOURCE_BYTES.toLocaleString()} byte preview limit`,
+				);
 			return { file: sourceFile.path, source: sourceFile.source, sourceBytes };
 		},
 		async transform(file) {
 			const sourceFile = workspace.read(file);
 			const sourceBytes = Buffer.byteLength(sourceFile.source, "utf8");
 			if (sourceBytes > MAX_SOURCE_BYTES)
-				throw new Error(`Source file exceeds the ${MAX_SOURCE_BYTES.toLocaleString()} byte preview limit`);
+				throw new Error(
+					`Source file exceeds the ${MAX_SOURCE_BYTES.toLocaleString()} byte preview limit`,
+				);
 			const startedAt = performance.now();
 			const result = await server.transformRequest(viteUrl(sourceFile.path));
-			if (result === null) throw new Error("Vite did not return a transformed module for this file");
+			if (result === null)
+				throw new Error("Vite did not return a transformed module for this file");
 			return {
 				file: sourceFile.path,
 				source: sourceFile.source,

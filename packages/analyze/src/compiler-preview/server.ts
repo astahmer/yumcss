@@ -54,7 +54,7 @@ const listen = (server: ListenableServer, host: string, port: number): Promise<v
 export const createCompilerPreviewServer = async (
 	options: CompilerPreviewServerOptions,
 ): Promise<CompilerPreviewServer> => {
-	const runtime = options.runtime ?? await createCompilerPreviewRuntime(options);
+	const runtime = options.runtime ?? (await createCompilerPreviewRuntime(options));
 	const token = options.token ?? randomBytes(32).toString("hex");
 	const host = options.host ?? DEFAULT_HOST;
 	const { app, dispose } = createCompilerPreviewApp({

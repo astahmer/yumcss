@@ -24,7 +24,11 @@ export interface CompilerPreviewFile {
 export interface CompilerPreviewWorkspace {
 	readonly root: string;
 	files(): readonly CompilerPreviewFile[];
-	read(file: string): { readonly path: string; readonly absolutePath: string; readonly source: string };
+	read(file: string): {
+		readonly path: string;
+		readonly absolutePath: string;
+		readonly source: string;
+	};
 }
 
 export interface CompilerPreviewWorkspaceOptions {
@@ -44,7 +48,8 @@ export const createCompilerPreviewWorkspace = (
 	options: CompilerPreviewWorkspaceOptions = {},
 ): CompilerPreviewWorkspace => {
 	const root = realpathSync(resolve(rootPath));
-	if (!statSync(root).isDirectory()) throw new Error(`Compiler Preview root is not a directory: ${root}`);
+	if (!statSync(root).isDirectory())
+		throw new Error(`Compiler Preview root is not a directory: ${root}`);
 	const sourceWorkspace = options.sourceWorkspace ?? createSourceWorkspace();
 	const paths = sourceWorkspace.files(DEFAULT_PATTERNS, root, { exclude: isGeneratedPath });
 	const pathSet = new Set(paths);

@@ -20,9 +20,10 @@ export const createCompilerPreviewApp = (
 	app.use("*", async (context, next) => {
 		context.header("Cache-Control", "no-store");
 		context.header("Referrer-Policy", "no-referrer");
+		const url = new URL(context.req.url);
 		const provided =
 			context.req.header("x-pandwind-compiler-preview-token") ??
-			new URL(context.req.url).searchParams.get("token");
+			(context.req.path === "/" ? url.searchParams.get("token") : null);
 		if (provided !== options.token)
 			return context.json({ error: "Compiler Preview authorization required" }, 401);
 		await next();

@@ -20,7 +20,6 @@ const transformSchema = z.object({
 });
 const errorSchema = z.object({ error: z.string() });
 
-type RuntimeInfo = z.infer<typeof runtimeInfoSchema>;
 type PreviewFile = z.infer<typeof fileSchema>;
 type TransformResult = z.infer<typeof transformSchema>;
 
@@ -33,7 +32,8 @@ const requiredElement = (id: string): HTMLElement => {
 
 const requiredInput = (id: string): HTMLInputElement => {
 	const element = document.getElementById(id);
-	if (!(element instanceof HTMLInputElement)) throw new Error(`Compiler Preview UI is missing input #${id}`);
+	if (!(element instanceof HTMLInputElement))
+		throw new Error(`Compiler Preview UI is missing input #${id}`);
 	return element;
 };
 
@@ -66,7 +66,9 @@ const request = async <Schema extends z.ZodType>(
 	const value: unknown = await response.json();
 	if (!response.ok) {
 		const parsedError = errorSchema.safeParse(value);
-		throw new Error(parsedError.success ? parsedError.data.error : `Request failed (${response.status})`);
+		throw new Error(
+			parsedError.success ? parsedError.data.error : `Request failed (${response.status})`,
+		);
 	}
 	return schema.parse(value);
 };
@@ -80,6 +82,13 @@ const setCompilerStatus = (message: string, state: "active" | "warning" | "error
 	label.textContent = message;
 	ui.compilerStatus.append(dot, label);
 	ui.compilerStatus.className = `compiler-status is-${state}`;
+};
+
+const setReadyStatus = (): void => {
+	setCompilerStatus(
+		pandwindPluginActive ? "Pandwind active" : "Vite ready · no Pandwind plugin",
+		pandwindPluginActive ? "active" : "warning",
+	);
 };
 
 const setError = (message: string): void => {
@@ -98,6 +107,7 @@ const lineCount = (code: string): number => code.split("\n").length;
 let previewFiles: readonly PreviewFile[] = [];
 let selectedFile = "";
 let activeCompile = 0;
+let pandwindPluginActive = false;
 
 const renderFileList = (): void => {
 	const filter = ui.fileFilter.value.trim().toLowerCase();
@@ -107,7 +117,10 @@ const renderFileList = (): void => {
 	if (filtered.length === 0) {
 		const empty = document.createElement("p");
 		empty.className = "empty-files";
-		empty.textContent = previewFiles.length === 0 ? "No supported source files found." : "No files match this filter.";
+		empty.textContent =
+			previewFiles.length === 0
+				? "No supported source files found."
+				: "No files match this filter.";
 		ui.fileList.append(empty);
 		return;
 	}
@@ -144,7 +157,7 @@ const renderResult = (result: TransformResult): void => {
 	ui.changeBadge.textContent = changed ? "Transformed" : "Unchanged";
 	ui.changeBadge.className = `change-badge is-${changed ? "changed" : "unchanged"}`;
 	setError("");
-	setCompilerStatus("Vite ready", "active");
+	setReadyStatus();
 };
 
 const compileFile = async (file: string): Promise<void> => {
@@ -203,11 +216,12 @@ const start = async (): Promise<void> => {
 	try {
 		const info = await request("/api/compiler-preview/info", runtimeInfoSchema);
 		ui.projectRoot.textContent = info.root;
-		const hasPandwind = info.pandwindPlugins.length > 0;
-		setCompilerStatus(hasPandwind ? "Pandwind active" : "Vite ready · no Pandwind plugin", hasPandwind ? "active" : "warning");
-		ui.pluginSummary.textContent = info.plugins.length === 0
-			? `Vite ${info.viteVersion} · no configured plugins`
-			: `Vite ${info.viteVersion} · ${info.plugins.join(" · ")}`;
+		pandwindPluginActive = info.pandwindPlugins.length > 0;
+		setReadyStatus();
+		ui.pluginSummary.textContent =
+			info.plugins.length === 0
+				? `Vite ${info.viteVersion} · no configured plugins`
+				: `Vite ${info.viteVersion} · ${info.plugins.join(" · ")}`;
 		previewFiles = await request("/api/compiler-preview/files", z.array(fileSchema));
 		renderFileList();
 		ui.refresh.removeAttribute("disabled");

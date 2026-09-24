@@ -18,6 +18,7 @@
 		"analyze": "pnpm --filter pandwind-analyze run cli --root \"$PWD\" --tw examples/example/src/tw.ts 'examples/example/src/**/*.ts' 'examples/example/src/**/*.tsx'",
 		"mcp": "pnpm --filter pandwind-analyze run cli mcp",
 		"migration-preview": "pnpm --filter pandwind-analyze run migration-preview",
+		"compiler-preview": "pnpm --filter pandwind-analyze run compiler-preview",
 		"lint": "pnpm --filter pandwind run build && pnpm --filter @pandwind/lint-plugin run build && pnpm exec oxlint --deny-warnings --report-unused-disable-directives",
 		"lint:fix": "pnpm --filter pandwind run build && pnpm --filter @pandwind/lint-plugin run build && pnpm exec oxlint --fix --deny-warnings --report-unused-disable-directives",
 		"format": "pnpm exec oxfmt --check",

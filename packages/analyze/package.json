@@ -16,8 +16,8 @@
 	},
 	"bin": {
 		"pandwind-analyze": "./dist/cli.js",
-		"pandwind-migration-preview": "./dist/migration-preview/cli.js",
-		"pandwind-compiler-preview": "./dist/compiler-preview/cli.js"
+		"pandwind-compiler-preview": "./dist/compiler-preview/cli.js",
+		"pandwind-migration-preview": "./dist/migration-preview/cli.js"
 	},
 	"files": [
 		"dist",

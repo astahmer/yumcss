@@ -13,21 +13,28 @@ describe("createCompilerPreviewRuntime", () => {
 		let runtime: CompilerPreviewRuntime | null = null;
 		try {
 			mkdirSync(join(root, "src"), { recursive: true });
-			writeFileSync(join(root, "src", "Card.ts"), "export const card = 'before';\n");
+			writeFileSync(
+				join(root, "src", "design.ts"),
+				"import { createDesignCss } from 'pandwind/design'; import { examplePreset } from '@pandwind/example-preset'; export const css = createDesignCss(examplePreset);\n",
+			);
+			writeFileSync(
+				join(root, "src", "Card.ts"),
+				"import { css } from './design'; import 'pandwind:css'; export const card = css.class({ color: '$blue-500' });\n",
+			);
 			writeFileSync(
 				join(root, "vite.config.ts"),
-				"export default { plugins: [{ name: 'pandwind-preview-test', enforce: 'pre', transform(code, id) { if (id.endsWith('/src/Card.ts')) return { code: code.replace('before', 'after'), map: null }; } }] };\n",
+				`import { pandwindCssVite, pandwindVite } from 'pandwind/vite'; import { createDesignCss } from 'pandwind/design'; import { examplePreset } from '@pandwind/example-preset'; const css = createDesignCss(examplePreset); export default { plugins: [pandwindVite({ css: { preset: examplePreset } }), pandwindCssVite(css, { root: ${JSON.stringify(root)} })] };\n`,
 			);
 
 			runtime = await createCompilerPreviewRuntime({ root });
 			expect(runtime.info.viteVersion).toBe("8.2.2");
-			expect(runtime.info.pandwindPlugins).toContain("pandwind-preview-test");
-			expect(runtime.files()).toContainEqual({ path: "src/Card.ts", bytes: 33 });
+			expect(runtime.info.pandwindPlugins.length).toBeGreaterThan(0);
+			expect(runtime.files().map((file) => file.path)).toContain("src/Card.ts");
 
 			const result = await runtime.transform("src/Card.ts");
-			expect(result.source).toContain("before");
-			expect(result.code).toContain("after");
-			expect(result.code).not.toContain("before");
+			expect(result.source).toContain("css.class(");
+			expect(result.code).not.toContain("css.class(");
+			expect(result.code).toMatch(/export const card = ["'][^"']+["']/u);
 			expect(result.durationMs).toBeGreaterThanOrEqual(0);
 			expect(() => runtime?.read("../outside.ts")).toThrow(
 				"outside the supported project workspace",
@@ -36,5 +43,5 @@ describe("createCompilerPreviewRuntime", () => {
 			if (runtime !== null) await runtime.close();
 			rmSync(root, { recursive: true, force: true });
 		}
-	});
+	}, 15_000);
 });

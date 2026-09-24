@@ -34,16 +34,17 @@ describe("createCompilerPreviewApp", () => {
 		});
 		const unauthorized = await handle.app.request("/api/compiler-preview/files");
 		expect(unauthorized.status).toBe(401);
+		const queryToken = await handle.app.request(`/api/compiler-preview/files?token=${token}`);
+		expect(queryToken.status).toBe(401);
 
 		const headers = { "x-pandwind-compiler-preview-token": token };
 		const files = await handle.app.request("/api/compiler-preview/files", { headers });
 		expect(files.status).toBe(200);
 		expect(await files.json()).toEqual([{ path: "src/Card.tsx", bytes: 31 }]);
 
-		const source = await handle.app.request(
-			"/api/compiler-preview/source?file=src%2FCard.tsx",
-			{ headers },
-		);
+		const source = await handle.app.request("/api/compiler-preview/source?file=src%2FCard.tsx", {
+			headers,
+		});
 		expect(await source.json()).toEqual({
 			file: "src/Card.tsx",
 			source: "export const card = 'source';",
@@ -64,6 +65,29 @@ describe("createCompilerPreviewApp", () => {
 		});
 		expect(page.status).toBe(200);
 		expect(page.headers.get("referrer-policy")).toBe("no-referrer");
+		handle.dispose();
+	});
+
+	test("returns Vite transform failures as visible diagnostics", async () => {
+		const runtime = {
+			...createRuntime(),
+			transform: async () => {
+				throw new Error("CSS transform failed");
+			},
+		};
+		const handle = createCompilerPreviewApp({
+			runtime,
+			token,
+			ui: createInMemoryCompilerPreviewUiProvider("<!doctype html><title>preview</title>"),
+		});
+		const response = await handle.app.request(
+			"/api/compiler-preview/transform?file=src%2FCard.tsx",
+			{
+				headers: { "x-pandwind-compiler-preview-token": token },
+			},
+		);
+		expect(response.status).toBe(422);
+		expect(await response.json()).toEqual({ error: "CSS transform failed" });
 		handle.dispose();
 	});
 });

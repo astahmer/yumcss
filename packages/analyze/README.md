@@ -58,9 +58,17 @@ localhost. If the Vite config is not named conventionally, pass it explicitly:
 pnpm exec pandwind-compiler-preview /path/to/project --config vite.config.ts
 ```
 
-Vite and the project's config are loaded from the selected project, so the
-preview uses its installed Vite version and plugin options. Vite config code
-executes as part of starting the preview.
+To inspect Pandwind's real-world compiler fixture from the repository root:
+
+```sh
+pnpm run compiler-preview "$PWD/packages/pandwind/tests/fixtures/tsc" \
+	--config "$PWD/packages/pandwind/tests/fixtures/tsc/compiler-preview.vite.config.ts"
+```
+
+Vite is resolved from the selected project first, and its config and plugin
+options are used for every transform. In this monorepo, the analyzer's
+development Vite dependency is a fallback when the selected root has no local
+Vite install. Vite config code executes as part of starting the preview.
 
 ## MCP tooling
 
