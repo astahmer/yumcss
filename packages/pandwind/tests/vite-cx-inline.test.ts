@@ -414,6 +414,18 @@ describe("module-level constant propagation", () => {
 		const { inlined } = foldModule(source);
 		expect(inlined).toBe(0);
 	});
+
+	test("module analysis ignores parser parent links", () => {
+		const parsed = parseSync(
+			"parent-cycle.ts",
+			'const TOKEN = "flex";\nexport const classes = cx(TOKEN);',
+			{ lang: "ts" },
+		);
+		const program = parsed.program as unknown as OxcNode & { parent?: unknown };
+		program.parent = program;
+
+		expect(collectModuleConstants(program).get("TOKEN")?.value).toBe("flex");
+	});
 });
 
 describe("partial folding of conditionals with static branches", () => {
