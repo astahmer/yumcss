@@ -2,7 +2,6 @@ import react from "@vitejs/plugin-react-swc";
 import { examplePreset } from "@pandwind/example-preset";
 import { createPandwindEngineContext, pandwindCssVite, pandwindVite } from "pandwind/vite";
 import { defineConfig } from "vite";
-import { css } from "./src/css.ts";
 
 const engine = createPandwindEngineContext({ preset: examplePreset });
 
@@ -13,7 +12,7 @@ const engine = createPandwindEngineContext({ preset: examplePreset });
 export default defineConfig({
 	plugins: [
 		pandwindVite({ css: { preset: examplePreset, engine } }),
-		pandwindCssVite(css, { engine }),
+		pandwindCssVite(examplePreset, { engine }),
 		react(),
 	],
 });
