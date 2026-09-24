@@ -135,27 +135,32 @@ interface EmbeddedProgram {
 }
 
 /** Parse framework-embedded script/template islands with original source offsets. */
-const embeddedPrograms = (document: SourceDocument): readonly EmbeddedProgram[] => {
+const embeddedPrograms = (
+	document: SourceDocument,
+	options: { readonly includeScripts?: boolean } = {},
+): readonly EmbeddedProgram[] => {
 	const programs: EmbeddedProgram[] = [];
 	const source = document.source;
-	const scriptPattern = /<script\b[^>]*>([\s\S]*?)<\/script\s*>/giu;
-	for (const match of source.matchAll(scriptPattern)) {
-		const body = match[1];
-		const matchStart = match.index;
-		if (body === undefined || matchStart === undefined) continue;
-		const bodyStart = matchStart + match[0].indexOf(body);
-		try {
-			const parsed = SOURCE_SCANNER_SERVICE.parse({
-				file: `${document.file}.tsx`,
-				source: `${" ".repeat(bodyStart)}${body}`,
-				language: "tsx",
-			});
-			programs.push({
-				program: parsed.program as unknown as OxcNode,
-				hostUses: collectHostUses(parsed.program as unknown as OxcNode),
-			});
-		} catch {
-			// A malformed script island remains unindexed and therefore unrewritten.
+	if (options.includeScripts !== false) {
+		const scriptPattern = /<script\b[^>]*>([\s\S]*?)<\/script\s*>/giu;
+		for (const match of source.matchAll(scriptPattern)) {
+			const body = match[1];
+			const matchStart = match.index;
+			if (body === undefined || matchStart === undefined) continue;
+			const bodyStart = matchStart + match[0].indexOf(body);
+			try {
+				const parsed = SOURCE_SCANNER_SERVICE.parse({
+					file: `${document.file}.tsx`,
+					source: `${" ".repeat(bodyStart)}${body}`,
+					language: "tsx",
+				});
+				programs.push({
+					program: parsed.program as unknown as OxcNode,
+					hostUses: collectHostUses(parsed.program as unknown as OxcNode),
+				});
+			} catch {
+				// A malformed script island remains unindexed and therefore unrewritten.
+			}
 		}
 	}
 	const templatePattern = /<template\b[^>]*>([\s\S]*?)<\/template\s*>/giu;
@@ -596,7 +601,19 @@ export class SourceBindings {
 		sourceBindingIndexCache.delete(cacheKey);
 		let index: SourceBindingIndex;
 		try {
-			index = SourceBindings.fromParseResult(recoverableParse({ ...document, language }));
+			const parsed = recoverableParse({ ...document, language });
+			if (language !== "vue") {
+				index = SourceBindings.fromParseResult(parsed);
+			} else {
+				const templates = embeddedPrograms(document, { includeScripts: false });
+				index =
+					templates.length === 0
+						? SourceBindings.fromParseResult(parsed)
+						: SourceBindings.fromPrograms(
+								[parsed.program as unknown as OxcNode, ...templates.map(({ program }) => program)],
+								templates.flatMap(({ hostUses }) => hostUses),
+							);
+			}
 		} catch {
 			const embedded = embeddedPrograms(document);
 			if (embedded.length === 0) throw new Error(`unable to parse ${document.file}`);

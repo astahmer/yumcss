@@ -1,5 +1,7 @@
 # Compiler-backed style diagnostics plan
 
+Status: complete
+
 ## Context
 
 - The 2026-09-23 Arena Pandwind lane accepted a misspelled CSS property,
@@ -20,6 +22,21 @@
 Make invalid static CSS properties and verified token references fail clearly
 on the supported typed/compiler path, and keep lint findings aligned with the
 same compiler semantics without rejecting intentional raw or dynamic styles.
+
+## Completion findings
+
+- The Arena preset uses properties: { $all: true, ...pandaProperties } and
+  strict: false. Its padingBlock is an allowed arbitrary property; "acent" is
+  an ordinary string value rather than a verified token reference.
+- The exact values are rejected by finite createCss typing, and retained by
+  the open preset test. No compiler diagnostic or guessed token vocabulary is
+  appropriate for the Arena's explicitly open configuration.
+- no-dynamic-values now consumes the compiler's cached module-constant scope.
+  Its finite conditional regression uses the same source case as the core Vite
+  extraction test. Oxlint remains independent of full compiler execution.
+- Validation: 43 lint-plugin tests, 78 core Vite CSS tests, and 12 TSTyche
+  cases with 39 assertions passed. All four Arena lane typechecks passed; the
+  scale/orphan probes rebuilt all four lanes.
 
 ## What
 
@@ -119,49 +136,49 @@ existing preset metadata or generated type/catalog artifacts.
 
 ## Implementation steps
 
-1. Add minimal exact-input tests for `padingBlock` and `acent` in the Arena
-   lane's real Pandwind API shape; assert current behavior before editing.
-2. Classify each case as a declaration gap, compiler-analysis gap, benchmark
-   escape hatch, or incomplete metadata case. Record the supported contract.
-3. Fix the property case at the narrowest correct boundary, preferring the
-   existing typed CSS contract; add a compiler diagnostic only if invalid
-   source can legitimately bypass that contract.
-4. Fix the token case only when active metadata proves the valid token set;
-   otherwise make the fixture use the verified generated/preset path or record
-   the intentional open boundary rather than guessing.
-5. Reuse the pure semantic helper in lint only where identical inputs and
-   outcomes are available. Cover aliases/namespaces and ignore unrelated local
-   functions as required by the lint plugin contract.
-6. Add positive and negative matrices for valid, invalid, custom, raw, dynamic,
-   conditional, open, and missing-metadata cases; assert compiler output and
-   lint findings independently against the shared semantic cases.
-7. Re-run the Arena typecheck/build proof and report whether both misspellings
-   are rejected in the supported lane. Describe the fix in a focused JJ
-   revision.
+1. [x] Add exact-input type cases for padingBlock and acent in finite and open
+   preset configurations.
+2. [x] Classify each case as an intentional open-contract path or a finite
+   property/token validation gap.
+3. [x] Keep invalid finite properties and verified token references rejected
+   by the existing typed CSS contract; no additional compiler diagnostic is
+   needed for values the open contract accepts.
+4. [x] Preserve strict: false behavior and avoid inventing a token allow-list.
+5. [x] Reuse compiler-owned cached static module analysis for lint binding
+   scope while keeping source-shape reporting and policy in the lint rule.
+6. [x] Cover finite conditionals with the same source case as the core Vite
+   extraction test and retain raw, dynamic, custom, open, and missing-metadata
+   cases.
+7. [x] Re-run lint, compiler, type, Arena build, and Arena typecheck proofs;
+   describe changes in focused JJ revisions.
 
-## Open questions
+## Resolved questions
 
-1. Does the Arena token typo occur in a typed token reference, or in a string
-   value intentionally accepted by the benchmark's open CSS value contract?
-2. Does the property typo reach compiler extraction through a typed `css()`
-   call, an explicit raw escape, or an untyped helper?
+1. "acent" is an ordinary string value under the Arena lane's open $all
+   property catalog, not a token reference with a finite valid set.
+2. padingBlock reaches an open strict: false preset. Finite createCss typing
+   rejects it; the open preset intentionally accepts arbitrary CSS property
+   names.
 
 ## Acceptance criteria
 
-- [ ] Exact Arena examples have regression coverage before implementation.
-- [ ] `padingBlock` is rejected by the supported static typed/compiler path
-      with a useful source location.
-- [ ] `acent` is rejected only when complete active token metadata proves it
-      invalid; incomplete or open metadata does not cause guessed diagnostics.
-- [ ] Compiler and lint agree on shared static semantic cases through the same
-      pure helper, with no full compiler execution in Oxlint.
-- [ ] Valid, custom-token, raw, dynamic, conditional, open, and missing-metadata
-      cases retain their documented behavior and do not gain false positives.
-- [ ] No public API surface is added, and the Arena lane's typecheck/build
-      evidence matches the published correctness table.
+- [x] Exact Arena examples have regression coverage in finite and open preset
+      configurations.
+- [x] `padingBlock` is rejected by finite typed createCss; the Arena's open
+      $all contract intentionally accepts it.
+- [x] `acent` is rejected only by finite token metadata; open string values do
+      not cause guessed diagnostics.
+- [x] Lint uses compiler-owned cached static-scope analysis and shares the
+      core finite-conditional fixture without running the compiler in Oxlint.
+- [x] Valid, custom-token, raw, dynamic, conditional, open, and missing
+      metadata cases retain their documented behavior.
+- [x] No public API was added, and Arena type/build evidence matches the
+      documented open-lane outcome.
 
 ## Decisions log
 
 | Date | Decision | Rationale |
 | --- | --- | --- |
 | 2026-09-24 | Split diagnostics from output-size work | Type/config semantics need different owners and acceptance tests than browser-byte optimization |
+| 2026-09-24 | Preserve Arena's open CSS contract and enforce typos on finite presets | The exact typos fail when the preset proves a finite property/token set; Arena deliberately allows arbitrary properties and string values |
+| 2026-09-24 | Share compiler static-scope collection with lint, not compiler execution | This removes repeated lint-only declaration walks while keeping Oxlint side-effect-free and core Vite conditional behavior authoritative |

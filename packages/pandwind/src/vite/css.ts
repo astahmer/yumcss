@@ -372,6 +372,7 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 		{ readonly selector: string; readonly property: string; readonly value: number }
 	>();
 	const builtSourceFiles = new Set<string>();
+	let hasBuiltSourceGraph = false;
 	let nextCssMarker = 0;
 
 	const forgetCompositionConsumer = (consumer: string): void => {
@@ -472,6 +473,7 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 			if (resolvedConfig?.command === "build") {
 				buildCssMarkers.clear();
 				builtSourceFiles.clear();
+				hasBuiltSourceGraph = false;
 				nextCssMarker = 0;
 			}
 			if (options.libraries === undefined || options.libraries.length === 0) return;
@@ -502,7 +504,7 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 			core.configResolved(config);
 		},
 		closeBundle() {
-			core.closeBundle([...builtSourceFiles].toSorted());
+			core.closeBundle(hasBuiltSourceGraph ? [...builtSourceFiles].toSorted() : undefined);
 		},
 		resolveId(source: string) {
 			return core.resolveId(source);
@@ -528,7 +530,11 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 				_outputOptions: unknown,
 				bundle: OutputBundle,
 			) {
-				if (resolvedConfig?.command !== "build" || buildCssMarkers.size === 0) return;
+				if (
+					resolvedConfig?.command !== "build" ||
+					(buildCssMarkers.size === 0 && options.inlineCritical === undefined)
+				)
+					return;
 				const sourceFiles = new Set<string>();
 				for (const output of Object.values(bundle)) {
 					if (output.type !== "chunk") continue;
@@ -541,7 +547,9 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 				}
 				const sortedSourceFiles = [...sourceFiles].toSorted();
 				for (const file of sortedSourceFiles) builtSourceFiles.add(file);
+				hasBuiltSourceGraph = true;
 
+				if (buildCssMarkers.size === 0) return;
 				for (const [id, marker] of buildCssMarkers) {
 					const escapedSelector = marker.selector.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 					const escapedProperty = marker.property.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");

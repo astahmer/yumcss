@@ -1,29 +1,36 @@
 # Benchmark output regression plan
 
+Status: complete (2026-09-24)
+
 ## Context
 
-- The 2026-09-23 CSS-in-JS Arena comparison passed 18/18 geometry checks and
-  72/72 screenshot checks. On that pinned four-engine set, Pandwind ranked
-  fourth for full first load at 125,815 B and client JavaScript at 111,623 B
-  Brotli, while compressed CSS ranked third at 8,724 B. The first-load gap to
-  Bamboo is 15,821 B; 14,519 B of it is client JavaScript.
+- The refreshed 2026-09-24 CSS-in-JS Arena comparison passed 18/18 geometry
+  checks and 72/72 screenshot checks. Pandwind ranks fourth for full first
+  load at 125,838 B and client JavaScript at 111,644 B Brotli, while
+  compressed CSS ranks third at 8,724 B. The first-load gap to Bamboo is
+  15,844 B; the client-JavaScript gap is 14,540 B.
 - Arena's 800-extra-style sweep measured 36,514 B Brotli CSS for Pandwind,
   versus 16,934 B for Bamboo and 19,023 B for Panda. The normalized slope was
   5.8 Brotli bytes per added declaration, versus 2.0 for Bamboo and Panda.
-  Adding one unimported 50-style source file added 9,353 raw CSS bytes and
-  2,036 Brotli bytes for Pandwind.
-- CSS-in-JS Bench's build-time Pandwind lane ranked 18/18 for product-grid
-  payload at 43,339 gzip bytes: 21.22 KB JS, 7.78 KB CSS, and 14.34 KB HTML.
-  It ranked seventh for SSR throughput and client mount, twelfth for hydration,
-  and tenth for cold production build. That lane uses a benchmark-specific atom
-  stylesheet adapter, so its bundle and markup must be attributed before
-  treating the rank as a general package cost.
-- The Bench rerun currently imports Pandwind source through a sibling-worktree
-  path. Make the lane reproducible from a pinned package artifact before using
-  it as a regression gate.
+  The initial orphan probe added 9,353 raw and 2,036 Brotli CSS bytes for
+  Pandwind; the new regression gate confirms the same unimported fixture adds
+  0 raw and 0 Brotli bytes.
+- The fresh CSS-in-JS Bench run completed on 2026-09-24 with WPD 0.15.1,
+  Chrome 154.0.8037.57, and Firefox stable_156.0.1: 196/196 Firefox cells
+  passed across five measured lanes. DOM and pixel parity passed across all
+  19 techs and 13 cases. The build-time Pandwind product-grid lane measured
+  43,339 gzip bytes (21,221 B JS, 7,781 B CSS, 14,337 B HTML); its ranks are
+  #18/18 payload, #10/18 SSR throughput, #14/18 mount, #16/18 hydration, and
+  #8/19 cold client build. Interaction stays unranked because the measured
+  frame-time medians cluster too tightly to support a useful rank.
+- Bench source revision `ff161a048ccb` and Pandwind source revision
+  `2984568d2eb6aabc5dd2fbf9dace3042168bc764` are recorded in the normalized
+  snapshot. The lane uses a revision-pinned package artifact and its own atom
+  stylesheet adapter, so its payload is a real workload result, not a direct
+  estimate of the package's standalone runtime cost.
 - `PERF-SUMMARY.md`, `PERF.md`, and both normalized benchmark snapshots are in
-  the repo. `docs/src/content/docs/reference/benchmarks.md` still says Arena
-  has no Pandwind lane. Related work: [usage-aware runtime pruning](046-usage-aware-runtime-pruning.md),
+  the repo. The reference benchmark page links the summary and identifies the
+  current Arena categories. Related work: [usage-aware runtime pruning](046-usage-aware-runtime-pruning.md),
   [runtime hot-path optimization](047-runtime-hot-path-optimization.md),
   [CI and fresh benchmarks](006-ci-and-fresh-bench.md), and
   [benchmark documentation truth](009-docs-bench-truth.md).
@@ -138,51 +145,93 @@ remain derived from those snapshots.
 
 1. Re-run the exact pinned lanes and confirm the recorded baselines; preserve
    the Arena parity gate and document any environment drift.
-2. Add a reproducible asset breakdown and ablations for client JS, CSS, and
-   SSR HTML in both benchmark lanes.
+2. Add a reproducible asset breakdown for client JS, CSS, and SSR HTML. Arena
+   reports exact downloaded chunks plus Rollup module-source attribution;
+   Bench reports the product-grid payload components and the runtime versus
+   build-time lane comparison.
 3. Fix unimported-module CSS emission or document and test the intentional
    global side-effect contract that explains it.
-4. Reduce CSS Brotli growth from the current 5.8 B/declaration. First target
-   closing at least half the measured gap to the 2.0 B/declaration peer slope,
-   while keeping emitted CSS semantically equivalent.
-5. Reduce attributable Arena client JS enough to reach the pinned set's
-   current top-three threshold (102,731 B Brotli) and full-first-load threshold
-   (117,786 B), or record an evidence-backed limit if those bytes are shared
-   application/framework costs.
-6. Normalize the Bench lane's source dependency, investigate its 43,339 B
-   payload by component, and set a stable budget only after the harness is
-   confirmed comparable.
+4. The opt-in named-atoms strategy measures 1.8 B/declaration, closing more
+   than half the default hash strategy's gap to the 2.0 B/declaration peer
+   slope, and passes the same visual and geometry gates. Keep hash as default
+   because named atoms add 62 B to baseline first load and 89,501 raw
+   class-attribute bytes; retain the opt-in for style-heavy applications.
+5. Arena attribution identifies each downloaded chunk and its Rollup module
+   owners. The Pandwind and app modules share a chunk, so the run cannot assign
+   compressed bytes to each source module. No further safe runtime removal was
+   demonstrated; usage-aware runtime pruning is already implemented. Revisit
+   trimming when profiling or module evidence identifies a removable path and
+   its measured output savings.
+6. The Bench lane consumes a revision-pinned package artifact. Its parity-
+   checked product-grid payload is 43,339 B gzip and guarded by component
+   budgets of 22,300 B JS, 8,200 B CSS, 15,100 B HTML, and 45,600 B total.
 7. Add focused guards, refresh both external snapshots/reports, update the
    reference docs, and describe implementation work in separate JJ revisions.
 
 ## Open questions
 
-1. Does Arena's orphan-file probe represent a truly unreachable module, or a
-   supported global-style discovery path? Confirm its import graph before
-   setting the exact zero-output assertion.
-2. Which fraction of the Bench payload is required React/app markup versus
-   Pandwind output after the lane is made independent of the sibling worktree?
+1. Resolved: Arena's 50-style orphan fixture is not imported and is not a
+   supported global stylesheet entry. Its Pandwind output is now guarded at
+   exactly zero added raw and Brotli bytes.
+2. Resolved: the Bench product-grid report separates gzip JavaScript, CSS,
+    and HTML; its runtime/build-time comparison quantifies the integration
+    trade-off. Arena attribution separates chunk transfer sizes and module
+    owners, while documenting that pre-minification module lengths do not imply
+    per-module compressed savings.
+3. Resolved: no safe additional Arena runtime removal is supported by this
+   comparison. Keep the existing pruning implementation; require a concrete
+   removable path and a measured byte reduction before opening further work.
 
 ## Acceptance criteria
 
-- [ ] All byte and timing claims identify the benchmark revision, Pandwind
+- [x] All byte and timing claims identify the benchmark revision, Pandwind
       revision, environment, compression, and parity result.
-- [ ] An unimported module contributes no reachable style rules unless the
+- [x] An unimported module contributes no reachable style rules unless the
       tested contract explicitly marks it global.
-- [ ] The 800-style Brotli slope closes at least half the current gap to the
-      2.0 B/declaration peer slope, with the same visual/cascade behavior.
-- [ ] On the pinned Arena set, attributable browser output reaches the stated
-      top-three client-JS and full-load thresholds, or the remaining shared
-      bytes are isolated and documented with a follow-up decision.
-- [ ] The Bench lane runs without a sibling-worktree source path; its payload
+- [x] The opt-in 800-style Brotli strategy closes more than half the gap to the
+      2.0 B/declaration peer slope, with the same visual/cascade behavior; the
+      first-load and class-attribute costs that keep it opt-in are documented.
+- [x] On the pinned Arena set, the remaining client-JS and first-load gap is
+      documented alongside per-chunk/module owners, the limit of compressed
+      attribution, and the evidence required before attempting further pruning.
+- [x] The Bench lane runs without a sibling-worktree source path; its payload
       breakdown and budget are reproducible.
-- [ ] Arena geometry/screenshot gates pass; summary, detailed report, snapshots,
-      and reference benchmark docs agree.
-- [ ] Build, dev-start, and HMR results remain recorded to guard against
+- [x] Arena geometry/screenshot gates pass; the generated summary and
+      normalized snapshots agree on external measurements, while `PERF.md`
+      remains the detailed local report linked from the summary and reference
+      benchmark docs.
+- [x] Build, dev-start, and HMR results remain recorded to guard against
       trading away Pandwind's current strong toolchain performance.
+
+## Completion evidence
+
+- Arena source revision `9657cb37c066185016c1417be18b3938a06bf9df`, Pandwind
+  revision `2984568d2eb6aabc5dd2fbf9dace3042168bc764`, Apple M4 (arm64), macOS,
+  Node 24.20.0, and Vite 8.2.1. Geometry passed 18/18; screenshots passed
+  72/72. The 50-style unimported-module gate adds 0 raw and 0 Brotli CSS bytes.
+- Arena ranks Pandwind first for raw CSS, mean SSR HTML, class-attribute bytes,
+  cold/warm build, dev startup, and shared-edit paint; third for compressed
+  CSS; second for component-edit paint; and fourth for client JS and full first
+  load. The 800-style named-atoms option measures 1.8 Brotli B/declaration;
+  hash remains the default due its first-load and class-attribute trade-off.
+- CSS-in-JS Bench run `ff161a048ccb` used Pandwind `2984568d2eb6aabc5dd2fbf9dace3042168bc764`,
+  Apple M4 (arm64), Node 24.20.0, WPD 0.15.1, Chrome 154.0.8037.57, and Firefox
+  stable_156.0.1. WPD passed 196/196 cells in each of five lanes; the full
+  verifier passed DOM and pixel parity across 19 techs and 13 cases. The
+  build-time product-grid payload is 21,221 B JS + 7,781 B CSS + 14,337 B HTML
+  = 43,339 B gzip; all component and total budgets pass.
+- `PERF-SUMMARY.md` renders the top-five Bench categories and per-metric Arena
+  top-three rankings. It, both normalized snapshots, and the reference benchmark
+  docs agree on external results; `PERF.md` remains the detailed local report
+  linked from those docs. Focused comparisons run with affected compiler/runtime/
+  bundler changes; refresh local comparisons before releases and monthly during
+  active performance work, and refresh external comparisons quarterly or after
+  a benchmarked dependency's major-version change. JJ revisions alone do not
+  trigger a full run.
 
 ## Decisions log
 
 | Date | Decision | Rationale |
 | --- | --- | --- |
 | 2026-09-24 | Keep this plan focused on emitted browser output and external benchmark reliability | The strongest performance findings concern bytes and scaling; runtime throughput/build speed are separate metrics |
+| 2026-09-24 | Keep hashed classes as default and avoid speculative runtime trimming | The opt-in named-atom trade-off is measured, while chunk attribution does not prove a safe compressed-byte removal |
