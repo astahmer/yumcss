@@ -164,13 +164,13 @@ const rawTokens = define.tokens({
 		md: "0 4px 6px rgb(15 23 42 / 0.1)",
 		lg: "0 10px 15px rgb(15 23 42 / 0.1)",
 		xl: "0 20px 25px rgb(15 23 42 / 0.1)",
-		focus: "0 0 0 3px rgb(37 99 235 / 0.25)",
+		"$focus-ring": "0 0 0 3px rgb(37 99 235 / 0.25)",
 		inner: "inset 0 2px 4px rgb(15 23 42 / 0.06)",
 	},
 	borders: {
 		none: "0 solid transparent",
-		hairline: "1px solid",
-		strong: "2px solid",
+		"$hairline-border": "1px solid",
+		"$strong-border": "2px solid",
 		input: "1px solid",
 		focus: "2px solid",
 	},
@@ -225,11 +225,11 @@ const semanticTokens = rawTokens.defineSemanticTokens(conditions, {
 	shadows: {
 		card: { base: "shadows.sm", _dark: "shadows.lg" },
 		dialog: { base: "shadows.xl", _dark: "shadows.xl" },
-		focus: { base: "shadows.focus", _dark: "shadows.focus" },
+		focus: { base: "shadows.$focus-ring", _dark: "shadows.$focus-ring" },
 	},
 	borders: {
-		hairline: { base: "borders.hairline", _dark: "borders.hairline" },
-		strong: { base: "borders.strong", _dark: "borders.strong" },
+		hairline: { base: "borders.$hairline-border", _dark: "borders.$hairline-border" },
+		strong: { base: "borders.$strong-border", _dark: "borders.$strong-border" },
 	},
 });
 
