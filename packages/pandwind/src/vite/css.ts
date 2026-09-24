@@ -525,11 +525,7 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 		},
 		generateBundle: {
 			order: "post" as const,
-			handler(
-				this: PluginContext,
-				_outputOptions: unknown,
-				bundle: OutputBundle,
-			) {
+			handler(this: PluginContext, _outputOptions: unknown, bundle: OutputBundle) {
 				if (
 					resolvedConfig?.command !== "build" ||
 					(buildCssMarkers.size === 0 && options.inlineCritical === undefined)

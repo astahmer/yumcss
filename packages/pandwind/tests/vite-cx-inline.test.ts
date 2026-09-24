@@ -17,11 +17,13 @@
  * participate as plain arguments to a subsequent cx() fold.
  */
 import { resolve } from "node:path";
+import { parseSync } from "oxc-parser";
 import { describe, expect, test } from "vitest";
 import { createCx } from "../src/cx/index.ts";
 import type { CxInput } from "../src/cx/index.ts";
+import type { OxcNode } from "../src/tw/literal.ts";
 import { inlineTwCalls } from "../src/vite/inline.ts";
-import { findCxImports, inlineCxCalls } from "../src/vite/cx-inline.ts";
+import { collectModuleConstants, findCxImports, inlineCxCalls } from "../src/vite/cx-inline.ts";
 import {
 	createInlineTwPluginCore,
 	createPandwindEngineContext,
@@ -30,6 +32,29 @@ import {
 import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
 const config = readGeneratedTwConfig(resolve(import.meta.dirname, "../../../examples/example/src"));
+
+const addParentPointers = (root: unknown): void => {
+	const stack: Array<{ readonly node: unknown; readonly parent?: Record<string, unknown> }> = [
+		{ node: root },
+	];
+	const seen = new WeakSet<object>();
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (current === undefined || current.node === null || typeof current.node !== "object")
+			continue;
+		if (seen.has(current.node)) continue;
+		seen.add(current.node);
+		if (Array.isArray(current.node)) {
+			for (const child of current.node) stack.push({ node: child, parent: current.parent });
+			continue;
+		}
+		const node = current.node as Record<string, unknown>;
+		if (current.parent !== undefined) node.parent = current.parent;
+		for (const key of Object.keys(node)) {
+			if (key !== "parent" && key !== "type") stack.push({ node: node[key], parent: node });
+		}
+	}
+};
 
 const runtimeCx = createCx({
 	conflicts: config.conflicts,
@@ -318,6 +343,16 @@ describe("module-level constant propagation", () => {
 		const { code, inlined } = foldModule(source);
 		expect(inlined).toBe(1);
 		expect(lastLiteral(code)).toBe(runtime("p-6", "text-sm"));
+	});
+
+	test("static-scope analysis ignores cyclic parser parent pointers", () => {
+		const program = parseSync("fixture.ts", 'const P6 = "p-6";', {
+			sourceType: "module",
+			lang: "ts",
+		}).program as unknown as OxcNode;
+		addParentPointers(program);
+
+		expect(collectModuleConstants(program).get("P6")?.value).toBe("p-6");
 	});
 
 	test("template interpolation of a known const folds", () => {

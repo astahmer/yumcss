@@ -63,14 +63,22 @@ const isTruthy = (value: StaticEval): boolean =>
 	value !== false && value !== null && value !== undefined && value !== "";
 
 const nodes = function* (root: unknown): Generator<OxcNode> {
-	const queue: unknown[] = [root];
-	for (let index = 0; index < queue.length; index++) {
-		const current = queue[index];
-		if (Array.isArray(current)) queue.push(...current);
-		else if (current !== null && typeof current === "object") {
-			const node = current as OxcNode;
-			if (typeof node.type === "string") yield node;
-			queue.push(...Object.values(node));
+	const stack: unknown[] = [root];
+	const seen = new WeakSet<object>();
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (current === null || typeof current !== "object" || seen.has(current)) continue;
+		seen.add(current);
+		if (Array.isArray(current)) {
+			for (let index = current.length - 1; index >= 0; index -= 1) stack.push(current[index]);
+			continue;
+		}
+		const node = current as OxcNode;
+		if (typeof node.type === "string") yield node;
+		const keys = Object.keys(node);
+		for (let index = keys.length - 1; index >= 0; index -= 1) {
+			const key = keys[index];
+			if (key !== undefined && key !== "parent" && key !== "type") stack.push(node[key]);
 		}
 	}
 };

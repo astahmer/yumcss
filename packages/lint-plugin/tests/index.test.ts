@@ -147,7 +147,7 @@ const isFixEdit = (value: unknown): value is FixEdit => {
 
 const applyFixes = (source: string, fixes: readonly FixEdit[]): string => {
 	let fixed = source;
-	for (const fix of [...fixes].sort((left, right) => right.range[0] - left.range[0])) {
+	for (const fix of fixes.toSorted((left, right) => right.range[0] - left.range[0])) {
 		fixed = `${fixed.slice(0, fix.range[0])}${fix.text ?? ""}${fixed.slice(fix.range[1])}`;
 	}
 	return fixed;
