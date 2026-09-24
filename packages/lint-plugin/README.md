@@ -54,8 +54,8 @@ settings. Every rule that resolves style calls uses this mapping:
 | Rule                          | Default intent                                                             | Fix                                   |
 | ----------------------------- | -------------------------------------------------------------------------- | ------------------------------------- |
 | `no-spreads`                  | Finds spread arguments that cannot be statically folded.                   | —                                     |
-| `no-dynamic-values`           | Uses the compiler evaluators to find values that stay on the runtime path. | —                   |
-| `no-multiple-conditionals`    | Finds `cx()` calls with multiple compiler-foldable conditional arguments.  | —                   |
+| `no-dynamic-values`           | Uses the compiler evaluators to find values that stay on the runtime path. | —                                     |
+| `no-multiple-conditionals`    | Finds `cx()` calls with multiple compiler-foldable conditional arguments.  | —                                     |
 | `no-dollar-raw`               | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                                     |
 | `prefer-typed-css-values`     | Finds values already covered by Pandwind's CSS value types.                | Safe: unwraps static supported values |
 | `no-arbitrary-values`         | Finds arbitrary class values such as `w-[13px]`.                           | —                                     |

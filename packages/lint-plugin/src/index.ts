@@ -1044,7 +1044,11 @@ const migrationAnalysis = (program: AstNode, context: RuleContext): CallAnalysis
 		const dynamic = isExtractionLane(api)
 			? node.arguments
 					.map((argument: AstNode) =>
-						findDynamicExpression({ root: argument, staticBindings, resolveCall: resolver.resolve }),
+						findDynamicExpression({
+							root: argument,
+							staticBindings,
+							resolveCall: resolver.resolve,
+						}),
 					)
 					.find(
 						(issue: DynamicExpression | undefined): issue is DynamicExpression =>
@@ -1701,8 +1705,10 @@ const rules: Record<string, RuleDefinition> = {
 					resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
 				},
 				CallExpression(node) {
-					const api = resolver?.resolve(node);
-					if (api === undefined || !isStaticLane(api) || program === undefined) return;
+					const currentResolver = resolver;
+					if (currentResolver === undefined || program === undefined) return;
+					const api = currentResolver.resolve(node);
+					if (api === undefined || !isStaticLane(api)) return;
 					if ((api.kind === API.tw || api.kind === API.cx) && compilerAnalysis === undefined)
 						compilerAnalysis = compilerStaticAnalysisForProgram(program);
 					if (api.kind === API.style && literalAnalysis === undefined)
@@ -1711,22 +1717,22 @@ const rules: Record<string, RuleDefinition> = {
 					for (const argument of node.arguments) {
 						if (
 							isCompilerStaticArgument({
-							api,
-							call: node,
-							argument,
-							compilerAnalysis,
-							literalAnalysis,
-							source,
-						})
+								api,
+								call: node,
+								argument,
+								compilerAnalysis,
+								literalAnalysis,
+								source,
+							})
 						)
 							continue;
 						const dynamic = findDynamicExpression({
 							root: argument,
 							staticBindings:
 								api.kind === API.style && literalAnalysis !== undefined
-									? staticBindingsForCall(literalAnalysis, node, resolver.staticBindings)
+									? staticBindingsForCall(literalAnalysis, node, currentResolver.staticBindings)
 									: EMPTY_STATIC_BINDINGS,
-							resolveCall: resolver.resolve,
+							resolveCall: currentResolver.resolve,
 							inspectConditionalTests: true,
 						});
 						if (dynamic === undefined) continue;
@@ -1741,7 +1747,7 @@ const rules: Record<string, RuleDefinition> = {
 			};
 		},
 	},
-		"no-multiple-conditionals": {
+	"no-multiple-conditionals": {
 		create(context) {
 			let resolver: ReturnType<typeof createApiResolver> | undefined;
 			let compilerAnalysis: CompilerStaticAnalysis | undefined;
@@ -1771,7 +1777,7 @@ const rules: Record<string, RuleDefinition> = {
 						message:
 							"pandwind: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
 						data: { n: count, name: callName(api) },
-				});
+					});
 				},
 			};
 		},
