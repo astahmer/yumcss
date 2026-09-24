@@ -517,6 +517,55 @@ css({ $raw: { background: "var(--image)", backgroundColor: "transparent", border
 		expect(conflictingReports[0]?.fixes).toBeUndefined();
 	});
 
+	test("unwraps responsive values when the project policy verifies their tokens", () => {
+		const code = `import { createCss } from "pandwind/css";
+const css = createCss(preset);
+css.class({
+  _hover: {
+    color: "fg",
+    $raw: {
+      background: { base: "transparent", xl: "transparent" },
+      borderColor: { base: "transparent", xl: "nav.fg" },
+      boxShadow: { base: "none", xl: "none" },
+    },
+  },
+});`;
+		const policy = {
+			owner: "pandwind",
+			resolved: true,
+			tokenVocabulary: { borderColor: { "nav.fg": "colors::nav.fg" } },
+		};
+
+		const withoutPolicy = runRule("prefer-typed-css-values", code);
+		expect(withoutPolicy).toHaveLength(1);
+		const withoutPolicyFixed = applyFixes(
+			code,
+			withoutPolicy.flatMap(({ fixes }) => fixes ?? []),
+		);
+		expect(withoutPolicyFixed).toMatch(/\$raw:\s*\{\s*borderColor:/);
+
+		const verified = runRule("prefer-typed-css-values", code, [], {
+			"pandwind-extraction": { policy },
+		});
+		expect(verified).toHaveLength(1);
+		expect(verified[0]?.data.properties).toBe("background, borderColor, boxShadow");
+		const verifiedFixed = applyFixes(
+			code,
+			verified.flatMap(({ fixes }) => fixes ?? []),
+		);
+		expect(verifiedFixed).not.toContain("$raw");
+		expect(verifiedFixed).toContain('borderColor: { base: "transparent", xl: "nav.fg" }');
+
+		const unresolved = runRule("prefer-typed-css-values", code, [], {
+			"pandwind-extraction": { policy: { ...policy, resolved: false } },
+		});
+		const unresolvedFixed = applyFixes(
+			code,
+			unresolved.flatMap(({ fixes }) => fixes ?? []),
+		);
+		expect(unresolvedFixed).toMatch(/\$raw:\s*\{\s*borderColor:/);
+	});
+
 	test("recognizes typed values in a configured local CSS module", () => {
 		const code = `import { css } from "./css";
 css.class({ $raw: { width: "auto" } });`;
