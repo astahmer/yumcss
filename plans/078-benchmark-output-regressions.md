@@ -4,27 +4,28 @@ Status: complete (2026-09-24)
 
 ## Context
 
-- The refreshed 2026-09-24 CSS-in-JS Arena comparison passed 18/18 geometry
-  checks and 72/72 screenshot checks. Pandwind ranks fourth for full first
-  load at 125,838 B and client JavaScript at 111,644 B Brotli, while
-  compressed CSS ranks third at 8,724 B. The first-load gap to Bamboo is
-  15,844 B; the client-JavaScript gap is 14,540 B.
+- The current 2026-09-24 CSS-in-JS Arena run used Pandwind revision
+  `65a1cfdca44da3c33899c2f138523309a9cf6834`; it passed 18/18 geometry checks
+  and 72/72 screenshot checks. Pandwind ranks fourth for full first load at
+  125,838 B and client JavaScript at 111,644 B Brotli, while compressed CSS
+  ranks third at 8,724 B. The first-load gap to Bamboo is 15,844 B; the
+  client-JavaScript gap is 14,540 B.
 - Arena's 800-extra-style sweep measured 36,514 B Brotli CSS for Pandwind,
   versus 16,934 B for Bamboo and 19,023 B for Panda. The normalized slope was
   5.8 Brotli bytes per added declaration, versus 2.0 for Bamboo and Panda.
   The initial orphan probe added 9,353 raw and 2,036 Brotli CSS bytes for
   Pandwind; the new regression gate confirms the same unimported fixture adds
   0 raw and 0 Brotli bytes.
-- The fresh CSS-in-JS Bench run completed on 2026-09-24 with WPD 0.15.1,
-  Chrome 154.0.8037.57, and Firefox stable_156.0.1: 196/196 Firefox cells
-  passed across five measured lanes. DOM and pixel parity passed across all
-  19 techs and 13 cases. The build-time Pandwind product-grid lane measured
-  43,339 gzip bytes (21,221 B JS, 7,781 B CSS, 14,337 B HTML); its ranks are
-  #18/18 payload, #10/18 SSR throughput, #14/18 mount, #16/18 hydration, and
-  #8/19 cold client build. Interaction stays unranked because the measured
-  frame-time medians cluster too tightly to support a useful rank.
-- Bench source revision `ff161a048ccb` and Pandwind source revision
-  `2984568d2eb6aabc5dd2fbf9dace3042168bc764` are recorded in the normalized
+- The current CSS-in-JS Bench run completed on 2026-09-24 with WPD 0.15.1,
+  Chrome 154.0.8037.57, and Firefox stable_156.0.1: all five lanes passed
+  196/196 cells. DOM and pixel parity passed across all 19 techs and 13 cases.
+  The build-time Pandwind product-grid lane measured 43,339 gzip bytes
+  (21,221 B JS, 7,781 B CSS, 14,337 B HTML); its ranks are #18/18 payload,
+  #6/18 SSR throughput, #7/18 mount, #3/18 hydration, and #14/19 cold client
+  build. Interaction stays unranked because the measured frame-time medians
+  cluster too tightly to support a useful rank.
+- Bench source revision `6124070ab65c` and Pandwind source revision
+  `65a1cfdca44da3c33899c2f138523309a9cf6834` are recorded in the normalized
   snapshot. The lane uses a revision-pinned package artifact and its own atom
   stylesheet adapter, so its payload is a real workload result, not a direct
   estimate of the package's standalone runtime cost.
@@ -205,21 +206,24 @@ remain derived from those snapshots.
 
 ## Completion evidence
 
-- Arena source revision `9657cb37c066185016c1417be18b3938a06bf9df`, Pandwind
-  revision `2984568d2eb6aabc5dd2fbf9dace3042168bc764`, Apple M4 (arm64), macOS,
+- Arena source revision `6e38b1802d96be4c499a8cfc478df0193cc06216`, Pandwind
+  revision `65a1cfdca44da3c33899c2f138523309a9cf6834`, Apple M4 (arm64), macOS,
   Node 24.20.0, and Vite 8.2.1. Geometry passed 18/18; screenshots passed
   72/72. The 50-style unimported-module gate adds 0 raw and 0 Brotli CSS bytes.
 - Arena ranks Pandwind first for raw CSS, mean SSR HTML, class-attribute bytes,
-  cold/warm build, dev startup, and shared-edit paint; third for compressed
-  CSS; second for component-edit paint; and fourth for client JS and full first
-  load. The 800-style named-atoms option measures 1.8 Brotli B/declaration;
-  hash remains the default due its first-load and class-attribute trade-off.
-- CSS-in-JS Bench run `ff161a048ccb` used Pandwind `2984568d2eb6aabc5dd2fbf9dace3042168bc764`,
-  Apple M4 (arm64), Node 24.20.0, WPD 0.15.1, Chrome 154.0.8037.57, and Firefox
-  stable_156.0.1. WPD passed 196/196 cells in each of five lanes; the full
-  verifier passed DOM and pixel parity across 19 techs and 13 cases. The
-  build-time product-grid payload is 21,221 B JS + 7,781 B CSS + 14,337 B HTML
-  = 43,339 B gzip; all component and total budgets pass.
+  cold/warm build, dev startup, shared-edit websocket, and both correct-paint
+  phases; third for compressed CSS; and fourth for client JS, full first load,
+  and component-edit websocket. The four-sweep HMR run pooled 28 websocket
+  samples and 20 browser pairs per engine and edit kind. The 800-style
+  named-atoms option measures 1.8 Brotli B/declaration; hash remains the default
+  due its first-load and class-attribute trade-off.
+- CSS-in-JS Bench run `6124070ab65c` used Pandwind
+  `65a1cfdca44da3c33899c2f138523309a9cf6834`, Apple M4 (arm64), Node 24.20.0,
+  WPD 0.15.1, Chrome 154.0.8037.57, and Firefox stable_156.0.1. WPD passed
+  196/196 cells in each of five lanes; the full verifier passed DOM and pixel
+  parity across 19 techs and 13 cases. The build-time product-grid payload is
+  21,221 B JS + 7,781 B CSS + 14,337 B HTML = 43,339 B gzip; all component and
+  total budgets pass.
 - `PERF-SUMMARY.md` renders the top-five Bench categories and per-metric Arena
   top-three rankings. It, both normalized snapshots, and the reference benchmark
   docs agree on external results; `PERF.md` remains the detailed local report
@@ -228,7 +232,9 @@ remain derived from those snapshots.
   active performance work, and refresh external comparisons quarterly or after
   a benchmarked dependency's major-version change. JJ revisions alone do not
   trigger a full run.
-- Validation: current core test stage passed 93 files / 1,016 tests; TSTyche
+- Validation: the Arena HMR probe regression suite passed 5/5, CSS-in-JS Bench
+  WPD and payload tests passed 14/14, and Arena parity/build/dev/scale/theme
+  checks passed. The current core test stage passed 93 files / 1,016 tests; TSTyche
   passed 168 tests / 377 assertions. The Pandwind and lint-plugin package
   typechecks, targeted Oxlint (four changed TS files), owned-file formatting,
   Bench summary freshness check, payload guard, parity verifier, WPD tests, and

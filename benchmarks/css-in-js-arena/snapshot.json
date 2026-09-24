@@ -2,8 +2,8 @@
 	"schemaVersion": 1,
 	"source": {
 		"url": "https://github.com/gajus/css-in-js-arena",
-		"arenaRevision": "9657cb37c066185016c1417be18b3938a06bf9df",
-		"pandwindRevision": "2984568d2eb6aabc5dd2fbf9dace3042168bc764",
+		"arenaRevision": "6e38b1802d96be4c499a8cfc478df0193cc06216",
+		"pandwindRevision": "65a1cfdca44da3c33899c2f138523309a9cf6834",
 		"measuredAt": "2026-09-24",
 		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1",
 		"parity": {
@@ -64,43 +64,43 @@
 			"category": "Build and dev",
 			"label": "Cold production build, median of five",
 			"unit": "ms",
-			"values": { "bamboo": 1477, "stylex": 2775, "panda": 2190, "pandwind": 1168 }
+			"values": { "bamboo": 1506, "stylex": 3091, "panda": 2126, "pandwind": 1047 }
 		},
 		{
 			"category": "Build and dev",
 			"label": "Warm production build, median of five",
 			"unit": "ms",
-			"values": { "bamboo": 1455, "stylex": 2728, "panda": 2084, "pandwind": 1049 }
+			"values": { "bamboo": 1390, "stylex": 3546, "panda": 2108, "pandwind": 949 }
 		},
 		{
 			"category": "Build and dev",
 			"label": "Dev server cold start, median of seven",
 			"unit": "ms",
-			"values": { "bamboo": 3138, "stylex": 3712, "panda": 2406, "pandwind": 1366 }
+			"values": { "bamboo": 1821, "stylex": 1840, "panda": 1932, "pandwind": 1186 }
 		},
 		{
 			"category": "HMR",
 			"label": "Shared edit to HMR websocket",
 			"unit": "ms",
-			"values": { "bamboo": 66, "stylex": 15, "panda": 27, "pandwind": 75 }
+			"values": { "bamboo": 41, "stylex": 85, "panda": 19, "pandwind": 14 }
 		},
 		{
 			"category": "HMR",
 			"label": "Shared style edit to correct paint",
 			"unit": "ms",
-			"values": { "bamboo": 272.5, "stylex": 208.4, "panda": 199.8, "pandwind": 190.5 }
+			"values": { "bamboo": 282.8, "stylex": 197.9, "panda": 210.9, "pandwind": 125.5 }
 		},
 		{
 			"category": "HMR",
 			"label": "Component edit to HMR websocket",
 			"unit": "ms",
-			"values": { "bamboo": 66, "stylex": 52, "panda": 50, "pandwind": 86 }
+			"values": { "bamboo": 46, "stylex": 26, "panda": 25, "pandwind": 59 }
 		},
 		{
 			"category": "HMR",
 			"label": "Component edit to correct paint",
 			"unit": "ms",
-			"values": { "bamboo": 177.2, "stylex": 355.4, "panda": 210.1, "pandwind": 194 }
+			"values": { "bamboo": 238.3, "stylex": 365.9, "panda": 232.7, "pandwind": 183.7 }
 		}
 	]
 }
