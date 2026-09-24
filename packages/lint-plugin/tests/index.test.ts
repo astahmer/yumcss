@@ -40,6 +40,7 @@ type FixEdit = { readonly range: readonly [number, number]; readonly text?: stri
 type RuleFixer = {
 	insertTextBefore(node: AstNode, text: string): FixEdit;
 	removeRange(range: readonly [number, number]): FixEdit;
+	replaceTextRange(range: readonly [number, number], text: string): FixEdit;
 };
 type RuleListeners = {
 	Program?: (node: AstNode) => void;
@@ -118,6 +119,9 @@ const runRule = (
 				},
 				removeRange(range) {
 					return { range };
+				},
+				replaceTextRange(range, text) {
+					return { range, text };
 				},
 			});
 			const edits = Array.isArray(fix) ? fix.filter(isFixEdit) : [];
@@ -1349,6 +1353,48 @@ export function Card() {
 });
 
 describe("Pandwind migration hygiene rules", () => {
+	test("uses mergeable CSS maps inside css.props and autofixes opaque class strings", () => {
+		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+const props = css.props(css.class({ color: "red" }), css({ color: "blue" }));`;
+		const reports = runRule("prefer-css-map-in-props", source);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.fixes).toBeDefined();
+		expect(
+			applyFixes(
+				source,
+				reports.flatMap(({ fixes }) => fixes ?? []),
+			),
+		).toContain('css.props(css({ color: "red" }), css({ color: "blue" }))');
+	});
+
+	test("keeps a unary CSS map projection valid and spreads full props in JSX", () => {
+		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+const mapProps = css.props(css({ color: "red" }));
+const element = <td className={css.props(css({ textAlign: "center" })).className} colSpan={2} />;`;
+		const reports = runRule("prefer-css-props-spread", source);
+
+		expect(reports).toHaveLength(1);
+		expect(
+			applyFixes(
+				source,
+				reports.flatMap(({ fixes }) => fixes ?? []),
+			),
+		).toContain('<td {...css.props(css({ textAlign: "center" }))} colSpan={2} />');
+		expect(runRule("prefer-css-map-in-props", source)).toEqual([]);
+	});
+
+	test("does not spread css.props over an explicit style or unknown host props", () => {
+		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+const first = <div className={css.props(css({ color: "red" })).className} style={style} />;
+const second = <div {...rest} className={css.props(css({ color: "blue" })).className} />;`;
+
+		expect(runRule("prefer-css-props-spread", source)).toEqual([]);
+	});
+
 	test("requires a reason on migration skip markers", () => {
 		const reports = runRule(
 			"migration-skip-reason",

@@ -17,6 +17,7 @@
  * - no-stale-migration-skip: static calls must not retain stale skip markers
  * - require-migration-residual: dynamic static-lane calls need a marker
  * - no-conflicting-style-props: css.props() must not compete with host props
+ * - prefer-css-props-spread: preserve all css.props() output on JSX hosts
  * - no-dynamic-carrier-fallback: dynamic host carriers that cannot be lowered directly
  * - no-dynamic-keyframes: keyframe bodies must be statically extractable
  * - no-raw-ast-identities: parser node discriminants must use an owned table
@@ -126,6 +127,7 @@ type RuleContext = {
 type RuleFixer = {
 	insertTextBefore(node: AstNode, text: string): unknown;
 	removeRange(range: readonly [number, number]): unknown;
+	replaceTextRange(range: readonly [number, number], text: string): unknown;
 };
 type RuleListener = {
 	Program?: (node: AstNode) => void;
@@ -2029,7 +2031,96 @@ const rules: Record<string, RuleDefinition> = {
 			};
 		},
 	},
+	"prefer-css-props-spread": {
+		meta: { fixable: "code" },
+		create(context) {
+			return {
+				Program(program) {
+					const source = context.sourceCode?.text;
+					if (source === undefined) return;
+					const resolver = createApiResolver(
+						program,
+						configuredCssModuleExportsForContext(context),
+					);
+					walkWithAncestors(program, (attribute, ancestors) => {
+						if (
+							attribute.type !== NodeKind.JSXAttribute ||
+							attribute.name?.name !== "className" ||
+							attribute.value?.type !== NodeKind.JSXExpressionContainer
+						)
+							return;
+						const expression = attribute.value.expression;
+						if (
+							expression?.type !== NodeKind.MemberExpression ||
+							expression.computed === true ||
+							expression.property?.name !== "className"
+						)
+							return;
+						const propsCall = expression.object;
+						const api = isNode(propsCall) ? resolver.resolve(propsCall) : undefined;
+						if (
+							propsCall?.type !== NodeKind.CallExpression ||
+							api?.kind !== API.style ||
+							api.method !== STYLE_METHOD.props ||
+							api.factory === API.designFactory
+						)
+							return;
+
+						let opening: AstNode | undefined;
+						for (let index = ancestors.length - 1; index >= 0; index -= 1) {
+							if (ancestors[index]?.type === NodeKind.JSXOpeningElement) {
+								opening = ancestors[index];
+								break;
+							}
+						}
+						if (!Array.isArray(opening?.attributes)) return;
+						const hasStyleOrUnknownSpread = opening.attributes.some(
+							(sibling: AstNode) =>
+								sibling !== attribute &&
+								(sibling.type === NodeKind.JSXSpreadAttribute ||
+									(sibling.type === NodeKind.JSXAttribute && sibling.name?.name === "style")),
+						);
+						if (hasStyleOrUnknownSpread) return;
+
+						let includesClassString = false;
+						for (const argument of propsCall.arguments ?? []) {
+							walkNode(argument, (inner) => {
+								if (
+									inner.type === NodeKind.CallExpression &&
+									resolver.resolve(inner)?.method === STYLE_METHOD.class
+								)
+									includesClassString = true;
+							});
+						}
+						if (includesClassString) return;
+
+						const start = attribute.start;
+						const end = attribute.end;
+						const callStart = propsCall.start;
+						const callEnd = propsCall.end;
+						if (
+							typeof start !== "number" ||
+							typeof end !== "number" ||
+							typeof callStart !== "number" ||
+							typeof callEnd !== "number"
+						)
+							return;
+						const propsCallText = source.slice(callStart, callEnd);
+						context.report({
+							node: attribute,
+							message:
+								"pandwind: spread css.props() on the host so its className and style outputs are both preserved",
+							fix: (fixer: RuleFixer) => [
+								fixer.replaceTextRange([start, end], `{...${propsCallText}}`),
+							],
+						});
+					});
+				},
+			};
+		},
+	},
 	"prefer-css-map-in-props": {
+		meta: { fixable: "code" },
 		create(context) {
 			const reported = new Set<AstNode>();
 			return withResolver(context, (node, api, _staticBindings, resolveCall) => {
@@ -2050,10 +2141,30 @@ const rules: Record<string, RuleDefinition> = {
 						)
 							return;
 						reported.add(inner);
+						const member = inner.callee;
+						const methodAccess =
+							member?.type === NodeKind.MemberExpression &&
+							member.computed !== true &&
+							member.property?.name === STYLE_METHOD.class &&
+							typeof member.object?.end === "number" &&
+							typeof member.property?.end === "number"
+								? { start: member.object.end, end: member.property.end }
+								: undefined;
+						const source = context.sourceCode?.text;
+						const fixRange =
+							methodAccess !== undefined &&
+							source?.slice(methodAccess.start, methodAccess.end) === ".class"
+								? methodAccess
+								: undefined;
 						context.report({
 							node: inner,
 							message:
 								"pandwind: css.class() returns an opaque string; use css() inside css.props() to preserve authored style composition and support xcss overrides",
+							...(fixRange === undefined
+								? {}
+								: {
+										fix: (fixer: RuleFixer) => [fixer.removeRange([fixRange.start, fixRange.end])],
+									}),
 						});
 					});
 				}

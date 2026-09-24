@@ -73,7 +73,8 @@ framework configuration. Dynamic preset expressions stay unresolved.
 | `no-stale-migration-skip`     | Finds skip markers that now precede a statically foldable call.            | Safe: remove marker                   |
 | `require-migration-residual`  | Requires an explicit skip marker when a static-lane value remains dynamic. | Safe: add marker                      |
 | `no-conflicting-style-props`  | Finds explicit `className`/`style` props that conflict with `css.props()`. | —                                     |
-| `prefer-css-map-in-props`     | Finds `css.class()` strings passed into `css.props()`.                     | —                                     |
+| `prefer-css-props-spread`     | Preserves both `className` and `style` when projecting props onto JSX.     | Safe: spread host props               |
+| `prefer-css-map-in-props`     | Finds `css.class()` strings passed into `css.props()`.                     | Safe: use mergeable `css()` map       |
 | `no-dynamic-carrier-fallback` | Finds dynamic JSX carriers that cannot use direct build-time lowering.     | —                                     |
 | `no-dynamic-keyframes`        | Requires `css.keyframes()` bodies to be statically extractable.            | —                                     |
 
@@ -89,6 +90,13 @@ boundaries. `css.class()` returns an opaque class string, so `css.props()` can
 only concatenate it; pass `css(...)` maps to `css.props()` instead. Components
 that accept caller-authored overrides can expose an `xcss` prop typed as
 `ReturnType<typeof css>` and compose it after their base map.
+
+A one-argument `css.props(styleMap)` is a valid projection from a compiled
+`css(...)` map (or a `css.vars(...)` carrier) to host props. Do not ban unary
+calls: they are how those values become `className` and `style` attributes.
+Avoid wrapping an existing class string just to forward it. The JSX spread
+rule changes `.className` extraction into a full props spread only when there
+is no sibling `style` prop or unknown prop spread that could change precedence.
 
 `prefer-typed-css-values` recognizes CSS-wide keywords, numeric values, the
 property-specific keywords from Pandwind's CSS value types, and exact tokens
