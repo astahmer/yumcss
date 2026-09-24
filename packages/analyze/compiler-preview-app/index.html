@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="color-scheme" content="light" />
+		<title>pandwind / compiler preview</title>
+	</head>
+	<body>
+		<div class="shell">
+			<header class="topbar">
+				<a class="identity" href="#" aria-label="Pandwind Compiler Preview">
+					<span class="mark" aria-hidden="true">p.</span>
+					<span class="identity-copy">
+						<strong>pandwind</strong>
+						<span>compiler preview</span>
+					</span>
+				</a>
+				<div class="project-context">
+					<span class="eyebrow">VITE PROJECT</span>
+					<span id="project-root" class="project-root">Connecting…</span>
+				</div>
+				<div class="top-actions">
+					<div id="compiler-status" class="compiler-status" role="status">
+						<span class="status-dot" aria-hidden="true"></span>
+						<span>Starting Vite</span>
+					</div>
+					<button id="refresh" class="refresh-button" type="button" disabled>
+						<span aria-hidden="true">↻</span>
+						Recompile
+					</button>
+				</div>
+			</header>
+
+			<div class="workspace">
+				<aside class="file-rail" aria-label="Project source files">
+					<div class="rail-heading">
+						<div>
+							<span class="eyebrow">WORKSPACE</span>
+							<h1>Source files</h1>
+						</div>
+						<span id="file-count" class="count-pill">—</span>
+					</div>
+					<label class="search-box">
+						<span class="search-icon" aria-hidden="true">⌕</span>
+						<span class="sr-only">Filter source files</span>
+						<input id="file-filter" type="search" placeholder="Filter files…" autocomplete="off" />
+					</label>
+					<div id="file-list" class="file-list" role="listbox" aria-label="Source files"></div>
+					<div class="rail-foot">
+						<span class="read-only-mark" aria-hidden="true">◉</span>
+						<span>Read-only preview</span>
+					</div>
+				</aside>
+
+				<main class="main-panel">
+					<div class="module-heading">
+						<div class="module-title-wrap">
+							<span class="eyebrow">COMPILED MODULE</span>
+							<h2 id="file-name">Choose a source file</h2>
+							<p id="file-detail">Select a file to run it through the project’s Vite transform pipeline.</p>
+						</div>
+						<div class="compile-metrics">
+							<span id="change-badge" class="change-badge">Awaiting file</span>
+							<span id="compile-time" class="compile-time">—</span>
+						</div>
+					</div>
+
+					<div id="error-panel" class="error-panel" role="alert" hidden></div>
+
+					<div class="code-panes">
+						<section class="code-pane" aria-labelledby="source-heading">
+							<div class="pane-heading">
+								<div class="pane-label"><span class="pane-index">01</span><h3 id="source-heading">Source</h3></div>
+								<span id="source-lines" class="line-count">—</span>
+							</div>
+							<pre class="code-view"><code id="source-code">Choose a source file from the workspace.</code></pre>
+						</section>
+						<section class="code-pane compiled-pane" aria-labelledby="compiled-heading">
+							<div class="pane-heading">
+								<div class="pane-label"><span class="pane-index">02</span><h3 id="compiled-heading">Vite output</h3></div>
+								<span id="output-lines" class="line-count">—</span>
+							</div>
+							<pre class="code-view"><code id="compiled-code">Transformed output appears here.</code></pre>
+						</section>
+					</div>
+
+					<footer class="main-foot">
+						<span id="plugin-summary">Waiting for Vite config…</span>
+						<span>Each output is produced by the project’s own Vite plugin chain.</span>
+					</footer>
+				</main>
+			</div>
+		</div>
+		<script type="module" src="./src/main.ts"></script>
+	</body>
+</html>

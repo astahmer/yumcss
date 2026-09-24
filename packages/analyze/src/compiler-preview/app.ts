@@ -31,6 +31,16 @@ export const createCompilerPreviewApp = (
 	app.get("/", async (context) => context.html(await options.ui.loadIndexHtml()));
 	app.get("/api/compiler-preview/info", (context) => context.json(options.runtime.info));
 	app.get("/api/compiler-preview/files", (context) => context.json(options.runtime.files()));
+	app.get("/api/compiler-preview/source", (context) => {
+		const file = context.req.query("file");
+		if (file === undefined || file === "")
+			return context.json({ error: "A project-relative source file is required" }, 400);
+		try {
+			return context.json(options.runtime.read(file));
+		} catch (error) {
+			return context.json({ error: error instanceof Error ? error.message : String(error) }, 422);
+		}
+	});
 	app.get("/api/compiler-preview/transform", async (context) => {
 		const file = context.req.query("file");
 		if (file === undefined || file === "")

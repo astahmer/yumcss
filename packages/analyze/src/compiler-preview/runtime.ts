@@ -44,9 +44,16 @@ export interface CompilerPreviewTransform {
 	readonly durationMs: number;
 }
 
+export interface CompilerPreviewSource {
+	readonly file: string;
+	readonly source: string;
+	readonly sourceBytes: number;
+}
+
 export interface CompilerPreviewRuntime {
 	readonly info: CompilerPreviewRuntimeInfo;
 	files(): readonly { readonly path: string; readonly bytes: number }[];
+	read(file: string): CompilerPreviewSource;
 	transform(file: string): Promise<CompilerPreviewTransform>;
 	close(): Promise<void>;
 }
@@ -99,6 +106,13 @@ export const createCompilerPreviewRuntime = async (
 			pandwindPlugins: plugins.filter((name) => name.toLowerCase().includes("pandwind")),
 		},
 		files: () => workspace.files(),
+		read(file) {
+			const sourceFile = workspace.read(file);
+			const sourceBytes = Buffer.byteLength(sourceFile.source, "utf8");
+			if (sourceBytes > MAX_SOURCE_BYTES)
+				throw new Error(`Source file exceeds the ${MAX_SOURCE_BYTES.toLocaleString()} byte preview limit`);
+			return { file: sourceFile.path, source: sourceFile.source, sourceBytes };
+		},
 		async transform(file) {
 			const sourceFile = workspace.read(file);
 			const sourceBytes = Buffer.byteLength(sourceFile.source, "utf8");
