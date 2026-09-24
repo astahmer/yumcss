@@ -934,6 +934,24 @@ css.class({ backgroundColor: selected ? "bg.subtle" : undefined });`,
 		expect(reports).toEqual([]);
 	});
 
+	test("matches the CSS compiler's finite conditional style values", () => {
+		const source = `import { css } from "./design";
+const compact = Math.random() > 0.5;
+const selected = Math.random() > 0.5;
+const cls = css.class({
+	color: compact ? "$red-300" : "$blue-600",
+	backgroundColor: selected ? "$red-300" : "$blue-600",
+	borderColor: selected ? "$red-300" : undefined,
+});`;
+		const settings = {
+			"pandwind-extraction": {
+				cssModules: [{ source: "./design", exports: ["css"] }],
+			},
+		};
+
+		expect(runRule("no-dynamic-values", source, [], settings)).toEqual([]);
+	});
+
 	test("uses the Tw compiler's module-constant scope", () => {
 		const reports = runRule(
 			"no-dynamic-values",

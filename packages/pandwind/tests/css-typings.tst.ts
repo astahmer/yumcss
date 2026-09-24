@@ -58,6 +58,13 @@ test("createCss rejects properties and token values outside the preset", () => {
 			backgroundColor: "not-a-color",
 		}),
 	).type.toBe<Compiled>();
+
+	expect(
+		css({
+			// @ts-expect-error not assignable
+			color: "acent",
+		}),
+	).type.toBe<Compiled>();
 });
 
 test("createCss rejects invalid finite CSS keywords", () => {

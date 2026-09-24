@@ -330,6 +330,10 @@ type ApiResolver = {
 	readonly staticBindings: Pick<ReadonlySet<string>, "has">;
 };
 
+type ApiResolverOptions = {
+	readonly includeUnconfiguredStyleFacades?: boolean;
+};
+
 const apiResolverCache = new WeakMap<AstNode, Map<string, ApiResolver>>();
 
 const cssModuleExportsCacheKey = (cssModuleExports: CssModuleExports): string =>
@@ -342,8 +346,13 @@ const cssModuleExportsCacheKey = (cssModuleExports: CssModuleExports): string =>
 const createApiResolver = (
 	program: AstNode,
 	cssModuleExports: CssModuleExports = new Map(),
+	options: ApiResolverOptions = {},
 ): ApiResolver => {
-	const cacheKey = cssModuleExportsCacheKey(cssModuleExports);
+	const includeUnconfiguredStyleFacades = options.includeUnconfiguredStyleFacades ?? true;
+	const cacheKey = JSON.stringify([
+		cssModuleExportsCacheKey(cssModuleExports),
+		includeUnconfiguredStyleFacades,
+	]);
 	const cached = apiResolverCache.get(program)?.get(cacheKey);
 	if (cached !== undefined) return cached;
 
@@ -352,7 +361,6 @@ const createApiResolver = (
 	const localNamespaces = new Map<string, string>();
 	const factories = new Map<string, string>();
 	const instances = new Map<string, string>();
-	const declarations = new Map<string, AstNode>();
 	const staticBindings = new Set<string>();
 	const shadowedCalls = new WeakSet<AstNode>();
 
@@ -366,7 +374,10 @@ const createApiResolver = (
 			source === SOURCE.css ||
 			source === SOURCE.unsafeCss ||
 			source === SOURCE.design;
-		const localFactory = isPandwindSource ? undefined : conventionalStyleModuleFactory(source);
+		const localFactory =
+			isPandwindSource || !includeUnconfiguredStyleFacades
+				? undefined
+				: conventionalStyleModuleFactory(source);
 		if (!isPandwindSource && configuredCssExports === undefined && localFactory === undefined)
 			return;
 		for (const specifier of node.specifiers ?? []) {
@@ -423,10 +434,9 @@ const createApiResolver = (
 		walkNode(sourceProgram, (node) => {
 			if (node.type === NodeKind.ImportDeclaration) registerImport(node);
 		});
-		walkNode(sourceProgram, (node) => {
+	walkNode(sourceProgram, (node) => {
 			if (node.type !== NodeKind.VariableDeclarator || node.id?.type !== NodeKind.Identifier)
 				return;
-			if (node.init !== undefined) declarations.set(node.id.name, node.init);
 			const factory = resolveFactory(node.init);
 			if (
 				factory === API.cssFactory ||
@@ -435,15 +445,8 @@ const createApiResolver = (
 			)
 				instances.set(node.id.name, factory);
 		});
-		for (let pass = 0; pass < declarations.size; pass += 1) {
-			for (const [name, value] of declarations) {
-				if (
-					staticBindings.has(name) ||
-					findDynamicExpression({ root: value, staticBindings, resolveCall: resolve }) === undefined
-				)
-					staticBindings.add(name);
-			}
-		}
+		for (const name of compilerStaticAnalysisForProgram(sourceProgram).cxConstants.keys())
+			staticBindings.add(name);
 
 		const scopedStack: Array<{ value: AstValue; shadowed: ReadonlySet<string> }> = [
 			{ value: sourceProgram, shadowed: new Set() },
@@ -1702,7 +1705,11 @@ const rules: Record<string, RuleDefinition> = {
 			return {
 				Program(node) {
 					program = node;
-					resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
+					resolver = createApiResolver(
+						node,
+						configuredCssModuleExportsForContext(context),
+						{ includeUnconfiguredStyleFacades: false },
+					);
 				},
 				CallExpression(node) {
 					const currentResolver = resolver;
@@ -1733,7 +1740,7 @@ const rules: Record<string, RuleDefinition> = {
 									? staticBindingsForCall(literalAnalysis, node, currentResolver.staticBindings)
 									: EMPTY_STATIC_BINDINGS,
 							resolveCall: currentResolver.resolve,
-							inspectConditionalTests: true,
+							inspectConditionalTests: api.kind !== API.style,
 						});
 						if (dynamic === undefined) continue;
 						context.report({
