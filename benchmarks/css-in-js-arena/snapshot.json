@@ -2,9 +2,9 @@
 	"schemaVersion": 1,
 	"source": {
 		"url": "https://github.com/gajus/css-in-js-arena",
-		"arenaRevision": "6ebaff4466dff20f32f5e5d7fa788a0da1305a8de",
-		"pandwindRevision": "ef4c7993ed36db6a5ae991ce140161bffee06926",
-		"measuredAt": "2026-09-23",
+		"arenaRevision": "9657cb37c066185016c1417be18b3938a06bf9df",
+		"pandwindRevision": "2984568d2eb6aabc5dd2fbf9dace3042168bc764",
+		"measuredAt": "2026-09-24",
 		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1",
 		"parity": {
 			"geometryPassed": 18,
@@ -26,6 +26,12 @@
 		},
 		{
 			"category": "Output",
+			"label": "Browser CSS, gzip",
+			"unit": "B",
+			"values": { "bamboo": 8627, "stylex": 8200, "panda": 11489, "pandwind": 9913 }
+		},
+		{
+			"category": "Output",
 			"label": "Browser CSS, Brotli",
 			"unit": "B",
 			"values": { "bamboo": 7357, "stylex": 7008, "panda": 9518, "pandwind": 8724 }
@@ -34,19 +40,19 @@
 			"category": "Output",
 			"label": "Client JavaScript, Brotli",
 			"unit": "B",
-			"values": { "bamboo": 97104, "stylex": 97845, "panda": 102731, "pandwind": 111623 }
+			"values": { "bamboo": 97104, "stylex": 97845, "panda": 102731, "pandwind": 111644 }
 		},
 		{
 			"category": "Output",
 			"label": "Mean SSR HTML, gzip, six routes",
 			"unit": "B",
-			"values": { "bamboo": 5533, "stylex": 5529, "panda": 5537, "pandwind": 5468 }
+			"values": { "bamboo": 5533, "stylex": 5529, "panda": 5537, "pandwind": 5470 }
 		},
 		{
 			"category": "Output",
 			"label": "Full first load",
 			"unit": "B",
-			"values": { "bamboo": 109994, "stylex": 110382, "panda": 117786, "pandwind": 125815 }
+			"values": { "bamboo": 109994, "stylex": 110382, "panda": 117786, "pandwind": 125838 }
 		},
 		{
 			"category": "Output",
@@ -58,25 +64,43 @@
 			"category": "Build and dev",
 			"label": "Cold production build, median of five",
 			"unit": "ms",
-			"values": { "bamboo": 1519, "stylex": 2919, "panda": 2094, "pandwind": 1284 }
+			"values": { "bamboo": 1477, "stylex": 2775, "panda": 2190, "pandwind": 1168 }
 		},
 		{
 			"category": "Build and dev",
-			"label": "Dev server cold start, median of three",
+			"label": "Warm production build, median of five",
 			"unit": "ms",
-			"values": { "bamboo": 1551, "stylex": 1657, "panda": 1670, "pandwind": 1383 }
+			"values": { "bamboo": 1455, "stylex": 2728, "panda": 2084, "pandwind": 1049 }
+		},
+		{
+			"category": "Build and dev",
+			"label": "Dev server cold start, median of seven",
+			"unit": "ms",
+			"values": { "bamboo": 3138, "stylex": 3712, "panda": 2406, "pandwind": 1366 }
+		},
+		{
+			"category": "HMR",
+			"label": "Shared edit to HMR websocket",
+			"unit": "ms",
+			"values": { "bamboo": 66, "stylex": 15, "panda": 27, "pandwind": 75 }
 		},
 		{
 			"category": "HMR",
 			"label": "Shared style edit to correct paint",
 			"unit": "ms",
-			"values": { "bamboo": 232.3, "stylex": 199.5, "panda": 154.1, "pandwind": 135.9 }
+			"values": { "bamboo": 272.5, "stylex": 208.4, "panda": 199.8, "pandwind": 190.5 }
+		},
+		{
+			"category": "HMR",
+			"label": "Component edit to HMR websocket",
+			"unit": "ms",
+			"values": { "bamboo": 66, "stylex": 52, "panda": 50, "pandwind": 86 }
 		},
 		{
 			"category": "HMR",
 			"label": "Component edit to correct paint",
 			"unit": "ms",
-			"values": { "bamboo": 164.2, "stylex": 356.9, "panda": 208.3, "pandwind": 227.4 }
+			"values": { "bamboo": 177.2, "stylex": 355.4, "panda": 210.1, "pandwind": 194 }
 		}
 	]
 }

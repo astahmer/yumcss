@@ -267,14 +267,14 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |   25 | all (createUnsafeCss+tw+cx)                       | runtime                   |         21.67 |      8.33 |
 |   26 | createCss(defaultPreset)                          | preset-bound default      |         26.01 |      9.35 |
 |   27 | createCss(fixturePreset)                          | preset-bound full catalog |         29.32 |     10.40 |
-|   28 | stylesheet generator (build-time only)            | build-time only           |         28.91 |     10.63 |
-|   29 | createCss(shadcnPreset)                           | preset-bound shadcn       |         31.53 |     10.68 |
+|   28 | createCss(shadcnPreset)                           | preset-bound shadcn       |         31.53 |     10.68 |
+|   29 | stylesheet generator (build-time only)            | build-time only           |         29.48 |     10.83 |
 |   30 | createCss(fixturePreset) + tw()                   | preset-bound full catalog |         32.01 |     11.38 |
 |   31 | createDesignCss(fixturePreset), fallback          | runtime                   |         37.39 |     12.85 |
 |   32 | createCss(fixturePreset) + cx()                   | preset-bound full catalog |         36.60 |     13.16 |
 |   33 | createCss(pandaPreset)                            | preset-bound panda        |         46.34 |     13.46 |
-|   34 | createRuntimeCss(preset), live sheet              | live sheet                |         37.49 |     13.75 |
-|   35 | createCss(tailwindPreset)                         | preset-bound tailwind     |         42.22 |     13.83 |
+|   34 | createCss(tailwindPreset)                         | preset-bound tailwind     |         42.22 |     13.83 |
+|   35 | createRuntimeCss(preset), live sheet              | live sheet                |         38.06 |     13.94 |
 |   36 | createCss(fixturePreset) + tw() + cx()            | preset-bound full catalog |         39.27 |     14.10 |
 |   37 | createCss(chakraPreset)                           | preset-bound chakra       |         53.08 |     14.50 |
 

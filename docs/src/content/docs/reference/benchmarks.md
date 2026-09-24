@@ -28,8 +28,20 @@ Its normalized source snapshot is
 [`benchmarks/css-in-js-bench/snapshot.json`](https://github.com/astahmer/pandwind/blob/main/benchmarks/css-in-js-bench/snapshot.json).
 The Pandwind lane measures the Vite `tw()` literal-folding path; its benchmark-specific
 atom stylesheet adapter uses the shared CSS extraction core.
-CSS-in-JS Arena has no Pandwind lane yet; its six-page visual-parity gate must
-pass before we publish a comparable rank.
+The 2026-09-24 WPD refresh passed 196/196 cells across five lanes; DOM and pixel
+parity passed across 19 techs and 13 cases. The build-time product-grid lane
+ranks #18/18 in gzip payload (43,339 B: 21,221 B JS, 7,781 B CSS, 14,337 B
+HTML), #10/18 in SSR throughput, #14/18 in Chrome mount, #16/18 in Chrome
+hydration, and #8/19 in cold client build. Interaction remains unranked because
+the frame-time medians are too close to support a meaningful order.
+CSS-in-JS Arena now includes a six-page Pandwind lane. Its refreshed geometry and
+screenshot gates passed (18/18 routes and 72/72 screenshots). Pandwind ranks
+first for raw CSS, mean SSR HTML, class-attribute bytes, cold and warm production
+builds, dev startup, and shared-edit paint; third for compressed CSS; and second
+for component-edit paint. Client JavaScript and full first load rank fourth.
+The current ranked summary and normalized Arena snapshot are in
+[`PERF-SUMMARY.md`](https://github.com/astahmer/pandwind/blob/main/PERF-SUMMARY.md)
+and [`benchmarks/css-in-js-arena/snapshot.json`](https://github.com/astahmer/pandwind/blob/main/benchmarks/css-in-js-arena/snapshot.json).
 
 Run focused regression measurements when changing the compiler, runtime, or
 bundler paths they cover. Refresh the complete local matrix before releases

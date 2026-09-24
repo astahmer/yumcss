@@ -1,747 +1,747 @@
 {
-	"schemaVersion": 1,
-	"source": {
-		"repository": "jantimon/css-in-js-bench",
-		"url": "https://github.com/jantimon/css-in-js-bench",
-		"cssInJsBenchRevision": "116a1f5",
-		"pandwindRevision": "ef4c7993ed36db6a5ae991ce140161bffee06926",
-		"wpdCompletedAt": "2026-09-23T20:10:49.093Z",
-		"host": "Apple M4 (arm64)",
-		"node": "v24.20.0",
-		"gitSha": "116a1f5",
-		"wpdVersion": "0.15.1",
-		"browsers": {
-			"chrome": "153.0.8010.36",
-			"firefox": "stable_155.0.1"
-		},
-		"laneCount": 19,
-		"caseCount": 13
-	},
-	"workloads": [
-		{
-			"id": "ssr-throughput",
-			"label": "SSR throughput",
-			"unit": "tiles/s",
-			"direction": "higher",
-			"caseId": "product-grid",
-			"results": [
-				{
-					"tech": "cnfast",
-					"label": "cnfast",
-					"value": 201368,
-					"spread": 0.11937845139247547
-				},
-				{
-					"tech": "emotion",
-					"label": "Emotion",
-					"value": 43727,
-					"spread": 0.027740297756534863
-				},
-				{
-					"tech": "goober",
-					"label": "Goober",
-					"value": 65809,
-					"spread": 0.01578811408773876
-				},
-				{
-					"tech": "next-yak",
-					"label": "next-yak 9.6.0",
-					"value": 100091,
-					"spread": 0.030452288417540038
-				},
-				{
-					"tech": "next-yak-9.7",
-					"label": "next-yak 9.7.0 (styled API)",
-					"value": 279362,
-					"spread": 0.07170445515138064
-				},
-				{
-					"tech": "next-yak-9.7-nofold",
-					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 144777,
-					"spread": 0.05375853899445354
-				},
-				{
-					"tech": "next-yak-css",
-					"label": "next-yak css-prop 9.6.0",
-					"value": 233685,
-					"spread": 0.06664527034255514
-				},
-				{
-					"tech": "next-yak-css-9.7",
-					"label": "next-yak css-prop 9.7.0",
-					"value": 340474,
-					"spread": 0.0344270047052051
-				},
-				{
-					"tech": "next-yak-css-9.7-nofold",
-					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 234891,
-					"spread": 0.056762498350298646
-				},
-				{
-					"tech": "panda",
-					"label": "Panda (css fn)",
-					"value": 186234,
-					"spread": 0.0682796911412524
-				},
-				{
-					"tech": "panda-props",
-					"label": "Panda (style props)",
-					"value": 9449,
-					"spread": 0.02360038099269764
-				},
-				{
-					"tech": "styled-components",
-					"label": "styled-components",
-					"value": 71580,
-					"spread": 0.02513271863649064
-				},
-				{
-					"tech": "stylex",
-					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 290627,
-					"spread": 0.06519352985097737
-				},
-				{
-					"tech": "tailwind-merge",
-					"label": "tailwind-merge",
-					"value": 154002,
-					"spread": 0.047356527837300814
-				},
-				{
-					"tech": "vanilla",
-					"label": "vanilla (hand-written ceiling)",
-					"value": 221899,
-					"spread": 0.3990666925042474
-				},
-				{
-					"tech": "stylex-layers",
-					"label": "StyleX",
-					"value": 286841,
-					"spread": 0.07418221244522226
-				},
-				{
-					"tech": "pandwind",
-					"label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
-					"value": 94433,
-					"spread": 0.03658678639882244
-				},
-				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 226570,
-					"spread": 0.05911859469479631
-				}
-			]
-		},
-		{
-			"id": "payload",
-			"label": "Transferred page payload",
-			"unit": "gzip bytes",
-			"direction": "lower",
-			"caseId": "product-grid",
-			"results": [
-				{
-					"tech": "cnfast",
-					"label": "cnfast",
-					"value": 27493,
-					"payload": {
-						"js": 11335,
-						"css": 1800,
-						"html": 14358
-					}
-				},
-				{
-					"tech": "emotion",
-					"label": "Emotion",
-					"value": 20122,
-					"payload": {
-						"js": 12594,
-						"css": 1214,
-						"html": 6314
-					}
-				},
-				{
-					"tech": "goober",
-					"label": "Goober",
-					"value": 11059,
-					"payload": {
-						"js": 3405,
-						"css": 1187,
-						"html": 6467
-					}
-				},
-				{
-					"tech": "next-yak",
-					"label": "next-yak 9.6.0",
-					"value": 8187,
-					"payload": {
-						"js": 966,
-						"css": 917,
-						"html": 6304
-					}
-				},
-				{
-					"tech": "next-yak-9.7",
-					"label": "next-yak 9.7.0 (styled API)",
-					"value": 8180,
-					"payload": {
-						"js": 961,
-						"css": 916,
-						"html": 6303
-					}
-				},
-				{
-					"tech": "next-yak-9.7-nofold",
-					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 8390,
-					"payload": {
-						"js": 1164,
-						"css": 919,
-						"html": 6307
-					}
-				},
-				{
-					"tech": "next-yak-css",
-					"label": "next-yak css-prop 9.6.0",
-					"value": 7441,
-					"payload": {
-						"js": 247,
-						"css": 929,
-						"html": 6265
-					}
-				},
-				{
-					"tech": "next-yak-css-9.7",
-					"label": "next-yak css-prop 9.7.0",
-					"value": 7694,
-					"payload": {
-						"js": 493,
-						"css": 933,
-						"html": 6268
-					}
-				},
-				{
-					"tech": "next-yak-css-9.7-nofold",
-					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 7579,
-					"payload": {
-						"js": 384,
-						"css": 929,
-						"html": 6266
-					}
-				},
-				{
-					"tech": "panda",
-					"label": "Panda (css fn)",
-					"value": 20975,
-					"payload": {
-						"js": 3506,
-						"css": 1519,
-						"html": 15950
-					}
-				},
-				{
-					"tech": "panda-props",
-					"label": "Panda (style props)",
-					"value": 25050,
-					"payload": {
-						"js": 7821,
-						"css": 1514,
-						"html": 15715
-					}
-				},
-				{
-					"tech": "styled-components",
-					"label": "styled-components",
-					"value": 21036,
-					"payload": {
-						"js": 13091,
-						"css": 1435,
-						"html": 6510
-					}
-				},
-				{
-					"tech": "stylex",
-					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 13123,
-					"payload": {
-						"js": 2612,
-						"css": 1484,
-						"html": 9027
-					}
-				},
-				{
-					"tech": "tailwind-merge",
-					"label": "tailwind-merge",
-					"value": 26681,
-					"payload": {
-						"js": 10523,
-						"css": 1800,
-						"html": 14358
-					}
-				},
-				{
-					"tech": "vanilla",
-					"label": "vanilla (hand-written ceiling)",
-					"value": 7881,
-					"payload": {
-						"js": 0,
-						"css": 1546,
-						"html": 6335
-					}
-				},
-				{
-					"tech": "stylex-layers",
-					"label": "StyleX",
-					"value": 12801,
-					"payload": {
-						"js": 2421,
-						"css": 1353,
-						"html": 9027
-					}
-				},
-				{
-					"tech": "pandwind",
-					"label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
-					"value": 40971,
-					"payload": {
-						"js": 24813,
-						"css": 1800,
-						"html": 14358
-					}
-				},
-				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 43339,
-					"payload": {
-						"js": 21221,
-						"css": 7781,
-						"html": 14337
-					}
-				}
-			]
-		},
-		{
-			"id": "mount",
-			"label": "Chrome client mount",
-			"unit": "ms",
-			"direction": "lower",
-			"caseId": "product-grid",
-			"results": [
-				{
-					"tech": "cnfast",
-					"label": "cnfast",
-					"value": 27.8
-				},
-				{
-					"tech": "emotion",
-					"label": "Emotion",
-					"value": 35.4
-				},
-				{
-					"tech": "goober",
-					"label": "Goober",
-					"value": 38
-				},
-				{
-					"tech": "next-yak",
-					"label": "next-yak 9.6.0",
-					"value": 40.8
-				},
-				{
-					"tech": "next-yak-9.7",
-					"label": "next-yak 9.7.0 (styled API)",
-					"value": 38.3
-				},
-				{
-					"tech": "next-yak-9.7-nofold",
-					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 25.9
-				},
-				{
-					"tech": "next-yak-css",
-					"label": "next-yak css-prop 9.6.0",
-					"value": 34.5
-				},
-				{
-					"tech": "next-yak-css-9.7",
-					"label": "next-yak css-prop 9.7.0",
-					"value": 27.1
-				},
-				{
-					"tech": "next-yak-css-9.7-nofold",
-					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 27.6
-				},
-				{
-					"tech": "panda",
-					"label": "Panda (css fn)",
-					"value": 28
-				},
-				{
-					"tech": "panda-props",
-					"label": "Panda (style props)",
-					"value": 46.2
-				},
-				{
-					"tech": "styled-components",
-					"label": "styled-components",
-					"value": 45.5
-				},
-				{
-					"tech": "stylex",
-					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 29.7
-				},
-				{
-					"tech": "tailwind-merge",
-					"label": "tailwind-merge",
-					"value": 35.2
-				},
-				{
-					"tech": "vanilla",
-					"label": "vanilla (hand-written ceiling)",
-					"value": 31.7
-				},
-				{
-					"tech": "stylex-layers",
-					"label": "StyleX",
-					"value": 32.8
-				},
-				{
-					"tech": "pandwind",
-					"label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
-					"value": 27.3
-				},
-				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 28.6
-				}
-			]
-		},
-		{
-			"id": "hydrate",
-			"label": "Chrome hydration",
-			"unit": "ms",
-			"direction": "lower",
-			"caseId": "product-grid",
-			"results": [
-				{
-					"tech": "cnfast",
-					"label": "cnfast",
-					"value": 26.7
-				},
-				{
-					"tech": "emotion",
-					"label": "Emotion",
-					"value": 43.5
-				},
-				{
-					"tech": "goober",
-					"label": "Goober",
-					"value": 31.4
-				},
-				{
-					"tech": "next-yak",
-					"label": "next-yak 9.6.0",
-					"value": 35.7
-				},
-				{
-					"tech": "next-yak-9.7",
-					"label": "next-yak 9.7.0 (styled API)",
-					"value": 26.7
-				},
-				{
-					"tech": "next-yak-9.7-nofold",
-					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 40.4
-				},
-				{
-					"tech": "next-yak-css",
-					"label": "next-yak css-prop 9.6.0",
-					"value": 30.8
-				},
-				{
-					"tech": "next-yak-css-9.7",
-					"label": "next-yak css-prop 9.7.0",
-					"value": 30.6
-				},
-				{
-					"tech": "next-yak-css-9.7-nofold",
-					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 32
-				},
-				{
-					"tech": "panda",
-					"label": "Panda (css fn)",
-					"value": 31.2
-				},
-				{
-					"tech": "panda-props",
-					"label": "Panda (style props)",
-					"value": 38.4
-				},
-				{
-					"tech": "styled-components",
-					"label": "styled-components",
-					"value": 56.8
-				},
-				{
-					"tech": "stylex",
-					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 34.2
-				},
-				{
-					"tech": "tailwind-merge",
-					"label": "tailwind-merge",
-					"value": 40.1
-				},
-				{
-					"tech": "vanilla",
-					"label": "vanilla (hand-written ceiling)",
-					"value": 23.1
-				},
-				{
-					"tech": "stylex-layers",
-					"label": "StyleX",
-					"value": 23.9
-				},
-				{
-					"tech": "pandwind",
-					"label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
-					"value": 38.8
-				},
-				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 36.4
-				}
-			]
-		},
-		{
-			"id": "inp",
-			"label": "Chrome interaction responsiveness",
-			"unit": "ms",
-			"direction": "lower",
-			"caseId": "product-grid",
-			"results": [
-				{
-					"tech": "cnfast",
-					"label": "cnfast",
-					"value": 33.3,
-					"p95Ms": 33.4
-				},
-				{
-					"tech": "emotion",
-					"label": "Emotion",
-					"value": 33.3,
-					"p95Ms": 33.4
-				},
-				{
-					"tech": "goober",
-					"label": "Goober",
-					"value": 33.4,
-					"p95Ms": 34.2
-				},
-				{
-					"tech": "next-yak",
-					"label": "next-yak 9.6.0",
-					"value": 33.3,
-					"p95Ms": 33.5
-				},
-				{
-					"tech": "next-yak-9.7",
-					"label": "next-yak 9.7.0 (styled API)",
-					"value": 33.2,
-					"p95Ms": 34.2
-				},
-				{
-					"tech": "next-yak-9.7-nofold",
-					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 33.3,
-					"p95Ms": 34.1
-				},
-				{
-					"tech": "next-yak-css",
-					"label": "next-yak css-prop 9.6.0",
-					"value": 33.2,
-					"p95Ms": 33.5
-				},
-				{
-					"tech": "next-yak-css-9.7",
-					"label": "next-yak css-prop 9.7.0",
-					"value": 33.2,
-					"p95Ms": 33.5
-				},
-				{
-					"tech": "next-yak-css-9.7-nofold",
-					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 33.3,
-					"p95Ms": 33.5
-				},
-				{
-					"tech": "panda",
-					"label": "Panda (css fn)",
-					"value": 33.3,
-					"p95Ms": 33.4
-				},
-				{
-					"tech": "panda-props",
-					"label": "Panda (style props)",
-					"value": 33.2,
-					"p95Ms": 34.3
-				},
-				{
-					"tech": "styled-components",
-					"label": "styled-components",
-					"value": 33.2,
-					"p95Ms": 34
-				},
-				{
-					"tech": "stylex",
-					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 33,
-					"p95Ms": 33.8
-				},
-				{
-					"tech": "tailwind-merge",
-					"label": "tailwind-merge",
-					"value": 33.3,
-					"p95Ms": 33.4
-				},
-				{
-					"tech": "vanilla",
-					"label": "vanilla (hand-written ceiling)",
-					"value": 33.3,
-					"p95Ms": 33.4
-				},
-				{
-					"tech": "stylex-layers",
-					"label": "StyleX",
-					"value": 33.1,
-					"p95Ms": 33.9
-				},
-				{
-					"tech": "pandwind",
-					"label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
-					"value": 33.1,
-					"p95Ms": 34.2
-				},
-				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 33.3,
-					"p95Ms": 33.9
-				}
-			]
-		},
-		{
-			"id": "cold-build",
-			"label": "Cold production client build",
-			"unit": "ms",
-			"direction": "lower",
-			"caseId": "all cases",
-			"results": [
-				{
-					"tech": "cnfast",
-					"label": "cnfast",
-					"value": 60
-				},
-				{
-					"tech": "emotion",
-					"label": "Emotion",
-					"value": 53
-				},
-				{
-					"tech": "goober",
-					"label": "Goober",
-					"value": 51
-				},
-				{
-					"tech": "next-yak",
-					"label": "next-yak 9.6.0",
-					"value": 88
-				},
-				{
-					"tech": "next-yak-9.7",
-					"label": "next-yak 9.7.0 (styled API)",
-					"value": 84
-				},
-				{
-					"tech": "next-yak-9.7-nofold",
-					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 91
-				},
-				{
-					"tech": "next-yak-css",
-					"label": "next-yak css-prop 9.6.0",
-					"value": 88
-				},
-				{
-					"tech": "next-yak-css-9.7",
-					"label": "next-yak css-prop 9.7.0",
-					"value": 84
-				},
-				{
-					"tech": "next-yak-css-9.7-nofold",
-					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 97
-				},
-				{
-					"tech": "panda",
-					"label": "Panda (css fn)",
-					"value": 587
-				},
-				{
-					"tech": "panda-props",
-					"label": "Panda (style props)",
-					"value": 343
-				},
-				{
-					"tech": "panda-recipe",
-					"label": "Panda (recipe)",
-					"value": 348
-				},
-				{
-					"tech": "styled-components",
-					"label": "styled-components",
-					"value": 54
-				},
-				{
-					"tech": "stylex",
-					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 234
-				},
-				{
-					"tech": "tailwind-merge",
-					"label": "tailwind-merge",
-					"value": 67
-				},
-				{
-					"tech": "vanilla",
-					"label": "vanilla (hand-written ceiling)",
-					"value": 77
-				},
-				{
-					"tech": "stylex-layers",
-					"label": "StyleX",
-					"value": 239
-				},
-				{
-					"tech": "pandwind",
-					"label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
-					"value": 61
-				},
-				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 84
-				}
-			]
-		}
-	]
+  "schemaVersion": 1,
+  "source": {
+    "repository": "jantimon/css-in-js-bench",
+    "url": "https://github.com/jantimon/css-in-js-bench",
+    "cssInJsBenchRevision": "ff161a048ccb",
+    "pandwindRevision": "2984568d2eb6aabc5dd2fbf9dace3042168bc764",
+    "wpdCompletedAt": "2026-09-24T14:43:59.496Z",
+    "host": "Apple M4 (arm64)",
+    "node": "v24.20.0",
+    "gitSha": "ff161a048ccb",
+    "wpdVersion": "0.15.1",
+    "browsers": {
+      "chrome": "154.0.8037.57",
+      "firefox": "stable_156.0.1"
+    },
+    "laneCount": 19,
+    "caseCount": 13
+  },
+  "workloads": [
+    {
+      "id": "ssr-throughput",
+      "label": "SSR throughput",
+      "unit": "tiles/s",
+      "direction": "higher",
+      "caseId": "product-grid",
+      "results": [
+        {
+          "tech": "cnfast",
+          "label": "cnfast",
+          "value": 208823,
+          "spread": 0.11307662470130206
+        },
+        {
+          "tech": "emotion",
+          "label": "Emotion",
+          "value": 42135,
+          "spread": 0.024267236264388276
+        },
+        {
+          "tech": "goober",
+          "label": "Goober",
+          "value": 62845,
+          "spread": 0.027695122921473466
+        },
+        {
+          "tech": "next-yak",
+          "label": "next-yak 9.6.0",
+          "value": 88236,
+          "spread": 0.05386690239811415
+        },
+        {
+          "tech": "next-yak-9.7",
+          "label": "next-yak 9.7.0 (styled API)",
+          "value": 255339,
+          "spread": 0.06783922550021736
+        },
+        {
+          "tech": "next-yak-9.7-nofold",
+          "label": "next-yak 9.7.0 (styled API) foldStatic: false",
+          "value": 129546,
+          "spread": 0.07457582634739783
+        },
+        {
+          "tech": "next-yak-css",
+          "label": "next-yak css-prop 9.6.0",
+          "value": 188576,
+          "spread": 0.19230708043441372
+        },
+        {
+          "tech": "next-yak-css-9.7",
+          "label": "next-yak css-prop 9.7.0",
+          "value": 303452,
+          "spread": 0.06714900544402409
+        },
+        {
+          "tech": "next-yak-css-9.7-nofold",
+          "label": "next-yak css-prop 9.7.0 foldStatic: false",
+          "value": 200669,
+          "spread": 0.10461257095017168
+        },
+        {
+          "tech": "panda",
+          "label": "Panda (css fn)",
+          "value": 175650,
+          "spread": 0.057697124964417874
+        },
+        {
+          "tech": "panda-props",
+          "label": "Panda (style props)",
+          "value": 9039,
+          "spread": 0.02046686580373935
+        },
+        {
+          "tech": "styled-components",
+          "label": "styled-components",
+          "value": 65255,
+          "spread": 0.03808137307486016
+        },
+        {
+          "tech": "stylex",
+          "label": "StyleX without CSS layers (:not() specificity hack)",
+          "value": 262834,
+          "spread": 0.06006833210315256
+        },
+        {
+          "tech": "tailwind-merge",
+          "label": "tailwind-merge",
+          "value": 136820,
+          "spread": 0.0638393509720801
+        },
+        {
+          "tech": "vanilla",
+          "label": "vanilla (hand-written ceiling)",
+          "value": 294551,
+          "spread": 0.0961599179768529
+        },
+        {
+          "tech": "stylex-layers",
+          "label": "StyleX",
+          "value": 246660,
+          "spread": 0.06698694559312414
+        },
+        {
+          "tech": "pandwind",
+          "label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
+          "value": 80431,
+          "spread": 0.09924034265395183
+        },
+        {
+          "tech": "pandwind-buildtime",
+          "label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+          "value": 141441,
+          "spread": 0.2810323739226957
+        }
+      ]
+    },
+    {
+      "id": "payload",
+      "label": "Transferred page payload",
+      "unit": "gzip bytes",
+      "direction": "lower",
+      "caseId": "product-grid",
+      "results": [
+        {
+          "tech": "cnfast",
+          "label": "cnfast",
+          "value": 27493,
+          "payload": {
+            "js": 11335,
+            "css": 1800,
+            "html": 14358
+          }
+        },
+        {
+          "tech": "emotion",
+          "label": "Emotion",
+          "value": 20122,
+          "payload": {
+            "js": 12594,
+            "css": 1214,
+            "html": 6314
+          }
+        },
+        {
+          "tech": "goober",
+          "label": "Goober",
+          "value": 11059,
+          "payload": {
+            "js": 3405,
+            "css": 1187,
+            "html": 6467
+          }
+        },
+        {
+          "tech": "next-yak",
+          "label": "next-yak 9.6.0",
+          "value": 8187,
+          "payload": {
+            "js": 966,
+            "css": 917,
+            "html": 6304
+          }
+        },
+        {
+          "tech": "next-yak-9.7",
+          "label": "next-yak 9.7.0 (styled API)",
+          "value": 8180,
+          "payload": {
+            "js": 961,
+            "css": 916,
+            "html": 6303
+          }
+        },
+        {
+          "tech": "next-yak-9.7-nofold",
+          "label": "next-yak 9.7.0 (styled API) foldStatic: false",
+          "value": 8390,
+          "payload": {
+            "js": 1164,
+            "css": 919,
+            "html": 6307
+          }
+        },
+        {
+          "tech": "next-yak-css",
+          "label": "next-yak css-prop 9.6.0",
+          "value": 7441,
+          "payload": {
+            "js": 247,
+            "css": 929,
+            "html": 6265
+          }
+        },
+        {
+          "tech": "next-yak-css-9.7",
+          "label": "next-yak css-prop 9.7.0",
+          "value": 7694,
+          "payload": {
+            "js": 493,
+            "css": 933,
+            "html": 6268
+          }
+        },
+        {
+          "tech": "next-yak-css-9.7-nofold",
+          "label": "next-yak css-prop 9.7.0 foldStatic: false",
+          "value": 7579,
+          "payload": {
+            "js": 384,
+            "css": 929,
+            "html": 6266
+          }
+        },
+        {
+          "tech": "panda",
+          "label": "Panda (css fn)",
+          "value": 20975,
+          "payload": {
+            "js": 3506,
+            "css": 1519,
+            "html": 15950
+          }
+        },
+        {
+          "tech": "panda-props",
+          "label": "Panda (style props)",
+          "value": 25050,
+          "payload": {
+            "js": 7821,
+            "css": 1514,
+            "html": 15715
+          }
+        },
+        {
+          "tech": "styled-components",
+          "label": "styled-components",
+          "value": 21036,
+          "payload": {
+            "js": 13091,
+            "css": 1435,
+            "html": 6510
+          }
+        },
+        {
+          "tech": "stylex",
+          "label": "StyleX without CSS layers (:not() specificity hack)",
+          "value": 13123,
+          "payload": {
+            "js": 2612,
+            "css": 1484,
+            "html": 9027
+          }
+        },
+        {
+          "tech": "tailwind-merge",
+          "label": "tailwind-merge",
+          "value": 26681,
+          "payload": {
+            "js": 10523,
+            "css": 1800,
+            "html": 14358
+          }
+        },
+        {
+          "tech": "vanilla",
+          "label": "vanilla (hand-written ceiling)",
+          "value": 7881,
+          "payload": {
+            "js": 0,
+            "css": 1546,
+            "html": 6335
+          }
+        },
+        {
+          "tech": "stylex-layers",
+          "label": "StyleX",
+          "value": 12801,
+          "payload": {
+            "js": 2421,
+            "css": 1353,
+            "html": 9027
+          }
+        },
+        {
+          "tech": "pandwind",
+          "label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
+          "value": 40971,
+          "payload": {
+            "js": 24813,
+            "css": 1800,
+            "html": 14358
+          }
+        },
+        {
+          "tech": "pandwind-buildtime",
+          "label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+          "value": 43339,
+          "payload": {
+            "js": 21221,
+            "css": 7781,
+            "html": 14337
+          }
+        }
+      ]
+    },
+    {
+      "id": "mount",
+      "label": "Chrome client mount",
+      "unit": "ms",
+      "direction": "lower",
+      "caseId": "product-grid",
+      "results": [
+        {
+          "tech": "cnfast",
+          "label": "cnfast",
+          "value": 27.8
+        },
+        {
+          "tech": "emotion",
+          "label": "Emotion",
+          "value": 42.9
+        },
+        {
+          "tech": "goober",
+          "label": "Goober",
+          "value": 30.6
+        },
+        {
+          "tech": "next-yak",
+          "label": "next-yak 9.6.0",
+          "value": 28.8
+        },
+        {
+          "tech": "next-yak-9.7",
+          "label": "next-yak 9.7.0 (styled API)",
+          "value": 31.8
+        },
+        {
+          "tech": "next-yak-9.7-nofold",
+          "label": "next-yak 9.7.0 (styled API) foldStatic: false",
+          "value": 28.3
+        },
+        {
+          "tech": "next-yak-css",
+          "label": "next-yak css-prop 9.6.0",
+          "value": 25.8
+        },
+        {
+          "tech": "next-yak-css-9.7",
+          "label": "next-yak css-prop 9.7.0",
+          "value": 41.2
+        },
+        {
+          "tech": "next-yak-css-9.7-nofold",
+          "label": "next-yak css-prop 9.7.0 foldStatic: false",
+          "value": 27.5
+        },
+        {
+          "tech": "panda",
+          "label": "Panda (css fn)",
+          "value": 24.3
+        },
+        {
+          "tech": "panda-props",
+          "label": "Panda (style props)",
+          "value": 42.2
+        },
+        {
+          "tech": "styled-components",
+          "label": "styled-components",
+          "value": 44.7
+        },
+        {
+          "tech": "stylex",
+          "label": "StyleX without CSS layers (:not() specificity hack)",
+          "value": 31.8
+        },
+        {
+          "tech": "tailwind-merge",
+          "label": "tailwind-merge",
+          "value": 31.5
+        },
+        {
+          "tech": "vanilla",
+          "label": "vanilla (hand-written ceiling)",
+          "value": 28.4
+        },
+        {
+          "tech": "stylex-layers",
+          "label": "StyleX",
+          "value": 30.9
+        },
+        {
+          "tech": "pandwind",
+          "label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
+          "value": 38.9
+        },
+        {
+          "tech": "pandwind-buildtime",
+          "label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+          "value": 39.6
+        }
+      ]
+    },
+    {
+      "id": "hydrate",
+      "label": "Chrome hydration",
+      "unit": "ms",
+      "direction": "lower",
+      "caseId": "product-grid",
+      "results": [
+        {
+          "tech": "cnfast",
+          "label": "cnfast",
+          "value": 31.3
+        },
+        {
+          "tech": "emotion",
+          "label": "Emotion",
+          "value": 45.9
+        },
+        {
+          "tech": "goober",
+          "label": "Goober",
+          "value": 36.6
+        },
+        {
+          "tech": "next-yak",
+          "label": "next-yak 9.6.0",
+          "value": 27.9
+        },
+        {
+          "tech": "next-yak-9.7",
+          "label": "next-yak 9.7.0 (styled API)",
+          "value": 36.4
+        },
+        {
+          "tech": "next-yak-9.7-nofold",
+          "label": "next-yak 9.7.0 (styled API) foldStatic: false",
+          "value": 19
+        },
+        {
+          "tech": "next-yak-css",
+          "label": "next-yak css-prop 9.6.0",
+          "value": 29.9
+        },
+        {
+          "tech": "next-yak-css-9.7",
+          "label": "next-yak css-prop 9.7.0",
+          "value": 24.6
+        },
+        {
+          "tech": "next-yak-css-9.7-nofold",
+          "label": "next-yak css-prop 9.7.0 foldStatic: false",
+          "value": 28.5
+        },
+        {
+          "tech": "panda",
+          "label": "Panda (css fn)",
+          "value": 31.3
+        },
+        {
+          "tech": "panda-props",
+          "label": "Panda (style props)",
+          "value": 47
+        },
+        {
+          "tech": "styled-components",
+          "label": "styled-components",
+          "value": 32.6
+        },
+        {
+          "tech": "stylex",
+          "label": "StyleX without CSS layers (:not() specificity hack)",
+          "value": 33.2
+        },
+        {
+          "tech": "tailwind-merge",
+          "label": "tailwind-merge",
+          "value": 27
+        },
+        {
+          "tech": "vanilla",
+          "label": "vanilla (hand-written ceiling)",
+          "value": 34.4
+        },
+        {
+          "tech": "stylex-layers",
+          "label": "StyleX",
+          "value": 34.3
+        },
+        {
+          "tech": "pandwind",
+          "label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
+          "value": 28.5
+        },
+        {
+          "tech": "pandwind-buildtime",
+          "label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+          "value": 38.3
+        }
+      ]
+    },
+    {
+      "id": "inp",
+      "label": "Chrome interaction responsiveness",
+      "unit": "ms",
+      "direction": "lower",
+      "caseId": "product-grid",
+      "results": [
+        {
+          "tech": "cnfast",
+          "label": "cnfast",
+          "value": 33.3,
+          "p95Ms": 33.5
+        },
+        {
+          "tech": "emotion",
+          "label": "Emotion",
+          "value": 33.3,
+          "p95Ms": 34
+        },
+        {
+          "tech": "goober",
+          "label": "Goober",
+          "value": 33.3,
+          "p95Ms": 33.5
+        },
+        {
+          "tech": "next-yak",
+          "label": "next-yak 9.6.0",
+          "value": 32.8,
+          "p95Ms": 33.5
+        },
+        {
+          "tech": "next-yak-9.7",
+          "label": "next-yak 9.7.0 (styled API)",
+          "value": 33.3,
+          "p95Ms": 33.4
+        },
+        {
+          "tech": "next-yak-9.7-nofold",
+          "label": "next-yak 9.7.0 (styled API) foldStatic: false",
+          "value": 33.3,
+          "p95Ms": 33.6
+        },
+        {
+          "tech": "next-yak-css",
+          "label": "next-yak css-prop 9.6.0",
+          "value": 33.1,
+          "p95Ms": 33.4
+        },
+        {
+          "tech": "next-yak-css-9.7",
+          "label": "next-yak css-prop 9.7.0",
+          "value": 33.4,
+          "p95Ms": 33.6
+        },
+        {
+          "tech": "next-yak-css-9.7-nofold",
+          "label": "next-yak css-prop 9.7.0 foldStatic: false",
+          "value": 33.3,
+          "p95Ms": 33.4
+        },
+        {
+          "tech": "panda",
+          "label": "Panda (css fn)",
+          "value": 33.2,
+          "p95Ms": 33.3
+        },
+        {
+          "tech": "panda-props",
+          "label": "Panda (style props)",
+          "value": 33.5,
+          "p95Ms": 33.9
+        },
+        {
+          "tech": "styled-components",
+          "label": "styled-components",
+          "value": 33.3,
+          "p95Ms": 33.6
+        },
+        {
+          "tech": "stylex",
+          "label": "StyleX without CSS layers (:not() specificity hack)",
+          "value": 33.3,
+          "p95Ms": 33.4
+        },
+        {
+          "tech": "tailwind-merge",
+          "label": "tailwind-merge",
+          "value": 32.8,
+          "p95Ms": 34.3
+        },
+        {
+          "tech": "vanilla",
+          "label": "vanilla (hand-written ceiling)",
+          "value": 33.5,
+          "p95Ms": 34.1
+        },
+        {
+          "tech": "stylex-layers",
+          "label": "StyleX",
+          "value": 33,
+          "p95Ms": 33.8
+        },
+        {
+          "tech": "pandwind",
+          "label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
+          "value": 33.3,
+          "p95Ms": 33.4
+        },
+        {
+          "tech": "pandwind-buildtime",
+          "label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+          "value": 33.5,
+          "p95Ms": 34
+        }
+      ]
+    },
+    {
+      "id": "cold-build",
+      "label": "Cold production client build",
+      "unit": "ms",
+      "direction": "lower",
+      "caseId": "all cases",
+      "results": [
+        {
+          "tech": "cnfast",
+          "label": "cnfast",
+          "value": 64
+        },
+        {
+          "tech": "emotion",
+          "label": "Emotion",
+          "value": 116
+        },
+        {
+          "tech": "goober",
+          "label": "Goober",
+          "value": 54
+        },
+        {
+          "tech": "next-yak",
+          "label": "next-yak 9.6.0",
+          "value": 100
+        },
+        {
+          "tech": "next-yak-9.7",
+          "label": "next-yak 9.7.0 (styled API)",
+          "value": 125
+        },
+        {
+          "tech": "next-yak-9.7-nofold",
+          "label": "next-yak 9.7.0 (styled API) foldStatic: false",
+          "value": 154
+        },
+        {
+          "tech": "next-yak-css",
+          "label": "next-yak css-prop 9.6.0",
+          "value": 127
+        },
+        {
+          "tech": "next-yak-css-9.7",
+          "label": "next-yak css-prop 9.7.0",
+          "value": 101
+        },
+        {
+          "tech": "next-yak-css-9.7-nofold",
+          "label": "next-yak css-prop 9.7.0 foldStatic: false",
+          "value": 94
+        },
+        {
+          "tech": "panda",
+          "label": "Panda (css fn)",
+          "value": 369
+        },
+        {
+          "tech": "panda-props",
+          "label": "Panda (style props)",
+          "value": 384
+        },
+        {
+          "tech": "panda-recipe",
+          "label": "Panda (recipe)",
+          "value": 342
+        },
+        {
+          "tech": "styled-components",
+          "label": "styled-components",
+          "value": 59
+        },
+        {
+          "tech": "stylex",
+          "label": "StyleX without CSS layers (:not() specificity hack)",
+          "value": 273
+        },
+        {
+          "tech": "tailwind-merge",
+          "label": "tailwind-merge",
+          "value": 64
+        },
+        {
+          "tech": "vanilla",
+          "label": "vanilla (hand-written ceiling)",
+          "value": 60
+        },
+        {
+          "tech": "stylex-layers",
+          "label": "StyleX",
+          "value": 412
+        },
+        {
+          "tech": "pandwind",
+          "label": "pandwind — generated-conflict-map cx()/tw() merge (drop-in for twMerge+clsx)",
+          "value": 66
+        },
+        {
+          "tech": "pandwind-buildtime",
+          "label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+          "value": 99
+        }
+      ]
+    }
+  ]
 }

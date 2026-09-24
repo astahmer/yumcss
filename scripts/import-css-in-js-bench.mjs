@@ -16,7 +16,9 @@ const report = JSON.parse(readFileSync(resolve(inputPath), "utf8"));
 const productGrid = report.cases?.find(({ caseId }) => caseId === "product-grid");
 
 if (report.schemaVersion !== 1 || productGrid === undefined || report.wpdVersion === undefined) {
-	throw new Error("input must be a complete CSS-in-JS Bench report with product-grid and WPD results");
+	throw new Error(
+		"input must be a complete CSS-in-JS Bench report with product-grid and WPD results",
+	);
 }
 
 const toResults = (items, valueOf) =>
@@ -30,8 +32,7 @@ const toResults = (items, valueOf) =>
 		}))
 		.filter(({ value }) => Number.isFinite(value) && value > 0);
 
-const wpdResults = (group) =>
-	toResults(group?.wpd ?? [], ({ medianMs }) => medianMs ?? Number.NaN);
+const wpdResults = (group) => toResults(group?.wpd ?? [], ({ medianMs }) => medianMs ?? Number.NaN);
 
 const workloads = [
 	{
@@ -81,9 +82,9 @@ const workloads = [
 		caseId: "product-grid",
 		results: wpdResults(productGrid.inp),
 	},
-		{
-			id: "cold-build",
-			label: "Cold production client build",
+	{
+		id: "cold-build",
+		label: "Cold production client build",
 		unit: "ms",
 		direction: "lower",
 		caseId: "all cases",
