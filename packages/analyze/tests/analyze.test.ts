@@ -41,6 +41,32 @@ describe("analyzeSource — per-call classification", () => {
 		expect([stats.cxFoldedFull, stats.cxFoldedPartial, stats.cxRuntime]).toEqual([0, 1, 0]);
 	});
 
+	test("multiple finite dynamic conditionals fold partially", () => {
+		const source = `export const c = cx(first ? "grid" : "block", second ? "flex" : "hidden");`;
+		const stats = analyzeSource(source, "c.ts", { config });
+		const pass = inlineCxCalls(source, "c.ts", config, new Set(["cx"]), {
+			constants: true,
+			partialFold: true,
+		});
+
+		expect([stats.cxFoldedFull, stats.cxFoldedPartial, stats.cxRuntime]).toEqual([0, 1, 0]);
+		expect(pass.inlined).toBe(1);
+	});
+
+	test("more than sixteen partial branches stay at runtime", () => {
+		const source = `export const c = cx(${["a", "b", "c", "d", "e"]
+			.map((condition) => `${condition} ? "grid" : "block"`)
+			.join(", ")});`;
+		const stats = analyzeSource(source, "c.ts", { config });
+		const pass = inlineCxCalls(source, "c.ts", config, new Set(["cx"]), {
+			constants: true,
+			partialFold: true,
+		});
+
+		expect([stats.cxFoldedFull, stats.cxFoldedPartial, stats.cxRuntime]).toEqual([0, 0, 1]);
+		expect(pass.inlined).toBe(0);
+	});
+
 	test("map callback stays at runtime with a reason", () => {
 		const source = `statuses.map((s) => cx(s.color, "px-3 py-1"));`;
 		const stats = analyzeSource(source, "d.ts", { config });

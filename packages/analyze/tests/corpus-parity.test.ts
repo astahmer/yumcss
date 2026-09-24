@@ -65,7 +65,7 @@ describe("analyze reproduces the vite-cx-coverage corpus", () => {
 		).toEqual([]);
 	});
 
-	test("aggregate elimination matches the coverage harness (23/35 = 66%)", () => {
+	test("aggregate elimination matches the coverage harness (24/35 = 69%)", () => {
 		const full = entries.filter((e) => e.expect === "full").length;
 		const partial = entries.filter((e) => e.expect === "partial").length;
 		const runtime = entries.length - full - partial;
@@ -73,10 +73,10 @@ describe("analyze reproduces the vite-cx-coverage corpus", () => {
 		// it folds — so per-call classification must agree with the prefix.
 		for (const e of entries) expect(kindOf(e.stats)).toBe(e.expect);
 		expect(full).toBe(14);
-		expect(partial).toBe(9);
-		expect(runtime).toBe(12);
+		expect(partial).toBe(10);
+		expect(runtime).toBe(11);
 		const eliminated = full + partial;
-		expect(Math.round((eliminated / entries.length) * 100)).toBe(66);
+		expect(Math.round((eliminated / entries.length) * 100)).toBe(69);
 		// Per-file pct from the analyzer must agree with the classification.
 		for (const e of entries) {
 			if (e.expect === "full") expect(e.stats.eliminatedPct).toBe(100);

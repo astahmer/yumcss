@@ -16,6 +16,7 @@ afterAll(() => {
 });
 
 function seed(files: Record<string, string>) {
+	rmSync(root, { recursive: true, force: true });
 	mkdirSync(root, { recursive: true });
 	for (const [name, source] of Object.entries(files)) {
 		const path = resolve(root, name);
@@ -73,16 +74,52 @@ describe("runCli --json", () => {
 		expect(human).not.toContain('"schema"');
 	});
 
+	test("resolves direct, barrel and star-reexport constants like the Vite pass", async () => {
+		seed({
+			"styles/constants.ts": 'export const PAD = "p-6"; export const SHELL = "rounded-xl";\n',
+			"styles/tokens.ts": 'export const BRAND_BG = "bg-indigo-600";\n',
+			"styles/index.ts": 'export { BRAND_BG } from "./tokens";\n',
+			"styles/colors.ts": 'export const TONE = "text-indigo-600";\n',
+			"styles/palette.ts": 'export * from "./colors";\n',
+			"app.ts": `import { PAD } from "./styles/constants";
+import { PAD as SHADOWED_PAD } from "./styles/constants";
+import { BRAND_BG } from "./styles";
+import { TONE } from "./styles/palette";
+import { SHELL } from "./styles/constants";
+export const direct = cx(PAD, "rounded-xl");
+export const barrel = cx(BRAND_BG, "text-white");
+export const star = cx(TONE, "bg-indigo-600");
+export const partial = cx(SHELL, dark ? "bg-gray-900 text-white" : "bg-white text-gray-900");
+export function Badge({ SHADOWED_PAD }: { SHADOWED_PAD: string }) { return cx(SHADOWED_PAD, "m-1"); }
+`,
+		});
+		const output = await runCli(["app.ts", "--tw", twPath, "--root", root, "--json"]);
+		const doc = JSON.parse(output) as {
+			totalCxCalls: number;
+			fullFolded: number;
+			partialFolded: number;
+			runtimeCalls: number;
+			files: Array<{ cxFoldedFull: number; cxFoldedPartial: number; cxRuntime: number }>;
+		};
+
+		expect(doc.totalCxCalls).toBe(5);
+		expect(doc.fullFolded).toBe(3);
+		expect(doc.partialFolded).toBe(1);
+		expect(doc.runtimeCalls).toBe(1);
+		expect(doc.files).toHaveLength(1);
+		expect(doc.files[0]).toMatchObject({ cxFoldedFull: 3, cxFoldedPartial: 1, cxRuntime: 1 });
+	});
+
 	test("reports CSS provenance and actionable extraction diagnostics", async () => {
 		seed({
 			"main.ts": 'import "./globals.css";\n',
 			"design.ts": "export const css = (x: unknown) => x;",
 			"a.ts": `import { css } from "./design";
-const tone = "$blue-500";
-export const a = css.class({ color: tone });
-export const spin = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
-const fade = { from: { opacity: 0 } };
-export const fadeName = css.keyframes(fade);`,
+export const makeStyles = (tone: string, fade: { from: { opacity: number } }) => ({
+	className: css.class({ color: tone }),
+	spin: css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } }),
+	fadeName: css.keyframes(fade),
+});`,
 		});
 		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
 		const doc = JSON.parse(output) as {
@@ -168,7 +205,7 @@ export const fadeName = css.keyframes(fade);`,
 			  ],
 			  "cssDiagnostics": [
 			    {
-			      "column": 18,
+			      "column": 13,
 			      "file": "a.ts",
 			      "kind": "missing-extraction",
 			      "line": 3,
@@ -176,10 +213,10 @@ export const fadeName = css.keyframes(fade);`,
 			      "suggestion": "Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
 			    },
 			    {
-			      "column": 25,
+			      "column": 12,
 			      "file": "a.ts",
 			      "kind": "unsupported-construct",
-			      "line": 6,
+			      "line": 5,
 			      "message": "css.keyframes needs one static object literal body.",
 			      "suggestion": "Keep every step and declaration literal, or keep the @keyframes rule in authored CSS.",
 			    },

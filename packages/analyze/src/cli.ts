@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { cac, type CAC, type Command } from "cac";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import type { createPandwindEngineContext } from "pandwind/vite";
+import { createCrossModuleConstResolver } from "pandwind/vite/cross-module-consts";
 import { collectFiles, type FoldSummary } from "./analyze.ts";
 import {
 	createAnalysisWorkspace,
@@ -221,9 +222,10 @@ async function runAnalysis(
 	const workspace = createAnalysisWorkspace();
 	const analysis = createFoldAnalysisService();
 	const config = workspace.loadConfig(args.twPath);
-	const importedConstants = args.constantsPath
+	const configuredConstants = args.constantsPath
 		? (JSON.parse(readFileSync(args.constantsPath, "utf8")) as Record<string, string>)
 		: undefined;
+	const crossModuleResolver = createCrossModuleConstResolver();
 	const files = workspace
 		.collectFiles(patterns, args.root)
 		.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
@@ -251,9 +253,16 @@ async function runAnalysis(
 			const file = absoluteFile.startsWith(`${args.root}/`)
 				? absoluteFile.slice(args.root.length + 1)
 				: absoluteFile;
+			const importedConstants: Record<string, string> = {};
+			if (scan.program !== undefined) {
+				const resolvedConstants = crossModuleResolver.importedScope(absoluteFile, scan.program);
+				for (const [name, known] of resolvedConstants) {
+					if (typeof known.value === "string") importedConstants[name] = known.value;
+				}
+			}
 			return analysis.analyze(content, file, {
 				config,
-				importedConstants,
+				importedConstants: { ...importedConstants, ...configuredConstants },
 				sourceScan: scan,
 				...(cxEngine === undefined
 					? {}

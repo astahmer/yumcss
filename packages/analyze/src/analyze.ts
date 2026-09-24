@@ -12,8 +12,8 @@
  *   or remove call sites);
  * - per-call foldability is classified with the engine's own evaluator
  *   (`evalStaticCx`), mirroring `inlineCxCalls`' decision logic: every
- *   argument static -> full fold; exactly one dynamic conditional whose
- *   branches are both static -> partial fold; otherwise runtime;
+ *   argument static -> full fold; bounded conditionals with static branches
+ *   -> partial fold; otherwise runtime;
  * - "full"/"partial" totals are cross-checked against the actual passes'
  *   eliminated counts (see analyze.test.ts).
  */
@@ -244,38 +244,60 @@ function parseModule(
  * partially folded? Ternaries require both branches; `&&` requires only the
  * right side (the left is the kept-dynamic test). Nested conditionals recurse.
  */
-function isSkeletonable(
+const MAX_PARTIAL_FOLD_CASES = 16;
+
+function partialFoldCaseCount(
 	node: unknown,
 	consts: ConstantScope,
 	twNames: ReadonlySet<string>,
 	config: TwConfig,
 	cxFold?: CxFoldContext,
-): boolean {
-	const t = (node as { type?: string })?.type;
+): number {
+	const resolved = resolveTwArg(node, twNames, config, consts);
+	const t = (resolved as { type?: string })?.type;
 	if (t === "ConditionalExpression") {
-		return (
-			branchFolds((node as { consequent?: unknown }).consequent, consts, twNames, config, cxFold) &&
-			branchFolds((node as { alternate?: unknown }).alternate, consts, twNames, config, cxFold)
+		const consequent = branchFoldCaseCount(
+			(resolved as { consequent?: unknown }).consequent,
+			consts,
+			twNames,
+			config,
+			cxFold,
 		);
+		const alternate = branchFoldCaseCount(
+			(resolved as { alternate?: unknown }).alternate,
+			consts,
+			twNames,
+			config,
+			cxFold,
+		);
+		return consequent === 0 || alternate === 0
+			? 0
+			: Math.min(MAX_PARTIAL_FOLD_CASES + 1, consequent + alternate);
 	}
-	if (t === "LogicalExpression" && (node as { operator?: string }).operator === "&&") {
-		return branchFolds((node as { right?: unknown }).right, consts, twNames, config, cxFold);
+	if (t === "LogicalExpression" && (resolved as { operator?: string }).operator === "&&") {
+		const right = branchFoldCaseCount(
+			(resolved as { right?: unknown }).right,
+			consts,
+			twNames,
+			config,
+			cxFold,
+		);
+		return right === 0 ? 0 : Math.min(MAX_PARTIAL_FOLD_CASES + 1, right + 1);
 	}
-	return false;
+	return 0;
 }
 
-function branchFolds(
+function branchFoldCaseCount(
 	branch: unknown,
 	consts: ConstantScope,
 	twNames: ReadonlySet<string>,
 	config: TwConfig,
 	cxFold?: CxFoldContext,
-): boolean {
+): number {
 	const resolved = resolveTwArg(branch, twNames, config, consts);
-	return (
-		isStatic(evalStaticCx(resolved as never, cxFold, consts)) ||
-		isSkeletonable(resolved, consts, twNames, config, cxFold)
-	);
+	return isStatic(evalStaticCx(resolved as never, cxFold, consts))
+		? 1
+		: partialFoldCaseCount(resolved, consts, twNames, config, cxFold);
 }
 
 /**
@@ -363,34 +385,30 @@ function classify(
 	cxFold?: CxFoldContext,
 ): CallInfo & { name: string } {
 	const args = rawArgs.map((arg) => resolveTwArg(arg, twNames, config, consts));
-	let dynamicConditional: { index: number; arg: unknown } | undefined;
+	let partialCases = 1;
+	let hasPartial = false;
 	for (let i = 0; i < args.length; i++) {
 		const value = evalStaticCx(args[i] as never, cxFold, consts);
 		if (isStatic(value)) continue;
-		const t = (args[i] as { type?: string })?.type;
-		if (
-			dynamicConditional === undefined &&
-			(t === "ConditionalExpression" || t === "LogicalExpression")
-		) {
-			dynamicConditional = { index: i, arg: args[i] };
-			continue;
+		const type = (args[i] as { type?: string })?.type;
+		const conditional = type === "ConditionalExpression" || type === "LogicalExpression";
+		if (!conditional) {
+			return { start, kind: FoldKindTag.Runtime, reason: explain(args, i), args, name };
 		}
-		return { start, kind: FoldKindTag.Runtime, reason: explain(args, i), args, name };
-	}
-	if (dynamicConditional !== undefined) {
-		// Partial folding mirrors buildSkeleton exactly: ternaries need
-		// both BRANCHES skeletonizable (the test may stay dynamic); an
-		// `&&` chain needs only its RIGHT side (the left is the kept-
-		// dynamic test). `||` / `??` never partially fold.
-		if (!isSkeletonable(dynamicConditional.arg, consts, twNames, config, cxFold)) {
+		const cases = partialFoldCaseCount(args[i], consts, twNames, config, cxFold);
+		if (cases === 0 || partialCases * cases > MAX_PARTIAL_FOLD_CASES) {
 			return {
 				start,
 				kind: FoldKindTag.Runtime,
-				reason: "conditional with non-static branches",
+				reason: cases === 0 ? "conditional with non-static branches" : explain(args, i),
 				args,
 				name,
 			};
 		}
+		partialCases *= cases;
+		hasPartial = true;
+	}
+	if (hasPartial) {
 		return { start, kind: FoldKindTag.Partial, reason: "", args, name };
 	}
 	return { start, kind: FoldKindTag.Full, reason: "", args, name };
@@ -516,6 +534,7 @@ export function loadTwConfig(twPath: string): TwConfig {
 		.read([
 			twPath,
 			resolve(dirname(twPath), "tw.runtime.ts"),
+			resolve(dirname(twPath), "tw.conflicts.ts"),
 			resolve(dirname(twPath), "tw.build.ts"),
 		])
 		.map(({ source }) => source);

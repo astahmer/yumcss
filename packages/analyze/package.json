@@ -91,7 +91,7 @@
 		"cli": "node dist/cli.js",
 		"migration-preview": "node dist/migration-preview/cli.js",
 		"compiler-preview": "node dist/compiler-preview/cli.js",
-		"corpus": "pnpm run cli \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../../examples/example/src/tw.ts --root ../.."
+		"corpus": "pnpm run cli \"tests/fixtures/coverage-corpus/*.ts\" --tw ../../examples/example/src/tw.ts --root ."
 	},
 	"dependencies": {
 		"@hono/node-server": "2.1.1",
