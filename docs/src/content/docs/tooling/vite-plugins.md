@@ -316,13 +316,23 @@ from that call site. Unsupported shapes retain the public carrier so merge,
 condition, and validation semantics stay exact.
 
 A direct `className` rewrite is limited to a simple host with no existing
-`style` or JSX spread prop. The compiler cannot use a props carrier in a plain
-string expression without changing its return shape, so code such as
-`const className = css.class({ color: dynamicColor, padding: "2" })` keeps the
-runtime `class()` call. Use `css.props(css.vars(...), staticClass)` explicitly
-when the surrounding API accepts host props. Use a relaxed or untyped CSS
-binding if the raw dynamic value is intentionally outside a strict preset's
-authored type.
+`style` or JSX spread prop. In a plain string result, the compiler keeps the
+string shape by compiling the static subset and calling `css.class()` only for
+the dynamic declarations:
+
+```ts
+const className = css.class({ color: dynamicColor, padding: "2" });
+```
+
+```ts
+const className = ["<static-class>", css.class({ color: dynamicColor })].filter(Boolean).join(" ");
+```
+
+Function arguments are not propagated back into helper bodies. Literal values
+at a helper's call sites do not make parameter-dependent declarations static,
+though static declarations alongside them can still be compiled. Use a relaxed
+or untyped CSS binding if the raw dynamic value is intentionally outside a
+strict preset's authored type.
 
 The same static/dynamic partition also applies by default to mixed callable JSX
 spreads:
