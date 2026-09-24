@@ -122,5 +122,5 @@ const snapshot = {
 
 const outputPath = resolve(root, "benchmarks/css-in-js-bench/snapshot.json");
 mkdirSync(dirname(outputPath), { recursive: true });
-writeFileSync(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`);
+writeFileSync(outputPath, `${JSON.stringify(snapshot, null, "\t")}\n`);
 process.stdout.write(`Imported ${workloads.length} product-grid metrics into ${outputPath}\n`);
