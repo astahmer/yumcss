@@ -34,9 +34,26 @@ same compiler semantics without rejecting intentional raw or dynamic styles.
 - no-dynamic-values now consumes the compiler's cached module-constant scope.
   Its finite conditional regression uses the same source case as the core Vite
   extraction test. Oxlint remains independent of full compiler execution.
-- Validation: 43 lint-plugin tests, 78 core Vite CSS tests, and 12 TSTyche
-  cases with 39 assertions passed. All four Arena lane typechecks passed; the
-  scale/orphan probes rebuilt all four lanes.
+- A targeted Oxlint run reproduced a stack-growth crash when the compiler's
+  static-scope walker followed parser `parent` pointers. The shared walker now
+  skips metadata/back-links, tracks visited objects, and uses an iterative
+  stack without spread. A cyclic-parent regression test passes; rebuilt Pandwind and
+  lint-plugin artifacts let targeted Oxlint complete on all four affected TS
+  files.
+- Validation: lint-plugin tests passed 44/44; core cx-inline passed 64/64;
+  core Vite CSS passed 78/78; source-binding passed 10/10; and TSTyche passed
+  168 tests / 377 assertions. Pandwind and lint-plugin package typechecks and
+  focused Oxlint passed. The current core test stage passed 93 files / 1,016
+  tests.
+- Timing gates remain inconclusive under host load: runtime `css.default.raw`
+  and `css.merge` throughput fell below their recorded bands, while four TSC
+  check-time scenarios narrowly exceeded limits without instantiation-count
+  failures. Host load averaged 17.33, then 12.85; do not update baselines from
+  these readings. Root `pnpm typecheck` still has unrelated
+  `packages/devtools/src/plugin.ts` errors. Root lint was stopped after 19
+  minutes at about 3.9 GB RSS; a scoped 348-file Oxlint scan was stopped after
+  more than 6 minutes at about 2.4 GB RSS. Full-repository lint latency remains
+  unproven despite the isolated lint-plugin scaling test passing.
 
 ## What
 
@@ -91,13 +108,13 @@ verified preset/type metadata ── static authored style ── shared semanti
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-| --- | --- | --- |
-| Add a new public API | No | Public authoring surface is frozen; fix declarations or internal diagnostics |
-| Duplicate property/token tables in lint | No | They will drift from compiler and configured preset semantics |
-| Run the full compiler inside Oxlint | No | Share pure semantic predicates and verified policy input only |
-| Token allow-list | No | Use active preset/generated metadata; incomplete metadata cannot prove absence |
-| Invalid literal handling | Fail with a source-located diagnostic when the contract is finite | Static errors should not silently emit invalid or unintended CSS |
+| Choice                                  | Decision                                                          | Rationale                                                                      |
+| --------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Add a new public API                    | No                                                                | Public authoring surface is frozen; fix declarations or internal diagnostics   |
+| Duplicate property/token tables in lint | No                                                                | They will drift from compiler and configured preset semantics                  |
+| Run the full compiler inside Oxlint     | No                                                                | Share pure semantic predicates and verified policy input only                  |
+| Token allow-list                        | No                                                                | Use active preset/generated metadata; incomplete metadata cannot prove absence |
+| Invalid literal handling                | Fail with a source-located diagnostic when the contract is finite | Static errors should not silently emit invalid or unintended CSS               |
 
 ### Architecture
 
@@ -137,20 +154,20 @@ existing preset metadata or generated type/catalog artifacts.
 ## Implementation steps
 
 1. [x] Add exact-input type cases for padingBlock and acent in finite and open
-   preset configurations.
+       preset configurations.
 2. [x] Classify each case as an intentional open-contract path or a finite
-   property/token validation gap.
+       property/token validation gap.
 3. [x] Keep invalid finite properties and verified token references rejected
-   by the existing typed CSS contract; no additional compiler diagnostic is
-   needed for values the open contract accepts.
+       by the existing typed CSS contract; no additional compiler diagnostic is
+       needed for values the open contract accepts.
 4. [x] Preserve strict: false behavior and avoid inventing a token allow-list.
 5. [x] Reuse compiler-owned cached static module analysis for lint binding
-   scope while keeping source-shape reporting and policy in the lint rule.
+       scope while keeping source-shape reporting and policy in the lint rule.
 6. [x] Cover finite conditionals with the same source case as the core Vite
-   extraction test and retain raw, dynamic, custom, open, and missing-metadata
-   cases.
+       extraction test and retain raw, dynamic, custom, open, and missing-metadata
+       cases.
 7. [x] Re-run lint, compiler, type, Arena build, and Arena typecheck proofs;
-   describe changes in focused JJ revisions.
+       describe changes in focused JJ revisions.
 
 ## Resolved questions
 
@@ -177,8 +194,8 @@ existing preset metadata or generated type/catalog artifacts.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-| --- | --- | --- |
-| 2026-09-24 | Split diagnostics from output-size work | Type/config semantics need different owners and acceptance tests than browser-byte optimization |
-| 2026-09-24 | Preserve Arena's open CSS contract and enforce typos on finite presets | The exact typos fail when the preset proves a finite property/token set; Arena deliberately allows arbitrary properties and string values |
-| 2026-09-24 | Share compiler static-scope collection with lint, not compiler execution | This removes repeated lint-only declaration walks while keeping Oxlint side-effect-free and core Vite conditional behavior authoritative |
+| Date       | Decision                                                                 | Rationale                                                                                                                                 |
+| ---------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-24 | Split diagnostics from output-size work                                  | Type/config semantics need different owners and acceptance tests than browser-byte optimization                                           |
+| 2026-09-24 | Preserve Arena's open CSS contract and enforce typos on finite presets   | The exact typos fail when the preset proves a finite property/token set; Arena deliberately allows arbitrary properties and string values |
+| 2026-09-24 | Share compiler static-scope collection with lint, not compiler execution | This removes repeated lint-only declaration walks while keeping Oxlint side-effect-free and core Vite conditional behavior authoritative  |

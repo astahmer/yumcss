@@ -93,13 +93,13 @@ instead of optimizing one aggregate rank.
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-| --- | --- | --- |
-| Optimize aggregate rank or attribute bytes first | Attribute assets first | Avoid shrinking shared React/app code or misreading harness overhead as library cost |
-| CSS raw bytes or compressed growth | Gate both, prioritize Brotli slope | Transfer size is the observed scaling gap; raw size is already strong |
-| New runtime optimization or existing pruning plan | Extend `plans/046` only when attribution points there | Keep one owner for usage-aware runtime specialization |
-| Benchmark source import | Pinned artifact or stable package contract | Reproduce results outside the original local worktree |
-| Rank targets | Use only against pinned versions and environment | Rankings move when competitors or tools change |
+| Choice                                            | Decision                                              | Rationale                                                                            |
+| ------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Optimize aggregate rank or attribute bytes first  | Attribute assets first                                | Avoid shrinking shared React/app code or misreading harness overhead as library cost |
+| CSS raw bytes or compressed growth                | Gate both, prioritize Brotli slope                    | Transfer size is the observed scaling gap; raw size is already strong                |
+| New runtime optimization or existing pruning plan | Extend `plans/046` only when attribution points there | Keep one owner for usage-aware runtime specialization                                |
+| Benchmark source import                           | Pinned artifact or stable package contract            | Reproduce results outside the original local worktree                                |
+| Rank targets                                      | Use only against pinned versions and environment      | Rankings move when competitors or tools change                                       |
 
 ### Architecture
 
@@ -174,10 +174,10 @@ remain derived from those snapshots.
    supported global stylesheet entry. Its Pandwind output is now guarded at
    exactly zero added raw and Brotli bytes.
 2. Resolved: the Bench product-grid report separates gzip JavaScript, CSS,
-    and HTML; its runtime/build-time comparison quantifies the integration
-    trade-off. Arena attribution separates chunk transfer sizes and module
-    owners, while documenting that pre-minification module lengths do not imply
-    per-module compressed savings.
+   and HTML; its runtime/build-time comparison quantifies the integration
+   trade-off. Arena attribution separates chunk transfer sizes and module
+   owners, while documenting that pre-minification module lengths do not imply
+   per-module compressed savings.
 3. Resolved: no safe additional Arena runtime removal is supported by this
    comparison. Keep the existing pruning implementation; require a concrete
    removable path and a measured byte reduction before opening further work.
@@ -228,10 +228,33 @@ remain derived from those snapshots.
   active performance work, and refresh external comparisons quarterly or after
   a benchmarked dependency's major-version change. JJ revisions alone do not
   trigger a full run.
+- Validation: current core test stage passed 93 files / 1,016 tests; TSTyche
+  passed 168 tests / 377 assertions. The Pandwind and lint-plugin package
+  typechecks, targeted Oxlint (four changed TS files), owned-file formatting,
+  Bench summary freshness check, payload guard, parity verifier, WPD tests, and
+  Arena geometry/screenshot gates passed.
+- Timing gates need a quiet-host rerun before treating their result as code
+  regression: runtime `css.default.raw` measured 369,771 ops/s versus a
+  1,686,424 baseline (421,606 minimum), and `css.merge` measured 73,066 versus
+  353,170 (176,585 minimum). The TSC check-time gate exceeded limits narrowly:
+  0.117 / 0.110 / 0.068 / 0.102 s against 0.097 / 0.097 / 0.064 / 0.092 s;
+  instantiation limits did not fail. Host load averaged 17.33, then 12.85.
+  The current default diff has no changes under `packages/pandwind/src/css` or
+  `src/cx`; avoid updating performance baselines from this run.
+- Broad-check caveats: root `pnpm typecheck` still reports errors in
+  `packages/devtools/src/plugin.ts` (`devtools` missing from `Plugin<any>` and
+  implicit-any `ctx`). Root `pnpm lint` was stopped after 19 minutes at about
+  3.9 GB RSS; a 348-file Oxlint scan was stopped after more than 6 minutes at
+  about 2.4 GB RSS, both without useful output. A targeted Oxlint crash from
+  cyclic AST parent pointers was fixed in the shared compiler walker and now
+  passes on the affected files. The one-file `no-array-sort` finding was fixed
+  with `toSorted`. Root formatting also reports unrelated concurrent
+  E2E, analyze, docs-size, and generated-history files; task-owned files were
+  formatted without touching them.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-| --- | --- | --- |
-| 2026-09-24 | Keep this plan focused on emitted browser output and external benchmark reliability | The strongest performance findings concern bytes and scaling; runtime throughput/build speed are separate metrics |
-| 2026-09-24 | Keep hashed classes as default and avoid speculative runtime trimming | The opt-in named-atom trade-off is measured, while chunk attribution does not prove a safe compressed-byte removal |
+| Date       | Decision                                                                            | Rationale                                                                                                          |
+| ---------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 2026-09-24 | Keep this plan focused on emitted browser output and external benchmark reliability | The strongest performance findings concern bytes and scaling; runtime throughput/build speed are separate metrics  |
+| 2026-09-24 | Keep hashed classes as default and avoid speculative runtime trimming               | The opt-in named-atom trade-off is measured, while chunk attribution does not prove a safe compressed-byte removal |
