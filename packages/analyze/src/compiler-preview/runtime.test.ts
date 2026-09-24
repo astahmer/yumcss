@@ -13,6 +13,9 @@ describe("createCompilerPreviewRuntime", () => {
 		let runtime: CompilerPreviewRuntime | null = null;
 		try {
 			mkdirSync(join(root, "src"), { recursive: true });
+			for (const declaration of ["types.d.ts", "types.d.mts", "types.d.cts"]) {
+				writeFileSync(join(root, "src", declaration), "export declare const generated: string;\n");
+			}
 			writeFileSync(
 				join(root, "src", "design.ts"),
 				"import { createDesignCss } from 'pandwind/design'; import { examplePreset } from '@pandwind/example-preset'; export const css = createDesignCss(examplePreset);\n",
@@ -30,6 +33,9 @@ describe("createCompilerPreviewRuntime", () => {
 			expect(runtime.info.viteVersion).toBe("8.2.2");
 			expect(runtime.info.pandwindPlugins.length).toBeGreaterThan(0);
 			expect(runtime.files().map((file) => file.path)).toContain("src/Card.ts");
+			for (const declaration of ["types.d.ts", "types.d.mts", "types.d.cts"]) {
+				expect(runtime.files().map((file) => file.path)).not.toContain(`src/${declaration}`);
+			}
 
 			const result = await runtime.transform("src/Card.ts");
 			expect(result.source).toContain("css.class(");
