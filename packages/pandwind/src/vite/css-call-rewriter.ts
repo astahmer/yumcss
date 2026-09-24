@@ -676,6 +676,10 @@ const collectFlatVarKeys = (node: OxcNode | undefined, prefix: string, out: Set<
 		if (entry?.type === NodeKind.SpreadElement) continue;
 		const key = entry?.key?.name ?? (entry?.key as { value?: string } | undefined)?.value;
 		if (typeof key !== "string") continue;
+		if (key === "$raw") {
+			collectFlatVarKeys(entry.value, prefix, out);
+			continue;
+		}
 		const full = prefix === "" ? key : `${prefix}__${key}`;
 		if (entry.value?.type === NodeKind.ObjectExpression) collectFlatVarKeys(entry.value, full, out);
 		else out.add(full);

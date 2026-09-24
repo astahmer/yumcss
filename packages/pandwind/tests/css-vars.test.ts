@@ -304,4 +304,23 @@ describe("vite pass — css.vars key collection feeds the sheet", () => {
 		const keys = scanner.findVarKeys(code, "app.ts", new Set(["css"]));
 		expect(keys).toContain("_hover__color");
 	});
+
+	test("$raw values keep the original property path for stylesheet rules", () => {
+		const scanner = createCssSourceScanner([]);
+		const code = `
+			import { css } from "./design";
+			export const raw = css.vars({ $raw: { color: dynamicValue } });
+			export const conditional = css.vars({ _hover: { $raw: { color: dynamicValue } } });
+		`;
+		const keys = scanner.findVarKeys(code, "app.ts", new Set(["css"]));
+
+		expect(keys).toContain("color");
+		expect(keys).toContain("_hover__color");
+		expect(keys).not.toContain("$raw__color");
+		expect(keys).not.toContain("_hover__$raw__color");
+
+		const sheet = createStylesheet(examplePreset as never);
+		for (const key of keys) sheet.processVarKey(key);
+		expect(sheet.gen.varRules()).toContain(".pw-color");
+	});
 });

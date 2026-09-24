@@ -411,6 +411,10 @@ const collectObjectKeys = (
 		if (property.type === NodeKind.SpreadElement) continue;
 		const key = property.key?.name ?? property.key?.value;
 		if (typeof key !== "string") continue;
+		if (key === "$raw") {
+			collectObjectKeys(property.value, prefix, out);
+			continue;
+		}
 		const full = prefix === "" ? key : `${prefix}__${key}`;
 		if (property.value?.type === NodeKind.ObjectExpression)
 			collectObjectKeys(property.value, full, out);
