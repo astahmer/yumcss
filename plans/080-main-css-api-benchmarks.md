@@ -1,13 +1,16 @@
-# Main CSS API benchmark and optimization plan
+# Main `createCss` API benchmark and optimization plan
 
 ## Context
 
 - The 2026-09-24 CSS-in-JS Arena run used Pandwind revision
   `65a1cfdca44da3c33899c2f138523309a9cf6834`. The six-page implementation
   builds with `pandwindCssVite(css)` and passes its geometry and screenshot
-  gates. Its authored declarations mostly use `css.class(...)`, so it measures
-  the real static CSS compiler and its class-string projection, but not the
-  callable `css(...styles)` API that should represent Pandwind's primary lane.
+  gates. Its authored declarations mostly use `css.class(...)`, which is the
+  right projection for its className hosts and measures the real static CSS
+  compiler. It does not cover the callable map plus `css.props(...)` host
+  boundary, so the corrected suite must exercise that shape in a workload that
+  naturally composes and forwards style maps; it must not rewrite Arena call
+  sites that correctly need a class string.
 - The Arena result is strong overall: Pandwind leads several raw CSS, SSR,
   class-attribute, build, and development metrics. Its remaining measured
   targets include fourth-place first load at 125,838 B, fourth-place client
@@ -27,9 +30,10 @@
   `pandwindCssVite(css)` product plugin as the Arena app. This is a useful
   `tw()` result, not a rank for Pandwind's main CSS API.
 - `pandwindCssVite(css)` already scans and rewrites static `css(...)` and
-  `css.class(...)` calls. The missing evidence is whether the primary callable
-  form, including its host-props boundary, reaches the intended fully static
-  client output in both external benchmark harnesses.
+  `css.class(...)` calls. The missing evidence is whether the main
+  `createCss` return shapes used by each workload, including map composition
+  and host-props boundaries, reach the intended static client output in both
+  external benchmark harnesses.
 - The previous output work is recorded in
   [plan 078](078-benchmark-output-regressions.md). This plan corrects API
   representation first, then optimizes only costs that the corrected results
@@ -37,23 +41,27 @@
 
 ## Goal
 
-Make the callable `css(...styles)` API the primary, parity-gated Pandwind
+Make the `createCss(preset)` API family the primary, parity-gated Pandwind
 benchmark lane, retain `tw(...)` as a separately labeled bonus lane, and use
 the corrected results to improve first-load size and compressed CSS scaling.
 
 ## What
 
-- Author the primary lane with `createCss(preset)`, multi-argument
-  `css(base, responsive, state)` composition, and `css.props(...)` at host
-  boundaries. Use `css.class(...)` only where the host genuinely needs a class
-  string.
+- Author the primary lane with `createCss(preset)` and choose projections by
+  host use case: `css.class(...)` when the host needs a class string,
+  `css(...styles)` plus `css.props(...)` when maps are composed or forwarded,
+  and `css.group(...)` or `css.vars(...)` only where reusable variants or
+  genuine dynamic values make them idiomatic. Do not call every method just to
+  inflate API coverage.
 - Build that lane through the pinned package's actual `pandwindCssVite(css)`
   plugin and its matching preset. Keep the declarations static; represent
   state changes with selections among statically authored styles. Any truly
   dynamic style-value case belongs in a separate, explicitly dynamic result.
 - Add the primary lane to both the six-page Arena workload and CSS-in-JS Bench
-  product-grid workload. Keep the current `tw(...)` lane as a separately
-  reported secondary comparison using `pandwindVite()`.
+  product-grid workload. Include a real map-composition/host-props case in the
+  Bench matrix alongside natural class-string call sites. Keep the current
+  `tw(...)` lane as a separately reported secondary comparison using
+  `pandwindVite()`.
 - Verify the emitted browser code and stylesheet. Static CSS calls must not
   invoke the declaration compiler at runtime. Measure any remaining
   `css.props(...)` adapter separately and fold it only if the compiler can
@@ -68,8 +76,8 @@ the corrected results to improve first-load size and compressed CSS scaling.
 
 The Arena result is already competitive, so broad speed work is not the best
 next move. The current Bench payload rank describes Pandwind's utility API
-path, while the product's central authored-style API is `css(...)`. Measuring
-that API through its real Vite compiler gives a fair basis for deciding
+path, while the product's central authored-style API is `createCss(preset)`.
+Measuring its return shapes through the real Vite compiler gives a fair basis for deciding
 whether Pandwind can move into the top three for Arena first load and the top
 five for Bench payload. It also prevents an API-specific #18 result from
 being mistaken for an overall product verdict.
@@ -95,14 +103,17 @@ flowchart TD
 1. Pin the Arena, Bench, Pandwind artifact, browser, Node, and compression
    inputs. Record the existing `css.class(...)` Arena and `tw(...)` Bench
    results as controls before changing the authored lanes.
-2. Port the Arena Pandwind implementation to the callable `css(...)` form and
-   `css.props(...)` host boundary without changing routes, interactions,
-   markup meaning, tokens, or visual output. Keep direct class projection only
-   for components whose actual boundary requires a string.
+2. Audit the Arena Pandwind implementation's host boundaries and retain
+   `css.class(...)` where React needs a class string. Use `css(...)` and
+   `css.props(...)` only at real map-composition/host-props boundaries; the
+   Bench product-grid lane must carry that coverage if Arena has no such
+   natural boundary. Preserve routes, interactions, markup meaning, tokens,
+   and visual output.
 3. Add a Bench `pandwind-css` lane for the existing product-grid scenario.
    Use the same `createCss` preset and `pandwindCssVite(css)` integration as a
-   consuming Vite application; do not copy or reconstruct the plugin's
-   compiler behavior in a benchmark-only adapter.
+   consuming Vite application; exercise class-string and map/props shapes only
+   where the workload naturally uses each. Do not copy or reconstruct the
+   plugin's compiler behavior in a benchmark-only adapter.
 4. Inspect transformed source and final bundles. Compare static call output
    with runtime compiler output, confirm the generated sheet includes every
    reachable declaration once, and record whether the CSS runtime or a
@@ -126,7 +137,7 @@ flowchart TD
 
 | Choice | Decision | Rationale |
 | --- | --- | --- |
-| Primary benchmark API | Callable `css(...styles)` with `css.props(...)` | This is the main authored-style API the report should represent. |
+| Primary benchmark API | The `createCss(preset)` family, selected by host need | This represents the authored-style API without forcing one return shape onto every host. |
 | Bonus API lane | Keep `tw(...)` separate | It is useful for utility-class comparisons, but answers a different performance question. |
 | CSS build path | Actual `pandwindCssVite(css)` from the pinned artifact | The benchmark must exercise the shipped compiler integration. |
 | Fully static proof | Inspect transformed modules and bundled assets | Source-level literals alone do not prove runtime work was removed. |
@@ -181,8 +192,10 @@ report.
 
 1. Reproduce and archive the existing pinned Arena and Bench baselines, with
    each result labeled by the exact Pandwind API and plugin path.
-2. Convert the Arena lane to callable `css(...)` composition and host props;
-   keep the six-page route matrix and existing screenshot/geometry proof.
+2. Keep Arena's `css.class(...)` projection for its className-oriented
+   components. Add callable `css(...)` composition and `css.props(...)` only
+   where a host naturally forwards maps; do not bulk-convert class-string
+   callsites. Keep the six-page route matrix and screenshot/geometry proof.
 3. Add the Bench `pandwind-css` product-grid lane using `pandwindCssVite(css)`
    from the pinned artifact. Retain the old `pandwind-buildtime` result as the
    secondary `tw(...)` lane.
@@ -204,9 +217,11 @@ report.
 
 ## Acceptance criteria
 
-- [ ] The scored Pandwind Arena and Bench lanes use callable `css(...)` with
-      real multi-object composition; `css.class(...)` appears only where a
-      class string is the natural host boundary.
+- [ ] The scored Pandwind lanes use the `createCss(preset)` API family
+      idiomatically: `css.class(...)` for class-string hosts and at least one
+      real multi-object `css(...)` plus `css.props(...)` map boundary across
+      the suite. `css.group(...)` and `css.vars(...)` appear only where their
+      workload use case is real; coverage never changes semantics.
 - [ ] Both primary lanes run the shipped `pandwindCssVite(css)` compiler from
       a pinned Pandwind artifact, with no benchmark-only reimplementation.
 - [ ] Static authored declarations produce the exact expected class maps and
@@ -235,7 +250,7 @@ report.
 
 | Date | Decision | Rationale |
 | --- | --- | --- |
-| 2026-09-24 | Score callable `css(...)` as the primary Pandwind lane; label `tw(...)` as bonus | Current Bench payload ranking measures the utility lane, while the user-facing main API is callable CSS composition. |
+| 2026-09-24 | Score the `createCss(preset)` API family as primary; label `tw(...)` as bonus | The main benchmark should use each CSS projection where its host use case calls for it; Bench's existing headline result measures only the utility lane. |
 | 2026-09-24 | Use `pandwindCssVite(css)` from the pinned package in both primary lanes | The comparison should exercise the actual shipped static compiler integration. |
 | 2026-09-24 | Keep hash classes as default pending total-workload evidence | Named atoms improve large-style CSS slope but currently add first-load and class-attribute cost. |
 | 2026-09-24 | Optimize only after the corrected lane is parity-gated and attributed | Existing results show strong categories, and prior module attribution did not prove a safe general runtime deletion. |
