@@ -13,6 +13,7 @@ import {
 	CX_NOT_STATIC,
 	evalStaticCx,
 	mergeImportedConstants,
+	renderFoldSkeletons,
 	renderFoldSkeleton,
 	type ConstantScope,
 	type CxFoldContext,
@@ -37,6 +38,7 @@ export interface CxCompilerPorts {
 		code: string,
 	) => import("./cx-static-evaluator.ts").FoldSkeleton | null;
 	readonly renderSkeleton: typeof renderFoldSkeleton;
+	readonly renderSkeletons?: typeof renderFoldSkeletons;
 	readonly mergeConstants: typeof mergeImportedConstants;
 }
 
@@ -45,7 +47,20 @@ export const defaultCxCompilerPorts: CxCompilerPorts = {
 	evaluate: evalStaticCx,
 	buildSkeleton: buildFoldSkeleton,
 	renderSkeleton: renderFoldSkeleton,
+	renderSkeletons: renderFoldSkeletons,
 	mergeConstants: mergeImportedConstants,
+};
+
+const MAX_PARTIAL_FOLD_CASES = 16;
+
+const foldSkeletonCaseCount = (skeleton: FoldSkeleton): number => {
+	if (skeleton.kind === "leaf") return 1;
+	if (skeleton.kind === "cond")
+		return Math.min(
+			MAX_PARTIAL_FOLD_CASES + 1,
+			foldSkeletonCaseCount(skeleton.consequent) + foldSkeletonCaseCount(skeleton.alternate),
+		);
+	return Math.min(MAX_PARTIAL_FOLD_CASES + 1, 1 + foldSkeletonCaseCount(skeleton.right));
 };
 
 const buildPartialFoldSkeleton = (options: {
@@ -70,7 +85,7 @@ export interface CxCompilerOptions {
 	readonly fold?: CxFoldContext;
 	/** Disable constant propagation only for coverage/comparison harnesses. */
 	readonly constants?: boolean;
-	/** Replace one dynamic conditional with a decision over premerged strings. */
+	/** Replace bounded dynamic conditionals with decisions over premerged strings. */
 	readonly partialFold?: boolean;
 	readonly onUnresolved?: OnUnresolved;
 	/** Reuse a program parsed by import discovery or a preceding fold pass. */
@@ -288,7 +303,8 @@ export class CxCallRewriter {
 		walkCalls(program, (call) => {
 			if (call.callee?.type !== NodeKind.Identifier || !cxNames.has(call.callee.name ?? "")) return;
 			const inputs: StaticEval[] = [];
-			let conditional: { index: number; skeleton: FoldSkeleton } | undefined;
+			const conditionals: Array<{ index: number; skeleton: FoldSkeleton }> = [];
+			let partialCases = 1;
 			for (let index = 0; index < call.arguments.length; index++) {
 				const value = this.ports.evaluate(call.arguments[index], fold, constants);
 				if (value !== CX_NOT_STATIC) {
@@ -296,19 +312,22 @@ export class CxCallRewriter {
 					continue;
 				}
 				const argument = call.arguments[index]!;
-				const skeleton =
-					partial && conditional === undefined
-						? buildPartialFoldSkeleton({
-								node: argument,
-								constants,
-								code,
-								buildSkeleton: this.ports.buildSkeleton,
-							})
-						: null;
+				const skeleton = partial
+					? buildPartialFoldSkeleton({
+							node: argument,
+							constants,
+							code,
+							buildSkeleton: this.ports.buildSkeleton,
+						})
+					: null;
 				if (skeleton !== null) {
-					conditional = { index, skeleton };
-					inputs.push(CX_NOT_STATIC);
-					continue;
+					const cases = foldSkeletonCaseCount(skeleton);
+					if (cases <= MAX_PARTIAL_FOLD_CASES && partialCases * cases <= MAX_PARTIAL_FOLD_CASES) {
+						conditionals.push({ index, skeleton });
+						partialCases *= cases;
+						inputs.push(CX_NOT_STATIC);
+						continue;
+					}
 				}
 				// Unknown helpers, spreads, and additional dynamic arguments are
 				// left intact so runtime evaluation retains its original semantics.
@@ -316,19 +335,25 @@ export class CxCallRewriter {
 				return;
 			}
 			let replacement: string | null = null;
-			if (conditional === undefined) {
+			if (conditionals.length === 0) {
 				const merged = merge(inputs as CxInput[]);
 				if (merged !== undefined) {
 					replacement = JSON.stringify(merged);
 					if (lines !== undefined)
 						unresolved.push(...collectUnresolvedTokens(merged, lines.lineOf(call.start), config));
 				}
-			} else {
+			} else if (conditionals.length === 1) {
 				// The emitted branches are each merged with the static siblings;
 				// only the original condition remains in application code.
 				replacement = this.ports.renderSkeleton(
-					conditional.skeleton,
-					conditional.index,
+					conditionals[0]!.skeleton,
+					conditionals[0]!.index,
+					inputs,
+					merge,
+				);
+			} else {
+				replacement = (this.ports.renderSkeletons ?? renderFoldSkeletons)(
+					conditionals,
 					inputs,
 					merge,
 				);

@@ -1,4 +1,4 @@
-import { NodeKind } from "../ast-node-kind.ts";
+import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 /**
  * pandwind vite plugin — statically inlines `tw()` calls at build time.
  *
@@ -21,9 +21,12 @@ import { NodeKind } from "../ast-node-kind.ts";
 import { basename, dirname, resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { createSourceWorkspace } from "../source-workspace.ts";
-import { walk } from "../tw/literal.ts";
+import { walk, walkWithParent } from "../tw/literal.ts";
 import { findCxImports, inlineCxCalls } from "./cx-inline.ts";
-import { createCrossModuleConstResolver } from "./cross-module-consts.ts";
+import {
+	bindingIsShadowedOrWritten,
+	createCrossModuleConstResolver,
+} from "./cross-module-consts.ts";
 import { type OxcNode } from "../tw/literal.ts";
 import { createCssSourceService } from "./css-source-service.ts";
 import { createPandwindEngineContext, type PandwindEngineContext } from "./engine-context.ts";
@@ -137,18 +140,102 @@ function findTwImports(
 		if (node.type !== NodeKind.ImportDeclaration) return;
 		const source = (node as { source?: { value?: string } }).source?.value;
 		if (typeof source !== "string" || !isTwSource(source)) return;
-		info.sources.push(source);
 		for (const specifier of (node as { specifiers?: OxcSpecifier[] }).specifiers ?? []) {
 			if (specifier.type !== NodeKind.ImportSpecifier) continue;
 			const imported = (specifier as { imported?: { name?: string } }).imported?.name;
 			const local = (specifier as { local?: { name?: string } }).local?.name;
 			if (imported === "tw" && typeof local === "string") {
 				info.localNames.add(local);
+				info.sources.push(source);
 			}
 		}
 	});
 	return { ...info, program };
 }
+
+const findLocalTwFactory = (
+	code: string,
+	program: OxcNode,
+): { readonly name: string; readonly config: TwConfig } | undefined => {
+	const createTwNames = new Set<string>();
+	for (const statement of (program as { body?: OxcNode[] }).body ?? []) {
+		if (statement.type !== NodeKind.ImportDeclaration) continue;
+		const importStatement = statement as { source?: { value?: string }; importKind?: string };
+		if (importStatement.source?.value !== "pandwind/tw" || importStatement.importKind === "type")
+			continue;
+		for (const specifier of (statement as { specifiers?: OxcSpecifier[] }).specifiers ?? []) {
+			if (specifier.type !== NodeKind.ImportSpecifier) continue;
+			const entry = specifier as {
+				imported?: { name?: string };
+				local?: { name?: string };
+				importKind?: string;
+			};
+			if (entry.importKind === "type" || entry.imported?.name !== "createTw") continue;
+			if (typeof entry.local?.name === "string") createTwNames.add(entry.local.name);
+		}
+	}
+	if (createTwNames.size === 0) return undefined;
+
+	const createTwCalls: string[] = [];
+	walk(program, (node) => {
+		if (node.type !== NodeKind.CallExpression) return;
+		const callee = (node as { callee?: OxcNode | null }).callee;
+		if (callee?.type !== NodeKind.Identifier) return;
+		const name = (callee as { name?: string }).name;
+		if (name !== undefined && createTwNames.has(name)) createTwCalls.push(name);
+	});
+	if (createTwCalls.length !== 1) return undefined;
+	const createTwName = createTwCalls[0];
+	if (createTwName === undefined || bindingIsShadowedOrWritten(program, createTwName))
+		return undefined;
+
+	const factories: Array<{ readonly name: string; readonly binding: OxcNode }> = [];
+	for (const statement of (program as { body?: OxcNode[] }).body ?? []) {
+		if (
+			statement.type !== NodeKind.VariableDeclaration ||
+			(statement as { kind?: string }).kind !== VariableDeclarationKindTag.Const
+		)
+			continue;
+		for (const declarator of (
+			statement as { declarations?: Array<{ id?: OxcNode; init?: OxcNode | null }> }
+		).declarations ?? []) {
+			const binding = declarator.id;
+			const initializer = declarator.init;
+			if (binding?.type !== NodeKind.Identifier || initializer?.type !== NodeKind.CallExpression)
+				continue;
+			const callee = (initializer as { callee?: OxcNode | null }).callee;
+			if (
+				callee?.type !== NodeKind.Identifier ||
+				(callee as { name?: string }).name !== createTwName
+			)
+				continue;
+			const name = (binding as { name?: string }).name;
+			if (name !== undefined) factories.push({ name, binding });
+		}
+	}
+	if (factories.length !== 1) return undefined;
+	const factory = factories[0];
+	if (factory === undefined) return undefined;
+
+	let callSites = 0;
+	let isSafeBinding = true;
+	walkWithParent(program, (node, parent) => {
+		if (node.type !== NodeKind.Identifier || (node as { name?: string }).name !== factory.name)
+			return;
+		if (node === factory.binding) return;
+		if (
+			parent?.type === NodeKind.CallExpression &&
+			(parent as { callee?: OxcNode }).callee === node
+		) {
+			callSites++;
+			return;
+		}
+		isSafeBinding = false;
+	});
+	if (!isSafeBinding || callSites === 0) return undefined;
+	const config = extractTwConfigFromSources([code]);
+	return config === undefined ? undefined : { name: factory.name, config };
+};
 
 interface OxcSpecifier {
 	type: string;
@@ -310,7 +397,12 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 
 			const imports = findTwImports(code, id, isTwSource);
 			const cxImports = findCxImports(code, id, isCxSource, imports.program);
-			if (imports.localNames.size === 0 && imports.sources.length === 0) {
+			const localTw =
+				imports.localNames.size === 0 && imports.sources.length === 0
+					? findLocalTwFactory(code, imports.program)
+					: undefined;
+			const twNames = localTw === undefined ? imports.localNames : new Set([localTw.name]);
+			if (twNames.size === 0 && imports.sources.length === 0) {
 				// CSS atoms carry their own property metadata through the fold
 				// engine, so a CSS-only cx() call does not need generated tw
 				// conflict metadata. Keep the ordinary no-metadata guard for
@@ -340,14 +432,15 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				remember(id, code, result);
 				return result;
 			}
-			if (resolver === undefined) return null;
-
-			let config: TwConfig | undefined;
-			// Sequential short-circuit: stop at the first source that resolves
-			// to a generated tw module. Promise.all would load them needlessly.
-			for (const source of imports.sources) {
-				config = await loadConfig(resolver, id, source);
-				if (config !== undefined) break;
+			let config = localTw?.config;
+			if (config === undefined) {
+				if (resolver === undefined) return null;
+				// Sequential short-circuit: stop at the first source that resolves
+				// to a generated tw module. Promise.all would load them needlessly.
+				for (const source of imports.sources) {
+					config = await loadConfig(resolver, id, source);
+					if (config !== undefined) break;
+				}
 			}
 			if (config === undefined) return null;
 
@@ -355,7 +448,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			// Cross-module constant propagation: resolve this module's import
 			// bindings against the per-build exported-const registry (HMR-aware).
 			const importedConstants = crossModuleResolver.importedScope(id, imports.program);
-			const result = inlineTwCalls(working, id, config, imports.localNames, importedConstants, {
+			const result = inlineTwCalls(working, id, config, twNames, importedConstants, {
 				...unresolvedOptions,
 				parsedProgram: imports.program,
 			});

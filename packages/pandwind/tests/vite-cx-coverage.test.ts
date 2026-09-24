@@ -115,7 +115,7 @@ const corpus: CorpusEntry[] = [
 	},
 	{
 		name: "two dynamic conditionals",
-		expect: "runtime",
+		expect: "partial",
 		source: `export const r = cx(a ? "grid" : "block", b ? "flex" : "hidden");`,
 	},
 	{

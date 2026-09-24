@@ -17,6 +17,8 @@
  * participate as plain arguments to a subsequent cx() fold.
  */
 import { resolve } from "node:path";
+import { readFileSync } from "node:fs";
+import { runInNewContext } from "node:vm";
 import { parseSync } from "oxc-parser";
 import { describe, expect, test } from "vitest";
 import { createCx } from "../src/cx/index.ts";
@@ -451,7 +453,7 @@ describe("partial folding of conditionals with static branches", () => {
 	test("ternary with dynamic test folds to conditional over merged branches", () => {
 		const source = 'export const cls = cx(flag ? "grid" : "block", "text-sm");';
 		const { code } = expectPartialFoldEquivalence(source, () => []);
-		expect(code).toContain('((flag ? "grid" : "block") ? "grid text-sm" : "block text-sm")');
+		expect(code).toContain('((flag) ? "grid text-sm" : "block text-sm")');
 		void code;
 		// Both branches equal the runtime merge for their inputs.
 		expect("grid text-sm").toBe(runtime("grid", "text-sm"));
@@ -477,8 +479,33 @@ describe("partial folding of conditionals with static branches", () => {
 		expect(code).toContain(JSON.stringify(falseBranch));
 	});
 
-	test("two dynamic conditionals stay at runtime", () => {
-		const source = 'export const cls = cx(a ? "grid" : "block", b ? "flex" : "hidden");';
+	test("multiple dynamic conditionals fold with runtime tests evaluated once in order", () => {
+		const source =
+			'export const cls = cx(check("first") ? "grid" : "block", check("second") ? "flex" : "hidden");';
+		const { code, inlined } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]));
+		expect(inlined).toBe(1);
+		const expression = code.slice(code.indexOf("= ") + 2, code.lastIndexOf(";"));
+
+		for (const first of [false, true]) {
+			for (const second of [false, true]) {
+				const order: string[] = [];
+				const result = runInNewContext(expression, {
+					check: (name: string) => {
+						order.push(name);
+						return name === "first" ? first : second;
+					},
+				});
+				expect(result).toBe(runtime(first ? "grid" : "block", second ? "flex" : "hidden"));
+				expect(order).toEqual(["first", "second"]);
+			}
+		}
+	});
+
+	test("partial folding keeps calls with more than sixteen branch results at runtime", () => {
+		const conditions = ["a", "b", "c", "d", "e"];
+		const source = `export const cls = cx(${conditions
+			.map((condition) => `${condition} ? "grid" : "block"`)
+			.join(", ")});`;
 		const { code, inlined } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]));
 		expect(inlined).toBe(0);
 		expect(code).toBe(source);
@@ -495,6 +522,39 @@ describe("partial folding of conditionals with static branches", () => {
 });
 
 describe("tw() constant propagation", () => {
+	test("inlines literal calls from a local createTw factory", async () => {
+		const id = resolve(import.meta.dirname, "fixtures/tsc/tw.ts");
+		const source = readFileSync(id, "utf8");
+		const code = `${source}\nexport const runtimeClass = (padding: string) => tw({ p: padding });`;
+		const plugin = createInlineTwPluginCore();
+		const result = await plugin.transform(code, id);
+
+		expect(source.match(/\btw\(\{/gu)).toHaveLength(10);
+		expect(result).not.toBeNull();
+		expect(result?.code.match(/\btw\(\{/gu)).toHaveLength(1);
+		expect(result?.code).toContain("tw({ p: padding })");
+	});
+
+	test("keeps local tw calls conservative when the name is shadowed", async () => {
+		const id = resolve(import.meta.dirname, "fixtures/tsc/tw.ts");
+		const source = readFileSync(id, "utf8");
+		const code = `${source}\nexport const shadowed = (tw: (input: unknown) => string) => tw({ p: "4" });`;
+		const result = await createInlineTwPluginCore().transform(code, id);
+
+		expect(result).toBeNull();
+	});
+
+	test("inlines calls from a locally configured createTw in an application module", async () => {
+		const id = resolve(import.meta.dirname, "fixtures/tsc/app.ts");
+		const source = readFileSync(id, "utf8");
+		const staticCode = source.replace('bg: disabled ? "gray-50" : "blue-600"', 'bg: "blue-600"');
+		const result = await createInlineTwPluginCore().transform(staticCode, id);
+
+		expect(source.match(/\btw\s*\(/gu)).toHaveLength(1);
+		expect(staticCode).not.toBe(source);
+		expect(result?.code).not.toMatch(/\btw\s*\(/u);
+	});
+
 	test("tw property values referencing known consts fold", () => {
 		const source = [
 			'import { tw } from "./tw";',

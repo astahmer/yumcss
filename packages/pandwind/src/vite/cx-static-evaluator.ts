@@ -346,6 +346,7 @@ export function buildFoldSkeleton(
 	if (value !== NOT_STATIC) return { kind: "leaf", value };
 	const type = (node as { type?: string }).type;
 	if (type === "ConditionalExpression") {
+		const test = (node as { test: Expression }).test as unknown as { start: number; end: number };
 		const consequent = buildFoldSkeleton(
 			(node as { consequent: Expression }).consequent,
 			consts,
@@ -359,7 +360,7 @@ export function buildFoldSkeleton(
 		if (consequent === null || alternate === null) return null;
 		return {
 			kind: "cond",
-			testSource: code.slice((node as { start: number }).start, (node as { end: number }).end),
+			testSource: code.slice(test.start, test.end),
 			consequent,
 			alternate,
 		};
@@ -377,37 +378,60 @@ export function buildFoldSkeleton(
 	return null;
 }
 
+export interface FoldSkeletonInput {
+	readonly index: number;
+	readonly skeleton: FoldSkeleton;
+}
+
+export const renderFoldSkeletons = (
+	skeletons: readonly FoldSkeletonInput[],
+	staticInputs: StaticEval[],
+	merge: (inputs: CxInput[]) => string | undefined,
+): string | null => {
+	const values = new Map<number, { readonly value: StaticEval }>();
+	const renderAt = (skeletonIndex: number): string | null => {
+		if (skeletonIndex === skeletons.length) {
+			const merged = merge(
+				staticInputs.map((value, index) => {
+					const branchValue = values.get(index);
+					return branchValue === undefined ? value : branchValue.value;
+				}) as CxInput[],
+			);
+			return merged === undefined ? null : JSON.stringify(merged);
+		}
+
+		const input = skeletons[skeletonIndex];
+		if (input === undefined) return null;
+		const render = (current: FoldSkeleton): string | null => {
+			if (current.kind === FoldSkeletonKindTag.Leaf) {
+				values.set(input.index, { value: current.value });
+				const rendered = renderAt(skeletonIndex + 1);
+				values.delete(input.index);
+				return rendered;
+			}
+			if (current.kind === FoldSkeletonKindTag.Conditional) {
+				const consequent = render(current.consequent);
+				const alternate = render(current.alternate);
+				return consequent === null || alternate === null
+					? null
+					: `((${current.testSource}) ? ${consequent} : ${alternate})`;
+			}
+			const truthy = render(current.right);
+			values.set(input.index, { value: false });
+			const falsy = renderAt(skeletonIndex + 1);
+			values.delete(input.index);
+			return truthy === null || falsy === null
+				? null
+				: `((${current.testSource}) ? ${truthy} : ${falsy})`;
+		};
+		return render(input.skeleton);
+	};
+	return renderAt(0);
+};
+
 export const renderFoldSkeleton = (
 	skeleton: FoldSkeleton,
 	dynamicIndex: number,
 	staticInputs: StaticEval[],
 	merge: (inputs: CxInput[]) => string | undefined,
-): string | null => {
-	// Each leaf is merged through the same callback used for a full fold, so
-	// partial folding cannot invent a different conflict-resolution result.
-	const render = (current: FoldSkeleton): string | null => {
-		if (current.kind === FoldSkeletonKindTag.Leaf) {
-			const merged = merge(
-				staticInputs.map((value, index) =>
-					index === dynamicIndex ? current.value : value,
-				) as CxInput[],
-			);
-			return merged === undefined ? null : JSON.stringify(merged);
-		}
-		if (current.kind === FoldSkeletonKindTag.Conditional) {
-			const consequent = render(current.consequent);
-			const alternate = render(current.alternate);
-			return consequent === null || alternate === null
-				? null
-				: `((${current.testSource}) ? ${consequent} : ${alternate})`;
-		}
-		const truthy = render(current.right);
-		const falsy = merge(
-			staticInputs.map((value, index) => (index === dynamicIndex ? false : value)) as CxInput[],
-		);
-		return truthy === null || falsy === undefined
-			? null
-			: `((${current.testSource}) ? ${truthy} : ${JSON.stringify(falsy)})`;
-	};
-	return render(skeleton);
-};
+): string | null => renderFoldSkeletons([{ index: dynamicIndex, skeleton }], staticInputs, merge);
