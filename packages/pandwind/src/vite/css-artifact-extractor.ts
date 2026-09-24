@@ -206,6 +206,21 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 					});
 				return;
 			}
+			if ((kind === "css" || kind === "css.class") && call.arguments.length > 1) {
+				const analysis = analyzeCssInlineArguments(call.arguments, {
+					evaluateStatic: (value) => {
+						const evaluated = evalLiteral(value as never, literalConstants, evaluateCall);
+						return evaluated === undefined ? CSS_INLINE_UNKNOWN : evaluated;
+					},
+					canonicalizeKey: (key) => canonicalStyleKey(key, this.preset.conditions),
+				});
+				if (analysis.dynamicWinners.length === 0 && analysis.residuals.length === 0) {
+					const style = styleFromInlineEntries(analysis.staticWinners);
+					if (style !== undefined && Object.keys(style).length > 0)
+						this.pushStyle(sources, code, id, call, kind, style);
+					return;
+				}
+			}
 			for (const argument of call.arguments) {
 				if (kind === "css.group") {
 					const groupStyles = this.extractInputGroupStyles(

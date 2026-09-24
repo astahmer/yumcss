@@ -531,6 +531,37 @@ test("inlineCssCalls rewrites literal css() calls to Tailwind classes", () => {
 	`);
 });
 
+test("inlineCssCalls folds static css props compositions", () => {
+	const runtimeCss = createCss(examplePreset);
+	const expected = runtimeCss.props(runtimeCss({ display: "flex", padding: 4 }, { padding: 8 }));
+	const code = `
+		import { css } from "./design";
+		const props = css.props(css(
+			{ display: "flex", padding: 4 },
+			{ padding: 8 },
+		));
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain(
+		`const props = {style:undefined,className:${JSON.stringify(expected.className)}};`,
+	);
+	expect(result.code).not.toContain("css.props");
+	expect(result.code).not.toContain("css(");
+});
+
+test("inlineCssCalls keeps dynamic css props compositions on the runtime path", () => {
+	const code = `
+		import { css } from "./design";
+		const color = getColor();
+		const props = css.props(css({ color }));
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.code).toContain("css.props(css({ color }))");
+});
+
 test("inlineCssCalls leaves raw/props and unsupported calls untouched", () => {
 	const code = `
 		import { css } from "./design";
@@ -641,6 +672,55 @@ test("static extraction retains the virtual stylesheet side effect", () => {
 
 		expect(transformed?.code).toContain('import "pandwind:css";');
 		expect(transformed?.code).not.toContain("css.class(");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite folds static css props compositions into the virtual sheet", () => {
+	const runtimeCss = createCss(examplePreset);
+	const expected = runtimeCss.props(runtimeCss({ display: "flex", padding: 4 }, { padding: 8 }));
+	const expectedClassName = runtimeCss.class({ display: "flex", padding: 4 }, { padding: 8 });
+	const dir = makeProject({
+		"src/design.ts": `
+			import { createCss } from "pandwind/css";
+			import { examplePreset } from "./preset";
+			export const css = createCss(examplePreset);
+		`,
+		"src/preset.ts": "export const examplePreset = {};",
+		"src/app.tsx": `
+			import { css } from "./design";
+			export const props = css.props(css(
+				{ display: "flex", padding: 4 },
+				{ padding: 8 },
+			));
+			export const className = css.class(
+				{ display: "flex", padding: 4 },
+				{ padding: 8 },
+			);
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(runtimeCss, { root: dir });
+		const file = join(dir, "src/app.tsx");
+		const source = readFileSync(file, "utf8");
+		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
+			source,
+			file,
+		);
+		const generated = loadGenerated(plugin);
+
+		expect(transformed?.code).toContain(
+			`{style:undefined,className:${JSON.stringify(expected.className)}}`,
+		);
+		expect(transformed?.code).toContain(`className = ${JSON.stringify(expectedClassName)}`);
+		expect(transformed?.code).not.toContain("css.props");
+		expect(transformed?.code).not.toContain("css(");
+		expect(transformed?.code).not.toContain("css.class(");
+		expect(generated).toContain("display:flex");
+		expect(generated).toContain("padding:8px");
+		expect(generated).not.toContain("padding:4px");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

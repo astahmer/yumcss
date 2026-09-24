@@ -264,9 +264,11 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 			}
 		};
 		const edits: Array<{ start: number; end: number; text: string }> = [];
+		const consumedCallStarts = new Set<number>();
 		walkWithParent(parsed, (node, parent, ancestors) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
+			if (consumedCallStarts.has(call.start)) return;
 			const literalConstants = resolveLiteralScope(call, ancestors);
 			const evaluateCssLiteral = (value: Parameters<LiteralCallEvaluator>[0] | undefined) =>
 				evalLiteral(value, literalConstants, evaluateCall);
@@ -326,6 +328,44 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						edits.push({ start: call.start, end: call.end, text: carrier.text });
 						for (const key of carrier.varKeys) this.varKeys.add(key);
 						return;
+					}
+				}
+				const staticCssCall = call.arguments[0] as CallNode | undefined;
+				if (
+					call.arguments.length === 1 &&
+					staticCssCall?.type === NodeKind.CallExpression &&
+					staticCssCall.callee?.type === NodeKind.Identifier &&
+					(staticCssCall.callee as { name?: string }).name === carrierName
+				) {
+					const styles: StyleObject[] = [];
+					let staticComposition = true;
+					for (const argument of staticCssCall.arguments) {
+						const literal = evaluateCssLiteral(argument as never);
+						if (!isRecord(literal)) {
+							staticComposition = false;
+							break;
+						}
+						try {
+							styles.push(resolveDesignStyle(literal, this.preset.tokens));
+						} catch {
+							staticComposition = false;
+							break;
+						}
+					}
+					if (staticComposition) {
+						try {
+							const className = engine.class(...styles);
+							edits.push({
+								start: call.start,
+								end: call.end,
+								text: `{style:undefined,className:${className ? JSON.stringify(className) : "undefined"}}`,
+							});
+							walk(call, (nested) => {
+								if (nested.type === NodeKind.CallExpression && nested.start !== call.start)
+									consumedCallStarts.add((nested as CallNode).start);
+							});
+							return;
+						} catch {}
 					}
 				}
 			}
