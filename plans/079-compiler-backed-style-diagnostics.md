@@ -44,16 +44,21 @@ same compiler semantics without rejecting intentional raw or dynamic styles.
   core Vite CSS passed 78/78; source-binding passed 10/10; and TSTyche passed
   168 tests / 377 assertions. Pandwind and lint-plugin package typechecks and
   focused Oxlint passed. The current core test stage passed 93 files / 1,016
-  tests.
+  tests. In the final aggregate run, one runtime API throughput case missed its
+  floor by 0.6%; rerunning that test file alone passed 1/1, so no performance
+  baseline was changed.
 - Timing gates remain inconclusive under host load: runtime `css.default.raw`
   and `css.merge` throughput fell below their recorded bands, while four TSC
   check-time scenarios narrowly exceeded limits without instantiation-count
   failures. Host load averaged 17.33, then 12.85; do not update baselines from
-  these readings. Root `pnpm typecheck` still has unrelated
-  `packages/devtools/src/plugin.ts` errors. Root lint was stopped after 19
-  minutes at about 3.9 GB RSS; a scoped 348-file Oxlint scan was stopped after
-  more than 6 minutes at about 2.4 GB RSS. Full-repository lint latency remains
-  unproven despite the isolated lint-plugin scaling test passing.
+  these readings. Root typecheck still has two unrelated
+  `packages/devtools/src/plugin.ts` errors. Root lint now completes after the
+  AST walker fix, proving the full-repository traversal no longer hangs, but
+  exits with 51 errors and 5 warnings; 34 are migration-residual reports on
+  runtime source and examples, with the rest including generated E2E output,
+  Vite `?raw` imports, control-character regexes, unused symbols, and array
+  method findings. Lint-plugin tests and targeted Oxlint on the affected TS
+  files pass; root lint cleanliness remains unresolved.
 
 ## What
 

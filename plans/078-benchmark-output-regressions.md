@@ -247,16 +247,17 @@ remain derived from those snapshots.
   instantiation limits did not fail. Host load averaged 17.33, then 12.85.
   The current default diff has no changes under `packages/pandwind/src/css` or
   `src/cx`; avoid updating performance baselines from this run.
-- Broad-check caveats: root `pnpm typecheck` still reports errors in
+- Broad-check caveats: root `pnpm run typecheck` still reports two errors in
   `packages/devtools/src/plugin.ts` (`devtools` missing from `Plugin<any>` and
-  implicit-any `ctx`). Root `pnpm lint` was stopped after 19 minutes at about
-  3.9 GB RSS; a 348-file Oxlint scan was stopped after more than 6 minutes at
-  about 2.4 GB RSS, both without useful output. A targeted Oxlint crash from
-  cyclic AST parent pointers was fixed in the shared compiler walker and now
-  passes on the affected files. The one-file `no-array-sort` finding was fixed
-  with `toSorted`. Root formatting also reports unrelated concurrent
-  E2E, analyze, docs-size, and generated-history files; task-owned files were
-  formatted without touching them.
+  implicit-any `ctx`). Root lint now completes after the cyclic-AST walker fix,
+  but exits with 51 errors and 5 warnings: 34 `require-migration-residual`
+  findings across runtime source and examples, 3 findings in generated E2E
+  output, and remaining import, regex, unused-symbol, and array-method
+  findings. The focused lint-plugin suite and targeted Oxlint on the four
+  changed TS files pass. Root formatting still reports six other files
+  (`.studio-history`, generated E2E output, the styling-size snapshot, docs
+  size, and CSS typings); the Bench importer and normalized Bench snapshot
+  pass the focused formatter check.
 
 ## Decisions log
 
