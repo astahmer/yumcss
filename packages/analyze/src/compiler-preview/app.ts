@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { Hono } from "hono";
 import type { CompilerPreviewRuntime } from "./runtime.ts";
 import type { CompilerPreviewUiPort } from "./ui-provider.ts";
@@ -17,19 +18,31 @@ export const createCompilerPreviewApp = (
 	options: CompilerPreviewAppOptions,
 ): CompilerPreviewAppHandle => {
 	const app = new Hono();
+	const uiAssetToken = Buffer.from(options.token).toString("base64url");
 	app.use("*", async (context, next) => {
 		context.header("Cache-Control", "no-store");
 		context.header("Referrer-Policy", "no-referrer");
 		const url = new URL(context.req.url);
+		const assetToken = url.pathname.startsWith("/_ui/") ? url.pathname.split("/")[2] : null;
 		const provided =
 			context.req.header("x-pandwind-compiler-preview-token") ??
-			(context.req.path === "/" ? url.searchParams.get("token") : null);
+			(context.req.path === "/" ? url.searchParams.get("token") : null) ??
+			(assetToken === uiAssetToken ? options.token : null);
 		if (provided !== options.token)
 			return context.json({ error: "Compiler Preview authorization required" }, 401);
 		await next();
 	});
 
-	app.get("/", async (context) => context.html(await options.ui.loadIndexHtml()));
+	app.get("/", async (context) => context.html(await options.ui.loadIndexHtml(uiAssetToken)));
+	app.get("/_ui/:token/assets/*", async (context) => {
+		const assetPath = context.req.param("*");
+		const asset = await options.ui.loadAsset(assetPath);
+		if (asset === null) return context.notFound();
+		return context.body(asset.content, 200, {
+			"Content-Type": asset.contentType,
+			"X-Content-Type-Options": "nosniff",
+		});
+	});
 	app.get("/api/compiler-preview/info", (context) => context.json(options.runtime.info));
 	app.get("/api/compiler-preview/files", (context) => context.json(options.runtime.files()));
 	app.get("/api/compiler-preview/source", (context) => {

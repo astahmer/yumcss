@@ -1,5 +1,7 @@
+import { Buffer } from "node:buffer";
 import { describe, expect, test } from "vitest";
 import type { CompilerPreviewRuntime } from "./runtime.ts";
+import type { CompilerPreviewUiAsset } from "./ui-provider.ts";
 import { createInMemoryCompilerPreviewUiProvider } from "./ui-provider.ts";
 import { createCompilerPreviewApp } from "./app.ts";
 
@@ -27,10 +29,16 @@ const createRuntime = (): CompilerPreviewRuntime => ({
 
 describe("createCompilerPreviewApp", () => {
 	test("protects source and transform routes and returns Vite output", async () => {
+		const uiAsset: CompilerPreviewUiAsset = {
+			content: new TextEncoder().encode("export const preview = true;"),
+			contentType: "application/javascript; charset=utf-8",
+		};
 		const handle = createCompilerPreviewApp({
 			runtime: createRuntime(),
 			token,
-			ui: createInMemoryCompilerPreviewUiProvider("<!doctype html><title>preview</title>"),
+			ui: createInMemoryCompilerPreviewUiProvider("<!doctype html><title>preview</title>", {
+				"assets/index-test.js": uiAsset,
+			}),
 		});
 		const unauthorized = await handle.app.request("/api/compiler-preview/files");
 		expect(unauthorized.status).toBe(401);
@@ -65,6 +73,14 @@ describe("createCompilerPreviewApp", () => {
 		});
 		expect(page.status).toBe(200);
 		expect(page.headers.get("referrer-policy")).toBe("no-referrer");
+
+		const assetToken = Buffer.from(token).toString("base64url");
+		const unauthorizedAsset = await handle.app.request("/_ui/wrong/assets/index-test.js");
+		expect(unauthorizedAsset.status).toBe(401);
+		const asset = await handle.app.request(`/_ui/${assetToken}/assets/index-test.js`);
+		expect(asset.status).toBe(200);
+		expect(asset.headers.get("content-type")).toBe(uiAsset.contentType);
+		expect(await asset.text()).toBe("export const preview = true;");
 		handle.dispose();
 	});
 
