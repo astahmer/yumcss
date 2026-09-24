@@ -37,6 +37,7 @@ export default defineConfig({
 		"src/vite/runtime-pruner.ts",
 		"src/vite/css-extract.ts",
 		"src/vite/css-inline-analysis.ts",
+		"src/vite/preset-context.ts",
 		"src/vite/cross-module-consts.ts",
 		"src/vite/cx-inline.ts",
 		"src/vite/inline.ts",

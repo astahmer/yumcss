@@ -229,6 +229,12 @@
 			"import": "./dist/vite/css-inline-analysis.js",
 			"default": "./dist/vite/css-inline-analysis.js"
 		},
+		"./vite/preset-context": {
+			"pandwind": "./src/vite/preset-context.ts",
+			"types": "./dist/vite/preset-context.d.ts",
+			"import": "./dist/vite/preset-context.js",
+			"default": "./dist/vite/preset-context.js"
+		},
 		"./vite/lib-artifact": {
 			"pandwind": "./src/vite/lib-artifact.ts",
 			"types": "./dist/vite/lib-artifact.d.ts",

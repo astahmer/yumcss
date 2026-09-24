@@ -9,6 +9,7 @@
  */
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { presetTokenVocabularyByProperty } from "pandwind/vite/preset-context";
 import type { TokenPolicySnapshot } from "./contracts.ts";
 import type { EffectiveTokenContextInputs } from "./effective-token-context.ts";
 
@@ -77,45 +78,6 @@ function derivePolicySnapshot(
 	};
 }
 
-/** Map authored per-property token names to canonical group::name ids. */
-function vocabularyByProperty(
-	preset: Record<string, unknown>,
-	tokenGroups: Readonly<Record<string, Readonly<Record<string, unknown>>>>,
-): Record<string, Record<string, string>> {
-	const namesToIds = new Map<string, string[]>();
-	for (const group of Object.keys(tokenGroups).toSorted()) {
-		for (const name of Object.keys(tokenGroups[group] ?? {}).toSorted()) {
-			const list = namesToIds.get(name) ?? [];
-			list.push(group + "::" + name);
-			namesToIds.set(name, list);
-		}
-	}
-	const properties = preset.properties as Record<string, unknown>;
-	const out: Record<string, Record<string, string>> = {};
-	for (const prop of Object.keys(properties).toSorted()) {
-		const value = properties[prop];
-		if (!isRecord(value)) continue;
-		const vocab: Record<string, string> = {};
-		for (const key of Object.keys(value).toSorted()) {
-			if (key === "$tokens") {
-				// $tokens: <group> pulls the group's vocabulary wholesale.
-				const group = value[key];
-				if (typeof group !== "string") continue;
-				for (const name of Object.keys(tokenGroups[group] ?? {}).toSorted()) {
-					const ids = namesToIds.get(name) ?? [];
-					vocab[name] = ids.length === 1 ? ids[0]! : "$" + name;
-				}
-				continue;
-			}
-			if (key.startsWith("$")) continue;
-			const ids = namesToIds.get(key) ?? [];
-			vocab[key] = ids.length === 1 ? ids[0]! : "$" + key;
-		}
-		if (Object.keys(vocab).length > 0) out[prop] = vocab;
-	}
-	return out;
-}
-
 /**
  * Derive governance inputs from a loaded preset module. Returns
  * policy=null (report-only) when no export declares the official strict
@@ -129,7 +91,7 @@ export function deriveProjectGovernanceContext(module: PresetModule): DerivedPro
 		const tokenGroups = isRecord(candidate.tokens)
 			? (candidate.tokens as Record<string, Record<string, unknown>>)
 			: undefined;
-		const vocabulary = vocabularyByProperty(candidate, tokenGroups ?? {});
+		const vocabulary = presetTokenVocabularyByProperty(candidate);
 		return {
 			...(tokenGroups === undefined ? {} : { tokenGroups }),
 			policy: derivePolicySnapshot(candidate, vocabulary),
