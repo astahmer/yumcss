@@ -434,7 +434,7 @@ const createApiResolver = (
 		walkNode(sourceProgram, (node) => {
 			if (node.type === NodeKind.ImportDeclaration) registerImport(node);
 		});
-	walkNode(sourceProgram, (node) => {
+		walkNode(sourceProgram, (node) => {
 			if (node.type !== NodeKind.VariableDeclarator || node.id?.type !== NodeKind.Identifier)
 				return;
 			const factory = resolveFactory(node.init);
@@ -603,10 +603,24 @@ type TokenPolicySnapshotOption = {
 
 const governancePolicy = (context: RuleContext): TokenPolicySnapshotOption | undefined => {
 	const options = context.options?.[0];
-	if (options === null || typeof options !== "object") return undefined;
-	const policy = (options as Record<string, unknown>)["policy"];
-	if (policy === null || typeof policy !== "object") return undefined;
-	return policy as TokenPolicySnapshotOption;
+	const optionPolicy =
+		options !== null && typeof options === "object" && !Array.isArray(options)
+			? (options as Record<string, unknown>)["policy"]
+			: undefined;
+	if (optionPolicy !== null && typeof optionPolicy === "object" && !Array.isArray(optionPolicy))
+		return optionPolicy as TokenPolicySnapshotOption;
+
+	const settings = context.settings?.["pandwind-extraction"];
+	if (settings === null || typeof settings !== "object" || Array.isArray(settings))
+		return undefined;
+	const settingsPolicy = (settings as Record<string, unknown>)["policy"];
+	if (
+		settingsPolicy === null ||
+		typeof settingsPolicy !== "object" ||
+		Array.isArray(settingsPolicy)
+	)
+		return undefined;
+	return settingsPolicy as TokenPolicySnapshotOption;
 };
 
 /** Verified-token or declared escape hatch for one strict property literal. */
@@ -1241,10 +1255,17 @@ const rawIndependentFixPlan = (
 
 type TypedCssValueInfo = { readonly hasTypedValue: boolean; readonly onlyTypedValues: boolean };
 
-const typedCssValueInfo = (value: AstNode | undefined, property: string): TypedCssValueInfo => {
+const typedCssValueInfo = (
+	value: AstNode | undefined,
+	property: string,
+	policy: TokenPolicySnapshotOption | undefined,
+): TypedCssValueInfo => {
 	if (value?.type === NodeKind.Literal) {
 		if (typeof value.value === "number") return { hasTypedValue: true, onlyTypedValues: true };
-		return typeof value.value === "string" && isTypedCssStringValue(property, value.value)
+		return typeof value.value === "string" &&
+			(isTypedCssStringValue(property, value.value) ||
+				(policy?.resolved === true &&
+					policy.tokenVocabulary?.[property]?.[value.value] !== undefined))
 			? { hasTypedValue: true, onlyTypedValues: true }
 			: { hasTypedValue: false, onlyTypedValues: false };
 	}
@@ -1264,7 +1285,7 @@ const typedCssValueInfo = (value: AstNode | undefined, property: string): TypedC
 			onlyTypedValues = false;
 			continue;
 		}
-		const child = typedCssValueInfo(condition.value, property);
+		const child = typedCssValueInfo(condition.value, property, policy);
 		hasTypedValue ||= child.hasTypedValue;
 		onlyTypedValues &&= child.onlyTypedValues;
 	}
@@ -1275,6 +1296,7 @@ const rawTypedCssValueFixPlan = (
 	property: AstNode,
 	parent: AstNode | undefined,
 	source: string,
+	policy: TokenPolicySnapshotOption | undefined,
 ): RawTypedCssValueFixPlan | undefined => {
 	if (
 		property.computed === true ||
@@ -1307,7 +1329,8 @@ const rawTypedCssValueFixPlan = (
 		const candidate = rawProperties[index];
 		if (candidate?.type !== NodeKind.Property || candidate.computed === true) continue;
 		const name = propertyName(candidate);
-		if (name === undefined || !typedCssValueInfo(candidate.value, name).onlyTypedValues) continue;
+		if (name === undefined || !typedCssValueInfo(candidate.value, name, policy).onlyTypedValues)
+			continue;
 		typedValueIndices.push(index);
 		typedValueNames.add(name);
 	}
@@ -1486,6 +1509,7 @@ const rules: Record<string, RuleDefinition> = {
 				Program(program) {
 					const source = context.sourceCode?.text;
 					if (source === undefined) return;
+					const policy = governancePolicy(context);
 					const resolver = createApiResolver(
 						program,
 						configuredCssModuleExportsForContext(context),
@@ -1506,17 +1530,20 @@ const rules: Record<string, RuleDefinition> = {
 						for (const candidate of property.value.properties) {
 							if (candidate?.type !== NodeKind.Property || candidate.computed === true) continue;
 							const name = propertyName(candidate);
-							if (name !== undefined && typedCssValueInfo(candidate.value, name).hasTypedValue)
+							if (
+								name !== undefined &&
+								typedCssValueInfo(candidate.value, name, policy).hasTypedValue
+							)
 								names.add(name);
 						}
 						if (names.size === 0) return;
 						reported.add(property);
 						const parent = ancestors[ancestors.length - 1];
-						const plan = rawTypedCssValueFixPlan(property, parent, source);
+						const plan = rawTypedCssValueFixPlan(property, parent, source, policy);
 						context.report({
 							node: property,
 							message:
-								"pandwind: values for {{properties}} are covered by Pandwind's CSS types — move them into the style object",
+								"pandwind: values for {{properties}} are covered by Pandwind's CSS types or verified project tokens — move them into the style object",
 							data: { properties: [...names].join(", ") },
 							...(plan === undefined
 								? {}
@@ -1705,11 +1732,9 @@ const rules: Record<string, RuleDefinition> = {
 			return {
 				Program(node) {
 					program = node;
-					resolver = createApiResolver(
-						node,
-						configuredCssModuleExportsForContext(context),
-						{ includeUnconfiguredStyleFacades: false },
-					);
+					resolver = createApiResolver(node, configuredCssModuleExportsForContext(context), {
+						includeUnconfiguredStyleFacades: false,
+					});
 				},
 				CallExpression(node) {
 					const currentResolver = resolver;

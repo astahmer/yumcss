@@ -49,6 +49,27 @@ settings. Every rule that resolves style calls uses this mapping:
 }
 ```
 
+When the project has a resolved token policy from its official preset or
+`pandwind.interop.json`, pass that snapshot in the same settings object. The
+CSS value rule uses only exact, property-specific entries from
+`tokenVocabulary`; it does not infer token names:
+
+```json
+{
+	"settings": {
+		"pandwind-extraction": {
+			"policy": {
+				"owner": "pandwind",
+				"resolved": true,
+				"tokenVocabulary": {
+					"borderColor": { "<authored-token-name>": "<canonical-token-id>" }
+				}
+			}
+		}
+	}
+}
+```
+
 ## Rules
 
 | Rule                          | Default intent                                                             | Fix                                   |
@@ -57,7 +78,7 @@ settings. Every rule that resolves style calls uses this mapping:
 | `no-dynamic-values`           | Uses the compiler evaluators to find values that stay on the runtime path. | —                                     |
 | `no-multiple-conditionals`    | Finds `cx()` calls with multiple compiler-foldable conditional arguments.  | —                                     |
 | `no-dollar-raw`               | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                                     |
-| `prefer-typed-css-values`     | Finds values already covered by Pandwind's CSS value types.                | Safe: unwraps static supported values |
+| `prefer-typed-css-values`     | Finds CSS values and verified project tokens inside `$raw`.                | Safe: unwraps static supported values |
 | `no-arbitrary-values`         | Finds arbitrary class values such as `w-[13px]`.                           | —                                     |
 | `design-tokens-only`          | Checks design values against an explicit project policy.                   | —                                     |
 | `migration-skip-reason`       | Requires every `pandwind:migrate-skip` marker to explain its residual.     | —                                     |
@@ -81,17 +102,18 @@ only concatenate it; pass `css(...)` maps to `css.props()` instead. Components
 that accept caller-authored overrides can expose an `xcss` prop typed as
 `ReturnType<typeof css>` and compose it after their base map.
 
-`prefer-typed-css-values` recognizes CSS-wide keywords, numeric values, and
-the property-specific keywords from Pandwind's CSS value types. It applies only
-to preset-bound `createCss(...)` instances. The fixer unwraps a whole `$raw`
+`prefer-typed-css-values` recognizes CSS-wide keywords, numeric values, the
+property-specific keywords from Pandwind's CSS value types, and exact tokens
+from the resolved project policy. It applies only to preset-bound
+`createCss(...)` instances. The fixer unwraps a whole `$raw`
 object or moves a group of supported properties when it can preserve their
 order, avoid shorthand conflicts, and avoid duplicate keys. It also unwraps
 static condition objects when every leaf is supported by the property's CSS
-value type; mixed responsive values are reported without a fix because their
-other values may depend on the project's preset. The rule follows module-scope
-static objects spread into a resolved CSS call. Computed, spread-containing,
-or comment-sensitive edits and properties that conflict with a CSS shorthand
-stay report-only. A per-rule option remains
+value type or an exact token in the resolved project policy. Unknown, mixed,
+and unresolved values stay report-only when moving them could change behavior.
+The rule follows module-scope static objects spread into a resolved CSS call.
+Computed, spread-containing, or comment-sensitive edits and properties that
+conflict with a CSS shorthand stay report-only. A per-rule option remains
 available for a narrow override; shared application mappings should use the
 plugin setting above:
 
