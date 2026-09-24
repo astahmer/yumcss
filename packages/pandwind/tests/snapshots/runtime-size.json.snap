@@ -56,8 +56,8 @@
     "gz": 4660
   },
   "createRuntimeCss(preset), live sheet": {
-    "min": 37489,
-    "gz": 13749
+    "min": 38061,
+    "gz": 13939
   },
   "createUnsafeCss(), static output after extraction": {
     "min": 81,
@@ -132,8 +132,8 @@
     "gz": 8331
   },
   "stylesheet generator (build-time only)": {
-    "min": 28911,
-    "gz": 10634
+    "min": 29483,
+    "gz": 10833
   },
   "unsafe css subpath only": {
     "min": 11731,

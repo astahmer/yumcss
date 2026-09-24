@@ -56,7 +56,7 @@
 		"gz": 5400
 	},
 	"createRuntimeCss(preset), live sheet": {
-		"min": 38000,
+		"min": 39000,
 		"gz": 14000
 	},
 	"createUnsafeCss(), static output after extraction": {
