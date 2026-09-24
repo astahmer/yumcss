@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { tokenizeSnippet } from "./snippet-highlighter.ts";
 import "./styles.css";
+import { vscodeFileUri } from "./vscode-link.ts";
 
 const runtimeInfoSchema = z.object({
 	root: z.string(),
@@ -37,6 +39,13 @@ const requiredInput = (id: string): HTMLInputElement => {
 	return element;
 };
 
+const requiredAnchor = (id: string): HTMLAnchorElement => {
+	const element = document.getElementById(id);
+	if (!(element instanceof HTMLAnchorElement))
+		throw new Error(`Compiler Preview UI is missing link #${id}`);
+	return element;
+};
+
 const ui = {
 	projectRoot: requiredElement("project-root"),
 	compilerStatus: requiredElement("compiler-status"),
@@ -48,6 +57,7 @@ const ui = {
 	fileDetail: requiredElement("file-detail"),
 	changeBadge: requiredElement("change-badge"),
 	compileTime: requiredElement("compile-time"),
+	openSourceInEditor: requiredAnchor("open-source-in-editor"),
 	errorPanel: requiredElement("error-panel"),
 	sourceLines: requiredElement("source-lines"),
 	outputLines: requiredElement("output-lines"),
@@ -104,8 +114,24 @@ const formatBytes = (bytes: number): string => {
 
 const lineCount = (code: string): number => code.split("\n").length;
 
+const renderSnippet = (element: HTMLElement, source: string, file: string): void => {
+	const fragment = document.createDocumentFragment();
+	for (const token of tokenizeSnippet(source, file)) {
+		if (token.kind === null) {
+			fragment.append(document.createTextNode(token.text));
+			continue;
+		}
+		const span = document.createElement("span");
+		span.className = `syntax-${token.kind}`;
+		span.textContent = token.text;
+		fragment.append(span);
+	}
+	element.replaceChildren(fragment);
+};
+
 let previewFiles: readonly PreviewFile[] = [];
 let selectedFile = "";
+let workspaceRoot = "";
 let activeCompile = 0;
 let pandwindPluginActive = false;
 
@@ -148,8 +174,8 @@ const renderFileList = (): void => {
 const renderResult = (result: TransformResult): void => {
 	ui.fileName.textContent = result.file;
 	ui.fileDetail.textContent = `${formatBytes(result.sourceBytes)} source · ${formatBytes(result.outputBytes)} output`;
-	ui.sourceCode.textContent = result.source;
-	ui.compiledCode.textContent = result.code;
+	renderSnippet(ui.sourceCode, result.source, result.file);
+	renderSnippet(ui.compiledCode, result.code, result.file);
 	ui.sourceLines.textContent = `${lineCount(result.source)} lines`;
 	ui.outputLines.textContent = `${lineCount(result.code)} lines`;
 	ui.compileTime.textContent = `${result.durationMs.toFixed(1)} ms`;
@@ -162,6 +188,10 @@ const renderResult = (result: TransformResult): void => {
 
 const compileFile = async (file: string): Promise<void> => {
 	selectedFile = file;
+	ui.openSourceInEditor.href = vscodeFileUri(workspaceRoot, file);
+	ui.openSourceInEditor.setAttribute("aria-label", `Open ${file} in VS Code`);
+	ui.openSourceInEditor.title = `Open ${file} in Visual Studio Code`;
+	ui.openSourceInEditor.hidden = workspaceRoot === "";
 	const requestId = ++activeCompile;
 	let sourceLoaded = false;
 	ui.refresh.setAttribute("disabled", "true");
@@ -181,7 +211,7 @@ const compileFile = async (file: string): Promise<void> => {
 			sourceSchema,
 		);
 		if (requestId !== activeCompile) return;
-		ui.sourceCode.textContent = source.source;
+		renderSnippet(ui.sourceCode, source.source, source.file);
 		ui.sourceLines.textContent = `${lineCount(source.source)} lines`;
 		sourceLoaded = true;
 		const result = await request(
@@ -215,6 +245,7 @@ const start = async (): Promise<void> => {
 	}
 	try {
 		const info = await request("/api/compiler-preview/info", runtimeInfoSchema);
+		workspaceRoot = info.root;
 		ui.projectRoot.textContent = info.root;
 		pandwindPluginActive = info.pandwindPlugins.length > 0;
 		setReadyStatus();
