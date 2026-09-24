@@ -34,6 +34,7 @@ import {
 	findCssFallbackValueNames,
 	type CssInlineEntry,
 } from "./css-inline-analysis.ts";
+import { hasDuplicateCssObjectKeys } from "./css-inline-shape.ts";
 
 /** Static rewrite port; unsupported or dynamic calls remain untouched. */
 interface CallNode extends OxcNode {
@@ -365,11 +366,8 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				}
 			}
 			if (kind === undefined || call.arguments.length === 0) return;
-			const classNameHost =
-				kind === "class" && this.transformDynamicClassName
-					? directClassNameHost(parent, ancestors)
-					: undefined;
-			if (classNameHost !== undefined) {
+			const classNameHost = kind === "class" ? directClassNameHost(parent, ancestors) : undefined;
+			if (classNameHost !== undefined && this.transformDynamicClassName) {
 				const carrier = dynamicHostCarrier(
 					code,
 					call,
@@ -391,6 +389,27 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						text: `{...${carrier.text}}`,
 					});
 					for (const key of carrier.varKeys) this.varKeys.add(key);
+					return;
+				}
+			}
+			if (
+				kind === "class" &&
+				carrierName !== undefined &&
+				(classNameHost === undefined || this.transformDynamicClassName)
+			) {
+				const classString = dynamicClassString(
+					code,
+					call,
+					carrierName,
+					compileStaticArguments,
+					literalConstants,
+					evaluateCall,
+					firstThatWorksNames,
+					firstThatWorksValueNames,
+					this.preset,
+				);
+				if (classString !== undefined) {
+					edits.push({ start: call.start, end: call.end, text: classString });
 					return;
 				}
 			}
@@ -685,6 +704,79 @@ const dynamicHostCarrier = (
 		text: renderDirectCarrier(code, analysis.evaluationEntries, descriptors, staticClasses),
 		varKeys: [...dynamicNames],
 	};
+};
+
+const renderDynamicStyleObject = (
+	code: string,
+	entries: readonly CssInlineEntry[],
+): string | undefined => {
+	type ExpressionNode = {
+		readonly children: Map<string, ExpressionNode>;
+		expression: string | undefined;
+	};
+	const root: ExpressionNode = { children: new Map(), expression: undefined };
+	for (const entry of entries) {
+		const valueNode = entry.valueNode as { start?: number; end?: number } | undefined;
+		const path = entry.key.split("__");
+		if (path.length === 0 || valueNode?.start === undefined || valueNode.end === undefined)
+			return undefined;
+		let current = root;
+		for (const part of path) {
+			if (current.expression !== undefined) return undefined;
+			let child = current.children.get(part);
+			if (child === undefined) {
+				child = { children: new Map(), expression: undefined };
+				current.children.set(part, child);
+			}
+			current = child;
+		}
+		if (current.expression !== undefined || current.children.size > 0) return undefined;
+		current.expression = code.slice(valueNode.start, valueNode.end);
+	}
+	const render = (node: ExpressionNode): string => {
+		if (node.expression !== undefined) return node.expression;
+		return `{${[...node.children]
+			.map(([key, child]) => `${JSON.stringify(key)}: ${render(child)}`)
+			.join(", ")}}`;
+	};
+	return render(root);
+};
+
+const dynamicClassString = (
+	code: string,
+	call: CallNode,
+	carrierName: string,
+	compileStatic: (entrySets: readonly (readonly CssInlineEntry[])[]) => string | null,
+	literalConstants: ReadonlyMap<string, unknown>,
+	evaluateCall: LiteralCallEvaluator,
+	firstThatWorksNames: ReadonlySet<string>,
+	firstThatWorksValueNames: ReadonlySet<string>,
+	preset: CssPreset,
+): string | undefined => {
+	if (call.arguments.length !== 1) return undefined;
+	const argument = call.arguments[0] as OxcNode;
+	const analysis = analyzeCssInlineArguments(call.arguments, {
+		evaluateStatic: (node) => {
+			const value = evalLiteral(node as never, literalConstants, evaluateCall);
+			return value === undefined ? CSS_INLINE_UNKNOWN : value;
+		},
+		canonicalizeKey: (key) => canonicalStyleKey(key, preset.conditions),
+		isDynamicFallback: (node) =>
+			containsFirstThatWorksValue(node as OxcNode, firstThatWorksNames, firstThatWorksValueNames),
+	});
+	if (
+		analysis.residuals.length > 0 ||
+		analysis.staticWinners.length === 0 ||
+		analysis.dynamicWinners.length === 0 ||
+		hasDuplicateCssObjectKeys(argument) ||
+		new Set(analysis.entries.map((entry) => entry.key)).size !== analysis.entries.length
+	)
+		return undefined;
+	const staticClass = compileStatic([analysis.staticWinners]);
+	if (staticClass === null || staticClass.length === 0) return undefined;
+	const dynamicStyle = renderDynamicStyleObject(code, analysis.dynamicWinners);
+	if (dynamicStyle === undefined) return undefined;
+	return `([${JSON.stringify(staticClass)}, ${carrierName}.class(${dynamicStyle})].filter(Boolean).join(" "))`;
 };
 
 const hasTopLevelLiteralProperty = (node: OxcNode): boolean =>

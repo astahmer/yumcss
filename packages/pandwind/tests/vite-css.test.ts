@@ -10,6 +10,7 @@ import { firstThatWorks } from "../src/css/index.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { examplePreset } from "@pandwind/example-preset";
+import { realWorldPreset } from "./fixtures/tsc/real-world-theme.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
 import { stackFoldVite } from "../src/vite/stack-fold.ts";
@@ -1196,6 +1197,46 @@ test("dynamic css calls keep the runtime fallback", () => {
 	expect(result.inlined).toBe(0);
 	expect(result.code).toContain("/* @__PURE__ */ createUnsafeCss()");
 	expect(result.code).toContain("css.class({ color })");
+});
+
+test("mixed css.class helpers inline static styles and retain dynamic values", () => {
+	const fixture = resolve(import.meta.dirname, "fixtures/tsc/real-world-usage.ts");
+	const code = readFileSync(fixture, "utf8");
+	const service = createCssExtractionService({ matchers: [], preset: realWorldPreset });
+	const result = service.inline(code, fixture, new Set(["css"]));
+	const helperStart = result.code.indexOf("const createButton");
+	const helperEnd = result.code.indexOf("const primaryButton", helperStart);
+	const helper = result.code.slice(helperStart, helperEnd);
+	const styles = service.extractStyles(code, fixture, new Set(["css"]));
+
+	expect(result.inlined).toBeGreaterThan(0);
+	expect(helper).toContain('.filter(Boolean).join(" ")');
+	expect(helper).toContain('css.class({"gap": compact ? 2 : 3');
+	expect(helper).not.toContain('display: "inline-flex"');
+	expect(helper).not.toContain('"display": "inline-flex"');
+	expect(
+		styles.some(
+			(style) =>
+				JSON.stringify(style).includes('"display":"inline-flex"') &&
+				JSON.stringify(style).includes('"backgroundColor":'),
+		),
+	).toBe(true);
+});
+
+test("mixed css.class calls with duplicate nested keys keep the runtime fallback", () => {
+	const code = `
+		import { css } from "./design";
+		const shade = getShade();
+		const className = css.class({
+			_hover: { color: "red" },
+			_hover: { backgroundColor: shade },
+		});
+	`;
+	const result = inline().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(0);
+	expect(result.code).toContain("css.class({");
+	expect(result.code).toContain("_hover: { backgroundColor: shade }");
 });
 
 test("dynamic className rewriting is opt-in and host-aware", () => {

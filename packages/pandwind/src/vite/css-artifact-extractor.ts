@@ -25,6 +25,13 @@ import { findReactStrictDomBindings, isReactStrictDomCreateCall } from "./css-re
 import { createFirstThatWorksEvaluator } from "./css-first-that-works.ts";
 import { createCssLiteralScopeResolver } from "./css-literal-scope.ts";
 import { findFirstThatWorksBindings } from "./css-source-scanner.ts";
+import {
+	analyzeCssInlineArguments,
+	canonicalStyleKey,
+	CSS_INLINE_UNKNOWN,
+	type CssInlineEntry,
+} from "./css-inline-analysis.ts";
+import { hasDuplicateCssObjectKeys } from "./css-inline-shape.ts";
 
 /** Resolves literal style calls into artifacts while preserving source provenance. */
 interface CallNode extends OxcNode {
@@ -57,6 +64,30 @@ const propertyName = (property: PropertyNode): string | undefined => {
 		return typeof value === "string" ? value : undefined;
 	}
 	return undefined;
+};
+
+const isStyleRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const styleFromInlineEntries = (
+	entries: readonly CssInlineEntry[],
+): Record<string, unknown> | undefined => {
+	const style: Record<string, unknown> = {};
+	for (const entry of entries) {
+		const path = entry.key.split("__");
+		if (path.length === 0) return undefined;
+		let current = style;
+		for (const part of path.slice(0, -1)) {
+			if (!Object.hasOwn(current, part)) current[part] = {};
+			const child = current[part];
+			if (!isStyleRecord(child)) return undefined;
+			current = child;
+		}
+		const finalPart = path.at(-1);
+		if (finalPart === undefined) return undefined;
+		current[finalPart] = entry.value;
+	}
+	return style;
 };
 
 const inputName = (
@@ -271,9 +302,8 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 
 	/**
 	 * Mixed static/dynamic call sites keep their provably literal declarations
-	 * in the stylesheet. The rewriter lowers the dynamic remainder through a
-	 * vars carrier; extraction only ever sees the static subset, so no dynamic
-	 * value reaches generated CSS through this path.
+	 * in the stylesheet. The rewriter lowers dynamic class strings separately
+	 * and uses vars carriers only at eligible JSX hosts.
 	 */
 	private pushPartialLiteral(
 		sources: ExtractedCssStyle[],
@@ -286,10 +316,45 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		evaluateCall: LiteralCallEvaluator,
 	): void {
 		if (kind === "css.group" || kind === "css.raw") return;
-		const node = argument as { type?: string; properties?: unknown[] } | null;
+		const node = argument as OxcNode | null;
 		if (node?.type !== NodeKind.ObjectExpression) return;
+		if (hasDuplicateCssObjectKeys(node)) {
+			this.pushTopLevelPartialLiteral(
+				sources,
+				code,
+				id,
+				call,
+				kind,
+				node,
+				literalConstants,
+				evaluateCall,
+			);
+			return;
+		}
+		const analysis = analyzeCssInlineArguments([node], {
+			evaluateStatic: (value) => {
+				const evaluated = evalLiteral(value as never, literalConstants, evaluateCall);
+				return evaluated === undefined ? CSS_INLINE_UNKNOWN : evaluated;
+			},
+			canonicalizeKey: (key) => canonicalStyleKey(key, this.preset.conditions),
+		});
+		const partial = styleFromInlineEntries(analysis.staticWinners);
+		if (partial === undefined || Object.keys(partial).length === 0) return;
+		this.pushStyle(sources, code, id, call, kind, partial);
+	}
+
+	private pushTopLevelPartialLiteral(
+		sources: ExtractedCssStyle[],
+		code: string,
+		id: string,
+		call: CallNode,
+		kind: ExtractedCssStyle["provenance"]["callKind"],
+		node: OxcNode,
+		literalConstants: LiteralConstantScope,
+		evaluateCall: LiteralCallEvaluator,
+	): void {
 		const partial: Record<string, unknown> = {};
-		for (const property of node.properties ?? []) {
+		for (const property of (node as { properties?: unknown[] }).properties ?? []) {
 			const entry = property as {
 				type?: string;
 				key?: { name?: string; value?: { value?: string } };
