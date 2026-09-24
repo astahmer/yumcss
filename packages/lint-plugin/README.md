@@ -65,6 +65,7 @@ framework configuration. Dynamic preset expressions stay unresolved.
 | `no-spreads`                  | Finds spread arguments that cannot be statically folded.                   | —                                     |
 | `no-dynamic-values`           | Uses the compiler evaluators to find values that stay on the runtime path. | —                                     |
 | `no-multiple-conditionals`    | Finds `cx()` calls with multiple compiler-foldable conditional arguments.  | —                                     |
+| `no-redundant-cx`             | Finds one static string passed through `cx()` unchanged.                   | —                                     |
 | `no-dollar-raw`               | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                                     |
 | `prefer-typed-css-values`     | Finds CSS values and statically resolved preset tokens inside `$raw`.      | Safe: unwraps static supported values |
 | `no-arbitrary-values`         | Finds arbitrary class values such as `w-[13px]`.                           | —                                     |
@@ -81,6 +82,12 @@ framework configuration. Dynamic preset expressions stay unresolved.
 `no-multiple-conditionals` applies to `cx()` class composition. Finite
 property branches in `css.class()` are extracted independently.
 
+`no-redundant-cx` reports only a single static string with no whitespace or
+NUL characters, which `cx()` returns unchanged. Multi-token and dynamic inputs
+remain valid because `cx()` may need to resolve conflicts or normalize them.
+This rule does not ban unary calls by arity: `css.props(styleMap)` is the
+documented projection from a compiled map or variable carrier to host props.
+
 `no-dynamic-values` follows statically resolved identifiers through extraction
 calls and accepts object spreads whose values are proven static. Runtime spread
 inputs remain reported.
@@ -94,7 +101,9 @@ that accept caller-authored overrides can expose an `xcss` prop typed as
 A one-argument `css.props(styleMap)` is a valid projection from a compiled
 `css(...)` map (or a `css.vars(...)` carrier) to host props. Do not ban unary
 calls: they are how those values become `className` and `style` attributes.
-Avoid wrapping an existing class string just to forward it. The JSX spread
+`no-redundant-cx` covers the provable class-string no-op without narrowing
+either API's TypeScript signature. Avoid wrapping an existing class string
+just to forward it. The JSX spread
 rule changes `.className` extraction into a full props spread only when there
 is no sibling `style` prop or unknown prop spread that could change precedence.
 

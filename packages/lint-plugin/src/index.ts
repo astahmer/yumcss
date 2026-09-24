@@ -10,6 +10,7 @@
  * - no-spreads: spread arguments that cannot be statically folded
  * - no-dynamic-values: compiler-backed runtime-only argument shapes
  * - no-multiple-conditionals: multiple compiler-foldable cx() arguments
+ * - no-redundant-cx: a single static class token passed through unchanged
  * - no-dollar-raw: explicit escape hatches from the token lane
  * - no-arbitrary-values: arbitrary class values in static lanes
  * - design-tokens-only: verified project token policy violations
@@ -1916,6 +1917,26 @@ const rules: Record<string, RuleDefinition> = {
 					});
 				},
 			};
+		},
+	},
+	"no-redundant-cx": {
+		create(context) {
+			return withResolver(context, (node, api) => {
+				if (api?.kind !== API.cx || node.arguments?.length !== 1) return;
+				const input = node.arguments[0];
+				if (
+					input?.type !== NodeKind.Literal ||
+					typeof input.value !== "string" ||
+					input.value.includes("\u0000") ||
+					/\s/.test(input.value)
+				)
+					return;
+				context.report({
+					node,
+					message:
+						"pandwind: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
+				});
+			});
 		},
 	},
 	"migration-skip-reason": {

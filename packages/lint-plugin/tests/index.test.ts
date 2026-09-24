@@ -196,6 +196,28 @@ const staticBindingChain = (size: number): string =>
 	].join("\n");
 
 describe("Pandwind Oxlint API binding resolution", () => {
+	test("flags only single static cx strings that pass through unchanged", () => {
+		const source = `import { cx as merge } from "pandwind";
+import * as pw from "pandwind";
+import { createUnsafeCss } from "pandwind/unsafe/css";
+const css = createUnsafeCss();
+merge("flex");
+pw.cx("items-center");
+pw.cx("p-4 p-6");
+merge(className);
+const localCx = (value) => value;
+localCx("grid");
+const map = css({ color: "red" });
+css.props(map);`;
+		const reports = runRule("no-redundant-cx", source);
+
+		expect(reports).toHaveLength(2);
+		expect(reports.map(({ message }) => message)).toEqual([
+			"pandwind: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
+			"pandwind: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
+		]);
+	});
+
 	test("recognizes aliases and namespaces, while ignoring unrelated local functions", () => {
 		const reports = runRule(
 			"no-spreads",
