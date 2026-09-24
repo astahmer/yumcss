@@ -1,11 +1,18 @@
 :root {
-	--canvas: #f8faf8;
-	--rail: #f0f4f1;
-	--ink: #25342f;
-	--muted: #82908a;
-	--line: #e0e7e2;
-	--green: #39785b;
-	--red: #b44f40;
-	--code: #182128;
-	--mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+	color-scheme: dark;
+	--canvas: #0b0e14;
+	--rail: #11151d;
+	--panel: #151a23;
+	--panel-hover: #1a2029;
+	--ink: #e6ebf4;
+	--muted: #8b96a8;
+	--line: #232a35;
+	--line-strong: #2f3947;
+	--accent: #63b3ed;
+	--accent-dim: #3182ce;
+	--good: #68d391;
+	--warn: #f6ad55;
+	--bad: #fc8181;
+	--code: #0d1117;
+	--mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 }

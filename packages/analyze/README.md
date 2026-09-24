@@ -52,17 +52,18 @@ pnpm exec pandwind-compiler-preview /path/to/project
 
 The browser UI compares each supported source file with Vite's transformed
 module and reports transform errors. It is read-only and serves only on
-localhost. If the Vite config is not named conventionally, pass it explicitly:
+localhost. Vite automatically discovers its conventional config in the input
+folder. Override discovery with `--config` when you use a custom filename or
+need a different config; the path is relative to the input folder:
 
 ```sh
-pnpm exec pandwind-compiler-preview /path/to/project --config vite.config.ts
+pnpm exec pandwind-compiler-preview /path/to/project --config vite.preview.config.ts
 ```
 
 To inspect Pandwind's real-world compiler fixture from the repository root:
 
 ```sh
-pnpm run compiler-preview "$PWD/packages/pandwind/tests/fixtures/tsc" \
-	--config "$PWD/packages/pandwind/tests/fixtures/tsc/compiler-preview.vite.config.ts"
+pnpm run compiler-preview "$PWD/packages/pandwind/tests/fixtures/tsc"
 ```
 
 Vite is resolved from the selected project first, and its config and plugin

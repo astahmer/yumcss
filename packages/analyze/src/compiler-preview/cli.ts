@@ -61,7 +61,10 @@ const main = async (argv: readonly string[] = process.argv.slice(2)): Promise<vo
 		"[root]",
 		"Preview Vite-transformed source without writing project files",
 	);
-	command.option("--config <path>", "Use this Vite config path relative to the project root");
+	command.option(
+		"--config <path>",
+		"Override Vite config discovery with a path relative to the project root",
+	);
 	command.option("--no-open", "Start the server without opening a browser");
 	cli.help();
 	try {
