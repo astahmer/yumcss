@@ -875,13 +875,16 @@ importers:
 
   packages/lint-plugin:
     dependencies:
+      oxc-parser:
+        specifier: 0.148.0
+        version: 0.148.0
       pandwind:
         specifier: workspace:*
         version: link:../pandwind
     devDependencies:
-      oxc-parser:
-        specifier: 0.148.0
-        version: 0.148.0
+      '@types/node':
+        specifier: 26.4.1
+        version: 26.4.1
       tsdown:
         specifier: 0.23.0
         version: 0.23.0(@vitejs/devtools@0.7.2)(@volar/typescript@2.4.28(typescript@7.0.2))(oxc-resolver@11.24.2)(typescript@7.0.2)

@@ -106,10 +106,11 @@ export interface LiteralValueSet {
 }
 
 /**
- * Statically evaluate a literal expression. Only pure literal values are
- * supported; anything else (variables, spreads, template interpolation)
- * returns `undefined`, making the enclosing call invisible to extraction —
- * the same limitation as dynamic class names in plain Tailwind.
+ * Statically evaluate a literal expression. Only pure literal values and
+ * spreads of proven object values are supported; unknown variables, spreads,
+ * and template interpolation return `undefined`, making the enclosing call
+ * invisible to extraction — the same limitation as dynamic class names in
+ * plain Tailwind.
  *
  * With `consts`, module-level constant bindings participate: Identifier
  * references resolve through the scope, and template interpolations / `+
@@ -165,6 +166,7 @@ export function evalLiteral(
 		case NodeKind.TSAsExpression:
 		case NodeKind.TSSatisfiesExpression:
 		case NodeKind.TSTypeAssertion:
+		case NodeKind.ParenthesizedExpression:
 			return evalLiteral(node.expression, consts, evaluateCall);
 		case NodeKind.ArrayExpression: {
 			const values: unknown[] = [];
@@ -181,6 +183,13 @@ export function evalLiteral(
 		case NodeKind.ObjectExpression: {
 			const styles: Record<string, unknown> = {};
 			for (const property of node.properties) {
+				if (property.type === NodeKind.SpreadElement) {
+					const spread = evalLiteral(property.argument, consts, evaluateCall);
+					if (typeof spread !== "object" || spread === null || Array.isArray(spread))
+						return undefined;
+					Object.assign(styles, spread);
+					continue;
+				}
 				if (
 					property.type !== NodeKind.Property ||
 					property.kind !== PropertyKindTag.Init ||
@@ -193,8 +202,9 @@ export function evalLiteral(
 				const name =
 					key.type === NodeKind.Identifier
 						? key.name
-						: key.type === NodeKind.Literal && typeof key.value === "string"
-							? key.value
+						: key.type === NodeKind.Literal &&
+							  (typeof key.value === "string" || typeof key.value === "number")
+							? String(key.value)
 							: undefined;
 				if (name === undefined) return undefined;
 				const value = evalLiteral(property.value, consts, evaluateCall);
@@ -202,6 +212,18 @@ export function evalLiteral(
 				styles[name] = value;
 			}
 			return styles;
+		}
+		case NodeKind.MemberExpression: {
+			const object = evalLiteral(node.object, consts, evaluateCall);
+			if (typeof object !== "object" || object === null) return undefined;
+			const property = node.computed
+				? evalLiteral(node.property, consts, evaluateCall)
+				: node.property.type === NodeKind.Identifier
+					? node.property.name
+					: undefined;
+			if (typeof property !== "string" && typeof property !== "number") return undefined;
+			const key = String(property);
+			return Object.hasOwn(object, key) ? Reflect.get(object, key) : undefined;
 		}
 		case NodeKind.CallExpression:
 			return evaluateCall?.(node, consts);

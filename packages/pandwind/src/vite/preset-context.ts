@@ -1,8 +1,6 @@
 type PresetRecord = Readonly<Record<string, unknown>>;
 
-export type PresetTokenVocabulary = Readonly<
-	Record<string, Readonly<Record<string, string>>>
->;
+export type PresetTokenVocabulary = Readonly<Record<string, Readonly<Record<string, string>>>>;
 
 const isRecord = (value: unknown): value is PresetRecord =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
@@ -24,7 +22,7 @@ export const presetTokenVocabularyByProperty = (preset: unknown): PresetTokenVoc
 
 	const vocabulary: Record<string, Record<string, string>> = {};
 	for (const property of Object.keys(preset.properties).toSorted()) {
-		const propertyConfig = preset.properties[property];
+		const propertyConfig: unknown = preset.properties[property];
 		if (!isRecord(propertyConfig)) continue;
 		const propertyVocabulary: Record<string, string> = {};
 		for (const name of Object.keys(propertyConfig).toSorted()) {
@@ -41,8 +39,7 @@ export const presetTokenVocabularyByProperty = (preset: unknown): PresetTokenVoc
 			const ids = namesToIds.get(name) ?? [];
 			propertyVocabulary[name] = ids.length === 1 ? ids[0]! : `$${name}`;
 		}
-		if (Object.keys(propertyVocabulary).length > 0)
-			vocabulary[property] = propertyVocabulary;
+		if (Object.keys(propertyVocabulary).length > 0) vocabulary[property] = propertyVocabulary;
 	}
 	return vocabulary;
 };

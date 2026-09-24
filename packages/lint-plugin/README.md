@@ -1,8 +1,8 @@
 # @pandwind/lint-plugin
 
 Use this when you want CI or editor diagnostics for style code that should be
-folded at build time. It catches common static-extraction mistakes without
-pretending to know your project's tokens or framework configuration.
+folded at build time. It catches common static-extraction mistakes and reads
+statically declared token vocabularies from the CSS factory's actual preset.
 
 Start with warnings during adoption:
 
@@ -37,7 +37,9 @@ same `css` and `design` basename convention as the Vite plugin.
 
 For application-local modules that re-export a preset-bound `createCss`
 instance, provide the exact import source and exported instance once in plugin
-settings. Every rule that resolves style calls uses this mapping:
+settings only when the facade does not use the conventional `css` or `design`
+basename. This mapping identifies the style factory; token names still come
+from its source-resolved preset.
 
 ```json
 {
@@ -49,26 +51,12 @@ settings. Every rule that resolves style calls uses this mapping:
 }
 ```
 
-When the project has a resolved token policy from its official preset or
-`pandwind.interop.json`, pass that snapshot in the same settings object. The
-CSS value rule uses only exact, property-specific entries from
-`tokenVocabulary`; it does not infer token names:
-
-```json
-{
-	"settings": {
-		"pandwind-extraction": {
-			"policy": {
-				"owner": "pandwind",
-				"resolved": true,
-				"tokenVocabulary": {
-					"borderColor": { "<authored-token-name>": "<canonical-token-id>" }
-				}
-			}
-		}
-	}
-}
-```
+`prefer-typed-css-values` follows local and package imports from the linted
+file to each `createCss(preset)` binding, then derives property-specific token
+names with Pandwind's shared preset vocabulary logic. It needs no
+`tokenVocabulary` setting. The resolver statically reads preset modules and
+uses Pandwind's actual `define.*` builders; it never executes project code or
+framework configuration. Dynamic preset expressions stay unresolved.
 
 ## Rules
 
@@ -78,7 +66,7 @@ CSS value rule uses only exact, property-specific entries from
 | `no-dynamic-values`           | Uses the compiler evaluators to find values that stay on the runtime path. | —                                     |
 | `no-multiple-conditionals`    | Finds `cx()` calls with multiple compiler-foldable conditional arguments.  | —                                     |
 | `no-dollar-raw`               | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                                     |
-| `prefer-typed-css-values`     | Finds CSS values and verified project tokens inside `$raw`.                | Safe: unwraps static supported values |
+| `prefer-typed-css-values`     | Finds CSS values and statically resolved preset tokens inside `$raw`.      | Safe: unwraps static supported values |
 | `no-arbitrary-values`         | Finds arbitrary class values such as `w-[13px]`.                           | —                                     |
 | `design-tokens-only`          | Checks design values against an explicit project policy.                   | —                                     |
 | `migration-skip-reason`       | Requires every `pandwind:migrate-skip` marker to explain its residual.     | —                                     |
@@ -104,14 +92,18 @@ that accept caller-authored overrides can expose an `xcss` prop typed as
 
 `prefer-typed-css-values` recognizes CSS-wide keywords, numeric values, the
 property-specific keywords from Pandwind's CSS value types, and exact tokens
-from the resolved project policy. It applies only to preset-bound
-`createCss(...)` instances. The fixer unwraps a whole `$raw`
+from the preset bound to each `createCss(...)` instance. It applies only to
+preset-bound CSS instances. The fixer unwraps a whole `$raw`
 object or moves a group of supported properties when it can preserve their
 order, avoid shorthand conflicts, and avoid duplicate keys. It also unwraps
 static condition objects when every leaf is supported by the property's CSS
-value type or an exact token in the resolved project policy. Unknown, mixed,
-and unresolved values stay report-only when moving them could change behavior.
-The rule follows module-scope static objects spread into a resolved CSS call.
+value type or an exact token in that instance's preset. Static local imports,
+re-exports, and resolvable package modules are followed; dynamic preset
+expressions and unresolved imports do not contribute token names. Unknown,
+mixed, and unresolved values stay report-only when moving them could change
+behavior. The rule follows
+module-scope static objects spread into a resolved CSS call and intersects
+vocabularies when an object is shared by multiple CSS factories.
 Computed, spread-containing, or comment-sensitive edits and properties that
 conflict with a CSS shorthand stay report-only. A per-rule option remains
 available for a narrow override; shared application mappings should use the
@@ -144,9 +136,10 @@ accounting. Explicit runtime carriers (`css.vars`,
 the static-value rule because they are the documented runtime/escape-hatch
 surfaces.
 
-`design-tokens-only` is deliberately inert unless configured with verified
-values or prefixes. It must not guess a project's theme from a hardcoded list
-of scale words:
+`design-tokens-only` is a separate generic policy rule and stays inert unless
+configured with verified values or prefixes. The CSS `$raw` rule above
+resolves tokens from its owning preset automatically. The policy rule must not
+guess a project's theme from a hardcoded list of scale words:
 
 ```json
 {
@@ -183,9 +176,10 @@ deliberately conservative when source ranges are not available.
 known parser node identities, so authored CSS properties and application data
 remain ordinary strings.
 
-For generated project policy, prefer passing values derived from the project's
-official config or `pandwind.interop.json` artifact at the composition boundary.
-The lint plugin itself stays synchronous and does not load arbitrary packages.
+The token rule reads the linted module's static import graph and statically
+resolvable package modules. It does not execute project code or framework
+configuration; dynamic presets remain unresolved, so those calls use only
+Pandwind's CSS value types.
 
 ## Wiring
 

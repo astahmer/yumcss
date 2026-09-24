@@ -33,10 +33,11 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"oxc-parser": "0.148.0",
 		"pandwind": "workspace:*"
 	},
 	"devDependencies": {
-		"oxc-parser": "0.148.0",
+		"@types/node": "26.4.1",
 		"tsdown": "0.23.0",
 		"typescript": "7.0.2",
 		"vitest": "5.0.0"

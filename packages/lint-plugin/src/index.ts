@@ -1,9 +1,10 @@
 /**
  * pandwind static-extraction discipline rules (TypeScript source for the Oxlint JS plugin).
  *
- * The plugin enforces source-level constraints only. Project configuration,
- * official ecosystem loaders, CSS generation, and browser proofs belong to
- * the adapter and validator layers; this plugin must not guess them.
+ * The plugin enforces source-level constraints and uses compiler-owned static
+ * resolvers when it can prove a project's preset values. Dynamic project
+ * configuration, external ecosystem loaders, CSS generation, and browser
+ * proofs belong to the adapter and validator layers.
  *
  * Rules:
  * - no-spreads: spread arguments that cannot be statically folded
@@ -22,7 +23,12 @@
  */
 
 import { NodeKind } from "./ast-node-kind.ts";
+import {
+	createProjectTokenVocabularyResolver,
+	styleBindingPathForCall,
+} from "./project-token-vocabulary.ts";
 import { cssPropertiesMayConflict, isTypedCssStringValue } from "./typed-css-values.ts";
+import type { PresetTokenVocabulary } from "pandwind/vite/preset-context";
 import {
 	analyzeCssInlineArguments,
 	canonicalStyleKey,
@@ -101,6 +107,9 @@ type SourceComment = {
 	end?: number;
 };
 type RuleContext = {
+	readonly cwd?: string;
+	readonly filename?: string;
+	readonly physicalFilename?: string;
 	readonly options?: readonly unknown[];
 	readonly settings?: Readonly<Record<string, unknown>>;
 	readonly sourceCode?: {
@@ -1258,14 +1267,13 @@ type TypedCssValueInfo = { readonly hasTypedValue: boolean; readonly onlyTypedVa
 const typedCssValueInfo = (
 	value: AstNode | undefined,
 	property: string,
-	policy: TokenPolicySnapshotOption | undefined,
+	tokenVocabulary: PresetTokenVocabulary | undefined,
 ): TypedCssValueInfo => {
 	if (value?.type === NodeKind.Literal) {
 		if (typeof value.value === "number") return { hasTypedValue: true, onlyTypedValues: true };
 		return typeof value.value === "string" &&
 			(isTypedCssStringValue(property, value.value) ||
-				(policy?.resolved === true &&
-					policy.tokenVocabulary?.[property]?.[value.value] !== undefined))
+				tokenVocabulary?.[property]?.[value.value] !== undefined)
 			? { hasTypedValue: true, onlyTypedValues: true }
 			: { hasTypedValue: false, onlyTypedValues: false };
 	}
@@ -1285,18 +1293,54 @@ const typedCssValueInfo = (
 			onlyTypedValues = false;
 			continue;
 		}
-		const child = typedCssValueInfo(condition.value, property, policy);
+		const child = typedCssValueInfo(condition.value, property, tokenVocabulary);
 		hasTypedValue ||= child.hasTypedValue;
 		onlyTypedValues &&= child.onlyTypedValues;
 	}
 	return { hasTypedValue, onlyTypedValues: hasTypedValue && onlyTypedValues };
 };
 
+const intersectTokenVocabularies = (
+	left: PresetTokenVocabulary,
+	right: PresetTokenVocabulary,
+): PresetTokenVocabulary => {
+	const intersection: Record<string, Record<string, string>> = {};
+	for (const [property, values] of Object.entries(left)) {
+		const matchingValues: Record<string, string> = {};
+		for (const [value, tokenId] of Object.entries(values)) {
+			if (right[property]?.[value] === tokenId) matchingValues[value] = tokenId;
+		}
+		if (Object.keys(matchingValues).length > 0) intersection[property] = matchingValues;
+	}
+	return intersection;
+};
+
+const tokenVocabulariesEqual = (
+	left: PresetTokenVocabulary,
+	right: PresetTokenVocabulary,
+): boolean => {
+	const leftProperties = Object.keys(left);
+	const rightProperties = Object.keys(right);
+	return (
+		leftProperties.length === rightProperties.length &&
+		leftProperties.every((property) => {
+			const leftValues = left[property];
+			const rightValues = right[property];
+			if (leftValues === undefined || rightValues === undefined) return false;
+			const values = Object.keys(leftValues);
+			return (
+				values.length === Object.keys(rightValues).length &&
+				values.every((value) => leftValues[value] === rightValues[value])
+			);
+		})
+	);
+};
+
 const rawTypedCssValueFixPlan = (
 	property: AstNode,
 	parent: AstNode | undefined,
 	source: string,
-	policy: TokenPolicySnapshotOption | undefined,
+	tokenVocabulary: PresetTokenVocabulary | undefined,
 ): RawTypedCssValueFixPlan | undefined => {
 	if (
 		property.computed === true ||
@@ -1329,7 +1373,10 @@ const rawTypedCssValueFixPlan = (
 		const candidate = rawProperties[index];
 		if (candidate?.type !== NodeKind.Property || candidate.computed === true) continue;
 		const name = propertyName(candidate);
-		if (name === undefined || !typedCssValueInfo(candidate.value, name, policy).onlyTypedValues)
+		if (
+			name === undefined ||
+			!typedCssValueInfo(candidate.value, name, tokenVocabulary).onlyTypedValues
+		)
 			continue;
 		typedValueIndices.push(index);
 		typedValueNames.add(name);
@@ -1509,15 +1556,45 @@ const rules: Record<string, RuleDefinition> = {
 				Program(program) {
 					const source = context.sourceCode?.text;
 					if (source === undefined) return;
-					const policy = governancePolicy(context);
+					const filename = context.physicalFilename ?? context.filename;
+					const projectTokenVocabulary = createProjectTokenVocabularyResolver({
+						program,
+						...(filename === undefined ? {} : { filename }),
+						...(context.cwd === undefined ? {} : { cwd: context.cwd }),
+					});
 					const resolver = createApiResolver(
 						program,
 						configuredCssModuleExportsForContext(context),
 					);
+					const literalAnalysis = createLiteralScopeAnalysis(program);
 					const reported = new Set<AstNode>();
-					const styleSpreadBindings = new Set<string>();
+					const styleSpreadBindings = new Map<string, PresetTokenVocabulary>();
+					const staticStyleBindings = new Set<string>();
 					const declarations = new Map<string, AstNode>();
-					const reportRawProperty = (property: AstNode, ancestors: readonly AstNode[]): void => {
+					const styleVocabularyForCall = (call: AstNode): PresetTokenVocabulary | undefined => {
+						const binding = styleBindingPathForCall(call);
+						return binding === undefined ? undefined : projectTokenVocabulary(binding);
+					};
+					const addStyleSpreadBinding = (
+						name: string,
+						tokenVocabulary: PresetTokenVocabulary | undefined,
+					): boolean => {
+						const next = tokenVocabulary ?? {};
+						const current = styleSpreadBindings.get(name);
+						if (current === undefined) {
+							styleSpreadBindings.set(name, next);
+							return true;
+						}
+						const intersection = intersectTokenVocabularies(current, next);
+						if (tokenVocabulariesEqual(current, intersection)) return false;
+						styleSpreadBindings.set(name, intersection);
+						return true;
+					};
+					const reportRawProperty = (
+						property: AstNode,
+						ancestors: readonly AstNode[],
+						tokenVocabulary: PresetTokenVocabulary | undefined,
+					): void => {
 						if (
 							property.type !== NodeKind.Property ||
 							propertyName(property) !== "$raw" ||
@@ -1532,18 +1609,18 @@ const rules: Record<string, RuleDefinition> = {
 							const name = propertyName(candidate);
 							if (
 								name !== undefined &&
-								typedCssValueInfo(candidate.value, name, policy).hasTypedValue
+								typedCssValueInfo(candidate.value, name, tokenVocabulary).hasTypedValue
 							)
 								names.add(name);
 						}
 						if (names.size === 0) return;
 						reported.add(property);
 						const parent = ancestors[ancestors.length - 1];
-						const plan = rawTypedCssValueFixPlan(property, parent, source, policy);
+						const plan = rawTypedCssValueFixPlan(property, parent, source, tokenVocabulary);
 						context.report({
 							node: property,
 							message:
-								"pandwind: values for {{properties}} are covered by Pandwind's CSS types or verified project tokens — move them into the style object",
+								"pandwind: values for {{properties}} are covered by Pandwind's CSS types or the resolved preset — move them into the style object",
 							data: { properties: [...names].join(", ") },
 							...(plan === undefined
 								? {}
@@ -1579,14 +1656,25 @@ const rules: Record<string, RuleDefinition> = {
 									ancestor.type === NodeKind.ArrowFunctionExpression,
 							);
 							if (api?.kind === API.style && api.factory === API.cssFactory && !insideFunction) {
+								const tokenVocabulary = styleVocabularyForCall(current);
+								const staticBindings = staticBindingsForCall(
+									literalAnalysis,
+									current,
+									resolver.staticBindings,
+								);
+								for (const name of literalAnalysis.scopes.get(current)?.keys() ?? [])
+									staticStyleBindings.add(name);
 								for (const argument of current.arguments ?? []) {
 									walkWithAncestors(argument, (inner, innerAncestors) => {
 										if (
 											inner.type === NodeKind.SpreadElement &&
 											inner.argument?.type === NodeKind.Identifier &&
+											staticBindings.has(inner.argument.name) &&
 											innerAncestors[innerAncestors.length - 1]?.type === NodeKind.ObjectExpression
-										)
-											styleSpreadBindings.add(inner.argument.name);
+										) {
+											staticStyleBindings.add(inner.argument.name);
+											addStyleSpreadBinding(inner.argument.name, tokenVocabulary);
+										}
 									});
 								}
 							}
@@ -1597,31 +1685,45 @@ const rules: Record<string, RuleDefinition> = {
 							if (ancestor?.type !== NodeKind.CallExpression) continue;
 							const api = resolver.resolve(ancestor);
 							if (api?.kind === API.style && api.factory === API.cssFactory)
-								reportRawProperty(current, ancestors);
+								reportRawProperty(current, ancestors, styleVocabularyForCall(ancestor));
 							break;
 						}
 					});
-					const pendingBindings = [...styleSpreadBindings];
-					const scannedBindings = new Set<string>();
+					const pendingBindings = [...styleSpreadBindings.keys()];
+					const processedBindings = new Map<string, PresetTokenVocabulary>();
 					while (pendingBindings.length > 0) {
 						const name = pendingBindings.pop();
+						const tokenVocabulary = name === undefined ? undefined : styleSpreadBindings.get(name);
 						if (
 							name === undefined ||
-							scannedBindings.has(name) ||
+							tokenVocabulary === undefined ||
+							(processedBindings.has(name) &&
+								tokenVocabulariesEqual(processedBindings.get(name) ?? {}, tokenVocabulary)) ||
 							!resolver.staticBindings.has(name)
 						)
 							continue;
-						scannedBindings.add(name);
+						processedBindings.set(name, tokenVocabulary);
 						const initializer = declarations.get(name);
 						if (initializer === undefined) continue;
 						walkWithAncestors(initializer, (current, ancestors) => {
-							if (current.type === NodeKind.Property && propertyName(current) === "$raw")
-								reportRawProperty(current, ancestors);
 							if (
 								current.type === NodeKind.SpreadElement &&
 								current.argument?.type === NodeKind.Identifier
 							)
-								pendingBindings.push(current.argument.name);
+								if (
+									staticStyleBindings.has(current.argument.name) &&
+									addStyleSpreadBinding(current.argument.name, tokenVocabulary)
+								)
+									pendingBindings.push(current.argument.name);
+						});
+					}
+					for (const [name, tokenVocabulary] of styleSpreadBindings) {
+						if (!staticStyleBindings.has(name)) continue;
+						const initializer = declarations.get(name);
+						if (initializer === undefined) continue;
+						walkWithAncestors(initializer, (current, ancestors) => {
+							if (current.type === NodeKind.Property && propertyName(current) === "$raw")
+								reportRawProperty(current, ancestors, tokenVocabulary);
 						});
 					}
 				},

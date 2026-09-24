@@ -13,6 +13,7 @@ export const NodeKind = {
 	CallExpression: "CallExpression",
 	ChainExpression: "ChainExpression",
 	ConditionalExpression: "ConditionalExpression",
+	ExportAllDeclaration: "ExportAllDeclaration",
 	ExportDefaultDeclaration: "ExportDefaultDeclaration",
 	ExportNamedDeclaration: "ExportNamedDeclaration",
 	ExpressionStatement: "ExpressionStatement",
@@ -20,6 +21,7 @@ export const NodeKind = {
 	FunctionExpression: "FunctionExpression",
 	Identifier: "Identifier",
 	ImportDeclaration: "ImportDeclaration",
+	ImportDefaultSpecifier: "ImportDefaultSpecifier",
 	ImportNamespaceSpecifier: "ImportNamespaceSpecifier",
 	ImportSpecifier: "ImportSpecifier",
 	JSXAttribute: "JSXAttribute",
@@ -41,5 +43,6 @@ export const NodeKind = {
 	TemplateLiteral: "TemplateLiteral",
 	TypeCastExpression: "TypeCastExpression",
 	UnaryExpression: "UnaryExpression",
+	VariableDeclaration: "VariableDeclaration",
 	VariableDeclarator: "VariableDeclarator",
 } as const;

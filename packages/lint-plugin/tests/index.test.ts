@@ -1,14 +1,23 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
 import { parseSync } from "oxc-parser";
 import { describe, expect, test } from "vitest";
 import { inlineCxCalls } from "pandwind/vite/cx-inline";
 import { inlineTwCalls } from "pandwind/vite/inline";
+import { presetTokenVocabularyByProperty } from "pandwind/vite/preset-context";
+import { tailwindPreset } from "pandwind/preset/tailwindcss";
 import { NodeKind } from "../src/ast-node-kind.ts";
 import plugin from "../src/index.ts";
+import { createProjectTokenVocabularyResolver } from "../src/project-token-vocabulary.ts";
 import { CSS_PROPERTY_VALUES, CSS_WIDE_VALUES } from "../src/typed-css-values.ts";
 
 type AstNode = { type: string; [key: string]: any };
 type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
 type RuleContext = {
+	readonly cwd?: string;
+	readonly filename?: string;
+	readonly physicalFilename?: string;
 	readonly options?: readonly unknown[];
 	readonly settings?: Readonly<Record<string, unknown>>;
 	readonly sourceCode?: {
@@ -76,13 +85,17 @@ const runRule = (
 	code: string | AstNode,
 	options: readonly unknown[] = [],
 	settings: Readonly<Record<string, unknown>> = {},
+	filename = resolve(process.cwd(), "fixture.tsx"),
 ): Report[] => {
 	const reports: Report[] = [];
 	const parsed =
 		typeof code === "string"
-			? parseSync("fixture.tsx", code, { sourceType: "module", lang: "tsx" })
+			? parseSync(filename, code, { sourceType: "module", lang: "tsx" })
 			: undefined;
 	const context = {
+		cwd: process.cwd(),
+		filename,
+		physicalFilename: filename,
 		options,
 		settings,
 		sourceCode:
@@ -129,6 +142,23 @@ const runRule = (
 	listeners.Program?.(sourceProgram);
 	visitCalls(sourceProgram, (node) => listeners.CallExpression?.(node));
 	return reports;
+};
+
+const withProject = <Result>(
+	files: Readonly<Record<string, string>>,
+	run: (directory: string) => Result,
+): Result => {
+	const directory = mkdtempSync(join(tmpdir(), "pandwind-lint-plugin-"));
+	try {
+		for (const [relativePath, contents] of Object.entries(files)) {
+			const filename = join(directory, relativePath);
+			mkdirSync(dirname(filename), { recursive: true });
+			writeFileSync(filename, contents);
+		}
+		return run(directory);
+	} finally {
+		rmSync(directory, { force: true, recursive: true });
+	}
 };
 
 const isFixEdit = (value: unknown): value is FixEdit => {
@@ -517,9 +547,8 @@ css({ $raw: { background: "var(--image)", backgroundColor: "transparent", border
 		expect(conflictingReports[0]?.fixes).toBeUndefined();
 	});
 
-	test("unwraps responsive values when the project policy verifies their tokens", () => {
-		const code = `import { createCss } from "pandwind/css";
-const css = createCss(preset);
+	test("resolves token values from the local CSS facade and preset without lint settings", () => {
+		const code = `import { css } from "./css";
 css.class({
   _hover: {
     color: "fg",
@@ -530,40 +559,169 @@ css.class({
     },
   },
 });`;
-		const policy = {
-			owner: "pandwind",
-			resolved: true,
-			tokenVocabulary: { borderColor: { "nav.fg": "colors::nav.fg" } },
-		};
-
-		const withoutPolicy = runRule("prefer-typed-css-values", code);
-		expect(withoutPolicy).toHaveLength(1);
-		const withoutPolicyFixed = applyFixes(
-			code,
-			withoutPolicy.flatMap(({ fixes }) => fixes ?? []),
+		withProject(
+			{
+				"src/theme.ts": `import { define } from "pandwind/preset";
+const tokens = define.tokens({ colors: { "nav.fg": "#123456" } });
+export const preset = define.preset({ config: {}, tokens }, {
+  strict: true,
+  conditions: {},
+  properties: { borderColor: { $tokens: "colors" } },
+});`,
+				"src/css.ts": `import { createCss } from "pandwind/css";
+import { preset } from "./theme";
+export const css = createCss(preset);`,
+				"src/app.tsx": code,
+			},
+			(directory) => {
+				const filename = join(directory, "src/app.tsx");
+				const reports = runRule("prefer-typed-css-values", code, [], {}, filename);
+				expect(reports).toHaveLength(1);
+				expect(reports[0]?.data.properties).toBe("background, borderColor, boxShadow");
+				const fixed = applyFixes(
+					code,
+					reports.flatMap(({ fixes }) => fixes ?? []),
+				);
+				expect(fixed).not.toContain("$raw");
+				expect(fixed).toContain('borderColor: { base: "transparent", xl: "nav.fg" }');
+			},
 		);
-		expect(withoutPolicyFixed).toMatch(/\$raw:\s*\{\s*borderColor:/);
+	});
 
-		const verified = runRule("prefer-typed-css-values", code, [], {
-			"pandwind-extraction": { policy },
-		});
-		expect(verified).toHaveLength(1);
-		expect(verified[0]?.data.properties).toBe("background, borderColor, boxShadow");
-		const verifiedFixed = applyFixes(
+	test("resolves the compiler's built-in preset through its package entry", () => {
+		const code = `import { createCss } from "pandwind/css";
+import { tailwindPreset } from "pandwind/preset/tailwindcss";
+const css = createCss(tailwindPreset);
+css.class({ $raw: { color: "$white" } });`;
+		const filename = resolve(process.cwd(), "tests/preset-resolver.fixture.ts");
+		const expected = presetTokenVocabularyByProperty(tailwindPreset).color?.["$white"];
+		const program = parseSync(filename, code, { sourceType: "module", lang: "tsx" }).program;
+		const actual = createProjectTokenVocabularyResolver({ filename, program })("css")?.color?.[
+			"$white"
+		];
+		expect(expected).toBeDefined();
+		expect(actual).toBe(expected);
+		const reports = runRule("prefer-typed-css-values", code, [], {}, filename);
+		expect(reports).toHaveLength(1);
+		const fixed = applyFixes(
 			code,
-			verified.flatMap(({ fixes }) => fixes ?? []),
+			reports.flatMap(({ fixes }) => fixes ?? []),
 		);
-		expect(verifiedFixed).not.toContain("$raw");
-		expect(verifiedFixed).toContain('borderColor: { base: "transparent", xl: "nav.fg" }');
+		expect(fixed).toContain('css.class({ color: "$white" });');
+		expect(fixed).not.toContain("$raw");
+	});
 
-		const unresolved = runRule("prefer-typed-css-values", code, [], {
-			"pandwind-extraction": { policy: { ...policy, resolved: false } },
-		});
-		const unresolvedFixed = applyFixes(
-			code,
-			unresolved.flatMap(({ fixes }) => fixes ?? []),
+	test("keeps token vocabularies scoped to each CSS factory preset", () => {
+		const code = `import { colorCss, backgroundCss } from "./css";
+colorCss.class({ $raw: { color: "nav.fg" } });
+backgroundCss.class({ $raw: { color: "nav.fg" } });`;
+		withProject(
+			{
+				"src/theme.ts": `import { define } from "pandwind/preset";
+const tokens = define.tokens({ colors: { "nav.fg": "#123456" } });
+const base = { config: {}, tokens };
+export const colorPreset = define.preset(base, {
+  strict: true, conditions: {}, properties: { color: { $tokens: "colors" } },
+});
+export const backgroundPreset = define.preset(base, {
+  strict: true, conditions: {}, properties: { backgroundColor: { $tokens: "colors" } },
+});`,
+				"src/css.ts": `import { createCss } from "pandwind/css";
+import { backgroundPreset, colorPreset } from "./theme";
+export const colorCss = createCss(colorPreset);
+export const backgroundCss = createCss(backgroundPreset);`,
+				"src/app.tsx": code,
+			},
+			(directory) => {
+				const filename = join(directory, "src/app.tsx");
+				const reports = runRule("prefer-typed-css-values", code, [], {}, filename);
+				expect(reports).toHaveLength(1);
+				const fixed = applyFixes(
+					code,
+					reports.flatMap(({ fixes }) => fixes ?? []),
+				);
+				expect(fixed).toContain('colorCss.class({ color: "nav.fg" });');
+				expect(fixed).toContain('backgroundCss.class({ $raw: { color: "nav.fg" } });');
+			},
 		);
-		expect(unresolvedFixed).toMatch(/\$raw:\s*\{\s*borderColor:/);
+	});
+
+	test("does not move a shared token when consumers resolve it to different token ids", () => {
+		const code = `import { colorCss, paletteCss } from "./css";
+const shared = { $raw: { color: "nav.fg" } };
+colorCss.class({ ...shared });
+paletteCss.class({ ...shared });`;
+		withProject(
+			{
+				"src/theme.ts": `import { define } from "pandwind/preset";
+const colorTokens = define.tokens({ colors: { "nav.fg": "#123456" } });
+const paletteTokens = define.tokens({ palette: { "nav.fg": "#654321" } });
+export const colorPreset = define.preset({ config: {}, tokens: colorTokens }, {
+  strict: true, conditions: {}, properties: { color: { $tokens: "colors" } },
+});
+export const palettePreset = define.preset({ config: {}, tokens: paletteTokens }, {
+  strict: true, conditions: {}, properties: { color: { $tokens: "palette" } },
+});`,
+				"src/css.ts": `import { createCss } from "pandwind/css";
+import { colorPreset, palettePreset } from "./theme";
+export const colorCss = createCss(colorPreset);
+export const paletteCss = createCss(palettePreset);`,
+				"src/app.tsx": code,
+			},
+			(directory) => {
+				const filename = join(directory, "src/app.tsx");
+				expect(runRule("prefer-typed-css-values", code, [], {}, filename)).toHaveLength(0);
+			},
+		);
+	});
+
+	test("uses the owning preset for a module-scope style object spread", () => {
+		const code = `import { css } from "./css";
+const shared = { $raw: { borderColor: "nav.fg" } };
+css.class({ ...shared });`;
+		withProject(
+			{
+				"src/theme.ts": `import { define } from "pandwind/preset";
+const tokens = define.tokens({ colors: { "nav.fg": "#123456" } });
+export const preset = define.preset({ config: {}, tokens }, {
+  strict: true, conditions: {}, properties: { borderColor: { $tokens: "colors" } },
+});`,
+				"src/css.ts": `import { createCss } from "pandwind/css";
+import { preset } from "./theme";
+export const css = createCss(preset);`,
+				"src/app.tsx": code,
+			},
+			(directory) => {
+				const filename = join(directory, "src/app.tsx");
+				const reports = runRule("prefer-typed-css-values", code, [], {}, filename);
+				expect(reports).toHaveLength(1);
+				expect(reports[0]?.data.properties).toBe("borderColor");
+				const fixed = applyFixes(
+					code,
+					reports.flatMap(({ fixes }) => fixes ?? []),
+				);
+				expect(fixed).toContain('const shared = { borderColor: "nav.fg" };');
+				expect(fixed).not.toContain("$raw");
+			},
+		);
+	});
+
+	test("does not infer project tokens from a dynamic preset", () => {
+		const code = `import { css } from "./css";
+css.class({ $raw: { borderColor: "nav.fg" } });`;
+		withProject(
+			{
+				"src/theme.ts": `export const preset = loadPreset();`,
+				"src/css.ts": `import { createCss } from "pandwind/css";
+import { preset } from "./theme";
+export const css = createCss(preset);`,
+				"src/app.tsx": code,
+			},
+			(directory) => {
+				const filename = join(directory, "src/app.tsx");
+				expect(runRule("prefer-typed-css-values", code, [], {}, filename)).toHaveLength(0);
+			},
+		);
 	});
 
 	test("recognizes typed values in a configured local CSS module", () => {

@@ -74,3 +74,59 @@ describe("evalLiteralValues", () => {
 		expect(evalLiteral(undefined)).toBeUndefined();
 	});
 });
+
+describe("evalLiteral object spreads", () => {
+	it("folds spreads from proven object values and rejects unknown spreads", () => {
+		const parsed = parseSync("test.tsx", 'const style = { ...base, color: "red", ...tail };');
+		const statement = parsed.program.body[0]!;
+		const expression =
+			statement.type === NodeKind.VariableDeclaration ? statement.declarations[0]?.init : undefined;
+		const constants = new Map<string, unknown>([
+			["base", { padding: 2 }],
+			["tail", { margin: 4 }],
+		]);
+
+		expect(evalLiteral(expression as never, constants)).toEqual({
+			padding: 2,
+			color: "red",
+			margin: 4,
+		});
+		expect(evalLiteral(expression as never)).toBeUndefined();
+	});
+
+	it("coerces numeric object keys to their JavaScript property names", () => {
+		const parsed = parseSync("test.ts", 'const values = { 0: "zero", 0.5: "half" };');
+		const statement = parsed.program.body[0]!;
+		const expression =
+			statement.type === NodeKind.VariableDeclaration ? statement.declarations[0]?.init : undefined;
+
+		expect(evalLiteral(expression as never)).toEqual({ "0": "zero", "0.5": "half" });
+	});
+
+	it("reads only own static properties from known object values", () => {
+		const parsed = parseSync("test.ts", "palette.colors.fg");
+		const statement = parsed.program.body[0]!;
+		const expression =
+			statement.type === NodeKind.ExpressionStatement ? statement.expression : undefined;
+		const constants = new Map<string, unknown>([["palette", { colors: { fg: "#123456" } }]]);
+
+		expect(evalLiteral(expression as never, constants)).toBe("#123456");
+
+		const inherited = parseSync("test.ts", "palette.toString");
+		const inheritedStatement = inherited.program.body[0]!;
+		const inheritedExpression =
+			inheritedStatement.type === NodeKind.ExpressionStatement
+				? inheritedStatement.expression
+				: undefined;
+		expect(evalLiteral(inheritedExpression as never, constants)).toBeUndefined();
+	});
+
+	it("folds parenthesized static expressions", () => {
+		const parsed = parseSync("test.ts", '("violet")');
+		const statement = parsed.program.body[0]!;
+		const expression =
+			statement.type === NodeKind.ExpressionStatement ? statement.expression : undefined;
+
+		expect(evalLiteral(expression as never)).toBe("violet");
+	});
+});
