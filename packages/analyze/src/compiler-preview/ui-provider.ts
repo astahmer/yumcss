@@ -1,5 +1,5 @@
 export interface CompilerPreviewUiAsset {
-	readonly content: Uint8Array;
+	readonly content: string;
 	readonly contentType: "application/javascript; charset=utf-8" | "text/css; charset=utf-8";
 }
 

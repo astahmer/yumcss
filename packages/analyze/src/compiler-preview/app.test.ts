@@ -30,7 +30,7 @@ const createRuntime = (): CompilerPreviewRuntime => ({
 describe("createCompilerPreviewApp", () => {
 	test("protects source and transform routes and returns Vite output", async () => {
 		const uiAsset: CompilerPreviewUiAsset = {
-			content: new TextEncoder().encode("export const preview = true;"),
+			content: "export const preview = true;",
 			contentType: "application/javascript; charset=utf-8",
 		};
 		const handle = createCompilerPreviewApp({

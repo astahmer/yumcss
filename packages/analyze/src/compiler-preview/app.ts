@@ -35,7 +35,7 @@ export const createCompilerPreviewApp = (
 
 	app.get("/", async (context) => context.html(await options.ui.loadIndexHtml(uiAssetToken)));
 	app.get("/_ui/:token/assets/*", async (context) => {
-		const assetPath = context.req.param("*");
+		const assetPath = context.req.path.slice(`/_ui/${context.req.param("token")}/`.length);
 		const asset = await options.ui.loadAsset(assetPath);
 		if (asset === null) return context.notFound();
 		return context.body(asset.content, 200, {

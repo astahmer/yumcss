@@ -18,10 +18,7 @@ export const createNodeCompilerPreviewUiProvider = (): CompilerPreviewUiPort => 
 				);
 			}
 		}
-		return cached.replaceAll(
-			"./assets/",
-			`/_ui/${assetToken}/assets/`,
-		);
+		return cached.replaceAll("./assets/", `/_ui/${assetToken}/assets/`);
 	},
 	loadAsset: async (path) => {
 		if (!/^assets\/[a-zA-Z0-9_-]+\.(?:js|css)$/.test(path)) return null;
@@ -30,7 +27,7 @@ export const createNodeCompilerPreviewUiProvider = (): CompilerPreviewUiPort => 
 		);
 		try {
 			return {
-				content: await readFile(artifact),
+				content: await readFile(artifact, "utf8"),
 				contentType: path.endsWith(".css")
 					? "text/css; charset=utf-8"
 					: "application/javascript; charset=utf-8",

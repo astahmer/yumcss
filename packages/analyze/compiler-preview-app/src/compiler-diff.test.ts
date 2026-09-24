@@ -12,13 +12,21 @@ describe("createCompilerDiff", () => {
 
 		expect(diff.name).toBe("Button.tsx");
 		expect(diff.type).toBe("change");
-		expect(diff.oldLines?.join("\n")).toContain("css.class");
-		expect(diff.newLines?.join("\n")).toContain('"btn_abc"');
 		expect(changes).toHaveLength(1);
-		expect(changes[0]).toMatchObject({
-			deletions: ["const button = css.class({ color: tone });"],
-			additions: ['const button = "btn_abc";'],
-		});
+		const change = changes[0];
+		if (change === undefined) throw new Error("Expected a compiler output change");
+		expect(
+			diff.deletionLines.slice(
+				change.deletionLineIndex,
+				change.deletionLineIndex + change.deletions,
+			),
+		).toEqual(["const button = css.class({ color: tone });\n"]);
+		expect(
+			diff.additionLines.slice(
+				change.additionLineIndex,
+				change.additionLineIndex + change.additions,
+			),
+		).toEqual(['const button = "btn_abc";\n']);
 	});
 
 	test("produces no changed hunks for unchanged compiler output", () => {
