@@ -2,10 +2,10 @@
 	"schemaVersion": 1,
 	"source": {
 		"url": "https://github.com/gajus/css-in-js-arena",
-		"arenaRevision": "6e38b1802d96be4c499a8cfc478df0193cc06216",
-		"pandwindRevision": "65a1cfdca44da3c33899c2f138523309a9cf6834",
-		"measuredAt": "2026-09-24",
-		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1",
+		"arenaRevision": "2f4ed369a107a186b8108184871bba0777f23fe4",
+		"pandwindRevision": "bc1b904c5d6795d43396b9f364a127fd68c2f436",
+		"measuredAt": "2026-09-25",
+		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps",
 		"parity": {
 			"geometryPassed": 18,
 			"geometryTotal": 18,
@@ -13,7 +13,7 @@
 			"screenshotsPassed": 72,
 			"screenshotsTotal": 72,
 			"screenshotThresholdPercent": 0.05,
-			"pandwindMaxImageDifferencePercent": 0.0153,
+			"pandwindMaxImageDifferencePercent": 0.0151,
 			"maxImageDifferencePercent": 0.0187
 		}
 	},
@@ -64,43 +64,43 @@
 			"category": "Build and dev",
 			"label": "Cold production build, median of five",
 			"unit": "ms",
-			"values": { "bamboo": 1506, "stylex": 3091, "panda": 2126, "pandwind": 1047 }
+			"values": { "bamboo": 3872, "stylex": 7443, "panda": 4882, "pandwind": 2465 }
 		},
 		{
 			"category": "Build and dev",
 			"label": "Warm production build, median of five",
 			"unit": "ms",
-			"values": { "bamboo": 1390, "stylex": 3546, "panda": 2108, "pandwind": 949 }
+			"values": { "bamboo": 4257, "stylex": 7356, "panda": 4711, "pandwind": 1997 }
 		},
 		{
 			"category": "Build and dev",
 			"label": "Dev server cold start, median of seven",
 			"unit": "ms",
-			"values": { "bamboo": 1821, "stylex": 1840, "panda": 1932, "pandwind": 1186 }
+			"values": { "bamboo": 2867, "stylex": 2285, "panda": 2834, "pandwind": 2091 }
 		},
 		{
 			"category": "HMR",
 			"label": "Shared edit to HMR websocket",
 			"unit": "ms",
-			"values": { "bamboo": 41, "stylex": 85, "panda": 19, "pandwind": 14 }
+			"values": { "bamboo": 129, "stylex": 100, "panda": 112, "pandwind": 113 }
 		},
 		{
 			"category": "HMR",
 			"label": "Shared style edit to correct paint",
 			"unit": "ms",
-			"values": { "bamboo": 282.8, "stylex": 197.9, "panda": 210.9, "pandwind": 125.5 }
+			"values": { "bamboo": 313.2, "stylex": 245.2, "panda": 211.4, "pandwind": 199.9 }
 		},
 		{
 			"category": "HMR",
 			"label": "Component edit to HMR websocket",
 			"unit": "ms",
-			"values": { "bamboo": 46, "stylex": 26, "panda": 25, "pandwind": 59 }
+			"values": { "bamboo": 139, "stylex": 113, "panda": 117, "pandwind": 126 }
 		},
 		{
 			"category": "HMR",
 			"label": "Component edit to correct paint",
 			"unit": "ms",
-			"values": { "bamboo": 238.3, "stylex": 365.9, "panda": 232.7, "pandwind": 183.7 }
+			"values": { "bamboo": 193.6, "stylex": 410.2, "panda": 232.6, "pandwind": 219.6 }
 		}
 	]
 }
