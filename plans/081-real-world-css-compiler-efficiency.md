@@ -147,12 +147,12 @@ The CSS and JavaScript audits found no safe, useful output reduction. The repeat
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-| --- | --- | --- |
-| 2026-09-25 | Treat benchmark rankings as diagnostic evidence, not goals | The corrected Bench page is mostly HTML, Arena's larger first-load cost is mostly JavaScript, and Pandwind already leads several real build and SSR measures. |
-| 2026-09-25 | Profile Emisoup's real build before redesigning the Vite pipeline | The production build attributes 1.5 s to CSS generateBundle, while transform hook time is overlapped and unknown. |
-| 2026-09-25 | Preserve the existing static/dynamic API boundary | Emisoup uses real dynamic values and authored CSS-variable names; extracting the static portion must not erase runtime intent or the theme contract. |
-| 2026-09-25 | Keep hashed class names and route splitting opt-in | Named atoms increase total transfer in current workloads, while route chunks require consumer-side loading and browser proof. |
-| 2026-09-25 | Gate CSS import discovery before parsing unrelated source | Seven deterministic 1,000-file samples show a 35.3× median phase improvement; the full Emisoup build remains within timing noise. |
-| 2026-09-25 | Do not merge non-adjacent repeated CSS bodies | No identical bodies were adjacent; merging non-adjacent rules risks changing cascade order and has no proven compressed-output benefit. |
-| 2026-09-25 | Keep runtime and route code intact after attribution | Arena's shared chunk includes runtime required by the compared source graph; no app router evidence supports route loading changes. |
+| Date       | Decision                                                          | Rationale                                                                                                                                                     |
+| ---------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-25 | Treat benchmark rankings as diagnostic evidence, not goals        | The corrected Bench page is mostly HTML, Arena's larger first-load cost is mostly JavaScript, and Pandwind already leads several real build and SSR measures. |
+| 2026-09-25 | Profile Emisoup's real build before redesigning the Vite pipeline | The production build attributes 1.5 s to CSS generateBundle, while transform hook time is overlapped and unknown.                                             |
+| 2026-09-25 | Preserve the existing static/dynamic API boundary                 | Emisoup uses real dynamic values and authored CSS-variable names; extracting the static portion must not erase runtime intent or the theme contract.          |
+| 2026-09-25 | Keep hashed class names and route splitting opt-in                | Named atoms increase total transfer in current workloads, while route chunks require consumer-side loading and browser proof.                                 |
+| 2026-09-25 | Gate CSS import discovery before parsing unrelated source         | Seven deterministic 1,000-file samples show a 35.3× median phase improvement; the full Emisoup build remains within timing noise.                             |
+| 2026-09-25 | Do not merge non-adjacent repeated CSS bodies                     | No identical bodies were adjacent; merging non-adjacent rules risks changing cascade order and has no proven compressed-output benefit.                       |
+| 2026-09-25 | Keep runtime and route code intact after attribution              | Arena's shared chunk includes runtime required by the compared source graph; no app router evidence supports route loading changes.                           |

@@ -388,10 +388,34 @@ const renderRealWorldCssExtractionDetails = (
 	const sourceScanAfterMedian = median(snapshot.sourceScan.guardedScanSamplesMs);
 	const sourceScanImprovement = sourceScanBeforeMedian / sourceScanAfterMedian;
 	const assetRows = [
-		["HTML", String(snapshot.clientAssets.html.files), integer(snapshot.clientAssets.html.rawBytes), integer(snapshot.clientAssets.html.gzip9Bytes), integer(snapshot.clientAssets.html.brotli11Bytes)],
-		["JavaScript", String(snapshot.clientAssets.javascript.files), integer(snapshot.clientAssets.javascript.rawBytes), integer(snapshot.clientAssets.javascript.gzip9Bytes), integer(snapshot.clientAssets.javascript.brotli11Bytes)],
-		["CSS", String(snapshot.clientAssets.css.files), integer(snapshot.clientAssets.css.rawBytes), integer(snapshot.clientAssets.css.gzip9Bytes), integer(snapshot.clientAssets.css.brotli11Bytes)],
-		["Total", String(snapshot.clientAssets.total.files), integer(snapshot.clientAssets.total.rawBytes), integer(snapshot.clientAssets.total.gzip9Bytes), integer(snapshot.clientAssets.total.brotli11Bytes)],
+		[
+			"HTML",
+			String(snapshot.clientAssets.html.files),
+			integer(snapshot.clientAssets.html.rawBytes),
+			integer(snapshot.clientAssets.html.gzip9Bytes),
+			integer(snapshot.clientAssets.html.brotli11Bytes),
+		],
+		[
+			"JavaScript",
+			String(snapshot.clientAssets.javascript.files),
+			integer(snapshot.clientAssets.javascript.rawBytes),
+			integer(snapshot.clientAssets.javascript.gzip9Bytes),
+			integer(snapshot.clientAssets.javascript.brotli11Bytes),
+		],
+		[
+			"CSS",
+			String(snapshot.clientAssets.css.files),
+			integer(snapshot.clientAssets.css.rawBytes),
+			integer(snapshot.clientAssets.css.gzip9Bytes),
+			integer(snapshot.clientAssets.css.brotli11Bytes),
+		],
+		[
+			"Total",
+			String(snapshot.clientAssets.total.files),
+			integer(snapshot.clientAssets.total.rawBytes),
+			integer(snapshot.clientAssets.total.gzip9Bytes),
+			integer(snapshot.clientAssets.total.brotli11Bytes),
+		],
 	];
 	const css = snapshot.clientAssets.mainPandwindStylesheet;
 	const memoryValues = snapshot.emisoup.afterMaxResidentBytes.map((value) =>
@@ -465,9 +489,7 @@ const renderRealWorldCssExtractionDetails = (
 			(snapshot.cpuProfiles.afterAstWalkSelfMs / 1000).toFixed(3) +
 			" s (" +
 			(
-				(1 -
-					snapshot.cpuProfiles.afterAstWalkSelfMs /
-						snapshot.cpuProfiles.beforeAstWalkSelfMs) *
+				(1 - snapshot.cpuProfiles.afterAstWalkSelfMs / snapshot.cpuProfiles.beforeAstWalkSelfMs) *
 				100
 			).toFixed(0) +
 			"% lower). Treat one profile per side as supporting evidence, not a repeated build-time result.",
@@ -490,7 +512,11 @@ const renderRealWorldCssExtractionDetails = (
 		"",
 		"Files are compressed separately with Node zlib gzip level 9 and Brotli quality 11. Totals cover the HTML and all emitted JS/CSS assets, not just the initial route.",
 		"",
-		markdownTable(["Asset group", "Files", "Raw bytes", "gzip 9 bytes", "Brotli 11 bytes"], assetRows, new Set([1, 2, 3, 4])),
+		markdownTable(
+			["Asset group", "Files", "Raw bytes", "gzip 9 bytes", "Brotli 11 bytes"],
+			assetRows,
+			new Set([1, 2, 3, 4]),
+		),
 		"",
 		"The main Pandwind stylesheet is " +
 			integer(css.rawBytes) +
@@ -1081,7 +1107,11 @@ const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined
 		"",
 		"This uses the same peer set with the primary `css()` row swapped for the literal `tw()` lane. It is shown separately and never changes the primary rank.",
 		"",
-		markdownTable(["Measure", "Workload", "Top five", "Pandwind `tw()` bonus"], twBonusRows, new Set()),
+		markdownTable(
+			["Measure", "Workload", "Top five", "Pandwind `tw()` bonus"],
+			twBonusRows,
+			new Set(),
+		),
 		...(namedStrategyRows.length === 0
 			? []
 			: [
