@@ -463,7 +463,11 @@ INP is not ranked because frame-timed medians cluster within measurement noise.
 
 ### Cold-build method and samples
 
-Pandwind cold runs were 498, 304, 375 ms (median 375 ms); immediate warm runs were 421, 344, 392 ms (median 392 ms). The harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches. It records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.
+Pandwind cold runs were 498, 304, 375 ms (median 375 ms); immediate warm runs were 421, 344, 392 ms (median 392 ms). The repeated rank harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches, and it records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.
+
+### One-off instrumented phase profile
+
+One instrumented CSS-in-JS Bench pandwind-css lane with isolated output and Vite cache sample on 2026-09-25, using Pandwind artifact bc1b904c5d6795d43396b9f364a127fd68c2f436, took 212.72 ms total. Hook timings were load 0.11 ms, resolve 0.06 ms, buildStart 0.05 ms, cumulative inclusive CSS transform 13.15 ms, and CSS generateBundle 81.32 ms. This predates the source-filter fix; it is a single instrumented diagnostic, not a repeated phase breakdown or a rank measurement.
 
 ### Separate `tw()` bonus lane
 
@@ -633,7 +637,7 @@ Full normalized measurements and parity metadata: [snapshot.json](benchmarks/css
 
 ### Current-source output recheck
 
-Pandwind revision 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1 measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps. Geometry passed 18/18 checks within 0.5 px; screenshots passed 72/72 checks under 0.05%. Rankings use the pinned peer values, with the current Pandwind output substituted.
+Pandwind revision 41a909fa9560c1cdd983f998329bf3602b277ccb measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps. Geometry passed 18/18 checks within 0.5 px; screenshots passed 72/72 checks under 0.05%. Rankings use the pinned peer values, with the current Pandwind output substituted.
 
 | Output measure                    | Pinned Pandwind | Current Pandwind | Delta | Rank |
 | --------------------------------- | --------------: | ---------------: | ----: | ---: |
@@ -644,6 +648,57 @@ Pandwind revision 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1 measured 2026-09-25 o
 | Mean SSR HTML, gzip, six routes   |         5,470 B |          5,469 B |  -1 B | #1/4 |
 | Full first load                   |       125,838 B |        125,825 B | -13 B | #4/4 |
 | HTML class attributes, six routes |        59,980 B |         59,980 B |   0 B | #1/4 |
+
+### Large-style CSS volume sweep
+
+Measured 2026-09-25 with Arena 2f4ed369a107a186b8108184871bba0777f23fe4 and Pandwind 41a909fa9560c1cdd983f998329bf3602b277ccb. Each run links 800 style definitions, each containing 6 CSS properties, into the same four applications. The corrected harness gives each property unique values across the 800-style run; the repeatable patch is [unique-scale-fixture.patch](benchmarks/css-in-js-arena/unique-scale-fixture.patch). Each engine is measured from its own zero-style baseline because framework overhead differs.
+
+| Engine / strategy    | Styles | Raw CSS | gzip-9 | Brotli-11 | CSS blocks |
+| -------------------- | -----: | ------: | -----: | --------: | ---------- |
+| Bamboo               |      0 |  43,420 |  8,627 |     7,357 | 662        |
+| Bamboo               |     50 |  57,820 | 10,545 |     8,107 | 962        |
+| Bamboo               |    200 | 101,020 | 16,847 |    10,054 | 1,862      |
+| Bamboo               |    800 | 274,020 | 38,586 |    17,833 | 5,462      |
+| StyleX               |      0 |  40,430 |  8,200 |     7,008 | 534        |
+| StyleX               |     50 |  61,826 | 10,944 |     8,905 | 834        |
+| StyleX               |    200 | 126,034 | 19,384 |    14,283 | 1,734      |
+| StyleX               |    800 | 382,812 | 49,736 |    35,570 | 5,334      |
+| Panda                |      0 |  54,007 | 11,489 |     9,518 | 579        |
+| Panda                |     50 |  67,207 | 13,406 |    10,216 | 879        |
+| Panda                |    200 | 106,807 | 19,728 |    12,167 | 1,779      |
+| Panda                |    800 | 265,407 | 41,330 |    19,812 | 5,379      |
+| Pandwind hash        |      0 |  31,732 |  9,913 |     8,724 | 721        |
+| Pandwind hash        |     50 |  41,085 | 12,466 |    10,760 | 1,021      |
+| Pandwind hash        |    200 |  69,208 | 20,215 |    16,485 | 1,921      |
+| Pandwind hash        |    800 | 181,543 | 49,925 |    38,968 | 5,521      |
+| Pandwind named atoms |      0 |  36,240 |  9,454 |     8,095 | 721        |
+| Pandwind named atoms |     50 |  49,290 | 11,162 |     8,796 | 1,021      |
+| Pandwind named atoms |    200 |  88,440 | 16,753 |    10,613 | 1,921      |
+| Pandwind named atoms |    800 | 245,240 | 36,736 |    17,763 | 5,521      |
+
+The 800-style Brotli growth, after subtracting each engine's zero-style output, was:
+
+| Engine / strategy    | Brotli growth per declaration |
+| -------------------- | ----------------------------- |
+| Bamboo               | 2.18 B / declaration          |
+| StyleX               | 5.95 B / declaration          |
+| Panda                | 2.14 B / declaration          |
+| Pandwind hash        | 6.30 B / declaration          |
+| Pandwind named atoms | 2.01 B / declaration          |
+
+The default hash lane adds 30,244 Brotli bytes across 4,800 unique declarations (6.30 B per declaration). Its raw increase is accounted for exactly by class names, selector syntax, declaration text, rule syntax, and line separation below. These raw categories are additive; Brotli and gzip are not, so their growth is measured on complete emitted assets.
+
+| Raw CSS component     |  Bytes |
+| --------------------- | -----: |
+| Class-name characters | 10,753 |
+| Other selector syntax | 34,158 |
+| Declaration text      | 90,500 |
+| Rule syntax           |  9,600 |
+| Inter-rule whitespace |  4,800 |
+
+The added rules stay in the existing @layer utilities context. They add 0 conditional wrappers and 0 layer-wrapper bytes.
+
+Named atoms lower the synthetic 800-style CSS slope from 6.30 to 2.01 Brotli bytes per declaration; their 17,763 B output edges Bamboo's 17,833 B by 70 B at this volume. The strict experimental ≤2.00 B/declaration assertion exits nonzero at the measured 2.014 B/declaration (displayed as 2.0). On the ordinary 400-tile Bench page, named atoms raise transfer from 10,539 B to 18,352 B gzip and add 89,501 raw class-attribute bytes across Arena routes. Keep hash classes as the default.
 
 ## Real-world Vite extraction: Emisoup and Playground
 
@@ -670,6 +725,29 @@ Measured 2026-09-25 with Emisoup source a13301f9a663b2190cdfd9ac4969794b2c3d6b74
 | Playground | `pnpm --filter playground run build`     | median 12.39 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 1144 MiB, range 1090–1170 MiB (1090, 1144, 1170) |
 
 Peak resident memory is the sampled sum for pnpm and descendant processes, polled every 75 ms. These current full-build samples characterize run-to-run spread; the pinned before/after comparison remains the source for optimization claims.
+
+### Source eligibility filtering in production bundle extraction
+
+A production-bundle regression reproduced: an excluded bundled module contributed CSS because its ID reached CSS collection without the same include/exclude gate used during source transforms. The fix exposes `CssSourceWorkspace.isScanned(file)` as the shared eligibility check and applies it before main, split, and critical CSS collection.
+
+Measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, with Emisoup Vite 8.3.0 and Playground Vite 8.2.2. Emisoup source a13301f9a663b2190cdfd9ac4969794b2c3d6b74; baseline Pandwind 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1; filtered Pandwind 41a909fa9560c1cdd983f998329bf3602b277ccb.
+
+| Workload   | Command                                  | Before full-build samples                                               | After full-build samples                                                | Before process-tree RSS                                 | After process-tree RSS                                              |
+| ---------- | ---------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
+| Emisoup    | `pnpm --filter @emisoup/front run build` | median 5.91 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 7.18 s, range 7.00–9.49 s (9.49, 7.84, 7.18, 7.00, 7.06)         | median 1213 MiB, range 1188–1302 MiB (1302, 1213, 1188) | median 1183 MiB, range 1140–1198 MiB (1184, 1198, 1171, 1183, 1140) |
+| Playground | `pnpm --filter playground run build`     | median 12.39 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 11.32 s, range 10.70–13.95 s (13.95, 11.32, 11.54, 10.70, 10.92) | median 1144 MiB, range 1090–1170 MiB (1090, 1144, 1170) | median 1197 MiB, range 1041–1213 MiB (1197, 1210, 1213, 1190, 1041) |
+
+RSS sums pnpm and descendant processes, sampled every 75 ms. The full-process medians were 5.91 s → 7.18 s for Emisoup and 12.39 s → 11.32 s for Playground. The ranges overlap; these samples show no repeatable end-to-end build or memory win.
+
+A separate instrumented Emisoup Vite API profile used 3 sequential builds per mode in one Node process. CSS transform ran 3,026 times per run; cumulative transform timings are inclusive and can overlap.
+
+| Profile measure              | Filter disabled                                           | Filter enabled                                            |
+| ---------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
+| Build API wall time          | median 5.97 s, range 3.68–6.94 s (6.94, 5.97, 3.68)       | median 3.65 s, range 3.29–6.44 s (6.44, 3.65, 3.29)       |
+| CSS transform inclusive time | median 36.05 s, range 31.09–38.81 s (36.05, 38.81, 31.09) | median 37.37 s, range 26.32–61.95 s (61.95, 26.32, 37.37) |
+| CSS generateBundle time      | median 1.88 s, range 0.94–1.99 s (1.99, 1.88, 0.94)       | median 0.84 s, range 0.83–1.46 s (1.46, 0.84, 0.83)       |
+
+The generateBundle median fell from 1.883 s to 0.841 s (about 55%) in this warm, instrumented profile. Samples are cache-sensitive and their ranges overlap; this is targeted hook evidence, not a full-build speedup. The change fixes the excluded-source leak. Arena's current-output recheck preserves its measured metrics; the Bench ranking remains tied to its pinned measured artifact and was not rerun here.
 
 ### Emisoup client output
 

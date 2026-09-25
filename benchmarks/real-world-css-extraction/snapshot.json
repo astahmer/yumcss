@@ -35,6 +35,51 @@
 			"peakProcessTreeRssMiB": [1090, 1144, 1170]
 		}
 	},
+	"sourceFilterComparison": {
+		"measuredAt": "2026-09-25",
+		"source": {
+			"emisoupRevision": "a13301f9a663b2190cdfd9ac4969794b2c3d6b74",
+			"baselinePandwindRevision": "180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1",
+			"filteredPandwindRevision": "41a909fa9560c1cdd983f998329bf3602b277ccb"
+		},
+		"environment": {
+			"machine": "Apple M4 (arm64), macOS",
+			"node": "24.20.0",
+			"emisoupVite": "8.3.0",
+			"playgroundVite": "8.2.2"
+		},
+		"processTreeRssSampleIntervalMs": 75,
+		"fullBuilds": {
+			"emisoup": {
+				"command": "pnpm --filter @emisoup/front run build",
+				"beforeBuildSeconds": [7.037, 5.882, 5.671, 5.914, 6.008],
+				"afterBuildSeconds": [9.493, 7.845, 7.179, 6.996, 7.063],
+				"beforePeakProcessTreeRssMiB": [1302, 1213, 1188],
+				"afterPeakProcessTreeRssMiB": [1184, 1198, 1171, 1183, 1140]
+			},
+			"playground": {
+				"command": "pnpm --filter playground run build",
+				"beforeBuildSeconds": [17.407, 12.392, 11.658, 12.171, 13.212],
+				"afterBuildSeconds": [13.949, 11.322, 11.536, 10.695, 10.923],
+				"beforePeakProcessTreeRssMiB": [1090, 1144, 1170],
+				"afterPeakProcessTreeRssMiB": [1197, 1210, 1213, 1190, 1041]
+			}
+		},
+		"instrumentedEmisoupApiProfile": {
+			"runsPerMode": 3,
+			"cssTransformCallsPerRun": 3026,
+			"filterDisabled": {
+				"buildSeconds": [6.943, 5.969, 3.679],
+				"cssTransformInclusiveSeconds": [36.051, 38.809, 31.085],
+				"cssGenerateBundleSeconds": [1.994, 1.883, 0.936]
+			},
+			"filterEnabled": {
+				"buildSeconds": [6.442, 3.655, 3.291],
+				"cssTransformInclusiveSeconds": [61.949, 26.316, 37.365],
+				"cssGenerateBundleSeconds": [1.456, 0.841, 0.833]
+			}
+		}
+	},
 	"emisoup": {
 		"moduleCount": 3026,
 		"beforeBuildSeconds": [5.45, 7.28, 9.21],

@@ -16,11 +16,16 @@ wins and a few bounded costs, not a case for changing the public API:
   current gaps to third place are 8,913 B Brotli for client JavaScript and
   8,052 B for full first load. The run passed 18/18 geometry and 72/72
   screenshot checks.
-- The 800-style Arena sweep reports 5.8 Brotli bytes per declaration for the
-  default hash strategy, against 2.0 for Bamboo and Panda. Named atoms reach
-  1.8 bytes per declaration but raise the 400-tile Bench transfer from
-  10,539 B to 18,352 B and add 89,501 raw class-attribute bytes in Arena.
-  Hash classes therefore remain the default.
+- The corrected all-distinct 800-style Arena sweep measures 6.30 Brotli bytes
+  per declaration for Pandwind hash classes, against 2.18 for Bamboo, 2.14
+  for Panda, and 5.95 for StyleX. Named atoms measure 2.014 bytes per
+  declaration and finish 70 B below Bamboo at 800 styles, but raise the
+  400-tile Bench transfer from 10,539 B to 18,352 B and add 89,501 raw
+  class-attribute bytes across Arena routes. Keep hash classes as the default.
+  The prior sweep used modulo repeats for two properties; the corrected values
+  and reproducible harness patch are recorded in
+  [PERF.md](../PERF.md#css-in-js-arena-detailed-results) and
+  [the Arena snapshot](../benchmarks/css-in-js-arena/snapshot.json).
 - The separate `tw()` bonus lane ranks sixteenth of sixteen for payload and
   seventeenth of seventeen for cold build. It answers a different question
   from the main CSS API and must remain a separate score.
@@ -134,23 +139,23 @@ the full transfer or build measurement.
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-| --- | --- | --- |
-| API target | Keep `css()` primary; report `tw()` separately | They exercise different runtime and generation paths. |
-| Static optimization | Extend the existing Vite compiler and `CxCallRewriter` only when they can prove the transformation | Avoid a second compiler path and preserve dynamic fallbacks. |
-| CSS identity | Prototype compact encodings only with deterministic collision handling | Five-character hashes can collide at project scale and may disagree across SSR, runtime, and extraction. |
-| Tailwind metadata | Use the official versioned loader and generated artifacts | Defaults, plugins, and custom config must remain authoritative. |
-| References | Reuse the pinned StyleX, Arena, and Bench sources already indexed | No duplicate checkout or unpinned comparison is needed. |
-| Public surface | Add no public option or API in this plan | The existing API remains frozen; a worthwhile public change needs its own design note and approval. |
+| Choice              | Decision                                                                                           | Rationale                                                                                                |
+| ------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| API target          | Keep `css()` primary; report `tw()` separately                                                     | They exercise different runtime and generation paths.                                                    |
+| Static optimization | Extend the existing Vite compiler and `CxCallRewriter` only when they can prove the transformation | Avoid a second compiler path and preserve dynamic fallbacks.                                             |
+| CSS identity        | Prototype compact encodings only with deterministic collision handling                             | Five-character hashes can collide at project scale and may disagree across SSR, runtime, and extraction. |
+| Tailwind metadata   | Use the official versioned loader and generated artifacts                                          | Defaults, plugins, and custom config must remain authoritative.                                          |
+| References          | Reuse the pinned StyleX, Arena, and Bench sources already indexed                                  | No duplicate checkout or unpinned comparison is needed.                                                  |
+| Public surface      | Add no public option or API in this plan                                                           | The existing API remains frozen; a worthwhile public change needs its own design note and approval.      |
 
 ### Trade-offs
 
-| Candidate | Potential gain | Cost or risk to prove |
-| --- | --- | --- |
-| Shorter class hashes | Fewer selector and class-attribute bytes | More collisions, and possible mismatch across independent SSR/runtime/extraction builds. |
-| More compile-time folding | Less shipped JavaScript and runtime work | More transform work and more cases that must preserve dynamic semantics. |
-| Default Tailwind baseline plus project delta | Less repeated generated source for common configs | Tighter coupling to the exact Tailwind version and more complex type composition. |
-| No change after attribution | Avoids weakening semantics or optimizing the wrong owner | Leaves a benchmark gap when it does not represent a real consumer cost. |
+| Candidate                                    | Potential gain                                           | Cost or risk to prove                                                                    |
+| -------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Shorter class hashes                         | Fewer selector and class-attribute bytes                 | More collisions, and possible mismatch across independent SSR/runtime/extraction builds. |
+| More compile-time folding                    | Less shipped JavaScript and runtime work                 | More transform work and more cases that must preserve dynamic semantics.                 |
+| Default Tailwind baseline plus project delta | Less repeated generated source for common configs        | Tighter coupling to the exact Tailwind version and more complex type composition.        |
+| No change after attribution                  | Avoids weakening semantics or optimizing the wrong owner | Leaves a benchmark gap when it does not represent a real consumer cost.                  |
 
 ### Architecture
 
@@ -182,55 +187,55 @@ the runtime.
 ## Implementation steps
 
 1. [ ] Re-establish trustworthy starting evidence. Verify the pinned Arena,
-   Bench, Emisoup, and Playground inputs and current generated report. Rerun
-   the previously noisy `css.default.raw` and `css.merge` throughput guards on
-   an otherwise quiet host with repeated isolated samples. Recheck the
-   previously reported lint and typecheck failures against the current base;
-   fix failures in changed paths and record unrelated baseline failures
-   separately.
+       Bench, Emisoup, and Playground inputs and current generated report. Rerun
+       the previously noisy `css.default.raw` and `css.merge` throughput guards on
+       an otherwise quiet host with repeated isolated samples. Recheck the
+       previously reported lint and typecheck failures against the current base;
+       fix failures in changed paths and record unrelated baseline failures
+       separately.
 2. [ ] Attribute Arena's client-JS and first-load gap. Capture per-asset
-   Brotli/gzip sizes, chunk imports, and the CSS factory/runtime features that
-   survive the six-page static workload. Revisit the earlier `cx` fold only
-   to explain why it changed no route module; test a distinct candidate only
-   if emitted code shows it can remove shared shipped bytes. Keep app-owned
-   JavaScript separate from Pandwind-owned output.
+       Brotli/gzip sizes, chunk imports, and the CSS factory/runtime features that
+       survive the six-page static workload. Revisit the earlier `cx` fold only
+       to explain why it changed no route module; test a distinct candidate only
+       if emitted code shows it can remove shared shipped bytes. Keep app-owned
+       JavaScript separate from Pandwind-owned output.
 3. [ ] Explain the large-style CSS slope. Reproduce the 200/400/800-style
-   sweep and split compressed growth among selectors, class names,
-   declarations, conditions, and wrapper syntax. Compare equivalent peer
-   outputs where the harness supports them, and label any non-equivalent
-   source comparison. Prototype only collision-safe, deterministic output
-   changes; prove that runtime, SSR, extraction, route splitting, and
-   hydration use identical class identities. Measure total page transfer at
-   the 400-tile and six-page sizes before changing the default.
+       sweep and split compressed growth among selectors, class names,
+       declarations, conditions, and wrapper syntax. Compare equivalent peer
+       outputs where the harness supports them, and label any non-equivalent
+       source comparison. Prototype only collision-safe, deterministic output
+       changes; prove that runtime, SSR, extraction, route splitting, and
+       hydration use identical class identities. Measure total page transfer at
+       the 400-tile and six-page sizes before changing the default.
 4. [ ] Close or explain the Bench payload/build gaps. Inspect the 9,047 B
-   HTML share and compare equivalent host DOM, attributes, and class output
-   across implementations. Do not change the 1,492 B CSS path to solve an
-   HTML-owned difference. Profile the 375 ms all-cases cold build by phase
-   and compare against the already strong Arena build and a real consumer.
-   Make no optimization if the result is harness-specific or within noise.
+       HTML share and compare equivalent host DOM, attributes, and class output
+       across implementations. Do not change the 1,492 B CSS path to solve an
+       HTML-owned difference. Profile the 375 ms all-cases cold build by phase
+       and compare against the already strong Arena build and a real consumer.
+       Make no optimization if the result is harness-specific or within noise.
 5. [ ] Measure full-build costs on real repositories. Use Emisoup and
-   Playground with repeated before/after wall-clock and memory samples. Break
-   out transform and `generateBundle` work without treating overlapping
-   inclusive timings as wall time. Optimize only a phase that is material in
-   the real build; retain the scan-gate result as an isolated discovery win,
-   not a full-build multiplier.
+       Playground with repeated before/after wall-clock and memory samples. Break
+       out transform and `generateBundle` work without treating overlapping
+       inclusive timings as wall time. Optimize only a phase that is material in
+       the real build; retain the scan-gate result as an isolated discovery win,
+       not a full-build multiplier.
 6. [ ] Audit `tw()` generated costs without conflating source artifacts and
-   shipped JavaScript. Inventory `types.d.ts`, `tw.ts`, optional runtime and
-   build metadata, bridge, and interop files by owner and importer. Measure
-   generated bytes, the actual client bundle for static and dynamic `tw()`
-   use, and TypeScript check time for realistic generated declarations.
-   Compare stock Tailwind, sparse overrides, resets, and custom/plugin
-   configurations through the official loader. Record whether a baseline and
-   project delta improve total consumer cost. Keep this step an evidence gate;
-   if the result supports a redesign, implement it under
-   [plan 083](083-tailwind-default-catalog-deltas.md), which owns the artifact
-   model, reset semantics, consumer migration, and parity work.
+       shipped JavaScript. Inventory `types.d.ts`, `tw.ts`, optional runtime and
+       build metadata, bridge, and interop files by owner and importer. Measure
+       generated bytes, the actual client bundle for static and dynamic `tw()`
+       use, and TypeScript check time for realistic generated declarations.
+       Compare stock Tailwind, sparse overrides, resets, and custom/plugin
+       configurations through the official loader. Record whether a baseline and
+       project delta improve total consumer cost. Keep this step an evidence gate;
+       if the result supports a redesign, implement it under
+       [plan 083](083-tailwind-default-catalog-deltas.md), which owns the artifact
+       model, reset semantics, consumer migration, and parity work.
 7. [ ] Re-run the focused compiler, runtime, generation, and browser parity
-   suites for each adopted change. Preserve Arena's 18/18 geometry and 72/72
-   screenshot gates, Bench DOM/pixel parity, static `css()` zero-marginal-JS
-   behavior, and runtime/compiler equivalence for dynamic cases. Update
-   `PERF.md`, `PERF-SUMMARY.md`, and relevant plan completion records with
-   the measured win or explicit no-change result.
+       suites for each adopted change. Preserve Arena's 18/18 geometry and 72/72
+       screenshot gates, Bench DOM/pixel parity, static `css()` zero-marginal-JS
+       behavior, and runtime/compiler equivalence for dynamic cases. Update
+       `PERF.md`, `PERF-SUMMARY.md`, and relevant plan completion records with
+       the measured win or explicit no-change result.
 
 ## Open questions
 
@@ -272,8 +277,8 @@ the runtime.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-| --- | --- | --- |
-| 2026-09-25 | Keep `css()` primary and `tw()` separate | Their benchmark lanes have different compiler, runtime, and generated-artifact costs. |
-| 2026-09-25 | Do not set a top-three rank as the success criterion | Results vary by workload and metric; real consumer cost and parity decide. |
+| Date       | Decision                                                         | Rationale                                                                                 |
+| ---------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 2026-09-25 | Keep `css()` primary and `tw()` separate                         | Their benchmark lanes have different compiler, runtime, and generated-artifact costs.     |
+| 2026-09-25 | Do not set a top-three rank as the success criterion             | Results vary by workload and metric; real consumer cost and parity decide.                |
 | 2026-09-25 | Reuse the pinned StyleX checkout instead of cloning another copy | The existing source reference is sufficient for the class and conditional-fold questions. |

@@ -144,6 +144,20 @@ type CssInJsBenchSnapshot = {
 			readonly coldMs: readonly number[];
 			readonly warmMs: readonly number[];
 		};
+		readonly pandwindBuildtimeProfile?: {
+			readonly pandwindRevision: string;
+			readonly measuredAt: string;
+			readonly harness: string;
+			readonly samples: number;
+			readonly totalBuildMs: number;
+			readonly phasesMs: {
+				readonly load: number;
+				readonly resolve: number;
+				readonly buildStart: number;
+				readonly cssTransformInclusive: number;
+				readonly cssGenerateBundle: number;
+			};
+		};
 	};
 	readonly workloads: readonly ExternalBenchmarkWorkload[];
 };
@@ -188,6 +202,60 @@ type ArenaOutputVerification = {
 	}[];
 };
 
+type ArenaScaleMeasurement = {
+	readonly styles: number;
+	readonly rawBytes: number;
+	readonly gzip9Bytes: number;
+	readonly brotli11Bytes: number;
+	readonly blocks: number;
+};
+
+type ArenaScaleSweep = {
+	readonly measuredAt: string;
+	readonly arenaRevision: string;
+	readonly pandwindRevision: string;
+	readonly stylesPerRun: readonly number[];
+	readonly declarationsPerStyle: number;
+	readonly allDeclarationValuesUnique: boolean;
+	readonly harnessCorrection: string;
+	readonly measurements: {
+		readonly bamboo: readonly ArenaScaleMeasurement[];
+		readonly stylex: readonly ArenaScaleMeasurement[];
+		readonly panda: readonly ArenaScaleMeasurement[];
+		readonly pandwindHash: readonly ArenaScaleMeasurement[];
+		readonly pandwindNamedAtoms: readonly ArenaScaleMeasurement[];
+	};
+	readonly pandwindHashGrowthBreakdown: {
+		readonly base: Omit<ArenaScaleMeasurement, "styles" | "blocks">;
+		readonly at800: Omit<ArenaScaleMeasurement, "styles" | "blocks">;
+		readonly declarationInputs: number;
+		readonly uniqueAtomicRules: number;
+		readonly growth: {
+			readonly rawBytes: number;
+			readonly gzip9Bytes: number;
+			readonly brotli11Bytes: number;
+			readonly classNameRawBytes: number;
+			readonly selectorSyntaxRawBytes: number;
+			readonly declarationRawBytes: number;
+			readonly ruleSyntaxRawBytes: number;
+			readonly interRuleWhitespaceRawBytes: number;
+			readonly newConditionWrappers: number;
+			readonly newLayerWrapperBytes: number;
+			readonly sharedLayerContext: string;
+		};
+	};
+	readonly namedAtomTradeoffs: {
+		readonly hashBrotliSlopePerDeclaration: number;
+		readonly namedAtomBrotliSlopePerDeclaration: number;
+		readonly hashAt800BrotliBytes: number;
+		readonly namedAtomsAt800BrotliBytes: number;
+		readonly benchPageHashGzipBytes: number;
+		readonly benchPageNamedAtomsGzipBytes: number;
+		readonly arenaClassAttributeRawBytesAdded: number;
+		readonly strictTwoBytePerDeclarationProbePassed: boolean;
+	};
+};
+
 type ArenaSnapshot = {
 	readonly schemaVersion: 1;
 	readonly source: {
@@ -200,6 +268,7 @@ type ArenaSnapshot = {
 	};
 	readonly metrics: readonly ArenaMetric[];
 	readonly outputVerification?: ArenaOutputVerification;
+	readonly scaleSweep?: ArenaScaleSweep;
 };
 
 type RealWorldBuildSamples = {
@@ -250,6 +319,47 @@ type RealWorldCssExtractionSnapshot = {
 			readonly command: string;
 			readonly buildWallSeconds: readonly number[];
 			readonly peakProcessTreeRssMiB: readonly number[];
+		};
+	};
+	readonly sourceFilterComparison?: {
+		readonly measuredAt: string;
+		readonly source: {
+			readonly emisoupRevision: string;
+			readonly baselinePandwindRevision: string;
+			readonly filteredPandwindRevision: string;
+		};
+		readonly environment: {
+			readonly machine: string;
+			readonly node: string;
+			readonly emisoupVite: string;
+			readonly playgroundVite: string;
+		};
+		readonly processTreeRssSampleIntervalMs: number;
+		readonly fullBuilds: Readonly<
+			Record<
+				"emisoup" | "playground",
+				{
+					readonly command: string;
+					readonly beforeBuildSeconds: readonly number[];
+					readonly afterBuildSeconds: readonly number[];
+					readonly beforePeakProcessTreeRssMiB: readonly number[];
+					readonly afterPeakProcessTreeRssMiB: readonly number[];
+				}
+			>
+		>;
+		readonly instrumentedEmisoupApiProfile: {
+			readonly runsPerMode: number;
+			readonly cssTransformCallsPerRun: number;
+			readonly filterDisabled: {
+				readonly buildSeconds: readonly number[];
+				readonly cssTransformInclusiveSeconds: readonly number[];
+				readonly cssGenerateBundleSeconds: readonly number[];
+			};
+			readonly filterEnabled: {
+				readonly buildSeconds: readonly number[];
+				readonly cssTransformInclusiveSeconds: readonly number[];
+				readonly cssGenerateBundleSeconds: readonly number[];
+			};
 		};
 	};
 	readonly emisoup: RealWorldBuildSamples & {
@@ -304,6 +414,8 @@ type RealWorldCssExtractionSnapshot = {
 		};
 	};
 };
+
+type SourceFilterComparison = NonNullable<RealWorldCssExtractionSnapshot["sourceFilterComparison"]>;
 
 type RankingMetric = "checkTimeSeconds" | "instantiations";
 
@@ -426,15 +538,38 @@ const renderArenaComparison = (snapshot: ArenaSnapshot | undefined): string[] =>
 		`Pandwind's maximum screenshot difference was ${parity.pandwindMaxImageDifferencePercent}%; maximum across all lanes was ${parity.maxImageDifferencePercent}%. The Arena worktree records full methods and stress results in revision ${snapshot.source.arenaRevision}; normalized inputs are in the [local comparison snapshot](benchmarks/css-in-js-arena/snapshot.json). Pandwind source revision ${snapshot.source.pandwindRevision}.`,
 		"",
 		...renderArenaOutputVerificationOverview(snapshot),
+		...renderArenaScaleSweepOverview(snapshot.scaleSweep),
+	];
+};
+
+const renderArenaScaleSweepOverview = (sweep: ArenaScaleSweep | undefined): string[] => {
+	if (sweep === undefined) return [];
+	const slope = (measurements: readonly ArenaScaleMeasurement[]): string => {
+		const base = measurements.find(({ styles }) => styles === 0);
+		const at800 = measurements.find(({ styles }) => styles === 800);
+		if (base === undefined || at800 === undefined) return "—";
+		return (
+			(at800.brotli11Bytes - base.brotli11Bytes) /
+			(800 * sweep.declarationsPerStyle)
+		).toFixed(2);
+	};
+	const tradeoffs = sweep.namedAtomTradeoffs;
+	return [
+		`The corrected all-distinct 800-style sweep measured ${tradeoffs.hashBrotliSlopePerDeclaration.toFixed(2)} Brotli B/declaration for Pandwind hash classes, compared with ${slope(sweep.measurements.bamboo)} for Bamboo and ${slope(sweep.measurements.panda)} for Panda. Named atoms reached ${tradeoffs.namedAtomBrotliSlopePerDeclaration.toFixed(2)} B/declaration, but raised the Bench page from ${integer(tradeoffs.benchPageHashGzipBytes)} B to ${integer(tradeoffs.benchPageNamedAtomsGzipBytes)} B gzip and added ${integer(tradeoffs.arenaClassAttributeRawBytesAdded)} raw class-attribute bytes. Keep hash classes as the default; see the full CSS byte breakdown in [PERF.md](PERF.md#css-in-js-arena-detailed-results).`,
+		"",
 	];
 };
 
 const renderArenaOutputVerificationOverview = (snapshot: ArenaSnapshot): string[] => {
 	const verification = snapshot.outputVerification;
 	if (verification === undefined) return [];
-	const javascript = verification.metrics.find(({ label }) => label === "Client JavaScript, Brotli");
+	const javascript = verification.metrics.find(
+		({ label }) => label === "Client JavaScript, Brotli",
+	);
 	const fullFirstLoad = verification.metrics.find(({ label }) => label === "Full first load");
-	const pinnedJavascript = snapshot.metrics.find(({ label }) => label === "Client JavaScript, Brotli");
+	const pinnedJavascript = snapshot.metrics.find(
+		({ label }) => label === "Client JavaScript, Brotli",
+	);
 	const pinnedFullFirstLoad = snapshot.metrics.find(({ label }) => label === "Full first load");
 	if (
 		javascript === undefined ||
@@ -479,7 +614,9 @@ const renderArenaOutputVerificationDetails = (snapshot: ArenaSnapshot): string[]
 	const rows = verification.metrics.map((metric) => {
 		const pinnedMetric = snapshot.metrics.find(({ label }) => label === metric.label);
 		if (pinnedMetric === undefined) {
-			throw new Error("Arena output verification metric is missing from the pinned snapshot: " + metric.label);
+			throw new Error(
+				"Arena output verification metric is missing from the pinned snapshot: " + metric.label,
+			);
 		}
 		const ranked = arenaLibraries
 			.map((library) => ({
@@ -556,6 +693,70 @@ const renderArenaDetails = (snapshot: ArenaSnapshot | undefined): string[] => {
 		`Full normalized measurements and parity metadata: [snapshot.json](benchmarks/css-in-js-arena/snapshot.json).`,
 		"",
 		...renderArenaOutputVerificationDetails(snapshot),
+		...renderArenaScaleSweepDetails(snapshot.scaleSweep),
+	];
+};
+
+const renderArenaScaleSweepDetails = (sweep: ArenaScaleSweep | undefined): string[] => {
+	if (sweep === undefined) return [];
+	const measurementGroups = [
+		{ label: "Bamboo", rows: sweep.measurements.bamboo },
+		{ label: "StyleX", rows: sweep.measurements.stylex },
+		{ label: "Panda", rows: sweep.measurements.panda },
+		{ label: "Pandwind hash", rows: sweep.measurements.pandwindHash },
+		{ label: "Pandwind named atoms", rows: sweep.measurements.pandwindNamedAtoms },
+	];
+	const measurementRows = measurementGroups.flatMap(({ label, rows }) =>
+		rows.map((measurement) => [
+			label,
+			integer(measurement.styles),
+			integer(measurement.rawBytes),
+			integer(measurement.gzip9Bytes),
+			integer(measurement.brotli11Bytes),
+			integer(measurement.blocks),
+		]),
+	);
+	const slopeRows = measurementGroups.map(({ label, rows }) => {
+		const base = rows.find(({ styles }) => styles === 0);
+		const at800 = rows.find(({ styles }) => styles === 800);
+		const slope =
+			base === undefined || at800 === undefined
+				? "—"
+				: `${((at800.brotli11Bytes - base.brotli11Bytes) / (800 * sweep.declarationsPerStyle)).toFixed(2)} B / declaration`;
+		return [label, slope];
+	});
+	const { growth } = sweep.pandwindHashGrowthBreakdown;
+	const growthRows = [
+		["Class-name characters", integer(growth.classNameRawBytes)],
+		["Other selector syntax", integer(growth.selectorSyntaxRawBytes)],
+		["Declaration text", integer(growth.declarationRawBytes)],
+		["Rule syntax", integer(growth.ruleSyntaxRawBytes)],
+		["Inter-rule whitespace", integer(growth.interRuleWhitespaceRawBytes)],
+	];
+	const tradeoffs = sweep.namedAtomTradeoffs;
+	return [
+		"### Large-style CSS volume sweep",
+		"",
+		`Measured ${sweep.measuredAt} with Arena ${sweep.arenaRevision} and Pandwind ${sweep.pandwindRevision}. Each run links ${integer(sweep.stylesPerRun.at(-1) ?? 0)} style definitions, each containing ${integer(sweep.declarationsPerStyle)} CSS properties, into the same four applications. The corrected harness gives each property unique values across the 800-style run; the repeatable patch is [unique-scale-fixture.patch](benchmarks/css-in-js-arena/unique-scale-fixture.patch). Each engine is measured from its own zero-style baseline because framework overhead differs.`,
+		"",
+		markdownTable(
+			["Engine / strategy", "Styles", "Raw CSS", "gzip-9", "Brotli-11", "CSS blocks"],
+			measurementRows,
+			new Set([1, 2, 3, 4]),
+		),
+		"",
+		"The 800-style Brotli growth, after subtracting each engine's zero-style output, was:",
+		"",
+		markdownTable(["Engine / strategy", "Brotli growth per declaration"], slopeRows, new Set()),
+		"",
+		`The default hash lane adds ${integer(sweep.pandwindHashGrowthBreakdown.growth.brotli11Bytes)} Brotli bytes across ${integer(sweep.pandwindHashGrowthBreakdown.declarationInputs)} unique declarations (${sweep.namedAtomTradeoffs.hashBrotliSlopePerDeclaration.toFixed(2)} B per declaration). Its raw increase is accounted for exactly by class names, selector syntax, declaration text, rule syntax, and line separation below. These raw categories are additive; Brotli and gzip are not, so their growth is measured on complete emitted assets.`,
+		"",
+		markdownTable(["Raw CSS component", "Bytes"], growthRows, new Set([1])),
+		"",
+		`The added rules stay in the existing ${growth.sharedLayerContext} context. They add ${integer(growth.newConditionWrappers)} conditional wrappers and ${integer(growth.newLayerWrapperBytes)} layer-wrapper bytes.`,
+		"",
+		`Named atoms lower the synthetic 800-style CSS slope from ${tradeoffs.hashBrotliSlopePerDeclaration.toFixed(2)} to ${tradeoffs.namedAtomBrotliSlopePerDeclaration.toFixed(2)} Brotli bytes per declaration; their 17,763 B output edges Bamboo's 17,833 B by 70 B at this volume. The strict experimental ≤2.00 B/declaration assertion exits nonzero at the measured 2.014 B/declaration (displayed as 2.0). On the ordinary 400-tile Bench page, named atoms raise transfer from ${integer(tradeoffs.benchPageHashGzipBytes)} B to ${integer(tradeoffs.benchPageNamedAtomsGzipBytes)} B gzip and add ${integer(tradeoffs.arenaClassAttributeRawBytesAdded)} raw class-attribute bytes across Arena routes. Keep hash classes as the default.`,
+		"",
 	];
 };
 
@@ -626,6 +827,7 @@ const renderRealWorldCssExtractionDetails = (
 		(value / 1_000_000_000).toFixed(2),
 	);
 	const recheck = snapshot.currentBuildRecheck;
+	const sourceFilterComparison = snapshot.sourceFilterComparison;
 	const currentBuildDetails =
 		recheck === undefined
 			? []
@@ -670,6 +872,10 @@ const renderRealWorldCssExtractionDetails = (
 						" ms. These current full-build samples characterize run-to-run spread; the pinned before/after comparison remains the source for optimization claims.",
 					"",
 				];
+	const sourceFilterDetails =
+		sourceFilterComparison === undefined
+			? []
+			: renderSourceFilterComparisonDetails(sourceFilterComparison);
 	return [
 		"## Real-world Vite extraction: Emisoup and Playground",
 		"",
@@ -758,6 +964,7 @@ const renderRealWorldCssExtractionDetails = (
 			" calls. The wrapper adds timing overhead.",
 		"",
 		...currentBuildDetails,
+		...sourceFilterDetails,
 		"### Emisoup client output",
 		"",
 		"Files are compressed separately with Node zlib gzip level 9 and Brotli quality 11. Totals cover the HTML and all emitted JS/CSS assets, not just the initial route.",
@@ -805,6 +1012,84 @@ const renderRealWorldCssExtractionDetails = (
 	];
 };
 
+const renderSourceFilterComparisonDetails = (comparison: SourceFilterComparison): string[] => {
+	const emisoup = comparison.fullBuilds.emisoup;
+	const playground = comparison.fullBuilds.playground;
+	const profile = comparison.instrumentedEmisoupApiProfile;
+	const filterDisabled = profile.filterDisabled;
+	const filterEnabled = profile.filterEnabled;
+	const generateBundleBeforeMedian = median(filterDisabled.cssGenerateBundleSeconds);
+	const generateBundleAfterMedian = median(filterEnabled.cssGenerateBundleSeconds);
+	const generateBundleImprovementPercent =
+		(1 - generateBundleAfterMedian / generateBundleBeforeMedian) * 100;
+	return [
+		"### Source eligibility filtering in production bundle extraction",
+		"",
+		"A production-bundle regression reproduced: an excluded bundled module contributed CSS because its ID reached CSS collection without the same include/exclude gate used during source transforms. The fix exposes `CssSourceWorkspace.isScanned(file)` as the shared eligibility check and applies it before main, split, and critical CSS collection.",
+		"",
+		`Measured ${comparison.measuredAt} on ${comparison.environment.machine}, Node ${comparison.environment.node}, with Emisoup Vite ${comparison.environment.emisoupVite} and Playground Vite ${comparison.environment.playgroundVite}. Emisoup source ${comparison.source.emisoupRevision}; baseline Pandwind ${comparison.source.baselinePandwindRevision}; filtered Pandwind ${comparison.source.filteredPandwindRevision}.`,
+		"",
+		markdownTable(
+			[
+				"Workload",
+				"Command",
+				"Before full-build samples",
+				"After full-build samples",
+				"Before process-tree RSS",
+				"After process-tree RSS",
+			],
+			[
+				[
+					"Emisoup",
+					"`" + emisoup.command + "`",
+					formatBuildWallSamples(emisoup.beforeBuildSeconds),
+					formatBuildWallSamples(emisoup.afterBuildSeconds),
+					formatProcessTreeRssSamples(emisoup.beforePeakProcessTreeRssMiB),
+					formatProcessTreeRssSamples(emisoup.afterPeakProcessTreeRssMiB),
+				],
+				[
+					"Playground",
+					"`" + playground.command + "`",
+					formatBuildWallSamples(playground.beforeBuildSeconds),
+					formatBuildWallSamples(playground.afterBuildSeconds),
+					formatProcessTreeRssSamples(playground.beforePeakProcessTreeRssMiB),
+					formatProcessTreeRssSamples(playground.afterPeakProcessTreeRssMiB),
+				],
+			],
+			new Set(),
+		),
+		"",
+		`RSS sums pnpm and descendant processes, sampled every ${comparison.processTreeRssSampleIntervalMs} ms. The full-process medians were ${median(emisoup.beforeBuildSeconds).toFixed(2)} s → ${median(emisoup.afterBuildSeconds).toFixed(2)} s for Emisoup and ${median(playground.beforeBuildSeconds).toFixed(2)} s → ${median(playground.afterBuildSeconds).toFixed(2)} s for Playground. The ranges overlap; these samples show no repeatable end-to-end build or memory win.`,
+		"",
+		`A separate instrumented Emisoup Vite API profile used ${profile.runsPerMode} sequential builds per mode in one Node process. CSS transform ran ${integer(profile.cssTransformCallsPerRun)} times per run; cumulative transform timings are inclusive and can overlap.`,
+		"",
+		markdownTable(
+			["Profile measure", "Filter disabled", "Filter enabled"],
+			[
+				[
+					"Build API wall time",
+					formatBuildWallSamples(filterDisabled.buildSeconds),
+					formatBuildWallSamples(filterEnabled.buildSeconds),
+				],
+				[
+					"CSS transform inclusive time",
+					formatBuildWallSamples(filterDisabled.cssTransformInclusiveSeconds),
+					formatBuildWallSamples(filterEnabled.cssTransformInclusiveSeconds),
+				],
+				[
+					"CSS generateBundle time",
+					formatBuildWallSamples(filterDisabled.cssGenerateBundleSeconds),
+					formatBuildWallSamples(filterEnabled.cssGenerateBundleSeconds),
+				],
+			],
+			new Set(),
+		),
+		"",
+		`The generateBundle median fell from ${generateBundleBeforeMedian.toFixed(3)} s to ${generateBundleAfterMedian.toFixed(3)} s (about ${generateBundleImprovementPercent.toFixed(0)}%) in this warm, instrumented profile. Samples are cache-sensitive and their ranges overlap; this is targeted hook evidence, not a full-build speedup. The change fixes the excluded-source leak. Arena's current-output recheck preserves its measured metrics; the Bench ranking remains tied to its pinned measured artifact and was not rerun here.`,
+		"",
+	];
+};
+
 const renderRealWorldCssExtractionOverview = (
 	snapshot: RealWorldCssExtractionSnapshot,
 ): string[] => {
@@ -847,6 +1132,7 @@ const renderRealWorldCssExtractionOverview = (
 			" modules.",
 		"",
 		...renderCurrentBuildRecheckOverview(snapshot.currentBuildRecheck),
+		...renderSourceFilterComparisonOverview(snapshot.sourceFilterComparison),
 		"All emitted Emisoup client assets total " +
 			integer(snapshot.clientAssets.total.rawBytes) +
 			" raw, " +
@@ -871,27 +1157,50 @@ const renderCurrentBuildRecheckOverview = (
 	return [
 		"Current package-build recheck measured " +
 			recheck.measuredAt +
-		" on " +
-		recheck.environment.machine +
-		", Node " +
-		recheck.environment.node +
-		", with Emisoup source " +
-		recheck.source.emisoupRevision +
-		" and Pandwind source " +
-		recheck.source.pandwindRevision +
-		". Five full build commands had medians of " +
-		median(recheck.emisoup.buildWallSeconds).toFixed(2) +
-		" s for Emisoup (" +
-		Math.min(...recheck.emisoup.buildWallSeconds).toFixed(2) +
-		"–" +
-		Math.max(...recheck.emisoup.buildWallSeconds).toFixed(2) +
-		" s) and " +
-		median(recheck.playground.buildWallSeconds).toFixed(2) +
-		" s for Playground (" +
-		Math.min(...recheck.playground.buildWallSeconds).toFixed(2) +
-		"–" +
-		Math.max(...recheck.playground.buildWallSeconds).toFixed(2) +
-		" s). These are variability samples, not a before/after speedup claim.",
+			" on " +
+			recheck.environment.machine +
+			", Node " +
+			recheck.environment.node +
+			", with Emisoup source " +
+			recheck.source.emisoupRevision +
+			" and Pandwind source " +
+			recheck.source.pandwindRevision +
+			". Five full build commands had medians of " +
+			median(recheck.emisoup.buildWallSeconds).toFixed(2) +
+			" s for Emisoup (" +
+			Math.min(...recheck.emisoup.buildWallSeconds).toFixed(2) +
+			"–" +
+			Math.max(...recheck.emisoup.buildWallSeconds).toFixed(2) +
+			" s) and " +
+			median(recheck.playground.buildWallSeconds).toFixed(2) +
+			" s for Playground (" +
+			Math.min(...recheck.playground.buildWallSeconds).toFixed(2) +
+			"–" +
+			Math.max(...recheck.playground.buildWallSeconds).toFixed(2) +
+			" s). These are variability samples, not a before/after speedup claim.",
+		"",
+	];
+};
+
+const renderSourceFilterComparisonOverview = (
+	comparison: RealWorldCssExtractionSnapshot["sourceFilterComparison"],
+): string[] => {
+	if (comparison === undefined) return [];
+	const beforeMedian = median(
+		comparison.instrumentedEmisoupApiProfile.filterDisabled.cssGenerateBundleSeconds,
+	);
+	const afterMedian = median(
+		comparison.instrumentedEmisoupApiProfile.filterEnabled.cssGenerateBundleSeconds,
+	);
+	const improvementPercent = (1 - afterMedian / beforeMedian) * 100;
+	return [
+		"The production source-eligibility filter also fixes excluded modules leaking into CSS extraction. An instrumented Emisoup profile measured CSS `generateBundle` at " +
+			beforeMedian.toFixed(3) +
+			" s before and " +
+			afterMedian.toFixed(3) +
+			" s after (about " +
+			improvementPercent.toFixed(0) +
+			"% lower across three warm runs per mode). Full-process Emisoup and Playground samples remain variable and establish no end-to-end speedup. Arena's current-output recheck preserves its measured metrics; CSS-in-JS Bench ranking remains tied to its pinned measured artifact. See the detailed comparison in [PERF.md](PERF.md#real-world-vite-extraction-emisoup-and-playground).",
 		"",
 	];
 };
@@ -1478,8 +1787,9 @@ const renderDetailedCssInJsBenchComparison = (
 			result.payload === undefined ? "—" : `${integer(result.payload.html)} B`,
 		]) ?? [];
 	const buildtimeSamples = source.pandwindBuildtimeSamples;
-	const buildtimeContext =
-		buildtimeSamples === undefined
+	const buildtimeProfile = source.pandwindBuildtimeProfile;
+	const buildtimeContext = [
+		...(buildtimeSamples === undefined
 			? []
 			: [
 					"### Cold-build method and samples",
@@ -1492,9 +1802,18 @@ const renderDetailedCssInJsBenchComparison = (
 						buildtimeSamples.warmMs.join(", ") +
 						" ms (median " +
 						median(buildtimeSamples.warmMs) +
-						" ms). The harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches. It records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.",
+						" ms). The repeated rank harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches, and it records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.",
 					"",
-				];
+				]),
+		...(buildtimeProfile === undefined
+			? []
+			: [
+					"### One-off instrumented phase profile",
+					"",
+					`One instrumented ${buildtimeProfile.harness} sample on ${buildtimeProfile.measuredAt}, using Pandwind artifact ${buildtimeProfile.pandwindRevision}, took ${buildtimeProfile.totalBuildMs.toFixed(2)} ms total. Hook timings were load ${buildtimeProfile.phasesMs.load.toFixed(2)} ms, resolve ${buildtimeProfile.phasesMs.resolve.toFixed(2)} ms, buildStart ${buildtimeProfile.phasesMs.buildStart.toFixed(2)} ms, cumulative inclusive CSS transform ${buildtimeProfile.phasesMs.cssTransformInclusive.toFixed(2)} ms, and CSS generateBundle ${buildtimeProfile.phasesMs.cssGenerateBundle.toFixed(2)} ms. This predates the source-filter fix; it is a single instrumented diagnostic, not a repeated phase breakdown or a rank measurement.`,
+					"",
+				]),
+	];
 	return [
 		"## CSS-in-JS Bench detailed results",
 		"",
@@ -1635,7 +1954,7 @@ export const renderPerformanceOverview = (): string => {
 		"",
 		"1. Run the local commands listed at the end of [PERF.md](PERF.md).",
 		"2. In a separate CSS-in-JS Bench checkout, run `pnpm gen:samples --measure=microbench,payload,buildtime`, then `pnpm gen:wpd`, `pnpm verify`, and `pnpm report`.",
-		"3. In CSS-in-JS Arena, refresh the pinned Pandwind tarball, pass the six-route geometry and screenshot gates, then run the byte, build, dev-start, and four-sweep HMR measurements. Keep parity and source revisions with the results.",
+		"3. In CSS-in-JS Arena, refresh the pinned Pandwind tarball, pass the six-route geometry and screenshot gates, then run the byte, build, dev-start, four-sweep HMR, and scale measurements. Apply [the unique-scale fixture patch](benchmarks/css-in-js-arena/unique-scale-fixture.patch) before `tools/scale.mjs`; keep parity and source revisions with the results.",
 		"4. Import `BENCHMARK.json` with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`, update `benchmarks/css-in-js-arena/snapshot.json`, then run `pnpm run bench:summary` and `pnpm run bench:summary:check`.",
 		"",
 	].join("\n");

@@ -104,7 +104,7 @@
 		}
 	],
 	"outputVerification": {
-		"pandwindRevision": "180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1",
+		"pandwindRevision": "41a909fa9560c1cdd983f998329bf3602b277ccb",
 		"measuredAt": "2026-09-25",
 		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps",
 		"parity": {
@@ -124,5 +124,195 @@
 			{ "label": "Full first load", "unit": "B", "value": 125825 },
 			{ "label": "HTML class attributes, six routes", "unit": "B", "value": 59980 }
 		]
+	},
+	"scaleSweep": {
+		"measuredAt": "2026-09-25",
+		"arenaRevision": "2f4ed369a107a186b8108184871bba0777f23fe4",
+		"pandwindRevision": "41a909fa9560c1cdd983f998329bf3602b277ccb",
+		"stylesPerRun": [0, 50, 200, 800],
+		"declarationsPerStyle": 6,
+		"allDeclarationValuesUnique": true,
+		"harnessCorrection": "Temporary local correction removed modulo cycles from fontSize and letterSpacing; the Arena checkout was restored after measurement.",
+		"measurements": {
+			"bamboo": [
+				{
+					"styles": 0,
+					"rawBytes": 43420,
+					"gzip9Bytes": 8627,
+					"brotli11Bytes": 7357,
+					"blocks": 662
+				},
+				{
+					"styles": 50,
+					"rawBytes": 57820,
+					"gzip9Bytes": 10545,
+					"brotli11Bytes": 8107,
+					"blocks": 962
+				},
+				{
+					"styles": 200,
+					"rawBytes": 101020,
+					"gzip9Bytes": 16847,
+					"brotli11Bytes": 10054,
+					"blocks": 1862
+				},
+				{
+					"styles": 800,
+					"rawBytes": 274020,
+					"gzip9Bytes": 38586,
+					"brotli11Bytes": 17833,
+					"blocks": 5462
+				}
+			],
+			"stylex": [
+				{
+					"styles": 0,
+					"rawBytes": 40430,
+					"gzip9Bytes": 8200,
+					"brotli11Bytes": 7008,
+					"blocks": 534
+				},
+				{
+					"styles": 50,
+					"rawBytes": 61826,
+					"gzip9Bytes": 10944,
+					"brotli11Bytes": 8905,
+					"blocks": 834
+				},
+				{
+					"styles": 200,
+					"rawBytes": 126034,
+					"gzip9Bytes": 19384,
+					"brotli11Bytes": 14283,
+					"blocks": 1734
+				},
+				{
+					"styles": 800,
+					"rawBytes": 382812,
+					"gzip9Bytes": 49736,
+					"brotli11Bytes": 35570,
+					"blocks": 5334
+				}
+			],
+			"panda": [
+				{
+					"styles": 0,
+					"rawBytes": 54007,
+					"gzip9Bytes": 11489,
+					"brotli11Bytes": 9518,
+					"blocks": 579
+				},
+				{
+					"styles": 50,
+					"rawBytes": 67207,
+					"gzip9Bytes": 13406,
+					"brotli11Bytes": 10216,
+					"blocks": 879
+				},
+				{
+					"styles": 200,
+					"rawBytes": 106807,
+					"gzip9Bytes": 19728,
+					"brotli11Bytes": 12167,
+					"blocks": 1779
+				},
+				{
+					"styles": 800,
+					"rawBytes": 265407,
+					"gzip9Bytes": 41330,
+					"brotli11Bytes": 19812,
+					"blocks": 5379
+				}
+			],
+			"pandwindHash": [
+				{
+					"styles": 0,
+					"rawBytes": 31732,
+					"gzip9Bytes": 9913,
+					"brotli11Bytes": 8724,
+					"blocks": 721
+				},
+				{
+					"styles": 50,
+					"rawBytes": 41085,
+					"gzip9Bytes": 12466,
+					"brotli11Bytes": 10760,
+					"blocks": 1021
+				},
+				{
+					"styles": 200,
+					"rawBytes": 69208,
+					"gzip9Bytes": 20215,
+					"brotli11Bytes": 16485,
+					"blocks": 1921
+				},
+				{
+					"styles": 800,
+					"rawBytes": 181543,
+					"gzip9Bytes": 49925,
+					"brotli11Bytes": 38968,
+					"blocks": 5521
+				}
+			],
+			"pandwindNamedAtoms": [
+				{
+					"styles": 0,
+					"rawBytes": 36240,
+					"gzip9Bytes": 9454,
+					"brotli11Bytes": 8095,
+					"blocks": 721
+				},
+				{
+					"styles": 50,
+					"rawBytes": 49290,
+					"gzip9Bytes": 11162,
+					"brotli11Bytes": 8796,
+					"blocks": 1021
+				},
+				{
+					"styles": 200,
+					"rawBytes": 88440,
+					"gzip9Bytes": 16753,
+					"brotli11Bytes": 10613,
+					"blocks": 1921
+				},
+				{
+					"styles": 800,
+					"rawBytes": 245240,
+					"gzip9Bytes": 36736,
+					"brotli11Bytes": 17763,
+					"blocks": 5521
+				}
+			]
+		},
+		"pandwindHashGrowthBreakdown": {
+			"base": { "rawBytes": 31732, "gzip9Bytes": 9913, "brotli11Bytes": 8724 },
+			"at800": { "rawBytes": 181543, "gzip9Bytes": 49925, "brotli11Bytes": 38968 },
+			"declarationInputs": 4800,
+			"uniqueAtomicRules": 4800,
+			"growth": {
+				"rawBytes": 149811,
+				"gzip9Bytes": 40012,
+				"brotli11Bytes": 30244,
+				"classNameRawBytes": 10753,
+				"selectorSyntaxRawBytes": 34158,
+				"declarationRawBytes": 90500,
+				"ruleSyntaxRawBytes": 9600,
+				"interRuleWhitespaceRawBytes": 4800,
+				"newConditionWrappers": 0,
+				"newLayerWrapperBytes": 0,
+				"sharedLayerContext": "@layer utilities"
+			}
+		},
+		"namedAtomTradeoffs": {
+			"hashBrotliSlopePerDeclaration": 6.3008333333,
+			"namedAtomBrotliSlopePerDeclaration": 2.0141666667,
+			"hashAt800BrotliBytes": 38968,
+			"namedAtomsAt800BrotliBytes": 17763,
+			"benchPageHashGzipBytes": 10539,
+			"benchPageNamedAtomsGzipBytes": 18352,
+			"arenaClassAttributeRawBytesAdded": 89501,
+			"strictTwoBytePerDeclarationProbePassed": false
+		}
 	}
 }

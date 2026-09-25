@@ -22,6 +22,20 @@
 		"pandwindBuildtimeSamples": {
 			"coldMs": [498, 304, 375],
 			"warmMs": [421, 344, 392]
+		},
+		"pandwindBuildtimeProfile": {
+			"pandwindRevision": "bc1b904c5d6795d43396b9f364a127fd68c2f436",
+			"measuredAt": "2026-09-25",
+			"harness": "CSS-in-JS Bench pandwind-css lane with isolated output and Vite cache",
+			"samples": 1,
+			"totalBuildMs": 212.72,
+			"phasesMs": {
+				"load": 0.11,
+				"resolve": 0.06,
+				"buildStart": 0.05,
+				"cssTransformInclusive": 13.15,
+				"cssGenerateBundle": 81.32
+			}
 		}
 	},
 	"workloads": [

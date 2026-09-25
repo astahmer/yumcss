@@ -1,0 +1,8 @@
+diff --git a/tools/scale.mjs b/tools/scale.mjs
+--- a/tools/scale.mjs
++++ b/tools/scale.mjs
+@@ -32,2 +32,2 @@ const DECLS = [
+-  (n) => `  fontSize: "${(n % 700) + 2000}px",`,
+-  (n) => `  letterSpacing: "${(n % 500) + 3000}px",`,
++  (n) => `  fontSize: "${n + 2000}px",`,
++  (n) => `  letterSpacing: "${n + 3000}px",`,

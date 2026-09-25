@@ -82,13 +82,17 @@ Pandwind's six-page lane passed parity: 18/18 route geometry checks stayed withi
 
 Pandwind's maximum screenshot difference was 0.0151%; maximum across all lanes was 0.0187%. The Arena worktree records full methods and stress results in revision 2f4ed369a107a186b8108184871bba0777f23fe4; normalized inputs are in the [local comparison snapshot](benchmarks/css-in-js-arena/snapshot.json). Pandwind source revision bc1b904c5d6795d43396b9f364a127fd68c2f436.
 
-Current-source output recheck: Pandwind revision 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1 measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps passed 18/18 geometry checks and 72/72 screenshot checks. All rechecked output ranks stayed the same; JavaScript Brotli changed by -12 B and full first load by -13 B versus the pinned ranking snapshot.
+Current-source output recheck: Pandwind revision 41a909fa9560c1cdd983f998329bf3602b277ccb measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps passed 18/18 geometry checks and 72/72 screenshot checks. All rechecked output ranks stayed the same; JavaScript Brotli changed by -12 B and full first load by -13 B versus the pinned ranking snapshot.
+
+The corrected all-distinct 800-style sweep measured 6.30 Brotli B/declaration for Pandwind hash classes, compared with 2.18 for Bamboo and 2.14 for Panda. Named atoms reached 2.01 B/declaration, but raised the Bench page from 10,539 B to 18,352 B gzip and added 89,501 raw class-attribute bytes. Keep hash classes as the default; see the full CSS byte breakdown in [PERF.md](PERF.md#css-in-js-arena-detailed-results).
 
 ## Real-world CSS compiler: Emisoup
 
 Pinned Emisoup source 005b44b87470228738873fd66076737a2017b3 on Vite 8.3.0 transformed 3,026 modules. Its three-build median was 7.24 s after versus 7.28 s before; spread prevents an end-to-end speedup claim. On a 1,000-file no-CSS workload, guarded discovery reduced the targeted parse-and-walk phase from 9.70 ms to 0.275 ms median, with parser calls dropping from 1,000 to 0. Playground also showed no build regression: 5.04 s after versus 5.61 s before over 4,220 modules.
 
 Current package-build recheck measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, with Emisoup source a13301f9a663b2190cdfd9ac4969794b2c3d6b74 and Pandwind source 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1. Five full build commands had medians of 5.91 s for Emisoup (5.67–7.04 s) and 12.39 s for Playground (11.66–17.41 s). These are variability samples, not a before/after speedup claim.
+
+The production source-eligibility filter also fixes excluded modules leaking into CSS extraction. An instrumented Emisoup profile measured CSS `generateBundle` at 1.883 s before and 0.841 s after (about 55% lower across three warm runs per mode). Full-process Emisoup and Playground samples remain variable and establish no end-to-end speedup. Arena's current-output recheck preserves its measured metrics; CSS-in-JS Bench ranking remains tied to its pinned measured artifact. See the detailed comparison in [PERF.md](PERF.md#real-world-vite-extraction-emisoup-and-playground).
 
 All emitted Emisoup client assets total 3,003,504 raw, 894,553 gzip-9, and 791,621 Brotli-11 bytes with each file compressed separately. The main Pandwind CSS asset is 123,976 raw, 21,169 gzip-9, and 18,496 Brotli-11 bytes. The progress-fill keeps static theme styles in CSS and width as a changing CSS variable; detailed hook, profile, CSS duplication, and delivery findings are in [PERF.md](PERF.md#real-world-vite-extraction-emisoup-and-playground).
 
@@ -100,5 +104,5 @@ Run focused regression benchmarks with changes to the compiler, runtime, public 
 
 1. Run the local commands listed at the end of [PERF.md](PERF.md).
 2. In a separate CSS-in-JS Bench checkout, run `pnpm gen:samples --measure=microbench,payload,buildtime`, then `pnpm gen:wpd`, `pnpm verify`, and `pnpm report`.
-3. In CSS-in-JS Arena, refresh the pinned Pandwind tarball, pass the six-route geometry and screenshot gates, then run the byte, build, dev-start, and four-sweep HMR measurements. Keep parity and source revisions with the results.
+3. In CSS-in-JS Arena, refresh the pinned Pandwind tarball, pass the six-route geometry and screenshot gates, then run the byte, build, dev-start, four-sweep HMR, and scale measurements. Apply [the unique-scale fixture patch](benchmarks/css-in-js-arena/unique-scale-fixture.patch) before `tools/scale.mjs`; keep parity and source revisions with the results.
 4. Import `BENCHMARK.json` with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`, update `benchmarks/css-in-js-arena/snapshot.json`, then run `pnpm run bench:summary` and `pnpm run bench:summary:check`.
