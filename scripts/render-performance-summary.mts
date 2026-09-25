@@ -377,6 +377,34 @@ const renderArenaComparison = (snapshot: ArenaSnapshot | undefined): string[] =>
 	];
 };
 
+const renderArenaDetails = (snapshot: ArenaSnapshot | undefined): string[] => {
+	if (snapshot === undefined) return [];
+	const { parity } = snapshot.source;
+	const rows = snapshot.metrics.map((metric) => {
+		const ranked = arenaLibraries
+			.map((library) => ({ ...library, value: metric.values[library.id] }))
+			.toSorted((left, right) => left.value - right.value || left.label.localeCompare(right.label));
+		return [
+			metric.category,
+			metric.label,
+			...ranked.map(
+				(entry, index) =>
+					`${index + 1}. ${entry.label}: ${formatArenaValue(entry.value, metric.unit)}`,
+			),
+		];
+	});
+	return [
+		"## CSS-in-JS Arena detailed results",
+		"",
+		`Source revisions: Arena ${snapshot.source.arenaRevision}, Pandwind ${snapshot.source.pandwindRevision}. Measured ${snapshot.source.measuredAt} on ${snapshot.source.environment}. Geometry passed ${parity.geometryPassed}/${parity.geometryTotal} route checks within ${parity.geometryThresholdPx} px; screenshots passed ${parity.screenshotsPassed}/${parity.screenshotsTotal} within ${parity.screenshotThresholdPercent}%. Maximum screenshot difference: Pandwind ${parity.pandwindMaxImageDifferencePercent}%, all lanes ${parity.maxImageDifferencePercent}%. Each metric is ranked independently, lower is better, and there is no composite score.`,
+		"",
+		markdownTable(["Category", "Measure", "Rank 1", "Rank 2", "Rank 3", "Rank 4"], rows, new Set()),
+		"",
+		`Full normalized measurements and parity metadata: [snapshot.json](benchmarks/css-in-js-arena/snapshot.json).`,
+		"",
+	];
+};
+
 const renderRealWorldCssExtractionDetails = (
 	snapshot: RealWorldCssExtractionSnapshot,
 ): string[] => {
@@ -1132,6 +1160,102 @@ const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined
 	];
 };
 
+const renderDetailedExternalWorkload = (
+	workload: ExternalBenchmarkWorkload,
+	results: readonly ExternalBenchmarkResult[],
+): string[] => {
+	const ordered =
+		workload.id === "inp"
+			? results.toSorted((left, right) => left.label.localeCompare(right.label))
+			: results.toSorted((left, right) =>
+					workload.direction === "higher"
+						? right.value - left.value || left.label.localeCompare(right.label)
+						: left.value - right.value || left.label.localeCompare(right.label),
+				);
+	const rows = ordered.map((result, index) => [
+		workload.id === "inp" ? "unranked" : String(index + 1),
+		result.label,
+		formatExternalMetric(result.value, workload.unit),
+		result.p95Ms === undefined ? "—" : `${result.p95Ms.toFixed(1)} ms`,
+		result.payload === undefined ? "—" : `${integer(result.payload.js)} B`,
+		result.payload === undefined ? "—" : `${integer(result.payload.css)} B`,
+		result.payload === undefined ? "—" : `${integer(result.payload.html)} B`,
+	]);
+	return [
+		`### ${workload.label} — ${workload.caseId}`,
+		"",
+		...(workload.id === "inp"
+			? ["INP is not ranked because frame-timed medians cluster within measurement noise.", ""]
+			: []),
+		markdownTable(
+			["Rank", "Implementation", "Result", "P95", "JS gzip", "CSS gzip", "HTML gzip"],
+			rows,
+			new Set([0]),
+		),
+		"",
+	];
+};
+
+const renderDetailedCssInJsBenchComparison = (
+	snapshot: CssInJsBenchSnapshot | undefined,
+): string[] => {
+	if (snapshot === undefined) return [];
+	const { source } = snapshot;
+	const mainLane = source.pandwindMainLane;
+	const twBonusLane = source.pandwindTwBonusLane;
+	const primaryWorkloads = snapshot.workloads.flatMap((workload) =>
+		workload.results.length === 0
+			? []
+			: [...renderDetailedExternalWorkload(workload, workload.results)],
+	);
+	const twBonusWorkloads = snapshot.workloads.flatMap((workload) => {
+		if (workload.bonusResults.length === 0) return [];
+		const peerResults = workload.results.filter(({ tech }) => tech !== mainLane);
+		return renderDetailedExternalWorkload(workload, [...peerResults, ...workload.bonusResults]);
+	});
+	const payload = snapshot.workloads.find(({ id }) => id === "payload");
+	const strategyRows =
+		payload?.strategyResults.map((result) => [
+			result.label,
+			`${integer(result.value)} B`,
+			result.payload === undefined ? "—" : `${integer(result.payload.js)} B`,
+			result.payload === undefined ? "—" : `${integer(result.payload.css)} B`,
+			result.payload === undefined ? "—" : `${integer(result.payload.html)} B`,
+		]) ?? [];
+	return [
+		"## CSS-in-JS Bench detailed results",
+		"",
+		`WPD ${source.wpdVersion} completed ${source.wpdCompletedAt} on ${source.host} with Node ${source.node}, Chrome ${source.browsers.chrome ?? "unknown"}, and Firefox ${source.browsers.firefox ?? "unknown"}. CSS-in-JS Bench revision ${source.cssInJsBenchRevision}; Pandwind artifact revision ${source.pandwindRevision}; ${source.laneCount} lanes and ${source.caseCount} workload definitions. The CSS lane is the 400-tile product-grid case. Rankings compare ${mainLane} with non-Pandwind peer lanes; per-call JS, CSS, and SSR HTML payload components are gzip bytes. Browser measurements are Chrome medians.`,
+		"",
+		"### Primary `createCss` lane",
+		"",
+		"The lane uses `createCss(preset)`, static `css.class(...)` declarations, and a multi-map `css(...)` plus `css.props(...)` host boundary through the shipped `pandwindCssVite(css)` plugin. Only the rating percentage remains a runtime style value.",
+		"",
+		...primaryWorkloads,
+		"### Separate `tw()` bonus lane",
+		"",
+		`This lane uses ${twBonusLane} and ranks against the same peer set with ${mainLane} removed. It does not contribute to the primary rank.`,
+		"",
+		...twBonusWorkloads,
+		...(strategyRows.length === 0
+			? []
+			: [
+					"### Named atom strategy diagnostic",
+					"",
+					"This is a strategy comparison for the same page, not an additional library lane.",
+					"",
+					markdownTable(
+						["Implementation", "Total gzip", "JS", "CSS", "HTML"],
+						strategyRows,
+						new Set(),
+					),
+					"",
+				]),
+		`Normalized measurements: [snapshot.json](benchmarks/css-in-js-bench/snapshot.json).`,
+		"",
+	];
+};
+
 const renderNaturalTypecheckRanking = (snapshot: StylingSnapshot | undefined): string[] => {
 	if (snapshot === undefined) return [];
 	const ranked = snapshot.workloads
@@ -1255,6 +1379,8 @@ export const renderPerformanceSummary = (): string => {
 		generatedRuntimeSizeSnapshotPath,
 	);
 	const ecosystemBundleSizes = readJson<EcosystemBundleSnapshot>(ecosystemBundleSizeSnapshotPath);
+	const cssInJsBench = readJson<CssInJsBenchSnapshot>(cssInJsBenchSnapshotPath);
+	const arena = readJson<ArenaSnapshot>(arenaSnapshotPath);
 	const realWorldCssExtraction = readJson<RealWorldCssExtractionSnapshot>(
 		realWorldCssExtractionSnapshotPath,
 	);
@@ -1266,7 +1392,7 @@ export const renderPerformanceSummary = (): string => {
 		"",
 		"# Pandwind performance details",
 		"",
-		"For the concise real-world comparison, see [PERF-SUMMARY.md](PERF-SUMMARY.md). This detailed report is derived from the committed typecheck, runtime-throughput, and bundle-size snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.",
+		"For the concise real-world comparison, see [PERF-SUMMARY.md](PERF-SUMMARY.md). This detailed report includes committed typecheck, runtime-throughput, bundle-size, CSS-in-JS Bench, and Arena snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.",
 		"",
 		"TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-throughput measurements are local in-process calls. Runtime-size measurements are minified browser bundles with gzip level 6.",
 		"",
@@ -1294,6 +1420,8 @@ export const renderPerformanceSummary = (): string => {
 	lines.push(...renderBundleRanking(runtimeSizes));
 	lines.push(...renderGeneratedRuntimeSizes(generatedRuntimeSizes));
 	lines.push(...renderEcosystemBundleComparison(ecosystemBundleSizes));
+	lines.push(...renderDetailedCssInJsBenchComparison(cssInJsBench));
+	lines.push(...renderArenaDetails(arena));
 	lines.push(...renderRealWorldCssExtractionDetails(realWorldCssExtraction));
 	lines.push(
 		"## External benchmark refresh",
