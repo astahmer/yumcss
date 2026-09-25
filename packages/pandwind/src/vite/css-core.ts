@@ -216,9 +216,6 @@ export function createCssExtractorPluginCore(
 	const resolvedManifestId = `\0${virtualId}-manifest.js`;
 	const routeChunkId = (name: string): string => `\0${virtualId}.css?route=${name}`;
 
-	const isScanned = (file: string): boolean =>
-		include.some((pattern) => pattern.test(file)) && !exclude.some((pattern) => pattern.test(file));
-
 	/**
 	 * Var keys the transform-time rewriter introduced through vars carriers.
 	 * The workspace's extractFile scanner cannot see these (it scans the
@@ -233,7 +230,7 @@ export function createCssExtractorPluginCore(
 		// must pass through untouched rather than reaching the path filters below.
 		if (typeof code !== "string" || typeof id !== "string") return null;
 		if (id.includes("node_modules")) return null;
-		if (!isScanned(id)) return null;
+		if (!workspace.isScanned(id)) return null;
 		const names = sourceService.findCssImports(code, id, matchers);
 		let extracted = code;
 		if (names.size === 0) carriedVarKeys.delete(id);
@@ -256,9 +253,10 @@ export function createCssExtractorPluginCore(
 
 	/** Render the full single-sheet body (default mode / debug manifest). */
 	const collectBody = (files: Array<string> = workspace.files()): string => {
-		if (bodyCache !== undefined && workspace.isFresh(files, bodyCache.files))
+		const scannedFiles = files.filter((file) => workspace.isScanned(file));
+		if (bodyCache !== undefined && workspace.isFresh(scannedFiles, bodyCache.files))
 			return bodyCache.value;
-		const sheet = collect(files);
+		const sheet = collect(scannedFiles);
 		const web = sheet.gen.web();
 		const body = render(
 			mergeEntries(sheet.gen.atomicEntries(), externalAtomic),
@@ -272,7 +270,7 @@ export function createCssExtractorPluginCore(
 			[...sheet.gen.atomicEntries(), ...sheet.gen.varEntries(), ...externalAtomic, ...externalVars],
 		);
 		if (options.debug !== true) {
-			bodyCache = { files, value: body };
+			bodyCache = { files: scannedFiles, value: body };
 			return body;
 		}
 		// Dev-only origin manifest: which scanned file feeds how many
@@ -296,7 +294,7 @@ export function createCssExtractorPluginCore(
 			(manifest === "" ? "/*   (no css() sources scanned) */" : manifest) +
 			"\n\n" +
 			body;
-		bodyCache = { files, value };
+		bodyCache = { files: scannedFiles, value };
 		return value;
 	};
 
@@ -401,12 +399,13 @@ export function createCssExtractorPluginCore(
 	const collectSplit = (
 		files: Array<string> = workspace.files(),
 	): { common: string; routes: Map<string, string> } => {
-		if (splitCache !== undefined && workspace.isFresh(files, splitCache.files))
+		const scannedFiles = files.filter((file) => workspace.isScanned(file));
+		if (splitCache !== undefined && workspace.isFresh(scannedFiles, splitCache.files))
 			return splitCache.value;
 		const commonFiles: Array<string> = [];
 		const routeFiles = new Map<string, Array<string>>();
 		for (const route of routes) routeFiles.set(route.name, []);
-		for (const file of files) {
+		for (const file of scannedFiles) {
 			const hit = routes.find((r) => r.match.test(file));
 			if (hit === undefined) commonFiles.push(file);
 			else routeFiles.get(hit.name)!.push(file);
@@ -501,7 +500,7 @@ export function createCssExtractorPluginCore(
 			);
 		}
 		const value = { common, routes: out };
-		splitCache = { files, value };
+		splitCache = { files: scannedFiles, value };
 		return value;
 	};
 

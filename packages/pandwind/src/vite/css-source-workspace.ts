@@ -13,6 +13,7 @@ interface CssSourceWorkspaceEntry {
 
 export interface CssSourceWorkspace {
 	files(): string[];
+	isScanned(file: string): boolean;
 	scan(file: string): CssSourceWorkspaceEntry;
 	isFresh(files: string[], cachedFiles: string[]): boolean;
 	entries(): ReadonlyMap<string, CssSourceWorkspaceEntry>;
@@ -40,7 +41,7 @@ class NodeCssSourceWorkspace implements CssSourceWorkspace {
 		this.sourceWorkspace = options.sourceWorkspace ?? createSourceWorkspace();
 	}
 
-	private isScanned(file: string): boolean {
+	isScanned(file: string): boolean {
 		return (
 			this.options.include.some((pattern) => pattern.test(file)) &&
 			!this.options.exclude.some((pattern) => pattern.test(file))

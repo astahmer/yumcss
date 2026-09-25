@@ -391,6 +391,70 @@ export const className = css.class({ backgroundColor: "$green-500" });
 });
 
 describe("build", () => {
+	test("production CSS extraction respects the configured source exclusions", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-vite-source-filter-"));
+		try {
+			mkdirSync(join(dir, "src"), { recursive: true });
+			mkdirSync(join(dir, "node_modules"), { recursive: true });
+			symlinkSync(PACKAGE_ROOT, join(dir, "node_modules/pandwind"), "dir");
+			mkdirSync(join(dir, "node_modules/@pandwind"), { recursive: true });
+			symlinkSync(
+				resolve(PACKAGE_ROOT, "../../examples/pandwind-example-preset"),
+				join(dir, "node_modules/@pandwind/example-preset"),
+				"dir",
+			);
+			writeFileSync(join(dir, "src/design.ts"), DESIGN_SOURCE);
+			writeFileSync(
+				join(dir, "src/app.ts"),
+				`import { dss } from "./design";
+import { excluded } from "./excluded";
+import "pandwind:css";
+export const included = dss.class({ color: "#ff0000" });
+console.log(included, excluded);`,
+			);
+			writeFileSync(
+				join(dir, "src/excluded.ts"),
+				`import { dss } from "./design";
+export const excluded = dss.class({ color: "#0000ff" });`,
+			);
+
+			const result = await build({
+				root: dir,
+				plugins: [
+					pandwindCssVite(createDesignCss(examplePreset), {
+						root: dir,
+						exclude: [/excluded\.ts$/],
+					}),
+				],
+				logLevel: "silent",
+				build: {
+					write: false,
+					minify: false,
+					rollupOptions: { input: join(dir, "src/app.ts") },
+				},
+			});
+			const output = (
+				Array.isArray(result) ? result : "output" in result ? result.output : []
+			) as Array<{
+				type: (typeof RollupOutputKind)[keyof typeof RollupOutputKind];
+				fileName: string;
+				source?: string | Uint8Array;
+			}>;
+			const css = output
+				.filter(
+					(chunk) =>
+						chunk.type === RollupOutputKind.Asset && chunk.fileName.endsWith(".css"),
+				)
+				.map((chunk) => chunk.source?.toString() ?? "")
+				.join("\n");
+
+			expect(css).toContain("color:#ff0000");
+			expect(css).not.toContain("color:#0000ff");
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
 	test("runtime pruning survives a real Vite production bundle", async () => {
 		const dir = mkdtempSync(join(tmpdir(), "pandwind-runtime-vite-"));
 		try {
