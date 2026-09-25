@@ -811,6 +811,7 @@ test("pandwindCssVite extracts progress-fill styles while keeping width dynamic"
 		expect(generated.match(/transition:width 300ms ease/gu)).toHaveLength(1);
 		expect(generated).toContain("width: var(--pw-c-width)");
 		expect(generated).toMatch(/background-color:\s*var\(/u);
+		expect(generated).toContain('[data-theme="dark"]');
 		expect(generated).not.toContain("component.progressTray.fill");
 		expect(generated).not.toContain("30%");
 		expect(generated).not.toContain("70%");

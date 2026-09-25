@@ -237,7 +237,7 @@ const componentTokens = semanticTokens.defineSemanticTokens(conditions, {
 	colors: {
 		"component.progressTray.fill": {
 			base: "colors.accent",
-			_dark: "colors.accent",
+			_dark: "colors.$neutral-100",
 		},
 		"button.primary.background": { base: "colors.accent", _dark: "colors.accent" },
 		"button.primary.backgroundHover": { base: "colors.$brand-700", _dark: "colors.$brand-300" },
