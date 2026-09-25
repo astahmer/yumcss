@@ -362,32 +362,33 @@ Full styled/baseline metrics, pinned versions, and the fixture methodology: [bun
 
 ## CSS-in-JS Bench detailed results
 
-WPD 0.15.1 completed 2026-09-25T00:35:42.187Z on Apple M4 (arm64) with Node v24.20.0, Chrome 154.0.8037.57, and Firefox stable_156.0.1. CSS-in-JS Bench revision 9ed62df69397; Pandwind artifact revision bc1b904c5d6795d43396b9f364a127fd68c2f436; 21 lanes and 13 workload definitions. The CSS lane is the 400-tile product-grid case. Rankings compare pandwind-css with non-Pandwind peer lanes; per-call JS, CSS, and SSR HTML payload components are gzip bytes. Browser measurements are Chrome medians.
+WPD 0.15.1 completed 2026-09-26T08:49:49.145Z on Apple M4 (arm64) with Node v24.20.0, Chrome 154.0.8037.57, and Firefox stable_156.0.1. CSS-in-JS Bench revision 3f8df1511738; Pandwind artifact revision 9a9f9c499e7f43f8b05811634613a2d2419fe156; 21 lanes and 13 workload definitions. The CSS lane is the 400-tile product-grid case. Rankings compare pandwind-css with non-Pandwind peer lanes; per-call JS, CSS, and SSR HTML payload components are gzip bytes. Browser measurements are Chrome medians.
 
 ### Primary `createCss` lane
 
 The lane uses `createCss(preset)`, static `css.class(...)` declarations, and a multi-map `css(...)` plus `css.props(...)` host boundary through the shipped `pandwindCssVite(css)` plugin. Only the rating percentage remains a runtime style value.
+The CSS-in-JS Bench page does not call `cx()`, so it does not exercise the class-map compiler optimization. The current Pandwind SSR median reports a 33.7% spread. Its rank measures this fixture; it is not evidence for or against the `cx()` change.
 
 ### SSR throughput — product-grid
 
 | Rank | Implementation                                          | Result          | P95 | JS gzip | CSS gzip | HTML gzip |
 | ---: | ------------------------------------------------------- | --------------- | --- | ------- | -------- | --------- |
-|    1 | pandwind — createCss styles compiled by pandwindCssVite | 269,852 tiles/s | —   | —       | —        | —         |
-|    2 | next-yak css-prop 9.7.0                                 | 262,274 tiles/s | —   | —       | —        | —         |
-|    3 | StyleX                                                  | 244,461 tiles/s | —   | —       | —        | —         |
-|    4 | next-yak 9.7.0 (styled API)                             | 242,492 tiles/s | —   | —       | —        | —         |
-|    5 | next-yak css-prop 9.6.0                                 | 204,429 tiles/s | —   | —       | —        | —         |
-|    6 | StyleX without CSS layers (:not() specificity hack)     | 191,471 tiles/s | —   | —       | —        | —         |
-|    7 | cnfast                                                  | 183,266 tiles/s | —   | —       | —        | —         |
-|    8 | next-yak css-prop 9.7.0 foldStatic: false               | 177,495 tiles/s | —   | —       | —        | —         |
-|    9 | Panda (css fn)                                          | 151,731 tiles/s | —   | —       | —        | —         |
-|   10 | tailwind-merge                                          | 129,511 tiles/s | —   | —       | —        | —         |
-|   11 | next-yak 9.6.0                                          | 75,031 tiles/s  | —   | —       | —        | —         |
-|   12 | styled-components                                       | 63,201 tiles/s  | —   | —       | —        | —         |
-|   13 | next-yak 9.7.0 (styled API) foldStatic: false           | 62,085 tiles/s  | —   | —       | —        | —         |
-|   14 | Goober                                                  | 40,337 tiles/s  | —   | —       | —        | —         |
-|   15 | Emotion                                                 | 38,421 tiles/s  | —   | —       | —        | —         |
-|   16 | Panda (style props)                                     | 8,860 tiles/s   | —   | —       | —        | —         |
+|    1 | next-yak css-prop 9.7.0                                 | 271,632 tiles/s | —   | —       | —        | —         |
+|    2 | next-yak css-prop 9.7.0 foldStatic: false               | 177,076 tiles/s | —   | —       | —        | —         |
+|    3 | next-yak css-prop 9.6.0                                 | 140,466 tiles/s | —   | —       | —        | —         |
+|    4 | next-yak 9.7.0 (styled API)                             | 128,585 tiles/s | —   | —       | —        | —         |
+|    5 | Panda (css fn)                                          | 113,141 tiles/s | —   | —       | —        | —         |
+|    6 | pandwind — createCss styles compiled by pandwindCssVite | 107,687 tiles/s | —   | —       | —        | —         |
+|    7 | StyleX without CSS layers (:not() specificity hack)     | 104,846 tiles/s | —   | —       | —        | —         |
+|    8 | StyleX                                                  | 101,761 tiles/s | —   | —       | —        | —         |
+|    9 | cnfast                                                  | 96,163 tiles/s  | —   | —       | —        | —         |
+|   10 | next-yak 9.6.0                                          | 72,351 tiles/s  | —   | —       | —        | —         |
+|   11 | tailwind-merge                                          | 69,972 tiles/s  | —   | —       | —        | —         |
+|   12 | next-yak 9.7.0 (styled API) foldStatic: false           | 68,730 tiles/s  | —   | —       | —        | —         |
+|   13 | Goober                                                  | 51,450 tiles/s  | —   | —       | —        | —         |
+|   14 | Emotion                                                 | 33,054 tiles/s  | —   | —       | —        | —         |
+|   15 | styled-components                                       | 22,681 tiles/s  | —   | —       | —        | —         |
+|   16 | Panda (style props)                                     | 4,440 tiles/s   | —   | —       | —        | —         |
 
 ### Transferred page payload — product-grid
 
@@ -414,43 +415,43 @@ The lane uses `createCss(preset)`, static `css.class(...)` declarations, and a m
 
 | Rank | Implementation                                          | Result   | P95 | JS gzip | CSS gzip | HTML gzip |
 | ---: | ------------------------------------------------------- | -------- | --- | ------- | -------- | --------- |
-|    1 | StyleX without CSS layers (:not() specificity hack)     | 26.30 ms | —   | —       | —        | —         |
-|    2 | next-yak 9.7.0 (styled API)                             | 27.00 ms | —   | —       | —        | —         |
-|    3 | next-yak css-prop 9.6.0                                 | 30.00 ms | —   | —       | —        | —         |
-|    4 | next-yak 9.6.0                                          | 33.10 ms | —   | —       | —        | —         |
-|    5 | tailwind-merge                                          | 33.80 ms | —   | —       | —        | —         |
-|    6 | cnfast                                                  | 34.60 ms | —   | —       | —        | —         |
-|    7 | pandwind — createCss styles compiled by pandwindCssVite | 34.70 ms | —   | —       | —        | —         |
-|    8 | next-yak css-prop 9.7.0 foldStatic: false               | 35.40 ms | —   | —       | —        | —         |
-|    9 | Panda (style props)                                     | 35.40 ms | —   | —       | —        | —         |
-|   10 | next-yak css-prop 9.7.0                                 | 36.80 ms | —   | —       | —        | —         |
-|   11 | StyleX                                                  | 38.40 ms | —   | —       | —        | —         |
-|   12 | Goober                                                  | 38.70 ms | —   | —       | —        | —         |
-|   13 | next-yak 9.7.0 (styled API) foldStatic: false           | 39.50 ms | —   | —       | —        | —         |
-|   14 | Panda (css fn)                                          | 40.00 ms | —   | —       | —        | —         |
-|   15 | Emotion                                                 | 40.90 ms | —   | —       | —        | —         |
-|   16 | styled-components                                       | 50.60 ms | —   | —       | —        | —         |
+|    1 | StyleX without CSS layers (:not() specificity hack)     | 25.60 ms | —   | —       | —        | —         |
+|    2 | tailwind-merge                                          | 29.90 ms | —   | —       | —        | —         |
+|    3 | next-yak 9.7.0 (styled API)                             | 31.20 ms | —   | —       | —        | —         |
+|    4 | cnfast                                                  | 31.60 ms | —   | —       | —        | —         |
+|    5 | next-yak css-prop 9.6.0                                 | 32.10 ms | —   | —       | —        | —         |
+|    6 | StyleX                                                  | 36.00 ms | —   | —       | —        | —         |
+|    7 | Panda (css fn)                                          | 36.80 ms | —   | —       | —        | —         |
+|    8 | next-yak css-prop 9.7.0                                 | 39.20 ms | —   | —       | —        | —         |
+|    9 | pandwind — createCss styles compiled by pandwindCssVite | 39.20 ms | —   | —       | —        | —         |
+|   10 | next-yak 9.6.0                                          | 40.90 ms | —   | —       | —        | —         |
+|   11 | styled-components                                       | 42.40 ms | —   | —       | —        | —         |
+|   12 | next-yak 9.7.0 (styled API) foldStatic: false           | 46.80 ms | —   | —       | —        | —         |
+|   13 | Emotion                                                 | 52.50 ms | —   | —       | —        | —         |
+|   14 | Goober                                                  | 56.40 ms | —   | —       | —        | —         |
+|   15 | Panda (style props)                                     | 56.70 ms | —   | —       | —        | —         |
+|   16 | next-yak css-prop 9.7.0 foldStatic: false               | 63.00 ms | —   | —       | —        | —         |
 
 ### Chrome hydration — product-grid
 
 | Rank | Implementation                                          | Result   | P95 | JS gzip | CSS gzip | HTML gzip |
 | ---: | ------------------------------------------------------- | -------- | --- | ------- | -------- | --------- |
-|    1 | StyleX without CSS layers (:not() specificity hack)     | 20.50 ms | —   | —       | —        | —         |
-|    2 | next-yak css-prop 9.6.0                                 | 21.80 ms | —   | —       | —        | —         |
-|    3 | pandwind — createCss styles compiled by pandwindCssVite | 22.10 ms | —   | —       | —        | —         |
-|    4 | next-yak 9.6.0                                          | 22.70 ms | —   | —       | —        | —         |
-|    5 | next-yak 9.7.0 (styled API) foldStatic: false           | 22.90 ms | —   | —       | —        | —         |
-|    6 | next-yak 9.7.0 (styled API)                             | 24.10 ms | —   | —       | —        | —         |
-|    7 | tailwind-merge                                          | 24.30 ms | —   | —       | —        | —         |
-|    8 | Panda (style props)                                     | 25.20 ms | —   | —       | —        | —         |
-|    9 | cnfast                                                  | 26.80 ms | —   | —       | —        | —         |
-|   10 | next-yak css-prop 9.7.0 foldStatic: false               | 27.80 ms | —   | —       | —        | —         |
-|   11 | next-yak css-prop 9.7.0                                 | 33.40 ms | —   | —       | —        | —         |
-|   12 | Goober                                                  | 33.80 ms | —   | —       | —        | —         |
-|   13 | StyleX                                                  | 34.50 ms | —   | —       | —        | —         |
-|   14 | Panda (css fn)                                          | 37.60 ms | —   | —       | —        | —         |
-|   15 | styled-components                                       | 38.50 ms | —   | —       | —        | —         |
-|   16 | Emotion                                                 | 44.60 ms | —   | —       | —        | —         |
+|    1 | cnfast                                                  | 20.70 ms | —   | —       | —        | —         |
+|    2 | next-yak css-prop 9.7.0 foldStatic: false               | 26.00 ms | —   | —       | —        | —         |
+|    3 | next-yak 9.7.0 (styled API) foldStatic: false           | 26.90 ms | —   | —       | —        | —         |
+|    4 | Panda (css fn)                                          | 27.80 ms | —   | —       | —        | —         |
+|    5 | Panda (style props)                                     | 28.30 ms | —   | —       | —        | —         |
+|    6 | next-yak css-prop 9.7.0                                 | 29.20 ms | —   | —       | —        | —         |
+|    7 | pandwind — createCss styles compiled by pandwindCssVite | 29.90 ms | —   | —       | —        | —         |
+|    8 | tailwind-merge                                          | 31.10 ms | —   | —       | —        | —         |
+|    9 | StyleX                                                  | 31.90 ms | —   | —       | —        | —         |
+|   10 | StyleX without CSS layers (:not() specificity hack)     | 32.30 ms | —   | —       | —        | —         |
+|   11 | Goober                                                  | 32.50 ms | —   | —       | —        | —         |
+|   12 | next-yak css-prop 9.6.0                                 | 33.10 ms | —   | —       | —        | —         |
+|   13 | next-yak 9.7.0 (styled API)                             | 33.30 ms | —   | —       | —        | —         |
+|   14 | next-yak 9.6.0                                          | 35.50 ms | —   | —       | —        | —         |
+|   15 | Emotion                                                 | 39.90 ms | —   | —       | —        | —         |
+|   16 | styled-components                                       | 43.40 ms | —   | —       | —        | —         |
 
 ### Chrome interaction responsiveness — product-grid
 
@@ -458,22 +459,22 @@ INP is not ranked because frame-timed medians cluster within measurement noise.
 
 |     Rank | Implementation                                          | Result   | P95     | JS gzip | CSS gzip | HTML gzip |
 | -------: | ------------------------------------------------------- | -------- | ------- | ------- | -------- | --------- |
-| unranked | cnfast                                                  | 33.30 ms | 33.9 ms | —       | —        | —         |
-| unranked | Emotion                                                 | 33.30 ms | 33.5 ms | —       | —        | —         |
-| unranked | Goober                                                  | 33.10 ms | 34.3 ms | —       | —        | —         |
-| unranked | next-yak 9.6.0                                          | 33.30 ms | 33.5 ms | —       | —        | —         |
-| unranked | next-yak 9.7.0 (styled API)                             | 33.30 ms | 33.4 ms | —       | —        | —         |
-| unranked | next-yak 9.7.0 (styled API) foldStatic: false           | 33.30 ms | 34.1 ms | —       | —        | —         |
-| unranked | next-yak css-prop 9.6.0                                 | 33.50 ms | 33.7 ms | —       | —        | —         |
-| unranked | next-yak css-prop 9.7.0                                 | 32.60 ms | 34.2 ms | —       | —        | —         |
-| unranked | next-yak css-prop 9.7.0 foldStatic: false               | 33.30 ms | 33.5 ms | —       | —        | —         |
-| unranked | Panda (css fn)                                          | 33.20 ms | 33.5 ms | —       | —        | —         |
-| unranked | Panda (style props)                                     | 33.20 ms | 33.7 ms | —       | —        | —         |
-| unranked | pandwind — createCss styles compiled by pandwindCssVite | 33.20 ms | 33.9 ms | —       | —        | —         |
-| unranked | styled-components                                       | 32.90 ms | 33.5 ms | —       | —        | —         |
-| unranked | StyleX                                                  | 33.30 ms | 33.8 ms | —       | —        | —         |
-| unranked | StyleX without CSS layers (:not() specificity hack)     | 32.70 ms | 34.3 ms | —       | —        | —         |
-| unranked | tailwind-merge                                          | 33.30 ms | 33.7 ms | —       | —        | —         |
+| unranked | cnfast                                                  | 32.80 ms | 34.0 ms | —       | —        | —         |
+| unranked | Emotion                                                 | 33.20 ms | 33.8 ms | —       | —        | —         |
+| unranked | Goober                                                  | 32.60 ms | 34.3 ms | —       | —        | —         |
+| unranked | next-yak 9.6.0                                          | 33.30 ms | 33.4 ms | —       | —        | —         |
+| unranked | next-yak 9.7.0 (styled API)                             | 33.40 ms | 34.1 ms | —       | —        | —         |
+| unranked | next-yak 9.7.0 (styled API) foldStatic: false           | 32.70 ms | 34.3 ms | —       | —        | —         |
+| unranked | next-yak css-prop 9.6.0                                 | 33.30 ms | 33.8 ms | —       | —        | —         |
+| unranked | next-yak css-prop 9.7.0                                 | 33.30 ms | 33.7 ms | —       | —        | —         |
+| unranked | next-yak css-prop 9.7.0 foldStatic: false               | 33.30 ms | 33.4 ms | —       | —        | —         |
+| unranked | Panda (css fn)                                          | 33.10 ms | 33.4 ms | —       | —        | —         |
+| unranked | Panda (style props)                                     | 33.40 ms | 34.2 ms | —       | —        | —         |
+| unranked | pandwind — createCss styles compiled by pandwindCssVite | 33.30 ms | 34.8 ms | —       | —        | —         |
+| unranked | styled-components                                       | 33.40 ms | 33.7 ms | —       | —        | —         |
+| unranked | StyleX                                                  | 33.30 ms | 33.5 ms | —       | —        | —         |
+| unranked | StyleX without CSS layers (:not() specificity hack)     | 33.40 ms | 33.7 ms | —       | —        | —         |
+| unranked | tailwind-merge                                          | 33.30 ms | 34.4 ms | —       | —        | —         |
 
 ### Cold production client build — all cases
 
@@ -497,20 +498,6 @@ INP is not ranked because frame-timed medians cluster within measurement noise.
 |   16 | Panda (style props)                                     | 409.00 ms | —   | —       | —        | —         |
 |   17 | Panda (recipe)                                          | 436.00 ms | —   | —       | —        | —         |
 
-### Cold-build method and samples
-
-Pandwind cold runs were 498, 304, 375 ms (median 375 ms); immediate warm runs were 421, 344, 392 ms (median 392 ms). The repeated rank harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches, and it records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.
-
-### One-off instrumented phase profile
-
-One instrumented CSS-in-JS Bench pandwind-css lane with isolated output and Vite cache sample on 2026-09-25, using Pandwind artifact bc1b904c5d6795d43396b9f364a127fd68c2f436, took 212.72 ms total. Hook timings were load 0.11 ms, resolve 0.06 ms, buildStart 0.05 ms, cumulative inclusive CSS transform 13.15 ms, and CSS generateBundle 81.32 ms. This predates the source-filter fix; it is a single instrumented diagnostic, not a repeated phase breakdown or a rank measurement.
-
-### Pinned-artifact DOM and pixel verification
-
-The CSS-in-JS Bench verifier ran 2026-09-25T14:53:49.355Z against benchmark revision 3f8df15117387d291d96fb7ab8fdefa8c4017a15 and Pandwind artifact bc1b904c5d6795d43396b9f364a127fd68c2f436. It passed 13/13 DOM-attribute cases and 13/13 pixel cases across the 21-lane benchmark artifact.
-
-Hydration verification skipped: The isolated verification workspace did not contain hydrate builds. The case-level evidence is in [parity-verification.json](benchmarks/css-in-js-bench/parity-verification.json). This validates the pinned artifact, not later current-source changes.
-
 ### Separate `tw()` bonus lane
 
 This lane uses pandwind-buildtime and ranks against the same peer set with pandwind-css removed. It does not contribute to the primary rank.
@@ -519,22 +506,22 @@ This lane uses pandwind-buildtime and ranks against the same peer set with pandw
 
 | Rank | Implementation                                                                                             | Result          | P95 | JS gzip | CSS gzip | HTML gzip |
 | ---: | ---------------------------------------------------------------------------------------------------------- | --------------- | --- | ------- | -------- | --------- |
-|    1 | next-yak css-prop 9.7.0                                                                                    | 262,274 tiles/s | —   | —       | —        | —         |
-|    2 | StyleX                                                                                                     | 244,461 tiles/s | —   | —       | —        | —         |
-|    3 | next-yak 9.7.0 (styled API)                                                                                | 242,492 tiles/s | —   | —       | —        | —         |
-|    4 | next-yak css-prop 9.6.0                                                                                    | 204,429 tiles/s | —   | —       | —        | —         |
-|    5 | pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped | 192,477 tiles/s | —   | —       | —        | —         |
-|    6 | StyleX without CSS layers (:not() specificity hack)                                                        | 191,471 tiles/s | —   | —       | —        | —         |
-|    7 | cnfast                                                                                                     | 183,266 tiles/s | —   | —       | —        | —         |
-|    8 | next-yak css-prop 9.7.0 foldStatic: false                                                                  | 177,495 tiles/s | —   | —       | —        | —         |
-|    9 | Panda (css fn)                                                                                             | 151,731 tiles/s | —   | —       | —        | —         |
-|   10 | tailwind-merge                                                                                             | 129,511 tiles/s | —   | —       | —        | —         |
-|   11 | next-yak 9.6.0                                                                                             | 75,031 tiles/s  | —   | —       | —        | —         |
-|   12 | styled-components                                                                                          | 63,201 tiles/s  | —   | —       | —        | —         |
-|   13 | next-yak 9.7.0 (styled API) foldStatic: false                                                              | 62,085 tiles/s  | —   | —       | —        | —         |
-|   14 | Goober                                                                                                     | 40,337 tiles/s  | —   | —       | —        | —         |
-|   15 | Emotion                                                                                                    | 38,421 tiles/s  | —   | —       | —        | —         |
-|   16 | Panda (style props)                                                                                        | 8,860 tiles/s   | —   | —       | —        | —         |
+|    1 | next-yak css-prop 9.7.0                                                                                    | 271,632 tiles/s | —   | —       | —        | —         |
+|    2 | next-yak css-prop 9.7.0 foldStatic: false                                                                  | 177,076 tiles/s | —   | —       | —        | —         |
+|    3 | next-yak css-prop 9.6.0                                                                                    | 140,466 tiles/s | —   | —       | —        | —         |
+|    4 | next-yak 9.7.0 (styled API)                                                                                | 128,585 tiles/s | —   | —       | —        | —         |
+|    5 | Panda (css fn)                                                                                             | 113,141 tiles/s | —   | —       | —        | —         |
+|    6 | StyleX without CSS layers (:not() specificity hack)                                                        | 104,846 tiles/s | —   | —       | —        | —         |
+|    7 | StyleX                                                                                                     | 101,761 tiles/s | —   | —       | —        | —         |
+|    8 | cnfast                                                                                                     | 96,163 tiles/s  | —   | —       | —        | —         |
+|    9 | pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped | 77,350 tiles/s  | —   | —       | —        | —         |
+|   10 | next-yak 9.6.0                                                                                             | 72,351 tiles/s  | —   | —       | —        | —         |
+|   11 | tailwind-merge                                                                                             | 69,972 tiles/s  | —   | —       | —        | —         |
+|   12 | next-yak 9.7.0 (styled API) foldStatic: false                                                              | 68,730 tiles/s  | —   | —       | —        | —         |
+|   13 | Goober                                                                                                     | 51,450 tiles/s  | —   | —       | —        | —         |
+|   14 | Emotion                                                                                                    | 33,054 tiles/s  | —   | —       | —        | —         |
+|   15 | styled-components                                                                                          | 22,681 tiles/s  | —   | —       | —        | —         |
+|   16 | Panda (style props)                                                                                        | 4,440 tiles/s   | —   | —       | —        | —         |
 
 ### Transferred page payload — product-grid
 
@@ -561,43 +548,43 @@ This lane uses pandwind-buildtime and ranks against the same peer set with pandw
 
 | Rank | Implementation                                                                                             | Result   | P95 | JS gzip | CSS gzip | HTML gzip |
 | ---: | ---------------------------------------------------------------------------------------------------------- | -------- | --- | ------- | -------- | --------- |
-|    1 | StyleX without CSS layers (:not() specificity hack)                                                        | 26.30 ms | —   | —       | —        | —         |
-|    2 | next-yak 9.7.0 (styled API)                                                                                | 27.00 ms | —   | —       | —        | —         |
-|    3 | next-yak css-prop 9.6.0                                                                                    | 30.00 ms | —   | —       | —        | —         |
-|    4 | next-yak 9.6.0                                                                                             | 33.10 ms | —   | —       | —        | —         |
-|    5 | tailwind-merge                                                                                             | 33.80 ms | —   | —       | —        | —         |
-|    6 | pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped | 34.00 ms | —   | —       | —        | —         |
-|    7 | cnfast                                                                                                     | 34.60 ms | —   | —       | —        | —         |
-|    8 | next-yak css-prop 9.7.0 foldStatic: false                                                                  | 35.40 ms | —   | —       | —        | —         |
-|    9 | Panda (style props)                                                                                        | 35.40 ms | —   | —       | —        | —         |
-|   10 | next-yak css-prop 9.7.0                                                                                    | 36.80 ms | —   | —       | —        | —         |
-|   11 | StyleX                                                                                                     | 38.40 ms | —   | —       | —        | —         |
-|   12 | Goober                                                                                                     | 38.70 ms | —   | —       | —        | —         |
-|   13 | next-yak 9.7.0 (styled API) foldStatic: false                                                              | 39.50 ms | —   | —       | —        | —         |
-|   14 | Panda (css fn)                                                                                             | 40.00 ms | —   | —       | —        | —         |
-|   15 | Emotion                                                                                                    | 40.90 ms | —   | —       | —        | —         |
-|   16 | styled-components                                                                                          | 50.60 ms | —   | —       | —        | —         |
+|    1 | pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped | 23.60 ms | —   | —       | —        | —         |
+|    2 | StyleX without CSS layers (:not() specificity hack)                                                        | 25.60 ms | —   | —       | —        | —         |
+|    3 | tailwind-merge                                                                                             | 29.90 ms | —   | —       | —        | —         |
+|    4 | next-yak 9.7.0 (styled API)                                                                                | 31.20 ms | —   | —       | —        | —         |
+|    5 | cnfast                                                                                                     | 31.60 ms | —   | —       | —        | —         |
+|    6 | next-yak css-prop 9.6.0                                                                                    | 32.10 ms | —   | —       | —        | —         |
+|    7 | StyleX                                                                                                     | 36.00 ms | —   | —       | —        | —         |
+|    8 | Panda (css fn)                                                                                             | 36.80 ms | —   | —       | —        | —         |
+|    9 | next-yak css-prop 9.7.0                                                                                    | 39.20 ms | —   | —       | —        | —         |
+|   10 | next-yak 9.6.0                                                                                             | 40.90 ms | —   | —       | —        | —         |
+|   11 | styled-components                                                                                          | 42.40 ms | —   | —       | —        | —         |
+|   12 | next-yak 9.7.0 (styled API) foldStatic: false                                                              | 46.80 ms | —   | —       | —        | —         |
+|   13 | Emotion                                                                                                    | 52.50 ms | —   | —       | —        | —         |
+|   14 | Goober                                                                                                     | 56.40 ms | —   | —       | —        | —         |
+|   15 | Panda (style props)                                                                                        | 56.70 ms | —   | —       | —        | —         |
+|   16 | next-yak css-prop 9.7.0 foldStatic: false                                                                  | 63.00 ms | —   | —       | —        | —         |
 
 ### Chrome hydration — product-grid
 
 | Rank | Implementation                                                                                             | Result   | P95 | JS gzip | CSS gzip | HTML gzip |
 | ---: | ---------------------------------------------------------------------------------------------------------- | -------- | --- | ------- | -------- | --------- |
-|    1 | StyleX without CSS layers (:not() specificity hack)                                                        | 20.50 ms | —   | —       | —        | —         |
-|    2 | next-yak css-prop 9.6.0                                                                                    | 21.80 ms | —   | —       | —        | —         |
-|    3 | next-yak 9.6.0                                                                                             | 22.70 ms | —   | —       | —        | —         |
-|    4 | next-yak 9.7.0 (styled API) foldStatic: false                                                              | 22.90 ms | —   | —       | —        | —         |
-|    5 | next-yak 9.7.0 (styled API)                                                                                | 24.10 ms | —   | —       | —        | —         |
-|    6 | tailwind-merge                                                                                             | 24.30 ms | —   | —       | —        | —         |
-|    7 | Panda (style props)                                                                                        | 25.20 ms | —   | —       | —        | —         |
-|    8 | cnfast                                                                                                     | 26.80 ms | —   | —       | —        | —         |
-|    9 | next-yak css-prop 9.7.0 foldStatic: false                                                                  | 27.80 ms | —   | —       | —        | —         |
-|   10 | pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped | 31.50 ms | —   | —       | —        | —         |
-|   11 | next-yak css-prop 9.7.0                                                                                    | 33.40 ms | —   | —       | —        | —         |
-|   12 | Goober                                                                                                     | 33.80 ms | —   | —       | —        | —         |
-|   13 | StyleX                                                                                                     | 34.50 ms | —   | —       | —        | —         |
-|   14 | Panda (css fn)                                                                                             | 37.60 ms | —   | —       | —        | —         |
-|   15 | styled-components                                                                                          | 38.50 ms | —   | —       | —        | —         |
-|   16 | Emotion                                                                                                    | 44.60 ms | —   | —       | —        | —         |
+|    1 | cnfast                                                                                                     | 20.70 ms | —   | —       | —        | —         |
+|    2 | next-yak css-prop 9.7.0 foldStatic: false                                                                  | 26.00 ms | —   | —       | —        | —         |
+|    3 | next-yak 9.7.0 (styled API) foldStatic: false                                                              | 26.90 ms | —   | —       | —        | —         |
+|    4 | Panda (css fn)                                                                                             | 27.80 ms | —   | —       | —        | —         |
+|    5 | Panda (style props)                                                                                        | 28.30 ms | —   | —       | —        | —         |
+|    6 | next-yak css-prop 9.7.0                                                                                    | 29.20 ms | —   | —       | —        | —         |
+|    7 | tailwind-merge                                                                                             | 31.10 ms | —   | —       | —        | —         |
+|    8 | pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped | 31.40 ms | —   | —       | —        | —         |
+|    9 | StyleX                                                                                                     | 31.90 ms | —   | —       | —        | —         |
+|   10 | StyleX without CSS layers (:not() specificity hack)                                                        | 32.30 ms | —   | —       | —        | —         |
+|   11 | Goober                                                                                                     | 32.50 ms | —   | —       | —        | —         |
+|   12 | next-yak css-prop 9.6.0                                                                                    | 33.10 ms | —   | —       | —        | —         |
+|   13 | next-yak 9.7.0 (styled API)                                                                                | 33.30 ms | —   | —       | —        | —         |
+|   14 | next-yak 9.6.0                                                                                             | 35.50 ms | —   | —       | —        | —         |
+|   15 | Emotion                                                                                                    | 39.90 ms | —   | —       | —        | —         |
+|   16 | styled-components                                                                                          | 43.40 ms | —   | —       | —        | —         |
 
 ### Chrome interaction responsiveness — product-grid
 
@@ -605,22 +592,22 @@ INP is not ranked because frame-timed medians cluster within measurement noise.
 
 |     Rank | Implementation                                                                                             | Result   | P95     | JS gzip | CSS gzip | HTML gzip |
 | -------: | ---------------------------------------------------------------------------------------------------------- | -------- | ------- | ------- | -------- | --------- |
-| unranked | cnfast                                                                                                     | 33.30 ms | 33.9 ms | —       | —        | —         |
-| unranked | Emotion                                                                                                    | 33.30 ms | 33.5 ms | —       | —        | —         |
-| unranked | Goober                                                                                                     | 33.10 ms | 34.3 ms | —       | —        | —         |
-| unranked | next-yak 9.6.0                                                                                             | 33.30 ms | 33.5 ms | —       | —        | —         |
-| unranked | next-yak 9.7.0 (styled API)                                                                                | 33.30 ms | 33.4 ms | —       | —        | —         |
-| unranked | next-yak 9.7.0 (styled API) foldStatic: false                                                              | 33.30 ms | 34.1 ms | —       | —        | —         |
-| unranked | next-yak css-prop 9.6.0                                                                                    | 33.50 ms | 33.7 ms | —       | —        | —         |
-| unranked | next-yak css-prop 9.7.0                                                                                    | 32.60 ms | 34.2 ms | —       | —        | —         |
-| unranked | next-yak css-prop 9.7.0 foldStatic: false                                                                  | 33.30 ms | 33.5 ms | —       | —        | —         |
-| unranked | Panda (css fn)                                                                                             | 33.20 ms | 33.5 ms | —       | —        | —         |
-| unranked | Panda (style props)                                                                                        | 33.20 ms | 33.7 ms | —       | —        | —         |
-| unranked | pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped | 33.30 ms | 33.3 ms | —       | —        | —         |
-| unranked | styled-components                                                                                          | 32.90 ms | 33.5 ms | —       | —        | —         |
-| unranked | StyleX                                                                                                     | 33.30 ms | 33.8 ms | —       | —        | —         |
-| unranked | StyleX without CSS layers (:not() specificity hack)                                                        | 32.70 ms | 34.3 ms | —       | —        | —         |
-| unranked | tailwind-merge                                                                                             | 33.30 ms | 33.7 ms | —       | —        | —         |
+| unranked | cnfast                                                                                                     | 32.80 ms | 34.0 ms | —       | —        | —         |
+| unranked | Emotion                                                                                                    | 33.20 ms | 33.8 ms | —       | —        | —         |
+| unranked | Goober                                                                                                     | 32.60 ms | 34.3 ms | —       | —        | —         |
+| unranked | next-yak 9.6.0                                                                                             | 33.30 ms | 33.4 ms | —       | —        | —         |
+| unranked | next-yak 9.7.0 (styled API)                                                                                | 33.40 ms | 34.1 ms | —       | —        | —         |
+| unranked | next-yak 9.7.0 (styled API) foldStatic: false                                                              | 32.70 ms | 34.3 ms | —       | —        | —         |
+| unranked | next-yak css-prop 9.6.0                                                                                    | 33.30 ms | 33.8 ms | —       | —        | —         |
+| unranked | next-yak css-prop 9.7.0                                                                                    | 33.30 ms | 33.7 ms | —       | —        | —         |
+| unranked | next-yak css-prop 9.7.0 foldStatic: false                                                                  | 33.30 ms | 33.4 ms | —       | —        | —         |
+| unranked | Panda (css fn)                                                                                             | 33.10 ms | 33.4 ms | —       | —        | —         |
+| unranked | Panda (style props)                                                                                        | 33.40 ms | 34.2 ms | —       | —        | —         |
+| unranked | pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped | 33.20 ms | 33.6 ms | —       | —        | —         |
+| unranked | styled-components                                                                                          | 33.40 ms | 33.7 ms | —       | —        | —         |
+| unranked | StyleX                                                                                                     | 33.30 ms | 33.5 ms | —       | —        | —         |
+| unranked | StyleX without CSS layers (:not() specificity hack)                                                        | 33.40 ms | 33.7 ms | —       | —        | —         |
+| unranked | tailwind-merge                                                                                             | 33.30 ms | 34.4 ms | —       | —        | —         |
 
 ### Cold production client build — all cases
 
@@ -679,16 +666,16 @@ Full normalized measurements and parity metadata: [snapshot.json](benchmarks/css
 
 ### Current-source output recheck
 
-Pandwind revision 41a909fa9560c1cdd983f998329bf3602b277ccb measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps. Geometry passed 18/18 checks within 0.5 px; screenshots passed 72/72 checks under 0.05%. Rankings use the pinned peer values, with the current Pandwind output substituted.
+Pandwind revision 9a9f9c499e7f43f8b05811634613a2d2419fe156 measured 2026-09-26 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps. Geometry passed 18/18 checks within 0.5 px; screenshots passed 72/72 checks under 0.05%. Rankings use the pinned peer values, with the current Pandwind output substituted.
 
 | Output measure                    | Pinned Pandwind | Current Pandwind | Delta | Rank |
 | --------------------------------- | --------------: | ---------------: | ----: | ---: |
 | Browser CSS, raw                  |        31,732 B |         31,732 B |   0 B | #1/4 |
 | Browser CSS, gzip                 |         9,913 B |          9,913 B |   0 B | #3/4 |
 | Browser CSS, Brotli               |         8,724 B |          8,724 B |   0 B | #3/4 |
-| Client JavaScript, Brotli         |       111,644 B |        111,632 B | -12 B | #4/4 |
-| Mean SSR HTML, gzip, six routes   |         5,470 B |          5,469 B |  -1 B | #1/4 |
-| Full first load                   |       125,838 B |        125,825 B | -13 B | #4/4 |
+| Client JavaScript, Brotli         |       111,644 B |        111,622 B | -22 B | #4/4 |
+| Mean SSR HTML, gzip, six routes   |         5,470 B |          5,470 B |   0 B | #1/4 |
+| Full first load                   |       125,838 B |        125,815 B | -23 B | #4/4 |
 | HTML class attributes, six routes |        59,980 B |         59,980 B |   0 B | #1/4 |
 
 ### Large-style CSS volume sweep

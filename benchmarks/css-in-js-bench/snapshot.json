@@ -3,48 +3,22 @@
 	"source": {
 		"repository": "jantimon/css-in-js-bench",
 		"url": "https://github.com/jantimon/css-in-js-bench",
-		"cssInJsBenchRevision": "9ed62df69397",
-		"pandwindRevision": "bc1b904c5d6795d43396b9f364a127fd68c2f436",
+		"cssInJsBenchRevision": "3f8df1511738",
+		"pandwindRevision": "9a9f9c499e7f43f8b05811634613a2d2419fe156",
 		"pandwindMainLane": "pandwind-css",
 		"pandwindTwBonusLane": "pandwind-buildtime",
 		"pandwindNamedStrategyDiagnostic": "pandwind-css-named",
-		"wpdCompletedAt": "2026-09-25T00:35:42.187Z",
+		"wpdCompletedAt": "2026-09-26T08:49:49.145Z",
 		"host": "Apple M4 (arm64)",
 		"node": "v24.20.0",
-		"gitSha": "9ed62df69397",
+		"gitSha": "3f8df1511738",
 		"wpdVersion": "0.15.1",
 		"browsers": {
 			"chrome": "154.0.8037.57",
 			"firefox": "stable_156.0.1"
 		},
 		"laneCount": 21,
-		"caseCount": 13,
-		"pandwindBuildtimeSamples": {
-			"coldMs": [498, 304, 375],
-			"warmMs": [421, 344, 392]
-		},
-		"pandwindBuildtimeProfile": {
-			"pandwindRevision": "bc1b904c5d6795d43396b9f364a127fd68c2f436",
-			"measuredAt": "2026-09-25",
-			"harness": "CSS-in-JS Bench pandwind-css lane with isolated output and Vite cache",
-			"samples": 1,
-			"totalBuildMs": 212.72,
-			"phasesMs": {
-				"load": 0.11,
-				"resolve": 0.06,
-				"buildStart": 0.05,
-				"cssTransformInclusive": 13.15,
-				"cssGenerateBundle": 81.32
-			}
-		}
-	},
-	"parityVerification": {
-		"measuredAt": "2026-09-25T14:53:49.355Z",
-		"benchmarkRevision": "3f8df15117387d291d96fb7ab8fdefa8c4017a15",
-		"pandwindArtifactRevision": "bc1b904c5d6795d43396b9f364a127fd68c2f436",
-		"reportPath": "benchmarks/css-in-js-bench/parity-verification.json",
-		"hydration": "skipped",
-		"hydrationNote": "The isolated verification workspace did not contain hydrate builds."
+		"caseCount": 13
 	},
 	"workloads": [
 		{
@@ -57,114 +31,114 @@
 				{
 					"tech": "cnfast",
 					"label": "cnfast",
-					"value": 183266,
-					"spread": 0.2205482740933943
+					"value": 96163,
+					"spread": 0.24962303588698356
 				},
 				{
 					"tech": "emotion",
 					"label": "Emotion",
-					"value": 38421,
-					"spread": 0.0599411780016137
+					"value": 33054,
+					"spread": 0.17674109033702426
 				},
 				{
 					"tech": "goober",
 					"label": "Goober",
-					"value": 40337,
-					"spread": 0.1653196816818306
+					"value": 51450,
+					"spread": 0.16826044703595724
 				},
 				{
 					"tech": "next-yak",
 					"label": "next-yak 9.6.0",
-					"value": 75031,
-					"spread": 0.12242273193746585
+					"value": 72351,
+					"spread": 0.1307238324280245
 				},
 				{
 					"tech": "next-yak-9.7",
 					"label": "next-yak 9.7.0 (styled API)",
-					"value": 242492,
-					"spread": 0.10874997938076307
+					"value": 128585,
+					"spread": 0.239783022903138
 				},
 				{
 					"tech": "next-yak-9.7-nofold",
 					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 62085,
-					"spread": 0.2627043569300153
+					"value": 68730,
+					"spread": 0.18563945875163684
 				},
 				{
 					"tech": "next-yak-css",
 					"label": "next-yak css-prop 9.6.0",
-					"value": 204429,
-					"spread": 0.17330711396132642
+					"value": 140466,
+					"spread": 0.3056647160166873
 				},
 				{
 					"tech": "next-yak-css-9.7",
 					"label": "next-yak css-prop 9.7.0",
-					"value": 262274,
-					"spread": 0.2194822971396326
+					"value": 271632,
+					"spread": 0.20365789008658775
 				},
 				{
 					"tech": "next-yak-css-9.7-nofold",
 					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 177495,
-					"spread": 0.16454548015437054
+					"value": 177076,
+					"spread": 0.23024294653143282
 				},
 				{
 					"tech": "panda",
 					"label": "Panda (css fn)",
-					"value": 151731,
-					"spread": 0.06929038891195603
+					"value": 113141,
+					"spread": 0.2096985177787009
 				},
 				{
 					"tech": "panda-props",
 					"label": "Panda (style props)",
-					"value": 8860,
-					"spread": 0.03639954853273138
+					"value": 4440,
+					"spread": 0.12578828828828828
 				},
 				{
 					"tech": "styled-components",
 					"label": "styled-components",
-					"value": 63201,
-					"spread": 0.03331434629198905
+					"value": 22681,
+					"spread": 0.10308187469688285
 				},
 				{
 					"tech": "stylex",
 					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 191471,
-					"spread": 0.18780650855743167
+					"value": 104846,
+					"spread": 0.19619251092077905
 				},
 				{
 					"tech": "tailwind-merge",
 					"label": "tailwind-merge",
-					"value": 129511,
-					"spread": 0.08920863864845457
+					"value": 69972,
+					"spread": 0.22664780197793402
 				},
 				{
 					"tech": "stylex-layers",
 					"label": "StyleX",
-					"value": 244461,
-					"spread": 0.12326506068452636
+					"value": 101761,
+					"spread": 0.14184707304370042
 				},
 				{
 					"tech": "pandwind-css",
 					"label": "pandwind — createCss styles compiled by pandwindCssVite",
-					"value": 269852,
-					"spread": 0.1263173887908928
+					"value": 107687,
+					"spread": 0.33738055661314736
 				}
 			],
 			"bonusResults": [
 				{
 					"tech": "pandwind-buildtime",
 					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 192477,
-					"spread": 0.11634636865703435
+					"value": 77350,
+					"spread": 0.18206851971557855
 				}
 			],
 			"strategyResults": [
 				{
 					"tech": "pandwind-css-named",
 					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
-					"value": 186658,
-					"spread": 0.15203741602288678
+					"value": 69290,
+					"spread": 0.14742387068841104
 				}
 			]
 		},
@@ -371,96 +345,96 @@
 				{
 					"tech": "cnfast",
 					"label": "cnfast",
-					"value": 34.6
+					"value": 31.6
 				},
 				{
 					"tech": "emotion",
 					"label": "Emotion",
-					"value": 40.9
+					"value": 52.5
 				},
 				{
 					"tech": "goober",
 					"label": "Goober",
-					"value": 38.7
+					"value": 56.4
 				},
 				{
 					"tech": "next-yak",
 					"label": "next-yak 9.6.0",
-					"value": 33.1
+					"value": 40.9
 				},
 				{
 					"tech": "next-yak-9.7",
 					"label": "next-yak 9.7.0 (styled API)",
-					"value": 27
+					"value": 31.2
 				},
 				{
 					"tech": "next-yak-9.7-nofold",
 					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 39.5
+					"value": 46.8
 				},
 				{
 					"tech": "next-yak-css",
 					"label": "next-yak css-prop 9.6.0",
-					"value": 30
+					"value": 32.1
 				},
 				{
 					"tech": "next-yak-css-9.7",
 					"label": "next-yak css-prop 9.7.0",
-					"value": 36.8
+					"value": 39.2
 				},
 				{
 					"tech": "next-yak-css-9.7-nofold",
 					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 35.4
+					"value": 63
 				},
 				{
 					"tech": "panda",
 					"label": "Panda (css fn)",
-					"value": 40
+					"value": 36.8
 				},
 				{
 					"tech": "panda-props",
 					"label": "Panda (style props)",
-					"value": 35.4
+					"value": 56.7
 				},
 				{
 					"tech": "styled-components",
 					"label": "styled-components",
-					"value": 50.6
+					"value": 42.4
 				},
 				{
 					"tech": "stylex",
 					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 26.3
+					"value": 25.6
 				},
 				{
 					"tech": "tailwind-merge",
 					"label": "tailwind-merge",
-					"value": 33.8
+					"value": 29.9
 				},
 				{
 					"tech": "stylex-layers",
 					"label": "StyleX",
-					"value": 38.4
+					"value": 36
 				},
 				{
 					"tech": "pandwind-css",
 					"label": "pandwind — createCss styles compiled by pandwindCssVite",
-					"value": 34.7
+					"value": 39.2
 				}
 			],
 			"bonusResults": [
 				{
 					"tech": "pandwind-buildtime",
 					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 34
+					"value": 23.6
 				}
 			],
 			"strategyResults": [
 				{
 					"tech": "pandwind-css-named",
 					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
-					"value": 34.1
+					"value": 38.6
 				}
 			]
 		},
@@ -474,96 +448,96 @@
 				{
 					"tech": "cnfast",
 					"label": "cnfast",
-					"value": 26.8
+					"value": 20.7
 				},
 				{
 					"tech": "emotion",
 					"label": "Emotion",
-					"value": 44.6
+					"value": 39.9
 				},
 				{
 					"tech": "goober",
 					"label": "Goober",
-					"value": 33.8
+					"value": 32.5
 				},
 				{
 					"tech": "next-yak",
 					"label": "next-yak 9.6.0",
-					"value": 22.7
+					"value": 35.5
 				},
 				{
 					"tech": "next-yak-9.7",
 					"label": "next-yak 9.7.0 (styled API)",
-					"value": 24.1
+					"value": 33.3
 				},
 				{
 					"tech": "next-yak-9.7-nofold",
 					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 22.9
+					"value": 26.9
 				},
 				{
 					"tech": "next-yak-css",
 					"label": "next-yak css-prop 9.6.0",
-					"value": 21.8
+					"value": 33.1
 				},
 				{
 					"tech": "next-yak-css-9.7",
 					"label": "next-yak css-prop 9.7.0",
-					"value": 33.4
+					"value": 29.2
 				},
 				{
 					"tech": "next-yak-css-9.7-nofold",
 					"label": "next-yak css-prop 9.7.0 foldStatic: false",
-					"value": 27.8
+					"value": 26
 				},
 				{
 					"tech": "panda",
 					"label": "Panda (css fn)",
-					"value": 37.6
+					"value": 27.8
 				},
 				{
 					"tech": "panda-props",
 					"label": "Panda (style props)",
-					"value": 25.2
+					"value": 28.3
 				},
 				{
 					"tech": "styled-components",
 					"label": "styled-components",
-					"value": 38.5
+					"value": 43.4
 				},
 				{
 					"tech": "stylex",
 					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 20.5
+					"value": 32.3
 				},
 				{
 					"tech": "tailwind-merge",
 					"label": "tailwind-merge",
-					"value": 24.3
+					"value": 31.1
 				},
 				{
 					"tech": "stylex-layers",
 					"label": "StyleX",
-					"value": 34.5
+					"value": 31.9
 				},
 				{
 					"tech": "pandwind-css",
 					"label": "pandwind — createCss styles compiled by pandwindCssVite",
-					"value": 22.1
+					"value": 29.9
 				}
 			],
 			"bonusResults": [
 				{
 					"tech": "pandwind-buildtime",
 					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 31.5
+					"value": 31.4
 				}
 			],
 			"strategyResults": [
 				{
 					"tech": "pandwind-css-named",
 					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
-					"value": 29.3
+					"value": 20.3
 				}
 			]
 		},
@@ -577,114 +551,114 @@
 				{
 					"tech": "cnfast",
 					"label": "cnfast",
-					"value": 33.3,
-					"p95Ms": 33.9
+					"value": 32.8,
+					"p95Ms": 34
 				},
 				{
 					"tech": "emotion",
 					"label": "Emotion",
-					"value": 33.3,
-					"p95Ms": 33.5
+					"value": 33.2,
+					"p95Ms": 33.8
 				},
 				{
 					"tech": "goober",
 					"label": "Goober",
-					"value": 33.1,
+					"value": 32.6,
 					"p95Ms": 34.3
 				},
 				{
 					"tech": "next-yak",
 					"label": "next-yak 9.6.0",
 					"value": 33.3,
-					"p95Ms": 33.5
+					"p95Ms": 33.4
 				},
 				{
 					"tech": "next-yak-9.7",
 					"label": "next-yak 9.7.0 (styled API)",
-					"value": 33.3,
-					"p95Ms": 33.4
+					"value": 33.4,
+					"p95Ms": 34.1
 				},
 				{
 					"tech": "next-yak-9.7-nofold",
 					"label": "next-yak 9.7.0 (styled API) foldStatic: false",
-					"value": 33.3,
-					"p95Ms": 34.1
+					"value": 32.7,
+					"p95Ms": 34.3
 				},
 				{
 					"tech": "next-yak-css",
 					"label": "next-yak css-prop 9.6.0",
-					"value": 33.5,
-					"p95Ms": 33.7
+					"value": 33.3,
+					"p95Ms": 33.8
 				},
 				{
 					"tech": "next-yak-css-9.7",
 					"label": "next-yak css-prop 9.7.0",
-					"value": 32.6,
-					"p95Ms": 34.2
+					"value": 33.3,
+					"p95Ms": 33.7
 				},
 				{
 					"tech": "next-yak-css-9.7-nofold",
 					"label": "next-yak css-prop 9.7.0 foldStatic: false",
 					"value": 33.3,
-					"p95Ms": 33.5
+					"p95Ms": 33.4
 				},
 				{
 					"tech": "panda",
 					"label": "Panda (css fn)",
-					"value": 33.2,
-					"p95Ms": 33.5
+					"value": 33.1,
+					"p95Ms": 33.4
 				},
 				{
 					"tech": "panda-props",
 					"label": "Panda (style props)",
-					"value": 33.2,
-					"p95Ms": 33.7
+					"value": 33.4,
+					"p95Ms": 34.2
 				},
 				{
 					"tech": "styled-components",
 					"label": "styled-components",
-					"value": 32.9,
-					"p95Ms": 33.5
+					"value": 33.4,
+					"p95Ms": 33.7
 				},
 				{
 					"tech": "stylex",
 					"label": "StyleX without CSS layers (:not() specificity hack)",
-					"value": 32.7,
-					"p95Ms": 34.3
+					"value": 33.4,
+					"p95Ms": 33.7
 				},
 				{
 					"tech": "tailwind-merge",
 					"label": "tailwind-merge",
 					"value": 33.3,
-					"p95Ms": 33.7
+					"p95Ms": 34.4
 				},
 				{
 					"tech": "stylex-layers",
 					"label": "StyleX",
 					"value": 33.3,
-					"p95Ms": 33.8
+					"p95Ms": 33.5
 				},
 				{
 					"tech": "pandwind-css",
 					"label": "pandwind — createCss styles compiled by pandwindCssVite",
-					"value": 33.2,
-					"p95Ms": 33.9
+					"value": 33.3,
+					"p95Ms": 34.8
 				}
 			],
 			"bonusResults": [
 				{
 					"tech": "pandwind-buildtime",
 					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
-					"value": 33.3,
-					"p95Ms": 33.3
+					"value": 33.2,
+					"p95Ms": 33.6
 				}
 			],
 			"strategyResults": [
 				{
 					"tech": "pandwind-css-named",
 					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
-					"value": 33.2,
-					"p95Ms": 33.9
+					"value": 33.3,
+					"p95Ms": 33.3
 				}
 			]
 		},

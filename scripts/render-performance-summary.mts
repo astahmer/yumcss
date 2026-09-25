@@ -2002,6 +2002,17 @@ const renderRankedExternalWorkload = (
 	return [[workload.label, workload.caseId, topFive, target]];
 };
 
+const renderCssInJsBenchScopeNote = (snapshot: CssInJsBenchSnapshot): string => {
+	const ssrSpread = snapshot.workloads
+		.find(({ id }) => id === "ssr-throughput")
+		?.results.find(({ tech }) => tech === snapshot.source.pandwindMainLane)?.spread;
+	const spreadNote =
+		ssrSpread === undefined
+			? ""
+			: ` The current Pandwind SSR median reports a ${(ssrSpread * 100).toFixed(1)}% spread.`;
+	return `The CSS-in-JS Bench page does not call \`cx()\`, so it does not exercise the class-map compiler optimization.${spreadNote} Its rank measures this fixture; it is not evidence for or against the \`cx()\` change.`;
+};
+
 const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined): string[] => {
 	if (snapshot === undefined) return [];
 	const rows = snapshot.workloads.flatMap((workload) =>
@@ -2052,6 +2063,8 @@ const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined
 		markdownTable(["Measure", "Workload", "Top five", "Pandwind `css()`"], rows, new Set()),
 		"",
 		"The primary lane uses `createCss(preset)` with `css.class(...)` for class-string hosts and a static multi-map `css(...)` + `css.props(...)` tile host, compiled by the shipped `pandwindCssVite(css)` plugin. The only runtime style value is the rating percentage custom property. Values are per-metric rankings; there is no cross-category score.",
+		"",
+		renderCssInJsBenchScopeNote(snapshot),
 		"",
 		"### Separate `tw()` bonus lane",
 		"",
@@ -2233,6 +2246,7 @@ const renderDetailedCssInJsBenchComparison = (
 		"### Primary `createCss` lane",
 		"",
 		"The lane uses `createCss(preset)`, static `css.class(...)` declarations, and a multi-map `css(...)` plus `css.props(...)` host boundary through the shipped `pandwindCssVite(css)` plugin. Only the rating percentage remains a runtime style value.",
+		renderCssInJsBenchScopeNote(snapshot),
 		"",
 		...primaryWorkloads,
 		...buildtimeContext,

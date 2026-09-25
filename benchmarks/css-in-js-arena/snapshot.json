@@ -104,8 +104,8 @@
 		}
 	],
 	"outputVerification": {
-		"pandwindRevision": "41a909fa9560c1cdd983f998329bf3602b277ccb",
-		"measuredAt": "2026-09-25",
+		"pandwindRevision": "9a9f9c499e7f43f8b05811634613a2d2419fe156",
+		"measuredAt": "2026-09-26",
 		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps",
 		"parity": {
 			"geometryPassed": 18,
@@ -119,9 +119,9 @@
 			{ "label": "Browser CSS, raw", "unit": "B", "value": 31732 },
 			{ "label": "Browser CSS, gzip", "unit": "B", "value": 9913 },
 			{ "label": "Browser CSS, Brotli", "unit": "B", "value": 8724 },
-			{ "label": "Client JavaScript, Brotli", "unit": "B", "value": 111632 },
-			{ "label": "Mean SSR HTML, gzip, six routes", "unit": "B", "value": 5469 },
-			{ "label": "Full first load", "unit": "B", "value": 125825 },
+			{ "label": "Client JavaScript, Brotli", "unit": "B", "value": 111622 },
+			{ "label": "Mean SSR HTML, gzip, six routes", "unit": "B", "value": 5470 },
+			{ "label": "Full first load", "unit": "B", "value": 125815 },
 			{ "label": "HTML class attributes, six routes", "unit": "B", "value": 59980 }
 		]
 	},
