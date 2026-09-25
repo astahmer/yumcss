@@ -417,6 +417,17 @@ describe("module-level constant propagation", () => {
 		expect(inlined).toBe(0);
 	});
 
+	test("immutable class-map members fold when declared before use", () => {
+		const source = [
+			'const styles = { padding: "p-6", text: "text-sm" };',
+			"export const className = cx(styles.padding, styles.text);",
+		].join("\n");
+		const { code, inlined } = foldModule(source);
+
+		expect(inlined).toBe(1);
+		expect(lastLiteral(code)).toBe(runtime("p-6", "text-sm"));
+	});
+
 	test("module analysis ignores parser parent links", () => {
 		const parsed = parseSync(
 			"parent-cycle.ts",
@@ -865,6 +876,86 @@ describe("pandwindVite CSS-only cx folding", () => {
 		expect(result).not.toBeNull();
 		expect(result!.code).not.toContain("cx(");
 		expect(result!.code).toContain(JSON.stringify(engine.foldLiteralStyle({ color: "$blue-500" })));
+	});
+
+	test("folds immutable css class maps and preserves reads before their declaration", async () => {
+		const plugin = pandwindVite({ css: { preset: examplePreset } });
+		const source = [
+			'import { cx } from "./cx";',
+			'import { css } from "./design";',
+			"export function className() { return cx(s.blue, \"text-sm\"); }",
+			'const s = { blue: css.class({ color: "$blue-500" }) };',
+		].join("\n");
+		const result = await plugin.transform.call({ resolve: () => null }, source, "/src/app.ts");
+		const expected = runtimeCxWithCss(
+			dss.class({ $raw: { color: "$blue-500" } }) as never,
+			"text-sm",
+		);
+
+		expect(result).not.toBeNull();
+		expect(result!.code).toContain(`(s.blue, ${JSON.stringify(expected)})`);
+		expect(result!.code).not.toContain("cx(");
+	});
+
+	test("does not fold class maps that escape, mutate, or use dynamic property access", async () => {
+		const plugin = pandwindVite({ css: { preset: examplePreset } });
+		const sources = [
+			[
+				'import { cx } from "./cx";',
+				'import { css } from "./design";',
+				'const s = { blue: css.class({ color: "$blue-500" }) };',
+				"mutate(s);",
+				"export const className = cx(s.blue);",
+			].join("\n"),
+			[
+				'import { cx } from "./cx";',
+				'import { css } from "./design";',
+				'const s = { blue: css.class({ color: "$blue-500" }) };',
+				"s.blue = \"text-red-500\";",
+				"export const className = cx(s.blue);",
+			].join("\n"),
+			[
+				'import { cx } from "./cx";',
+				'import { css } from "./design";',
+				'const s = { blue: css.class({ color: "$blue-500" }) };',
+				"s.blue++;",
+				"export const className = cx(s.blue);",
+			].join("\n"),
+			[
+				'import { cx } from "./cx";',
+				'import { css } from "./design";',
+				'const s = { blue: css.class({ color: "$blue-500" }) };',
+				"delete s.blue;",
+				"export const className = cx(s.blue);",
+			].join("\n"),
+			[
+				'import { cx } from "./cx";',
+				'import { css } from "./design";',
+				'const s = { blue: css.class({ color: "$blue-500" }) };',
+				'const key = "blue";',
+				"export const className = cx(s[key]);",
+			].join("\n"),
+			[
+				'import { cx } from "./cx";',
+				'import { css } from "./design";',
+				'const s = { blue: css.class({ color: "$blue-500" }) };',
+				"export const className = cx(s?.blue);",
+			].join("\n"),
+			[
+				'import { cx } from "./cx";',
+				"const s = { get blue() { return \"text-blue-500\"; } };",
+				"export const className = cx(s.blue);",
+			].join("\n"),
+		];
+
+		for (const [index, source] of sources.entries()) {
+			const result = await plugin.transform.call(
+				{ resolve: () => null },
+				source,
+				`/src/app-${index}.ts`,
+			);
+			expect(result).toBeNull();
+		}
 	});
 });
 

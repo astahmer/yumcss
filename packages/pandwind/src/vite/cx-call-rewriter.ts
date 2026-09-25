@@ -10,8 +10,10 @@ import { tokenHasExactCss } from "./unresolved.ts";
 import {
 	buildFoldSkeleton,
 	collectModuleConstants,
+	containsLateObjectMemberRead,
 	CX_NOT_STATIC,
 	evalStaticCx,
+	isLateObjectMemberRead,
 	mergeImportedConstants,
 	renderFoldSkeletons,
 	renderFoldSkeleton,
@@ -304,14 +306,25 @@ export class CxCallRewriter {
 			if (call.callee?.type !== NodeKind.Identifier || !cxNames.has(call.callee.name ?? "")) return;
 			const inputs: StaticEval[] = [];
 			const conditionals: Array<{ index: number; skeleton: FoldSkeleton }> = [];
+			const lateMemberReads: Expression[] = [];
 			let partialCases = 1;
 			for (let index = 0; index < call.arguments.length; index++) {
-				const value = this.ports.evaluate(call.arguments[index], fold, constants);
+				const argument = call.arguments[index]!;
+				const hasLateMemberRead = containsLateObjectMemberRead(argument, constants);
+				const isDirectLateMemberRead = isLateObjectMemberRead(argument, constants);
+				if (
+					hasLateMemberRead &&
+					(!isDirectLateMemberRead || conditionals.length > 0)
+				) {
+					registerCallCandidates(call);
+					return;
+				}
+				const value = this.ports.evaluate(argument, fold, constants);
 				if (value !== CX_NOT_STATIC) {
 					inputs.push(value);
+					if (isDirectLateMemberRead) lateMemberReads.push(argument);
 					continue;
 				}
-				const argument = call.arguments[index]!;
 				const skeleton = partial
 					? buildPartialFoldSkeleton({
 							node: argument,
@@ -357,6 +370,12 @@ export class CxCallRewriter {
 					inputs,
 					merge,
 				);
+			}
+			if (replacement !== null && lateMemberReads.length > 0) {
+				const reads = lateMemberReads.map((argument) =>
+					code.slice(argument.start, argument.end),
+				);
+				replacement = `(${reads.join(", ")}, ${replacement})`;
 			}
 			if (replacement !== null) edits.push({ start: call.start, end: call.end, text: replacement });
 			else {

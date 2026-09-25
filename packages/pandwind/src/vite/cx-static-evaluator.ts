@@ -83,6 +83,43 @@ const nodes = function* (root: unknown): Generator<OxcNode> {
 	}
 };
 
+const nodesWithParents = function* (
+	root: unknown,
+): Generator<{ readonly node: OxcNode; readonly parent: OxcNode | undefined }> {
+	const stack: Array<{ readonly value: unknown; readonly parent: OxcNode | undefined }> = [
+		{ value: root, parent: undefined },
+	];
+	const seen = new WeakSet<object>();
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (current === undefined || current.value === null || typeof current.value !== "object") continue;
+		if (seen.has(current.value)) continue;
+		seen.add(current.value);
+		if (Array.isArray(current.value)) {
+			for (let index = current.value.length - 1; index >= 0; index -= 1)
+				stack.push({ value: current.value[index], parent: current.parent });
+			continue;
+		}
+		const node = current.value as OxcNode;
+		if (typeof node.type === "string") yield { node, parent: current.parent };
+		for (const key of Object.keys(node)) {
+			if (key !== "parent" && key !== "type") stack.push({ value: node[key], parent: node });
+		}
+	}
+};
+
+const staticClassMapNames = new WeakMap<ConstantScope, readonly (readonly [string, number])[]>();
+
+const classMapConstants = (consts: ConstantScope): readonly (readonly [string, number])[] => {
+	const cached = staticClassMapNames.get(consts);
+	if (cached !== undefined) return cached;
+	const entries = [...consts].flatMap(([name, known]) =>
+		isStaticClassMap(known.value) ? [[name, known.declStart] as const] : [],
+	);
+	staticClassMapNames.set(consts, entries);
+	return entries;
+};
+
 interface Candidate {
 	init: Expression;
 	decl: OxcNode;
@@ -119,13 +156,22 @@ const collectRiskyBindings = (options: {
 	readonly candidates: ReadonlyMap<string, Candidate>;
 }): ReadonlySet<string> => {
 	const own = new Set([...options.candidates.values()].map(({ decl }) => decl));
+	const objectCandidates = new Set(
+		[...options.candidates].filter(([, candidate]) => candidate.init.type === NodeKind.ObjectExpression).map(([name]) => name),
+	);
 	const names = new Set<string>();
 	const addBindingName = (binding: OxcNode | null | undefined): void => {
 		if (binding?.type !== NodeKind.Identifier) return;
 		const name = (binding as { name?: string }).name;
 		if (name !== undefined) names.add(name);
 	};
-	for (const node of nodes(options.program)) {
+	const addWrittenRoot = (target: OxcNode | null | undefined): void => {
+		let root = target;
+		while (root?.type === NodeKind.MemberExpression)
+			root = (root as { object?: OxcNode | null }).object ?? undefined;
+		addBindingName(root);
+	};
+	for (const { node, parent } of nodesWithParents(options.program)) {
 		switch (node.type) {
 			case NodeKind.VariableDeclarator: {
 				if (!own.has(node)) addBindingName((node as { id?: OxcNode }).id);
@@ -144,16 +190,39 @@ const collectRiskyBindings = (options: {
 				break;
 			}
 			case NodeKind.AssignmentExpression: {
-				let target = (node as { left?: OxcNode }).left;
-				while (target?.type === NodeKind.MemberExpression)
-					target = (target as { object?: OxcNode }).object;
-				addBindingName(target);
+				addWrittenRoot((node as { left?: OxcNode }).left);
 				break;
 			}
 			case NodeKind.UpdateExpression: {
-				addBindingName((node as { argument?: OxcNode }).argument);
+				addWrittenRoot((node as { argument?: OxcNode }).argument);
 				break;
 			}
+			case NodeKind.UnaryExpression: {
+				const expression = node as { operator?: string; argument?: OxcNode };
+				if (expression.operator === "delete") addWrittenRoot(expression.argument);
+				break;
+			}
+			case NodeKind.ForInStatement:
+			case NodeKind.ForOfStatement: {
+				addWrittenRoot((node as { left?: OxcNode }).left);
+				break;
+			}
+		}
+		if (node.type === NodeKind.Identifier) {
+			const name = (node as { name?: string }).name;
+			if (name === undefined || !objectCandidates.has(name)) continue;
+			const candidate = options.candidates.get(name);
+			if ((candidate?.decl as { id?: OxcNode } | undefined)?.id === node) continue;
+			if (parent?.type === NodeKind.MemberExpression) {
+				const member = parent as { object?: OxcNode; property?: OxcNode; computed?: boolean };
+				if (member.object === node) continue;
+				if (member.property === node && member.computed !== true) continue;
+			}
+			if (parent?.type === NodeKind.Property) {
+				const property = parent as { key?: OxcNode; computed?: boolean; shorthand?: boolean };
+				if (property.key === node && property.computed !== true && property.shorthand !== true) continue;
+			}
+			names.add(name);
 		}
 		if (
 			node.type === NodeKind.FunctionDeclaration ||
@@ -175,10 +244,14 @@ export function collectModuleConstants(program: OxcNode, fold?: CxFoldContext): 
 	const candidates = topLevelCandidates(program);
 	const riskyBindings = collectRiskyBindings({ program, candidates });
 	for (const [name, candidate] of candidates) {
-		const value = evalStaticCx(candidate.init, fold, scope);
-		if (value === NOT_STATIC || riskyBindings.has(name)) continue;
+		if (riskyBindings.has(name)) continue;
+		const value =
+			candidate.init.type === NodeKind.ObjectExpression
+				? evalLiteralForCx(candidate.init, scope, fold)
+				: evalStaticCx(candidate.init, fold, scope);
+		if (value === NOT_STATIC || !isStaticCxInput(value)) continue;
 		scope.set(name, {
-			value,
+			value: value as StaticEval,
 			declStart: (candidate.decl as { start?: number }).start ?? Number.POSITIVE_INFINITY,
 		});
 	}
@@ -222,6 +295,29 @@ export function evalStaticCx(
 			return known !== undefined && typeof node.start === "number" && node.start >= known.declStart
 				? known.value
 				: NOT_STATIC;
+		}
+		case NodeKind.MemberExpression: {
+			const member = node as unknown as {
+				object?: Expression;
+				property?: Expression;
+				computed?: boolean;
+				optional?: boolean;
+			};
+			if (
+				member.computed === true ||
+				member.optional === true ||
+				member.object?.type !== NodeKind.Identifier ||
+				member.property?.type !== NodeKind.Identifier
+			)
+				return NOT_STATIC;
+			const objectName = (member.object as { name?: string }).name;
+			const propertyName = (member.property as { name?: string }).name;
+			const known = consts?.get(objectName ?? "");
+			if (known === undefined || propertyName === undefined || !isStaticClassMap(known.value))
+				return NOT_STATIC;
+			if (!Object.prototype.hasOwnProperty.call(known.value, propertyName)) return NOT_STATIC;
+			const value = known.value[propertyName];
+			return isStaticCxInput(value) ? (value as StaticEval) : NOT_STATIC;
 		}
 		case NodeKind.TemplateLiteral: {
 			const expressions = (node as { expressions?: Expression[] }).expressions ?? [];
@@ -278,7 +374,7 @@ export function evalStaticCx(
 			if (fold === undefined || !cssCall(node, fold)) return NOT_STATIC;
 			const classes: string[] = [];
 			for (const argument of (node as unknown as { arguments: Expression[] }).arguments) {
-				const literal = evalLiteralForCx(argument, consts);
+				const literal = evalLiteralForCx(argument, consts, fold);
 				if (
 					literal === NOT_STATIC ||
 					typeof literal !== "object" ||
@@ -297,10 +393,25 @@ export function evalStaticCx(
 	}
 }
 
-const evalLiteralForCx = (node: Expression, consts?: ConstantScope): unknown => {
-	const value = evalStaticCx(node, undefined, consts);
-	if (value !== NOT_STATIC && (typeof value !== "object" || value === null || Array.isArray(value)))
-		return value;
+const isStaticClassMap = (value: unknown): value is Record<string, string> =>
+	value !== null &&
+	typeof value === "object" &&
+	!Array.isArray(value) &&
+	Object.getPrototypeOf(value) === Object.prototype &&
+	Object.values(value).every((entry) => typeof entry === "string");
+
+const isStaticCxInput = (value: unknown): value is CxInput | true => {
+	if (typeof value === "string" || typeof value === "boolean" || value === null || value === undefined)
+		return true;
+	if (Array.isArray(value)) return value.every(isStaticCxInput);
+	return isStaticClassMap(value);
+};
+
+const evalLiteralForCx = (node: Expression, consts?: ConstantScope, fold?: CxFoldContext): unknown => {
+	if (node.type !== NodeKind.ObjectExpression) {
+		const value = evalStaticCx(node, fold, consts);
+		if (value !== NOT_STATIC) return value;
+	}
 	if (node.type !== NodeKind.ObjectExpression) return NOT_STATIC;
 	const result: Record<string, unknown> = {};
 	for (const property of node.properties) {
@@ -308,7 +419,8 @@ const evalLiteralForCx = (node: Expression, consts?: ConstantScope): unknown => 
 			property.type !== NodeKind.Property ||
 			property.computed ||
 			property.method ||
-			property.shorthand
+			property.shorthand ||
+			(property as { kind?: string }).kind !== "init"
 		)
 			return NOT_STATIC;
 		const key =
@@ -317,12 +429,49 @@ const evalLiteralForCx = (node: Expression, consts?: ConstantScope): unknown => 
 				: property.key.type === NodeKind.Literal && typeof property.key.value === "string"
 					? property.key.value
 					: undefined;
-		if (key === undefined) return NOT_STATIC;
-		const propertyValue = evalLiteralForCx(property.value, consts);
+		if (key === undefined || key === "__proto__") return NOT_STATIC;
+		const propertyValue = evalLiteralForCx(property.value, consts, fold);
 		if (propertyValue === NOT_STATIC) return NOT_STATIC;
 		result[key] = propertyValue;
 	}
 	return result;
+};
+
+export const isLateObjectMemberRead = (
+	input: object,
+	consts: ConstantScope,
+): boolean => {
+	const node = input as OxcNode;
+	if (
+		node.type !== NodeKind.MemberExpression ||
+		(node as { computed?: boolean }).computed === true ||
+		(node as { optional?: boolean }).optional === true
+	)
+		return false;
+	const member = node as unknown as { object?: Expression; property?: Expression };
+	if (member.object?.type !== NodeKind.Identifier || member.property?.type !== NodeKind.Identifier)
+		return false;
+	const known = consts.get((member.object as { name?: string }).name ?? "");
+	return (
+		known !== undefined &&
+		isStaticClassMap(known.value) &&
+		typeof node.start === "number" &&
+		node.start < known.declStart
+	);
+};
+
+export const containsLateObjectMemberRead = (
+	node: object,
+	consts: ConstantScope,
+): boolean => {
+	const start = (node as { start?: number }).start;
+	if (typeof start !== "number") return false;
+	const possibleNames = classMapConstants(consts);
+	if (!possibleNames.some(([, declStart]) => start < declStart)) return false;
+	for (const child of nodes(node)) {
+		if (isLateObjectMemberRead(child, consts)) return true;
+	}
+	return false;
 };
 
 export type FoldSkeleton =
