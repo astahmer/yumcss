@@ -29,7 +29,7 @@ describe("CSS Vite extraction at project scale", () => {
 			};
 			const modules = Array.from({ length: 1_000 }, (_, index) => ({
 				id: resolve(sourceDirectory, `module-${index}.tsx`),
-				source: `import { css } from "./design";\nexport const style${index} = css({ margin: "${index}px" });\n`,
+				source: `import { css } from "./design";\nexport const style${index} = css({ margin: "${index}px", color: "#123456" });\n`,
 			}));
 
 			try {
@@ -46,6 +46,7 @@ describe("CSS Vite extraction at project scale", () => {
 
 				expect(css).toContain("0px");
 				expect(css).toContain("999px");
+				expect(css.match(/color:#123456/gu)).toHaveLength(1);
 				expect(warmCss).toBe(css);
 				expect(warmMs).toBeLessThan(coldMs);
 			} finally {

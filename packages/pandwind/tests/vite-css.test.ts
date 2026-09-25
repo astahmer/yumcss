@@ -15,7 +15,10 @@ import { pandwindCssVite } from "../src/vite/css.ts";
 import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
 import { stackFoldVite } from "../src/vite/stack-fold.ts";
 import { createCssExtractionService, createCssSourceScanner } from "../src/vite/css-extract.ts";
-import { CssSourceScannerService } from "../src/vite/css-source-scanner.ts";
+import {
+	CssSourceScannerService,
+	findCssCarrierImportSources,
+} from "../src/vite/css-source-scanner.ts";
 import { SOURCE_SCANNER_SERVICE } from "../src/source-scanner.ts";
 import { NodeKind } from "../src/ast-node-kind.ts";
 import type {
@@ -329,6 +332,34 @@ test("shares one parsed document across CSS inspection operations", () => {
 	`);
 	scanner.findImports(source.replace("red", "blue"), "src/card.tsx");
 	expect(parseCount).toBe(2);
+});
+
+test("skips irrelevant CSS import scans without missing escaped source paths", () => {
+	let parseCount = 0;
+	const sharedScanner = {
+		...SOURCE_SCANNER_SERVICE,
+		parse: (document: Parameters<typeof SOURCE_SCANNER_SERVICE.parse>[0]) => {
+			parseCount++;
+			return SOURCE_SCANNER_SERVICE.parse(document);
+		},
+	};
+	const scanner = new CssSourceScannerService(["css", "design"], sharedScanner);
+	const unrelated = Array.from(
+		{ length: 1_000 },
+		(_, index) => `export const value${index} = ${index};`,
+	);
+	const escapedImport = String.raw`import styles from "./c\u0073s";`;
+
+	for (const [index, source] of unrelated.entries())
+		expect(scanner.findImports(source, `src/unrelated-${index}.tsx`)).toEqual(new Set());
+	expect(parseCount).toBe(0);
+	expect(scanner.findImports(escapedImport, "src/escaped-import.tsx")).toEqual(
+		new Set(["styles"]),
+	);
+	expect(findCssCarrierImportSources(escapedImport, "src/escaped-import.tsx", ["css"])).toEqual(
+		["./css"],
+	);
+	expect(parseCount).toBe(1);
 });
 
 test("retains recently used parsed programs when the bounded cache grows", () => {
@@ -721,6 +752,68 @@ test("pandwindCssVite folds static css props compositions into the virtual sheet
 		expect(generated).toContain("display:flex");
 		expect(generated).toContain("padding:8px");
 		expect(generated).not.toContain("padding:4px");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite extracts progress-fill styles while keeping width dynamic", () => {
+	const runtimeCss = createCss(realWorldPreset);
+	const staticStyle = {
+		transition: "width 300ms ease",
+		backgroundColor: "component.progressTray.fill",
+		height: "full",
+	};
+	const runtimeProps = (progressPercent: number) =>
+		runtimeCss.props(
+			runtimeCss(staticStyle),
+			runtimeCss.vars({ width: `${progressPercent}%` }),
+		);
+	const expectedAtThirty = runtimeProps(30);
+	const expectedAtSeventy = runtimeProps(70);
+	const staticClassNames = runtimeCss.class(staticStyle).split(" ");
+	const dir = makeProject({
+		"src/design.ts": `
+			import { createCss } from "pandwind/css";
+			export const css = createCss();
+		`,
+		"src/app.tsx": [
+			'import { css } from "./design";',
+			"export const createProgressFillProps = (progressPercent: number) => css.props(",
+			"\tcss({",
+			'\t\ttransition: "width 300ms ease",',
+			'\t\tbackgroundColor: "component.progressTray.fill",',
+			'\t\theight: "full",',
+			"\t}),",
+			'\tcss.vars({ width: `${progressPercent}%` }),',
+			");",
+		].join("\n"),
+	});
+
+	try {
+		const plugin = pandwindCssVite(runtimeCss, { root: dir });
+		const file = join(dir, "src/app.tsx");
+		const source = readFileSync(file, "utf8");
+		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
+			source,
+			file,
+		);
+		const generated = loadGenerated(plugin);
+
+		expect(expectedAtThirty.className).toBe(expectedAtSeventy.className);
+		expect(expectedAtThirty.style).toMatchObject({ "--pw-c-width": "30%" });
+		expect(expectedAtSeventy.style).toMatchObject({ "--pw-c-width": "70%" });
+		expect(transformed?.code).toContain("css.props(");
+		expect(transformed?.code).toContain("css.vars({ width: `${progressPercent}%` })");
+		expect(transformed?.code).not.toContain("css({");
+		for (const className of staticClassNames)
+			expect(transformed?.code).toContain(JSON.stringify(className));
+		expect(generated.match(/transition:width 300ms ease/gu)).toHaveLength(1);
+		expect(generated).toContain("width: var(--pw-c-width)");
+		expect(generated).toMatch(/background-color:\s*var\(/u);
+		expect(generated).not.toContain("component.progressTray.fill");
+		expect(generated).not.toContain("30%");
+		expect(generated).not.toContain("70%");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}
