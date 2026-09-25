@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-09-25",
+  "environment": {
+    "machine": "Apple M4 (arm64), macOS",
+    "node": "24.20.0",
+    "vite": "8.3.0"
+  },
+  "source": {
+    "emisoupRevision": "005b44b87470228738873fd66076737a2017b3",
+    "pandwindBeforeRevision": "04fe7147674974a773d958507d7b5e93c76187ef",
+    "pandwindAfterRevision": "94df3c41d5209e92adcadd298d0d246c37932a5a"
+  },
+  "emisoup": {
+    "moduleCount": 3026,
+    "beforeBuildSeconds": [5.45, 7.28, 9.21],
+    "afterBuildSeconds": [7.24, 7.07, 8.67],
+    "afterMaxResidentBytes": [1045364736, 1075609600]
+  },
+  "playground": {
+    "moduleCount": 4220,
+    "beforeBuildSeconds": [6.67, 5.35, 5.61],
+    "afterBuildSeconds": [6.04, 5.04, 4.5]
+  },
+  "sourceScan": {
+    "files": 1000,
+    "parserCallsBefore": 1000,
+    "parserCallsAfter": 0,
+    "parseAndWalkSamplesMs": [11.246417, 13.275958, 9.980667, 5.812583, 9.69975, 7.157583, 7.589458],
+    "guardedScanSamplesMs": [0.696666, 0.491542, 0.230167, 2.019333, 0.274666, 0.244125, 0.207792]
+  },
+  "cpuProfiles": {
+    "beforeSampledSelfMs": 7529,
+    "beforeAstWalkSelfMs": 1497,
+    "afterSampledSelfMs": 5705,
+    "afterAstWalkSelfMs": 990
+  },
+  "instrumentedHooks": {
+    "buildSeconds": 6.79,
+    "stackFoldTransformCalls": 3026,
+    "stackFoldTransformInclusiveMs": 342.772277,
+    "cssTransformCalls": 3026,
+    "cssTransformInclusiveMs": 46829.376,
+    "cssTransformMaxMs": 450.743458,
+    "cssGenerateBundleCalls": 1,
+    "cssGenerateBundleMs": 2632.920167
+  },
+  "clientAssets": {
+    "html": { "files": 1, "rawBytes": 5739, "gzip9Bytes": 1516, "brotli11Bytes": 1226 },
+    "javascript": { "files": 196, "rawBytes": 2872183, "gzip9Bytes": 871079, "brotli11Bytes": 771249 },
+    "css": { "files": 2, "rawBytes": 125582, "gzip9Bytes": 21958, "brotli11Bytes": 19146 },
+    "total": { "files": 199, "rawBytes": 3003504, "gzip9Bytes": 894553, "brotli11Bytes": 791621 },
+    "mainPandwindStylesheet": {
+      "rawBytes": 123976,
+      "gzip9Bytes": 21169,
+      "brotli11Bytes": 18496,
+      "ruleCount": 1963,
+      "duplicateBodyGroups": 348,
+      "duplicateRuleCount": 862,
+      "repeatedDeclarationBytes": 21654,
+      "adjacentRulesMerged": 0,
+      "adjacentMergeRawBytesSaved": 0,
+      "adjacentMergeGzip9BytesSaved": 0,
+      "adjacentMergeBrotli11BytesSaved": 0,
+      "progressFillTransitionRuleCount": 1,
+      "progressFillWidthVariableRuleCount": 1,
+      "progressFillAuthoredTokenPathPresent": false,
+      "progressFillRuntimeValues": ["30%", "70%"],
+      "progressFillRuntimeClassStable": true
+    }
+  }
+}

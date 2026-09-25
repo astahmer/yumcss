@@ -175,6 +175,85 @@ type ArenaSnapshot = {
 	readonly metrics: readonly ArenaMetric[];
 };
 
+type RealWorldBuildSamples = {
+	readonly moduleCount: number;
+	readonly beforeBuildSeconds: readonly number[];
+	readonly afterBuildSeconds: readonly number[];
+};
+
+type RealWorldAssetSizes = {
+	readonly files: number;
+	readonly rawBytes: number;
+	readonly gzip9Bytes: number;
+	readonly brotli11Bytes: number;
+};
+
+type RealWorldCssExtractionSnapshot = {
+	readonly schemaVersion: 1;
+	readonly measuredAt: string;
+	readonly environment: {
+		readonly machine: string;
+		readonly node: string;
+		readonly vite: string;
+	};
+	readonly source: {
+		readonly emisoupRevision: string;
+		readonly pandwindBeforeRevision: string;
+		readonly pandwindAfterRevision: string;
+	};
+	readonly emisoup: RealWorldBuildSamples & {
+		readonly afterMaxResidentBytes: readonly number[];
+	};
+	readonly playground: RealWorldBuildSamples;
+	readonly sourceScan: {
+		readonly files: number;
+		readonly parserCallsBefore: number;
+		readonly parserCallsAfter: number;
+		readonly parseAndWalkSamplesMs: readonly number[];
+		readonly guardedScanSamplesMs: readonly number[];
+	};
+	readonly cpuProfiles: {
+		readonly beforeSampledSelfMs: number;
+		readonly beforeAstWalkSelfMs: number;
+		readonly afterSampledSelfMs: number;
+		readonly afterAstWalkSelfMs: number;
+	};
+	readonly instrumentedHooks: {
+		readonly buildSeconds: number;
+		readonly stackFoldTransformCalls: number;
+		readonly stackFoldTransformInclusiveMs: number;
+		readonly cssTransformCalls: number;
+		readonly cssTransformInclusiveMs: number;
+		readonly cssTransformMaxMs: number;
+		readonly cssGenerateBundleCalls: number;
+		readonly cssGenerateBundleMs: number;
+	};
+	readonly clientAssets: {
+		readonly html: RealWorldAssetSizes;
+		readonly javascript: RealWorldAssetSizes;
+		readonly css: RealWorldAssetSizes;
+		readonly total: RealWorldAssetSizes;
+		readonly mainPandwindStylesheet: {
+			readonly rawBytes: number;
+			readonly gzip9Bytes: number;
+			readonly brotli11Bytes: number;
+			readonly ruleCount: number;
+			readonly duplicateBodyGroups: number;
+			readonly duplicateRuleCount: number;
+			readonly repeatedDeclarationBytes: number;
+			readonly adjacentRulesMerged: number;
+			readonly adjacentMergeRawBytesSaved: number;
+			readonly adjacentMergeGzip9BytesSaved: number;
+			readonly adjacentMergeBrotli11BytesSaved: number;
+			readonly progressFillTransitionRuleCount: number;
+			readonly progressFillWidthVariableRuleCount: number;
+			readonly progressFillAuthoredTokenPathPresent: boolean;
+			readonly progressFillRuntimeValues: readonly string[];
+			readonly progressFillRuntimeClassStable: boolean;
+		};
+	};
+};
+
 type RankingMetric = "checkTimeSeconds" | "instantiations";
 
 const stylingSnapshotPath = resolve(ROOT, "benchmarks/styling-tsc/snapshots/tsc.json");
@@ -203,6 +282,10 @@ const ecosystemBundleSizeSnapshotPath = resolve(
 );
 const cssInJsBenchSnapshotPath = resolve(ROOT, "benchmarks/css-in-js-bench/snapshot.json");
 const arenaSnapshotPath = resolve(ROOT, "benchmarks/css-in-js-arena/snapshot.json");
+const realWorldCssExtractionSnapshotPath = resolve(
+	ROOT,
+	"benchmarks/real-world-css-extraction/snapshot.json",
+);
 
 const readJson = <T,>(path: string): T | undefined => {
 	if (!existsSync(path)) return undefined;
@@ -212,6 +295,10 @@ const readJson = <T,>(path: string): T | undefined => {
 const integer = (value: number): string => Math.round(value).toLocaleString("en-US");
 const seconds = (value: number): string => value.toFixed(3);
 const kilobytes = (value: number): string => (Math.round(value / 10) / 100).toFixed(2);
+const median = (values: readonly number[]): number => {
+	const sorted = values.toSorted((left, right) => left - right);
+	return sorted[Math.floor(sorted.length / 2)] ?? 0;
+};
 
 const signedKilobytes = (value: number): string => {
 	if (value === 0) return "0.00 KB";
@@ -286,6 +373,216 @@ const renderArenaComparison = (snapshot: ArenaSnapshot | undefined): string[] =>
 		markdownTable(["Category", "Measure", "Top three", "Pandwind"], rows, new Set()),
 		"",
 		`Pandwind's maximum screenshot difference was ${parity.pandwindMaxImageDifferencePercent}%; maximum across all lanes was ${parity.maxImageDifferencePercent}%. The Arena worktree records full methods and stress results in revision ${snapshot.source.arenaRevision}; normalized inputs are in the [local comparison snapshot](benchmarks/css-in-js-arena/snapshot.json). Pandwind source revision ${snapshot.source.pandwindRevision}.`,
+		"",
+	];
+};
+
+const renderRealWorldCssExtractionDetails = (
+	snapshot: RealWorldCssExtractionSnapshot,
+): string[] => {
+	const appBeforeMedian = median(snapshot.emisoup.beforeBuildSeconds);
+	const appAfterMedian = median(snapshot.emisoup.afterBuildSeconds);
+	const playgroundBeforeMedian = median(snapshot.playground.beforeBuildSeconds);
+	const playgroundAfterMedian = median(snapshot.playground.afterBuildSeconds);
+	const sourceScanBeforeMedian = median(snapshot.sourceScan.parseAndWalkSamplesMs);
+	const sourceScanAfterMedian = median(snapshot.sourceScan.guardedScanSamplesMs);
+	const sourceScanImprovement = sourceScanBeforeMedian / sourceScanAfterMedian;
+	const assetRows = [
+		["HTML", String(snapshot.clientAssets.html.files), integer(snapshot.clientAssets.html.rawBytes), integer(snapshot.clientAssets.html.gzip9Bytes), integer(snapshot.clientAssets.html.brotli11Bytes)],
+		["JavaScript", String(snapshot.clientAssets.javascript.files), integer(snapshot.clientAssets.javascript.rawBytes), integer(snapshot.clientAssets.javascript.gzip9Bytes), integer(snapshot.clientAssets.javascript.brotli11Bytes)],
+		["CSS", String(snapshot.clientAssets.css.files), integer(snapshot.clientAssets.css.rawBytes), integer(snapshot.clientAssets.css.gzip9Bytes), integer(snapshot.clientAssets.css.brotli11Bytes)],
+		["Total", String(snapshot.clientAssets.total.files), integer(snapshot.clientAssets.total.rawBytes), integer(snapshot.clientAssets.total.gzip9Bytes), integer(snapshot.clientAssets.total.brotli11Bytes)],
+	];
+	const css = snapshot.clientAssets.mainPandwindStylesheet;
+	const memoryValues = snapshot.emisoup.afterMaxResidentBytes.map((value) =>
+		(value / 1_000_000_000).toFixed(2),
+	);
+	return [
+		"## Real-world Vite extraction: Emisoup and Playground",
+		"",
+		"Measured " +
+			snapshot.measuredAt +
+			" on " +
+			snapshot.environment.machine +
+			", Node " +
+			snapshot.environment.node +
+			", Vite " +
+			snapshot.environment.vite +
+			". Emisoup source " +
+			snapshot.source.emisoupRevision +
+			"; Pandwind before scan gate " +
+			snapshot.source.pandwindBeforeRevision +
+			"; after " +
+			snapshot.source.pandwindAfterRevision +
+			".",
+		"",
+		markdownTable(
+			["Workload", "Modules", "Before runs (s)", "Before median", "After runs (s)", "After median"],
+			[
+				[
+					"Emisoup",
+					integer(snapshot.emisoup.moduleCount),
+					snapshot.emisoup.beforeBuildSeconds.map((value) => value.toFixed(2)).join(", "),
+					appBeforeMedian.toFixed(2) + " s",
+					snapshot.emisoup.afterBuildSeconds.map((value) => value.toFixed(2)).join(", "),
+					appAfterMedian.toFixed(2) + " s",
+				],
+				[
+					"Playground",
+					integer(snapshot.playground.moduleCount),
+					snapshot.playground.beforeBuildSeconds.map((value) => value.toFixed(2)).join(", "),
+					playgroundBeforeMedian.toFixed(2) + " s",
+					snapshot.playground.afterBuildSeconds.map((value) => value.toFixed(2)).join(", "),
+					playgroundAfterMedian.toFixed(2) + " s",
+				],
+			],
+			new Set([1, 3, 5]),
+		),
+		"",
+		"The small full-build median shifts are within run-to-run spread and do not establish a build-time win. Two after runs measured " +
+			memoryValues.join("–") +
+			" GB maximum resident memory. The deterministic " +
+			integer(snapshot.sourceScan.files) +
+			"-file source-scan workload improved from " +
+			sourceScanBeforeMedian.toFixed(2) +
+			" ms median parse-and-walk to " +
+			sourceScanAfterMedian.toFixed(3) +
+			" ms median guarded discovery (" +
+			sourceScanImprovement.toFixed(1) +
+			"×). Parser calls fell from " +
+			integer(snapshot.sourceScan.parserCallsBefore) +
+			" to " +
+			integer(snapshot.sourceScan.parserCallsAfter) +
+			". This phase result is not a multiplier for the full application build.",
+		"",
+		"The single CPU-profile pair sampled " +
+			(snapshot.cpuProfiles.beforeSampledSelfMs / 1000).toFixed(3) +
+			" s before and " +
+			(snapshot.cpuProfiles.afterSampledSelfMs / 1000).toFixed(3) +
+			" s after; AST-walk samples fell from " +
+			(snapshot.cpuProfiles.beforeAstWalkSelfMs / 1000).toFixed(3) +
+			" s to " +
+			(snapshot.cpuProfiles.afterAstWalkSelfMs / 1000).toFixed(3) +
+			" s (" +
+			(
+				(1 -
+					snapshot.cpuProfiles.afterAstWalkSelfMs /
+						snapshot.cpuProfiles.beforeAstWalkSelfMs) *
+				100
+			).toFixed(0) +
+			"% lower). Treat one profile per side as supporting evidence, not a repeated build-time result.",
+		"",
+		"One instrumented build completed in " +
+			snapshot.instrumentedHooks.buildSeconds.toFixed(2) +
+			" s. The CSS transform hook ran " +
+			integer(snapshot.instrumentedHooks.cssTransformCalls) +
+			" times for " +
+			(snapshot.instrumentedHooks.cssTransformInclusiveMs / 1000).toFixed(2) +
+			" s cumulative inclusive time; concurrent module transforms overlap. CSS generateBundle took " +
+			(snapshot.instrumentedHooks.cssGenerateBundleMs / 1000).toFixed(2) +
+			" s. Stack-fold transform used " +
+			(snapshot.instrumentedHooks.stackFoldTransformInclusiveMs / 1000).toFixed(2) +
+			" s cumulative across " +
+			integer(snapshot.instrumentedHooks.stackFoldTransformCalls) +
+			" calls. The wrapper adds timing overhead.",
+		"",
+		"### Emisoup client output",
+		"",
+		"Files are compressed separately with Node zlib gzip level 9 and Brotli quality 11. Totals cover the HTML and all emitted JS/CSS assets, not just the initial route.",
+		"",
+		markdownTable(["Asset group", "Files", "Raw bytes", "gzip 9 bytes", "Brotli 11 bytes"], assetRows, new Set([1, 2, 3, 4])),
+		"",
+		"The main Pandwind stylesheet is " +
+			integer(css.rawBytes) +
+			" raw bytes, " +
+			integer(css.gzip9Bytes) +
+			" gzip-9 bytes, and " +
+			integer(css.brotli11Bytes) +
+			" Brotli-11 bytes. The progress-fill case emits " +
+			integer(css.progressFillTransitionRuleCount) +
+			" transition rule and " +
+			integer(css.progressFillWidthVariableRuleCount) +
+			" width-variable rule; the authored token path is absent from output, and runtime values " +
+			css.progressFillRuntimeValues.join(" and ") +
+			" keep the class stable.",
+		"",
+		"The stylesheet has " +
+			integer(css.ruleCount) +
+			" rules and " +
+			integer(css.duplicateBodyGroups) +
+			" repeated declaration-body groups (" +
+			integer(css.duplicateRuleCount) +
+			" rules, " +
+			integer(css.repeatedDeclarationBytes) +
+			" repeated raw declaration bytes under an exact declaration-order and at-rule-context key). An order-preserving adjacent-rule prototype merged " +
+			integer(css.adjacentRulesMerged) +
+			" rules and saved " +
+			integer(css.adjacentMergeRawBytesSaved) +
+			" raw, " +
+			integer(css.adjacentMergeGzip9BytesSaved) +
+			" gzip, and " +
+			integer(css.adjacentMergeBrotli11BytesSaved) +
+			" Brotli bytes. No CSS interning change was adopted; combining non-adjacent rules could cross cascade entries.",
+		"",
+		"Arena's shared JavaScript remains attributed to Pandwind runtime, preset, cx, and app modules; the measured fold changed none of the six route modules. No JavaScript was removed. Route splitting remains opt-in without first-paint and client-navigation evidence; hashed class names remain the default.",
+		"",
+	];
+};
+
+const renderRealWorldCssExtractionOverview = (
+	snapshot: RealWorldCssExtractionSnapshot,
+): string[] => {
+	const appBeforeMedian = median(snapshot.emisoup.beforeBuildSeconds);
+	const appAfterMedian = median(snapshot.emisoup.afterBuildSeconds);
+	const playgroundBeforeMedian = median(snapshot.playground.beforeBuildSeconds);
+	const playgroundAfterMedian = median(snapshot.playground.afterBuildSeconds);
+	const scanBeforeMedian = median(snapshot.sourceScan.parseAndWalkSamplesMs);
+	const scanAfterMedian = median(snapshot.sourceScan.guardedScanSamplesMs);
+	const css = snapshot.clientAssets.mainPandwindStylesheet;
+	return [
+		"## Real-world CSS compiler: Emisoup",
+		"",
+		"Pinned Emisoup source " +
+			snapshot.source.emisoupRevision +
+			" on Vite " +
+			snapshot.environment.vite +
+			" transformed " +
+			integer(snapshot.emisoup.moduleCount) +
+			" modules. Its three-build median was " +
+			appAfterMedian.toFixed(2) +
+			" s after versus " +
+			appBeforeMedian.toFixed(2) +
+			" s before; spread prevents an end-to-end speedup claim. On a " +
+			integer(snapshot.sourceScan.files) +
+			"-file no-CSS workload, guarded discovery reduced the targeted parse-and-walk phase from " +
+			scanBeforeMedian.toFixed(2) +
+			" ms to " +
+			scanAfterMedian.toFixed(3) +
+			" ms median, with parser calls dropping from " +
+			integer(snapshot.sourceScan.parserCallsBefore) +
+			" to " +
+			integer(snapshot.sourceScan.parserCallsAfter) +
+			". Playground also showed no build regression: " +
+			playgroundAfterMedian.toFixed(2) +
+			" s after versus " +
+			playgroundBeforeMedian.toFixed(2) +
+			" s before over " +
+			integer(snapshot.playground.moduleCount) +
+			" modules.",
+		"",
+		"All emitted Emisoup client assets total " +
+			integer(snapshot.clientAssets.total.rawBytes) +
+			" raw, " +
+			integer(snapshot.clientAssets.total.gzip9Bytes) +
+			" gzip-9, and " +
+			integer(snapshot.clientAssets.total.brotli11Bytes) +
+			" Brotli-11 bytes with each file compressed separately. The main Pandwind CSS asset is " +
+			integer(css.rawBytes) +
+			" raw, " +
+			integer(css.gzip9Bytes) +
+			" gzip-9, and " +
+			integer(css.brotli11Bytes) +
+			" Brotli-11 bytes. The progress-fill keeps static theme styles in CSS and width as a changing CSS variable; detailed hook, profile, CSS duplication, and delivery findings are in [PERF.md](PERF.md#real-world-vite-extraction-emisoup-and-playground).",
 		"",
 	];
 };
@@ -881,8 +1178,14 @@ export const renderPerformanceOverview = (): string => {
 	const ecosystemBundleSizes = readJson<EcosystemBundleSnapshot>(ecosystemBundleSizeSnapshotPath);
 	const cssInJsBench = readJson<CssInJsBenchSnapshot>(cssInJsBenchSnapshotPath);
 	const arena = readJson<ArenaSnapshot>(arenaSnapshotPath);
+	const realWorldCssExtraction = readJson<RealWorldCssExtractionSnapshot>(
+		realWorldCssExtractionSnapshotPath,
+	);
 	if (cssInJsBench === undefined) {
 		throw new Error(`missing ${cssInJsBenchSnapshotPath}; import a CSS-in-JS Bench report first`);
+	}
+	if (realWorldCssExtraction === undefined || realWorldCssExtraction.schemaVersion !== 1) {
+		throw new Error(`missing or unsupported ${realWorldCssExtractionSnapshotPath}`);
 	}
 	return [
 		"<!-- Generated by scripts/render-performance-summary.mts; do not edit. -->",
@@ -895,6 +1198,7 @@ export const renderPerformanceOverview = (): string => {
 		...renderStaticBundleRanking(ecosystemBundleSizes),
 		...renderCssInJsBenchComparison(cssInJsBench),
 		...renderArenaComparison(arena),
+		...renderRealWorldCssExtractionOverview(realWorldCssExtraction),
 		"## Benchmark cadence",
 		"",
 		"Run focused regression benchmarks with changes to the compiler, runtime, public API, or bundler plugin paths they cover. Refresh the full local comparison before releases and monthly while performance work is active. Refresh external CSS-in-JS Bench/Arena comparisons quarterly, or sooner when a benchmarked library or its major version changes. A JJ revision by itself is not a reason to rerun the full matrix.",
@@ -921,6 +1225,12 @@ export const renderPerformanceSummary = (): string => {
 		generatedRuntimeSizeSnapshotPath,
 	);
 	const ecosystemBundleSizes = readJson<EcosystemBundleSnapshot>(ecosystemBundleSizeSnapshotPath);
+	const realWorldCssExtraction = readJson<RealWorldCssExtractionSnapshot>(
+		realWorldCssExtractionSnapshotPath,
+	);
+	if (realWorldCssExtraction === undefined || realWorldCssExtraction.schemaVersion !== 1) {
+		throw new Error(`missing or unsupported ${realWorldCssExtractionSnapshotPath}`);
+	}
 	const lines = [
 		"<!-- Generated by scripts/render-performance-summary.mts; do not edit. -->",
 		"",
@@ -954,6 +1264,7 @@ export const renderPerformanceSummary = (): string => {
 	lines.push(...renderBundleRanking(runtimeSizes));
 	lines.push(...renderGeneratedRuntimeSizes(generatedRuntimeSizes));
 	lines.push(...renderEcosystemBundleComparison(ecosystemBundleSizes));
+	lines.push(...renderRealWorldCssExtractionDetails(realWorldCssExtraction));
 	lines.push(
 		"## External benchmark refresh",
 		"",
@@ -970,6 +1281,7 @@ export const renderPerformanceSummary = (): string => {
 		"- Runtime size: `pnpm --filter pandwind exec vitest run runtime-size -u`",
 		"- Runtime API throughput: `pnpm --filter pandwind run test:benchmarks -- -u`",
 		"- Ecosystem bundle-size comparison: `pnpm run bench:size:ecosystem -- --update`",
+		"- Real-world CSS extraction evidence: `benchmarks/real-world-css-extraction/snapshot.json`",
 		"- Summary freshness: `pnpm run bench:summary:check`",
 		"",
 	);

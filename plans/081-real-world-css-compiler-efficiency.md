@@ -124,18 +124,26 @@ Use focused package and consuming-app measurements after changes to extraction, 
 8. Evaluate route-split improvements separately against an actual router only if initial-route transfer remains a real consumer problem. Do not combine route integration with core extraction or compiler-cache revisions.
 9. Refresh detailed and short performance reports from the final pinned evidence. Keep implementation, report updates, and any external harness changes in separate described JJ revisions.
 
+## Completion record
+
+Implementation is in the described revisions for Vite anchor isolation, CSS-import scan gating, and the Emisoup-shaped progress-fill regression. Runtime source after the scan gate is pinned at Pandwind 94df3c41d5209e92adcadd298d0d246c37932a5a; the Emisoup app source is pinned at 005b44b87470228738873fd66076737a2017b3. Detailed measurements and output audit are in [PERF.md](../PERF.md#real-world-vite-extraction-emisoup-and-playground), with a short summary in [PERF-SUMMARY.md](../PERF-SUMMARY.md#real-world-css-compiler-emisoup).
+
+The source gate improved its target phase on seven repeated deterministic samples: 1,000 irrelevant TSX files went from 9.70 ms median parse-and-walk to 0.275 ms median guarded discovery, and the parser-call regression test confirms 1,000 calls become zero. Full Emisoup build medians were 7.28 s before and 7.24 s after, within run-to-run spread; no end-to-end build win is claimed. Playground had no meaningful regression, and the Vite, scale, and HMR suites pass.
+
+The CSS and JavaScript audits found no safe, useful output reduction. The repeated CSS bodies were non-adjacent; an order-preserving adjacent merge saved zero bytes. Arena's shared JavaScript remains needed by the measured source graph, and route splitting lacks first-paint/navigation evidence from an actual consumer. Keep hashed classes as default, route splitting opt-in, and the public API unchanged.
+
 ## Acceptance criteria
 
-- [ ] The Emisoup baseline is reproducible against pinned app and Pandwind revisions, with repeated build medians and per-hook attribution. Current figures of 3,026 modules, 3.61 s build, 1.5 s generateBundle, and 123.97 kB raw / 21.35 kB gzip CSS are treated as one baseline sample, not a guaranteed future threshold.
-- [ ] The source corpus represents actual Emisoup and Playground call forms and includes static, finite, mixed, and genuinely dynamic cases.
-- [ ] For each transformed case, runtime and compiler results agree on classes, props, declarations, conditions, token references, and dynamic values. Unsupported shapes preserve runtime behavior.
-- [ ] The Emisoup mixed progress-fill form emits static declarations once and keeps width as a changing CSS variable; repeated renders do not grow the stylesheet.
-- [ ] A compiler-throughput change shows a repeatable improvement beyond run-to-run noise in the phase it targets on Emisoup or the deterministic large workload, without a meaningful regression in the Playground-sized workload or HMR freshness.
-- [ ] A CSS-output change reduces complete compressed delivery cost for a real workload and a repeated-style stress case while preserving authored variable names, theme overrides, cascade order, SSR, hydration, and browser-computed styles.
-- [ ] Any JavaScript reduction is attributed to code that is actually removable for the tested source graph; required runtime behavior and preset semantics remain intact.
-- [ ] Hash remains the default unless total transfer across CSS, JavaScript, and HTML improves for an ordinary application.
-- [ ] No benchmark-only source shape, benchmark rank, or single-category byte count is used as an acceptance criterion.
-- [ ] No public API is added or changed as part of this work.
+- [x] Repeated Emisoup builds, exact source pins, module counts, memory samples, CPU profiles, and per-hook attribution are recorded. Build timing remains noisy and is not presented as a speedup.
+- [x] The corpus covers actual Emisoup progress-fill composition, static extraction, repeated styles at 1,000-module scale, and existing static, finite, condition, token, and genuinely dynamic cases.
+- [x] Runtime API and compiler behavior are checked independently for classes, dynamic props, static declarations, theme tokens, and conservative dynamic fallbacks across the Vite extraction suite.
+- [x] Emisoup progress-fill emits static declarations once, retains a dark-theme token selector, and keeps width in one changing CSS variable rule; 30% and 70% preserve the same classes and change inline values.
+- [x] The targeted source-scan phase has a repeatable deterministic improvement, with no meaningful Playground build regression and existing HMR freshness tests passing. Full Emisoup wall time is unchanged within noise.
+- [x] Current Emisoup CSS duplication and compressed output were audited against a repeated-style stress case. Adjacent interning saved zero bytes, so no CSS-output transformation was adopted; existing cascade, token, runtime, and hydration tests remain green.
+- [x] Arena JavaScript was attributed to Pandwind runtime, preset, cx, and app modules; no unneeded code was proven removable, so no JavaScript reduction is claimed.
+- [x] Hashed classes remain the default; the named-atom result increases total transfer, and no ordinary-app total-transfer evidence justifies changing the default.
+- [x] No benchmark-only source shape, benchmark rank, or single-category byte count was used as an acceptance criterion.
+- [x] No public API was added or changed.
 
 ## Decisions log
 
@@ -145,3 +153,6 @@ Use focused package and consuming-app measurements after changes to extraction, 
 | 2026-09-25 | Profile Emisoup's real build before redesigning the Vite pipeline | The production build attributes 1.5 s to CSS generateBundle, while transform hook time is overlapped and unknown. |
 | 2026-09-25 | Preserve the existing static/dynamic API boundary | Emisoup uses real dynamic values and authored CSS-variable names; extracting the static portion must not erase runtime intent or the theme contract. |
 | 2026-09-25 | Keep hashed class names and route splitting opt-in | Named atoms increase total transfer in current workloads, while route chunks require consumer-side loading and browser proof. |
+| 2026-09-25 | Gate CSS import discovery before parsing unrelated source | Seven deterministic 1,000-file samples show a 35.3× median phase improvement; the full Emisoup build remains within timing noise. |
+| 2026-09-25 | Do not merge non-adjacent repeated CSS bodies | No identical bodies were adjacent; merging non-adjacent rules risks changing cascade order and has no proven compressed-output benefit. |
+| 2026-09-25 | Keep runtime and route code intact after attribution | Arena's shared chunk includes runtime required by the compared source graph; no app router evidence supports route loading changes. |

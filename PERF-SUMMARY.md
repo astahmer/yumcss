@@ -82,6 +82,12 @@ Pandwind's six-page lane passed parity: 18/18 route geometry checks stayed withi
 
 Pandwind's maximum screenshot difference was 0.0151%; maximum across all lanes was 0.0187%. The Arena worktree records full methods and stress results in revision 2f4ed369a107a186b8108184871bba0777f23fe4; normalized inputs are in the [local comparison snapshot](benchmarks/css-in-js-arena/snapshot.json). Pandwind source revision bc1b904c5d6795d43396b9f364a127fd68c2f436.
 
+## Real-world CSS compiler: Emisoup
+
+Pinned Emisoup source 005b44b87470228738873fd66076737a2017b3 on Vite 8.3.0 transformed 3,026 modules. Its three-build median was 7.24 s after versus 7.28 s before; spread prevents an end-to-end speedup claim. On a 1,000-file no-CSS workload, guarded discovery reduced the targeted parse-and-walk phase from 9.70 ms to 0.275 ms median, with parser calls dropping from 1,000 to 0. Playground also showed no build regression: 5.04 s after versus 5.61 s before over 4,220 modules.
+
+All emitted Emisoup client assets total 3,003,504 raw, 894,553 gzip-9, and 791,621 Brotli-11 bytes with each file compressed separately. The main Pandwind CSS asset is 123,976 raw, 21,169 gzip-9, and 18,496 Brotli-11 bytes. The progress-fill keeps static theme styles in CSS and width as a changing CSS variable; detailed hook, profile, CSS duplication, and delivery findings are in [PERF.md](PERF.md#real-world-vite-extraction-emisoup-and-playground).
+
 ## Benchmark cadence
 
 Run focused regression benchmarks with changes to the compiler, runtime, public API, or bundler plugin paths they cover. Refresh the full local comparison before releases and monthly while performance work is active. Refresh external CSS-in-JS Bench/Arena comparisons quarterly, or sooner when a benchmarked library or its major version changes. A JJ revision by itself is not a reason to rerun the full matrix.
