@@ -132,6 +132,10 @@ The source gate improved its target phase on seven repeated deterministic sample
 
 The CSS and JavaScript audits found no safe, useful output reduction. The repeated CSS bodies were non-adjacent; an order-preserving adjacent merge saved zero bytes. Arena's shared JavaScript remains needed by the measured source graph, and route splitting lacks first-paint/navigation evidence from an actual consumer. Keep hashed classes as default, route splitting opt-in, and the public API unchanged.
 
+### Validation caveat
+
+The focused Vite group passed 102 tests, and the Pandwind package's functional test segment passed 1,031 tests across 92 files. The later throughput guard failed for `css.default.raw` (405,642 ops/s against a 421,606 floor) and `css.merge` (147,917 ops/s against a 176,585 floor). This plan did not change either runtime path. Host load averaged 19–23 during follow-up checks, so no quiet isolated result was available; benchmark snapshots and thresholds remain unchanged.
+
 ## Acceptance criteria
 
 - [x] Repeated Emisoup builds, exact source pins, module counts, memory samples, CPU profiles, and per-hook attribution are recorded. Build timing remains noisy and is not presented as a speedup.
@@ -139,7 +143,7 @@ The CSS and JavaScript audits found no safe, useful output reduction. The repeat
 - [x] Runtime API and compiler behavior are checked independently for classes, dynamic props, static declarations, theme tokens, and conservative dynamic fallbacks across the Vite extraction suite.
 - [x] Emisoup progress-fill emits static declarations once, retains a dark-theme token selector, and keeps width in one changing CSS variable rule; 30% and 70% preserve the same classes and change inline values.
 - [x] The targeted source-scan phase has a repeatable deterministic improvement, with no meaningful Playground build regression and existing HMR freshness tests passing. Full Emisoup wall time is unchanged within noise.
-- [x] Current Emisoup CSS duplication and compressed output were audited against a repeated-style stress case. Adjacent interning saved zero bytes, so no CSS-output transformation was adopted; existing cascade, token, runtime, and hydration tests remain green.
+- [x] Current Emisoup CSS duplication and compressed output were audited against a repeated-style stress case. Adjacent interning saved zero bytes, so no CSS-output transformation was adopted; existing cascade, token, runtime behavior, and hydration tests remain green.
 - [x] Arena JavaScript was attributed to Pandwind runtime, preset, cx, and app modules; no unneeded code was proven removable, so no JavaScript reduction is claimed.
 - [x] Hashed classes remain the default; the named-atom result increases total transfer, and no ordinary-app total-transfer evidence justifies changing the default.
 - [x] No benchmark-only source shape, benchmark rank, or single-category byte count was used as an acceptance criterion.
