@@ -57,6 +57,8 @@ import {
 	type PandwindLibArtifact,
 } from "./lib-artifact.ts";
 
+let nextCssExtractorInstanceId = 0;
+
 export interface PandwindCssViteOptions {
 	/** Match host stylesheet precedence with StyleX specificity or a native layer. */
 	cascade?: CssCascade;
@@ -367,6 +369,7 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 	const compositionConsumers = new Map<string, Set<string>>();
 	const consumerCompositions = new Map<string, Set<string>>();
 	const stylesheetPrefix = `\0${options.virtualId ?? "pandwind:css"}.css`;
+	const cssExtractorInstanceId = nextCssExtractorInstanceId++;
 	const buildCssMarkers = new Map<
 		string,
 		{ readonly selector: string; readonly property: string; readonly value: number }
@@ -514,8 +517,8 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 				let marker = buildCssMarkers.get(id);
 				if (marker === undefined) {
 					const value = nextCssMarker++;
-					const selector = `.pandwind-css-anchor-${value}`;
-					const property = `--pandwind-css-anchor-${value}`;
+					const selector = `.pandwind-css-anchor-${cssExtractorInstanceId}-${value}`;
+					const property = `--pandwind-css-anchor-${cssExtractorInstanceId}-${value}`;
 					marker = { selector, property, value };
 					buildCssMarkers.set(id, marker);
 				}
@@ -561,7 +564,21 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 						output.source = output.source.replace(markerRule, css);
 						replaced = true;
 					}
-					if (!replaced) this.error(`Pandwind stylesheet anchor was not emitted for ${id}`);
+					if (!replaced) {
+						const assets = Object.values(bundle).flatMap((output) => {
+							if (output.type !== "asset") return [];
+							const source =
+								typeof output.source === "string"
+									? output.source
+									: new TextDecoder().decode(output.source);
+							if (!output.fileName.endsWith(".css") && !markerRule.test(source)) return [];
+							return [`${output.fileName}: anchor=${markerRule.test(source)}`];
+						});
+						this.error(
+							`Pandwind stylesheet anchor was not emitted for ${id}; ` +
+								`expected ${marker.selector}; assets: ${assets.slice(0, 8).join(", ") || "(none)"}`,
+						);
+					}
 				}
 			},
 		},

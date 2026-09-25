@@ -1071,6 +1071,60 @@ test("production CSS excludes styles from source files absent from the bundle gr
 	}
 });
 
+test("multiple Pandwind CSS extractors keep their production anchors distinct", async () => {
+	const dir = makeProject({
+		"index.html": '<script type="module" src="/src/main.ts"></script>',
+		"src/first-css.ts": "export const css = { class: (styles: unknown) => styles };",
+		"src/second-css.ts": "export const css = { class: (styles: unknown) => styles };",
+		"src/main.ts": `
+			import { css as firstCss } from "./first-css";
+			import { css as secondCss } from "./second-css";
+			import "pandwind:first-css";
+			import "pandwind:second-css";
+			export const first = firstCss.class({ color: "red" });
+			export const second = secondCss.class({ backgroundColor: "blue" });
+		`,
+	});
+
+	try {
+		const result = await build({
+			configFile: false,
+			root: dir,
+			plugins: [
+				pandwindCssVite(examplePreset, {
+					root: dir,
+					cssSources: ["first-css"],
+					virtualId: "pandwind:first-css",
+				}),
+				pandwindCssVite(examplePreset, {
+					root: dir,
+					cssSources: ["second-css"],
+					virtualId: "pandwind:second-css",
+				}),
+			],
+			build: { write: false },
+		});
+		const outputs = Array.isArray(result)
+			? result.flatMap((item) => item.output)
+			: "output" in result
+				? result.output
+				: [];
+		const css = outputs
+			.flatMap((output) =>
+				output.type === "asset" && output.fileName.endsWith(".css")
+					? [typeof output.source === "string" ? output.source : ""]
+					: [],
+			)
+			.join("\n");
+
+		expect(css).toContain("color:red");
+		expect(css).toContain("background-color:blue");
+		expect(css).not.toContain("pandwind-css-anchor");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 test("default stylesheet mode rewrites literal css calls", () => {
 	const code = `
 		import { css } from "./design";
