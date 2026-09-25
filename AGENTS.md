@@ -283,6 +283,13 @@ of ecosystem-specific operations. Record each completed domain in
 `docs/src/content/docs/contributing/architecture.md` and keep the relevant
 JJ revision focused and described.
 
+## Compiler and CSS regression proof
+
+For compiler, lint, extraction, or CSS serialization changes, follow
+`.agents/skills/css-compiler-regression/SKILL.md`. Shared compiler/lint logic
+must stay pure and narrow; validate emitted CSS and runtime behavior, not only
+diagnostic counts.
+
 ## Pre-launch Evolution
 
 We have not launched and have no production users or production data. Revisit this policy before the first production deployment.
