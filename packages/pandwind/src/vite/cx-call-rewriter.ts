@@ -9,11 +9,11 @@ import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "
 import { tokenHasExactCss } from "./unresolved.ts";
 import {
 	buildFoldSkeleton,
+	classMapMember,
 	collectModuleConstants,
 	containsLateObjectMemberRead,
 	CX_NOT_STATIC,
 	evalStaticCx,
-	isLateObjectMemberRead,
 	mergeImportedConstants,
 	renderFoldSkeletons,
 	renderFoldSkeleton,
@@ -306,15 +306,24 @@ export class CxCallRewriter {
 			if (call.callee?.type !== NodeKind.Identifier || !cxNames.has(call.callee.name ?? "")) return;
 			const inputs: StaticEval[] = [];
 			const conditionals: Array<{ index: number; skeleton: FoldSkeleton }> = [];
-			const lateMemberReads: Expression[] = [];
+			const classMapReads: Array<{
+				readonly argument: Expression;
+				readonly value: string;
+				readonly late: boolean;
+			}> = [];
+			let mergedValue: string | undefined;
 			let partialCases = 1;
 			for (let index = 0; index < call.arguments.length; index++) {
 				const argument = call.arguments[index]!;
 				const hasLateMemberRead = containsLateObjectMemberRead(argument, constants);
-				const isDirectLateMemberRead = isLateObjectMemberRead(argument, constants);
+				const mapMember = classMapMember(argument, constants);
+				const isDirectLateMemberRead =
+					mapMember !== undefined &&
+					typeof argument.start === "number" &&
+					argument.start < mapMember.declStart;
 				if (
 					hasLateMemberRead &&
-					(!isDirectLateMemberRead || conditionals.length > 0)
+					(mapMember === undefined || !isDirectLateMemberRead || conditionals.length > 0)
 				) {
 					registerCallCandidates(call);
 					return;
@@ -322,7 +331,8 @@ export class CxCallRewriter {
 				const value = this.ports.evaluate(argument, fold, constants);
 				if (value !== CX_NOT_STATIC) {
 					inputs.push(value);
-					if (isDirectLateMemberRead) lateMemberReads.push(argument);
+					if (mapMember !== undefined)
+						classMapReads.push({ argument, value: mapMember.value, late: isDirectLateMemberRead });
 					continue;
 				}
 				const skeleton = partial
@@ -336,6 +346,10 @@ export class CxCallRewriter {
 				if (skeleton !== null) {
 					const cases = foldSkeletonCaseCount(skeleton);
 					if (cases <= MAX_PARTIAL_FOLD_CASES && partialCases * cases <= MAX_PARTIAL_FOLD_CASES) {
+						if (classMapReads.some((read) => read.late)) {
+							registerCallCandidates(call);
+							return;
+						}
 						conditionals.push({ index, skeleton });
 						partialCases *= cases;
 						inputs.push(CX_NOT_STATIC);
@@ -351,6 +365,7 @@ export class CxCallRewriter {
 			if (conditionals.length === 0) {
 				const merged = merge(inputs as CxInput[]);
 				if (merged !== undefined) {
+					mergedValue = merged;
 					replacement = JSON.stringify(merged);
 					if (lines !== undefined)
 						unresolved.push(...collectUnresolvedTokens(merged, lines.lineOf(call.start), config));
@@ -371,11 +386,22 @@ export class CxCallRewriter {
 					merge,
 				);
 			}
-			if (replacement !== null && lateMemberReads.length > 0) {
-				const reads = lateMemberReads.map((argument) =>
-					code.slice(argument.start, argument.end),
-				);
-				replacement = `(${reads.join(", ")}, ${replacement})`;
+			if (replacement !== null && classMapReads.length > 0 && conditionals.length === 0) {
+				const everyArgumentIsClassMapMember = classMapReads.length === call.arguments.length;
+				const rawClassList = classMapReads.map(({ value }) => value).join(" ");
+				const originalLength = call.end - call.start;
+				const sourceMemberExpression = classMapReads
+					.map(({ argument }) => code.slice(argument.start, argument.end))
+					.join('+" "+');
+				if (
+					everyArgumentIsClassMapMember &&
+					mergedValue === rawClassList &&
+					sourceMemberExpression.length <= originalLength
+				) {
+					replacement = sourceMemberExpression;
+				} else if (classMapReads.some((read) => read.late)) {
+					replacement = null;
+				}
 			}
 			if (replacement !== null) edits.push({ start: call.start, end: call.end, text: replacement });
 			else {

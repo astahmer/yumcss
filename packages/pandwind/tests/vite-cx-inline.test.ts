@@ -347,6 +347,17 @@ describe("module-level constant propagation", () => {
 		expect(lastLiteral(code)).toBe(runtime("p-6", "text-sm"));
 	});
 
+	test("keeps late class-map reads dynamic when conflict merging would alter them", () => {
+		const source = [
+			"export function className() { return cx(styles.red, styles.blue); }",
+			'const styles = { red: "bg-red-500", blue: "bg-blue-500" };',
+		].join("\n");
+		const { code, inlined } = foldModule(source);
+
+		expect(inlined).toBe(0);
+		expect(code).toContain("cx(styles.red, styles.blue)");
+	});
+
 	test("static-scope analysis ignores cyclic parser parent pointers", () => {
 		const program = parseSync("fixture.ts", 'const P6 = "p-6";', {
 			sourceType: "module",
@@ -425,7 +436,8 @@ describe("module-level constant propagation", () => {
 		const { code, inlined } = foldModule(source);
 
 		expect(inlined).toBe(1);
-		expect(lastLiteral(code)).toBe(runtime("p-6", "text-sm"));
+		expect(code).toContain('styles.padding+" "+styles.text');
+		expect("p-6 text-sm").toBe(runtime("p-6", "text-sm"));
 	});
 
 	test("module analysis ignores parser parent links", () => {
@@ -693,6 +705,12 @@ describe("css() folding is differentially equivalent to the runtime", () => {
 		);
 	});
 
+	test("numeric CSS declarations in css.class() fold through the runtime engine", () => {
+		expect(foldWithCss("cx(css.class({ fontWeight: 650 }))")).toBe(
+			runtimeFromLiterals((design) => [design.class({ $raw: { fontWeight: 650 } }) as never]),
+		);
+	});
+
 	test("tw class conflicts against a folded atom (last wins)", () => {
 		const source = 'cx(css({ backgroundColor: "$red-500" }), "bg-blue-500")';
 		expect(foldWithCss(source)).toBe(
@@ -883,17 +901,22 @@ describe("pandwindVite CSS-only cx folding", () => {
 		const source = [
 			'import { cx } from "./cx";',
 			'import { css } from "./design";',
-			"export function className() { return cx(s.blue, \"text-sm\"); }",
-			'const s = { blue: css.class({ color: "$blue-500" }) };',
+			"export function className() { return cx(s.blue, s.small); }",
+			'const s = { blue: css.class({ color: "$blue-500", fontWeight: 650 }), small: "text-sm" };',
 		].join("\n");
 		const result = await plugin.transform.call({ resolve: () => null }, source, "/src/app.ts");
-		const expected = runtimeCxWithCss(
-			dss.class({ $raw: { color: "$blue-500" } }) as never,
-			"text-sm",
-		);
+		const atom = dss.class({ $raw: { color: "$blue-500", fontWeight: 650 } }) as never;
+		const expected = runtimeCxWithCss(atom, "text-sm");
 
 		expect(result).not.toBeNull();
-		expect(result!.code).toContain(`(s.blue, ${JSON.stringify(expected)})`);
+		expect(
+			createPandwindEngineContext({ preset: examplePreset }).foldLiteralStyle({
+				color: "$blue-500",
+				fontWeight: 650,
+			}),
+		).toBe(atom);
+		expect(`${atom} text-sm`).toBe(expected);
+		expect(result!.code).toContain('s.blue+" "+s.small');
 		expect(result!.code).not.toContain("cx(");
 	});
 
@@ -911,7 +934,7 @@ describe("pandwindVite CSS-only cx folding", () => {
 				'import { cx } from "./cx";',
 				'import { css } from "./design";',
 				'const s = { blue: css.class({ color: "$blue-500" }) };',
-				"s.blue = \"text-red-500\";",
+				's.blue = "text-red-500";',
 				"export const className = cx(s.blue);",
 			].join("\n"),
 			[
@@ -943,7 +966,7 @@ describe("pandwindVite CSS-only cx folding", () => {
 			].join("\n"),
 			[
 				'import { cx } from "./cx";',
-				"const s = { get blue() { return \"text-blue-500\"; } };",
+				'const s = { get blue() { return "text-blue-500"; } };',
 				"export const className = cx(s.blue);",
 			].join("\n"),
 		];
