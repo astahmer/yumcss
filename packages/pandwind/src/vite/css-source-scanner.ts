@@ -96,8 +96,7 @@ const mayContainCssImportCandidate = (
 	code.includes("css") ||
 	code.includes("Css") ||
 	matchers.some(
-		(matcher) =>
-			typeof matcher !== "string" || matcher.length === 0 || code.includes(matcher),
+		(matcher) => typeof matcher !== "string" || matcher.length === 0 || code.includes(matcher),
 	);
 
 const location = (code: string, start: number): { line: number; column: number } => {
@@ -227,10 +226,7 @@ export const findCssCarrierImportSources = (
 	id: string,
 	matchers: readonly (string | RegExp)[],
 ): readonly string[] => {
-	if (
-		!SOURCE_SCANNER_SERVICE.isScriptFile(id) ||
-		!mayContainCssImportCandidate(code, matchers)
-	)
+	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssImportCandidate(code, matchers))
 		return [];
 	const program = SOURCE_SCANNER_SERVICE.parse({
 		file: id,
@@ -370,8 +366,7 @@ export class CssSourceScannerService implements CssSourceScanner {
 	}
 
 	findImports(code: string, id: string): ReadonlySet<string> {
-		if (!this.canParse(id) || !mayContainCssImportCandidate(code, this.matchers))
-			return new Set();
+		if (!this.canParse(id) || !mayContainCssImportCandidate(code, this.matchers)) return new Set();
 		return collectNames(this.parseProgram(code, id), this.matchers);
 	}
 

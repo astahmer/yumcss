@@ -39,6 +39,7 @@ describe("CSS Vite extraction at project scale", () => {
 				for (const module of modules)
 					await plugin.transform.call(pluginContext, module.source, module.id);
 				const css = plugin.load("\0pandwind:css.css");
+				if (css === null) throw new Error("Expected the CSS module to load.");
 				const coldMs = performance.now() - coldStart;
 				const warmStart = performance.now();
 				const warmCss = plugin.load("\0pandwind:css.css");

@@ -353,12 +353,10 @@ test("skips irrelevant CSS import scans without missing escaped source paths", (
 	for (const [index, source] of unrelated.entries())
 		expect(scanner.findImports(source, `src/unrelated-${index}.tsx`)).toEqual(new Set());
 	expect(parseCount).toBe(0);
-	expect(scanner.findImports(escapedImport, "src/escaped-import.tsx")).toEqual(
-		new Set(["styles"]),
-	);
-	expect(findCssCarrierImportSources(escapedImport, "src/escaped-import.tsx", ["css"])).toEqual(
-		["./css"],
-	);
+	expect(scanner.findImports(escapedImport, "src/escaped-import.tsx")).toEqual(new Set(["styles"]));
+	expect(findCssCarrierImportSources(escapedImport, "src/escaped-import.tsx", ["css"])).toEqual([
+		"./css",
+	]);
 	expect(parseCount).toBe(1);
 });
 
@@ -760,15 +758,12 @@ test("pandwindCssVite folds static css props compositions into the virtual sheet
 test("pandwindCssVite extracts progress-fill styles while keeping width dynamic", () => {
 	const runtimeCss = createCss(realWorldPreset);
 	const staticStyle = {
-		transition: "width 300ms ease",
+		$raw: { transition: "width 300ms ease" },
 		backgroundColor: "component.progressTray.fill",
 		height: "full",
-	};
+	} satisfies Parameters<typeof runtimeCss.class>[0];
 	const runtimeProps = (progressPercent: number) =>
-		runtimeCss.props(
-			runtimeCss(staticStyle),
-			runtimeCss.vars({ width: `${progressPercent}%` }),
-		);
+		runtimeCss.props(runtimeCss(staticStyle), runtimeCss.vars({ width: `${progressPercent}%` }));
 	const expectedAtThirty = runtimeProps(30);
 	const expectedAtSeventy = runtimeProps(70);
 	const staticClassNames = runtimeCss.class(staticStyle).split(" ");
@@ -785,7 +780,7 @@ test("pandwindCssVite extracts progress-fill styles while keeping width dynamic"
 			'\t\tbackgroundColor: "component.progressTray.fill",',
 			'\t\theight: "full",',
 			"\t}),",
-			'\tcss.vars({ width: `${progressPercent}%` }),',
+			"\tcss.vars({ width: `${progressPercent}%` }),",
 			");",
 		].join("\n"),
 	});
