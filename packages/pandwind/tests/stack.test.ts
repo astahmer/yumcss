@@ -42,10 +42,21 @@ describe("stackClasses — mapping table", () => {
 
 	test("numeric values stay available to both the Tailwind and CSS lanes", () => {
 		expect(stackClasses({ gap: 4, padding: 6 })).toBe("flex gap-4 p-6");
-		expect(stackStyle({ gap: 4, padding: 6 })).toEqual({
+		expect(
+			stackStyle({
+				direction: "column",
+				gap: 4,
+				padding: 6,
+				align: "center",
+				justify: "between",
+			}),
+		).toEqual({
 			display: "flex",
+			flexDirection: "column",
 			gap: 4,
 			padding: 6,
+			alignItems: "center",
+			justifyContent: "space-between",
 		});
 	});
 

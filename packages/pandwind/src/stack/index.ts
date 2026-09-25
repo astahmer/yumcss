@@ -13,7 +13,7 @@
  */
 import type { StyleObject } from "../types/typings.ts";
 import type { CssFn } from "../css/create-css.ts";
-import { forEachResponsiveLeaf, type ResponsiveValue } from "./responsive.ts";
+import { forEachResponsiveLeaf, isResponsiveObject, type ResponsiveValue } from "./responsive.ts";
 
 export type StackDirection = "row" | "column" | "row-reverse" | "column-reverse";
 export type StackAlign = "start" | "center" | "end" | "stretch" | "baseline";
@@ -134,6 +134,10 @@ const assignResponsiveStyle = <T extends StackStyleLeaf>(
 	value: StackResponsiveValue<T>,
 	map: (value: T) => StackStyleLeaf,
 ): void => {
+	if (!isResponsiveObject<T>(value)) {
+		target[property] = map(value);
+		return;
+	}
 	forEachResponsiveLeaf(value, (leaf, conditions) => {
 		let branch = target;
 		for (const condition of conditions) {
