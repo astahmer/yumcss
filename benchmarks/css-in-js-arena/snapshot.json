@@ -102,5 +102,27 @@
 			"unit": "ms",
 			"values": { "bamboo": 193.6, "stylex": 410.2, "panda": 232.6, "pandwind": 219.6 }
 		}
-	]
+	],
+	"outputVerification": {
+		"pandwindRevision": "180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1",
+		"measuredAt": "2026-09-25",
+		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps",
+		"parity": {
+			"geometryPassed": 18,
+			"geometryTotal": 18,
+			"geometryThresholdPx": 0.5,
+			"screenshotsPassed": 72,
+			"screenshotsTotal": 72,
+			"screenshotThresholdPercent": 0.05
+		},
+		"metrics": [
+			{ "label": "Browser CSS, raw", "unit": "B", "value": 31732 },
+			{ "label": "Browser CSS, gzip", "unit": "B", "value": 9913 },
+			{ "label": "Browser CSS, Brotli", "unit": "B", "value": 8724 },
+			{ "label": "Client JavaScript, Brotli", "unit": "B", "value": 111632 },
+			{ "label": "Mean SSR HTML, gzip, six routes", "unit": "B", "value": 5469 },
+			{ "label": "Full first load", "unit": "B", "value": 125825 },
+			{ "label": "HTML class attributes, six routes", "unit": "B", "value": 59980 }
+		]
+	}
 }

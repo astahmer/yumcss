@@ -461,6 +461,10 @@ INP is not ranked because frame-timed medians cluster within measurement noise.
 |   16 | Panda (style props)                                     | 409.00 ms | —   | —       | —        | —         |
 |   17 | Panda (recipe)                                          | 436.00 ms | —   | —       | —        | —         |
 
+### Cold-build method and samples
+
+Pandwind cold runs were 498, 304, 375 ms (median 375 ms); immediate warm runs were 421, 344, 392 ms (median 392 ms). The harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches. It records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.
+
 ### Separate `tw()` bonus lane
 
 This lane uses pandwind-buildtime and ranks against the same peer set with pandwind-css removed. It does not contribute to the primary rank.
@@ -627,6 +631,20 @@ Source revisions: Arena 2f4ed369a107a186b8108184871bba0777f23fe4, Pandwind bc1b9
 
 Full normalized measurements and parity metadata: [snapshot.json](benchmarks/css-in-js-arena/snapshot.json).
 
+### Current-source output recheck
+
+Pandwind revision 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1 measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps. Geometry passed 18/18 checks within 0.5 px; screenshots passed 72/72 checks under 0.05%. Rankings use the pinned peer values, with the current Pandwind output substituted.
+
+| Output measure                    | Pinned Pandwind | Current Pandwind | Delta | Rank |
+| --------------------------------- | --------------: | ---------------: | ----: | ---: |
+| Browser CSS, raw                  |        31,732 B |         31,732 B |   0 B | #1/4 |
+| Browser CSS, gzip                 |         9,913 B |          9,913 B |   0 B | #3/4 |
+| Browser CSS, Brotli               |         8,724 B |          8,724 B |   0 B | #3/4 |
+| Client JavaScript, Brotli         |       111,644 B |        111,632 B | -12 B | #4/4 |
+| Mean SSR HTML, gzip, six routes   |         5,470 B |          5,469 B |  -1 B | #1/4 |
+| Full first load                   |       125,838 B |        125,825 B | -13 B | #4/4 |
+| HTML class attributes, six routes |        59,980 B |         59,980 B |   0 B | #1/4 |
+
 ## Real-world Vite extraction: Emisoup and Playground
 
 Measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.3.0. Emisoup source 005b44b87470228738873fd66076737a2017b3; Pandwind before scan gate 04fe7147674974a773d958507d7b5e93c76187ef; after 94df3c41d5209e92adcadd298d0d246c37932a5a.
@@ -641,6 +659,17 @@ The small full-build median shifts are within run-to-run spread and do not estab
 The single CPU-profile pair sampled 7.529 s before and 5.705 s after; AST-walk samples fell from 1.497 s to 0.990 s (34% lower). Treat one profile per side as supporting evidence, not a repeated build-time result.
 
 One instrumented build completed in 6.79 s. The CSS transform hook ran 3,026 times for 46.83 s cumulative inclusive time; concurrent module transforms overlap. CSS generateBundle took 2.63 s. Stack-fold transform used 0.34 s cumulative across 3,026 calls. The wrapper adds timing overhead.
+
+### Current-source build and memory recheck
+
+Measured 2026-09-25 with Emisoup source a13301f9a663b2190cdfd9ac4969794b2c3d6b74, Pandwind source 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1, and Node 24.20.0. Vite versions: Emisoup 8.3.0, Playground 8.2.2.
+
+| Workload   | Full command                             | Wall samples                                                            | Peak process-tree RSS                                   |
+| ---------- | ---------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------- |
+| Emisoup    | `pnpm --filter @emisoup/front run build` | median 5.91 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 1213 MiB, range 1188–1302 MiB (1302, 1213, 1188) |
+| Playground | `pnpm --filter playground run build`     | median 12.39 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 1144 MiB, range 1090–1170 MiB (1090, 1144, 1170) |
+
+Peak resident memory is the sampled sum for pnpm and descendant processes, polled every 75 ms. These current full-build samples characterize run-to-run spread; the pinned before/after comparison remains the source for optimization claims.
 
 ### Emisoup client output
 

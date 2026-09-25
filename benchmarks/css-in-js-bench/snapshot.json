@@ -18,7 +18,11 @@
 			"firefox": "stable_156.0.1"
 		},
 		"laneCount": 21,
-		"caseCount": 13
+		"caseCount": 13,
+		"pandwindBuildtimeSamples": {
+			"coldMs": [498, 304, 375],
+			"warmMs": [421, 344, 392]
+		}
 	},
 	"workloads": [
 		{

@@ -82,9 +82,13 @@ Pandwind's six-page lane passed parity: 18/18 route geometry checks stayed withi
 
 Pandwind's maximum screenshot difference was 0.0151%; maximum across all lanes was 0.0187%. The Arena worktree records full methods and stress results in revision 2f4ed369a107a186b8108184871bba0777f23fe4; normalized inputs are in the [local comparison snapshot](benchmarks/css-in-js-arena/snapshot.json). Pandwind source revision bc1b904c5d6795d43396b9f364a127fd68c2f436.
 
+Current-source output recheck: Pandwind revision 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1 measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps passed 18/18 geometry checks and 72/72 screenshot checks. All rechecked output ranks stayed the same; JavaScript Brotli changed by -12 B and full first load by -13 B versus the pinned ranking snapshot.
+
 ## Real-world CSS compiler: Emisoup
 
 Pinned Emisoup source 005b44b87470228738873fd66076737a2017b3 on Vite 8.3.0 transformed 3,026 modules. Its three-build median was 7.24 s after versus 7.28 s before; spread prevents an end-to-end speedup claim. On a 1,000-file no-CSS workload, guarded discovery reduced the targeted parse-and-walk phase from 9.70 ms to 0.275 ms median, with parser calls dropping from 1,000 to 0. Playground also showed no build regression: 5.04 s after versus 5.61 s before over 4,220 modules.
+
+Current package-build recheck measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, with Emisoup source a13301f9a663b2190cdfd9ac4969794b2c3d6b74 and Pandwind source 180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1. Five full build commands had medians of 5.91 s for Emisoup (5.67–7.04 s) and 12.39 s for Playground (11.66–17.41 s). These are variability samples, not a before/after speedup claim.
 
 All emitted Emisoup client assets total 3,003,504 raw, 894,553 gzip-9, and 791,621 Brotli-11 bytes with each file compressed separately. The main Pandwind CSS asset is 123,976 raw, 21,169 gzip-9, and 18,496 Brotli-11 bytes. The progress-fill keeps static theme styles in CSS and width as a changing CSS variable; detailed hook, profile, CSS duplication, and delivery findings are in [PERF.md](PERF.md#real-world-vite-extraction-emisoup-and-playground).
 

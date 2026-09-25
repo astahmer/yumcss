@@ -11,6 +11,30 @@
 		"pandwindBeforeRevision": "04fe7147674974a773d958507d7b5e93c76187ef",
 		"pandwindAfterRevision": "94df3c41d5209e92adcadd298d0d246c37932a5a"
 	},
+	"currentBuildRecheck": {
+		"measuredAt": "2026-09-25",
+		"source": {
+			"emisoupRevision": "a13301f9a663b2190cdfd9ac4969794b2c3d6b74",
+			"pandwindRevision": "180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1"
+		},
+		"environment": {
+			"machine": "Apple M4 (arm64), macOS",
+			"node": "24.20.0",
+			"emisoupVite": "8.3.0",
+			"playgroundVite": "8.2.2"
+		},
+		"processTreeRssSampleIntervalMs": 75,
+		"emisoup": {
+			"command": "pnpm --filter @emisoup/front run build",
+			"buildWallSeconds": [7.037, 5.882, 5.671, 5.914, 6.008],
+			"peakProcessTreeRssMiB": [1302, 1213, 1188]
+		},
+		"playground": {
+			"command": "pnpm --filter playground run build",
+			"buildWallSeconds": [17.407, 12.392, 11.658, 12.171, 13.212],
+			"peakProcessTreeRssMiB": [1090, 1144, 1170]
+		}
+	},
 	"emisoup": {
 		"moduleCount": 3026,
 		"beforeBuildSeconds": [5.45, 7.28, 9.21],
