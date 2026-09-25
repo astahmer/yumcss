@@ -1,0 +1,42 @@
+{
+	"schema": "pandwind.generated/1",
+	"generator": "pandwind-codemod tw generate",
+	"inputs": [
+		{
+			"path": ".plan083-probe/tailwind.css",
+			"hash": "42070e0b45bb201b2b838a52aaaa6e965f964e0b542d97f1fe517fe59c4b75a8"
+		}
+	],
+	"artifacts": [
+		{
+			"path": ".plan083-probe/generated/pandwind.interop.json",
+			"ownership": "build-only",
+			"hash": "1c8a7eb85492c254a1a85f2a1b80b1261d56acb72f8c11d785fd74c7df9e81a4"
+		},
+		{
+			"path": ".plan083-probe/generated/tw.build.ts",
+			"ownership": "build-only",
+			"hash": "9813a1936f8e69d4ae0b99d816ba907ea6cdb08efc7d5b77d8477a6d50020ae0"
+		},
+		{
+			"path": ".plan083-probe/generated/tw.conflicts.ts",
+			"ownership": "optional",
+			"hash": "7c975bb590e723b735d04de66dbba4a35fded37a7296540e88353777344637bb"
+		},
+		{
+			"path": ".plan083-probe/generated/tw.runtime.ts",
+			"ownership": "optional",
+			"hash": "85389a35e02ebfdfb74a0651aebf768dcfeff7452747ce6b1baea47b1428e600"
+		},
+		{
+			"path": ".plan083-probe/generated/tw.ts",
+			"ownership": "runtime",
+			"hash": "84a689b71b54d44f0e7fc11862ab2af96b038b4373dd61c9ebb86e8fd8f39bbc"
+		},
+		{
+			"path": ".plan083-probe/generated/types.d.ts",
+			"ownership": "editor",
+			"hash": "d23072eb92675b5a8589aea52500be57d0e2f2e40b2fc0f3473bb27316fb461c"
+		}
+	]
+}

@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"updatedAt": "2026-09-25",
+	"environment": {
+		"platform": "darwin",
+		"arch": "arm64",
+		"node": "v24.20.0"
+	},
+	"method": "Each process median is based on five in-process samples of two million calls, from the isolated Vitest runtime API benchmark. This targeted follow-up is separate from the pinned all-API ranking snapshot.",
+	"measurements": [
+		{
+			"name": "stack.style",
+			"operation": "renderer-agnostic Stack style mapping for direction=row, gap=4, align=center",
+			"iterationsPerSample": 2000000,
+			"samplesPerProcess": 5,
+			"before": {
+				"revision": "41a909fa9560c1cdd983f998329bf3602b277ccb",
+				"runs": [
+					{ "medianOpsPerSecond": 13693456 },
+					{ "medianOpsPerSecond": 13670556 },
+					{ "medianOpsPerSecond": 11774007, "p10": 8822551, "p90": 13245804 }
+				]
+			},
+			"after": {
+				"revision": "d1b6fc227d9a984c5b86f030cdd151331a22e360",
+				"runs": [
+					{ "medianOpsPerSecond": 20084136, "p10": 19733094, "p90": 20172466 },
+					{ "medianOpsPerSecond": 20061530, "p10": 19562684, "p90": 20178843 }
+				]
+			}
+		}
+	]
+}

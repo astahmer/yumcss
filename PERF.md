@@ -234,6 +234,16 @@ Measured on darwin/arm64 with Node v24.19.0; snapshot updated 2026-09-16. Higher
 
 The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap); the older hot-path regression snapshot remains separate because its repeated micro-inputs and tolerance are intentionally different.
 
+### Targeted runtime optimization follow-up
+
+Measured on darwin/arm64 with Node v24.20.0 on 2026-09-25. Each process median is based on five in-process samples of two million calls, from the isolated Vitest runtime API benchmark. This targeted follow-up is separate from the pinned all-API ranking snapshot.
+
+| API         | Operation                                                                    |                 Before median ops/s (run range) |                  After median ops/s (run range) | Change |
+| ----------- | ---------------------------------------------------------------------------- | ----------------------------------------------: | ----------------------------------------------: | -----: |
+| stack.style | renderer-agnostic Stack style mapping for direction=row, gap=4, align=center | 13,670,556 (11,774,007–13,693,456; 3 processes) | 20,084,136 (20,061,530–20,084,136; 2 processes) | +46.9% |
+
+The recorded within-process P10–P90 envelope was 8,822,551–13,245,804 ops/s before (one run retained percentiles) and 19,562,684–20,178,843 ops/s after. Source revisions: before 41a909fa9560c1cdd983f998329bf3602b277ccb; after d1b6fc227d9a984c5b86f030cdd151331a22e360. This focused runtime result does not establish a full application build win or a cross-library rank change; the all-API table above remains pinned to its recorded snapshot.
+
 ## Runtime size ranking
 
 Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values remain in the committed snapshot and budgets. Static output and build-time-only rows are included for completeness but are not browser runtime costs.
@@ -463,11 +473,17 @@ INP is not ranked because frame-timed medians cluster within measurement noise.
 
 ### Cold-build method and samples
 
-Pandwind cold runs were 498, 304, 375 ms (median 375 ms); immediate warm runs were 421, 344, 392 ms (median 392 ms). The repeated rank harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches, and it records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.
+Pandwind cold runs were 498, 304, 375 ms (median 340 ms); immediate warm runs were 421, 344, 392 ms (median 368 ms). The repeated rank harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches, and it records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.
 
 ### One-off instrumented phase profile
 
 One instrumented CSS-in-JS Bench pandwind-css lane with isolated output and Vite cache sample on 2026-09-25, using Pandwind artifact bc1b904c5d6795d43396b9f364a127fd68c2f436, took 212.72 ms total. Hook timings were load 0.11 ms, resolve 0.06 ms, buildStart 0.05 ms, cumulative inclusive CSS transform 13.15 ms, and CSS generateBundle 81.32 ms. This predates the source-filter fix; it is a single instrumented diagnostic, not a repeated phase breakdown or a rank measurement.
+
+### Pinned-artifact DOM and pixel verification
+
+The CSS-in-JS Bench verifier ran 2026-09-25T14:53:49.355Z against benchmark revision 3f8df15117387d291d96fb7ab8fdefa8c4017a15 and Pandwind artifact bc1b904c5d6795d43396b9f364a127fd68c2f436. It passed 13/13 DOM-attribute cases and 13/13 pixel cases across the 21-lane benchmark artifact.
+
+Hydration verification skipped: The isolated verification workspace did not contain hydrate builds. The case-level evidence is in [parity-verification.json](benchmarks/css-in-js-bench/parity-verification.json). This validates the pinned artifact, not later current-source changes.
 
 ### Separate `tw()` bonus lane
 
@@ -706,10 +722,10 @@ Measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.3.0. Emisou
 
 | Workload   | Modules | Before runs (s)  | Before median | After runs (s)   | After median |
 | ---------- | ------: | ---------------- | ------------: | ---------------- | -----------: |
-| Emisoup    |   3,026 | 5.45, 7.28, 9.21 |        7.28 s | 7.24, 7.07, 8.67 |       7.24 s |
-| Playground |   4,220 | 6.67, 5.35, 5.61 |        5.61 s | 6.04, 5.04, 4.50 |       5.04 s |
+| Emisoup    |   3,026 | 5.45, 7.28, 9.21 |        6.00 s | 7.24, 7.07, 8.67 |       7.00 s |
+| Playground |   4,220 | 6.67, 5.35, 5.61 |        5.00 s | 6.04, 5.04, 4.50 |       5.00 s |
 
-The small full-build median shifts are within run-to-run spread and do not establish a build-time win. Two after runs measured 1.05–1.08 GB maximum resident memory. The deterministic 1,000-file source-scan workload improved from 9.70 ms median parse-and-walk to 0.275 ms median guarded discovery (35.3×). Parser calls fell from 1,000 to 0. This phase result is not a multiplier for the full application build.
+The small full-build median shifts are within run-to-run spread and do not establish a build-time win. Two after runs measured 1.05–1.08 GB maximum resident memory. The deterministic 1,000-file source-scan workload improved from 9.00 ms median parse-and-walk to 0.000 ms median guarded discovery (Infinity×). Parser calls fell from 1,000 to 0. This phase result is not a multiplier for the full application build.
 
 The single CPU-profile pair sampled 7.529 s before and 5.705 s after; AST-walk samples fell from 1.497 s to 0.990 s (34% lower). Treat one profile per side as supporting evidence, not a repeated build-time result.
 
@@ -721,8 +737,8 @@ Measured 2026-09-25 with Emisoup source a13301f9a663b2190cdfd9ac4969794b2c3d6b74
 
 | Workload   | Full command                             | Wall samples                                                            | Peak process-tree RSS                                   |
 | ---------- | ---------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------- |
-| Emisoup    | `pnpm --filter @emisoup/front run build` | median 5.91 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 1213 MiB, range 1188–1302 MiB (1302, 1213, 1188) |
-| Playground | `pnpm --filter playground run build`     | median 12.39 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 1144 MiB, range 1090–1170 MiB (1090, 1144, 1170) |
+| Emisoup    | `pnpm --filter @emisoup/front run build` | median 6.00 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 1201 MiB, range 1188–1302 MiB (1302, 1213, 1188) |
+| Playground | `pnpm --filter playground run build`     | median 12.00 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 1117 MiB, range 1090–1170 MiB (1090, 1144, 1170) |
 
 Peak resident memory is the sampled sum for pnpm and descendant processes, polled every 75 ms. These current full-build samples characterize run-to-run spread; the pinned before/after comparison remains the source for optimization claims.
 
@@ -734,20 +750,20 @@ Measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, with Emisoup Vite 
 
 | Workload   | Command                                  | Before full-build samples                                               | After full-build samples                                                | Before process-tree RSS                                 | After process-tree RSS                                              |
 | ---------- | ---------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
-| Emisoup    | `pnpm --filter @emisoup/front run build` | median 5.91 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 7.18 s, range 7.00–9.49 s (9.49, 7.84, 7.18, 7.00, 7.06)         | median 1213 MiB, range 1188–1302 MiB (1302, 1213, 1188) | median 1183 MiB, range 1140–1198 MiB (1184, 1198, 1171, 1183, 1140) |
-| Playground | `pnpm --filter playground run build`     | median 12.39 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 11.32 s, range 10.70–13.95 s (13.95, 11.32, 11.54, 10.70, 10.92) | median 1144 MiB, range 1090–1170 MiB (1090, 1144, 1170) | median 1197 MiB, range 1041–1213 MiB (1197, 1210, 1213, 1190, 1041) |
+| Emisoup    | `pnpm --filter @emisoup/front run build` | median 6.00 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 7.00 s, range 7.00–9.49 s (9.49, 7.84, 7.18, 7.00, 7.06)         | median 1201 MiB, range 1188–1302 MiB (1302, 1213, 1188) | median 1177 MiB, range 1140–1198 MiB (1184, 1198, 1171, 1183, 1140) |
+| Playground | `pnpm --filter playground run build`     | median 12.00 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 11.00 s, range 10.70–13.95 s (13.95, 11.32, 11.54, 10.70, 10.92) | median 1117 MiB, range 1090–1170 MiB (1090, 1144, 1170) | median 1194 MiB, range 1041–1213 MiB (1197, 1210, 1213, 1190, 1041) |
 
-RSS sums pnpm and descendant processes, sampled every 75 ms. The full-process medians were 5.91 s → 7.18 s for Emisoup and 12.39 s → 11.32 s for Playground. The ranges overlap; these samples show no repeatable end-to-end build or memory win.
+RSS sums pnpm and descendant processes, sampled every 75 ms. The full-process medians were 6.00 s → 7.00 s for Emisoup and 12.00 s → 11.00 s for Playground. The ranges overlap; these samples show no repeatable end-to-end build or memory win.
 
 A separate instrumented Emisoup Vite API profile used 3 sequential builds per mode in one Node process. CSS transform ran 3,026 times per run; cumulative transform timings are inclusive and can overlap.
 
 | Profile measure              | Filter disabled                                           | Filter enabled                                            |
 | ---------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
-| Build API wall time          | median 5.97 s, range 3.68–6.94 s (6.94, 5.97, 3.68)       | median 3.65 s, range 3.29–6.44 s (6.44, 3.65, 3.29)       |
-| CSS transform inclusive time | median 36.05 s, range 31.09–38.81 s (36.05, 38.81, 31.09) | median 37.37 s, range 26.32–61.95 s (61.95, 26.32, 37.37) |
-| CSS generateBundle time      | median 1.88 s, range 0.94–1.99 s (1.99, 1.88, 0.94)       | median 0.84 s, range 0.83–1.46 s (1.46, 0.84, 0.83)       |
+| Build API wall time          | median 5.00 s, range 3.68–6.94 s (6.94, 5.97, 3.68)       | median 3.00 s, range 3.29–6.44 s (6.44, 3.65, 3.29)       |
+| CSS transform inclusive time | median 34.00 s, range 31.09–38.81 s (36.05, 38.81, 31.09) | median 32.00 s, range 26.32–61.95 s (61.95, 26.32, 37.37) |
+| CSS generateBundle time      | median 1.00 s, range 0.94–1.99 s (1.99, 1.88, 0.94)       | median 1.00 s, range 0.83–1.46 s (1.46, 0.84, 0.83)       |
 
-The generateBundle median fell from 1.883 s to 0.841 s (about 55%) in this warm, instrumented profile. Samples are cache-sensitive and their ranges overlap; this is targeted hook evidence, not a full-build speedup. The change fixes the excluded-source leak. Arena's current-output recheck preserves its measured metrics; the Bench ranking remains tied to its pinned measured artifact and was not rerun here.
+The generateBundle median fell from 1.000 s to 1.000 s (about 0%) in this warm, instrumented profile. Samples are cache-sensitive and their ranges overlap; this is targeted hook evidence, not a full-build speedup. The change fixes the excluded-source leak. Arena's current-output recheck preserves its measured metrics; the Bench ranking remains tied to its pinned measured artifact and was not rerun here.
 
 ### Emisoup client output
 

@@ -72,6 +72,39 @@ type RuntimeApiSnapshot = {
 	}[];
 };
 
+type RuntimeApiFollowupsSnapshot = {
+	readonly schemaVersion: 1;
+	readonly updatedAt: string;
+	readonly environment: {
+		readonly platform: string;
+		readonly arch: string;
+		readonly node: string;
+	};
+	readonly method: string;
+	readonly measurements: readonly {
+		readonly name: string;
+		readonly operation: string;
+		readonly iterationsPerSample: number;
+		readonly samplesPerProcess: number;
+		readonly before: {
+			readonly revision: string;
+			readonly runs: readonly {
+				readonly medianOpsPerSecond: number;
+				readonly p10?: number;
+				readonly p90?: number;
+			}[];
+		};
+		readonly after: {
+			readonly revision: string;
+			readonly runs: readonly {
+				readonly medianOpsPerSecond: number;
+				readonly p10?: number;
+				readonly p90?: number;
+			}[];
+		};
+	}[];
+};
+
 type BundleSize = { readonly min: number; readonly gz: number };
 
 type EcosystemBundleSnapshot = {
@@ -124,6 +157,14 @@ type ExternalBenchmarkWorkload = {
 
 type CssInJsBenchSnapshot = {
 	readonly schemaVersion: 2;
+	readonly parityVerification?: {
+		readonly measuredAt: string;
+		readonly benchmarkRevision: string;
+		readonly pandwindArtifactRevision: string;
+		readonly reportPath: string;
+		readonly hydration: "passed" | "skipped" | "failed";
+		readonly hydrationNote?: string;
+	};
 	readonly source: {
 		readonly repository: string;
 		readonly url: string;
@@ -160,6 +201,16 @@ type CssInJsBenchSnapshot = {
 		};
 	};
 	readonly workloads: readonly ExternalBenchmarkWorkload[];
+};
+
+type CssInJsBenchParityReport = {
+	readonly ok: boolean;
+	readonly generatedAt: string;
+	readonly reports: readonly {
+		readonly caseId: string;
+		readonly ok: boolean;
+		readonly notes: readonly string[];
+	}[];
 };
 
 type ArenaLibrary = "bamboo" | "stylex" | "panda" | "pandwind";
@@ -431,6 +482,7 @@ const runtimeApiSnapshotPath = resolve(
 	ROOT,
 	"packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap",
 );
+const runtimeApiFollowupsSnapshotPath = resolve(ROOT, "benchmarks/runtime-api-followups.json");
 const runtimeSizeSnapshotPath = resolve(
 	ROOT,
 	"packages/pandwind/tests/snapshots/runtime-size.json.snap",
@@ -444,6 +496,10 @@ const ecosystemBundleSizeSnapshotPath = resolve(
 	"benchmarks/styling-size/snapshots/bundle-size.json",
 );
 const cssInJsBenchSnapshotPath = resolve(ROOT, "benchmarks/css-in-js-bench/snapshot.json");
+const cssInJsBenchParityReportPath = resolve(
+	ROOT,
+	"benchmarks/css-in-js-bench/parity-verification.json",
+);
 const arenaSnapshotPath = resolve(ROOT, "benchmarks/css-in-js-arena/snapshot.json");
 const realWorldCssExtractionSnapshotPath = resolve(
 	ROOT,
@@ -458,7 +514,7 @@ const readJson = <T,>(path: string): T | undefined => {
 const integer = (value: number): string => Math.round(value).toLocaleString("en-US");
 const seconds = (value: number): string => value.toFixed(3);
 const kilobytes = (value: number): string => (Math.round(value / 10) / 100).toFixed(2);
-const median = (values: readonly number[]): number => {
+const medianOfProcessRuns = (values: readonly number[]): number => {
 	const sorted = values.toSorted((left, right) => left - right);
 	return sorted[Math.floor(sorted.length / 2)] ?? 0;
 };
@@ -1555,7 +1611,79 @@ const renderEcosystemBundleComparison = (
 	];
 };
 
-const renderRuntimeApiRanking = (snapshot: RuntimeApiSnapshot | undefined): string[] => {
+const median = (values: readonly number[]): number => {
+	const sorted = [...values].toSorted((left, right) => left - right);
+	const middle = Math.floor(sorted.length / 2);
+	const lower = sorted[middle - 1];
+	const upper = sorted[middle];
+	if (upper === undefined) return 0;
+	return lower === undefined ? upper : Math.round((lower + upper) / 2);
+};
+
+const summarizeRuntimeApiRuns = (
+	runs: RuntimeApiFollowupsSnapshot["measurements"][number]["before"]["runs"],
+): string => {
+	const medians = runs.map((run) => run.medianOpsPerSecond);
+	return `${integer(medianOfProcessRuns(medians))} (${integer(Math.min(...medians))}–${integer(Math.max(...medians))}; ${runs.length} processes)`;
+};
+
+const renderRuntimeApiFollowups = (snapshot: RuntimeApiFollowupsSnapshot | undefined): string[] => {
+	if (snapshot === undefined || snapshot.measurements.length === 0) return [];
+	const rows = snapshot.measurements.map((measurement) => {
+		const beforeMedian = medianOfProcessRuns(
+			measurement.before.runs.map((run) => run.medianOpsPerSecond),
+		);
+		const afterMedian = medianOfProcessRuns(
+			measurement.after.runs.map((run) => run.medianOpsPerSecond),
+		);
+		const changePercent = ((afterMedian / beforeMedian - 1) * 100).toFixed(1);
+		const change = Number(changePercent) >= 0 ? `+${changePercent}%` : `${changePercent}%`;
+		return [
+			measurement.name,
+			measurement.operation,
+			summarizeRuntimeApiRuns(measurement.before.runs),
+			summarizeRuntimeApiRuns(measurement.after.runs),
+			change,
+		];
+	});
+	const p10Before = snapshot.measurements.flatMap((measurement) =>
+		measurement.before.runs.flatMap((run) => (run.p10 === undefined ? [] : [run.p10])),
+	);
+	const p90Before = snapshot.measurements.flatMap((measurement) =>
+		measurement.before.runs.flatMap((run) => (run.p90 === undefined ? [] : [run.p90])),
+	);
+	const p10After = snapshot.measurements.flatMap((measurement) =>
+		measurement.after.runs.flatMap((run) => (run.p10 === undefined ? [] : [run.p10])),
+	);
+	const p90After = snapshot.measurements.flatMap((measurement) =>
+		measurement.after.runs.flatMap((run) => (run.p90 === undefined ? [] : [run.p90])),
+	);
+	return [
+		"### Targeted runtime optimization follow-up",
+		"",
+		`Measured on ${snapshot.environment.platform}/${snapshot.environment.arch} with Node ${snapshot.environment.node} on ${snapshot.updatedAt}. ${snapshot.method}`,
+		"",
+		markdownTable(
+			[
+				"API",
+				"Operation",
+				"Before median ops/s (run range)",
+				"After median ops/s (run range)",
+				"Change",
+			],
+			rows,
+			new Set([2, 3, 4]),
+		),
+		"",
+		`The recorded within-process P10–P90 envelope was ${integer(Math.min(...p10Before))}–${integer(Math.max(...p90Before))} ops/s before (one run retained percentiles) and ${integer(Math.min(...p10After))}–${integer(Math.max(...p90After))} ops/s after. Source revisions: before ${snapshot.measurements.map((measurement) => measurement.before.revision).join(", ")}; after ${snapshot.measurements.map((measurement) => measurement.after.revision).join(", ")}. This focused runtime result does not establish a full application build win or a cross-library rank change; the all-API table above remains pinned to its recorded snapshot.`,
+		"",
+	];
+};
+
+const renderRuntimeApiRanking = (
+	snapshot: RuntimeApiSnapshot | undefined,
+	followups: RuntimeApiFollowupsSnapshot | undefined,
+): string[] => {
 	if (snapshot === undefined || snapshot.scenarios.length === 0) return [];
 	const rows = snapshot.scenarios
 		.toSorted(
@@ -1585,6 +1713,7 @@ const renderRuntimeApiRanking = (snapshot: RuntimeApiSnapshot | undefined): stri
 		"",
 		"The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap); the older hot-path regression snapshot remains separate because its repeated micro-inputs and tolerance are intentionally different.",
 		"",
+		...renderRuntimeApiFollowups(followups),
 	];
 };
 
@@ -1760,8 +1889,61 @@ const renderDetailedExternalWorkload = (
 	];
 };
 
+const renderCssInJsBenchParityVerification = (
+	snapshot: CssInJsBenchSnapshot,
+	parityReport: CssInJsBenchParityReport | undefined,
+): string[] => {
+	const metadata = snapshot.parityVerification;
+	if (metadata === undefined) return [];
+	if (parityReport === undefined) {
+		throw new Error("missing CSS-in-JS Bench parity report: " + metadata.reportPath);
+	}
+	const domCases = parityReport.reports.filter(
+		(report) => report.ok && report.notes.some((note) => note.includes("attrs clean")),
+	).length;
+	const pixelCases = parityReport.reports.filter(
+		(report) => report.ok && report.notes.some((note) => note.startsWith("✓ pixels:")),
+	).length;
+	const allCasesPassed =
+		parityReport.ok &&
+		parityReport.reports.length === snapshot.source.caseCount &&
+		domCases === snapshot.source.caseCount &&
+		pixelCases === snapshot.source.caseCount;
+	return [
+		"### Pinned-artifact DOM and pixel verification",
+		"",
+		"The CSS-in-JS Bench verifier ran " +
+			metadata.measuredAt +
+			" against benchmark revision " +
+			metadata.benchmarkRevision +
+			" and Pandwind artifact " +
+			metadata.pandwindArtifactRevision +
+			". It passed " +
+			domCases +
+			"/" +
+			snapshot.source.caseCount +
+			" DOM-attribute cases and " +
+			pixelCases +
+			"/" +
+			snapshot.source.caseCount +
+			" pixel cases across the " +
+			snapshot.source.laneCount +
+			"-lane benchmark artifact" +
+			(allCasesPassed ? "." : "; some checks did not pass."),
+		"",
+		"Hydration verification " +
+			metadata.hydration +
+			(metadata.hydrationNote === undefined ? "." : ": " + metadata.hydrationNote) +
+			" The case-level evidence is in [parity-verification.json](" +
+			metadata.reportPath +
+			"). This validates the pinned artifact, not later current-source changes.",
+		"",
+	];
+};
+
 const renderDetailedCssInJsBenchComparison = (
 	snapshot: CssInJsBenchSnapshot | undefined,
+	parityReport: CssInJsBenchParityReport | undefined,
 ): string[] => {
 	if (snapshot === undefined) return [];
 	const { source } = snapshot;
@@ -1825,6 +2007,7 @@ const renderDetailedCssInJsBenchComparison = (
 		"",
 		...primaryWorkloads,
 		...buildtimeContext,
+		...renderCssInJsBenchParityVerification(snapshot, parityReport),
 		"### Separate `tw()` bonus lane",
 		"",
 		`This lane uses ${twBonusLane} and ranks against the same peer set with ${mainLane} removed. It does not contribute to the primary rank.`,
@@ -1967,12 +2150,19 @@ export const renderPerformanceSummary = (): string => {
 	const exampleSnapshot = readJson<TscSnapshot>(exampleSnapshotPath);
 	const apiSnapshot = readJson<ApiTscSnapshot>(apiSnapshotPath);
 	const runtimeApiSnapshot = readJson<RuntimeApiSnapshot>(runtimeApiSnapshotPath);
+	const runtimeApiFollowups = readJson<RuntimeApiFollowupsSnapshot>(
+		runtimeApiFollowupsSnapshotPath,
+	);
+	if (runtimeApiFollowups !== undefined && runtimeApiFollowups.schemaVersion !== 1) {
+		throw new Error(`missing or unsupported ${runtimeApiFollowupsSnapshotPath}`);
+	}
 	const runtimeSizes = readJson<Record<string, BundleSize>>(runtimeSizeSnapshotPath);
 	const generatedRuntimeSizes = readJson<Record<string, BundleSize>>(
 		generatedRuntimeSizeSnapshotPath,
 	);
 	const ecosystemBundleSizes = readJson<EcosystemBundleSnapshot>(ecosystemBundleSizeSnapshotPath);
 	const cssInJsBench = readJson<CssInJsBenchSnapshot>(cssInJsBenchSnapshotPath);
+	const cssInJsBenchParity = readJson<CssInJsBenchParityReport>(cssInJsBenchParityReportPath);
 	const arena = readJson<ArenaSnapshot>(arenaSnapshotPath);
 	const realWorldCssExtraction = readJson<RealWorldCssExtractionSnapshot>(
 		realWorldCssExtractionSnapshotPath,
@@ -2009,11 +2199,11 @@ export const renderPerformanceSummary = (): string => {
 		);
 	}
 	lines.push(...renderGeneratedComparison(generated));
-	lines.push(...renderRuntimeApiRanking(runtimeApiSnapshot));
+	lines.push(...renderRuntimeApiRanking(runtimeApiSnapshot, runtimeApiFollowups));
 	lines.push(...renderBundleRanking(runtimeSizes));
 	lines.push(...renderGeneratedRuntimeSizes(generatedRuntimeSizes));
 	lines.push(...renderEcosystemBundleComparison(ecosystemBundleSizes));
-	lines.push(...renderDetailedCssInJsBenchComparison(cssInJsBench));
+	lines.push(...renderDetailedCssInJsBenchComparison(cssInJsBench, cssInJsBenchParity));
 	lines.push(...renderArenaDetails(arena));
 	lines.push(...renderRealWorldCssExtractionDetails(realWorldCssExtraction));
 	lines.push(

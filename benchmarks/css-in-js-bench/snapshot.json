@@ -38,6 +38,14 @@
 			}
 		}
 	},
+	"parityVerification": {
+		"measuredAt": "2026-09-25T14:53:49.355Z",
+		"benchmarkRevision": "3f8df15117387d291d96fb7ab8fdefa8c4017a15",
+		"pandwindArtifactRevision": "bc1b904c5d6795d43396b9f364a127fd68c2f436",
+		"reportPath": "benchmarks/css-in-js-bench/parity-verification.json",
+		"hydration": "skipped",
+		"hydrationNote": "The isolated verification workspace did not contain hydrate builds."
+	},
 	"workloads": [
 		{
 			"id": "ssr-throughput",
