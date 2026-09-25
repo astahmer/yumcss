@@ -5,6 +5,7 @@ const types = `
 type BgColorValue = "blue-500" | "red-500";
 interface WindUtilities {
 \t"bgColor"?: BgColorValue | true | Array<BgColorValue | true>;
+\t"textColor"?: BgColorValue | true | Array<BgColorValue | true>;
 }
 `;
 
@@ -28,10 +29,12 @@ describe("pandwind interop artifact", () => {
 			bridge: { "background-color": { "#3182ce": "bg-blue-500" } },
 		});
 
-		expect(artifact.schema).toBe("pandwind.interop/1");
+		expect(artifact.schema).toBe("pandwind.interop/2");
 		expect(artifact.utilities).toEqual([
-			{ key: "bgColor", base: "bg", valueType: "BgColorValue", values: ["blue-500", "red-500"] },
+			{ key: "bgColor", base: "bg", valueType: "BgColorValue" },
+			{ key: "textColor", base: "text", valueType: "BgColorValue" },
 		]);
+		expect(artifact.valueTypes).toEqual({ BgColorValue: ["blue-500", "red-500"] });
 		expect(artifact.tw.variants.hover).toEqual({ join: ":" });
 		expect(artifact.tw.compose).toEqual(["shadow"]);
 		expect(artifact.bridge["background-color"]!["#3182ce"]).toBe("bg-blue-500");

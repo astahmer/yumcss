@@ -3,13 +3,12 @@ import type { UtilityBridge } from "pandwind/tw";
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 
 /** Stable generated metadata consumed by migration and analysis tooling. */
-export const PANDWIND_INTEROP_SCHEMA = "pandwind.interop/1" as const;
+export const PANDWIND_INTEROP_SCHEMA = "pandwind.interop/2" as const;
 
 export interface PandwindInteropUtility {
 	readonly key: string;
 	readonly base: string;
 	readonly valueType?: string;
-	readonly values: readonly string[];
 }
 
 export interface PandwindInteropArtifact {
@@ -22,6 +21,8 @@ export interface PandwindInteropArtifact {
 		readonly theme?: string;
 	};
 	readonly utilities: readonly PandwindInteropUtility[];
+	/** Named value unions shared by utility rows that use the same generated type. */
+	readonly valueTypes: Readonly<Record<string, readonly string[]>>;
 	readonly tw: {
 		readonly variants: TwConfig["variants"];
 		readonly conflicts: TwConfig["conflicts"];
@@ -61,22 +62,27 @@ function typeLiterals(typesDts: string): Map<string, string[]> {
 	return aliases;
 }
 
-function utilitiesFromTypes(typesDts: string): readonly PandwindInteropUtility[] {
+function utilityMetadataFromTypes(typesDts: string): {
+	readonly utilities: readonly PandwindInteropUtility[];
+	readonly valueTypes: Readonly<Record<string, readonly string[]>>;
+} {
 	const aliases = typeLiterals(typesDts);
 	const bodyMatch = /interface WindUtilities\b[^{]*\{([\s\S]*?)\n\}/.exec(typesDts);
 	if (bodyMatch === null) throw new Error("pandwind interop: no WindUtilities interface");
 	const utilities: PandwindInteropUtility[] = [];
+	const usedValueTypes = new Set<string>();
 	const entry = /"([^"]+)"\?:\s*([A-Za-z_$][\w$]*)\s*\|\s*true/g;
 	for (const match of bodyMatch[1]!.matchAll(entry)) {
 		const valueType = match[2]!;
-		utilities.push({
-			key: match[1]!,
-			base: utilityBase(match[1]!),
-			valueType,
-			values: aliases.get(valueType) ?? [],
-		});
+		usedValueTypes.add(valueType);
+		utilities.push({ key: match[1]!, base: utilityBase(match[1]!), valueType });
 	}
-	return utilities;
+	return {
+		utilities,
+		valueTypes: Object.fromEntries(
+			[...usedValueTypes].map((valueType) => [valueType, aliases.get(valueType) ?? []]),
+		),
+	};
 }
 
 function themeMetadata(themeBlock: string): PandwindInteropArtifact["theme"] {
@@ -104,6 +110,7 @@ export function buildPandwindInteropArtifact(
 		...(options.twBuildTs === undefined ? [] : [options.twBuildTs]),
 	]);
 	if (config === undefined) throw new Error("pandwind interop: could not read generated tw config");
+	const utilityMetadata = utilityMetadataFromTypes(options.typesDts);
 	return {
 		schema: PANDWIND_INTEROP_SCHEMA,
 		generatedFrom: {
@@ -112,7 +119,7 @@ export function buildPandwindInteropArtifact(
 			bridge: "bridge.ts",
 			...(options.themeBlock ? { theme: "pandwind-theme.css" } : {}),
 		},
-		utilities: utilitiesFromTypes(options.typesDts),
+		...utilityMetadata,
 		tw: {
 			variants: config.variants,
 			conflicts: config.conflicts,

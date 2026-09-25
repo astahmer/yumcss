@@ -34,7 +34,7 @@ function project() {
 		resolve(root, "src/button.ts"),
 		`import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const button = css.class({ color: "red" });\n`,
 	);
-	writeFileSync(resolve(root, "pandwind.interop.json"), '{"schema":"pandwind.interop/1"}\n');
+	writeFileSync(resolve(root, "pandwind.interop.json"), '{"schema":"pandwind.interop/2"}\n');
 	return createMcpToolService(createMcpProjectContext(root));
 }
 
@@ -73,7 +73,7 @@ describe("Pandwind MCP tools", () => {
 		expect(JSON.parse(await service.readResource(MCP_RESOURCE.InteropArtifact))).toMatchObject({
 			schema: "pandwind.mcp.interop/1",
 			path: "pandwind.interop.json",
-			content: '{"schema":"pandwind.interop/1"}\n',
+			content: '{"schema":"pandwind.interop/2"}\n',
 		});
 		const routes = JSON.parse(await service.readResource(MCP_RESOURCE.MigrationRouteCatalog)) as {
 			schema: string;

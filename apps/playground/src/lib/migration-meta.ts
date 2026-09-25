@@ -14,6 +14,13 @@ export const PLAYGROUND_MIGRATION_META: PandwindMeta = (() => {
 		entries.push(key);
 		keysByBase.set(key.base, entries);
 	}
+	const valueLiterals = new Map(
+		Object.entries(interop.valueTypes).map(([valueType, values]) => [valueType, new Set(values)]),
+	);
+	for (const utility of keys) {
+		const valueType = utility.valueType ?? utility.key;
+		if (!valueLiterals.has(valueType)) valueLiterals.set(valueType, new Set());
+	}
 	const bridgeInverse = new Map<string, { property: string; value: string }>();
 	for (const [property, values] of Object.entries(interop.bridge)) {
 		for (const [value, utility] of Object.entries(values)) {
@@ -24,12 +31,7 @@ export const PLAYGROUND_MIGRATION_META: PandwindMeta = (() => {
 	return {
 		keys,
 		keysByBase,
-		valueLiterals: new Map(
-			interop.utilities.map((utility) => [
-				utility.valueType ?? utility.key,
-				new Set(utility.values),
-			]),
-		),
+		valueLiterals,
 		variants: new Map(
 			Object.entries(interop.tw.variants).map(([name, value]) => [
 				name,

@@ -33,11 +33,13 @@ describe("project-aware migration metadata", () => {
 			writeFileSync(
 				join(dir, "pandwind.interop.json"),
 				JSON.stringify({
-					schema: "pandwind.interop/1",
+					schema: "pandwind.interop/2",
 					generatedFrom: { types: "types.d.ts", runtime: "tw.ts", bridge: "bridge.ts" },
 					utilities: [
-						{ key: "bgColor", base: "bg", valueType: "BgColorValue", values: ["blue-500"] },
+						{ key: "bgColor", base: "bg", valueType: "BgColorValue" },
+						{ key: "textColor", base: "text", valueType: "BgColorValue" },
 					],
+					valueTypes: { BgColorValue: ["blue-500"] },
 					tw: {
 						variants: { hover: { join: ":" } },
 						conflicts: { bg: { "blue-500": ["background-color"] } },
@@ -49,11 +51,25 @@ describe("project-aware migration metadata", () => {
 			);
 			const meta = loadMetaFromSources({ interopPath: join(dir, "pandwind.interop.json") });
 			expect(meta.keys[0]).toMatchObject({ key: "bgColor", base: "bg" });
+			expect(meta.valueLiterals.get("BgColorValue")).toEqual(new Set(["blue-500"]));
 			expect(meta.variants.get("hover")).toEqual({ join: ":" });
 			expect(meta.bridgeInverse.get("bg-blue-500")).toEqual({
 				property: "background-color",
 				value: "#3182ce",
 			});
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
+	test("rejects interop artifacts from the previous schema", () => {
+		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-meta-"));
+		try {
+			const path = join(dir, "pandwind.interop.json");
+			writeFileSync(path, '{"schema":"pandwind.interop/1"}\n');
+			expect(() => loadMetaFromSources({ interopPath: path })).toThrow(
+				"unsupported pandwind interop schema",
+			);
 		} finally {
 			rmSync(dir, { recursive: true, force: true });
 		}

@@ -183,7 +183,7 @@ function readInterop(path: string | undefined): PandwindInteropArtifact | undefi
 	if (path === undefined) return undefined;
 	try {
 		const parsed = JSON.parse(readFileSync(path, "utf8")) as Partial<PandwindInteropArtifact>;
-		if (parsed.schema !== "pandwind.interop/1")
+		if (parsed.schema !== "pandwind.interop/2")
 			throw new Error(`codemod: unsupported pandwind interop schema in ${path}`);
 		return parsed as PandwindInteropArtifact;
 	} catch (error) {
@@ -245,14 +245,7 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 		keys,
 		keysByBase,
 		valueLiterals:
-			interop === undefined
-				? parseValueLiterals(typesDts!)
-				: new Map(
-						interop.utilities.map((utility) => [
-							utility.valueType ?? utility.key,
-							new Set(utility.values),
-						]),
-					),
+			interop === undefined ? parseValueLiterals(typesDts!) : valueLiteralsFromInterop(interop),
 		variants:
 			interop === undefined
 				? parseVariants(twSources.join("\n"))
@@ -275,6 +268,17 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 		tokens: options.tokens,
 		interop,
 	};
+}
+
+function valueLiteralsFromInterop(interop: PandwindInteropArtifact): Map<string, Set<string>> {
+	const valueLiterals = new Map(
+		Object.entries(interop.valueTypes).map(([valueType, values]) => [valueType, new Set(values)]),
+	);
+	for (const utility of interop.utilities) {
+		const valueType = utility.valueType ?? utility.key;
+		if (!valueLiterals.has(valueType)) valueLiterals.set(valueType, new Set());
+	}
+	return valueLiterals;
 }
 
 type ModuleExports = Record<string, unknown>;
