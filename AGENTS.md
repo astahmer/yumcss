@@ -298,3 +298,10 @@ We have not launched and have no production users or production data. Revisit th
 - Remove obsolete code, schemas, APIs, configuration, aliases, and transitional paths directly.
 - Do not add backward-compatibility shims, legacy aliases, dual-read or dual-write paths, or data-preserving backfills unless the user explicitly asks for them.
 - Internal interfaces are not public compatibility contracts. Update their callers and tests atomically when they change.
+
+## Product naming
+
+- Start Pandwind names from practical utility. Favor natural, balanced names
+  over clever or overly technical wordplay.
+- Do not start Pandwind product or package names with "style" or "css"; those
+  prefixes were explicitly ruled out.
