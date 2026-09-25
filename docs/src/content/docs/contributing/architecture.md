@@ -382,7 +382,7 @@ cascade layer), content validation,
 and rule-entry types; `packages/codemod/src/lib/` owns source scanning and
 artifact writing; `vite/css.ts` owns explicit package resolution; and
 `vite/css-core.ts` only merges already-validated entries. It remains separate
-from the Tailwind-focused `pandwind.interop/1` artifact because the two files
+from the Tailwind-focused `pandwind.interop/2` artifact because the two files
 serve different consumers and failure policies.
 
 | Domain                 | Port boundary                                                                                                                                | Default implementation                                                                                                                                                                                                                                                                                                                |

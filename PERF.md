@@ -2,7 +2,7 @@
 
 # Pandwind performance details
 
-For the concise real-world comparison, see [PERF-SUMMARY.md](PERF-SUMMARY.md). This detailed report includes committed typecheck, runtime-throughput, bundle-size, CSS-in-JS Bench, and Arena snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.
+For the concise real-world comparison, see [PERF-SUMMARY.md](PERF-SUMMARY.md). This detailed report includes committed typecheck, runtime-throughput, bundle-size, generated Tailwind metadata, CSS-in-JS Bench, and Arena snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.
 
 TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-throughput measurements are local in-process calls. Runtime-size measurements are minified browser bundles with gzip level 6.
 
@@ -302,6 +302,32 @@ These rows are separate from the native CSS runtime: static generated calls eras
 |    6 | generated tw runtime metadata (opt-in)  |        177.82 |     19.56 |
 |    7 | explicit conflict cx (dynamic)          |         57.10 |     19.87 |
 
+## Generated Tailwind project metadata
+
+Measured 2026-09-25 on Apple M4 (arm64), macOS with Node 24.20.0, Tailwind CSS 4.3.3, TypeScript 7.0.2, and Vite 8.2.2. Before Pandwind revision 5a4797777994da5ba93f5b9ffeacc1059c6b64a9; after change xlqxnyqlywumvszkwwowypxznqorynlt.
+
+The official default-only codegen produced 414 utilities and 88 variants. Its declaration was 134,434 raw bytes; the customized Playground declaration was 142,978 bytes. The stock interop artifact was 723,737 raw / 35,581 gzip bytes. The measured Pandwind package tarball was 338,079 bytes.
+
+The shared default-catalog design remains a no-go: measurements do not show a lower combined package, generated-project, and TypeScript cost, and no shared type export was added. The compiler continues to load the effective project catalog through the official Tailwind loader.
+
+| Measurement                            |      Before |       After |             Change |
+| -------------------------------------- | ----------: | ----------: | -----------------: |
+| All generated project artifacts (raw)  | 1,248,282 B | 1,015,391 B |         -232,891 B |
+| Self-contained interop artifact (raw)  |   781,244 B |   548,353 B | -232,891 B (29.8%) |
+| Self-contained interop artifact (gzip) |    43,563 B |    39,537 B |    -4,026 B (9.2%) |
+| Playground MigrationLabPage (raw)      |   536,967 B |   431,679 B | -105,288 B (19.6%) |
+| Playground MigrationLabPage (gzip)     |    52,058 B |    48,176 B |    -3,882 B (7.5%) |
+
+Interop changed from pandwind.interop/1 to pandwind.interop/2. V2 stores each generated value union once by type alias and keeps utility rows as references, so the artifact remains self-contained. Node zlib gzipSync default level on Node 24.20.0. The after bundle was verified to contain the v2 schema and generated utility values (both present).
+
+TypeScript diagnostics were 340,769 instantiations; 467,842 KiB; 0.462 s check before and 340,499 instantiations; 465,901 KiB; 0.604 s check after. The after run includes one additional test file and its check time is not lower; this is not a typecheck-performance claim.
+
+The full pnpm --filter playground run tw:generate command measured median 5.00 s, range 4.71–5.26 s (5.26, 4.71, 5.00) before and median 3.64 s, range 3.36–4.06 s (3.64, 4.06, 3.36) after, with peak process RSS 124.4, 124.2, 125.2 MiB before and 124.0, 123.3, 123.4 MiB after. Includes pnpm, codegen CLI, oxfmt, and generated manifest refresh. These samples support the size result but do not isolate generator CPU time.
+
+The CSS-in-JS Bench and Arena rankings are unchanged: this is a Playground migration-tool chunk, not a benchmarked styling lane. The static and dynamic tw() runtime paths, conflict metadata, and generated APIs remain intact.
+
+Normalized evidence: [snapshot.json](benchmarks/tw-codegen/snapshot.json).
+
 ## Ecosystem bundle-size comparison
 
 Measured on darwin/arm64 with Node v24.20.0, Vite 8.2.2, and esbuild 0.28.2; snapshot updated 2026-09-23. Each value is the styled app minus its unstyled app baseline, in decimal KB.
@@ -473,7 +499,7 @@ INP is not ranked because frame-timed medians cluster within measurement noise.
 
 ### Cold-build method and samples
 
-Pandwind cold runs were 498, 304, 375 ms (median 340 ms); immediate warm runs were 421, 344, 392 ms (median 368 ms). The repeated rank harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches, and it records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.
+Pandwind cold runs were 498, 304, 375 ms (median 375 ms); immediate warm runs were 421, 344, 392 ms (median 392 ms). The repeated rank harness clears the lane's output and Vite caches, then measures the whole client build through Vite's build API in one Node process; it does not cold-start the process or operating-system caches, and it records no phase timings. Treat the 375 ms rank as a lane-level diagnostic, not as a real-project build-time comparison.
 
 ### One-off instrumented phase profile
 
@@ -722,10 +748,10 @@ Measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.3.0. Emisou
 
 | Workload   | Modules | Before runs (s)  | Before median | After runs (s)   | After median |
 | ---------- | ------: | ---------------- | ------------: | ---------------- | -----------: |
-| Emisoup    |   3,026 | 5.45, 7.28, 9.21 |        6.00 s | 7.24, 7.07, 8.67 |       7.00 s |
-| Playground |   4,220 | 6.67, 5.35, 5.61 |        5.00 s | 6.04, 5.04, 4.50 |       5.00 s |
+| Emisoup    |   3,026 | 5.45, 7.28, 9.21 |        7.28 s | 7.24, 7.07, 8.67 |       7.24 s |
+| Playground |   4,220 | 6.67, 5.35, 5.61 |        5.61 s | 6.04, 5.04, 4.50 |       5.04 s |
 
-The small full-build median shifts are within run-to-run spread and do not establish a build-time win. Two after runs measured 1.05–1.08 GB maximum resident memory. The deterministic 1,000-file source-scan workload improved from 9.00 ms median parse-and-walk to 0.000 ms median guarded discovery (Infinity×). Parser calls fell from 1,000 to 0. This phase result is not a multiplier for the full application build.
+The small full-build median shifts are within run-to-run spread and do not establish a build-time win. Two after runs measured 1.05–1.08 GB maximum resident memory. The deterministic 1,000-file source-scan workload improved from 9.70 ms median parse-and-walk to 0.275 ms median guarded discovery (35.3×). Parser calls fell from 1,000 to 0. This phase result is not a multiplier for the full application build.
 
 The single CPU-profile pair sampled 7.529 s before and 5.705 s after; AST-walk samples fell from 1.497 s to 0.990 s (34% lower). Treat one profile per side as supporting evidence, not a repeated build-time result.
 
@@ -737,8 +763,8 @@ Measured 2026-09-25 with Emisoup source a13301f9a663b2190cdfd9ac4969794b2c3d6b74
 
 | Workload   | Full command                             | Wall samples                                                            | Peak process-tree RSS                                   |
 | ---------- | ---------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------- |
-| Emisoup    | `pnpm --filter @emisoup/front run build` | median 6.00 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 1201 MiB, range 1188–1302 MiB (1302, 1213, 1188) |
-| Playground | `pnpm --filter playground run build`     | median 12.00 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 1117 MiB, range 1090–1170 MiB (1090, 1144, 1170) |
+| Emisoup    | `pnpm --filter @emisoup/front run build` | median 5.91 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 1213 MiB, range 1188–1302 MiB (1302, 1213, 1188) |
+| Playground | `pnpm --filter playground run build`     | median 12.39 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 1144 MiB, range 1090–1170 MiB (1090, 1144, 1170) |
 
 Peak resident memory is the sampled sum for pnpm and descendant processes, polled every 75 ms. These current full-build samples characterize run-to-run spread; the pinned before/after comparison remains the source for optimization claims.
 
@@ -750,20 +776,20 @@ Measured 2026-09-25 on Apple M4 (arm64), macOS, Node 24.20.0, with Emisoup Vite 
 
 | Workload   | Command                                  | Before full-build samples                                               | After full-build samples                                                | Before process-tree RSS                                 | After process-tree RSS                                              |
 | ---------- | ---------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
-| Emisoup    | `pnpm --filter @emisoup/front run build` | median 6.00 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 7.00 s, range 7.00–9.49 s (9.49, 7.84, 7.18, 7.00, 7.06)         | median 1201 MiB, range 1188–1302 MiB (1302, 1213, 1188) | median 1177 MiB, range 1140–1198 MiB (1184, 1198, 1171, 1183, 1140) |
-| Playground | `pnpm --filter playground run build`     | median 12.00 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 11.00 s, range 10.70–13.95 s (13.95, 11.32, 11.54, 10.70, 10.92) | median 1117 MiB, range 1090–1170 MiB (1090, 1144, 1170) | median 1194 MiB, range 1041–1213 MiB (1197, 1210, 1213, 1190, 1041) |
+| Emisoup    | `pnpm --filter @emisoup/front run build` | median 5.91 s, range 5.67–7.04 s (7.04, 5.88, 5.67, 5.91, 6.01)         | median 7.18 s, range 7.00–9.49 s (9.49, 7.84, 7.18, 7.00, 7.06)         | median 1213 MiB, range 1188–1302 MiB (1302, 1213, 1188) | median 1183 MiB, range 1140–1198 MiB (1184, 1198, 1171, 1183, 1140) |
+| Playground | `pnpm --filter playground run build`     | median 12.39 s, range 11.66–17.41 s (17.41, 12.39, 11.66, 12.17, 13.21) | median 11.32 s, range 10.70–13.95 s (13.95, 11.32, 11.54, 10.70, 10.92) | median 1144 MiB, range 1090–1170 MiB (1090, 1144, 1170) | median 1197 MiB, range 1041–1213 MiB (1197, 1210, 1213, 1190, 1041) |
 
-RSS sums pnpm and descendant processes, sampled every 75 ms. The full-process medians were 6.00 s → 7.00 s for Emisoup and 12.00 s → 11.00 s for Playground. The ranges overlap; these samples show no repeatable end-to-end build or memory win.
+RSS sums pnpm and descendant processes, sampled every 75 ms. The full-process medians were 5.91 s → 7.18 s for Emisoup and 12.39 s → 11.32 s for Playground. The ranges overlap; these samples show no repeatable end-to-end build or memory win.
 
 A separate instrumented Emisoup Vite API profile used 3 sequential builds per mode in one Node process. CSS transform ran 3,026 times per run; cumulative transform timings are inclusive and can overlap.
 
 | Profile measure              | Filter disabled                                           | Filter enabled                                            |
 | ---------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
-| Build API wall time          | median 5.00 s, range 3.68–6.94 s (6.94, 5.97, 3.68)       | median 3.00 s, range 3.29–6.44 s (6.44, 3.65, 3.29)       |
-| CSS transform inclusive time | median 34.00 s, range 31.09–38.81 s (36.05, 38.81, 31.09) | median 32.00 s, range 26.32–61.95 s (61.95, 26.32, 37.37) |
-| CSS generateBundle time      | median 1.00 s, range 0.94–1.99 s (1.99, 1.88, 0.94)       | median 1.00 s, range 0.83–1.46 s (1.46, 0.84, 0.83)       |
+| Build API wall time          | median 5.97 s, range 3.68–6.94 s (6.94, 5.97, 3.68)       | median 3.65 s, range 3.29–6.44 s (6.44, 3.65, 3.29)       |
+| CSS transform inclusive time | median 36.05 s, range 31.09–38.81 s (36.05, 38.81, 31.09) | median 37.37 s, range 26.32–61.95 s (61.95, 26.32, 37.37) |
+| CSS generateBundle time      | median 1.88 s, range 0.94–1.99 s (1.99, 1.88, 0.94)       | median 0.84 s, range 0.83–1.46 s (1.46, 0.84, 0.83)       |
 
-The generateBundle median fell from 1.000 s to 1.000 s (about 0%) in this warm, instrumented profile. Samples are cache-sensitive and their ranges overlap; this is targeted hook evidence, not a full-build speedup. The change fixes the excluded-source leak. Arena's current-output recheck preserves its measured metrics; the Bench ranking remains tied to its pinned measured artifact and was not rerun here.
+The generateBundle median fell from 1.883 s to 0.841 s (about 55%) in this warm, instrumented profile. Samples are cache-sensitive and their ranges overlap; this is targeted hook evidence, not a full-build speedup. The change fixes the excluded-source leak. Arena's current-output recheck preserves its measured metrics; the Bench ranking remains tied to its pinned measured artifact and was not rerun here.
 
 ### Emisoup client output
 
@@ -788,6 +814,7 @@ After refreshing CSS-in-JS Bench in a separate checkout, import its generated re
 
 ## Sources and refresh commands
 
+- Generated Tailwind metadata: run pnpm --filter playground run tw:generate and pnpm --filter playground run build, then update benchmarks/tw-codegen/snapshot.json
 - Typecheck ecosystem: `pnpm run bench:tsc:styling -- --update`
 - Generated facade comparison: `pnpm run bench:tsc:generated -- --update`
 - Package/example typecheck: `pnpm run bench:tsc -- --update` and `pnpm run bench:tsc:example -- --update`

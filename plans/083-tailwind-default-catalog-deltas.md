@@ -1,5 +1,7 @@
 # Versioned Tailwind baseline and project deltas
 
+Status: complete. The evidence gate rejected shared baseline packaging; lossless interop value-catalog compaction shipped instead.
+
 ## Context
 
 Plan 082 owns the broader performance evidence and contains the gate for the
@@ -99,15 +101,15 @@ ship an adapter-owned partial Tailwind vocabulary.
 
 ### Artifact ownership and resolution
 
-| Artifact | Consumer | Planned representation and invariant |
-| --- | --- | --- |
-| Versioned default catalog | Generated declarations and catalog resolvers | Shared, type-only data where possible; keyed by exact Tailwind and catalog versions. It must not add browser runtime imports. |
-| `types.d.ts` | Editor and TypeScript | Baseline plus override-safe delta types; retain current suggestions and accepted inputs. Measure the full type graph, not just this file's byte count. |
-| `tw.ts` | Authored runtime entry | Keep the current small API and static-folding behavior. Never import build-only metadata through this entry. |
-| `tw.runtime.ts` | Explicit dynamic runtime features | Include only runtime data those features require. Preserve arbitrary-value and dynamic merge behavior. |
-| `tw.conflicts.ts` | Runtime conflict handling and compiler/scanner paths | Keep every conflict/candidate record required for `cx()` folding and exact candidate verification. Split or omit data only after importer analysis and parity proof. |
-| `tw.build.ts` | Vite/compiler | Use a compact baseline reference and project delta when resolvable; materialize exact candidates when required. Keep it out of browser bundles. |
-| `pandwind.interop.json` | Analyze and migration consumers | Move to a versioned schema carrying the baseline identity and delta. Consumers that need a full catalog resolve or materialize it through an explicit path. |
+| Artifact                  | Consumer                                             | Planned representation and invariant                                                                                                                                 |
+| ------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Versioned default catalog | Generated declarations and catalog resolvers         | Shared, type-only data where possible; keyed by exact Tailwind and catalog versions. It must not add browser runtime imports.                                        |
+| `types.d.ts`              | Editor and TypeScript                                | Baseline plus override-safe delta types; retain current suggestions and accepted inputs. Measure the full type graph, not just this file's byte count.               |
+| `tw.ts`                   | Authored runtime entry                               | Keep the current small API and static-folding behavior. Never import build-only metadata through this entry.                                                         |
+| `tw.runtime.ts`           | Explicit dynamic runtime features                    | Include only runtime data those features require. Preserve arbitrary-value and dynamic merge behavior.                                                               |
+| `tw.conflicts.ts`         | Runtime conflict handling and compiler/scanner paths | Keep every conflict/candidate record required for `cx()` folding and exact candidate verification. Split or omit data only after importer analysis and parity proof. |
+| `tw.build.ts`             | Vite/compiler                                        | Use a compact baseline reference and project delta when resolvable; materialize exact candidates when required. Keep it out of browser bundles.                      |
+| `pandwind.interop.json`   | Analyze and migration consumers                      | Move to a versioned schema carrying the baseline identity and delta. Consumers that need a full catalog resolve or materialize it through an explicit path.          |
 
 Inventory every reader and writer before changing these contracts. The codegen
 writer may stop writing a sidecar only when no enabled consumer needs it;
@@ -202,89 +204,48 @@ typechecking, generated runtime, or full builds get worse.
 
 ## Implementation steps
 
-1. [ ] Complete Plan 082's evidence gate for `tw()`: verify current generated
-   artifacts and importers; capture generated sizes, type diagnostics,
-   generation cost, and real static/dynamic consumer bundles. Stop if no
-   consumer cost is demonstrated.
-2. [ ] Record the current resolved catalog and supported Tailwind versions.
-   Add a deterministic baseline-generation command driven by the official
-   loader and verify repeatable output. Do not hand-edit generated baseline
-   files.
-3. [ ] Define the versioned semantic catalog and delta operations. Cover
-   additions, overrides, namespace resets, global theme resets, static
-   utility retention, custom utilities/variants, and disabled features using
-   official loader results.
-4. [ ] Add override-safe type composition and a real generated `tw()` type
-   benchmark. Compare baseline sharing against the current materialized
-   declarations, including package/install cost and realistic TypeScript
-   workloads. Resolve the shared-type packaging gate before changing consumer
-   output.
-5. [ ] Update `tw.build.ts`, `tw.conflicts.ts`, and runtime metadata readers
-   to resolve the baseline and delta without adding build metadata to browser
-   imports. Keep full materialization for unsupported baselines and preserve
-   exact compile-time candidate and conflict behavior.
-6. [ ] Version the interop artifact and update codegen, analyzer, migration,
-   bridge, and tests together. Verify missing-baseline materialization and
-   structured failure paths. Preserve bridge-section ownership.
-7. [ ] Make writer output demand-driven only where the importer inventory
-   proves a sidecar is unnecessary. Verify every current feature mode still
-   generates the data it needs; do not change defaults based on file size
-   alone.
-8. [ ] Run the default, extension, override, reset, custom-plugin, dynamic,
-   and fallback regression matrix. Compare exact candidates, diagnostics,
-   type acceptance, runtime conflicts, compiler output, and interop results
-   against the official loader and existing behavior.
-9. [ ] Refresh generated-file, package, TypeScript, build, and browser
-   measurements. Update the detailed report and summary only with demonstrated
-   wins and label any trade-offs or no-change result.
+1. [x] Complete Plan 082's evidence gate. The pinned Tailwind 4.3.3 default-only CLI workload and generated Playground project were measured across artifacts, package size, TypeScript diagnostics, generation, and the real migration route chunk. The full baseline redesign was not started before this comparison.
+2. [x] Resolve the baseline identity question from official loader output. The stock import produced 414 utilities and 88 variants. The resulting type and interop files are recorded in the benchmark snapshot; no handwritten baseline or shared baseline package file was added.
+3. [x] Close the semantic delta design as a no-go. No project catalog composition was introduced, so additions, overrides, resets, static utilities, plugins, tokens, variants, and conditions remain resolved by Tailwind's official loader and the existing code generator.
+4. [x] Resolve shared type packaging. The stock declaration was 134,434 raw bytes and the customized Playground declaration was 142,978 bytes. The complete Playground check showed no typecheck improvement, and the package had a 338,079-byte tarball before this change. There is no demonstrated total cost reduction that justifies a shared type source or new package export.
+5. [x] Inventory the generated artifact consumers. Keep types.d.ts, tw.ts, tw.runtime.ts, tw.conflicts.ts, tw.build.ts, bridge.ts, and pandwind.interop.json generation unchanged. Migration and Playground continue to consume a self-contained interop artifact; compiler and scanner paths retain their conflict/candidate metadata.
+6. [x] Version and update the interop contract atomically. Schema v2 stores each generated utility value union once in valueTypes, keyed by generated type alias. Utility rows reference their valueType. The codegen writer, bridge refresh, project bootstrap, codemod reader, Playground reader, analyzer resource fixture, and generated project files now use v2. The codemod rejects stale v1 artifacts.
+7. [x] Keep codegen output demand-driven policy unchanged. No sidecar was removed, made opt-in, or moved into the browser runtime. Existing static folding, dynamic tw behavior, conflict metadata, and compiler candidate verification remain intact.
+8. [x] Cover producer and consumers with regression tests. Producer tests prove two utilities sharing one alias serialize one value list. Codemod tests cover v2 value recovery and v1 rejection. Playground tests prove shared aliases resolve to the same candidate set. Existing Tailwind/Cx compiler and runtime tests passed.
+9. [x] Refresh generated outputs and evidence. Both generated example projects are fresh. The detailed report and overview include total project bytes, interop gzip, browser route output, generation samples, TypeScript diagnostics, and the baseline decision. CSS-in-JS Bench and Arena ranks remain unchanged because this tooling route is outside those benchmark lanes.
+
+## Completion record
+
+The broad versioned default-catalog plus project-delta redesign is closed without implementation: baseline sharing did not establish a lower combined package, generated-project, and TypeScript cost. The measured no-public-export alternative is schema v2 value-list sharing. Playground interop fell by 232,891 raw bytes and 4,026 gzip bytes; its MigrationLabPage bundle fell by 105,288 raw bytes and 3,882 gzip bytes. All nine generated Playground artifacts fell by 232,891 raw bytes.
+
+The Playground TypeScript check remained statistically inconclusive: the snapshot moved from 340,769 to 340,499 instantiations while check time changed from 0.462 s to 0.604 s, with one additional test file. Whole-command generation samples moved from 4.71–5.26 s to 3.36–4.06 s and peak RSS stayed around 123–125 MiB; the command includes pnpm, formatting, and manifest refresh, so it is supporting evidence rather than an isolated generator speed claim.
+
+The benchmark renderer's median calculation was corrected for odd sample counts while refreshing these reports. Raw benchmark inputs and external ranking snapshots were not changed. The report continues to separate this generated Tailwind tooling evidence from the primary css() and tw() comparison lanes.
 
 ## Open questions
 
-1. Can a shared type baseline be resolved by consumers without creating a new
-   published export or shifting more cost into the package tarball and type
-   graph? If not, prepare the separate API design decision before coding that
-   path.
-2. Which interop consumers need a self-contained full catalog, and which can
-   resolve a baseline from the installed Pandwind toolchain? Decide from the
-   importer inventory rather than assumed portability.
-3. Which generated sidecars are genuinely optional after accounting for
-   compiler `cx()` folding, exact candidate filtering, dynamic runtime merges,
-   migration, and editor types?
+1. [x] Can a shared type baseline be resolved without a new export and lower total cost? No measured typecheck gain or total size reduction justified adding that dependency surface.
+2. [x] Which interop consumers require a self-contained catalog? Migration and Playground use the artifact directly, so v2 retains the complete value catalog and does not require a baseline resolver.
+3. [x] Which sidecars can be omitted by default? None were removed. The producer and importer inventory does not justify changing writer defaults.
 
 ## Acceptance criteria
 
-- [ ] No implementation begins unless Plan 082 demonstrates a real consumer
-      benefit for changing Tailwind artifacts or type generation.
-- [ ] Baselines are deterministic, generated from official Tailwind packages,
-      and keyed by exact supported package/schema/content identity.
-- [ ] Default, extension, override, namespace reset, global reset, plugin,
-      token, condition, disabled-feature, and unsupported-version cases match
-      the official loader's effective design system.
-- [ ] An override replaces the default type and candidate; namespace resets
-      remove affected defaults; global theme reset retains static utilities.
-- [ ] Missing or incompatible baselines use complete official-loader
-      generation or a typed failure path; no partial/guessed catalog escapes.
-- [ ] Existing `tw()`, arbitrary-value, plugin, variant, conflict, `cx()`
-      folding, static extraction, and runtime merge features remain covered.
-- [ ] Static calls retain their current zero-marginal-JavaScript behavior;
-      dynamic calls preserve runtime semantics and exact output.
-- [ ] Interop producers and consumers use one new schema atomically, and
-      bridge updates preserve the established ownership contract.
-- [ ] No new public `tw()` API or package export lands without its separate
-      design note and maintainer approval.
-- [ ] Reports compare total project/package size, TypeScript cost, generation
-      cost, real consumer JS/CSS/HTML, and full-build behavior; smaller files
-      alone do not count as success.
-- [ ] Detailed and summary benchmark reports keep the `tw()` lane separate
-      from the primary `css()` API and report only measured improvements.
+- [x] The evidence gate was completed before the baseline design decision.
+- [x] The default Tailwind catalog was measured through the official loader at the pinned package version.
+- [x] Baseline/delta type composition was explicitly rejected because total package, generated-project, and TypeScript cost savings were not demonstrated.
+- [x] No new public tw() API or package export was added.
+- [x] Interop producers and consumers use one v2 schema; stale v1 artifacts fail clearly.
+- [x] Value unions are stored once per generated type alias, remain self-contained, and recover the exact candidate sets in codemod and Playground readers.
+- [x] Existing Tw/Cx compiler/runtime, conflict, candidate, and generated-runtime-size tests pass; no static or dynamic feature was removed.
+- [x] All generated project outputs remain enabled and generated artifacts/manifests are fresh.
+- [x] Detailed and summary reports include the measured browser/tooling result without changing CSS-in-JS Bench or Arena ranks.
+- [x] The broad redesign's no-go decision, the targeted improvement, and remaining trade-offs are recorded above.
 
 ## Decisions log
 
-- Keep Plan 082 as the broad evidence and comparison plan; this plan owns the
-  conditional Tailwind generator and artifact redesign.
-- Treat official loader output as the only source for baseline and project
-  semantics.
-- Preserve all current features and authored API unless future evidence and a
-  separately approved design justify a change.
-- Require an evidence gate before implementation; a no-change conclusion is
-  valid when the generated files do not create a consumer cost.
+- Keep Plan 082 as the broad benchmark evidence plan; this plan's baseline redesign is closed by its evidence gate.
+- Keep the official Tailwind loader as the source of the effective default and project semantics.
+- Do not add a shared catalog package/type export without evidence of lower total cost.
+- Use the versioned v2 interop dictionary because it cuts repeated values in a real Playground browser consumer while preserving a self-contained artifact.
+- Preserve the current codegen writer set, public authoring APIs, and static/dynamic behavior.
+- Report the tooling result separately from css() and tw() benchmark rankings.

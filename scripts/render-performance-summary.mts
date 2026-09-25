@@ -335,6 +335,69 @@ type RealWorldAssetSizes = {
 	readonly brotli11Bytes: number;
 };
 
+type TwCodegenSnapshot = {
+	readonly schemaVersion: 1;
+	readonly measuredAt: string;
+	readonly environment: {
+		readonly machine: string;
+		readonly node: string;
+		readonly tailwindCss: string;
+		readonly typescript: string;
+		readonly vite: string;
+	};
+	readonly source: {
+		readonly beforePandwindRevision: string;
+		readonly afterPandwindChange: string;
+	};
+	readonly defaultCatalogGate: {
+		readonly utilities: number;
+		readonly variants: number;
+		readonly typesDtsRawBytes: number;
+		readonly interopRawBytes: number;
+		readonly interopGzipBytes: number;
+		readonly pandwindPackageTarballBytes: number;
+	};
+	readonly playground: {
+		readonly generatedArtifacts: {
+			readonly fileCount: number;
+			readonly beforeTotalRawBytes: number;
+			readonly afterTotalRawBytes: number;
+			readonly interopBefore: {
+				readonly schema: string;
+				readonly rawBytes: number;
+				readonly gzipBytes: number;
+			};
+			readonly interopAfter: {
+				readonly schema: string;
+				readonly rawBytes: number;
+				readonly gzipBytes: number;
+			};
+			readonly gzipMethod: string;
+		};
+		readonly generation: {
+			readonly command: string;
+			readonly beforeWallSeconds: readonly number[];
+			readonly afterWallSeconds: readonly number[];
+			readonly beforePeakRssBytes: readonly number[];
+			readonly afterPeakRssBytes: readonly number[];
+			readonly scope: string;
+		};
+		readonly typecheck: {
+			readonly before: Metrics;
+			readonly after: Metrics;
+		};
+		readonly migrationRoute: {
+			readonly name: string;
+			readonly beforeRawBytes: number;
+			readonly beforeGzipBytes: number;
+			readonly afterRawBytes: number;
+			readonly afterGzipBytes: number;
+			readonly containsInteropV2: boolean;
+			readonly containsGeneratedUtilityValues: boolean;
+		};
+	};
+};
+
 type RealWorldCssExtractionSnapshot = {
 	readonly schemaVersion: 1;
 	readonly measuredAt: string;
@@ -505,6 +568,7 @@ const realWorldCssExtractionSnapshotPath = resolve(
 	ROOT,
 	"benchmarks/real-world-css-extraction/snapshot.json",
 );
+const twCodegenSnapshotPath = resolve(ROOT, "benchmarks/tw-codegen/snapshot.json");
 
 const readJson = <T,>(path: string): T | undefined => {
 	if (!existsSync(path)) return undefined;
@@ -1533,6 +1597,170 @@ const renderGeneratedRuntimeSizes = (sizes: Record<string, BundleSize> | undefin
 	];
 };
 
+const renderTwCodegenDetails = (snapshot: TwCodegenSnapshot): string[] => {
+	const artifacts = snapshot.playground.generatedArtifacts;
+	const migrationRoute = snapshot.playground.migrationRoute;
+	const generation = snapshot.playground.generation;
+	const typecheck = snapshot.playground.typecheck;
+	const rawSaved = artifacts.beforeTotalRawBytes - artifacts.afterTotalRawBytes;
+	const interopRawSaved = artifacts.interopBefore.rawBytes - artifacts.interopAfter.rawBytes;
+	const interopGzipSaved = artifacts.interopBefore.gzipBytes - artifacts.interopAfter.gzipBytes;
+	const routeRawSaved = migrationRoute.beforeRawBytes - migrationRoute.afterRawBytes;
+	const routeGzipSaved = migrationRoute.beforeGzipBytes - migrationRoute.afterGzipBytes;
+	const peakRssMiB = (values: readonly number[]): string =>
+		values.map((value) => (value / 1_048_576).toFixed(1)).join(", ") + " MiB";
+	const tscMetrics = (metrics: Metrics): string =>
+		integer(metrics.instantiations) +
+		" instantiations; " +
+		integer(metrics.memoryUsedKiB) +
+		" KiB; " +
+		seconds(metrics.checkTimeSeconds) +
+		" s check";
+	return [
+		"## Generated Tailwind project metadata",
+		"",
+		"Measured " +
+			snapshot.measuredAt +
+			" on " +
+			snapshot.environment.machine +
+			" with Node " +
+			snapshot.environment.node +
+			", Tailwind CSS " +
+			snapshot.environment.tailwindCss +
+			", TypeScript " +
+			snapshot.environment.typescript +
+			", and Vite " +
+			snapshot.environment.vite +
+			". Before Pandwind revision " +
+			snapshot.source.beforePandwindRevision +
+			"; after change " +
+			snapshot.source.afterPandwindChange +
+			".",
+		"",
+		"The official default-only codegen produced " +
+			integer(snapshot.defaultCatalogGate.utilities) +
+			" utilities and " +
+			integer(snapshot.defaultCatalogGate.variants) +
+			" variants. Its declaration was " +
+			integer(snapshot.defaultCatalogGate.typesDtsRawBytes) +
+			" raw bytes; the customized Playground declaration was 142,978 bytes. The stock interop artifact was " +
+			integer(snapshot.defaultCatalogGate.interopRawBytes) +
+			" raw / " +
+			integer(snapshot.defaultCatalogGate.interopGzipBytes) +
+			" gzip bytes. The measured Pandwind package tarball was " +
+			integer(snapshot.defaultCatalogGate.pandwindPackageTarballBytes) +
+			" bytes.",
+		"",
+		"The shared default-catalog design remains a no-go: measurements do not show a lower combined package, generated-project, and TypeScript cost, and no shared type export was added. The compiler continues to load the effective project catalog through the official Tailwind loader.",
+		"",
+		markdownTable(
+			["Measurement", "Before", "After", "Change"],
+			[
+				[
+					"All generated project artifacts (raw)",
+					integer(artifacts.beforeTotalRawBytes) + " B",
+					integer(artifacts.afterTotalRawBytes) + " B",
+					"-" + integer(rawSaved) + " B",
+				],
+				[
+					"Self-contained interop artifact (raw)",
+					integer(artifacts.interopBefore.rawBytes) + " B",
+					integer(artifacts.interopAfter.rawBytes) + " B",
+					"-" +
+						integer(interopRawSaved) +
+						" B (" +
+						reduction(artifacts.interopBefore.rawBytes, artifacts.interopAfter.rawBytes) +
+						")",
+				],
+				[
+					"Self-contained interop artifact (gzip)",
+					integer(artifacts.interopBefore.gzipBytes) + " B",
+					integer(artifacts.interopAfter.gzipBytes) + " B",
+					"-" +
+						integer(interopGzipSaved) +
+						" B (" +
+						reduction(artifacts.interopBefore.gzipBytes, artifacts.interopAfter.gzipBytes) +
+						")",
+				],
+				[
+					"Playground MigrationLabPage (raw)",
+					integer(migrationRoute.beforeRawBytes) + " B",
+					integer(migrationRoute.afterRawBytes) + " B",
+					"-" +
+						integer(routeRawSaved) +
+						" B (" +
+						reduction(migrationRoute.beforeRawBytes, migrationRoute.afterRawBytes) +
+						")",
+				],
+				[
+					"Playground MigrationLabPage (gzip)",
+					integer(migrationRoute.beforeGzipBytes) + " B",
+					integer(migrationRoute.afterGzipBytes) + " B",
+					"-" +
+						integer(routeGzipSaved) +
+						" B (" +
+						reduction(migrationRoute.beforeGzipBytes, migrationRoute.afterGzipBytes) +
+						")",
+				],
+			],
+			new Set([1, 2, 3]),
+		),
+		"",
+		"Interop changed from " +
+			artifacts.interopBefore.schema +
+			" to " +
+			artifacts.interopAfter.schema +
+			". V2 stores each generated value union once by type alias and keeps utility rows as references, so the artifact remains self-contained. " +
+			artifacts.gzipMethod +
+			". The after bundle was verified to contain the v2 schema and generated utility values (" +
+			(migrationRoute.containsInteropV2 && migrationRoute.containsGeneratedUtilityValues
+				? "both present"
+				: "verification incomplete") +
+			").",
+		"",
+		"TypeScript diagnostics were " +
+			tscMetrics(typecheck.before) +
+			" before and " +
+			tscMetrics(typecheck.after) +
+			" after. The after run includes one additional test file and its check time is not lower; this is not a typecheck-performance claim.",
+		"",
+		"The full " +
+			generation.command +
+			" command measured " +
+			formatBuildWallSamples(generation.beforeWallSeconds) +
+			" before and " +
+			formatBuildWallSamples(generation.afterWallSeconds) +
+			" after, with peak process RSS " +
+			peakRssMiB(generation.beforePeakRssBytes) +
+			" before and " +
+			peakRssMiB(generation.afterPeakRssBytes) +
+			" after. " +
+			generation.scope +
+			" These samples support the size result but do not isolate generator CPU time.",
+		"",
+		"The CSS-in-JS Bench and Arena rankings are unchanged: this is a Playground migration-tool chunk, not a benchmarked styling lane. The static and dynamic tw() runtime paths, conflict metadata, and generated APIs remain intact.",
+		"",
+		"Normalized evidence: [snapshot.json](benchmarks/tw-codegen/snapshot.json).",
+		"",
+	];
+};
+
+const renderTwCodegenOverview = (snapshot: TwCodegenSnapshot): string[] => {
+	const artifacts = snapshot.playground.generatedArtifacts;
+	const route = snapshot.playground.migrationRoute;
+	const routeGzipSaved = route.beforeGzipBytes - route.afterGzipBytes;
+	return [
+		"### Generated Tailwind tooling metadata",
+		"",
+		"A lossless interop v2 catalog reduced Playground's migration artifact by " +
+			integer(artifacts.interopBefore.gzipBytes - artifacts.interopAfter.gzipBytes) +
+			" gzip bytes and its migration route chunk by " +
+			integer(routeGzipSaved) +
+			" gzip bytes. The broader shared default-catalog proposal remains a no-go because the measured package and TypeScript costs did not establish a total win. These tooling measurements do not change the CSS-in-JS Bench or Arena ranks; details are in [PERF.md](PERF.md#generated-tailwind-project-metadata).",
+		"",
+	];
+};
+
 const ecosystemLibrary = (library: string): string =>
 	({
 		pandwind: "Pandwind css() (static)",
@@ -1614,10 +1842,11 @@ const renderEcosystemBundleComparison = (
 const median = (values: readonly number[]): number => {
 	const sorted = [...values].toSorted((left, right) => left - right);
 	const middle = Math.floor(sorted.length / 2);
+	if (sorted.length % 2 === 1) return sorted[middle] ?? 0;
 	const lower = sorted[middle - 1];
 	const upper = sorted[middle];
-	if (upper === undefined) return 0;
-	return lower === undefined ? upper : Math.round((lower + upper) / 2);
+	if (lower === undefined || upper === undefined) return 0;
+	return (lower + upper) / 2;
 };
 
 const summarizeRuntimeApiRuns = (
@@ -2108,6 +2337,10 @@ export const renderPerformanceOverview = (): string => {
 	const ecosystemBundleSizes = readJson<EcosystemBundleSnapshot>(ecosystemBundleSizeSnapshotPath);
 	const cssInJsBench = readJson<CssInJsBenchSnapshot>(cssInJsBenchSnapshotPath);
 	const arena = readJson<ArenaSnapshot>(arenaSnapshotPath);
+	const twCodegen = readJson<TwCodegenSnapshot>(twCodegenSnapshotPath);
+	if (twCodegen === undefined || twCodegen.schemaVersion !== 1) {
+		throw new Error("missing or unsupported " + twCodegenSnapshotPath);
+	}
 	const realWorldCssExtraction = readJson<RealWorldCssExtractionSnapshot>(
 		realWorldCssExtractionSnapshotPath,
 	);
@@ -2128,6 +2361,7 @@ export const renderPerformanceOverview = (): string => {
 		...renderStaticBundleRanking(ecosystemBundleSizes),
 		...renderCssInJsBenchComparison(cssInJsBench),
 		...renderArenaComparison(arena),
+		...renderTwCodegenOverview(twCodegen),
 		...renderRealWorldCssExtractionOverview(realWorldCssExtraction),
 		"## Benchmark cadence",
 		"",
@@ -2164,6 +2398,10 @@ export const renderPerformanceSummary = (): string => {
 	const cssInJsBench = readJson<CssInJsBenchSnapshot>(cssInJsBenchSnapshotPath);
 	const cssInJsBenchParity = readJson<CssInJsBenchParityReport>(cssInJsBenchParityReportPath);
 	const arena = readJson<ArenaSnapshot>(arenaSnapshotPath);
+	const twCodegen = readJson<TwCodegenSnapshot>(twCodegenSnapshotPath);
+	if (twCodegen === undefined || twCodegen.schemaVersion !== 1) {
+		throw new Error("missing or unsupported " + twCodegenSnapshotPath);
+	}
 	const realWorldCssExtraction = readJson<RealWorldCssExtractionSnapshot>(
 		realWorldCssExtractionSnapshotPath,
 	);
@@ -2175,7 +2413,7 @@ export const renderPerformanceSummary = (): string => {
 		"",
 		"# Pandwind performance details",
 		"",
-		"For the concise real-world comparison, see [PERF-SUMMARY.md](PERF-SUMMARY.md). This detailed report includes committed typecheck, runtime-throughput, bundle-size, CSS-in-JS Bench, and Arena snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.",
+		"For the concise real-world comparison, see [PERF-SUMMARY.md](PERF-SUMMARY.md). This detailed report includes committed typecheck, runtime-throughput, bundle-size, generated Tailwind metadata, CSS-in-JS Bench, and Arena snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.",
 		"",
 		"TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-throughput measurements are local in-process calls. Runtime-size measurements are minified browser bundles with gzip level 6.",
 		"",
@@ -2202,6 +2440,7 @@ export const renderPerformanceSummary = (): string => {
 	lines.push(...renderRuntimeApiRanking(runtimeApiSnapshot, runtimeApiFollowups));
 	lines.push(...renderBundleRanking(runtimeSizes));
 	lines.push(...renderGeneratedRuntimeSizes(generatedRuntimeSizes));
+	lines.push(...renderTwCodegenDetails(twCodegen));
 	lines.push(...renderEcosystemBundleComparison(ecosystemBundleSizes));
 	lines.push(...renderDetailedCssInJsBenchComparison(cssInJsBench, cssInJsBenchParity));
 	lines.push(...renderArenaDetails(arena));
@@ -2215,6 +2454,7 @@ export const renderPerformanceSummary = (): string => {
 	lines.push(
 		"## Sources and refresh commands",
 		"",
+		"- Generated Tailwind metadata: run pnpm --filter playground run tw:generate and pnpm --filter playground run build, then update benchmarks/tw-codegen/snapshot.json",
 		"- Typecheck ecosystem: `pnpm run bench:tsc:styling -- --update`",
 		"- Generated facade comparison: `pnpm run bench:tsc:generated -- --update`",
 		"- Package/example typecheck: `pnpm run bench:tsc -- --update` and `pnpm run bench:tsc:example -- --update`",
