@@ -32,6 +32,7 @@ import {
 	type CssInlineEntry,
 } from "./css-inline-analysis.ts";
 import { hasDuplicateCssObjectKeys } from "./css-inline-shape.ts";
+import { findStaticCssHelperCallSites } from "./css-helper-call-sites.ts";
 
 /** Resolves literal style calls into artifacts while preserving source provenance. */
 interface CallNode extends OxcNode {
@@ -187,6 +188,14 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 			parsed as unknown as OxcNode,
 			evaluateCall,
 		);
+		for (const site of findStaticCssHelperCallSites(
+			parsed,
+			names,
+			resolveLiteralScope,
+			evaluateCall,
+		)) {
+			this.pushStyle(sources, code, id, site, "css.class", site.style);
+		}
 		walkWithParent(parsed, (node, _parent, ancestors) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
@@ -426,7 +435,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		sources: ExtractedCssStyle[],
 		code: string,
 		id: string,
-		call: CallNode,
+		call: Pick<CallNode, "start" | "end">,
 		kind: ExtractedCssStyle["provenance"]["callKind"],
 		style: Record<string, unknown>,
 	): void {
@@ -439,7 +448,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 	private provenance(
 		code: string,
 		id: string,
-		call: CallNode,
+		call: Pick<CallNode, "start" | "end">,
 		kind: ExtractedCssStyle["provenance"]["callKind"],
 	): CssSourceProvenance {
 		const before = code.slice(0, call.start);

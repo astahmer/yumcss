@@ -13,6 +13,8 @@
 import { describe, expect, test } from "vitest";
 import type { TwConfig } from "../src/vite/inline.ts";
 import { inlineCxCalls } from "../src/vite/cx-inline.ts";
+import { createPandwindEngineContext } from "../src/vite/engine-context.ts";
+import { examplePreset } from "@pandwind/example-preset";
 import { resolve } from "node:path";
 import { readGeneratedTwConfig } from "./helpers/generated-tw.ts";
 
@@ -28,6 +30,8 @@ interface CorpusEntry {
 	source: string;
 	/** Cross-module import bindings propagated into this entry. */
 	imports?: Record<string, string>;
+	/** CSS factory names available to literal css() folding. */
+	cssNames?: readonly string[];
 }
 
 const corpus: CorpusEntry[] = [
@@ -124,8 +128,9 @@ const corpus: CorpusEntry[] = [
 		source: `const PAD = "p-4";\nexport function Badge({ PAD }: { PAD: string }) { return cx(PAD, "m-1"); }`,
 	},
 	{
-		name: "css atom object stays at runtime",
-		expect: "runtime",
+		name: "static css atom object",
+		expect: "full",
+		cssNames: ["css"],
 		source: `export const s = cx(css({ color: "$blue-500" }), "font-bold");`,
 	},
 	{
@@ -222,10 +227,18 @@ function measure(options?: Parameters<typeof inlineCxCalls>[4]) {
 						]),
 					)
 				: undefined;
+		const fold =
+			entry.cssNames === undefined
+				? undefined
+				: {
+						cssNames: new Set(entry.cssNames),
+						engine: createPandwindEngineContext({ preset: examplePreset }),
+					};
 		const { code, inlined } = inlineCxCalls(entry.source, "app.ts", config, new Set(["cx"]), {
 			constants: resolved.constants,
 			partialFold: resolved.partialFold,
 			importedConstants,
+			...(fold === undefined ? {} : { fold }),
 		});
 		let got: string;
 		if (inlined === 0) got = "runtime";
@@ -257,8 +270,8 @@ describe("fold coverage across a realistic corpus", () => {
 	});
 
 	test("coverage strictly improves and hits the target", () => {
-		// Before: only the 4 fully-literal entries fold.
-		expect(before.full).toBe(4);
+		// Before: the five fully-literal entries, including the configured CSS atom, fold.
+		expect(before.full).toBe(5);
 		expect(before.eliminatedPct).toBeLessThan(after.eliminatedPct);
 		// After: everything except the genuinely-runtime entries.
 		expect(after.eliminatedPct).toBeGreaterThanOrEqual(60);

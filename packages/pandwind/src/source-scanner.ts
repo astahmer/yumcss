@@ -569,7 +569,12 @@ function createSourceLanguageClassifier(
 		},
 		isScriptFile(file) {
 			const language = this.languageForFile(file);
-			return isOxcLanguage(language) || language === "vue";
+			return (
+				isOxcLanguage(language) ||
+				language === "vue" ||
+				language === "svelte" ||
+				language === "astro"
+			);
 		},
 		isTypeScriptFile(file) {
 			const language = this.languageForFile(file);

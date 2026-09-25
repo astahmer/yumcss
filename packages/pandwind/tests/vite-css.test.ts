@@ -706,6 +706,46 @@ test("static extraction retains the virtual stylesheet side effect", () => {
 	}
 });
 
+test("default CSS extraction transforms Svelte scripts and Astro frontmatter", () => {
+	const dir = makeProject({
+		"src/Component.svelte":
+			'<script lang="ts">\nimport { css } from "./design";\nexport const button = css.class({ color: "red" });\n</script>\n<button class={button} />',
+		"src/Page.astro":
+			'---\nimport { css } from "./design";\nexport const button = css.class({ color: "blue" });\n---\n<button class={button} />',
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const svelteFile = join(dir, "src/Component.svelte");
+		const astroFile = join(dir, "src/Page.astro");
+		const transform = plugin.transform as (code: string, id: string) => { code: string } | null;
+		const svelte = transform(readFileSync(svelteFile, "utf8"), svelteFile);
+		const astro = transform(readFileSync(astroFile, "utf8"), astroFile);
+
+		expect(svelte?.code).toContain('import "pandwind:css";');
+		expect(svelte?.code.indexOf('import "pandwind:css";')).toBeGreaterThan(
+			svelte?.code.indexOf("<script") ?? Number.POSITIVE_INFINITY,
+		);
+		expect(svelte?.code.indexOf('import "pandwind:css";')).toBeLessThan(
+			svelte?.code.indexOf("</script>") ?? Number.NEGATIVE_INFINITY,
+		);
+		expect(astro?.code).toContain('import "pandwind:css";');
+		expect(astro?.code.indexOf('import "pandwind:css";')).toBeGreaterThan(
+			astro?.code.indexOf("---") ?? Number.POSITIVE_INFINITY,
+		);
+		expect(astro?.code.indexOf('import "pandwind:css";')).toBeLessThan(
+			astro?.code.indexOf("---", (astro?.code.indexOf("---") ?? 0) + 3) ?? Number.NEGATIVE_INFINITY,
+		);
+		expect(svelte?.code).not.toContain("css.class(");
+		expect(astro?.code).not.toContain("css.class(");
+
+		const virtualCss = plugin.resolveId("pandwind:css");
+		expect(virtualCss).not.toBeNull();
+		expect(plugin.load(virtualCss!)).toContain("color:");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 test("pandwindCssVite folds static css props compositions into the virtual sheet", () => {
 	const runtimeCss = createCss(examplePreset);
 	const expected = runtimeCss.props(runtimeCss({ display: "flex", padding: 4 }, { padding: 8 }));
@@ -1433,6 +1473,9 @@ test("mixed css.class helpers inline static styles and retain dynamic values", (
 	const styles = service.extractStyles(code, fixture, new Set(["css"]));
 
 	expect(result.inlined).toBeGreaterThan(0);
+	expect(result.code).not.toContain('createButton("brand", false)');
+	expect(result.code).not.toContain('createButton("neutral", false)');
+	expect(result.code).not.toContain('createButton("brand", true)');
 	expect(helper).toContain('.filter(Boolean).join(" ")');
 	expect(helper).toContain('css.class({"gap": compact ? 2 : 3');
 	expect(helper).not.toContain('display: "inline-flex"');
@@ -1444,6 +1487,19 @@ test("mixed css.class helpers inline static styles and retain dynamic values", (
 				JSON.stringify(style).includes('"backgroundColor":'),
 		),
 	).toBe(true);
+});
+
+test("static CSS helper call folding leaves dynamic arguments at runtime", () => {
+	const code = `
+		import { css } from "./design";
+		const createButton = (tone: string) => css.class({ color: tone });
+		const staticButton = createButton("red");
+		const dynamicButton = createButton(getTone());
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.code).not.toContain('createButton("red")');
+	expect(result.code).toContain("createButton(getTone())");
 });
 
 test("mixed css.class calls with duplicate nested keys keep the runtime fallback", () => {

@@ -21,6 +21,7 @@ import { createCssSourceService } from "./css-source-service.ts";
 import { createCssSourceWorkspace } from "./css-source-workspace.ts";
 import { createRuntimePruningTransform } from "./runtime-pruner.ts";
 import { createSourceWorkspace } from "../source-workspace.ts";
+import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 
 export type { CssExtractorPreset };
 
@@ -97,7 +98,20 @@ const mergeTokenEntries = (
 const mergeCssSections = (...sections: readonly string[]): string =>
 	[...new Set(sections.filter((section) => section.length > 0))].join("\n");
 
-const addImportAfterDirectives = (source: string, statement: string): string => {
+const addImportAfterDirectives = (source: string, statement: string, id: string): string => {
+	if (SOURCE_SCANNER_SERVICE.languageForFile(id) === "astro") {
+		const opening = /^---[ \t]*\r?\n/u.exec(source);
+		if (opening === null) return source;
+		const bodyStart = opening[0].length;
+		const closing = /\r?\n---[ \t]*(?:\r?\n|$)/u.exec(source.slice(bodyStart));
+		if (closing === null) return source;
+		const bodyEnd = bodyStart + closing.index;
+		return `${source.slice(0, bodyStart)}${addImportAfterDirectives(
+			source.slice(bodyStart, bodyEnd),
+			statement,
+			"source.ts",
+		)}${source.slice(bodyEnd)}`;
+	}
 	const scriptOpen = /<script\b[^>]*>/iu.exec(source);
 	if (scriptOpen !== null) {
 		const bodyStart = scriptOpen.index + scriptOpen[0].length;
@@ -107,6 +121,7 @@ const addImportAfterDirectives = (source: string, statement: string): string => 
 			return `${source.slice(0, bodyStart)}${addImportAfterDirectives(
 				source.slice(bodyStart, bodyEnd),
 				statement,
+				"source.ts",
 			)}${source.slice(bodyEnd)}`;
 		}
 	}
@@ -181,7 +196,7 @@ export function createCssExtractorPluginCore(
 	// treat the virtual module as stylesheet, not JavaScript.
 	const resolvedVirtualId = `\0${virtualId}.css`;
 	const root = options.root ?? process.cwd();
-	const include = options.include ?? [/\.(?:[cm]?[jt]sx?|vue)$/];
+	const include = options.include ?? [/\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/];
 	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
 	const sourceWorkspace = createSourceWorkspace();
 	const workspace = createCssSourceWorkspace({
@@ -232,7 +247,7 @@ export function createCssExtractorPluginCore(
 			names.size > 0 &&
 			!extracted.includes(`"${virtualId}"`) &&
 			!extracted.includes(`'${virtualId}'`)
-				? addImportAfterDirectives(extracted, `import "${virtualId}";`)
+				? addImportAfterDirectives(extracted, `import "${virtualId}";`, id)
 				: extracted;
 		const optimized = runtimePruner.transform(withStylesheetImport, id);
 		if (optimized !== null) return optimized;

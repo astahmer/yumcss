@@ -21,6 +21,14 @@ describe("source workspace", () => {
 			'import { createElement } from "react"; export const Card = () => createElement("div");',
 		);
 		writeFileSync(join(root, "nested", "Card.vue"), "<template><div /></template>");
+		writeFileSync(
+			join(root, "nested", "Card.svelte"),
+			"<script>export const label = 'card';</script>",
+		);
+		writeFileSync(
+			join(root, "nested", "Page.astro"),
+			"---\nconst title = 'page';\n---\n<h1>{title}</h1>",
+		);
 		writeFileSync(join(root, "README.md"), "not a source document");
 
 		const workspace = createSourceWorkspace();
@@ -30,11 +38,23 @@ describe("source workspace", () => {
 		workspace.forEach(files, ({ path }) => streamed.push(path));
 
 		expect(workspace.schema).toBe("pandwind.source-workspace/1");
-		expect(files).toEqual([join(root, "Card.tsx"), join(root, "nested", "Card.vue")]);
+		expect(files).toEqual([
+			join(root, "Card.tsx"),
+			join(root, "nested", "Card.svelte"),
+			join(root, "nested", "Card.vue"),
+			join(root, "nested", "Page.astro"),
+		]);
 		expect(streamed).toEqual(files);
-		expect(documents.map((document) => document.scan.framework)).toEqual(["react", "vue"]);
+		expect(documents.map((document) => document.scan.framework)).toEqual([
+			"react",
+			"svelte",
+			"vue",
+			"astro",
+		]);
 		expect(documents[0]?.scan.program?.type).toBe("Program");
-		expect(documents[1]?.scan.program).toBeUndefined();
+		expect(documents[1]?.scan.program?.type).toBe("Program");
+		expect(documents[2]?.scan.program).toBeUndefined();
+		expect(documents[3]?.scan.program?.type).toBe("Program");
 	});
 
 	test("can discover non-script assets without changing the default source query", () => {

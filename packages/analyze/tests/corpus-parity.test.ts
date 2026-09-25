@@ -9,14 +9,16 @@
  * prefix). If a pattern there changes, update the mirror here and both
  * suites keep reporting identical percentages.
  *
- * Expected aggregates (after the smarter compiler): 14 full + 9 partial +
- * 12 runtime = 35 entries -> 66% eliminated. The "const used twice" fixture
+ * Expected aggregates (after the smarter compiler): 15 full + 10 partial +
+ * 10 runtime = 35 entries -> 71% eliminated. The "const used twice" fixture
  * holds two cx calls but still counts once at entry level (an entry counts
  * as eliminated only when EVERY call in it folds).
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { examplePreset } from "@pandwind/example-preset";
+import { createPandwindEngineContext } from "pandwind/vite";
 import { analyzeSource } from "../src/analyze.ts";
 
 const _app = resolve(import.meta.dirname, "../../../examples/example");
@@ -47,6 +49,14 @@ const entries: Array<Entry> = readdirSync(corpusDir)
 		const stats = analyzeSource(source, file, {
 			config,
 			importedConstants: IMPORTS[file],
+			...(file === "021-full-css-atom-object.ts"
+				? {
+						cxFold: {
+							cssNames: new Set(["css"]),
+							engine: createPandwindEngineContext({ preset: examplePreset }),
+						},
+					}
+				: {}),
 		});
 		return { file, expect: expectKey, stats };
 	});
@@ -72,11 +82,11 @@ describe("analyze reproduces the vite-cx-coverage corpus", () => {
 		// Entry-level counting: an entry is eliminated when every cx call in
 		// it folds — so per-call classification must agree with the prefix.
 		for (const e of entries) expect(kindOf(e.stats)).toBe(e.expect);
-		expect(full).toBe(14);
+		expect(full).toBe(15);
 		expect(partial).toBe(10);
-		expect(runtime).toBe(11);
+		expect(runtime).toBe(10);
 		const eliminated = full + partial;
-		expect(Math.round((eliminated / entries.length) * 100)).toBe(69);
+		expect(Math.round((eliminated / entries.length) * 100)).toBe(71);
 		// Per-file pct from the analyzer must agree with the classification.
 		for (const e of entries) {
 			if (e.expect === "full") expect(e.stats.eliminatedPct).toBe(100);

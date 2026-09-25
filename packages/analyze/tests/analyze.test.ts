@@ -134,20 +134,22 @@ describe("collectFiles + summarize + formatReport", () => {
 			"src/comp.tsx",
 			"src/util.js",
 			"src/util.ts",
+			"src/view.astro",
 			"src/view.jsx",
+			"src/view.svelte",
 		]);
 		stats = files.map((file) => analyzeSource(readFileSync(file, "utf8"), file, { config }));
 		summary = summarize(stats);
 	});
 
 	test("summary aggregates across files", () => {
-		expect(summary.totalCxCalls).toBe(5);
+		expect(summary.totalCxCalls).toBe(7);
 		expect(summary.eliminatedPct).toBe(100);
 	});
 
 	test("report contains table rows, runtime reasons and totals", () => {
 		const report = formatReport(summary);
 		expect(report).toContain("pandwind analyze — fold coverage");
-		expect(report).toContain("cx(): 100% of 5 calls eliminated at build time");
+		expect(report).toContain("cx(): 100% of 7 calls eliminated at build time");
 	});
 });

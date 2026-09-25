@@ -27,6 +27,7 @@ import {
 	mayContainCssFactoryImport,
 } from "./css-factory-source.ts";
 import { createCssLiteralScopeResolver } from "./css-literal-scope.ts";
+import { findStaticCssHelperCallSites } from "./css-helper-call-sites.ts";
 import {
 	analyzeCssInlineArguments,
 	canonicalStyleKey,
@@ -223,6 +224,14 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 			parsed as unknown as OxcNode,
 			firstThatWorksNames,
 		);
+		const staticHelperCalls = new Map(
+			findStaticCssHelperCallSites(
+				parsed as unknown as OxcNode,
+				names,
+				resolveLiteralScope,
+				evaluateCall,
+			).map((site) => [site.start, site]),
+		);
 		const usedIdentifiers = new Set<string>();
 		walk(parsed as unknown as OxcNode, (node) => {
 			if (node.type !== NodeKind.Identifier) return;
@@ -269,6 +278,20 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
 			if (consumedCallStarts.has(call.start)) return;
+			const helperCall = staticHelperCalls.get(call.start);
+			if (helperCall !== undefined && helperCall.end === call.end) {
+				try {
+					const style = resolveDesignStyle(helperCall.style, this.preset.tokens);
+					edits.push({
+						start: call.start,
+						end: call.end,
+						text: JSON.stringify(engine.class(style)),
+					});
+				} catch {
+					// An unsupported style remains a call to its original helper.
+				}
+				return;
+			}
 			const literalConstants = resolveLiteralScope(call, ancestors);
 			const evaluateCssLiteral = (value: Parameters<LiteralCallEvaluator>[0] | undefined) =>
 				evalLiteral(value, literalConstants, evaluateCall);
