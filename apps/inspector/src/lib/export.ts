@@ -4,29 +4,25 @@
  * `downloadFile`, called exclusively from UI event handlers.
  */
 import type { InspectorPayload, ThemeVar, UtilityUnion } from "../types.ts";
+import {
+	serializeDtcgTokenDocument,
+	serializeTokenResolverDocument,
+} from "pandwind-codemod/swap/token-document/serializer";
 
-/** Best-effort DTCG token type from a value's shape. */
-const tokenTypeOf = (value: string): string => {
-	if (/^(#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(|oklch\(|lab\(|color\()/.test(value)) return "color";
-	if (/^-?\d*\.?\d+(px|rem|em|%|vh|vw|ch|ex)$/.test(value)) return "dimension";
-	return "other";
-};
-
-/**
- * Token sections as a DTCG-compatible document. Condition-bound values
- * (stored as JSON strings) keep their raw string form under `"type":
- * "other"` — DTCG has no conditional-value concept, so nothing is invented.
- */
+/** Export only the source-validated generated token snapshot. */
 export function tokensToDtcg(data: InspectorPayload): string {
-	const doc: Record<string, Record<string, { value: string; type: string }>> = {};
-	for (const section of data.designSystem.tokenSections) {
-		const group: Record<string, { value: string; type: string }> = {};
-		for (const entry of section.entries) {
-			group[entry.name] = { value: entry.value, type: tokenTypeOf(entry.value) };
-		}
-		doc[section.id] = group;
+	const tokens = data.interopTokens;
+	if (tokens?.state !== "available") {
+		throw new Error(tokens?.diagnostics.join("; ") ?? "No validated token snapshot is available.");
 	}
-	return `${JSON.stringify(doc, null, "\t")}\n`;
+	return serializeDtcgTokenDocument(tokens.document);
+}
+
+/** Resolver data stays in its own DTCG sidecar document. */
+export function tokensResolverToDtcg(data: InspectorPayload): string | undefined {
+	const tokens = data.interopTokens;
+	if (tokens?.state !== "available" || tokens.document.resolver === undefined) return undefined;
+	return serializeTokenResolverDocument(tokens.document.resolver);
 }
 
 /** @theme vars as a plain `:root` custom-properties stylesheet. */
@@ -226,6 +222,7 @@ ${missing}</table>
 /** Single export boundary for the inspector; serializers remain pure functions. */
 export const InspectorExport = {
 	tokensToDtcg,
+	tokensResolverToDtcg,
 	themeVarsToCss,
 	utilitiesToJson,
 	coverageToJson,

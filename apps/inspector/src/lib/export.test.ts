@@ -7,12 +7,44 @@ import {
 	downloadFile,
 	themeVarsToCss,
 	tokensToDtcg,
+	tokensResolverToDtcg,
 	utilitiesToJson,
 } from "./export.ts";
+import {
+	parseDtcgResolverDocument,
+	parseDtcgTokenDocument,
+} from "pandwind-codemod/swap/token-document";
 import type { InspectorPayload } from "../types.ts";
+
+const tokenDocument = parseDtcgTokenDocument(
+	JSON.stringify({
+		colors: {
+			$description: "Brand colors",
+			$type: "color",
+			"blue-500": {
+				$value: { colorSpace: "srgb", components: [0.231, 0.51, 0.965], hex: "#3b82f6" },
+			},
+		},
+		spacing: {
+			gutter: { $type: "dimension", $value: { value: 8, unit: "px" } },
+		},
+	}),
+);
+const tokenSnapshot = {
+	schema: "pandwind.interop.tokens/1" as const,
+	state: "available" as const,
+	source: {
+		kind: "configured-token-module" as const,
+		module: "fixture",
+		fingerprint: tokenDocument.sourceFingerprint,
+	},
+	fidelity: { status: "lossless" as const, losses: [] },
+	document: tokenDocument,
+};
 
 const payload: InspectorPayload = {
 	meta: { root: "/repo" },
+	interopTokens: tokenSnapshot,
 	authoredCss: [],
 	cssSources: [],
 	cssDiagnostics: [],
@@ -99,23 +131,51 @@ afterEach(() => {
 });
 
 describe("tokensToDtcg", () => {
-	test("maps sections to DTCG groups with typed tokens", () => {
+	test("exports the validated hierarchy and authored DTCG types without shape guessing", () => {
 		const doc = JSON.parse(tokensToDtcg(payload)) as {
-			colors: Record<string, { value: string; type: string }>;
+			colors: { $type: string; $description: string; "blue-500": { $value: { hex: string } } };
+			spacing: { gutter: { $type: string; $value: { value: number; unit: string } } };
 		};
-		expect(doc.colors?.["$blue-500"]).toEqual({ value: "#3b82f6", type: "color" });
-		expect(doc.colors?.["$gutter"]?.type).toBe("dimension");
+		expect(doc.colors.$type).toBe("color");
+		expect(doc.colors.$description).toBe("Brand colors");
+		expect(doc.colors["blue-500"].$value.hex).toBe("#3b82f6");
+		expect(doc.spacing.gutter).toEqual({ $type: "dimension", $value: { value: 8, unit: "px" } });
 	});
 
-	test("condition-bound values keep their raw string form as other", () => {
-		const doc = JSON.parse(tokensToDtcg(payload)) as {
-			colors: Record<string, { value: string; type: string }>;
+	test("refuses a DTCG export when interop token provenance is unavailable", () => {
+		const unavailable = {
+			...payload,
+			interopTokens: {
+				schema: "pandwind.interop.tokens/1" as const,
+				state: "unavailable" as const,
+				source: null,
+				fidelity: null,
+				document: null,
+				diagnostics: ["stale artifact"],
+			},
 		};
-		expect(doc.colors?.["$surface"]?.type).toBe("other");
-		expect(JSON.parse(doc.colors?.["$surface"]?.value ?? "{}")).toEqual({
-			base: "#ffffff",
-			dark: "#0b0b10",
-		});
+		expect(() => tokensToDtcg(unavailable)).toThrow("stale artifact");
+	});
+
+	test("exports DTCG Resolver contexts in a separate sidecar", () => {
+		const withResolver: InspectorPayload = {
+			...payload,
+			interopTokens: {
+				...tokenSnapshot,
+				document: {
+					...tokenDocument,
+					resolver: parseDtcgResolverDocument(
+						JSON.stringify({
+							version: "2025.10",
+							sets: { base: { sources: [{ $ref: "./base.tokens.json" }] } },
+							modifiers: { mode: { contexts: { light: [{ $ref: "./light.tokens.json" }] } } },
+							resolutionOrder: [{ $ref: "#/sets/base" }, { $ref: "#/modifiers/mode" }],
+						}),
+					),
+				},
+			},
+		};
+		expect(tokensResolverToDtcg(withResolver)).toContain('"resolutionOrder"');
 	});
 });
 

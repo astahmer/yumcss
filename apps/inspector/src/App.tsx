@@ -16,6 +16,7 @@ import {
 	authoredTokenSpelling,
 	type GovernanceCoverageBoundary,
 	type RemovalSafety,
+	type TokenReleaseReport,
 	type TokenPolicySnapshot,
 } from "pandwind-analyze/governance/browser";
 
@@ -3814,6 +3815,9 @@ function CleanupReportView(props: {
 	urlStateChange: (state: Partial<InspectorUrlState>) => void;
 }) {
 	const g = props.data.governance;
+	const [releaseReport, setReleaseReport] = useState<TokenReleaseReport | null>(null);
+	const [releaseError, setReleaseError] = useState<string | null>(null);
+	const [releaseLoading, setReleaseLoading] = useState(false);
 	if (g === undefined) {
 		return (
 			<section>
@@ -3847,6 +3851,98 @@ function CleanupReportView(props: {
 		props.state.cleanupSafety === undefined ? {} : { safety: props.state.cleanupSafety };
 	return (
 		<div>
+			<section id="release-impact">
+				<h2>release impact</h2>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+					Choose a prior DTCG token file to compare with the validated current snapshot. The report
+					joins exact token paths to this project’s usage evidence and keeps scan boundaries
+					visible.
+				</p>
+				<label className={uiCss.class({ display: "inline-flex", gap: 8, alignItems: "center" })}>
+					<span>Compare baseline</span>
+					<input
+						type="file"
+						accept=".tokens,.tokens.json,application/design-tokens+json,application/json"
+						disabled={releaseLoading || props.data.interopTokens?.state !== "available"}
+						aria-label="Choose baseline DTCG token file"
+						onChange={async (event) => {
+							const input = event.currentTarget;
+							const file = input.files?.[0];
+							if (file === undefined) return;
+							setReleaseLoading(true);
+							setReleaseError(null);
+							setReleaseReport(null);
+							try {
+								setReleaseReport(await InspectorApi.compareTokenRelease(await file.text()));
+							} catch (error) {
+								setReleaseError(error instanceof Error ? error.message : String(error));
+							} finally {
+								setReleaseLoading(false);
+								input.value = "";
+							}
+						}}
+					/>
+				</label>
+				{releaseLoading && <p role="status">Comparing token release…</p>}
+				{releaseError !== null && <p role="alert">{releaseError}</p>}
+				{props.data.interopTokens?.state === "unavailable" && (
+					<p role="status">
+						Current token snapshot unavailable: {props.data.interopTokens.diagnostics.join("; ")}
+					</p>
+				)}
+				{releaseReport !== null && (
+					<div>
+						<p>
+							{releaseReport.changes.length === 0
+								? "No token release changes."
+								: `${releaseReport.changes.length} change(s) across ${releaseReport.consumerRoots.length} consumer project(s).`}
+							<span className={uiCss.class({ color: "var(--muted, #888)", marginLeft: 8 })}>
+								Baseline {releaseReport.baseline.format}@{releaseReport.baseline.formatVersion}
+							</span>
+						</p>
+						{releaseReport.changes.map((change, index) => {
+							const usageCount = change.consumers.reduce(
+								(total, consumer) => total + consumer.usages.length,
+								0,
+							);
+							const suggestionCount = change.consumers.reduce(
+								(total, consumer) => total + consumer.exactSuggestions.length,
+								0,
+							);
+							const boundaries = change.consumers.flatMap((consumer) =>
+								Object.entries(consumer.coverageBoundaries)
+									.filter(([, count]) => count > 0)
+									.map(([name, count]) => `${name}: ${count}`),
+							);
+							return (
+								<details key={`${change.path}:${change.kind}:${index}`}>
+									<summary>
+										<strong>{change.kind}</strong> {change.path} · {usageCount} exact usage(s) ·{" "}
+										{suggestionCount} exact suggestion(s)
+									</summary>
+									{change.references.length > 0 && (
+										<p>References: {change.references.join(", ")}</p>
+									)}
+									{change.changedFields !== undefined && (
+										<p>Changed fields: {change.changedFields.join(", ")}</p>
+									)}
+									{change.consumers.flatMap((consumer) =>
+										consumer.usages.map((use) => (
+											<p key={`${consumer.root}:${use.file}:${use.start}`}>
+												{consumer.root}/{use.file} · {use.property ?? "unknown property"} ·{" "}
+												{use.confidence} · {use.strictness}
+											</p>
+										)),
+									)}
+									{boundaries.length > 0 && (
+										<p>Coverage boundaries: {[...new Set(boundaries)].join(" · ")}</p>
+									)}
+								</details>
+							);
+						})}
+					</div>
+				)}
+			</section>
 			<section>
 				<h2>cleanup assessment</h2>
 				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
@@ -4704,13 +4800,26 @@ export function App() {
 											type="button"
 											aria-label="Download tokens as DTCG JSON"
 											title="Download tokens as DTCG JSON"
-											onClick={() =>
-												InspectorExport.downloadFile(
-													"pandwind-tokens.json",
-													InspectorExport.tokensToDtcg(data),
-													"application/json",
-												)
-											}
+											disabled={data.interopTokens?.state !== "available"}
+											onClick={async () => {
+												try {
+													const output = await InspectorApi.exportTokensDtcg();
+													InspectorExport.downloadFile(
+														"pandwind-tokens.tokens.json",
+														output.text,
+														"application/design-tokens+json",
+													);
+													if (output.resolverText !== undefined) {
+														InspectorExport.downloadFile(
+															"pandwind-tokens.resolver.json",
+															output.resolverText,
+															"application/design-tokens+json",
+														);
+													}
+												} catch (error) {
+													window.alert(error instanceof Error ? error.message : String(error));
+												}
+											}}
 										>
 											tokens — DTCG JSON
 										</button>

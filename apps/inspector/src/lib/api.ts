@@ -1,4 +1,14 @@
 import type { InspectorPayload } from "../types.ts";
+import type { TokenReleaseReport } from "pandwind-analyze/governance/browser";
+
+interface DtcgExportOutput {
+	text: string;
+	resolverText?: string;
+	fidelity: {
+		status: "lossless" | "lossy";
+		losses: ReadonlyArray<{ path: string; feature: string; reason: string }>;
+	};
+}
 
 async function fetchData(forceRefresh = false): Promise<InspectorPayload> {
 	const res = await fetch(forceRefresh ? "/api/data?refresh=1" : "/api/data", {
@@ -64,6 +74,25 @@ async function fetchAnalyticsHistory(): Promise<Array<AnalyticsHistoryPoint>> {
 	return (await res.json()) as Array<AnalyticsHistoryPoint>;
 }
 
+async function exportTokensDtcg(): Promise<DtcgExportOutput> {
+	const response = await fetch("/api/tokens/export", { method: "POST" });
+	const body = (await response.json()) as DtcgExportOutput & { error?: string };
+	if (!response.ok) throw new Error(body.error ?? `token export failed: ${response.status}`);
+	return body;
+}
+
+async function compareTokenRelease(baselineText: string): Promise<TokenReleaseReport> {
+	const response = await fetch("/api/tokens/release", {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify({ baselineText }),
+	});
+	const body = (await response.json()) as TokenReleaseReport & { error?: string };
+	if (!response.ok)
+		throw new Error(body.error ?? `token release comparison failed: ${response.status}`);
+	return body;
+}
+
 /** Single inspector transport facade; endpoint functions remain private seams. */
 export const InspectorApi = {
 	fetchData,
@@ -71,6 +100,8 @@ export const InspectorApi = {
 	fetchHistoryRun,
 	fetchPruneChangeset,
 	fetchAnalyticsHistory,
+	exportTokensDtcg,
+	compareTokenRelease,
 	vscodeLink,
 	vscodeLinkAt,
 	kb,
