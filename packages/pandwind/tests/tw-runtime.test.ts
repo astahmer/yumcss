@@ -235,6 +235,57 @@ describe("tw semantic sub-keys — bg / border / outline / decoration families",
 		);
 	});
 
+	test("arbitrary sub-key values use their own conflict properties", () => {
+		const compile = createTw<Record<string, unknown>>({
+			conflicts: {
+				text: { "*": ["font-size"] },
+				border: {
+					"*": [
+						"border-top-width",
+						"border-right-width",
+						"border-bottom-width",
+						"border-left-width",
+						"border-top-style",
+						"border-right-style",
+						"border-bottom-style",
+						"border-left-style",
+					],
+					solid: [
+						"border-top-style",
+						"border-right-style",
+						"border-bottom-style",
+						"border-left-style",
+					],
+				},
+			},
+		});
+
+		expect(
+			compile({
+				textSize: "[16px]",
+				textColor: "[#111827]",
+				borderWidth: "1",
+				borderStyle: "solid",
+				borderColor: "[#e5e7eb]",
+				disabled: { borderColor: "[#d1d5db]" },
+			}),
+		).toBe(
+			"text-[16px] text-[#111827] border-1 border-solid border-[#e5e7eb] disabled:border-[#d1d5db]",
+		);
+	});
+
+	test("arbitrary directional border colors keep the width utility", () => {
+		const compile = createTw<Record<string, unknown>>({
+			conflicts: {
+				"border-l": { "*": ["border-left-width", "border-left-style"] },
+			},
+		});
+
+		expect(compile({ borderL: ["2", "[color:hsl(106_70%_50%)]"] })).toBe(
+			"border-l-2 border-l-[color:hsl(106_70%_50%)]",
+		);
+	});
+
 	test("base vs sub-key merges last-wins through the base's map", () => {
 		expect(merged({ bg: "red-500", bgColor: "blue-500" })).toBe("bg-blue-500");
 		expect(merged({ bgColor: "blue-500", bg: "red-500" })).toBe("bg-red-500");

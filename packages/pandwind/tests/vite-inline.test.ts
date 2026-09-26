@@ -200,4 +200,34 @@ describe("inlineTwCalls", () => {
 		});
 		expect(JSON.parse(code)).toBe(tw(styles));
 	});
+
+	test("arbitrary semantic subkeys stay byte-identical between runtime and inlining", () => {
+		const styles = {
+			textSize: "[16px]",
+			textColor: "[#111827]",
+			borderWidth: "1",
+			borderStyle: "solid",
+			borderColor: "[#e5e7eb]",
+			borderL: ["2", "[color:hsl(106_70%_50%)]"],
+			disabled: { borderColor: "[#d1d5db]" },
+		};
+		const { code, inlined } = inlineTwCalls(
+			`tw(${JSON.stringify(styles)})`,
+			"app.ts",
+			config!,
+			new Set(["tw"]),
+		);
+		const tw = createTw({
+			variants: config!.variants,
+			conflicts: config!.conflicts,
+			compose: config!.compose,
+			valueTokens: config!.valueTokens,
+		});
+
+		expect(inlined).toBe(1);
+		expect(JSON.parse(code)).toBe(
+			"text-[16px] text-[#111827] border-1 border-solid border-[#e5e7eb] border-l-2 border-l-[color:hsl(106_70%_50%)] disabled:border-[#d1d5db]",
+		);
+		expect(JSON.parse(code)).toBe(tw(styles));
+	});
 });

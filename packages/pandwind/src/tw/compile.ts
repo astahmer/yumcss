@@ -110,10 +110,9 @@ const COMPOUND_BASES: Record<string, Set<string>> = {
  * tw({ textSize: "2xl", textColor: "gray-900" }); // "text-2xl text-gray-900"
  * ```
  *
- * Conflict semantics come from the generated per-property conflict map of
- * the BASE utility: `{ text: "sm", textSize: "lg" }` merges last-wins
- * (both set font-size), while `{ textSize: "2xl", textColor: "gray-900" }`
- * composes (disjoint properties).
+ * Conflict semantics use the generated per-property conflict map. Typed
+ * sub-keys retain their own CSS concern so arbitrary values do not fall back
+ * to another concern's wildcard properties.
  *
  * The typegen pipeline imports this table so generated types expose exactly
  * these spellings — one source of truth for runtime and types.
@@ -145,6 +144,66 @@ export const UTILITY_SUBKEYS: Readonly<Record<string, string>> = {
 	decorationColor: "decoration",
 	decorationStyle: "decoration",
 	decorationThickness: "decoration",
+};
+
+const UTILITY_SUBKEY_PROPERTIES: Readonly<Record<string, readonly string[]>> = {
+	textColor: ["color"],
+	textOverflow: ["text-overflow"],
+	textAlign: ["text-align"],
+	textSize: ["font-size"],
+	textWrap: ["text-wrap"],
+	bgColor: ["background-color"],
+	bgImage: ["background-image"],
+	bgSize: ["background-size"],
+	bgPosition: ["background-position"],
+	bgRepeat: ["background-repeat"],
+	bgAttachment: ["background-attachment"],
+	borderColor: [
+		"border-top-color",
+		"border-right-color",
+		"border-bottom-color",
+		"border-left-color",
+	],
+	borderWidth: [
+		"border-top-width",
+		"border-right-width",
+		"border-bottom-width",
+		"border-left-width",
+	],
+	borderStyle: [
+		"border-top-style",
+		"border-right-style",
+		"border-bottom-style",
+		"border-left-style",
+	],
+	outlineColor: ["outline-color"],
+	outlineWidth: ["outline-width"],
+	outlineStyle: ["outline-style"],
+	decorationColor: ["text-decoration-color"],
+	decorationStyle: ["text-decoration-style"],
+	decorationThickness: ["text-decoration-thickness"],
+};
+
+const BORDER_COLOR_PROPERTIES: Readonly<Record<string, readonly string[]>> = {
+	border: ["border-top-color", "border-right-color", "border-bottom-color", "border-left-color"],
+	"border-x": ["border-left-color", "border-right-color"],
+	"border-y": ["border-top-color", "border-bottom-color"],
+	"border-t": ["border-top-color"],
+	"border-r": ["border-right-color"],
+	"border-b": ["border-bottom-color"],
+	"border-l": ["border-left-color"],
+	"border-s": ["border-inline-start-color"],
+	"border-e": ["border-inline-end-color"],
+	"border-bs": ["border-block-start-color"],
+	"border-be": ["border-block-end-color"],
+};
+
+const borderColorProperties = (utility: string, value: string): readonly string[] | undefined => {
+	if (!value.startsWith("[") || !value.endsWith("]")) return undefined;
+	const rawValue = value.slice(1, -1);
+	if (!/^(?:color:|#|(?:rgb|hsl|hwb|lab|lch|oklab|oklch|color)\()/iu.test(rawValue))
+		return undefined;
+	return BORDER_COLOR_PROPERTIES[utility];
 };
 
 function isNestedStyles(value: TwValue | TwNestedStyles): value is TwNestedStyles {
@@ -210,19 +269,40 @@ function visit(
 		}
 
 		// Sub-keys resolve onto their base utility: `textSize` emits `text-*`
-		// classes and shares the base's conflict-map entries.
+		// classes while retaining the more specific CSS property for conflicts.
 		const utility = UTILITY_SUBKEYS[key] ?? dashCase(key);
+		const subkeyProperties = UTILITY_SUBKEY_PROPERTIES[key];
 		const className = frame.prefix ? `${frame.prefix}:${utility}` : utility;
 
 		if (typeof value === "boolean") {
 			if (value) {
-				push(classes, signatures, conflicts, compose, className, frame.prefix, utility, "");
+				push(
+					classes,
+					signatures,
+					conflicts,
+					compose,
+					className,
+					frame.prefix,
+					utility,
+					"",
+					subkeyProperties,
+				);
 			}
 			continue;
 		}
 
 		if (value === "" || value == null) {
-			push(classes, signatures, conflicts, compose, className, frame.prefix, utility, "");
+			push(
+				classes,
+				signatures,
+				conflicts,
+				compose,
+				className,
+				frame.prefix,
+				utility,
+				"",
+				subkeyProperties,
+			);
 			continue;
 		}
 
@@ -236,7 +316,17 @@ function visit(
 		const parts = rawParts.filter((part) => typeof part !== "boolean").map(String);
 		const compound = COMPOUND_BASES[key];
 		if (hasBareFlag || (compound && parts.some((part) => compound.has(part)))) {
-			push(classes, signatures, conflicts, compose, className, frame.prefix, utility, "");
+			push(
+				classes,
+				signatures,
+				conflicts,
+				compose,
+				className,
+				frame.prefix,
+				utility,
+				"",
+				subkeyProperties,
+			);
 		}
 
 		for (const part of parts) {
@@ -255,6 +345,7 @@ function visit(
 				frame.prefix,
 				utility,
 				token,
+				subkeyProperties,
 			);
 		}
 	}
@@ -269,6 +360,7 @@ function push(
 	prefix: string,
 	utility: string,
 	value: string,
+	subkeyProperties?: readonly string[],
 ): void {
 	if (conflicts === undefined) {
 		(classes as string[]).push(className);
@@ -279,11 +371,12 @@ function push(
 
 	// Opacity-modified colors (`bg-red-500/50`) share the base value's
 	// properties; exact lookup first, then the modifier-stripped form.
-	const props =
-		conflicts[utility]?.[value] ??
-		conflicts[utility]?.[value.replace(/\/\d+$/, "")] ??
-		conflicts[utility]?.["*"] ??
-		[];
+	const exactProperties =
+		conflicts[utility]?.[value] ?? conflicts[utility]?.[value.replace(/\/\d+$/, "")];
+	const arbitraryProperties = value.startsWith("[")
+		? (subkeyProperties ?? borderColorProperties(utility, value))
+		: undefined;
+	const props = exactProperties ?? arbitraryProperties ?? conflicts[utility]?.["*"] ?? [];
 
 	// Composing utilities share a CSS property with sibling keys but must
 	// coexist (`scale-x` + `scale-y`): merge only within the same key.
