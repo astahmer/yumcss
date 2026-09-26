@@ -1,7 +1,7 @@
 {
   "generated tw (dynamic)": {
-    "min": 4448,
-    "gz": 1739
+    "min": 6022,
+    "gz": 2161
   },
   "generated tw runtime metadata (opt-in)": {
     "min": 177823,
@@ -12,16 +12,16 @@
     "gz": 7364
   },
   "generated conflict cx (dynamic, no css)": {
-    "min": 30442,
-    "gz": 10440
+    "min": 30492,
+    "gz": 10449
   },
   "explicit conflict cx (dynamic)": {
-    "min": 57100,
-    "gz": 19870
+    "min": 58275,
+    "gz": 20166
   },
   "example dss+cx (no tw metadata)": {
-    "min": 34021,
-    "gz": 12562
+    "min": 35196,
+    "gz": 12865
   },
   "generated tw+cx (static)": {
     "min": 51,
