@@ -45,6 +45,31 @@ test("$raw follows normal source order when merged with typed declarations", () 
 	expect(createStylesheet(preset, { debug: true }).generate([raw])).toContain("padding:8px");
 });
 
+test("flat raw styles merge into a detached null-prototype result", () => {
+	const css = createCss(preset, { debug: true });
+	const base = { display: "flex", padding: 4, $raw: { color: "red" } };
+	const override = { padding: 8, $raw: { color: "blue" } };
+
+	const raw = css.raw(base, override);
+
+	expect(raw).toEqual({ display: "flex", padding: 8, color: "blue" });
+	expect(Object.getPrototypeOf(raw)).toBeNull();
+	expect(base).toEqual({ display: "flex", padding: 4, $raw: { color: "red" } });
+	expect(override).toEqual({ padding: 8, $raw: { color: "blue" } });
+});
+
+test("nested raw styles still deep-merge through the generic path", () => {
+	const css = createCss(preset, { debug: true });
+	const raw = css.raw(
+		{ $raw: { _hover: { color: "red" } } },
+		{ $raw: { _hover: { backgroundColor: "blue" } } },
+	);
+	const output = createStylesheet(preset, { debug: true }).generate([raw]);
+
+	expect(output).toContain("color:red");
+	expect(output).toContain("background-color:blue");
+});
+
 test("class projection preserves nested raw declarations", () => {
 	const css = createCss(preset, { debug: true });
 	const style = {

@@ -4,15 +4,15 @@
 		"gz": 3800
 	},
 	"createCss(minimal preset), fallback": {
-		"min": 16050,
+		"min": 16150,
 		"gz": 6200
 	},
 	"createCss(csstypePreset)": {
-		"min": 20550,
+		"min": 20700,
 		"gz": 7500
 	},
 	"createCss(tailwindPreset)": {
-		"min": 43350,
+		"min": 43420,
 		"gz": 14200
 	},
 	"createCss(chakraPreset)": {
@@ -32,19 +32,19 @@
 		"gz": 10650
 	},
 	"createCss(fixturePreset)": {
-		"min": 30350,
-		"gz": 10700
+		"min": 30520,
+		"gz": 10750
 	},
 	"createDesignCss(fixturePreset), fallback": {
 		"min": 39000,
 		"gz": 13500
 	},
 	"createCss(fixturePreset) + tw()": {
-		"min": 33050,
+		"min": 33210,
 		"gz": 11850
 	},
 	"createCss(fixturePreset) + cx()": {
-		"min": 37650,
+		"min": 37800,
 		"gz": 13700
 	},
 	"createCss(fixturePreset) + tw() + cx()": {
