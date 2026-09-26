@@ -10,7 +10,8 @@ export const isEmptyCondition = (part: string, conditions: StyleConditions): boo
 
 /** Find the CSS property in a flattened condition/property path. */
 export const cssPropertyFromKey = (key: string, conditions: StyleConditions = {}): string => {
-	const parts = key.includes("__") ? key.split("__") : [key];
+	if (!key.includes("__")) return key;
+	const parts = key.split("__");
 	for (let index = parts.length - 1; index >= 0; index -= 1) {
 		const part = parts[index]!;
 		if (!isConditionPathPart(part, conditions)) return part;
