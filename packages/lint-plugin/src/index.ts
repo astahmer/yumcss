@@ -1114,7 +1114,8 @@ const markerForCall = (
 	if (marker.end === undefined || call.start === undefined || call.start < marker.end)
 		return undefined;
 	const gap = source.slice(marker.end, call.start);
-	if (gap.trim() !== "") return undefined;
+	const trimmedGap = gap.trim();
+	if (trimmedGap !== "" && trimmedGap !== "...") return undefined;
 	const lineBreaks = (gap.match(/\n/g) ?? []).length;
 	return lineBreaks <= 1 ? marker : undefined;
 };

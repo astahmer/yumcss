@@ -1468,6 +1468,15 @@ tw("text-red-500");`,
 // pandwind:migrate-skip (residual: runtime theme)
 tw(theme.color);`,
 		);
+		const spreadResidualReports = runRule(
+			"require-migration-residual",
+			`import { untypedCss } from "../css";
+const element = <div
+	{
+		/* pandwind:migrate-skip (residual: dynamic color) */ ...untypedCss({ color: theme.color })
+	}
+/>;`,
+		);
 		const missingReports = runRule(
 			"require-migration-residual",
 			`import { tw } from "pandwind";
@@ -1499,6 +1508,7 @@ css.vars({ color: theme.color });`,
 			]
 		`);
 		expect(residualReports).toEqual([]);
+		expect(spreadResidualReports).toEqual([]);
 		expect(runtimeSkipReports).toEqual([]);
 		expect(missingReports).toHaveLength(1);
 		expect(missingReports[0]?.data).toEqual({ bad: "member expression value", name: "tw" });
