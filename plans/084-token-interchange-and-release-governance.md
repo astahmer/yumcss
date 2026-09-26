@@ -1,15 +1,16 @@
 # Token interchange and release governance plan
 
+Status: complete (2026-09-27)
+
 ## Context
 
 - Pandwind already models raw, semantic, scope, and component tokens, including
   aliases and condition-scoped values. `define.tokens`, preset codegen, theme
   emission, token analysis, and the Inspector provide a strong internal path.
-- The token format registry supports DTCG, Style Dictionary, Figma Tokens,
-  Panda, presets, CSS variables, and StyleX. Its current `TokenSet` is only
-  `group -> key -> string`. The DTCG adapter reads string `$value` fields,
-  flattens paths, and exports `$value`; it does not preserve rich token
-  metadata or structured values.
+- At planning time, the token format registry supported DTCG, Style Dictionary,
+  Figma Tokens, Panda, presets, CSS variables, and StyleX through a scalar-only
+  `TokenSet`. The DTCG adapter flattened string `$value` fields and discarded
+  rich metadata and structured values; this plan replaces that path.
 - Token governance is already implemented by
   [plan 054](./054-token-usage-governance.md): the versioned report covers the
   effective token universe, provenance, scoped values, aliases, observed use,
@@ -119,15 +120,15 @@ emits values that the existing preset/compiler can represent safely.
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| Canonical exchange | DTCG 2025.10 Format, Color, and Resolver modules | Use stable, tool-neutral contracts instead of inventing a second authored token format. |
-| Internal representation | Replace the scalar-only `TokenSet` with a versioned typed document model | Keep hierarchy, metadata, references, structured values, and contexts intact. |
-| Generated project artifact | Extend `pandwind.interop/2` to `pandwind.interop/3` | The repo already assigns generated design-system context to this artifact. Do not use the compiled-rule `pandwind.lib/1` or create a parallel token artifact. |
-| Existing source adapters | Declare import/export fidelity and validation per adapter | DTCG can be lossless first; other formats must state limits instead of pretending to preserve all semantics. |
-| Release identity | Use canonical token paths; only recognize renames from explicit replacement metadata | Similar names or values do not prove token identity. |
-| Release analysis | Add a separate versioned `TokenReleaseReport/1` and consume `TokenGovernanceReport` | Keep current-project usage analysis authoritative and avoid overloading its report contract. |
-| Runtime behavior | No runtime API changes | Token exchange and release analysis stay in tooling and generated artifacts. |
+| Choice                     | Decision                                                                             | Rationale                                                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Canonical exchange         | DTCG 2025.10 Format, Color, and Resolver modules                                     | Use stable, tool-neutral contracts instead of inventing a second authored token format.                                                                       |
+| Internal representation    | Replace the scalar-only `TokenSet` with a versioned typed document model             | Keep hierarchy, metadata, references, structured values, and contexts intact.                                                                                 |
+| Generated project artifact | Extend `pandwind.interop/2` to `pandwind.interop/3`                                  | The repo already assigns generated design-system context to this artifact. Do not use the compiled-rule `pandwind.lib/1` or create a parallel token artifact. |
+| Existing source adapters   | Declare import/export fidelity and validation per adapter                            | DTCG can be lossless first; other formats must state limits instead of pretending to preserve all semantics.                                                  |
+| Release identity           | Use canonical token paths; only recognize renames from explicit replacement metadata | Similar names or values do not prove token identity.                                                                                                          |
+| Release analysis           | Add a separate versioned `TokenReleaseReport/1` and consume `TokenGovernanceReport`  | Keep current-project usage analysis authoritative and avoid overloading its report contract.                                                                  |
+| Runtime behavior           | No runtime API changes                                                               | Token exchange and release analysis stay in tooling and generated artifacts.                                                                                  |
 
 ### Architecture
 
@@ -191,13 +192,13 @@ Not applicable. This feature targets repository and package workflows.
 
 ### Common interactions
 
-| Action | Result |
-|--------|--------|
-| Validate a token file | Format and version diagnostics identify invalid or unsupported paths; source remains unchanged. |
-| Export to a target format | Supported semantics are emitted; a lossy export is refused unless explicitly requested and accompanied by a loss report. |
-| Compare against a prior release | Added, changed, deprecated, and removed paths appear with current consumer usages and confidence boundaries. |
-| Inspect a changed token | Inspector shows provenance, context/alias relationships, use sites, and any unresolved impact. |
-| Request a migration proposal | Exact, unambiguous replacements appear as a reviewable diff; no edits happen without write mode. |
+| Action                          | Result                                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Validate a token file           | Format and version diagnostics identify invalid or unsupported paths; source remains unchanged.                          |
+| Export to a target format       | Supported semantics are emitted; a lossy export is refused unless explicitly requested and accompanied by a loss report. |
+| Compare against a prior release | Added, changed, deprecated, and removed paths appear with current consumer usages and confidence boundaries.             |
+| Inspect a changed token         | Inspector shows provenance, context/alias relationships, use sites, and any unresolved impact.                           |
+| Request a migration proposal    | Exact, unambiguous replacements appear as a reviewable diff; no edits happen without write mode.                         |
 
 ## Data model
 
@@ -254,75 +255,83 @@ source metadata whose owning adapter does not interpret them.
 
 ## Implementation steps
 
-1. Audit current format adapters and representative DTCG documents. Record
-   exactly which paths, types, metadata, references, and contexts each adapter
-   currently drops or transforms.
-2. Define the versioned `TokenDocument`, typed values, context model, format
-   fidelity result, and `TokenReleaseReport/1`. Add registry substitution tests
-   with a minimal fake format adapter.
-3. Implement DTCG 2025.10 validation and lossless import/export for groups,
-   inherited types, `$root`, scalar and structured values, references,
-   `$description`, `$deprecated`, `$extensions`, sets, and modifiers.
-4. Separate source preservation from explicit context resolution and CSS
-   lowering. Keep unsupported CSS lowering as a structured diagnostic while
-   retaining the token document intact.
-5. Migrate existing format adapters to the richer model. Add fidelity fixtures
-   for each adapter; refuse unsupported lossy exports by default. Improve
-   individual formats only where real project needs justify the work.
-6. Generate `pandwind.interop/3` from codegen-owned token inputs and provenance.
-   Update readers and bridge generation atomically, regenerate checked-in
-   artifacts, and reject stale schema output with a regeneration diagnostic.
-7. Implement baseline comparison and join it with the existing governance
-   report. Cover aliases, conditions, deprecations, removal safety, exact
-   replacements, public exports, and dynamic/unknown boundaries.
-8. Surface validation, export fidelity, and release impact through existing
-   CLI and Inspector surfaces. Add consumer documentation and a real package
-   fixture for publish/consume/upgrade behavior.
+1. [x] Audit current format adapters and representative DTCG documents. Record
+       exactly which paths, types, metadata, references, and contexts each adapter
+       currently drops or transforms.
+2. [x] Define the versioned `TokenDocument`, typed values, context model, format
+       fidelity result, and `TokenReleaseReport/1`. Add registry substitution tests
+       with a minimal fake format adapter.
+3. [x] Implement DTCG 2025.10 validation and lossless import/export for groups,
+       inherited types, `$root`, scalar and structured values, references,
+       `$description`, `$deprecated`, `$extensions`, sets, and modifiers.
+4. [x] Separate source preservation from explicit context resolution and CSS
+       lowering. Keep unsupported CSS lowering as a structured diagnostic while
+       retaining the token document intact.
+5. [x] Migrate existing format adapters to the richer model. Add fidelity fixtures
+       for each adapter; refuse unsupported lossy exports by default. Improve
+       individual formats only where real project needs justify the work.
+6. [x] Generate `pandwind.interop/3` from codegen-owned token inputs and provenance.
+       Update readers and bridge generation atomically, regenerate checked-in
+       artifacts, and reject stale schema output with a regeneration diagnostic.
+7. [x] Implement baseline comparison and join it with the existing governance
+       report. Cover aliases, conditions, deprecations, removal safety, exact
+       replacements, public exports, and dynamic/unknown boundaries.
+8. [x] Surface validation, export fidelity, and release impact through existing
+       CLI and Inspector surfaces. Add consumer documentation and a real package
+       fixture for publish/consume/upgrade behavior.
 
-## Open questions
+## Resolved questions
 
-1. Which DTCG fixture corpus and resolver conformance suite should be pinned
-   locally for deterministic verification of the 2025.10 contracts?
-2. Which legacy adapters have real users who need rich-value export after the
-   DTCG path is complete? Until evidence exists, keep their limits explicit.
-3. Should a release baseline be accepted directly as a DTCG file, a prior
-   `pandwind.interop/3` artifact, or both? The first implementation should
-   choose the smallest explicit file contract that serves actual consumers.
+1. Keep a repo-owned fixture suite derived from the DTCG 2025.10 Format,
+   Color, and Resolver reports and validate the Resolver version against the
+   official schema. The fixtures test supported semantics without claiming to
+   be an official conformance corpus.
+2. No additional legacy rich-value export is justified by a documented
+   consumer need. Keep each adapter's fidelity declaration explicit and reject
+   lossy output unless the caller opts in.
+3. Accept any registered token format as an explicit baseline (`dtcg` by
+   default, configurable with `--release-format`). Read the current release
+   only from a validated `pandwind.interop/3` token snapshot. This keeps
+   authored baseline files separate from generated current-project metadata.
 
 ## Acceptance criteria
 
-- [ ] DTCG 2025.10 valid documents round-trip semantically without losing
+- [x] DTCG 2025.10 valid documents round-trip semantically without losing
       hierarchy, standard metadata, supported typed values, references,
       extensions, or resolver contexts.
-- [ ] Invalid structures and unsupported values produce path-specific
+- [x] Invalid structures and unsupported values produce path-specific
       diagnostics; no input is silently skipped or flattened.
-- [ ] Context-dependent values remain contextual unless an explicit resolver
+- [x] Context-dependent values remain contextual unless an explicit resolver
       context is selected.
-- [ ] Every registered format adapter declares its supported fidelity, and
+- [x] Every registered format adapter declares its supported fidelity, and
       lossy exports fail by default with a machine-readable explanation.
-- [ ] Codegen owns and deterministically writes the token section of
+- [x] Codegen owns and deterministically writes the token section of
       `pandwind.interop/3`; bridge generation refreshes only bridge-owned data
       or regenerates the full artifact from authoritative inputs.
-- [ ] `pandwind.lib/1` remains the compiled CSS-rule artifact and is not used
+- [x] `pandwind.lib/1` remains the compiled CSS-rule artifact and is not used
       as the token interchange contract.
-- [ ] `TokenReleaseReport/1` identifies additions, changes, deprecations, and
+- [x] `TokenReleaseReport/1` identifies additions, changes, deprecations, and
       removals and links them to existing usage/provenance evidence.
-- [ ] Potential renames are not guessed; exact replacement suggestions reuse
+- [x] Potential renames are not guessed; exact replacement suggestions reuse
       current token policies and preserve unknown boundaries.
-- [ ] Analysis stays read-only by default and supports explicit consumer roots
+- [x] Analysis stays read-only by default and supports explicit consumer roots
       without ambient repository or registry scans.
-- [ ] No runtime authoring API, component surface, or duplicate governance
+- [x] No runtime authoring API, component surface, or duplicate governance
       subsystem is introduced.
-- [ ] Documentation distinguishes token-file portability, generated
+- [x] Documentation distinguishes token-file portability, generated
       interop metadata, and compiled CSS artifacts.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-09-27 | Treat scalar-only format conversion as the portability gap | Pandwind already has themes, token layers, and current-project usage governance. |
-| 2026-09-27 | Use stable DTCG 2025.10 modules as the external fidelity target | They cover token format, color values, and multi-context resolution without a Pandwind-specific authored format. |
+| Date       | Decision                                                                                      | Rationale                                                                                                                    |
+| ---------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-27 | Treat scalar-only format conversion as the portability gap                                    | Pandwind already has themes, token layers, and current-project usage governance.                                             |
+| 2026-09-27 | Use stable DTCG 2025.10 modules as the external fidelity target                               | They cover token format, color values, and multi-context resolution without a Pandwind-specific authored format.             |
 | 2026-09-27 | Extend the codegen-owned interop artifact instead of adding a second generated token artifact | Repository policy assigns generated design-system context to `pandwind.interop.json`; `pandwind.lib/1` remains compiled CSS. |
-| 2026-09-27 | Add a separate release diff that consumes the existing governance report | Current usage analysis is complete; release comparison is the missing layer. |
-| 2026-09-27 | Keep all behavior in tooling and preserve the frozen runtime API | Interchange, fidelity, and release impact do not require new styling syntax. |
-| 2026-09-27 | Keep components and live design-tool sync out of scope | They expand product breadth without closing the identified token-contract gap. |
+| 2026-09-27 | Add a separate release diff that consumes the existing governance report                      | Current usage analysis is complete; release comparison is the missing layer.                                                 |
+| 2026-09-27 | Keep all behavior in tooling and preserve the frozen runtime API                              | Interchange, fidelity, and release impact do not require new styling syntax.                                                 |
+| 2026-09-27 | Keep components and live design-tool sync out of scope                                        | They expand product breadth without closing the identified token-contract gap.                                               |
+| 2026-09-27 | Pin repo-owned fixtures to the official DTCG reports and 2025.10 Resolver schema              | The fixtures are deterministic and spec-derived without claiming an external conformance suite.                              |
+| 2026-09-27 | Keep registered token files as baselines and `/3` interop snapshots as current state          | Each side has one explicit format contract and current metadata stays codegen-owned.                                         |
+| 2026-09-27 | Restrict Resolver file references to real paths inside the invocation project root            | Relative references remain useful while remote, traversal, absolute-outside-root, and symlink escapes are rejected.          |
+| 2026-09-27 | Put Inspector export and release review in the existing usage/cleanup surface                 | Token governance improves without adding a design-system component or another navigation area.                               |

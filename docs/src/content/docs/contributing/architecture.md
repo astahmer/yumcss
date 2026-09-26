@@ -382,7 +382,7 @@ cascade layer), content validation,
 and rule-entry types; `packages/codemod/src/lib/` owns source scanning and
 artifact writing; `vite/css.ts` owns explicit package resolution; and
 `vite/css-core.ts` only merges already-validated entries. It remains separate
-from the Tailwind-focused `pandwind.interop/2` artifact because the two files
+from the project-context `pandwind.interop/3` artifact because the two files
 serve different consumers and failure policies.
 
 | Domain                 | Port boundary                                                                                                                                | Default implementation                                                                                                                                                                                                                                                                                                                |
@@ -391,7 +391,7 @@ serve different consumers and failure policies.
 | Tailwind codegen       | theme loader, design-system loader, utility catalog, conflict analyzer, variant probe, type emitter, runtime emitter, writer                 | `packages/codemod/src/tw/codegen-theme-input.ts`, `packages/codemod/src/tw/codegen-catalog.ts`, `packages/codemod/src/tw/codegen-conflicts.ts`, `packages/codemod/src/tw/codegen-variants.ts`, `packages/codemod/src/tw/codegen-emitter.ts`, `packages/codemod/src/tw/codegen-writer.ts`, `packages/codemod/src/tw/generate-types.ts` |
 | Runtime CSS            | canonicalizer, ordering, serializer, store, sink                                                                                             | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts`                                                                                                                                                                                                     |
 | Stylesheet lowering    | condition, ordering, decoder, serializer, and variable compiler policies                                                                     | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                                                                                                                                                                                                                                                                            |
-| Token formats          | one normalized token set plus format adapters                                                                                                | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`                                                                                                                                                                                                                                                                 |
+| Token formats          | versioned typed document, explicit format fidelity, Resolver handling, and adapter registry                                                  | `codemod/swap/token-document.ts`, `codemod/swap/token-document-codec.ts`, `codemod/swap/token-format-contracts.ts`, `codemod/swap/token-formats/`                                                                                                                                                                                     |
 | Source documents       | language scanner registry plus Node workspace expansion/read/scan                                                                            | `source-scanner.ts`, `source-workspace.ts`; analyzer, Vite, codemod, and Tailwind collection consume this workspace                                                                                                                                                                                                                   |
 | `cx()` compilation     | constant discovery, expression evaluation, imported merges, fold policy, and code emission                                                   | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts`                                                                                                                                                                                                                                                |
 | Design vocabulary      | module adapter registry                                                                                                                      | `design/resolve.ts`                                                                                                                                                                                                                                                                                                                   |
@@ -403,7 +403,10 @@ serve different consumers and failure policies.
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
 bridge generation refreshes the optional bridge section from the compiled
-design system. Pandwind does not import generated `bridge.ts` automatically;
+design system. The `pandwind.interop/3` token section comes from the same token
+module used by codegen and carries its source fingerprint and fidelity
+diagnostics. It is project metadata rather than an authored token file or
+compiled CSS. Pandwind does not import generated `bridge.ts` automatically;
 only an explicit `twAdapter` selection adds it to an application's runtime
 graph. Migration tooling consumes that artifact when present and only falls
 back to parsing `types.d.ts`/`tw.ts` and their companion metadata for projects
@@ -820,8 +823,15 @@ budget and inspection paths. Runtime sheets and stylesheet lowering likewise
 accept replacement ports for storage, ordering, canonicalization,
 serialization, conditions, decoding, and sinks.
 
-Token conversion uses `TokenSetCodec` over a registered normalized set. Each
-format lives in its own adapter file (`dtcg`, `theme`, `panda`, `preset`, `sd`,
+Token exchange uses the versioned `TokenDocumentCodec` over the typed
+`TokenDocument` contract. DTCG 2025.10 tokens preserve hierarchy, inherited
+types, structured values, references, metadata, and extensions; Resolver
+sets/modifiers remain a separate sidecar. Inline contexts stay contextual
+until a source is explicitly selected, and unsupported projections return
+path-specific fidelity losses. Scalar-only adapters advertise their limits and
+reject lossy exports unless the caller opts in. The replaceable registry is
+covered by a minimal adapter substitution test. Each format has a domain-local
+adapter file (`dtcg`, `dtcg-resolver`, `theme`, `panda`, `preset`, `sd`,
 `figma`, `rootcss`, and `stylex`). The `cx()` façade delegates to explicit
 constant, import, evaluation, fold, and rewrite policies. Analyzer/reporting
 and design vocabulary use the same port/registry pattern. New policies must
@@ -1104,6 +1114,17 @@ Policy is never guessed. `deriveProjectGovernanceContext` reads the loaded offic
 Removal stays report-first. `buildGovernancePruneChangeset` classifies every unused candidate as safe, review-required, or not-removable with provenance-linked reasons, deterministically and deduplicated. Consumers decide what happens next: the Inspector governance tab renders summary, strict-policy panel, boundary chips, candidate and suggestion tables, and the prune preview; `pandwind analyze --governance` emits the versioned JSON document; `design-tokens-only` accepts the snapshot as a structural option so the lint plugin stays dependency-free; and the codemod tokenize lane rewrites only exact `(property, rawValue)` pairs from the report's suggestions — when suggestions are supplied, the heuristic fallback is disabled rather than merged.
 
 Suggestion safety is exact-match only: a raw literal is replaceable when the target definition is statically valued and unscoped, the property category and token group are compatible, resolved values are exactly equal (hex case-folding is the one normalization), and exactly one candidate matches. Ambiguous matches are rejected with a diagnostic, never resolved by plausibility. Repository-scale cost is benchmarked in `packages/analyze/tests/governance.bench.ts` (2,000 definitions, 400 files, ~16k usage sites per pass).
+
+Release review is a separate `TokenReleaseReport/1` projection over explicit
+baseline/current token documents. It reports path additions, removals, value
+and type changes, deprecation, metadata, and context changes; it treats path
+changes as remove-plus-add and never guesses renames. Exact governance IDs and
+their existing usages, suggestions, removal-safety reasons, public-export
+evidence, and dynamic/unknown coverage boundaries attach where the current
+governance report proves them. `pandwind analyze` requires explicit consumer
+roots and reads generated `pandwind.interop/3` snapshots without scanning the
+repository or registry. Inspector shows release comparison within its existing
+Usage & cleanup view, alongside token validation/export fidelity.
 
 ## Plan inventory and remaining claims
 

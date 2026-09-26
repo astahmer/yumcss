@@ -150,18 +150,25 @@ as target modules; unsupported plugin or runtime behavior remains explicit.
 
 ## Token formats
 
-The `tokens` subcommand converts through one normalized token-set IR:
+The `tokens` subcommand converts through the versioned `TokenDocument` model.
+The DTCG 2025.10 adapter preserves token groups, inherited types, root tokens,
+standard metadata, structured values, references, and extensions. DTCG Resolver
+sets and modifiers stay in a separate sidecar until a context is explicitly
+selected. Format adapters report unsupported semantics and refuse lossy output
+unless `--allow-lossy` is supplied.
 
 ```sh
-pnpm exec pandwind-codemod tokens --from=dtcg --to=theme tokens.json --out=theme.css
-pnpm exec pandwind-codemod tokens --from=panda --to=dtcg panda.config.ts --out=tokens.json
-pnpm exec pandwind-codemod tokens --from=preset --to=panda src/preset.ts
+pnpm exec pandwind-codemod tokens --from=dtcg tokens.tokens.json --validate --report-format=json
+pnpm exec pandwind-codemod tokens --from=panda --to=dtcg panda.config.ts --out=tokens.tokens.json --resolver-out=tokens.resolver.json
+pnpm exec pandwind-codemod tokens --from=dtcg --resolver=tokens.resolver.json --to=theme tokens.tokens.json --context=mode=dark --allow-lossy --out=dark-theme.css
 ```
 
 Supported format adapters are DTCG, Tailwind `@theme`, Panda, Pandwind
 presets, Style Dictionary, Figma Tokens, root CSS variables, and StyleX
-import/export. Adding a format means implementing one source/target adapter; the
-normalized representation is shared.
+import/export. Adding a format means implementing one registered adapter; the
+normalized representation and fidelity contract are shared. Resolver file
+sources are local and remain beneath the invocation project root; remote and
+out-of-root references are rejected.
 
 ## Codemod polish
 
@@ -209,9 +216,9 @@ pnpm exec pandwind-codemod tokens --from=stylex --to=dtcg vars.stylex.ts \
 ```
 
 Named aliases, namespace imports, and default imports are recognized. Static
-string/number leaves become token-set entries; conditional/theme objects are
-not flattened into invented token names. If a file contains only conditional
-values, the importer fails with an actionable diagnostic.
+static string/number leaves become typed token-document entries; conditional
+or theme-dependent values are not flattened into invented token names. Their
+unsupported paths remain visible in the fidelity report.
 
 ## Safety rails and reports
 
