@@ -136,7 +136,7 @@ class DefaultVarCompiler implements VarCompiler {
 		if (keys.length === 1 && singleKey !== undefined && !singleKey.includes("__")) {
 			const raw = flat[singleKey];
 			if (!isSafeCssValue(raw) || raw === "") return { atoms: [], style: {} };
-			const property = cssPropertyFromKey(singleKey);
+			const property = singleKey;
 			const prop = dashCase(property);
 			const value =
 				typeof raw === "string" && this.resolveRuntimeValue !== undefined
@@ -152,6 +152,17 @@ class DefaultVarCompiler implements VarCompiler {
 		for (const key of keys.toSorted()) {
 			const raw = flat[key];
 			if (!isSafeCssValue(raw) || raw === "") continue;
+			if (!key.includes("__")) {
+				const property = key;
+				const prop = dashCase(property);
+				const value =
+					typeof raw === "string" && this.resolveRuntimeValue !== undefined
+						? this.resolveRuntimeValue(property, raw)
+						: raw;
+				atoms.push({ cls: `${this.prefix}${prop}`, keys: [key] });
+				style[this.baseCustomProp(prop)] = runtimeValue(prop, value);
+				continue;
+			}
 			const { canonical, conditions, property, prop } = this.splitKey(key);
 			if (!prop) continue;
 			const value =
