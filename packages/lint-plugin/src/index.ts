@@ -228,10 +228,20 @@ const apiFromImport = (
 };
 
 const conventionalStyleModuleFactory = (source: string): string | undefined => {
-	const basename = source.split(/[\\/]/u).at(-1)?.split(".")[0];
-	if (basename === "css") return API.cssFactory;
-	if (basename === "design") return API.designFactory;
+	const match = /^(?:\.\/|\.\.\/)+(css|design)(?:\.[cm]?[jt]sx?)?$/u.exec(
+		source.replace(/\\/gu, "/"),
+	);
+	if (match?.[1] === "css") return API.cssFactory;
+	if (match?.[1] === "design") return API.designFactory;
 	return undefined;
+};
+
+const isConventionalStyleInstance = (factory: string, imported: string): boolean => {
+	if (factory === API.cssFactory)
+		return imported === "css" || (imported.endsWith("Css") && !imported.startsWith("create"));
+	if (factory === API.designFactory)
+		return imported === "dss" || (imported.endsWith("Dss") && !imported.startsWith("create"));
+	return false;
 };
 
 type DynamicExpression = { node: AstNode; bad: string };
@@ -351,8 +361,8 @@ const apiResolverCache = new WeakMap<AstNode, Map<string, ApiResolver>>();
 const cssModuleExportsCacheKey = (cssModuleExports: CssModuleExports): string =>
 	JSON.stringify(
 		[...cssModuleExports.entries()]
-			.sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
-			.map(([source, exports]) => [source, [...exports].sort()]),
+			.toSorted(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+			.map(([source, exports]) => [source, [...exports].toSorted()]),
 	);
 
 const createApiResolver = (
@@ -405,7 +415,11 @@ const createApiResolver = (
 				factories.set(specifier.local.name, api);
 			else if (imported !== undefined && configuredCssExports?.has(imported))
 				instances.set(specifier.local.name, API.cssFactory);
-			else if (imported !== undefined && localFactory !== undefined)
+			else if (
+				imported !== undefined &&
+				localFactory !== undefined &&
+				isConventionalStyleInstance(localFactory, imported)
+			)
 				instances.set(specifier.local.name, localFactory);
 			else if (api !== undefined) direct.set(specifier.local.name, api);
 		}
@@ -1708,7 +1722,7 @@ const rules: Record<string, RuleDefinition> = {
 						processedBindings.set(name, tokenVocabulary);
 						const initializer = declarations.get(name);
 						if (initializer === undefined) continue;
-						walkWithAncestors(initializer, (current, ancestors) => {
+						walkWithAncestors(initializer, (current) => {
 							if (
 								current.type === NodeKind.SpreadElement &&
 								current.argument?.type === NodeKind.Identifier

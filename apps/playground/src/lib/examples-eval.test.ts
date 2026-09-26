@@ -153,7 +153,7 @@ describe("example catalog evaluates end to end", () => {
 								return rule.css.slice(start + 1, -1);
 							}),
 						)
-						.sort();
+						.toSorted();
 					expect(declarations, label).toEqual(expectedDeclarations);
 				}
 			}

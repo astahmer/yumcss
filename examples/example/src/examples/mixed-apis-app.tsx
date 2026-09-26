@@ -1,3 +1,4 @@
+/* oxlint-disable import/default -- Vite's ?raw modules export source as a default string. */
 import dogfoodSource from "../dogfood-app.tsx?raw";
 import designSource from "../design-app.tsx?raw";
 import { DesignApp } from "../design-app";

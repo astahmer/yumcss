@@ -15,6 +15,7 @@ type RuntimeElementWithSheet = RuntimeStyleElement & {
 };
 
 const escapeAttributeSelector = (value: string): string =>
+	// oxlint-disable-next-line no-control-regex -- CSS selectors require control characters to be escaped.
 	value.replace(/[\u0000-\u001f\u007f"\\]/g, (character) => {
 		const code = character.charCodeAt(0).toString(16);
 		return `\\${code} `;

@@ -330,16 +330,18 @@ const CSS_SHORTHAND_FAMILIES: readonly (readonly string[])[] = [
 	["all"],
 ];
 
+const CSS_SHORTHAND_LONGHANDS = CSS_SHORTHAND_FAMILIES.map((family) => ({
+	shorthand: family[0],
+	longhands: new Set(family.slice(1)),
+}));
+
 export const cssPropertiesMayConflict = (left: string, right: string): boolean =>
 	left === right ||
 	left === "all" ||
 	right === "all" ||
-	CSS_SHORTHAND_FAMILIES.some((family) => {
-		const shorthand = family[0];
+	CSS_SHORTHAND_LONGHANDS.some(({ shorthand, longhands }) => {
 		if (shorthand === undefined) return false;
-		const longhands = family.slice(1);
 		return (
-			(left === shorthand && longhands.includes(right)) ||
-			(right === shorthand && longhands.includes(left))
+			(left === shorthand && longhands.has(right)) || (right === shorthand && longhands.has(left))
 		);
 	});

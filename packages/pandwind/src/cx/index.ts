@@ -773,6 +773,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 			if (
 				typeof atom?.cls !== "string" ||
 				atom.cls.length === 0 ||
+				// oxlint-disable-next-line no-control-regex -- Class tokens reject whitespace and NUL.
 				/[\s\u0000]/.test(atom.cls) ||
 				!Array.isArray(atom.keys) ||
 				!atom.keys.every((key) => typeof key === "string" && key.length > 0)
@@ -866,7 +867,12 @@ export function createCx(options: CxOptions = {}): CxFn {
 		let out = "";
 		for (let index = 0; index < inputs.length; index++) {
 			const input = inputs[index];
-			if (typeof input !== "string" || input.length === 0 || /[\s\u0000]/.test(input))
+			if (
+				typeof input !== "string" ||
+				input.length === 0 ||
+				// oxlint-disable-next-line no-control-regex -- Class tokens reject whitespace and NUL.
+				/[\s\u0000]/.test(input)
+			)
 				return undefined;
 			for (let previous = 0; previous < index; previous++) {
 				if (inputs[previous] === input) return undefined;

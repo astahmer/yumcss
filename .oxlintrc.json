@@ -39,6 +39,7 @@
 		"**/docs/.astro/**",
 		"**/docs/node_modules/**",
 		"**/apps/playground/src/generated/**",
+		"**/apps/playground/e2e/.migration-preview-features-gen/**",
 		"scripts/**/*.d.ts",
 		"**/packages/codemod/tests/routes/**",
 		"**/packages/codemod/tests/roundtrips/**",

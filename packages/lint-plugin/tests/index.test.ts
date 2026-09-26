@@ -317,12 +317,12 @@ css.class({ $raw: { color: "red" } });`,
 		expect(reports[0]?.data.name).toBe("css.class");
 	});
 
-	test("discovers local style facades by Vite source basename", () => {
+	test("discovers conventional local style facades", () => {
 		const reports = runRule(
 			"no-dollar-raw",
-			`import { css as styles } from "../pandwind/css";
-import { dss as design } from "../pandwind/design";
-import * as cssModule from "../pandwind/css";
+			`import { css as styles } from "./css";
+import { dss as design } from "./design";
+import * as cssModule from "./css";
 import { css as unrelated } from "../helpers/styles";
 styles.class({ $raw: { color: "red" } });
 design.class({ $raw: { color: "blue" } });
@@ -338,6 +338,20 @@ unrelated.class({ $raw: { color: "green" } });`,
 			"cssModule.css.class",
 			"cssModule.css",
 		]);
+	});
+
+	test("ignores backend helpers imported from a conventional css module", () => {
+		const reports = runRule(
+			"require-migration-residual",
+			`import { createCssBackend } from "./css.ts";
+import { normalizeCss } from "../helpers/css";
+import * as cssBackend from "./css.ts";
+createCssBackend(options);
+normalizeCss(options);
+cssBackend.createCssBackend(options);`,
+		);
+
+		expect(reports).toEqual([]);
 	});
 
 	test("does not invent a root css export or classify an unrelated factory", () => {
@@ -773,14 +787,14 @@ css.class({ $raw: { width: "$width-1" } });`,
 	});
 
 	test("recognizes typed values in an automatically discovered CSS facade", () => {
-		const code = `import { css as styles } from "../pandwind/css";
+		const code = `import { css as styles } from "./css";
 styles.class({ $raw: { width: "auto" } });`;
 		const reports = runRule("prefer-typed-css-values", code);
 
 		expect(reports).toHaveLength(1);
 		expect(reports[0]?.data.properties).toBe("width");
 		expect(applyFixes(code, reports[0]?.fixes ?? [])).toBe(
-			`import { css as styles } from "../pandwind/css";
+			`import { css as styles } from "./css";
 styles.class({ width: "auto" });`,
 		);
 	});
@@ -1269,7 +1283,7 @@ tw({ md: { hover: { color: theme.colors.brand } } });`,
 			{
 				name: "two dynamic arguments",
 				expression: 'cx(active ? "grid" : "block", compact ? "flex" : "hidden")',
-				inlined: 0,
+				inlined: 1,
 				dynamicValues: 0,
 				conditions: 2,
 			},

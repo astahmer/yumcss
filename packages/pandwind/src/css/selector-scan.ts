@@ -1,5 +1,3 @@
-import { splitSelectorList } from "./selector-list.ts";
-
 export { splitSelectorList } from "./selector-list.ts";
 
 /**

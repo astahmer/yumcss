@@ -74,7 +74,13 @@ export const createRuntimeStylesheet = (
 	const classNameFor = (orderedKey: string, rawValue: string): string => {
 		if (sheetStrategy?.sheetBacked === true) {
 			const named = sheetStrategy.toClassName(orderedKey, rawValue);
-			if (typeof named === "string" && named.length > 0 && !/[\s\u0000]/.test(named)) return named;
+			if (
+				typeof named === "string" &&
+				named.length > 0 &&
+				// oxlint-disable-next-line no-control-regex -- Class tokens reject whitespace and NUL.
+				!/[\s\u0000]/.test(named)
+			)
+				return named;
 		}
 		return hashFn(orderedKey, rawValue);
 	};

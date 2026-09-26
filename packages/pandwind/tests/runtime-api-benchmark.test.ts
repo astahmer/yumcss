@@ -296,7 +296,6 @@ const sourceDocument = {
 };
 const sourceRegistry = createSourceScannerRegistry();
 const cssExtraction = createCssExtractionService({ matchers: ["css"], preset: examplePreset });
-const inlineTw = createInlineTwPluginCore();
 const artifact = createPandwindLibArtifact({
 	compatibility,
 	sources: [{ path: "runtime-api.ts", hash: "runtime-api" }],
