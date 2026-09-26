@@ -115,11 +115,17 @@
 			"import": "./dist/swap/variant-hoisting.js",
 			"default": "./dist/swap/variant-hoisting.js"
 		},
-		"./swap/token-set": {
-			"pandwind": "./src/swap/token-set.ts",
-			"types": "./dist/swap/token-set.d.ts",
-			"import": "./dist/swap/token-set.js",
-			"default": "./dist/swap/token-set.js"
+		"./swap/token-document": {
+			"pandwind": "./src/swap/token-document-codec.ts",
+			"types": "./dist/swap/token-document-codec.d.ts",
+			"import": "./dist/swap/token-document-codec.js",
+			"default": "./dist/swap/token-document-codec.js"
+		},
+		"./swap/token-document/serializer": {
+			"pandwind": "./src/swap/token-document-serializer.ts",
+			"types": "./dist/swap/token-document-serializer.d.ts",
+			"import": "./dist/swap/token-document-serializer.js",
+			"default": "./dist/swap/token-document-serializer.js"
 		},
 		"./swap/unplugin": {
 			"pandwind": "./src/swap/unplugin.ts",
@@ -192,7 +198,8 @@
 		"pandwind": "workspace:*",
 		"postcss": "8.5.28",
 		"tailwind-merge": "3.6.0",
-		"unplugin": "3.3.0"
+		"unplugin": "3.3.0",
+		"zod": "4.5.4"
 	},
 	"devDependencies": {
 		"@chakra-ui/react": "3.37.0",

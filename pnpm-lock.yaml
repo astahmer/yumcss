@@ -202,6 +202,9 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      zod:
+        specifier: 4.5.4
+        version: 4.5.4
     devDependencies:
       '@types/node':
         specifier: 26.4.1
@@ -798,6 +801,9 @@ importers:
       unplugin:
         specifier: 3.3.0
         version: 3.3.0(esbuild@0.28.2)(rolldown@1.2.7)(rollup@4.63.1)(vite@8.2.2)(webpack@5.110.3(@swc/core@1.16.1(@swc/helpers@0.5.23))(cssnano@4.1.11)(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.28)(sharp@0.35.4(@types/node@26.4.1))(svgo@4.1.0))
+      zod:
+        specifier: 4.5.4
+        version: 4.5.4
     devDependencies:
       '@chakra-ui/react':
         specifier: 3.37.0
