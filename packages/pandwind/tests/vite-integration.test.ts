@@ -441,10 +441,7 @@ export const excluded = dss.class({ color: "#0000ff" });`,
 				source?: string | Uint8Array;
 			}>;
 			const css = output
-				.filter(
-					(chunk) =>
-						chunk.type === RollupOutputKind.Asset && chunk.fileName.endsWith(".css"),
-				)
+				.filter((chunk) => chunk.type === RollupOutputKind.Asset && chunk.fileName.endsWith(".css"))
 				.map((chunk) => chunk.source?.toString() ?? "")
 				.join("\n");
 

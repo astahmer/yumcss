@@ -274,9 +274,7 @@ test("an open preset config keeps arbitrary CSS properties typed", () => {
 		{ strict: false, conditions: {}, properties: { $all: true } },
 	);
 	const permissive = createCss(permissivePreset);
-	expect(
-		permissive.class({ padingBlock: "8px", color: "acent" }),
-	).type.toBe<string>();
+	expect(permissive.class({ padingBlock: "8px", color: "acent" })).type.toBe<string>();
 });
 
 test("semantic token references are checked against the supplied catalog", () => {

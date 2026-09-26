@@ -12,6 +12,11 @@
 		"**/packages/codemod/tests/routes/**",
 		"**/packages/codemod/tests/roundtrips/**",
 		"apps/playground/src/pandwind.interop.json",
+		"apps/playground/e2e/.migration-preview-features-gen/**",
+		".studio-history/**",
+		"apps/inspector/.studio-history/**",
+		"benchmarks/styling-size/snapshots/bundle-size.json",
+		"docs/src/content/docs/reference/size.md",
 		"**/dist/**",
 		"plans/evidence/**/*.json"
 	]

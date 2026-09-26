@@ -298,7 +298,7 @@ export function ResizableSplitter(props: {
 								value={
 									panel.collapsible === true
 										? {
-											collapsed: isCollapsedPanel,
+												collapsed: isCollapsedPanel,
 												toggle: () => togglePanel(panel.id),
 											}
 										: null

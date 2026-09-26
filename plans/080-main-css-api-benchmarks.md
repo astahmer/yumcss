@@ -135,14 +135,14 @@ flowchart TD
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-| --- | --- | --- |
-| Primary benchmark API | The `createCss(preset)` family, selected by host need | This represents the authored-style API without forcing one return shape onto every host. |
-| Bonus API lane | Keep `tw(...)` separate | It is useful for utility-class comparisons, but answers a different performance question. |
-| CSS build path | Actual `pandwindCssVite(css)` from the pinned artifact | The benchmark must exercise the shipped compiler integration. |
-| Fully static proof | Inspect transformed modules and bundled assets | Source-level literals alone do not prove runtime work was removed. |
-| Class strategy | Keep hash default; retain named atoms as opt-in | Named atoms win the large-style slope but lose baseline and class-attribute bytes. |
-| Optimization order | Fix representation, attribute bytes, then optimize | Do not spend time chasing a rank produced by the wrong API lane or shared app code. |
+| Choice                | Decision                                               | Rationale                                                                                 |
+| --------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Primary benchmark API | The `createCss(preset)` family, selected by host need  | This represents the authored-style API without forcing one return shape onto every host.  |
+| Bonus API lane        | Keep `tw(...)` separate                                | It is useful for utility-class comparisons, but answers a different performance question. |
+| CSS build path        | Actual `pandwindCssVite(css)` from the pinned artifact | The benchmark must exercise the shipped compiler integration.                             |
+| Fully static proof    | Inspect transformed modules and bundled assets         | Source-level literals alone do not prove runtime work was removed.                        |
+| Class strategy        | Keep hash default; retain named atoms as opt-in        | Named atoms win the large-style slope but lose baseline and class-attribute bytes.        |
+| Optimization order    | Fix representation, attribute bytes, then optimize     | Do not spend time chasing a rank produced by the wrong API lane or shared app code.       |
 
 ### Architecture
 
@@ -191,31 +191,31 @@ report.
 ## Implementation steps
 
 1. [x] Reproduce and archive the existing pinned Arena and Bench baselines, with
-   each result labeled by the exact Pandwind API and plugin path.
+       each result labeled by the exact Pandwind API and plugin path.
 2. [x] Keep Arena's `css.class(...)` projection for its className-oriented
-   components. Add callable `css(...)` composition and `css.props(...)` only
-   where a host naturally forwards maps; do not bulk-convert class-string
-   callsites. Keep the six-page route matrix and screenshot/geometry proof.
+       components. Add callable `css(...)` composition and `css.props(...)` only
+       where a host naturally forwards maps; do not bulk-convert class-string
+       callsites. Keep the six-page route matrix and screenshot/geometry proof.
 3. [x] Add the Bench `pandwind-css` product-grid lane using `pandwindCssVite(css)`
-   from the pinned artifact. Retain the old `pandwind-buildtime` result as the
-   secondary `tw(...)` lane.
+       from the pinned artifact. Retain the old `pandwind-buildtime` result as the
+       secondary `tw(...)` lane.
 4. [x] Add focused compiler-output assertions for multi-argument static
-   `css(...)`, `css.props(...)`, CSS sheet membership, and absence of runtime
-   declaration compilation. Reuse compiler cases for runtime-versus-plugin
-   output parity; cover the conservative path separately if any values remain
-   dynamic.
+       `css(...)`, `css.props(...)`, CSS sheet membership, and absence of runtime
+       declaration compilation. Reuse compiler cases for runtime-versus-plugin
+       output parity; cover the conservative path separately if any values remain
+       dynamic.
 5. [x] Run Arena and Bench parity, then regenerate the normalized snapshots,
-   detailed `PERF.md`, short top-five summary, and reference benchmark page.
-   Identify primary-lane ranks separately from the `tw(...)` bonus row.
+       detailed `PERF.md`, short top-five summary, and reference benchmark page.
+       Identify primary-lane ranks separately from the `tw(...)` bonus row.
 6. [x] Use emitted CSS, compressed assets, and current module attribution to
-   isolate first-load and CSS-slope costs. The refreshed evidence did not
-   justify a safe output deletion: Arena's residual Pandwind JavaScript is in
-   the runtime `cx`/preset path, and the cross-module `cx` experiment changed
-   no route modules. Keep that compiler work as a ranked follow-up instead of
-   making an unproven rewrite.
+       isolate first-load and CSS-slope costs. The refreshed evidence did not
+       justify a safe output deletion: Arena's residual Pandwind JavaScript is in
+       the runtime `cx`/preset path, and the cross-module `cx` experiment changed
+       no route modules. Keep that compiler work as a ranked follow-up instead of
+       making an unproven rewrite.
 7. [x] Re-run the focused regressions and both pinned external suites after the
-   optimization. Describe benchmark setup, compiler change, and report refresh
-   in separate JJ revisions.
+       optimization. Describe benchmark setup, compiler change, and report refresh
+       in separate JJ revisions.
 
 ## Acceptance criteria
 
@@ -259,9 +259,9 @@ compiler-output tests compare generated props and classes against the real
 runtime API and assert that calls are removed from the transformed module and
 styles are emitted once in the virtual sheet.
 
-| Comparison | Pinned sources and parity | Primary `createCss` result |
-| --- | --- | --- |
-| CSS-in-JS Arena, six routes | Arena `2f4ed369a107a186b8108184871bba0777f23fe4`; Pandwind `bc1b904c5d6795d43396b9f364a127fd68c2f436`; Apple M4, Node 24.20.0, Vite 8.2.1; 18/18 geometry and 72/72 screenshots passed | CSS raw #1/4 at 31,732 B; CSS Brotli #3/4 at 8,724 B; JS Brotli #4/4 at 111,644 B; full first load #4/4 at 125,838 B; cold/warm builds #1/4 at 2,465/1,997 ms; shared edit paint #1/4 at 199.9 ms |
+| Comparison                             | Pinned sources and parity                                                                                                                                                                                       | Primary `createCss` result                                                                                                                                                                                                                                                |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CSS-in-JS Arena, six routes            | Arena `2f4ed369a107a186b8108184871bba0777f23fe4`; Pandwind `bc1b904c5d6795d43396b9f364a127fd68c2f436`; Apple M4, Node 24.20.0, Vite 8.2.1; 18/18 geometry and 72/72 screenshots passed                          | CSS raw #1/4 at 31,732 B; CSS Brotli #3/4 at 8,724 B; JS Brotli #4/4 at 111,644 B; full first load #4/4 at 125,838 B; cold/warm builds #1/4 at 2,465/1,997 ms; shared edit paint #1/4 at 199.9 ms                                                                         |
 | CSS-in-JS Bench, 400-tile product grid | Bench `9ed62df69397`; Pandwind `bc1b904c5d6795d43396b9f364a127fd68c2f436`; Apple M4, Node 24.20.0, WPD 0.15.1, Chrome 154.0.8037.57, Firefox stable 156.0.1; all 21 lanes passed DOM/pixel parity over 13 cases | Payload #7/16 at 10,539 B gzip (0 B JS + 1,492 B CSS + 9,047 B HTML); SSR throughput #1/16 at 269,852 tiles/s; mount #7/16 at 34.7 ms; hydration #3/16 at 22.1 ms; cold build #15/17 at 375 ms; INP unranked at 33.2 ms because medians cluster within frame-timing noise |
 
 The Bench CSS lane is one real product-grid workload; the 13-case result
@@ -308,9 +308,9 @@ record the same source revisions and current payload figures in their READMEs.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-| --- | --- | --- |
+| Date       | Decision                                                                      | Rationale                                                                                                                                                |
+| ---------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2026-09-24 | Score the `createCss(preset)` API family as primary; label `tw(...)` as bonus | The main benchmark should use each CSS projection where its host use case calls for it; Bench's existing headline result measures only the utility lane. |
-| 2026-09-24 | Use `pandwindCssVite(css)` from the pinned package in both primary lanes | The comparison should exercise the actual shipped static compiler integration. |
-| 2026-09-24 | Keep hash classes as default pending total-workload evidence | Named atoms improve large-style CSS slope but currently add first-load and class-attribute cost. |
-| 2026-09-24 | Optimize only after the corrected lane is parity-gated and attributed | Existing results show strong categories, and prior module attribution did not prove a safe general runtime deletion. |
+| 2026-09-24 | Use `pandwindCssVite(css)` from the pinned package in both primary lanes      | The comparison should exercise the actual shipped static compiler integration.                                                                           |
+| 2026-09-24 | Keep hash classes as default pending total-workload evidence                  | Named atoms improve large-style CSS slope but currently add first-load and class-attribute cost.                                                         |
+| 2026-09-24 | Optimize only after the corrected lane is parity-gated and attributed         | Existing results show strong categories, and prior module attribution did not prove a safe general runtime deletion.                                     |

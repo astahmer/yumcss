@@ -248,8 +248,8 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): PluginW
 				});
 		},
 		devtools: {
-					setup(ctx) {
-					if (options.enabled === false) return;
+			setup(ctx) {
+				if (options.enabled === false) return;
 				const clientPath = fileURLToPath(new URL("../dist/client", import.meta.url));
 				const modulePath = fileURLToPath(new URL("../dist", import.meta.url));
 				ctx.views.hostStatic("/__pandwind_devtools__", clientPath);
