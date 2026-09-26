@@ -38,53 +38,93 @@ const isVarsOutput = (value: object): value is VarsOutput => {
 /** Attach the host-prop projection that combines classes and inline variables. */
 export const attachProps: RuntimeCssAttachment = (css) => {
 	css.props = (...props: Array<PropsInput>): PropsReturn => {
-		const compiled: Array<CompiledStyles> = [];
-		const styles: Array<CssStyle> = [];
-		const classNames: string[] = [];
-		const stack = props.slice().reverse() as PropsInput[];
-		const active = new WeakSet<object>();
-		while (stack.length > 0) {
-			const current = stack.pop();
-			if (!current) continue;
-			if (Array.isArray(current)) {
-				if (active.has(current)) continue;
-				active.add(current);
-				for (let index = current.length - 1; index >= 0; index--) {
-					stack.push(current[index]!);
-				}
-				continue;
+		let compiled: CompiledStyles | undefined;
+		let copiedCompiled = false;
+		let styles: Array<CssStyle> | undefined;
+		let classNames: string[] | undefined;
+		let stack: PropsInput[] | undefined;
+		let active: WeakSet<object> | undefined;
+		const appendCompiled = (value: CompiledStyles): void => {
+			if (typeof value !== "object" || value === null || Array.isArray(value)) return;
+			if (compiled === undefined) {
+				compiled = value;
+				return;
 			}
+			if (!copiedCompiled) {
+				const copy = Object.create(null) as CompiledStyles;
+				for (const key of Object.keys(compiled)) copy[key] = compiled[key]!;
+				compiled = copy;
+				copiedCompiled = true;
+			}
+			for (const key of Object.keys(value)) compiled[key] = value[key]!;
+		};
+		const append = (current: PropsInput): void => {
+			if (!current) return;
 			if (typeof current === "string") {
+				classNames ??= [];
 				classNames.push(current);
-				continue;
+				return;
 			}
-			if (typeof current !== "object") continue;
+			if (typeof current !== "object") return;
 			if (DYNAMIC in current) {
 				const dynamic = current as Partial<DynamicReturn>;
 				if (dynamic.compiled !== undefined && dynamic.style !== undefined) {
-					compiled.push(dynamic.compiled);
+					appendCompiled(dynamic.compiled);
+					styles ??= [];
 					styles.push(dynamic.style);
 				}
-				continue;
+				return;
 			}
 			if (isVarsOutput(current)) {
-				if (current.class) classNames.push(current.class);
-				if (current.style) styles.push(current.style);
+				if (current.class) {
+					classNames ??= [];
+					classNames.push(current.class);
+				}
+				if (current.style) {
+					styles ??= [];
+					styles.push(current.style);
+				}
+				return;
+			}
+			appendCompiled(current as CompiledStyles);
+		};
+		for (const prop of props) {
+			if (!Array.isArray(prop)) {
+				append(prop);
 				continue;
 			}
-			compiled.push(current as CompiledStyles);
+			active ??= new WeakSet<object>();
+			if (active.has(prop)) continue;
+			active.add(prop);
+			stack ??= [];
+			for (let index = prop.length - 1; index >= 0; index--) {
+				stack.push(prop[index]!);
+			}
+			while (stack.length > 0) {
+				const current = stack.pop();
+				if (!current) continue;
+				if (Array.isArray(current)) {
+					if (active.has(current)) continue;
+					active.add(current);
+					for (let index = current.length - 1; index >= 0; index--) {
+						stack.push(current[index]!);
+					}
+					continue;
+				}
+				append(current);
+			}
 		}
-		const compiledClassNames = compiled.length
-			? Object.values(assign(...compiled)).filter(
-					(value): value is string => typeof value === "string",
-				)
-			: [];
+		if (compiled !== undefined) {
+			for (const key of Object.keys(compiled)) {
+				const value = compiled[key];
+				if (typeof value !== "string") continue;
+				classNames ??= [];
+				classNames.push(value);
+			}
+		}
 		return {
-			style: styles.length ? Object.assign({}, assign(...styles)) : undefined,
-			className:
-				compiledClassNames.length || classNames.length
-					? [...classNames, ...compiledClassNames].join(" ")
-					: undefined,
+			style: styles?.length ? Object.assign({}, assign(...styles)) : undefined,
+			className: classNames?.length ? classNames.join(" ") : undefined,
 		};
 	};
 };
