@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { ui } from "./ui-css.ts";
+import { css as uiCss } from "./ui-css.ts";
 import { InspectorApi, type AnalyticsHistoryPoint, type HistoryListItem } from "./lib/api.ts";
 import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
 import { InspectorExport } from "./lib/export.ts";
@@ -81,7 +81,15 @@ function CopyButton(props: { text: string; className?: string }) {
 		<button
 			type="button"
 			className={
-				copied ? `${props.className ?? ui.copy} ${ui.copied}` : (props.className ?? ui.copy)
+				copied
+					? `${props.className ?? uiCss.class({ padding: "2px 7px", fontSize: 12, opacity: 0.55, "&:hover": { opacity: 1 } })} ${uiCss.class({ color: "var(--good)", opacity: 1 })}`
+					: (props.className ??
+						uiCss.class({
+							padding: "2px 7px",
+							fontSize: 12,
+							opacity: 0.55,
+							"&:hover": { opacity: 1 },
+						}))
 			}
 			aria-label={copied ? `copied ${props.text}` : `copy ${props.text}`}
 			aria-live="polite"
@@ -89,7 +97,21 @@ function CopyButton(props: { text: string; className?: string }) {
 			onClick={copy}
 		>
 			<span aria-hidden="true">{copied ? "✓" : "⧉"}</span>
-			<span className={ui.srOnly}>{copied ? "copied" : "copy"}</span>
+			<span
+				className={uiCss.class({
+					position: "absolute",
+					width: 1,
+					height: 1,
+					padding: 0,
+					margin: -1,
+					overflow: "hidden",
+					clipPath: "inset(50%)",
+					whiteSpace: "nowrap",
+					border: 0,
+				})}
+			>
+				{copied ? "copied" : "copy"}
+			</span>
 		</button>
 	);
 }
@@ -110,13 +132,37 @@ function SwatchButton(props: { name: string; mode: string; color: string }) {
 	return (
 		<button
 			type="button"
-			className={copied ? `${ui.swatch} ${ui.copied}` : ui.swatch}
-			style={{ background: props.color }}
+			{...uiCss.props(
+				uiCss.class({
+					flex: 1,
+					border: "none",
+					cursor: "copy",
+					padding: 0,
+					minWidth: 0,
+					"& + &": { borderLeft: "1px solid rgba(255, 255, 255, 0.14)" },
+				}),
+				copied ? uiCss.class({ color: "var(--good)", opacity: 1 }) : undefined,
+				uiCss.vars({ background: props.color }),
+			)}
 			aria-label={`${copied ? "Copied" : "Copy"} ${props.name}${props.mode === "base" ? "" : ` (${props.mode})`} color ${props.color}`}
 			title={`${props.name}${props.mode === "base" ? "" : ` (${props.mode})`} = ${props.color} — click to copy`}
 			onClick={copy}
 		>
-			<span className={ui.srOnly}>{copied ? "copied" : "copy"}</span>
+			<span
+				className={uiCss.class({
+					position: "absolute",
+					width: 1,
+					height: 1,
+					padding: 0,
+					margin: -1,
+					overflow: "hidden",
+					clipPath: "inset(50%)",
+					whiteSpace: "nowrap",
+					border: 0,
+				})}
+			>
+				{copied ? "copied" : "copy"}
+			</span>
 		</button>
 	);
 }
@@ -128,13 +174,44 @@ function SearchControl(props: {
 	totalCount: number;
 }) {
 	return (
-		<div className={ui.searchRow}>
-			<label className={ui.srOnly} htmlFor="inspector-search">
+		<div
+			className={uiCss.class({
+				display: "grid",
+				gridTemplateColumns: "1fr auto auto",
+				alignItems: "center",
+				gap: 8,
+				margin: "14px 0 10px",
+			})}
+		>
+			<label
+				className={uiCss.class({
+					position: "absolute",
+					width: 1,
+					height: 1,
+					padding: 0,
+					margin: -1,
+					overflow: "hidden",
+					clipPath: "inset(50%)",
+					whiteSpace: "nowrap",
+					border: 0,
+				})}
+				htmlFor="inspector-search"
+			>
 				Filter visible inspector data
 			</label>
 			<input
 				id="inspector-search"
-				className={ui.search}
+				className={uiCss.class({
+					width: "100%",
+					padding: "8px 13px",
+					font: "inherit",
+					background: "var(--panel)",
+					color: "var(--text)",
+					border: "1px solid var(--line)",
+					borderRadius: 7,
+					outline: "none",
+					"&:focus": { borderColor: "var(--accent-dim)" },
+				})}
 				type="search"
 				placeholder="filter tokens & utilities…"
 				value={props.query}
@@ -146,17 +223,35 @@ function SearchControl(props: {
 			/>
 			<button
 				type="button"
-				className={ui.searchClear}
+				className={uiCss.class({ padding: "6px 10px" })}
 				disabled={props.query === ""}
 				aria-label="Clear search"
 				onClick={() => props.queryChange("")}
 			>
 				clear
 			</button>
-			<span id="inspector-search-status" className={ui.searchMeta} role="status" aria-live="polite">
+			<span
+				id="inspector-search-status"
+				className={uiCss.class({ color: "var(--muted)", fontSize: 12, whiteSpace: "nowrap" })}
+				role="status"
+				aria-live="polite"
+			>
 				{props.matchCount} of {props.totalCount} matches
 			</span>
-			<span id="inspector-search-hint" className={ui.srOnly}>
+			<span
+				id="inspector-search-hint"
+				className={uiCss.class({
+					position: "absolute",
+					width: 1,
+					height: 1,
+					padding: 0,
+					margin: -1,
+					overflow: "hidden",
+					clipPath: "inset(50%)",
+					whiteSpace: "nowrap",
+					border: 0,
+				})}
+			>
 				Press slash to focus search.
 			</span>
 		</div>
@@ -165,10 +260,20 @@ function SearchControl(props: {
 
 function ErrorState(props: { message: string; retry: () => void }) {
 	return (
-		<div className={ui.emptyState} role="alert">
+		<div
+			className={uiCss.class({
+				display: "flex",
+				alignItems: "center",
+				gap: 12,
+				padding: "48px 0",
+				color: "var(--muted)",
+				justifyContent: "center",
+			})}
+			role="alert"
+		>
 			<div>
-				<p className={ui.error}>{props.message}</p>
-				<p className={ui.muted}>
+				<p className={uiCss.class({ color: "var(--bad)" })}>{props.message}</p>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 					Check that the Inspector dev server and analyzer dependencies are running, then retry. If
 					the project is large, the first gather can take a moment.
 				</p>
@@ -183,30 +288,129 @@ function ErrorState(props: { message: string; retry: () => void }) {
 function LoadingSkeleton() {
 	return (
 		<div
-			className={ui.loadingState}
+			className={uiCss.class({
+				display: "flex",
+				flexDirection: "column",
+				gap: 14,
+				padding: "22px 0",
+			})}
 			role="status"
 			aria-live="polite"
 			aria-label="Loading inspector data"
 		>
-			<div className={ui.skeletonGrid} aria-hidden="true">
-				<div className={ui.skeletonCard} />
-				<div className={ui.skeletonCard} />
-				<div className={ui.skeletonCard} />
-				<div className={ui.skeletonCard} />
+			<div
+				className={uiCss.class({
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+					gap: 12,
+				})}
+				aria-hidden="true"
+			>
+				<div
+					className={uiCss.class({
+						height: 104,
+						borderRadius: 10,
+						background:
+							"linear-gradient(90deg, var(--bg-raised), var(--panel-hover), var(--bg-raised))",
+						backgroundSize: "200% 100%",
+						animation: "skeleton 1.3s ease-in-out infinite",
+					})}
+				/>
+				<div
+					className={uiCss.class({
+						height: 104,
+						borderRadius: 10,
+						background:
+							"linear-gradient(90deg, var(--bg-raised), var(--panel-hover), var(--bg-raised))",
+						backgroundSize: "200% 100%",
+						animation: "skeleton 1.3s ease-in-out infinite",
+					})}
+				/>
+				<div
+					className={uiCss.class({
+						height: 104,
+						borderRadius: 10,
+						background:
+							"linear-gradient(90deg, var(--bg-raised), var(--panel-hover), var(--bg-raised))",
+						backgroundSize: "200% 100%",
+						animation: "skeleton 1.3s ease-in-out infinite",
+					})}
+				/>
+				<div
+					className={uiCss.class({
+						height: 104,
+						borderRadius: 10,
+						background:
+							"linear-gradient(90deg, var(--bg-raised), var(--panel-hover), var(--bg-raised))",
+						backgroundSize: "200% 100%",
+						animation: "skeleton 1.3s ease-in-out infinite",
+					})}
+				/>
 			</div>
-			<div className={ui.skeletonTable} aria-hidden="true" />
-			<span className={ui.muted}>analyzing project…</span>
+			<div
+				className={uiCss.class({
+					height: 220,
+					borderRadius: 9,
+					background: "linear-gradient(90deg, var(--panel), var(--panel-hover), var(--panel))",
+					backgroundSize: "200% 100%",
+					animation: "skeleton 1.3s ease-in-out infinite",
+				})}
+				aria-hidden="true"
+			/>
+			<span className={uiCss.class({ color: "var(--muted, #888)" })}>analyzing project…</span>
 		</div>
 	);
 }
 
 function HelpPopover(props: { title: string; children: ReactNode }) {
 	return (
-		<details className={ui.cardHelp}>
-			<summary className={ui.cardHelpTrigger} aria-label={`About ${props.title}`}>
+		<details className={uiCss.class({ position: "relative", flex: "0 0 auto" })}>
+			<summary
+				className={uiCss.class({
+					listStyle: "none",
+					cursor: "pointer",
+					width: 24,
+					height: 24,
+					display: "grid",
+					placeItems: "center",
+					border: "1px solid var(--line)",
+					borderRadius: "50%",
+					color: "var(--muted)",
+					fontSize: 12,
+					fontWeight: 650,
+					lineHeight: 1,
+
+					"&::-webkit-details-marker": { display: "none" },
+					"&:hover": { color: "var(--accent)", borderColor: "var(--accent-dim)" },
+					"&:focus-visible": { outline: "2px solid var(--accent)", outlineOffset: 2 },
+				})}
+				aria-label={`About ${props.title}`}
+			>
 				?
 			</summary>
-			<div className={ui.cardHelpPopover} role="note">
+			<div
+				className={uiCss.class({
+					position: "absolute",
+					top: "calc(100% + 8px)",
+					right: 0,
+					zIndex: 40,
+					width: 300,
+					maxWidth: "calc(100vw - 48px)",
+					padding: "10px 12px",
+					background: "var(--panel)",
+					color: "var(--text)",
+					border: "1px solid var(--line-strong)",
+					borderRadius: 8,
+					boxShadow: "0 10px 26px rgb(0 0 0 / 35%)",
+					fontSize: 12,
+					fontWeight: 400,
+					letterSpacing: "normal",
+					lineHeight: 1.5,
+					"& p": { margin: 0 },
+					"& ul": { margin: "7px 0 0", paddingLeft: 17 },
+				})}
+				role="note"
+			>
 				<strong>{props.title}</strong>
 				<div>{props.children}</div>
 			</div>
@@ -216,13 +420,35 @@ function HelpPopover(props: { title: string; children: ReactNode }) {
 
 function Card(props: { label: string; value: ReactNode; sub?: ReactNode; help?: ReactNode }) {
 	return (
-		<div className={ui.card}>
-			<div className={ui.cardValue}>{props.value}</div>
-			<div className={ui.cardLabel}>
+		<div
+			className={uiCss.class({
+				background: "linear-gradient(180deg, var(--bg-raised), var(--panel))",
+				border: "1px solid var(--line)",
+				borderRadius: 10,
+				padding: "15px 17px",
+			})}
+		>
+			<div className={uiCss.class({ fontSize: 26, fontWeight: 650, letterSpacing: "-0.02em" })}>
+				{props.value}
+			</div>
+			<div
+				className={uiCss.class({
+					color: "var(--muted)",
+					marginTop: 2,
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "space-between",
+					gap: 8,
+				})}
+			>
 				<span>{props.label}</span>
 				{props.help !== undefined && <HelpPopover title={props.label}>{props.help}</HelpPopover>}
 			</div>
-			{props.sub !== undefined && <div className={ui.cardSub}>{props.sub}</div>}
+			{props.sub !== undefined && (
+				<div className={uiCss.class({ color: "var(--muted)", fontSize: 12, marginTop: 4 })}>
+					{props.sub}
+				</div>
+			)}
 		</div>
 	);
 }
@@ -237,7 +463,16 @@ function InspectorLink(props: {
 	return (
 		<a
 			href={href}
-			className={ui.metricLink}
+			className={uiCss.class({
+				color: "var(--accent)",
+				textDecoration: "underline",
+				textDecorationColor: "color-mix(in srgb, var(--accent) 42%, transparent)",
+				textUnderlineOffset: 3,
+				borderRadius: 2,
+
+				"&:hover": { textDecorationColor: "currentColor" },
+				"&:focus-visible": { outline: "2px solid var(--accent)", outlineOffset: 3 },
+			})}
 			aria-label={props.label}
 			onClick={(event) => {
 				if (
@@ -289,12 +524,61 @@ function Bar(props: {
 }) {
 	const pct = props.max > 0 ? Math.max(2, Math.round((props.value / props.max) * 100)) : 2;
 	return (
-		<div className={ui.barRow}>
-			<span className={ui.barLabel}>{props.label}</span>
-			<span className={ui.barTrack}>
-				<span className={ui.barFill} style={{ width: `${pct}%` }} />
+		<div
+			className={uiCss.class({
+				display: "grid",
+				gridTemplateColumns: "190px 1fr 60px",
+				alignItems: "center",
+				gap: 12,
+				margin: "5px 0",
+
+				"@media (max-width: 900px)": {
+					gridTemplateColumns: "minmax(110px, 0.55fr) 1fr 50px",
+					gap: 8,
+				},
+			})}
+		>
+			<span
+				className={uiCss.class({
+					fontFamily: "var(--mono)",
+					fontSize: 12,
+					color: "var(--muted)",
+					textAlign: "right",
+
+					"@media (max-width: 900px)": {
+						textAlign: "left",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+					},
+				})}
+			>
+				{props.label}
 			</span>
-			<span className={ui.barValue}>
+			<span
+				className={uiCss.class({
+					background: "var(--panel)",
+					border: "1px solid var(--line)",
+					borderRadius: 5,
+					height: 16,
+					overflow: "hidden",
+				})}
+			>
+				<span
+					{...uiCss.props(
+						uiCss.class({
+							display: "block",
+							height: "100%",
+							background: "linear-gradient(90deg, var(--accent-dim), var(--accent))",
+							borderRadius: 4,
+						}),
+						uiCss.vars({ width: `${pct}%` }),
+					)}
+				/>
+			</span>
+			<span
+				className={uiCss.class({ fontFamily: "var(--mono)", fontSize: 12, color: "var(--muted)" })}
+			>
 				{props.renderValue ?? (
 					<>
 						{props.value}
@@ -335,21 +619,77 @@ function ColorSwatches(props: {
 	return (
 		<section id={props.section.id}>
 			<h2>{props.section.label}</h2>
-			<div className={ui.swatches}>
+			<div
+				className={uiCss.class({
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fill, minmax(148px, 1fr))",
+					gap: 10,
+				})}
+			>
 				{usable.map((s) => (
-					<div className={ui.swatchCard} key={`${props.section.id}:${s.name}`}>
-						<div className={ui.swatchModes}>
+					<div
+						className={uiCss.class({
+							background: "var(--panel)",
+							border: "1px solid var(--line)",
+							borderRadius: 9,
+							padding: 8,
+							display: "flex",
+							flexDirection: "column",
+							gap: 7,
+							position: "relative",
+							"&:hover": { borderColor: "var(--line-strong)" },
+						})}
+						key={`${props.section.id}:${s.name}`}
+					>
+						<div
+							className={uiCss.class({
+								display: "flex",
+								height: 52,
+								borderRadius: 6,
+								overflow: "hidden",
+							})}
+						>
 							{Object.entries(s.modes).map(([mode, color]) => (
 								<SwatchButton key={mode} name={s.name} mode={mode} color={color} />
 							))}
 						</div>
-						<div className={ui.swatchMeta}>
-							<span className={ui.swatchName}>{stripDollar(s.name)}</span>
-							<span className={ui.swatchChain}>
+						<div
+							className={uiCss.class({
+								display: "flex",
+								flexDirection: "column",
+								gap: 1,
+								minWidth: 0,
+							})}
+						>
+							<span className={uiCss.class({ fontSize: 12.5, fontWeight: 600 })}>
+								{stripDollar(s.name)}
+							</span>
+							<span
+								className={uiCss.class({
+									fontFamily: "var(--mono)",
+									fontSize: 11,
+									color: "var(--muted)",
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									whiteSpace: "nowrap",
+								})}
+							>
 								{s.chain.length > 1 ? s.chain.join(" ← ") : Object.values(s.modes).join(" ")}
 							</span>
 						</div>
-						<CopyButton text={stripDollar(s.name)} className={ui.swatchCardCopy} />
+						<CopyButton
+							text={stripDollar(s.name)}
+							className={uiCss.class({
+								position: "absolute",
+								top: 8,
+								right: 8,
+								background: "color-mix(in srgb, var(--bg) 70%, transparent)",
+								padding: "2px 7px",
+								fontSize: 12,
+								opacity: 0.55,
+								"&:hover": { opacity: 1 },
+							})}
+						/>
 					</div>
 				))}
 			</div>
@@ -507,7 +847,14 @@ function DesignSystemView(props: {
 
 	return (
 		<>
-			<section className={ui.cards}>
+			<section
+				className={uiCss.class({
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+					gap: 12,
+					marginBottom: 6,
+				})}
+			>
 				<Card
 					label="CSS tokens"
 					help={
@@ -564,7 +911,24 @@ function DesignSystemView(props: {
 						</ul>
 					}
 					value={
-						<div className={ui.metricBreakdown}>
+						<div
+							className={uiCss.class({
+								display: "grid",
+								gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+								gap: 8,
+
+								"& > div": { minWidth: 0 },
+								"& > div > span": {
+									display: "block",
+									marginTop: 2,
+									color: "var(--muted)",
+									fontSize: 10,
+									fontWeight: 400,
+									letterSpacing: "normal",
+									lineHeight: 1.25,
+								},
+							})}
+						>
 							<div>
 								<InspectorLink
 									target={sectionTarget("sec-utilities")}
@@ -635,11 +999,23 @@ function DesignSystemView(props: {
 			/>
 
 			{sectionLinks.length > 0 && (
-				<nav className={ui.sectionNav}>
+				<nav
+					className={uiCss.class({
+						display: "flex",
+						flexWrap: "wrap",
+						gap: 14,
+						margin: "0 0 6px",
+						fontSize: 12.5,
+
+						"& a": { color: "var(--muted)", textDecoration: "none", padding: "2px 0" },
+						"& a:hover": { color: "var(--accent)" },
+						"& a[aria-current='true']": { color: "var(--accent)", fontWeight: 650 },
+					})}
+				>
 					{sectionLinks.map((link) => (
 						<a
 							key={link.id}
-							className={ui.sectionNavLink}
+							className={uiCss.class({ borderBottom: "1px solid transparent" })}
 							href={`#tokens/${link.id}`}
 							aria-current={activeSection === link.id ? "true" : undefined}
 							onClick={(event) => {
@@ -679,10 +1055,43 @@ function DesignSystemView(props: {
 				<section id="sec-typography">
 					<h2>Typography — font sizes at real size</h2>
 					{visibleFontSizeEntries.length > 0 && (
-						<div className={ui.typeSizes}>
+						<div
+							className={uiCss.class({
+								display: "flex",
+								flexDirection: "column",
+								gap: 4,
+								background: "var(--panel)",
+								border: "1px solid var(--line)",
+								borderRadius: 9,
+								padding: "10px 14px",
+							})}
+						>
 							{visibleFontSizeEntries.map((e) => (
-								<div className={ui.typeSizeRow} key={e.name}>
-									<span className={ui.typeSizeSample} style={{ fontSize: e.value }}>
+								<div
+									className={uiCss.class({
+										display: "flex",
+										alignItems: "baseline",
+										gap: 16,
+										padding: "6px 0",
+										borderBottom: "1px dashed var(--line)",
+										minWidth: 0,
+
+										"&:last-child": { borderBottom: "none" },
+										"@media (max-width: 900px)": { flexWrap: "wrap" },
+									})}
+									key={e.name}
+								>
+									<span
+										{...uiCss.props(
+											uiCss.class({
+												flex: 1,
+												whiteSpace: "nowrap",
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+											}),
+											uiCss.vars({ fontSize: e.value }),
+										)}
+									>
 										Ag {FONT_SIZE_SAMPLE}
 									</span>
 									<code>
@@ -697,9 +1106,22 @@ function DesignSystemView(props: {
 					{visibleWeightEntries.length > 0 && (
 						<>
 							<h3>weights</h3>
-							<div className={ui.chipRow}>
+							<div className={uiCss.class({ display: "flex", flexWrap: "wrap", gap: 8 })}>
 								{visibleWeightEntries.map((e) => (
-									<span className={ui.chip} key={e.name} style={{ fontWeight: Number(e.value) }}>
+									<span
+										{...uiCss.props(
+											uiCss.class({
+												background: "color-mix(in srgb, currentColor 8%, transparent)",
+												border: "1px solid var(--line)",
+												borderRadius: 6,
+												padding: "2px 8px",
+												fontSize: 12,
+												fontFamily: "var(--mono)",
+											}),
+											uiCss.vars({ fontWeight: Number(e.value) }),
+										)}
+										key={e.name}
+									>
 										{e.name} {e.value}
 									</span>
 								))}
@@ -712,8 +1134,31 @@ function DesignSystemView(props: {
 							<h3>families</h3>
 							<div>
 								{visibleFamilyEntries.map((e) => (
-									<div className={ui.typeSizeRow} key={e.name}>
-										<span className={ui.typeSizeSample} style={{ fontFamily: e.value }}>
+									<div
+										className={uiCss.class({
+											display: "flex",
+											alignItems: "baseline",
+											gap: 16,
+											padding: "6px 0",
+											borderBottom: "1px dashed var(--line)",
+											minWidth: 0,
+
+											"&:last-child": { borderBottom: "none" },
+											"@media (max-width: 900px)": { flexWrap: "wrap" },
+										})}
+										key={e.name}
+									>
+										<span
+											{...uiCss.props(
+												uiCss.class({
+													flex: 1,
+													whiteSpace: "nowrap",
+													overflow: "hidden",
+													textOverflow: "ellipsis",
+												}),
+												uiCss.vars({ fontFamily: e.value }),
+											)}
+										>
 											{e.name}: Ag 0123456789
 										</span>
 										<code>{e.value}</code>
@@ -754,11 +1199,13 @@ function DesignSystemView(props: {
 									value: () => "Hamburgefonstiv 0123",
 									render: (row) => (
 										<span
-											style={
-												row.kind === "letter spacing"
-													? { letterSpacing: row.value }
-													: { lineHeight: row.value }
-											}
+											{...uiCss.props(
+												uiCss.vars(
+													row.kind === "letter spacing"
+														? { letterSpacing: row.value }
+														: { lineHeight: row.value },
+												),
+											)}
 										>
 											Hamburgefonstiv 0123
 										</span>
@@ -796,12 +1243,30 @@ function DesignSystemView(props: {
 			{visibleRadiiEntries.length > 0 && (
 				<section id="sec-radii">
 					<h2>Radii</h2>
-					<div className={ui.radii}>
+					<div className={uiCss.class({ display: "flex", flexWrap: "wrap", gap: 18 })}>
 						{visibleRadiiEntries.map((e) => (
-							<div className={ui.radiusDemo} key={e.name}>
+							<div
+								className={uiCss.class({
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "center",
+									gap: 5,
+									fontSize: 12,
+									color: "var(--muted)",
+								})}
+								key={e.name}
+							>
 								<div
-									className={ui.radiusBox}
-									style={{ borderRadius: e.value === "9999px" ? "9999px" : e.value }}
+									{...uiCss.props(
+										uiCss.class({
+											width: 74,
+											height: 74,
+											background: "linear-gradient(135deg, var(--accent-dim), var(--accent))",
+											opacity: 0.85,
+											border: "1px solid var(--line-strong)",
+										}),
+										uiCss.vars({ borderRadius: e.value === "9999px" ? "9999px" : e.value }),
+									)}
 								/>
 								<span>{e.name}</span>
 								<code>{e.value}</code>
@@ -814,7 +1279,9 @@ function DesignSystemView(props: {
 			{(visibleUtilities.length > 0 || showEmptyUtilitiesSection) && (
 				<section id="sec-utilities">
 					{visibleUtilities.length === 0 ? (
-						<p className={ui.muted}>No style utilities were found.</p>
+						<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+							No style utilities were found.
+						</p>
 					) : (
 						<InspectorTable
 							title="style utilities"
@@ -851,7 +1318,9 @@ function DesignSystemView(props: {
 				<section id="sec-theme-vars">
 					<h2>CSS tokens by category</h2>
 					{showEmptyThemeSection ? (
-						<p className={ui.muted}>No CSS tokens were found.</p>
+						<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+							No CSS tokens were found.
+						</p>
 					) : (
 						visibleThemeGroups
 							.filter(([, vars]) => vars.length > 0)
@@ -870,8 +1339,18 @@ function DesignSystemView(props: {
 													<>
 														{categorizeColor(variable) !== null && (
 															<span
-																className={ui.miniSwatch}
-																style={{ background: categorizeColor(variable) ?? "" }}
+																{...uiCss.props(
+																	uiCss.class({
+																		display: "inline-block",
+																		width: 11,
+																		height: 11,
+																		borderRadius: 3,
+																		marginRight: 7,
+																		verticalAlign: "-1px",
+																		border: "1px solid rgba(255, 255, 255, 0.18)",
+																	}),
+																	uiCss.vars({ background: categorizeColor(variable) ?? "" }),
+																)}
 															/>
 														)}
 														<code>{variable.name}</code>
@@ -900,7 +1379,18 @@ function DesignSystemView(props: {
 				</section>
 			)}
 			{props.query !== "" && matchCount === 0 && (
-				<p className={ui.emptyState}>No visible inspector data matches “{props.query}”.</p>
+				<p
+					className={uiCss.class({
+						display: "flex",
+						alignItems: "center",
+						gap: 12,
+						padding: "48px 0",
+						color: "var(--muted)",
+						justifyContent: "center",
+					})}
+				>
+					No visible inspector data matches “{props.query}”.
+				</p>
 			)}
 		</>
 	);
@@ -1053,10 +1543,34 @@ function ClassDrillDown(props: { data: InspectorPayload }) {
 		<section>
 			<h2>class drill-down — grouped by CSS concern</h2>
 			<p>related utilities share a group. select a class to inspect the CSS rules it emits.</p>
-			<label className={ui.tableSearch}>
-				<span className={ui.srOnly}>Search class candidates</span>
+			<label className={uiCss.class({ display: "grid", flex: "1 1 230px", minWidth: 180 })}>
+				<span
+					className={uiCss.class({
+						position: "absolute",
+						width: 1,
+						height: 1,
+						padding: 0,
+						margin: -1,
+						overflow: "hidden",
+						clipPath: "inset(50%)",
+						whiteSpace: "nowrap",
+						border: 0,
+					})}
+				>
+					Search class candidates
+				</span>
 				<input
-					className={ui.search}
+					className={uiCss.class({
+						width: "100%",
+						padding: "8px 13px",
+						font: "inherit",
+						background: "var(--panel)",
+						color: "var(--text)",
+						border: "1px solid var(--line)",
+						borderRadius: 7,
+						outline: "none",
+						"&:focus": { borderColor: "var(--accent-dim)" },
+					})}
 					type="search"
 					value={query}
 					placeholder="Search classes, properties, or CSS…"
@@ -1064,11 +1578,11 @@ function ClassDrillDown(props: { data: InspectorPayload }) {
 					onChange={(event) => setQuery(event.target.value)}
 				/>
 			</label>
-			<p className={ui.muted} role="status" aria-live="polite">
+			<p className={uiCss.class({ color: "var(--muted, #888)" })} role="status" aria-live="polite">
 				{entries.length} of {props.data.classDrillDown.length} candidates · {groups.length} CSS
 				groups
 			</p>
-			<div className={ui.drillGroups}>
+			<div className={uiCss.class({ display: "flex", flexDirection: "column", gap: 8 })}>
 				{groups.map((group) => {
 					const groupEntries = group.entries.toSorted((left, right) =>
 						left.candidate.localeCompare(right.candidate),
@@ -1076,19 +1590,99 @@ function ClassDrillDown(props: { data: InspectorPayload }) {
 					const selectedEntry = groupEntries.find((entry) => entry.candidate === open);
 					const ruleCount = group.entries.reduce((total, entry) => total + entry.rules.length, 0);
 					return (
-						<details key={group.key} className={ui.drillGroup} open={group.key === groups[0]?.key}>
-							<summary className={ui.drillGroupSummary}>
+						<details
+							key={group.key}
+							className={uiCss.class({
+								background: "var(--panel)",
+								border: "1px solid var(--line)",
+								borderRadius: 8,
+
+								"&[open] > summary": {
+									borderBottom: "1px solid var(--line)",
+									borderRadius: "8px 8px 0 0",
+								},
+								"&[open] > summary::before": { content: "'▾'" },
+							})}
+							open={group.key === groups[0]?.key}
+						>
+							<summary
+								className={uiCss.class({
+									display: "flex",
+									alignItems: "center",
+									flexWrap: "wrap",
+									gap: 8,
+									cursor: "pointer",
+									listStyle: "none",
+									padding: "10px 13px",
+
+									"&::-webkit-details-marker": { display: "none" },
+									"&::before": {
+										content: "'▸'",
+										color: "var(--accent)",
+										fontFamily: "var(--mono)",
+									},
+									"&:hover": { background: "var(--panel-hover)" },
+									"& strong": {
+										fontFamily: "var(--mono)",
+										fontSize: 12,
+										overflowWrap: "anywhere",
+									},
+								})}
+							>
 								<strong>{group.key}</strong>
-								<span className={ui.drillGroupMeta}>
+								<span
+									className={uiCss.class({
+										marginLeft: "auto",
+										color: "var(--muted)",
+										fontSize: 12,
+									})}
+								>
 									{group.entries.length} classes · {ruleCount} rules
 								</span>
 							</summary>
-							<div className={ui.drillCandidateGrid}>
+							<div
+								className={uiCss.class({
+									display: "grid",
+									gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+									gap: 8,
+									padding: 10,
+								})}
+							>
 								{groupEntries.map((entry) => (
 									<button
 										key={entry.candidate}
 										type="button"
-										className={ui.drillCandidate}
+										className={uiCss.class({
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "space-between",
+											gap: 10,
+											width: "100%",
+											minWidth: 0,
+											padding: "9px 11px",
+											textAlign: "left",
+											color: "var(--text)",
+											background: "var(--bg)",
+											border: "1px solid var(--line)",
+											borderRadius: 7,
+											cursor: "pointer",
+
+											"&:hover": {
+												borderColor: "var(--line-strong)",
+												background: "var(--panel-hover)",
+											},
+											"&[aria-expanded='true']": {
+												borderColor: "var(--accent)",
+												background: "var(--accent-dim)",
+											},
+											"& code": {
+												minWidth: 0,
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+												whiteSpace: "nowrap",
+											},
+											"& span": { flexShrink: 0, color: "var(--muted)", fontSize: 11 },
+										})}
 										aria-expanded={open === entry.candidate}
 										onClick={() => setOpen(open === entry.candidate ? null : entry.candidate)}
 									>
@@ -1098,7 +1692,18 @@ function ClassDrillDown(props: { data: InspectorPayload }) {
 								))}
 							</div>
 							{selectedEntry !== undefined && (
-								<pre className={ui.drillRules}>
+								<pre
+									className={uiCss.class({
+										maxHeight: 360,
+										margin: "0 10px 10px",
+										padding: 12,
+										overflow: "auto",
+										background: "var(--bg)",
+										border: "1px solid var(--line)",
+										borderRadius: 7,
+										fontSize: 12,
+									})}
+								>
 									{selectedEntry.rules
 										.map((rule) => `${rule.selector} {\n  ${rule.declarations}\n}`)
 										.join("\n")}
@@ -1126,10 +1731,20 @@ function HistoryView(props: {
 	return (
 		<div>
 			{props.error !== null && (
-				<div className={ui.emptyState} role="alert">
+				<div
+					className={uiCss.class({
+						display: "flex",
+						alignItems: "center",
+						gap: 12,
+						padding: "48px 0",
+						color: "var(--muted)",
+						justifyContent: "center",
+					})}
+					role="alert"
+				>
 					<div>
-						<p className={ui.error}>{props.error}</p>
-						<p className={ui.muted}>
+						<p className={uiCss.class({ color: "var(--bad)" })}>{props.error}</p>
+						<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 							The Inspector could not read saved runs. Check the Inspector server, then retry.
 						</p>
 						<button type="button" onClick={props.retry}>
@@ -1139,15 +1754,19 @@ function HistoryView(props: {
 				</div>
 			)}
 			{(props.list ?? []).length < 2 && props.error === null && (
-				<p className={ui.muted}>need at least 2 runs — hit refresh to snapshot another one.</p>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+					need at least 2 runs — hit refresh to snapshot another one.
+				</p>
 			)}
 			{props.diffPair !== null && props.diffPair.a === props.diffPair.b && (
-				<p className={ui.muted}>select two different runs to compare</p>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+					select two different runs to compare
+				</p>
 			)}
 			<section>
 				<h2>runs</h2>
 				{(props.list ?? []).map((run) => (
-					<label key={run.timestamp} style={{ display: "block", margin: "4px 0" }}>
+					<label key={run.timestamp} className={uiCss.class({ display: "block", margin: "4px 0" })}>
 						<input
 							type="radio"
 							name="hist-a"
@@ -1228,9 +1847,15 @@ function HistoryView(props: {
 								<>
 									<h3>dead candidates</h3>
 									{d.resolvedDead.length > 0 && (
-										<p className={ui.good}>resolved: {d.resolvedDead.join(", ")}</p>
+										<p className={uiCss.class({ color: "var(--good, #4ade80)" })}>
+											resolved: {d.resolvedDead.join(", ")}
+										</p>
 									)}
-									{d.newDead.length > 0 && <p className={ui.warn}>new: {d.newDead.join(", ")}</p>}
+									{d.newDead.length > 0 && (
+										<p className={uiCss.class({ color: "var(--warn, #fbbf24)" })}>
+											new: {d.newDead.join(", ")}
+										</p>
+									)}
 								</>
 							)}
 						</section>
@@ -1321,10 +1946,22 @@ function StatsView(props: {
 
 	return (
 		<>
-			<div className={ui.statsGroups}>
-				<section className={ui.statsGroup}>
+			<div className={uiCss.class({ display: "grid", gap: 12 })}>
+				<section
+					className={uiCss.class({
+						marginTop: 0,
+						"& h2": { marginTop: 0 },
+					})}
+				>
 					<h2>build-time folding</h2>
-					<div className={ui.cards}>
+					<div
+						className={uiCss.class({
+							display: "grid",
+							gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+							gap: 12,
+							marginBottom: 6,
+						})}
+					>
 						<Card
 							label="cx eliminated"
 							value={
@@ -1392,9 +2029,21 @@ function StatsView(props: {
 						/>
 					</div>
 				</section>
-				<section className={ui.statsGroup}>
+				<section
+					className={uiCss.class({
+						marginTop: 0,
+						"& h2": { marginTop: 0 },
+					})}
+				>
 					<h2>stylesheet budget</h2>
-					<div className={ui.cards}>
+					<div
+						className={uiCss.class({
+							display: "grid",
+							gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+							gap: 12,
+							marginBottom: 6,
+						})}
+					>
 						<Card
 							label="css budget"
 							value={
@@ -1489,23 +2138,48 @@ function StatsView(props: {
 			{c.shape !== undefined && (
 				<section>
 					<h2>stylesheet shape</h2>
-					<p className={ui.muted}>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 						{c.shape.totalRules} rules · {InspectorApi.kb(c.shape.totalBytes)} compiled
 					</p>
 					{c.shape.categories.map((cat) => {
 						const maxBytes = Math.max(...c.shape.categories.map((x) => x.bytes), 1);
 						return (
-							<div key={cat.category} className={ui.shapeCat}>
-								<div className={ui.shapeHead}>
+							<div key={cat.category} className={uiCss.class({ marginBottom: 14 })}>
+								<div
+									className={uiCss.class({
+										display: "flex",
+										justifyContent: "space-between",
+										alignItems: "baseline",
+										marginBottom: 4,
+										"& span": { color: "var(--muted, #888)", fontSize: 12 },
+									})}
+								>
 									<strong>{cat.category}</strong>
 									<span>
 										{cat.rules} rules · {InspectorApi.kb(cat.bytes)}
 									</span>
 								</div>
 								<Bar label="bytes" value={cat.bytes} max={maxBytes} />
-								<div className={ui.shapeValues}>
+								<div
+									className={uiCss.class({
+										display: "flex",
+										flexWrap: "wrap",
+										gap: 6,
+										marginTop: 6,
+									})}
+								>
 									{cat.topValues.map((tv) => (
-										<span key={tv.value} className={ui.chip}>
+										<span
+											key={tv.value}
+											className={uiCss.class({
+												background: "color-mix(in srgb, currentColor 8%, transparent)",
+												border: "1px solid var(--line)",
+												borderRadius: 6,
+												padding: "2px 8px",
+												fontSize: 12,
+												fontFamily: "var(--mono)",
+											})}
+										>
 											{tv.value} ×{tv.count}
 										</span>
 									))}
@@ -1534,7 +2208,11 @@ function StatsView(props: {
 						id: "eliminatedPct",
 						label: "eliminated %",
 						value: (file) => file.eliminatedPct,
-						render: (file) => <span className={ui.pct}>{file.eliminatedPct}%</span>,
+						render: (file) => (
+							<span className={uiCss.class({ fontFamily: "var(--mono)", fontSize: 13 })}>
+								{file.eliminatedPct}%
+							</span>
+						),
 					},
 					{
 						id: "foldCounts",
@@ -1636,7 +2314,14 @@ function StatsView(props: {
 				}}
 				defaultSort={{ columnId: "eliminatedPct", direction: "ascending" }}
 				defaultOpen={hasActiveTableFilters || props.state.section === "per-file-fold-coverage"}
-				tableClassName={ui.stickyTable}
+				tableClassName={uiCss.class({
+					"& thead th": {
+						position: "sticky",
+						top: "var(--inspector-header-height)",
+						zIndex: 1,
+						background: "var(--panel)",
+					},
+				})}
 			/>
 
 			<ClassDrillDown data={props.data} />
@@ -1644,10 +2329,22 @@ function StatsView(props: {
 			{props.data.cssSources.length > 0 && (
 				<section>
 					<h2>CSS-in-JS provenance</h2>
-					<p className={ui.muted}>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 						Source calls and the semantic rules emitted for each call site.
 					</p>
-					<ul className={ui.sites}>
+					<ul
+						className={uiCss.class({
+							listStyle: "none",
+							padding: 0,
+							margin: 0,
+							background: "var(--panel)",
+							border: "1px solid var(--line)",
+							borderRadius: 9,
+
+							"& li": { padding: "7px 13px", borderBottom: "1px solid var(--line)" },
+							"& li:last-child": { borderBottom: "none" },
+						})}
+					>
 						{props.data.cssSources.map((site) => (
 							<li key={`${site.file}:${site.start}`}>
 								<a
@@ -1680,9 +2377,23 @@ function StatsView(props: {
 			<section id="missing-css-sites">
 				<h2>missing-css sites</h2>
 				{c.missingCssSites.length === 0 ? (
-					<p className={ui.muted}>No missing-css sites found.</p>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+						No missing-css sites found.
+					</p>
 				) : (
-					<ul className={ui.sites}>
+					<ul
+						className={uiCss.class({
+							listStyle: "none",
+							padding: 0,
+							margin: 0,
+							background: "var(--panel)",
+							border: "1px solid var(--line)",
+							borderRadius: 9,
+
+							"& li": { padding: "7px 13px", borderBottom: "1px solid var(--line)" },
+							"& li:last-child": { borderBottom: "none" },
+						})}
+					>
 						{c.missingCssSites.map((s) => (
 							<li key={`${s.file}:${s.line}:${s.token}`}>
 								<a href={InspectorApi.vscodeLink(props.data.meta.root, s.file, s.line)}>
@@ -1698,14 +2409,28 @@ function StatsView(props: {
 			<section id="dead-candidates">
 				<h2>dead CSS candidates</h2>
 				{c.budget.deadSample.length === 0 ? (
-					<p className={ui.muted}>No dead CSS candidates found.</p>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+						No dead CSS candidates found.
+					</p>
 				) : (
 					<>
-						<p className={ui.muted}>
+						<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 							{c.budget.deadCandidates} candidates · showing {c.budget.deadSample.length} sample
 							{c.budget.deadSample.length === 1 ? "" : "s"}
 						</p>
-						<ul className={ui.sites}>
+						<ul
+							className={uiCss.class({
+								listStyle: "none",
+								padding: 0,
+								margin: 0,
+								background: "var(--panel)",
+								border: "1px solid var(--line)",
+								borderRadius: 9,
+
+								"& li": { padding: "7px 13px", borderBottom: "1px solid var(--line)" },
+								"& li:last-child": { borderBottom: "none" },
+							})}
+						>
 							{c.budget.deadSample.map((candidate) => (
 								<li key={candidate}>
 									<code>{candidate}</code>
@@ -1719,7 +2444,19 @@ function StatsView(props: {
 			{c.runtimeSites.length > 0 && (
 				<section>
 					<h2>runtime cx() sites</h2>
-					<ul className={ui.sites}>
+					<ul
+						className={uiCss.class({
+							listStyle: "none",
+							padding: 0,
+							margin: 0,
+							background: "var(--panel)",
+							border: "1px solid var(--line)",
+							borderRadius: 9,
+
+							"& li": { padding: "7px 13px", borderBottom: "1px solid var(--line)" },
+							"& li:last-child": { borderBottom: "none" },
+						})}
+					>
 						{c.runtimeSites.map((s) => (
 							<li key={`${s.file}:${s.line}`}>
 								<a href={InspectorApi.vscodeLink(props.data.meta.root, s.file, s.line)}>
@@ -1801,51 +2538,128 @@ function TokenGraphView(props: {
 		nodes: TokenGraph["nodes"],
 		emptyMessage: string,
 	) => (
-		<section id={id} className={ui.relationshipColumn}>
+		<section
+			id={id}
+			className={uiCss.class({
+				minWidth: 0,
+				background: "var(--panel)",
+				border: "1px solid var(--line)",
+				borderRadius: 10,
+				padding: "12px 14px",
+				"& h3": { margin: "0 0 2px" },
+				"& p": { fontSize: 12, margin: "4px 0 12px" },
+			})}
+		>
 			<h3>{title}</h3>
-			<p className={ui.muted}>{description}</p>
+			<p className={uiCss.class({ color: "var(--muted, #888)" })}>{description}</p>
 			{nodes.length > 0 ? (
-				<ul className={ui.relationshipList}>
+				<ul
+					className={uiCss.class({
+						listStyle: "none",
+						padding: 0,
+						margin: 0,
+						display: "grid",
+						gap: 7,
+					})}
+				>
 					{nodes.map((node) => {
 						const presentation = presentTokenNode(node);
 						return (
 							<li key={node.id}>
 								<button
 									type="button"
-									className={ui.relationshipNode}
-									style={{ borderColor: TIER_COLOR[node.tier] }}
+
+									{...uiCss.props(
+										uiCss.class({
+											width: "100%",
+											minWidth: 0,
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "space-between",
+											gap: 8,
+											textAlign: "left",
+											background: "var(--bg-raised)",
+											border: "1px solid var(--line-strong)",
+											borderRadius: 7,
+											padding: "8px 10px",
+
+											"& code": {
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+												whiteSpace: "nowrap",
+											},
+											"&:hover": { background: "var(--panel-hover)" },
+										}),
+										uiCss.vars({ borderColor: TIER_COLOR[node.tier] }),
+									)}
 									aria-label={`Focus ${presentation.label}, ${node.tier} token`}
 									onClick={() => focusNode(node)}
 								>
 									<code>{presentation.label}</code>
-									<span className={ui.relationshipTier}>{node.tier}</span>
+									<span
+										className={uiCss.class({
+											flexShrink: 0,
+											color: "var(--muted)",
+											fontSize: 10,
+											textTransform: "uppercase",
+											letterSpacing: "0.04em",
+										})}
+									>
+										{node.tier}
+									</span>
 								</button>
 							</li>
 						);
 					})}
 				</ul>
 			) : (
-				<p className={ui.relationshipEmpty}>{emptyMessage}</p>
+				<p
+					className={uiCss.class({
+						padding: "10px 12px",
+						color: "var(--muted)",
+						fontSize: 12,
+						background: "var(--bg)",
+						border: "1px dashed var(--line-strong)",
+						borderRadius: 7,
+					})}
+				>
+					{emptyMessage}
+				</p>
 			)}
 		</section>
 	);
 
 	if (graph.nodes.length === 0) {
 		return (
-			<div id="relationships" className={ui.wrap}>
+			<div
+				id="relationships"
+				className={uiCss.class({ maxWidth: 1180, margin: "0 auto", padding: "20px 24px 80px" })}
+			>
 				<h2>Token relationships</h2>
-				<p className={ui.muted}>No CSS tokens or component mappings were found.</p>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+					No CSS tokens or component mappings were found.
+				</p>
 			</div>
 		);
 	}
 	return (
-		<div id="relationships" className={ui.wrap}>
+		<div
+			id="relationships"
+			className={uiCss.class({ maxWidth: 1180, margin: "0 auto", padding: "20px 24px 80px" })}
+		>
 			<h2>Token relationships</h2>
-			<p className={ui.muted}>
+			<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 				Follow direct references for one token at a time. Choose another token in either column to
 				continue through the graph.
 			</p>
-			<section className={ui.cards}>
+			<section
+				className={uiCss.class({
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+					gap: 12,
+					marginBottom: 6,
+				})}
+			>
 				<Card
 					label="tokens and mappings"
 					value={
@@ -1898,11 +2712,24 @@ function TokenGraphView(props: {
 					/>
 				)}
 			</section>
-			<div id="token-relationship-search-section" className={ui.relationshipSearch}>
+			<div
+				id="token-relationship-search-section"
+				className={uiCss.class({ display: "grid", gap: 6, maxWidth: 720, margin: "18px 0" })}
+			>
 				<label htmlFor="token-relationship-search">Find a token</label>
 				<input
 					id="token-relationship-search"
-					className={ui.search}
+					className={uiCss.class({
+						width: "100%",
+						padding: "8px 13px",
+						font: "inherit",
+						background: "var(--panel)",
+						color: "var(--text)",
+						border: "1px solid var(--line)",
+						borderRadius: 7,
+						outline: "none",
+						"&:focus": { borderColor: "var(--accent-dim)" },
+					})}
 					type="search"
 					list="token-relationship-options"
 					placeholder={`Search ${graph.nodes.length} token nodes…`}
@@ -1922,12 +2749,20 @@ function TokenGraphView(props: {
 						<option key={node.id} value={presentTokenNode(node).label} label={node.tier} />
 					))}
 				</datalist>
-				<p id="token-relationship-hint" className={ui.muted}>
+				<p id="token-relationship-hint" className={uiCss.class({ color: "var(--muted, #888)" })}>
 					Choose a suggestion to focus it. Each relationship link is also keyboard accessible.
 				</p>
 			</div>
 			{selectedNode !== undefined && relationships !== null && (
-				<div className={ui.relationshipLayout}>
+				<div
+					className={uiCss.class({
+						display: "grid",
+						gridTemplateColumns: "minmax(0, 1fr) minmax(230px, 0.9fr) minmax(0, 1fr)",
+						alignItems: "start",
+						gap: 12,
+						"@media (max-width: 760px)": { gridTemplateColumns: "1fr" },
+					})}
+				>
 					{renderRelationList(
 						"token-graph-used-by",
 						"Used by",
@@ -1935,17 +2770,49 @@ function TokenGraphView(props: {
 						relationships.usedBy,
 						"Nothing in the generated graph refers to this token.",
 					)}
-					<article className={ui.relationshipCurrent}>
-						<span className={ui.relationshipTier} style={{ color: TIER_COLOR[selectedNode.tier] }}>
+					<article
+						className={uiCss.class({
+							minWidth: 0,
+							background: "linear-gradient(180deg, var(--bg-raised), var(--panel))",
+							border: "1px solid var(--line-strong)",
+							borderRadius: 10,
+							padding: 16,
+
+							"& h3": { margin: "8px 0", overflowWrap: "anywhere" },
+							"& p": { fontSize: 12 },
+						})}
+					>
+						<span
+							{...uiCss.props(
+								uiCss.class({
+									flexShrink: 0,
+									color: "var(--muted)",
+									fontSize: 10,
+									textTransform: "uppercase",
+									letterSpacing: "0.04em",
+								}),
+								uiCss.vars({ color: TIER_COLOR[selectedNode.tier] }),
+							)}
+						>
 							{selectedNode.tier} token
 						</span>
 						<h3>
 							<code>{selectedPresentation?.label}</code>
 						</h3>
 						{themeVar !== undefined && (
-							<code className={ui.relationshipValue}>{themeVar.value}</code>
+							<code
+								className={uiCss.class({
+									display: "block",
+									padding: 8,
+									background: "var(--bg)",
+									borderRadius: 6,
+									overflowWrap: "anywhere",
+								})}
+							>
+								{themeVar.value}
+							</code>
 						)}
-						<p className={ui.cardSub}>
+						<p className={uiCss.class({ color: "var(--muted)", fontSize: 12, marginTop: 4 })}>
 							<InspectorLink
 								target={relationshipTarget({
 									node: selectedNode.id,
@@ -1969,10 +2836,12 @@ function TokenGraphView(props: {
 							</InspectorLink>
 						</p>
 						{relationships.isCyclic && (
-							<p className={ui.warn}>Part of a cycle. The emitter skips cyclic references.</p>
+							<p className={uiCss.class({ color: "var(--warn, #fbbf24)" })}>
+								Part of a cycle. The emitter skips cyclic references.
+							</p>
 						)}
 						{relationships.isUnlinkedRaw && (
-							<p className={ui.muted}>
+							<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 								No other graph node references this raw variable. It may still be used in source
 								code; check Usage &amp; cleanup for application-level coverage.
 							</p>
@@ -1999,9 +2868,23 @@ function TokenGraphView(props: {
 			<section id="token-graph-issues">
 				<h3>Graph issues</h3>
 				{graph.cycles.length === 0 && graph.dangling.length === 0 ? (
-					<p className={ui.muted}>No cycles or missing references found.</p>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+						No cycles or missing references found.
+					</p>
 				) : (
-					<ul className={ui.sites}>
+					<ul
+						className={uiCss.class({
+							listStyle: "none",
+							padding: 0,
+							margin: 0,
+							background: "var(--panel)",
+							border: "1px solid var(--line)",
+							borderRadius: 9,
+
+							"& li": { padding: "7px 13px", borderBottom: "1px solid var(--line)" },
+							"& li:last-child": { borderBottom: "none" },
+						})}
+					>
 						{graph.cycles.map((cycle, index) => (
 							<li key={`cycle:${index}`}>
 								cycle · <code>{cycle.join(" → ")}</code>
@@ -2167,16 +3050,43 @@ function AnalysisConfidenceBadge({ data }: { data: InspectorPayload }) {
 	const confidence = getAnalysisConfidence(data);
 	const tone =
 		confidence.level === "verified"
-			? ui.confidenceVerified
+			? uiCss.class({ color: "var(--good)" })
 			: confidence.level === "conservative"
-				? ui.confidenceConservative
-				: ui.confidenceScan;
+				? uiCss.class({ color: "var(--warn)" })
+				: uiCss.class({ color: "var(--accent)" });
 	return (
-		<details className={ui.confidenceDetails}>
-			<summary className={`${ui.confidenceBadge} ${tone}`}>
+		<details className={uiCss.class({ position: "relative" })}>
+			<summary
+				className={`${uiCss.class({
+					listStyle: "none",
+					cursor: "pointer",
+					border: "1px solid var(--line)",
+					borderRadius: 999,
+					padding: "4px 9px",
+					fontSize: 12,
+					whiteSpace: "nowrap",
+					"&::-webkit-details-marker": { display: "none" },
+				})} ${tone}`}
+			>
 				<span aria-hidden="true">●</span> {confidence.label} analysis
 			</summary>
-			<div className={ui.confidencePopover}>
+			<div
+				className={uiCss.class({
+					position: "absolute",
+					top: "calc(100% + 8px)",
+					right: 0,
+					zIndex: 30,
+					width: 300,
+					padding: "10px 12px",
+					background: "var(--panel)",
+					border: "1px solid var(--line-strong)",
+					borderRadius: 8,
+					boxShadow: "0 10px 26px rgb(0 0 0 / 35%)",
+					fontSize: 12,
+					lineHeight: 1.45,
+					"& ul": { margin: "7px 0 0", paddingLeft: 17 },
+				})}
+			>
 				<strong>{confidence.summary}</strong>
 				{confidence.reasons.length > 0 && (
 					<ul>
@@ -2203,7 +3113,9 @@ function UsageView(props: {
 	if (a === undefined) {
 		return (
 			<div id="usage">
-				<p className={ui.muted}>no analytics in this snapshot — hit refresh.</p>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+					no analytics in this snapshot — hit refresh.
+				</p>
 			</div>
 		);
 	}
@@ -2211,14 +3123,21 @@ function UsageView(props: {
 		<div id="usage">
 			<section>
 				<h2>usage overview</h2>
-				<p className={ui.muted}>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 					{a.sitesScanned} styling call site(s) scanned
 					{crawl !== undefined && ` · ${crawl.files} css file(s) crawled`}
 					{crawl !== undefined &&
 						crawl.unresolved.length > 0 &&
 						` · ${crawl.unresolved.length} unresolved import(s)`}
 				</p>
-				<div className={ui.cards}>
+				<div
+					className={uiCss.class({
+						display: "grid",
+						gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+						gap: 12,
+						marginBottom: 6,
+					})}
+				>
 					{TOKEN_CONDITION_KINDS.map((kind) => (
 						<Card
 							key={kind}
@@ -2377,11 +3296,18 @@ function TokenUsageIntelligence(props: {
 	return (
 		<section id="token-intelligence">
 			<h2>token intelligence</h2>
-			<p className={ui.muted}>
+			<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 				Authored shorthand is normalized to its catalog group before usage is compared. “Not
 				observed” is an analysis result, not an automatic removal recommendation.
 			</p>
-			<div className={ui.cards}>
+			<div
+				className={uiCss.class({
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+					gap: 12,
+					marginBottom: 6,
+				})}
+			>
 				<Card
 					label="catalog coverage"
 					value={
@@ -2423,7 +3349,16 @@ function TokenUsageIntelligence(props: {
 				/>
 			</div>
 			{groupStats.length > 0 && (
-				<div className={ui.usageCoverage} aria-label="token coverage by category">
+				<div
+					className={uiCss.class({
+						padding: "10px 14px",
+						background: "var(--panel)",
+						border: "1px solid var(--line)",
+						borderRadius: 9,
+						margin: "12px 0",
+					})}
+					aria-label="token coverage by category"
+				>
 					{groupStats.map((group) => (
 						<Bar
 							key={group.label}
@@ -2444,7 +3379,17 @@ function TokenUsageIntelligence(props: {
 				</div>
 			)}
 			{hot.length > 0 && (
-				<div className={ui.usageHot}>
+				<div
+					className={uiCss.class({
+						padding: "10px 14px",
+						background:
+							"linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--panel)), var(--panel))",
+						border: "1px solid var(--line)",
+						borderRadius: 9,
+						margin: "12px 0",
+						"& h3": { marginTop: 0 },
+					})}
+				>
 					<h3>hot tokens</h3>
 					{hot.map((row) => (
 						<Bar
@@ -2487,7 +3432,13 @@ function TokenUsageIntelligence(props: {
 						label: "status",
 						value: (row) => (row.status === "unused" ? "not observed" : row.status),
 						render: (row) => (
-							<span className={row.status === "unused" ? ui.muted : ui.good}>
+							<span
+								className={
+									row.status === "unused"
+										? uiCss.class({ color: "var(--muted, #888)" })
+										: uiCss.class({ color: "var(--good, #4ade80)" })
+								}
+							>
 								{row.status === "unused" ? "not observed" : row.status}
 							</span>
 						),
@@ -2541,9 +3492,15 @@ function TokenUsageIntelligence(props: {
 				}
 			/>
 			{usage.unknown.length > 0 && (
-				<details className={ui.unknownTokens}>
+				<details
+					className={uiCss.class({
+						marginTop: 10,
+						color: "var(--muted)",
+						"& summary": { cursor: "pointer" },
+					})}
+				>
 					<summary>observed outside the loaded catalog ({usage.unknown.length})</summary>
-					<p className={ui.muted}>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 						{usage.unknown.map((entry) => `${entry.name} (${entry.count})`).join(", ")}
 					</p>
 				</details>
@@ -2565,7 +3522,9 @@ function ContrastWarningsView({
 		return (
 			<section id="contrast-warnings">
 				<h2>wcag contrast</h2>
-				<p className={ui.muted}>no text/background pairs below 4.5:1 found.</p>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+					no text/background pairs below 4.5:1 found.
+				</p>
 			</section>
 		);
 	}
@@ -2587,7 +3546,7 @@ function ContrastWarningsView({
 				</InspectorLink>{" "}
 				warning(s)
 			</h2>
-			<p className={ui.muted}>
+			<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 				text/background pairs within one call site. &lt;4.5 fails normal text; &lt;3 also fails
 				large text.
 			</p>
@@ -2603,7 +3562,11 @@ function ContrastWarningsView({
 						value: (row) => row.warning.ratio,
 						render: (row) => (
 							<span
-								style={{ color: row.warning.severity === "fail-large" ? "#ef4444" : "#d97706" }}
+								{...uiCss.props(
+									uiCss.vars({
+										color: row.warning.severity === "fail-large" ? "#ef4444" : "#d97706",
+									}),
+								)}
 							>
 								{row.warning.ratio.toFixed(2)}
 							</span>
@@ -2658,7 +3621,7 @@ function ContrastPairView({ data }: { data: InspectorPayload }) {
 		return (
 			<section>
 				<h2>check a palette pair</h2>
-				<p className={ui.muted}>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 					A resolved color catalog is required for focused contrast checks.
 				</p>
 			</section>
@@ -2667,18 +3630,42 @@ function ContrastPairView({ data }: { data: InspectorPayload }) {
 	const evaluation = evaluateContrastPair(foreground, background, colorValues);
 	const statusClass =
 		evaluation?.status === "pass"
-			? ui.good
+			? uiCss.class({ color: "var(--good, #4ade80)" })
 			: evaluation?.status === "fail-large"
-				? ui.error
-				: ui.warn;
+				? uiCss.class({ color: "var(--bad)" })
+				: uiCss.class({ color: "var(--warn, #fbbf24)" });
 	return (
 		<section>
 			<h2>check a palette pair</h2>
-			<p className={ui.muted}>
+			<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 				Choose one text and one background token. This keeps palette accessibility useful without
 				producing an all-colors matrix.
 			</p>
-			<div className={ui.contrastControls}>
+			<div
+				className={uiCss.class({
+					display: "grid",
+					gridTemplateColumns: "repeat(2, minmax(180px, 1fr))",
+					gap: 12,
+					maxWidth: 620,
+
+					"& label": {
+						display: "flex",
+						flexDirection: "column",
+						gap: 5,
+						color: "var(--muted)",
+						fontSize: 12,
+					},
+					"& select": {
+						font: "inherit",
+						color: "var(--text)",
+						background: "var(--panel)",
+						border: "1px solid var(--line)",
+						borderRadius: 6,
+						padding: "7px 9px",
+					},
+					"@media (max-width: 560px)": { gridTemplateColumns: "1fr" },
+				})}
+			>
 				<label>
 					text
 					<select value={foreground} onChange={(event) => setForeground(event.target.value)}>
@@ -2701,9 +3688,23 @@ function ContrastPairView({ data }: { data: InspectorPayload }) {
 				</label>
 			</div>
 			{evaluation === null ? (
-				<p className={ui.muted}>The selected values could not be resolved to colors.</p>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+					The selected values could not be resolved to colors.
+				</p>
 			) : (
-				<div className={ui.contrastResult} role="status" aria-live="polite">
+				<div
+					className={uiCss.class({
+						display: "flex",
+						alignItems: "baseline",
+						gap: 9,
+						marginTop: 12,
+						fontSize: 13,
+
+						"& span:first-child": { fontFamily: "var(--mono)", fontSize: 18, fontWeight: 650 },
+					})}
+					role="status"
+					aria-live="polite"
+				>
 					<span className={statusClass}>{evaluation.ratio.toFixed(2)}:1</span>
 					<span>
 						{evaluation.status === "pass"
@@ -2741,7 +3742,7 @@ function RemovalPreviewView({ unusedCount }: { unusedCount: number }) {
 	return (
 		<section>
 			<h2>removal preview</h2>
-			<p className={ui.muted}>
+			<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 				Previews a .changeset file for {unusedCount} token(s) classified safe by reachability
 				analysis. The preview is read-only; nothing is written server-side, and it still needs human
 				review.
@@ -2751,8 +3752,8 @@ function RemovalPreviewView({ unusedCount }: { unusedCount: number }) {
 			</button>{" "}
 			{error !== null && (
 				<div role="alert">
-					<p className={ui.error}>{error}</p>
-					<p className={ui.muted}>
+					<p className={uiCss.class({ color: "var(--bad)" })}>{error}</p>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 						Check that the Inspector server is running, then retry generation.
 					</p>
 					<button type="button" onClick={generate} disabled={busy || unusedCount === 0}>
@@ -2765,7 +3766,18 @@ function RemovalPreviewView({ unusedCount }: { unusedCount: number }) {
 					{copied ? "copied ✓" : "copy to clipboard"}
 				</button>
 			)}
-			{content !== null && <pre className={ui.card}>{content}</pre>}
+			{content !== null && (
+				<pre
+					className={uiCss.class({
+						background: "linear-gradient(180deg, var(--bg-raised), var(--panel))",
+						border: "1px solid var(--line)",
+						borderRadius: 10,
+						padding: "15px 17px",
+					})}
+				>
+					{content}
+				</pre>
+			)}
 		</section>
 	);
 }
@@ -2806,7 +3818,7 @@ function CleanupReportView(props: {
 		return (
 			<section>
 				<h2>cleanup assessment</h2>
-				<p className={ui.muted}>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 					This snapshot has no cleanup report. Refresh to rerun the analysis.
 				</p>
 			</section>
@@ -2837,7 +3849,7 @@ function CleanupReportView(props: {
 		<div>
 			<section>
 				<h2>cleanup assessment</h2>
-				<p className={ui.muted}>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 					These counts use the analyzer’s reachable-token report, not the catalog coverage above. A
 					candidate is a review classification, not approval to delete it; scan boundaries are shown
 					before any removal preview.
@@ -2846,13 +3858,20 @@ function CleanupReportView(props: {
 			{s.boundaries["configuration-failure"] > 0 && (
 				<section>
 					<h2>configuration incomplete</h2>
-					<p className={ui.muted}>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 						The project configuration could not be fully evaluated, so usage evidence is incomplete.
 						Treat these tokens as “not observed” rather than “unused.”
 					</p>
 				</section>
 			)}
-			<section className={ui.cards}>
+			<section
+				className={uiCss.class({
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fit, minmax(215px, 1fr))",
+					gap: 12,
+					marginBottom: 6,
+				})}
+			>
 				<Card label="in analyzer scope" value={String(s.defined)} />
 				<Card label="reachable" value={String(s.used)} />
 				<Card
@@ -2959,13 +3978,23 @@ function CleanupReportView(props: {
 			{nonZeroBoundaries.length > 0 && (
 				<section id="cleanup-boundaries">
 					<h2>coverage boundaries</h2>
-					<p className={ui.muted}>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 						conditions that prevent a definitive usage claim — nothing behind these is classified as
 						safe-to-remove.
 					</p>
-					<div className={ui.chipRow}>
+					<div className={uiCss.class({ display: "flex", flexWrap: "wrap", gap: 8 })}>
 						{nonZeroBoundaries.map((b) => (
-							<span className={ui.chip} key={b}>
+							<span
+								className={uiCss.class({
+									background: "color-mix(in srgb, currentColor 8%, transparent)",
+									border: "1px solid var(--line)",
+									borderRadius: 6,
+									padding: "2px 8px",
+									fontSize: 12,
+									fontFamily: "var(--mono)",
+								})}
+								key={b}
+							>
 								{b} ({s.boundaries[b]})
 							</span>
 						))}
@@ -2975,11 +4004,28 @@ function CleanupReportView(props: {
 			<section id="resolved-cleanup-policy">
 				<h2>resolved cleanup policy</h2>
 				{policy === null ? (
-					<p className={ui.muted}>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 						no policy resolved — strictness is report-only/fail-open (unknown).
 					</p>
 				) : policy.resolved ? (
-					<dl className={ui.definitionGrid}>
+					<dl
+						className={uiCss.class({
+							display: "grid",
+							gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+							gap: 8,
+							margin: 0,
+
+							"& > div": {
+								minWidth: 0,
+								padding: "10px 12px",
+								background: "var(--panel)",
+								border: "1px solid var(--line)",
+								borderRadius: 8,
+							},
+							"& dt": { marginBottom: 4, color: "var(--muted)", fontSize: 11 },
+							"& dd": { margin: 0, overflowWrap: "anywhere" },
+						})}
+					>
 						<div>
 							<dt>owner</dt>
 							<dd>{policy.owner}</dd>
@@ -3004,13 +4050,13 @@ function CleanupReportView(props: {
 						)}
 					</dl>
 				) : (
-					<p className={ui.muted}>
+					<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 						policy for {policy.owner} could not be resolved — all strictness is unknown.
 					</p>
 				)}
 			</section>
 			<section>
-				<p className={ui.muted}>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 					zero reachable usage after alias/composition/generated-artifact/export analysis — safety
 					is a classification, not a deletion approval.
 				</p>
@@ -3030,7 +4076,9 @@ function CleanupReportView(props: {
 							label: "safety",
 							value: (candidate) => candidate.safety,
 							render: (candidate) => (
-								<span style={{ color: SAFETY_COLOR[candidate.safety] }}>{candidate.safety}</span>
+								<span {...uiCss.props(uiCss.vars({ color: SAFETY_COLOR[candidate.safety] }))}>
+									{candidate.safety}
+								</span>
 							),
 						},
 						{
@@ -3071,11 +4119,13 @@ function CleanupReportView(props: {
 				{suggestions.length === 0 ? (
 					<>
 						<h2>raw value suggestions · 0</h2>
-						<p className={ui.muted}>No exact raw value replacements were found.</p>
+						<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+							No exact raw value replacements were found.
+						</p>
 					</>
 				) : (
 					<>
-						<p className={ui.muted}>
+						<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 							each suggestion is an exact resolved-value match with a legal spelling for the
 							property; ambiguous matches are rejected, not ranked.
 						</p>
@@ -3128,7 +4178,9 @@ function CleanupReportView(props: {
 				{g.diagnostics.length === 0 ? (
 					<>
 						<h2>diagnostics · 0</h2>
-						<p className={ui.muted}>No cleanup diagnostics were reported.</p>
+						<p className={uiCss.class({ color: "var(--muted, #888)" })}>
+							No cleanup diagnostics were reported.
+						</p>
 					</>
 				) : (
 					<>
@@ -3147,14 +4199,16 @@ function CleanupReportView(props: {
 									value: (row) => row.diagnostic.severity,
 									render: (row) => (
 										<span
-											style={{
-												color:
-													row.diagnostic.severity === "error"
-														? "#ef4444"
-														: row.diagnostic.severity === "warning"
-															? "#d97706"
-															: "#64748b",
-											}}
+											{...uiCss.props(
+												uiCss.vars({
+													color:
+														row.diagnostic.severity === "error"
+															? "#ef4444"
+															: row.diagnostic.severity === "warning"
+																? "#d97706"
+																: "#64748b",
+												}),
+											)}
 										>
 											{row.diagnostic.severity}
 										</span>
@@ -3198,8 +4252,8 @@ function AnalyticsHistoryChart() {
 		return (
 			<section role="alert">
 				<h2>trend</h2>
-				<p className={ui.error}>{error}</p>
-				<p className={ui.muted}>
+				<p className={uiCss.class({ color: "var(--bad)" })}>{error}</p>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 					History is optional. Enable INSPECTOR_HISTORY=1 to record snapshots, then retry if the
 					server was restarted.
 				</p>
@@ -3213,7 +4267,7 @@ function AnalyticsHistoryChart() {
 		return (
 			<section>
 				<h2>trend</h2>
-				<p className={ui.muted}>
+				<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 					need at least 2 recorded snapshots — run with INSPECTOR_HISTORY=1 and refresh twice.
 				</p>
 			</section>
@@ -3236,7 +4290,7 @@ function AnalyticsHistoryChart() {
 			<svg
 				width="100%"
 				viewBox={`0 0 ${HISTORY_W} ${HISTORY_H + 24}`}
-				style={{ minWidth: `${HISTORY_W}px` }}
+				{...uiCss.props(uiCss.vars({ minWidth: `${HISTORY_W}px` }))}
 				role="img"
 				aria-label="analytics trend chart"
 			>
@@ -3259,7 +4313,7 @@ function AnalyticsHistoryChart() {
 					call sites
 				</text>
 			</svg>
-			<p className={ui.muted}>
+			<p className={uiCss.class({ color: "var(--muted, #888)" })}>
 				first {series[0]!.timestamp.slice(0, 19)} · last {series[n - 1]!.timestamp.slice(0, 19)}
 			</p>
 		</section>
@@ -3511,13 +4565,46 @@ export function App() {
 	}
 
 	return (
-		<main className={ui.wrap} aria-busy={loading}>
+		<main
+			className={uiCss.class({
+				maxWidth: 1180,
+				margin: "0 auto",
+				padding: "20px 24px 80px",
+
+				"@media (max-width: 900px)": {
+					"& header": {
+						alignItems: "stretch",
+						flexDirection: "column",
+						gap: 10,
+						padding: "12px 0 14px",
+					},
+					"& header nav": {
+						marginLeft: 0,
+						maxWidth: "100%",
+						overflowX: "auto",
+						padding: "2px 2px 5px",
+						whiteSpace: "nowrap",
+					},
+					"& header nav button": { flex: "0 0 auto" },
+					"& section": { minWidth: 0 },
+					"& table": { display: "block", overflowX: "auto", whiteSpace: "nowrap" },
+					"& thead": { width: "100%" },
+					"& tbody": { width: "100%" },
+				},
+				"@media (max-width: 560px)": { "& h1": { fontSize: 16 } },
+			})}
+			aria-busy={loading}
+		>
 			<header>
 				<h1>
-					<span className={ui.brandMark}>◆</span> pandwind{" "}
-					<span className={ui.brandThin}>Inspector</span>
+					<span className={uiCss.class({ color: "var(--accent)" })}>◆</span> pandwind{" "}
+					<span className={uiCss.class({ color: "var(--muted)", fontWeight: 400 })}>Inspector</span>
 				</h1>
-				<nav className={ui.tabList} aria-label="Inspector views" role="tablist">
+				<nav
+					className={uiCss.class({ display: "flex", gap: 6, alignItems: "center" })}
+					aria-label="Inspector views"
+					role="tablist"
+				>
 					{INSPECTOR_TABS.map((tabId, index) => (
 						<button
 							key={tabId}
@@ -3527,7 +4614,15 @@ export function App() {
 							aria-selected={tab === tabId}
 							aria-controls="inspector-panel"
 							tabIndex={tab === tabId ? 0 : -1}
-							className={tab === tabId ? ui.active : undefined}
+							className={
+								tab === tabId
+									? uiCss.class({
+											borderColor: "var(--accent-dim)",
+											background: "color-mix(in srgb, var(--accent-dim) 18%, transparent)",
+											color: "var(--accent)",
+										})
+									: undefined
+							}
 							onClick={() => changeTab(tabId)}
 							onKeyDown={(event) => {
 								if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
@@ -3548,7 +4643,7 @@ export function App() {
 						</button>
 					))}
 				</nav>
-				<div className={ui.headerActions}>
+				<div className={uiCss.class({ display: "flex", gap: 6, alignItems: "center" })}>
 					{data !== null && <AnalysisConfidenceBadge data={data} />}
 					<button
 						type="button"
@@ -3559,9 +4654,50 @@ export function App() {
 						{loading ? "…" : "⟳ refresh"}
 					</button>
 					{data !== null && !loading && tab !== "history" && (
-						<details className={ui.exportMenu}>
+						<details
+							className={uiCss.class({
+								position: "relative",
+
+								"& summary": {
+									listStyle: "none",
+									cursor: "pointer",
+									padding: "0.35rem 0.7rem",
+									border: "1px solid #2c2c34",
+									borderRadius: 6,
+									color: "inherit",
+								},
+								"& summary::-webkit-details-marker": { display: "none" },
+								"&[open] summary": { background: "#1d1d24" },
+							})}
+						>
 							<summary aria-label="Open export menu">⬇ export</summary>
-							<div className={ui.exportItems}>
+							<div
+								className={uiCss.class({
+									position: "absolute",
+									right: 0,
+									top: "calc(100% + 4px)",
+									minWidth: 220,
+									display: "flex",
+									flexDirection: "column",
+									background: "#17171c",
+									border: "1px solid #2c2c34",
+									borderRadius: 8,
+									zIndex: 20,
+									boxShadow: "0 8px 24px rgb(0 0 0 / 45%)",
+
+									"& button": {
+										cursor: "pointer",
+										border: "none",
+										background: "transparent",
+										color: "inherit",
+										textAlign: "left",
+										padding: "0.5rem 0.9rem",
+										font: "inherit",
+										fontSize: "0.85rem",
+									},
+									"& button:hover": { background: "#22222a" },
+								})}
+							>
 								{tab === "tokens" ? (
 									<>
 										<button
@@ -3676,19 +4812,44 @@ ${InspectorExport.themeVarsToCss(data)}}
 			</header>
 			<div
 				id="inspector-panel"
-				className={ui.tabPanel}
+				className={uiCss.class({ outline: "none" })}
 				role="tabpanel"
 				aria-labelledby={`tab-${tab}`}
 				tabIndex={-1}
 				aria-busy={loading}
 			>
 				{loading && data !== null && (
-					<div className={ui.refreshing} role="status">
+					<div
+						className={uiCss.class({ color: "var(--muted)", fontSize: 12, margin: "-8px 0 8px" })}
+						role="status"
+					>
 						refreshing analysis…
 					</div>
 				)}
 				{tab === "tokens" && error === null && (
-					<nav className={ui.tokenViewNav} aria-label="Token views">
+					<nav
+						className={uiCss.class({
+							display: "flex",
+							flexWrap: "wrap",
+							gap: 6,
+							margin: "0 0 18px",
+							borderBottom: "1px solid var(--line)",
+
+							"& a": {
+								color: "var(--muted)",
+								textDecoration: "none",
+								padding: "8px 11px",
+								fontSize: 13,
+								borderBottom: "2px solid transparent",
+							},
+							"& a:hover": { color: "var(--text)" },
+							"& a[aria-current='page']": {
+								color: "var(--accent)",
+								borderBottomColor: "var(--accent)",
+							},
+						})}
+						aria-label="Token views"
+					>
 						{TOKEN_VIEWS.map((view) => (
 							<a
 								key={view.label}

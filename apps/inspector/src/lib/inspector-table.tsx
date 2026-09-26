@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { ui } from "../ui-css.ts";
+import { css as uiCss } from "../ui-css.ts";
 
 type TableValue = string | number | null | undefined;
 
@@ -107,18 +107,83 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 	return (
 		<details
 			id={props.id}
-			className={ui.tableDetails}
+			className={uiCss.class({
+				margin: "14px 0",
+
+				"&[open] > summary": { borderRadius: "8px 8px 0 0" },
+				"&[open] > summary::before": { content: "'▾'" },
+			})}
 			open={props.defaultOpen ?? props.rows.length <= 12}
 		>
-			<summary className={ui.tableSummary}>
+			<summary
+				className={uiCss.class({
+					display: "flex",
+					alignItems: "center",
+					gap: 10,
+					cursor: "pointer",
+					listStyle: "none",
+					padding: "11px 14px",
+					background: "var(--panel)",
+					border: "1px solid var(--line)",
+					borderRadius: 8,
+
+					"&::-webkit-details-marker": { display: "none" },
+					"&::before": { content: "'▸'", color: "var(--accent)", fontFamily: "var(--mono)" },
+					"&:hover": { background: "var(--panel-hover)" },
+				})}
+			>
 				<strong>{props.title}</strong>
-				<span className={ui.tableCount}>{props.rows.length} rows</span>
+				<span
+					className={uiCss.class({
+						marginLeft: "auto",
+						color: "var(--muted)",
+						fontSize: 12,
+						whiteSpace: "nowrap",
+					})}
+				>
+					{props.rows.length} rows
+				</span>
 			</summary>
-			<div className={ui.tableTools}>
-				<label className={ui.tableSearch}>
-					<span className={ui.srOnly}>Search {props.title}</span>
+			<div
+				className={uiCss.class({
+					display: "flex",
+					alignItems: "end",
+					flexWrap: "wrap",
+					gap: 8,
+					padding: "12px 14px",
+					background: "var(--panel)",
+					borderLeft: "1px solid var(--line)",
+					borderRight: "1px solid var(--line)",
+				})}
+			>
+				<label className={uiCss.class({ display: "grid", flex: "1 1 230px", minWidth: 180 })}>
+					<span
+						className={uiCss.class({
+							position: "absolute",
+							width: 1,
+							height: 1,
+							padding: 0,
+							margin: -1,
+							overflow: "hidden",
+							clipPath: "inset(50%)",
+							whiteSpace: "nowrap",
+							border: 0,
+						})}
+					>
+						Search {props.title}
+					</span>
 					<input
-						className={ui.search}
+						className={uiCss.class({
+							width: "100%",
+							padding: "8px 13px",
+							font: "inherit",
+							background: "var(--panel)",
+							color: "var(--text)",
+							border: "1px solid var(--line)",
+							borderRadius: 7,
+							outline: "none",
+							"&:focus": { borderColor: "var(--accent-dim)" },
+						})}
 						type="search"
 						value={searchValue}
 						placeholder={`Search ${props.title.toLocaleLowerCase()}…`}
@@ -127,7 +192,27 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 					/>
 				</label>
 				{filterOptions.map(({ filter, values }) => (
-					<label key={filter.id} className={ui.tableFilter}>
+					<label
+						key={filter.id}
+						className={uiCss.class({
+							display: "grid",
+							gap: 4,
+							minWidth: 125,
+							color: "var(--muted)",
+							fontSize: 11,
+
+							"& select": {
+								width: "100%",
+								padding: "7px 9px",
+								font: "inherit",
+								fontSize: 12,
+								color: "var(--text)",
+								background: "var(--bg)",
+								border: "1px solid var(--line)",
+								borderRadius: 6,
+							},
+						})}
+					>
 						<span>{filter.label}</span>
 						<select
 							value={filterValues[filter.id] ?? ""}
@@ -151,7 +236,7 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 				{hasActiveControls && (
 					<button
 						type="button"
-						className={ui.searchClear}
+						className={uiCss.class({ padding: "6px 10px" })}
 						onClick={() => {
 							if (props.onClearFilters !== undefined) {
 								props.onClearFilters();
@@ -164,11 +249,28 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 						clear filters
 					</button>
 				)}
-				<span className={ui.tableCount} role="status" aria-live="polite">
+				<span
+					className={uiCss.class({
+						marginLeft: "auto",
+						color: "var(--muted)",
+						fontSize: 12,
+						whiteSpace: "nowrap",
+					})}
+					role="status"
+					aria-live="polite"
+				>
 					{sortedRows.length} of {props.rows.length} rows
 				</span>
 			</div>
-			<div className={ui.tableScroller}>
+			<div
+				className={uiCss.class({
+					overflowX: "auto",
+					border: "1px solid var(--line)",
+					borderTop: 0,
+					borderRadius: "0 0 8px 8px",
+					"& table": { border: 0, borderRadius: 0 },
+				})}
+			>
 				<table aria-label={props.title} className={props.tableClassName}>
 					<thead>
 						<tr>
@@ -178,7 +280,13 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 									<th key={column.id} aria-sort={activeSort ?? "none"}>
 										<button
 											type="button"
-											className={ui.sortButton}
+											className={uiCss.class({
+												all: "unset",
+												cursor: "pointer",
+												color: "inherit",
+												font: "inherit",
+												"&:hover": { color: "var(--text)" },
+											})}
 											onClick={() =>
 												setSort((current) => {
 													const direction =
@@ -194,8 +302,8 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 												aria-hidden="true"
 												className={
 													activeSort === null
-														? ui.sortIndicator
-														: `${ui.sortIndicator} ${ui.sortIndicatorActive}`
+														? uiCss.class({ marginLeft: 5, color: "var(--muted)", fontSize: 11 })
+														: `${uiCss.class({ marginLeft: 5, color: "var(--muted)", fontSize: 11 })} ${uiCss.class({ color: "var(--accent)" })}`
 												}
 											>
 												{activeSort === null ? "↕" : activeSort === "ascending" ? "↑" : "↓"}
@@ -209,7 +317,13 @@ export const InspectorTable = <Row,>(props: InspectorTableProps<Row>) => {
 					<tbody>
 						{sortedRows.length === 0 ? (
 							<tr>
-								<td colSpan={props.columns.length} className={ui.tableEmpty}>
+								<td
+									colSpan={props.columns.length}
+									className={uiCss.class({
+										padding: "16px 14px",
+										color: "var(--muted)",
+									})}
+								>
 									No matching rows.
 								</td>
 							</tr>

@@ -1,6 +1,8 @@
 import react from "@vitejs/plugin-react-swc";
 import { constants, gzipSync } from "node:zlib";
 import { defineConfig, type Plugin } from "vite";
+import { pandwindCssVite } from "pandwind/vite";
+import { css } from "./src/ui-css.ts";
 import { gather } from "./src/server/gather.ts";
 import { buildGovernancePruneChangeset } from "pandwind-analyze/governance";
 import { persistAnalyticsSnapshot, readAnalyticsSeries } from "./src/server/analytics-history.ts";
@@ -124,5 +126,5 @@ const inspectorApi = (): Plugin => ({
 });
 
 export default defineConfig({
-	plugins: [react(), inspectorApi()],
+	plugins: [pandwindCssVite(css, { cssSources: ["ui-css"] }), react(), inspectorApi()],
 });
