@@ -1641,9 +1641,13 @@ test("the checked-in dynamic example exercises both compiler carrier rewrites", 
 		file,
 	);
 
-	expect(transformed?.code.match(/\{\.\.\.\(\(values\) =>/g)?.length).toBe(2);
-	expect(transformed?.code).not.toContain("className={relaxedCss.class");
-	expect(transformed?.code).not.toContain("{...relaxedCss({");
+	const transformedSource = transformed?.code.replace(
+		/\/\* pandwind:migrate-skip[\s\S]*?\*\//gu,
+		"",
+	);
+	expect(transformedSource?.match(/\{\s*\.\.\.\(\(values\) =>/g)?.length).toBe(2);
+	expect(transformedSource).not.toContain("className={untypedCss.class");
+	expect(transformedSource).not.toContain("{...untypedCss(");
 });
 
 test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers", () => {

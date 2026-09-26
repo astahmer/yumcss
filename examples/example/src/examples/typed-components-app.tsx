@@ -28,7 +28,12 @@ type PanelProps = PropsWithChildren<
 const Stack = createStack(css);
 
 function Panel({ children, className, style, xcss, ...styleProps }: PanelProps) {
-	const generated = css.props(css(styleProps), xcss);
+	const generated = css.props(
+		/* pandwind:migrate-skip (residual: component styles resolve from runtime caller props) */ css(
+			styleProps,
+		),
+		xcss,
+	);
 	return (
 		<article
 			className={cx(generated.className, className)}

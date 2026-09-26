@@ -1,5 +1,5 @@
 import { useState, type PropsWithChildren } from "react";
-import { css, relaxedCss, untypedCss } from "../css";
+import { css, untypedCss } from "../css";
 import { cx } from "../cx";
 import { tw } from "../tw";
 
@@ -55,22 +55,30 @@ function CompilerCarrierExamples({ accent }: { accent: string }) {
 			</p>
 			<button
 				type="button"
-				className={relaxedCss.class({
-					color: accent,
-					backgroundColor: "white",
-					padding: 8,
-					borderRadius: "md",
-				})}
+				className={
+					/* pandwind:migrate-skip (residual: accent is carried by the opt-in dynamic className transform) */ untypedCss.class(
+						{
+							color: accent,
+							backgroundColor: "white",
+							padding: 8,
+							borderRadius: "md",
+						},
+					)
+				}
 			>
 				opt-in dynamic className rewrite
 			</button>
 			<div
-				{...relaxedCss({
-					color: "white",
-					backgroundColor: accent,
-					padding: 8,
-					borderRadius: "md",
-				})}
+				{
+					/* pandwind:migrate-skip (residual: accent remains a runtime value in the callable host carrier) */ ...untypedCss(
+						{
+							color: "white",
+							backgroundColor: accent,
+							padding: 8,
+							borderRadius: "md",
+						},
+					)
+				}
 			>
 				mixed callable JSX spread
 			</div>

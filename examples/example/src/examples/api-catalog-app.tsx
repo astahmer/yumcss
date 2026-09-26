@@ -138,7 +138,12 @@ export function ApiCatalogApp() {
 			padding: `${runtimePadding}px ${runtimePadding * 2}px`,
 		}),
 	);
-	const runtimeClass = runtimeCss.class({ outlineColor: accent });
+	const runtimeClass =
+		/* pandwind:migrate-skip (residual: runtime CSS registers the current accent value on demand) */ runtimeCss.class(
+			{
+				outlineColor: accent,
+			},
+		);
 
 	return (
 		<section
