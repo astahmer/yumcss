@@ -40,7 +40,7 @@ import type {
 import { readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, relative, resolve } from "node:path";
 import type { OutputBundle, PluginContext } from "rollup";
-import type { HmrContext, ModuleNode, ViteDevServer } from "vite";
+import type { HmrContext, ModuleNode, ResolvedConfig, ViteDevServer } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import { refreshPandwindEngineContext, type PandwindEngineContext } from "./engine-context.ts";
 import { findCssFactoryKinds } from "./css-factory-source.ts";
@@ -365,6 +365,7 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 	let libraryArtifacts: readonly PandwindLibArtifact[] = [];
 	let core = createCssExtractorPluginCore(activePreset, initialOptions, libraryArtifacts);
 	let resolvedConfig: { command?: "build" | "serve" } | undefined;
+	let isSsrBuild = false;
 	const compositionModules = new Map<string, ReadonlySet<CssFactoryKind>>();
 	const compositionConsumers = new Map<string, Set<string>>();
 	const consumerCompositions = new Map<string, Set<string>>();
@@ -502,18 +503,20 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 			}
 			return core.transform(code, id);
 		},
-		configResolved(config: { command?: "build" | "serve" }) {
+		configResolved(config: ResolvedConfig) {
 			resolvedConfig = config;
+			isSsrBuild = Boolean(config.build.ssr);
 			core.configResolved(config);
 		},
 		closeBundle() {
-			core.closeBundle(hasBuiltSourceGraph ? [...builtSourceFiles].toSorted() : undefined);
+			if (!isSsrBuild)
+				core.closeBundle(hasBuiltSourceGraph ? [...builtSourceFiles].toSorted() : undefined);
 		},
 		resolveId(source: string) {
 			return core.resolveId(source);
 		},
 		load(id: string) {
-			if (resolvedConfig?.command === "build" && id.startsWith(stylesheetPrefix)) {
+			if (resolvedConfig?.command === "build" && !isSsrBuild && id.startsWith(stylesheetPrefix)) {
 				let marker = buildCssMarkers.get(id);
 				if (marker === undefined) {
 					const value = nextCssMarker++;
@@ -531,6 +534,7 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 			handler(this: PluginContext, _outputOptions: unknown, bundle: OutputBundle) {
 				if (
 					resolvedConfig?.command !== "build" ||
+					isSsrBuild ||
 					(buildCssMarkers.size === 0 && options.inlineCritical === undefined)
 				)
 					return;
