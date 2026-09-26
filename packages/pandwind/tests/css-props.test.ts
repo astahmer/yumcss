@@ -109,6 +109,27 @@ test("css props flattens nested style arrays", () => {
 	});
 });
 
+test("css props shallow merges flat variable styles with later values winning", () => {
+	const css = createUnsafeCss();
+	const first = css.vars({ color: "var(--first)" });
+	const second = css.vars({ color: "var(--second)" });
+
+	expect(css.props(first, second).style).toEqual({ "--pw-c-color": "var(--second)" });
+});
+
+test("css props retains deep merging for nested userland style values", () => {
+	const css = createUnsafeCss();
+	const first = {
+		class: "first",
+		style: { "--nested": { color: "red", padding: "1px" } },
+	};
+	const second = { class: "second", style: { "--nested": { color: "blue" } } };
+
+	expect(css.props(first as never, second as never).style).toEqual({
+		"--nested": { color: "blue", padding: "1px" },
+	});
+});
+
 test("css with dynamic styles", () => {
 	const css = createUnsafeCss({ debug: true });
 

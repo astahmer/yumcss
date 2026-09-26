@@ -14,702 +14,702 @@
 			"category": "css",
 			"description": "preset-bound default CSS class projection",
 			"iterations": 30000,
-			"median": 597881,
-			"p10": 525070,
-			"p90": 603879
+			"median": 566464,
+			"p10": 469173,
+			"p90": 568604
 		},
 		{
 			"name": "css.default.compose",
 			"category": "css",
 			"description": "preset-bound declaration-map composition",
 			"iterations": 30000,
-			"median": 183824,
-			"p10": 176733,
-			"p90": 186496
+			"median": 181129,
+			"p10": 174462,
+			"p90": 181551
 		},
 		{
 			"name": "css.preset.class",
 			"category": "css",
 			"description": "custom preset-bound CSS class projection",
 			"iterations": 30000,
-			"median": 1685780,
-			"p10": 1574714,
-			"p90": 1691996
+			"median": 1628167,
+			"p10": 1513177,
+			"p90": 1649141
 		},
 		{
 			"name": "css.default.vars",
 			"category": "css",
 			"description": "preset-bound CSS variable carrier",
 			"iterations": 50000,
-			"median": 1692050,
-			"p10": 1568306,
-			"p90": 1706441
+			"median": 1741710,
+			"p10": 1578262,
+			"p90": 1742697
 		},
 		{
 			"name": "css.default.props",
 			"category": "css",
 			"description": "preset-bound CSS host-props projection",
 			"iterations": 30000,
-			"median": 1733015,
-			"p10": 1664090,
-			"p90": 1749233
+			"median": 3375369,
+			"p10": 2791022,
+			"p90": 3474132
 		},
 		{
 			"name": "css.default.raw",
 			"category": "css",
 			"description": "preset-bound CSS raw merge projection",
 			"iterations": 50000,
-			"median": 678869,
-			"p10": 606301,
-			"p90": 691222
+			"median": 676854,
+			"p10": 666910,
+			"p90": 680239
 		},
 		{
 			"name": "css.first-that-works",
 			"category": "css",
 			"description": "CSS fallback-chain class projection",
 			"iterations": 30000,
-			"median": 1046795,
-			"p10": 864103,
-			"p90": 1060509
+			"median": 1047722,
+			"p10": 949138,
+			"p90": 1054613
 		},
 		{
 			"name": "css.generated.class",
 			"category": "css",
 			"description": "generated CSS facade class projection",
 			"iterations": 30000,
-			"median": 370183,
-			"p10": 361152,
-			"p90": 375302
+			"median": 370464,
+			"p10": 354267,
+			"p90": 372950
 		},
 		{
 			"name": "css.generated.vars",
 			"category": "css",
 			"description": "generated CSS variable carrier",
 			"iterations": 50000,
-			"median": 1720408,
-			"p10": 1593977,
-			"p90": 1729296
+			"median": 1694788,
+			"p10": 1637141,
+			"p90": 1725147
 		},
 		{
 			"name": "css.generated.props",
 			"category": "css",
 			"description": "generated CSS host-props projection",
 			"iterations": 30000,
-			"median": 1814973,
-			"p10": 1783039,
-			"p90": 1860835
+			"median": 3782744,
+			"p10": 3674013,
+			"p90": 3856310
 		},
 		{
 			"name": "css.generated.raw",
 			"category": "css",
 			"description": "generated CSS raw merge projection",
 			"iterations": 50000,
-			"median": 669051,
-			"p10": 645873,
-			"p90": 675157
+			"median": 677998,
+			"p10": 665781,
+			"p90": 683306
 		},
 		{
 			"name": "css.unsafe.class",
 			"category": "css",
 			"description": "open CSS class projection",
 			"iterations": 30000,
-			"median": 563823,
-			"p10": 549185,
-			"p90": 566076
+			"median": 556956,
+			"p10": 518562,
+			"p90": 560611
 		},
 		{
 			"name": "css.unsafe.vars",
 			"category": "css",
 			"description": "open CSS variable carrier",
 			"iterations": 50000,
-			"median": 2173326,
-			"p10": 2141194,
-			"p90": 2199143
+			"median": 2155118,
+			"p10": 2150522,
+			"p90": 2159936
 		},
 		{
 			"name": "css.unsafe.props",
 			"category": "css",
 			"description": "open CSS host-props projection",
 			"iterations": 30000,
-			"median": 6695620,
-			"p10": 5022076,
-			"p90": 6878368
+			"median": 6752131,
+			"p10": 5048628,
+			"p90": 6808253
 		},
 		{
 			"name": "css.unsafe.raw",
 			"category": "css",
 			"description": "open CSS raw merge projection",
 			"iterations": 50000,
-			"median": 962094,
-			"p10": 958258,
-			"p90": 975409
+			"median": 958007,
+			"p10": 946976,
+			"p90": 963812
 		},
 		{
 			"name": "css.unsafe.group",
 			"category": "css",
 			"description": "open CSS parameterized group member",
 			"iterations": 30000,
-			"median": 3165169,
-			"p10": 2902582,
-			"p90": 3179327
+			"median": 3175443,
+			"p10": 2949998,
+			"p90": 3235213
 		},
 		{
 			"name": "css.unsafe.input",
 			"category": "css",
 			"description": "open CSS named runtime input group",
 			"iterations": 30000,
-			"median": 4758821,
-			"p10": 3318859,
-			"p90": 4851164
+			"median": 4762723,
+			"p10": 3244047,
+			"p90": 4812802
 		},
 		{
 			"name": "css.runtime.class",
 			"category": "css",
 			"description": "runtime CSS class registration and sheet flush",
 			"iterations": 20000,
-			"median": 399845,
-			"p10": 341066,
-			"p90": 416967
+			"median": 415684,
+			"p10": 403707,
+			"p90": 416375
 		},
 		{
 			"name": "css.runtime.vars",
 			"category": "css",
 			"description": "runtime CSS variable carrier registration",
 			"iterations": 30000,
-			"median": 1556050,
-			"p10": 1413619,
-			"p90": 1601302
+			"median": 1596654,
+			"p10": 1461380,
+			"p90": 1614096
 		},
 		{
 			"name": "css.runtime.props",
 			"category": "css",
 			"description": "runtime CSS host-props projection",
 			"iterations": 30000,
-			"median": 6751625,
-			"p10": 6642925,
-			"p90": 6771563
+			"median": 6662471,
+			"p10": 3413843,
+			"p90": 6773538
 		},
 		{
 			"name": "css.runtime.raw",
 			"category": "css",
 			"description": "runtime CSS raw merge projection",
 			"iterations": 50000,
-			"median": 888631,
-			"p10": 874200,
-			"p90": 892207
+			"median": 865194,
+			"p10": 857414,
+			"p90": 875273
 		},
 		{
 			"name": "css.runtime.sheet",
 			"category": "css",
 			"description": "runtime CSS sheet registration",
 			"iterations": 1000000,
-			"median": 59799224,
-			"p10": 55115650,
-			"p90": 60837583
+			"median": 58369449,
+			"p10": 52187869,
+			"p90": 59401972
 		},
 		{
 			"name": "dss.class",
 			"category": "design",
 			"description": "design vocabulary class projection",
 			"iterations": 20000,
-			"median": 178559,
-			"p10": 170664,
-			"p90": 179229
+			"median": 169511,
+			"p10": 154173,
+			"p90": 173060
 		},
 		{
 			"name": "dss.compose",
 			"category": "design",
 			"description": "design vocabulary declaration-map composition",
 			"iterations": 20000,
-			"median": 149754,
-			"p10": 147719,
-			"p90": 150833
+			"median": 142041,
+			"p10": 138657,
+			"p90": 146781
 		},
 		{
 			"name": "dss.vars",
 			"category": "design",
 			"description": "design vocabulary variable carrier",
 			"iterations": 30000,
-			"median": 1039674,
-			"p10": 1032405,
-			"p90": 1082249
+			"median": 1056304,
+			"p10": 947002,
+			"p90": 1076859
 		},
 		{
 			"name": "dss.props",
 			"category": "design",
 			"description": "design vocabulary host-props projection",
 			"iterations": 30000,
-			"median": 1769620,
-			"p10": 1762184,
-			"p90": 1789465
+			"median": 2762336,
+			"p10": 2732002,
+			"p90": 2781931
 		},
 		{
 			"name": "dss.raw",
 			"category": "design",
 			"description": "design vocabulary raw merge projection",
 			"iterations": 30000,
-			"median": 211061,
-			"p10": 197853,
-			"p90": 217110
+			"median": 208767,
+			"p10": 178137,
+			"p90": 209344
 		},
 		{
 			"name": "dss.runtime.class",
 			"category": "design",
 			"description": "runtime design vocabulary class registration",
 			"iterations": 20000,
-			"median": 173871,
-			"p10": 170772,
-			"p90": 176606
+			"median": 174722,
+			"p10": 172942,
+			"p90": 175798
 		},
 		{
 			"name": "dss.runtime.props",
 			"category": "design",
 			"description": "runtime design host-props projection",
 			"iterations": 30000,
-			"median": 3323317,
-			"p10": 3264196,
-			"p90": 3409446
+			"median": 3409155,
+			"p10": 3371418,
+			"p90": 3427755
 		},
 		{
 			"name": "dss.runtime.raw",
 			"category": "design",
 			"description": "runtime design raw merge projection",
 			"iterations": 30000,
-			"median": 217213,
-			"p10": 216098,
-			"p90": 217933
+			"median": 207122,
+			"p10": 200273,
+			"p90": 209944
 		},
 		{
 			"name": "dss.runtime.sheet",
 			"category": "design",
 			"description": "runtime design sheet serialization",
 			"iterations": 2000000,
-			"median": 249912812,
-			"p10": 248838732,
-			"p90": 250595164
+			"median": 249686581,
+			"p10": 243670892,
+			"p90": 253901063
 		},
 		{
 			"name": "dss.group",
 			"category": "design",
 			"description": "design vocabulary reusable group member",
 			"iterations": 30000,
-			"median": 204196928,
-			"p10": 161761693,
-			"p90": 204255319
+			"median": 206421071,
+			"p10": 163154317,
+			"p90": 211453744
 		},
 		{
 			"name": "design.resolve",
 			"category": "design",
 			"description": "direct design vocabulary resolution",
 			"iterations": 30000,
-			"median": 326708,
-			"p10": 304375,
-			"p90": 331211
+			"median": 313470,
+			"p10": 294402,
+			"p90": 314730
 		},
 		{
 			"name": "design.resolver",
 			"category": "design",
 			"description": "registry-backed reusable design resolver",
 			"iterations": 30000,
-			"median": 328786,
-			"p10": 324936,
-			"p90": 333467
+			"median": 317543,
+			"p10": 315712,
+			"p90": 318645
 		},
 		{
 			"name": "design.registry",
 			"category": "design",
 			"description": "design module registry construction",
 			"iterations": 30000,
-			"median": 27255185,
-			"p10": 23010547,
-			"p90": 27508223
+			"median": 24269390,
+			"p10": 21384016,
+			"p90": 26161848
 		},
 		{
 			"name": "cx.plain",
 			"category": "composition",
 			"description": "plain class-string composition",
 			"iterations": 500000,
-			"median": 81406151,
-			"p10": 73203763,
-			"p90": 82572401
+			"median": 79819085,
+			"p10": 72219540,
+			"p90": 79973334
 		},
 		{
 			"name": "cx.atoms",
 			"category": "composition",
 			"description": "configured CSS atom conflict composition",
 			"iterations": 30000,
-			"median": 527716,
-			"p10": 466817,
-			"p90": 531234
+			"median": 523546,
+			"p10": 513768,
+			"p90": 541392
 		},
 		{
 			"name": "cx.vars",
 			"category": "composition",
 			"description": "class composition with variable carriers",
 			"iterations": 30000,
-			"median": 872811,
-			"p10": 827508,
-			"p90": 888939
+			"median": 872190,
+			"p10": 810547,
+			"p90": 878529
 		},
 		{
 			"name": "tw.configured",
 			"category": "tailwind",
 			"description": "metadata-aware configured tw compiler",
 			"iterations": 50000,
-			"median": 685911,
-			"p10": 643507,
-			"p90": 698168
+			"median": 697141,
+			"p10": 637403,
+			"p90": 697825
 		},
 		{
 			"name": "tw.root",
 			"category": "tailwind",
 			"description": "root open tw compiler",
 			"iterations": 100000,
-			"median": 931020,
-			"p10": 888084,
-			"p90": 949468
+			"median": 935472,
+			"p10": 909805,
+			"p90": 977025
 		},
 		{
 			"name": "stack.classes",
 			"category": "layout",
 			"description": "renderer-agnostic Stack class mapping",
 			"iterations": 200000,
-			"median": 8597713,
-			"p10": 8061076,
-			"p90": 8639122
+			"median": 8663916,
+			"p10": 8197463,
+			"p90": 8766835
 		},
 		{
 			"name": "stack.style",
 			"category": "layout",
 			"description": "renderer-agnostic Stack style mapping",
 			"iterations": 2000000,
-			"median": 20886101,
-			"p10": 20678977,
-			"p90": 21016139
+			"median": 20701621,
+			"p10": 20516740,
+			"p90": 20822542
 		},
 		{
 			"name": "stack.css",
 			"category": "layout",
 			"description": "Stack bound to the CSS class compiler",
 			"iterations": 30000,
-			"median": 1149304,
-			"p10": 1132179,
-			"p90": 1159680
+			"median": 1106630,
+			"p10": 1096012,
+			"p90": 1135498
 		},
 		{
 			"name": "react-native.dss",
 			"category": "platform",
 			"description": "React Native design style object",
 			"iterations": 30000,
-			"median": 136301,
-			"p10": 134155,
-			"p90": 139512
+			"median": 135080,
+			"p10": 130635,
+			"p90": 138255
 		},
 		{
 			"name": "react-native.cx",
 			"category": "platform",
 			"description": "React Native style-object composition",
 			"iterations": 100000,
-			"median": 101121,
-			"p10": 100347,
-			"p90": 103281
+			"median": 99703,
+			"p10": 98245,
+			"p90": 102833
 		},
 		{
 			"name": "opentui.dss",
 			"category": "platform",
 			"description": "OpenTUI design style object",
 			"iterations": 30000,
-			"median": 141389,
-			"p10": 138484,
-			"p90": 143687
+			"median": 134937,
+			"p10": 132434,
+			"p90": 137793
 		},
 		{
 			"name": "opentui.cx",
 			"category": "platform",
 			"description": "OpenTUI style-object composition",
 			"iterations": 100000,
-			"median": 102738,
-			"p10": 97218,
-			"p90": 103823
+			"median": 99207,
+			"p10": 90003,
+			"p90": 99959
 		},
 		{
 			"name": "react-strict-dom.css",
 			"category": "platform",
 			"description": "React Strict DOM web CSS carrier",
 			"iterations": 30000,
-			"median": 1661701,
-			"p10": 1547419,
-			"p90": 1685567
+			"median": 1641344,
+			"p10": 1262478,
+			"p90": 1642613
 		},
 		{
 			"name": "react-strict-dom.native",
 			"category": "platform",
 			"description": "React Strict DOM native CSS carrier",
 			"iterations": 30000,
-			"median": 819488,
-			"p10": 806775,
-			"p90": 823180
+			"median": 830316,
+			"p10": 781163,
+			"p90": 836479
 		},
 		{
 			"name": "react-strict-dom.dss",
 			"category": "platform",
 			"description": "React Strict DOM design carrier",
 			"iterations": 30000,
-			"median": 173295,
-			"p10": 172190,
-			"p90": 176188
+			"median": 169836,
+			"p10": 167201,
+			"p90": 170519
 		},
 		{
 			"name": "react-strict-dom.cx",
 			"category": "platform",
 			"description": "React Strict DOM web composition",
 			"iterations": 100000,
-			"median": 1676993,
-			"p10": 1638763,
-			"p90": 1689608
+			"median": 1665533,
+			"p10": 1624483,
+			"p90": 1679870
 		},
 		{
 			"name": "react-strict-dom.native-cx",
 			"category": "platform",
 			"description": "React Strict DOM native composition",
 			"iterations": 100000,
-			"median": 919640,
-			"p10": 877853,
-			"p90": 922373
+			"median": 907419,
+			"p10": 537883,
+			"p90": 914651
 		},
 		{
 			"name": "react-strict-dom.create",
 			"category": "platform",
 			"description": "React Strict DOM named style definitions",
 			"iterations": 30000,
-			"median": 1300017,
-			"p10": 1271548,
-			"p90": 1307192
+			"median": 1293852,
+			"p10": 1241660,
+			"p90": 1295689
 		},
 		{
 			"name": "adapter.named-atoms",
 			"category": "adapter",
 			"description": "sheet-backed named atom strategy",
 			"iterations": 30000,
-			"median": 1599922,
-			"p10": 1434926,
-			"p90": 1601609
+			"median": 1561294,
+			"p10": 1436068,
+			"p90": 1580552
 		},
 		{
 			"name": "adapter.stylex",
 			"category": "adapter",
 			"description": "StyleX-shaped class strategy",
 			"iterations": 30000,
-			"median": 1534102,
-			"p10": 1518644,
-			"p90": 1539814
+			"median": 1503216,
+			"p10": 1486329,
+			"p90": 1515136
 		},
 		{
 			"name": "adapter.panda",
 			"category": "adapter",
 			"description": "Panda-shaped class strategy",
 			"iterations": 30000,
-			"median": 1569226,
-			"p10": 1424744,
-			"p90": 1583904
+			"median": 1585041,
+			"p10": 1455283,
+			"p90": 1599840
 		},
 		{
 			"name": "adapter.unocss",
 			"category": "adapter",
 			"description": "UnoCSS candidate strategy",
 			"iterations": 30000,
-			"median": 1534583,
-			"p10": 1530586,
-			"p90": 1542559
+			"median": 1537295,
+			"p10": 1486977,
+			"p90": 1559772
 		},
 		{
 			"name": "adapter.tailwind",
 			"category": "adapter",
 			"description": "Tailwind utility class strategy",
 			"iterations": 100000,
-			"median": 4369834,
-			"p10": 3882038,
-			"p90": 4509761
+			"median": 4288563,
+			"p10": 3800818,
+			"p90": 4449149
 		},
 		{
 			"name": "backend.css",
 			"category": "backend",
 			"description": "CSS backend declaration lowering",
 			"iterations": 100000,
-			"median": 12991582,
-			"p10": 12725075,
-			"p90": 13112892
+			"median": 12299556,
+			"p10": 12127949,
+			"p90": 12820649
 		},
 		{
 			"name": "backend.object",
 			"category": "backend",
 			"description": "object backend style resolution",
 			"iterations": 100000,
-			"median": 1113443,
-			"p10": 1102287,
-			"p90": 1118985
+			"median": 1043442,
+			"p10": 994295,
+			"p90": 1100446
 		},
 		{
 			"name": "backend.object-css",
 			"category": "backend",
 			"description": "object backend CSS projection",
 			"iterations": 100000,
-			"median": 987140,
-			"p10": 984350,
-			"p90": 994676
+			"median": 953439,
+			"p10": 914022,
+			"p90": 965876
 		},
 		{
 			"name": "backend.object-design-css",
 			"category": "backend",
 			"description": "object backend design projection",
 			"iterations": 50000,
-			"median": 125808,
-			"p10": 122504,
-			"p90": 126662
+			"median": 122943,
+			"p10": 122555,
+			"p90": 123410
 		},
 		{
 			"name": "backend.rn",
 			"category": "backend",
 			"description": "React Native backend declaration lowering",
 			"iterations": 100000,
-			"median": 3895712,
-			"p10": 3811436,
-			"p90": 3979836
+			"median": 4090014,
+			"p10": 4034685,
+			"p90": 4120398
 		},
 		{
 			"name": "backend.opentui",
 			"category": "backend",
 			"description": "OpenTUI backend declaration lowering",
 			"iterations": 100000,
-			"median": 3891625,
-			"p10": 3768300,
-			"p90": 3907776
+			"median": 3834570,
+			"p10": 3727403,
+			"p90": 3881454
 		},
 		{
 			"name": "backend.react-strict-dom",
 			"category": "backend",
 			"description": "React Strict DOM backend declaration lowering",
 			"iterations": 100000,
-			"median": 5540857,
-			"p10": 4569905,
-			"p90": 5625273
+			"median": 5689428,
+			"p10": 4813661,
+			"p90": 5707328
 		},
 		{
 			"name": "backend.registry.create",
 			"category": "backend",
 			"description": "empty backend registry construction",
 			"iterations": 50000,
-			"median": 2618247,
-			"p10": 1731012,
-			"p90": 5827195
+			"median": 2950331,
+			"p10": 957787,
+			"p90": 6937418
 		},
 		{
 			"name": "backend.object-cx",
 			"category": "backend",
 			"description": "object backend style merge",
 			"iterations": 100000,
-			"median": 1635256,
-			"p10": 1390224,
-			"p90": 1682777
+			"median": 1703772,
+			"p10": 1478358,
+			"p90": 1718638
 		},
 		{
 			"name": "backend.registry",
 			"category": "backend",
 			"description": "built-in backend registry lookup",
 			"iterations": 500000,
-			"median": 68221740,
-			"p10": 66605248,
-			"p90": 68804969
+			"median": 62511721,
+			"p10": 59721402,
+			"p90": 62791068
 		},
 		{
 			"name": "host.registry",
 			"category": "host",
 			"description": "host adapter lookup and class prop projection",
 			"iterations": 2000000,
-			"median": 148026624,
-			"p10": 141565359,
-			"p90": 149604017
+			"median": 146555932,
+			"p10": 92140953,
+			"p90": 152053189
 		},
 		{
 			"name": "build.stylesheet",
 			"category": "build",
 			"description": "pure stylesheet generation",
 			"iterations": 2000,
-			"median": 171877,
-			"p10": 164724,
-			"p90": 175389
+			"median": 166774,
+			"p10": 158954,
+			"p90": 173237
 		},
 		{
 			"name": "build.lib-artifact",
 			"category": "build",
 			"description": "design-system artifact construction",
 			"iterations": 20000,
-			"median": 382049,
-			"p10": 380672,
-			"p90": 387062
+			"median": 356690,
+			"p10": 198003,
+			"p90": 392950
 		},
 		{
 			"name": "build.source.scan",
 			"category": "build",
 			"description": "source scanner language and AST boundary",
 			"iterations": 10000,
-			"median": 641895,
-			"p10": 510794,
-			"p90": 654465
+			"median": 650491,
+			"p10": 512530,
+			"p90": 662652
 		},
 		{
 			"name": "build.source.registry",
 			"category": "build",
 			"description": "source scanner registry lookup",
 			"iterations": 200000,
-			"median": 13795006,
-			"p10": 13579769,
-			"p90": 13889291
+			"median": 12669488,
+			"p10": 12253870,
+			"p90": 12836044
 		},
 		{
 			"name": "build.source.workspace",
 			"category": "build",
 			"description": "source workspace construction boundary",
 			"iterations": 20000,
-			"median": 26282659,
-			"p10": 18580177,
-			"p90": 28595244
+			"median": 26133850,
+			"p10": 18634987,
+			"p90": 28539139
 		},
 		{
 			"name": "build.css-extraction",
 			"category": "build",
 			"description": "CSS extraction inspection",
 			"iterations": 10000,
-			"median": 331183,
-			"p10": 279258,
-			"p90": 347417
+			"median": 355073,
+			"p10": 339262,
+			"p90": 359018
 		},
 		{
 			"name": "build.vite-core",
 			"category": "build",
 			"description": "Vite transform core construction",
 			"iterations": 500,
-			"median": 4803812,
-			"p10": 1849283,
-			"p90": 4920049
+			"median": 4854369,
+			"p10": 1806685,
+			"p90": 4938272
 		},
 		{
 			"name": "build.vite-plugin",
 			"category": "build",
 			"description": "Vite plugin composition root construction",
 			"iterations": 500,
-			"median": 4482657,
-			"p10": 3395586,
-			"p90": 4518059
+			"median": 4357298,
+			"p10": 3340750,
+			"p90": 4585389
 		},
 		{
 			"name": "preset.define",
 			"category": "preset",
 			"description": "unified preset builder calls",
 			"iterations": 100000,
-			"median": 3255840,
-			"p10": 3180071,
-			"p90": 3337380
+			"median": 3333829,
+			"p10": 3306842,
+			"p90": 3374944
 		}
 	]
 }

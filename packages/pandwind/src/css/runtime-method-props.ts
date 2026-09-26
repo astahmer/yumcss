@@ -35,6 +35,19 @@ const isVarsOutput = (value: object): value is VarsOutput => {
 	);
 };
 
+const mergeFlatCssStyles = (styles: Array<CssStyle>): CssStyle | undefined => {
+	const merged: CssStyle = {};
+	for (const style of styles) {
+		if (style === null || typeof style !== "object" || Array.isArray(style)) return undefined;
+		for (const key of Object.keys(style)) {
+			const value = style[key];
+			if (typeof value !== "string") return undefined;
+			merged[key] = value;
+		}
+	}
+	return merged;
+};
+
 /** Attach the host-prop projection that combines classes and inline variables. */
 export const attachProps: RuntimeCssAttachment = (css) => {
 	css.props = (...props: Array<PropsInput>): PropsReturn => {
@@ -122,8 +135,11 @@ export const attachProps: RuntimeCssAttachment = (css) => {
 				classNames.push(value);
 			}
 		}
+		const style = styles?.length
+			? (mergeFlatCssStyles(styles) ?? Object.assign({}, assign(...styles)))
+			: undefined;
 		return {
-			style: styles?.length ? Object.assign({}, assign(...styles)) : undefined,
+			style,
 			className: classNames?.length ? classNames.join(" ") : undefined,
 		};
 	};
