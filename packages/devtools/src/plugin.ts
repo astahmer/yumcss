@@ -1,8 +1,7 @@
 import { globSync, readFileSync } from "node:fs";
 import { basename, extname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineRpcFunction } from "@vitejs/devtools-kit";
-import type { Plugin, ResolvedConfig } from "vite";
+import { defineRpcFunction, type PluginWithDevTools } from "@vitejs/devtools-kit";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import {
 	runAdapterMigrationAsync,
@@ -195,8 +194,8 @@ function elementSelection(input: DevtoolsElementInput, store: DevtoolsEvidenceSt
 	});
 }
 
-export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin {
-	let config: ResolvedConfig | undefined;
+export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): PluginWithDevTools {
+	let root: string | undefined;
 	let store: DevtoolsEvidenceStore | undefined;
 
 	const currentStore = (): DevtoolsEvidenceStore => {
@@ -208,7 +207,7 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 		name: "pandwind-devtools",
 		apply: "serve",
 		configResolved(resolved) {
-			config = resolved;
+			root = resolved.root;
 			store = createDevtoolsEvidenceStore(resolved.root);
 			loadInteropTokens(resolved.root, store);
 		},
@@ -216,11 +215,11 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 			const file = fileForId(id);
 			if (!isInspectableFile(file)) return null;
 			const started = performance.now();
-			const relativeFile = relative(config?.root ?? process.cwd(), file);
+			const relativeFile = relative(root ?? process.cwd(), file);
 			const scan = SOURCE_SCANNER_SERVICE.scan({
 				file: relativeFile,
 				source: code,
-				root: config?.root,
+				root,
 			});
 			const evidence = currentStore();
 			evidence.recordTransform(relativeFile, Buffer.byteLength(code), performance.now() - started);
@@ -245,12 +244,12 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 			if (isInspectableFile(file))
 				currentStore().recordRuntime({
 					event: "hmr-update",
-					file: relative(config?.root ?? process.cwd(), file),
+					file: relative(root ?? process.cwd(), file),
 				});
 		},
 		devtools: {
-			setup(ctx) {
-				if (options.enabled === false) return;
+					setup(ctx) {
+					if (options.enabled === false) return;
 				const clientPath = fileURLToPath(new URL("../dist/client", import.meta.url));
 				const modulePath = fileURLToPath(new URL("../dist", import.meta.url));
 				ctx.views.hostStatic("/__pandwind_devtools__", clientPath);
@@ -326,9 +325,9 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): Plugin 
 						returns: undefined,
 						setup: () => ({
 							handler: async (input: DevtoolsMigrationInput) => {
-								const root = config?.root;
-								if (root === undefined) throw new Error("Vite root is not initialized");
-								const result = await previewMigration(root, input);
+								const projectRoot = root;
+								if (projectRoot === undefined) throw new Error("Vite root is not initialized");
+								const result = await previewMigration(projectRoot, input);
 								recordMigration(currentStore(), result);
 								return result;
 							},
