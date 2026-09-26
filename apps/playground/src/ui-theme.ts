@@ -183,24 +183,43 @@ const theme = define.theme({
 
 export type PlaygroundColorToken = keyof typeof semanticTokens.colors;
 
-export const playgroundPreset = define.preset(theme, {
-	strict: true,
-	conditions: themeConditions,
-	properties: {
-		backgroundColor: { $tokens: "colors", $strict: false },
-		color: { $tokens: "colors", $strict: false },
-		borderColor: { $tokens: "colors", $strict: false },
-		outlineColor: { $tokens: "colors", $strict: false },
-		accentColor: { $tokens: "colors", $strict: false },
-		fill: { $tokens: "colors", $strict: false },
-		stroke: { $tokens: "colors", $strict: false },
-		textDecorationColor: { $tokens: "colors", $strict: false },
-		boxShadow: { $tokens: "shadows", $strict: false },
-		border: { $tokens: "borders", $strict: false },
-		borderTop: { $tokens: "borders", $strict: false },
-		borderRight: { $tokens: "borders", $strict: false },
-		borderBottom: { $tokens: "borders", $strict: false },
-		borderLeft: { $tokens: "borders", $strict: false },
-		$all: true,
+export const playgroundPreset = define.preset(
+	theme,
+	{
+		strict: true,
+		conditions: themeConditions,
+		properties: {
+			backgroundColor: { $tokens: "colors", $strict: false },
+			color: { $tokens: "colors", $strict: false },
+			borderColor: { $tokens: "colors", $strict: false },
+			outlineColor: { $tokens: "colors", $strict: false },
+			accentColor: { $tokens: "colors", $strict: false },
+			fill: { $tokens: "colors", $strict: false },
+			stroke: { $tokens: "colors", $strict: false },
+			textDecorationColor: { $tokens: "colors", $strict: false },
+			boxShadow: { $tokens: "shadows", $strict: false },
+			border: { $tokens: "borders", $strict: false },
+			borderTop: { $tokens: "borders", $strict: false },
+			borderRight: { $tokens: "borders", $strict: false },
+			borderBottom: { $tokens: "borders", $strict: false },
+			borderLeft: { $tokens: "borders", $strict: false },
+			$all: true,
+		},
 	},
-});
+	{
+		globals: {
+			"html, body, #root": { width: "100%", height: "100%", margin: 0 },
+			":root": {
+				colorScheme: "dark",
+				fontFamily: "ui-sans-serif, system-ui, sans-serif",
+				WebkitFontSmoothing: "antialiased",
+			},
+			':root[data-theme="light"]': { colorScheme: "light" },
+			"button, input, select": { font: "inherit" },
+			a: { color: "inherit", textDecoration: "none" },
+		},
+		keyframes: {
+			pulse: { "50%": { opacity: 0.5 } },
+		},
+	},
+);

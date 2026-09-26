@@ -1127,7 +1127,7 @@ function StyleProgramTreeNode(props: {
 	const expanded = props.expandedPaths.has(props.path);
 	return (
 		<div>
-			<div className={IR_ROW} style={{ paddingLeft: `${props.depth * 14}px` }}>
+			<div {...uiCss.props(IR_ROW, uiCss.vars({ paddingLeft: `${props.depth * 14}px` }))}>
 				<button
 					type="button"
 					className={IR_DISCLOSURE}

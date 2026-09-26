@@ -35,6 +35,10 @@ const SPLITTER_PANEL = uiCss.class({
 	flexDirection: "column",
 	overflow: "hidden",
 });
+const SPLITTER_PANEL_COLLAPSED = uiCss.class({
+	flexGrow: 0,
+	flexShrink: 0,
+});
 const SPLITTER_PANEL_CONTENT = uiCss.class({
 	display: "flex",
 	width: "100%",
@@ -121,15 +125,6 @@ interface ResizableSplitterControls {
 
 const RESIZABLE_SPLITTER_CONTROLS = createContext<ResizableSplitterControls | null>(null);
 const DEFAULT_COLLAPSED_SIZE = "36px";
-
-const collapsedPanelStyle = (panel: ResizableSplitterPanel) => {
-	const size = panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE;
-	return {
-		flexGrow: 0,
-		flexShrink: 0,
-		flexBasis: typeof size === "number" ? `${size}%` : size,
-	};
-};
 
 const initialPanelSizes = (panels: readonly ResizableSplitterPanel[]): number[] => {
 	const sizes = panels.map((panel) => panel.initialSize ?? 100 / Math.max(panels.length, 1));
@@ -275,22 +270,35 @@ export function ResizableSplitter(props: {
 		>
 			{props.panels.map((panel, index) => {
 				const nextPanel = props.panels[index + 1];
+				const isCollapsedPanel = collapsedPanelIds.has(panel.id);
+				const collapsedPanelSize = panel.collapsedSize ?? DEFAULT_COLLAPSED_SIZE;
 				const resizeDisabled =
 					nextPanel === undefined ||
-					collapsedPanelIds.has(panel.id) ||
+					isCollapsedPanel ||
 					(nextPanel !== undefined && collapsedPanelIds.has(nextPanel.id));
 				return (
 					<Fragment key={panel.id}>
 						<Splitter.Panel
 							id={panel.id}
-							className={SPLITTER_PANEL}
-							style={collapsedPanelIds.has(panel.id) ? collapsedPanelStyle(panel) : undefined}
+
+							{...uiCss.props(
+								SPLITTER_PANEL,
+								isCollapsedPanel ? SPLITTER_PANEL_COLLAPSED : undefined,
+								isCollapsedPanel
+									? uiCss.vars({
+											flexBasis:
+												typeof collapsedPanelSize === "number"
+													? `${collapsedPanelSize}%`
+													: collapsedPanelSize,
+										})
+									: undefined,
+							)}
 						>
 							<RESIZABLE_SPLITTER_CONTROLS.Provider
 								value={
 									panel.collapsible === true
 										? {
-												collapsed: collapsedPanelIds.has(panel.id),
+											collapsed: isCollapsedPanel,
 												toggle: () => togglePanel(panel.id),
 											}
 										: null
