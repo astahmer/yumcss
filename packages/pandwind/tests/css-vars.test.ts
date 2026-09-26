@@ -138,6 +138,18 @@ describe("css.vars — encoding", () => {
 		});
 	});
 
+	test("single-object fast path still expands raw style subtrees", () => {
+		const out = css.vars({ $raw: { color: "red" } } as never);
+		expect(out.class).toBe("pw-color");
+		expect(out.style).toEqual({ "--pw-c-color": "red" });
+	});
+
+	test("multi-object inputs keep last-value-wins flattening", () => {
+		const out = css.vars({ color: "red" }, { color: "blue", padding: 4 });
+		expect(out.class).toBe("pw-color pw-padding");
+		expect(out.style).toEqual({ "--pw-c-color": "blue", "--pw-c-padding": "4px" });
+	});
+
 	test("invalid and structural values are omitted instead of becoming CSS", () => {
 		const out = css.vars({
 			opacity: Number.NaN,

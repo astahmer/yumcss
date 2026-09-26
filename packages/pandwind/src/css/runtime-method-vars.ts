@@ -1,6 +1,7 @@
 import type { StyleObject } from "../types/typings.ts";
 import { isEncodedFirstThatWorks } from "./first-that-works.ts";
 import { createVarCompiler, type VarAtom, type VarsOutput } from "./var-compiler.ts";
+import { flattenStyles } from "./style-flattening.ts";
 import { VARS_ATOMS } from "./vars-carrier.ts";
 import type { RuntimeCssAttachment } from "./runtime-base.ts";
 
@@ -15,7 +16,7 @@ export const attachVars: RuntimeCssAttachment = (css, context) => {
 		context.resolveRuntimeValue,
 	);
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
-		const flat = context.flatten(context.assign(...styles));
+		const flat = flattenStyles(...styles);
 		if (Object.values(flat).some(isEncodedFirstThatWorks)) {
 			throw new Error(
 				"pandwind: firstThatWorks is a static declaration fallback; use css() or css.class() instead of css.vars().",

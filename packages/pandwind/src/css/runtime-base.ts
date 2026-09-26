@@ -1,4 +1,4 @@
-import { assign, isSafePathPart, type FlatStyles, flattenStyle } from "../lib/utils.ts";
+import { assign, type FlatStyles, flattenStyle } from "../lib/utils.ts";
 import type {
 	AnyCssConfig,
 	AnyTokens,
@@ -12,6 +12,7 @@ import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
 import { isCompilableCssValue } from "./first-that-works.ts";
 import { expandRawStyle } from "./raw.ts";
+import { isFlatStyle } from "./style-flattening.ts";
 
 /**
  * Options shared by the public CSS factories.
@@ -89,15 +90,6 @@ export type RuntimeCssAttachment = (css: RuntimeCssFunction, context: RuntimeCss
 const normalizeStyleInput = (style: unknown): StyleObject => {
 	if (!isStyleObject(style)) return Object.create(null) as StyleObject;
 	return style;
-};
-
-const isFlatStyle = (style: unknown): style is StyleObject => {
-	if (!isStyleObject(style)) return false;
-	for (const key of Object.keys(style)) {
-		const value = style[key];
-		if (!isSafePathPart(key) || value == null || typeof value === "object") return false;
-	}
-	return true;
 };
 
 /**
