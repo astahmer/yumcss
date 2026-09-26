@@ -44,3 +44,16 @@ test("$raw follows normal source order when merged with typed declarations", () 
 
 	expect(createStylesheet(preset, { debug: true }).generate([raw])).toContain("padding:8px");
 });
+
+test("class projection preserves nested raw declarations", () => {
+	const css = createCss(preset, { debug: true });
+	const style = {
+		color: "$brand",
+		$raw: {
+			"scroll-timeline-name": "--progress",
+			_hover: { color: "rebeccapurple" },
+		},
+	} satisfies Parameters<typeof css>[0];
+
+	expect(css.class(style)).toBe(Object.values(css(style)).join(" "));
+});

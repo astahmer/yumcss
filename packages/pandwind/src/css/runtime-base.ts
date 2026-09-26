@@ -113,8 +113,7 @@ export function createCssRuntime(
 		validate(key, value);
 		return backend.declare(key, value);
 	};
-	const compileStyles = (...styles: Array<StyleObject>): CompiledStyles => {
-		const expandedStyles = styles.map((style) => expandRawStyle(style));
+	const compileExpandedStyles = (expandedStyles: Array<StyleObject>): CompiledStyles => {
 		if (expandedStyles.length === 1 && isFlatStyle(expandedStyles[0])) {
 			const compiled = Object.create(null) as CompiledStyles;
 			for (const key of Object.keys(expandedStyles[0])) {
@@ -139,6 +138,8 @@ export function createCssRuntime(
 		Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
 		return compiled;
 	};
+	const compileStyles = (...styles: Array<StyleObject>): CompiledStyles =>
+		compileExpandedStyles(styles.map((style) => expandRawStyle(style)));
 	const compileClass = (...styles: Array<StyleObject>): string => {
 		const expandedStyles = styles.map((style) => expandRawStyle(style));
 		if (expandedStyles.length === 1 && isFlatStyle(expandedStyles[0])) {
@@ -151,7 +152,7 @@ export function createCssRuntime(
 			}
 			return className;
 		}
-		const compiled = compileStyles(...expandedStyles);
+		const compiled = compileExpandedStyles(expandedStyles);
 		let className = "";
 		for (const key of Object.keys(compiled)) {
 			if (className) className += " ";

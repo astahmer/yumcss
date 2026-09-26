@@ -153,84 +153,84 @@ Measured on darwin/arm64 with Node v24.20.0; snapshot updated 2026-09-26. Higher
 
 | Rank | API                        | Category    | Median ops/s |   P10 ops/s |   P90 ops/s |
 | ---: | -------------------------- | ----------- | -----------: | ----------: | ----------: |
-|    1 | dss.runtime.sheet          | design      |  248,472,947 | 243,672,139 | 248,711,086 |
-|    2 | dss.group                  | design      |  201,850,294 | 156,148,341 | 206,362,855 |
-|    3 | host.registry              | host        |  138,555,730 | 131,087,370 | 147,052,066 |
-|    4 | cx.plain                   | composition |   81,001,175 |  72,755,486 |  81,468,612 |
-|    5 | backend.registry           | backend     |   64,743,777 |  62,900,337 |  68,672,272 |
-|    6 | css.runtime.sheet          | css         |   61,808,995 |  52,660,567 |  61,915,671 |
-|    7 | build.source.workspace     | build       |   25,852,319 |  19,247,722 |  29,059,208 |
-|    8 | design.registry            | design      |   23,544,037 |  21,002,888 |  24,478,146 |
-|    9 | stack.style                | layout      |   20,337,122 |  16,489,700 |  20,499,268 |
-|   10 | backend.css                | backend     |   15,622,456 |  15,129,355 |  15,850,372 |
-|   11 | build.source.registry      | build       |   13,537,715 |  13,347,756 |  13,595,038 |
-|   12 | adapter.tailwind           | adapter     |    8,326,741 |   5,677,248 |   8,372,609 |
-|   13 | stack.classes              | layout      |    7,043,597 |   6,501,731 |   7,867,898 |
-|   14 | css.unsafe.props           | css         |    6,612,117 |   4,909,213 |   6,652,929 |
-|   15 | backend.react-strict-dom   | backend     |    6,421,147 |   5,302,039 |   6,446,293 |
-|   16 | css.runtime.props          | css         |    6,247,722 |   5,696,608 |   6,441,973 |
-|   17 | build.vite-core            | build       |    4,993,758 |   1,840,773 |   5,014,643 |
-|   18 | build.vite-plugin          | build       |    4,638,563 |   3,479,277 |   4,689,332 |
-|   19 | css.unsafe.input           | css         |    4,573,141 |   3,144,819 |   4,626,001 |
-|   20 | backend.rn                 | backend     |    4,039,581 |   3,996,170 |   4,064,751 |
-|   21 | backend.opentui            | backend     |    3,953,246 |   3,830,378 |   3,985,817 |
-|   22 | css.generated.props        | css         |    3,682,639 |   3,630,002 |   3,723,567 |
-|   23 | css.unsafe.group           | css         |    3,625,451 |   3,222,226 |   3,689,697 |
-|   24 | css.default.props          | css         |    3,291,173 |   2,702,378 |   3,331,374 |
-|   25 | dss.runtime.props          | design      |    3,267,855 |   3,003,630 |   3,315,650 |
-|   26 | preset.define              | preset      |    3,237,381 |   2,952,458 |   3,265,630 |
-|   27 | backend.registry.create    | backend     |    2,824,500 |   1,721,420 |   7,078,268 |
-|   28 | css.unsafe.vars            | css         |    2,570,694 |   2,560,486 |   2,579,757 |
-|   29 | dss.props                  | design      |    2,264,699 |   1,935,031 |   2,608,734 |
-|   30 | css.generated.vars         | css         |    2,159,275 |   1,799,354 |   2,238,877 |
-|   31 | css.preset.class           | css         |    2,080,023 |   1,937,567 |   2,095,515 |
-|   32 | css.default.vars           | css         |    2,065,753 |   1,922,421 |   2,264,732 |
-|   33 | adapter.named-atoms        | adapter     |    1,948,331 |   1,811,571 |   1,989,533 |
-|   34 | css.runtime.vars           | css         |    1,929,834 |     869,850 |   1,963,367 |
-|   35 | adapter.stylex             | adapter     |    1,884,338 |   1,846,490 |   1,909,890 |
-|   36 | react-strict-dom.css       | platform    |    1,769,481 |   1,595,830 |   1,783,556 |
-|   37 | backend.object-cx          | backend     |    1,734,686 |   1,349,340 |   1,739,458 |
-|   38 | adapter.unocss             | adapter     |    1,661,582 |   1,577,992 |   1,884,102 |
-|   39 | adapter.panda              | adapter     |    1,643,303 |   1,623,944 |   1,918,874 |
-|   40 | react-strict-dom.cx        | platform    |    1,550,124 |   1,267,176 |   1,686,371 |
-|   41 | stack.css                  | layout      |    1,394,797 |   1,355,776 |   1,404,911 |
-|   42 | react-strict-dom.create    | platform    |    1,350,355 |   1,147,601 |   1,359,881 |
-|   43 | tw.root                    | tailwind    |    1,307,563 |   1,241,295 |   1,370,775 |
-|   44 | backend.object             | backend     |    1,131,397 |   1,120,925 |   1,141,059 |
-|   45 | css.first-that-works       | css         |    1,115,323 |   1,028,275 |   1,137,500 |
-|   46 | dss.vars                   | design      |    1,051,270 |     925,687 |   1,177,957 |
-|   47 | css.unsafe.raw             | css         |      974,054 |     894,726 |     980,983 |
-|   48 | backend.object-css         | backend     |      940,182 |     832,632 |     995,174 |
-|   49 | react-strict-dom.native-cx | platform    |      919,863 |     915,183 |     924,109 |
-|   50 | tw.configured              | tailwind    |      915,673 |     833,754 |     916,793 |
-|   51 | css.runtime.raw            | css         |      879,593 |     842,731 |     904,913 |
-|   52 | cx.vars                    | composition |      852,230 |     755,017 |     881,373 |
-|   53 | react-strict-dom.native    | platform    |      817,841 |     604,174 |     820,935 |
-|   54 | css.default.raw            | css         |      669,656 |     609,703 |     734,188 |
-|   55 | css.default.class          | css         |      667,473 |     557,419 |     681,754 |
-|   56 | css.generated.raw          | css         |      666,474 |     551,811 |     698,123 |
-|   57 | build.source.scan          | build       |      604,609 |     478,715 |     657,275 |
-|   58 | css.unsafe.class           | css         |      587,192 |     582,240 |     591,165 |
-|   59 | cx.atoms                   | composition |      491,181 |     462,118 |     532,323 |
-|   60 | css.generated.class        | css         |      401,546 |     366,040 |     404,999 |
-|   61 | css.runtime.class          | css         |      358,696 |     347,670 |     401,185 |
-|   62 | build.css-extraction       | build       |      354,737 |     341,088 |     356,543 |
-|   63 | build.lib-artifact         | build       |      335,303 |     315,393 |     378,974 |
-|   64 | design.resolver            | design      |      328,960 |     307,008 |     329,739 |
-|   65 | design.resolve             | design      |      314,738 |     278,817 |     322,263 |
-|   66 | dss.raw                    | design      |      226,061 |     204,832 |     228,871 |
-|   67 | dss.runtime.raw            | design      |      219,869 |     206,112 |     223,758 |
-|   68 | dss.runtime.class          | design      |      190,575 |     167,161 |     194,057 |
-|   69 | css.default.compose        | css         |      183,303 |     157,500 |     193,690 |
-|   70 | react-strict-dom.dss       | platform    |      176,355 |     159,662 |     181,740 |
-|   71 | dss.class                  | design      |      176,202 |     159,779 |     184,582 |
-|   72 | build.stylesheet           | build       |      174,493 |     159,051 |     183,900 |
-|   73 | dss.compose                | design      |      159,848 |     142,314 |     162,207 |
-|   74 | react-native.dss           | platform    |      134,321 |     111,854 |     137,559 |
-|   75 | opentui.dss                | platform    |      120,717 |     105,271 |     134,509 |
-|   76 | backend.object-design-css  | backend     |      119,048 |     109,353 |     125,834 |
-|   77 | react-native.cx            | platform    |       97,809 |      94,783 |      99,779 |
-|   78 | opentui.cx                 | platform    |       97,180 |      95,931 |      99,458 |
+|    1 | dss.group                  | design      |  196,560,197 | 124,589,374 | 206,658,538 |
+|    2 | dss.runtime.sheet          | design      |  192,745,540 | 176,449,824 | 227,088,863 |
+|    3 | host.registry              | host        |  124,100,596 | 119,558,525 | 137,216,562 |
+|    4 | backend.registry           | backend     |   68,913,637 |  60,992,345 |  69,300,069 |
+|    5 | css.runtime.sheet          | css         |   59,572,716 |  55,069,491 |  61,671,767 |
+|    6 | cx.plain                   | composition |   52,258,891 |  37,445,352 |  72,845,585 |
+|    7 | build.source.workspace     | build       |   25,962,798 |  17,222,197 |  27,848,676 |
+|    8 | stack.style                | layout      |   19,627,800 |  17,713,105 |  20,358,807 |
+|    9 | design.registry            | design      |   16,304,348 |   8,024,699 |  21,378,302 |
+|   10 | backend.css                | backend     |   15,180,745 |  15,025,262 |  15,482,273 |
+|   11 | build.source.registry      | build       |   13,012,750 |  12,028,899 |  13,190,908 |
+|   12 | stack.classes              | layout      |    8,421,304 |   7,555,474 |   8,482,319 |
+|   13 | adapter.tailwind           | adapter     |    8,103,317 |   6,402,954 |   8,174,025 |
+|   14 | css.unsafe.props           | css         |    6,615,459 |   4,948,556 |   6,743,974 |
+|   15 | css.runtime.props          | css         |    6,295,082 |   6,253,420 |   6,425,818 |
+|   16 | backend.react-strict-dom   | backend     |    5,964,037 |   5,251,124 |   6,219,663 |
+|   17 | build.vite-core            | build       |    4,856,349 |   1,890,359 |   4,950,495 |
+|   18 | css.unsafe.input           | css         |    4,663,726 |   3,250,139 |   4,746,491 |
+|   19 | build.vite-plugin          | build       |    4,627,830 |   3,443,336 |   4,652,937 |
+|   20 | backend.rn                 | backend     |    4,013,767 |   3,798,785 |   4,050,831 |
+|   21 | css.generated.props        | css         |    3,759,870 |   3,726,265 |   3,795,586 |
+|   22 | css.unsafe.group           | css         |    3,730,667 |   3,031,183 |   3,789,873 |
+|   23 | backend.opentui            | backend     |    3,381,844 |   3,274,260 |   3,789,751 |
+|   24 | css.default.props          | css         |    3,339,564 |   2,787,834 |   3,368,390 |
+|   25 | preset.define              | preset      |    3,256,388 |   3,247,307 |   3,314,913 |
+|   26 | dss.runtime.props          | design      |    3,194,633 |   3,180,690 |   3,273,382 |
+|   27 | backend.registry.create    | backend     |    2,672,124 |   2,432,922 |   3,785,537 |
+|   28 | dss.props                  | design      |    2,584,489 |   1,877,229 |   2,654,202 |
+|   29 | css.unsafe.vars            | css         |    2,573,467 |   2,513,210 |   2,617,202 |
+|   30 | css.default.vars           | css         |    2,243,041 |   1,965,383 |   2,245,059 |
+|   31 | css.generated.vars         | css         |    2,173,492 |   2,000,447 |   2,192,798 |
+|   32 | css.preset.class           | css         |    2,059,037 |   1,914,278 |   2,070,917 |
+|   33 | css.runtime.vars           | css         |    1,974,653 |   1,803,923 |   1,997,342 |
+|   34 | adapter.named-atoms        | adapter     |    1,950,369 |   1,802,939 |   1,998,795 |
+|   35 | adapter.unocss             | adapter     |    1,820,531 |   1,804,629 |   1,858,914 |
+|   36 | adapter.panda              | adapter     |    1,808,187 |   1,544,928 |   1,883,333 |
+|   37 | react-strict-dom.css       | platform    |    1,784,940 |   1,571,634 |   1,791,490 |
+|   38 | react-strict-dom.cx        | platform    |    1,746,403 |   1,683,195 |   1,750,137 |
+|   39 | adapter.stylex             | adapter     |    1,691,018 |   1,651,524 |   1,860,758 |
+|   40 | backend.object-cx          | backend     |    1,616,881 |   1,399,899 |   1,674,668 |
+|   41 | stack.css                  | layout      |    1,410,509 |   1,383,971 |   1,415,194 |
+|   42 | tw.root                    | tailwind    |    1,350,402 |   1,307,254 |   1,359,179 |
+|   43 | react-strict-dom.create    | platform    |    1,339,664 |   1,299,463 |   1,340,942 |
+|   44 | dss.vars                   | design      |    1,085,925 |     855,180 |   1,139,152 |
+|   45 | css.first-that-works       | css         |    1,078,062 |   1,049,743 |   1,093,542 |
+|   46 | backend.object             | backend     |    1,027,997 |     744,149 |   1,118,882 |
+|   47 | css.unsafe.raw             | css         |      971,640 |     959,740 |     976,656 |
+|   48 | react-strict-dom.native-cx | platform    |      919,441 |     905,133 |     932,426 |
+|   49 | backend.object-css         | backend     |      879,148 |     789,101 |     973,535 |
+|   50 | tw.configured              | tailwind    |      865,358 |     740,271 |     881,790 |
+|   51 | css.runtime.raw            | css         |      863,248 |     842,176 |     881,492 |
+|   52 | react-strict-dom.native    | platform    |      835,709 |     825,408 |     841,466 |
+|   53 | cx.vars                    | composition |      831,442 |     785,353 |     856,303 |
+|   54 | css.default.raw            | css         |      733,109 |     667,533 |     757,338 |
+|   55 | css.generated.raw          | css         |      718,039 |     710,410 |     724,723 |
+|   56 | css.default.class          | css         |      669,983 |     402,292 |     685,991 |
+|   57 | css.unsafe.class           | css         |      606,347 |     586,056 |     614,444 |
+|   58 | build.source.scan          | build       |      533,377 |     504,933 |     641,440 |
+|   59 | cx.atoms                   | composition |      502,743 |     394,736 |     521,448 |
+|   60 | css.runtime.class          | css         |      454,492 |     436,944 |     456,679 |
+|   61 | css.generated.class        | css         |      410,261 |     373,025 |     417,341 |
+|   62 | build.lib-artifact         | build       |      346,697 |     321,831 |     378,076 |
+|   63 | build.css-extraction       | build       |      317,875 |     312,067 |     348,375 |
+|   64 | design.resolver            | design      |      311,062 |     287,639 |     317,046 |
+|   65 | design.resolve             | design      |      308,313 |     275,433 |     311,332 |
+|   66 | dss.runtime.raw            | design      |      210,291 |     203,496 |     216,070 |
+|   67 | dss.raw                    | design      |      206,779 |     193,101 |     210,364 |
+|   68 | dss.class                  | design      |      187,805 |     179,217 |     191,659 |
+|   69 | dss.runtime.class          | design      |      185,352 |     184,275 |     187,964 |
+|   70 | css.default.compose        | css         |      184,710 |     184,333 |     189,477 |
+|   71 | react-strict-dom.dss       | platform    |      178,854 |     173,825 |     181,145 |
+|   72 | build.stylesheet           | build       |      168,795 |     154,227 |     177,914 |
+|   73 | opentui.dss                | platform    |      137,118 |     134,461 |     139,216 |
+|   74 | dss.compose                | design      |      135,381 |     126,895 |     146,512 |
+|   75 | react-native.dss           | platform    |      132,811 |     131,153 |     133,855 |
+|   76 | backend.object-design-css  | backend     |      113,763 |     111,123 |     117,720 |
+|   77 | opentui.cx                 | platform    |      100,858 |      86,498 |     102,224 |
+|   78 | react-native.cx            | platform    |       94,377 |      89,202 |      99,996 |
 
 The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap); the older hot-path regression snapshot remains separate because its repeated micro-inputs and tolerance are intentionally different.
 
@@ -257,7 +257,7 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |    5 | createUnsafeCss(), generated call                 | generated runtime         |          6.34 |      2.65 |
 |    6 | createUnsafeCss(), generated class                | generated runtime         |          6.39 |      2.67 |
 |    7 | createUnsafeCss(), compiler-pruned call           | compiler-pruned           |          6.40 |      2.69 |
-|    8 | createCssRuntime() core (internal)                | internal core             |          6.43 |      2.69 |
+|    8 | createCssRuntime() core (internal)                | internal core             |          6.43 |      2.70 |
 |    9 | createUnsafeCss(), compiler-pruned class          | compiler-pruned           |          6.47 |      2.71 |
 |   10 | cx, plain                                         | runtime                   |          7.37 |      3.15 |
 |   11 | createUnsafeCss(), generated vars                 | generated runtime         |          9.00 |      3.58 |
@@ -266,27 +266,27 @@ Lower is smaller. Sizes are decimal KB (1 KB = 1,000 bytes); exact byte values r
 |   14 | createCss(), compiler-pruned class                | compiler-pruned           |          9.73 |      3.92 |
 |   15 | createGeneratedCss(), compiler-pruned keyframes   | compiler-pruned           |         10.30 |      4.13 |
 |   16 | createUnsafeCss(), generated all                  | generated runtime         |         11.70 |      4.55 |
-|   17 | createUnsafeCss(), dynamic fallback               | unsafe fallback           |         12.66 |      4.91 |
-|   18 | createUnsafeCss(), fallback                       | unsafe fallback           |         12.67 |      4.91 |
-|   19 | unsafe css subpath only                           | tree-shaken subpath       |         12.68 |      4.91 |
-|   20 | createCss(minimal preset), fallback               | preset-bound fallback     |         15.93 |      6.08 |
+|   17 | createUnsafeCss(), fallback                       | unsafe fallback           |         12.67 |      4.92 |
+|   18 | createUnsafeCss(), dynamic fallback               | unsafe fallback           |         12.66 |      4.92 |
+|   19 | unsafe css subpath only                           | tree-shaken subpath       |         12.68 |      4.92 |
+|   20 | createCss(minimal preset), fallback               | preset-bound fallback     |         15.93 |      6.09 |
 |   21 | createDesignCss(), compiler-pruned class          | compiler-pruned           |         17.82 |      6.47 |
-|   22 | createCss(csstypePreset)                          | preset-bound structural   |         20.44 |      7.41 |
-|   23 | cx                                                | runtime                   |         19.92 |      7.62 |
-|   24 | root barrel, cx + unsafe css                      | tree-shaken barrel        |         19.92 |      7.66 |
-|   25 | all (createUnsafeCss+tw+cx)                       | runtime                   |         22.62 |      8.58 |
-|   26 | createCss(defaultPreset)                          | preset-bound default      |         26.96 |      9.61 |
-|   27 | createCss(fixturePreset)                          | preset-bound full catalog |         30.27 |     10.66 |
+|   22 | createCss(csstypePreset)                          | preset-bound structural   |         20.44 |      7.42 |
+|   23 | cx                                                | runtime                   |         19.92 |      7.63 |
+|   24 | root barrel, cx + unsafe css                      | tree-shaken barrel        |         19.92 |      7.67 |
+|   25 | all (createUnsafeCss+tw+cx)                       | runtime                   |         22.61 |      8.58 |
+|   26 | createCss(defaultPreset)                          | preset-bound default      |         26.96 |      9.62 |
+|   27 | createCss(fixturePreset)                          | preset-bound full catalog |         30.27 |     10.67 |
 |   28 | stylesheet generator (build-time only)            | build-time only           |         29.73 |     10.89 |
-|   29 | createCss(shadcnPreset)                           | preset-bound shadcn       |         32.48 |     10.94 |
-|   30 | createCss(fixturePreset) + tw()                   | preset-bound full catalog |         32.95 |     11.64 |
+|   29 | createCss(shadcnPreset)                           | preset-bound shadcn       |         32.47 |     10.95 |
+|   30 | createCss(fixturePreset) + tw()                   | preset-bound full catalog |         32.95 |     11.65 |
 |   31 | createDesignCss(fixturePreset), fallback          | runtime                   |         38.33 |     13.11 |
-|   32 | createCss(fixturePreset) + cx()                   | preset-bound full catalog |         37.54 |     13.41 |
-|   33 | createCss(pandaPreset)                            | preset-bound panda        |         47.28 |     13.73 |
-|   34 | createCss(tailwindPreset)                         | preset-bound tailwind     |         43.17 |     14.10 |
-|   35 | createRuntimeCss(preset), live sheet              | live sheet                |         39.01 |     14.20 |
+|   32 | createCss(fixturePreset) + cx()                   | preset-bound full catalog |         37.54 |     13.42 |
+|   33 | createCss(pandaPreset)                            | preset-bound panda        |         47.28 |     13.74 |
+|   34 | createCss(tailwindPreset)                         | preset-bound tailwind     |         43.16 |     14.11 |
+|   35 | createRuntimeCss(preset), live sheet              | live sheet                |         39.01 |     14.21 |
 |   36 | createCss(fixturePreset) + tw() + cx()            | preset-bound full catalog |         40.22 |     14.36 |
-|   37 | createCss(chakraPreset)                           | preset-bound chakra       |         54.02 |     14.76 |
+|   37 | createCss(chakraPreset)                           | preset-bound chakra       |         54.02 |     14.77 |
 
 ## Generated Tailwind metadata size
 
