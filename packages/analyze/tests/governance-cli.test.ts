@@ -6,12 +6,18 @@
  */
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { afterAll, describe, expect, test } from "vitest";
+import { afterAll, beforeEach, describe, expect, test } from "vitest";
+import { buildPandwindInteropArtifact } from "pandwind-codemod/tw";
+import { parseDtcgTokenDocument } from "pandwind-codemod/swap/token-document";
 import { DEFAULT_GOVERNANCE_PRESET, GOVERNANCE_JSON_SCHEMA, runCli } from "../src/cli.ts";
 
 const root = resolve(import.meta.dirname, "tmp-governance");
 
 afterAll(() => {
+	rmSync(root, { recursive: true, force: true });
+});
+
+beforeEach(() => {
 	rmSync(root, { recursive: true, force: true });
 });
 
@@ -27,7 +33,7 @@ function seed(files: Record<string, string>) {
 describe("runCli --governance", () => {
 	test("emits the versioned governance document with policy + changeset", async () => {
 		seed({
-			"a.tsx": 'export const a = tw({ color: "red-500", padding: "4" });',
+			"a.tsx": 'export const a = tw({ bgColor: "red-500", padding: "4" });',
 			"design.ts": 'export const brand = "$colors.brand";',
 		});
 		const output = await runCli([
@@ -106,5 +112,76 @@ describe("runCli --governance", () => {
 		expect(human).toContain("pandwind analyze — token governance");
 		expect(human).not.toContain('"schema"');
 		expect(human).toContain("policy:");
+	});
+
+	test("compares an explicit DTCG baseline to interop/3 across declared consumer roots", async () => {
+		const current = parseDtcgTokenDocument(
+			JSON.stringify({
+				colors: {
+					brand: { $type: "color", $value: { colorSpace: "srgb", components: [0.8, 0.2, 0.3] } },
+				},
+			}),
+		);
+		const artifact = buildPandwindInteropArtifact({
+			typesDts: [
+				'type Brand = "primary";',
+				"interface WindUtilities {",
+				'"bgColor"?: Brand | true | Array<Brand | true>;',
+				"}",
+			].join("\n"),
+			twTs: `
+				import { createTw } from "pandwind/tw";
+				const __pandwindConfig = {
+					variants: { hover: { join: ":" } },
+					conflicts: {},
+					compose: [],
+				};
+				export const tw = createTw(__pandwindConfig);
+			`,
+			tokenDocument: current,
+			tokenSource: "./tokens.ts",
+		});
+		const firstRoot = resolve(root, "first");
+		const secondRoot = resolve(root, "second");
+		const thirdRoot = resolve(root, "third");
+		const baselinePath = resolve(root, "baseline.tokens.json");
+		const currentPath = resolve(root, "current.interop.json");
+		mkdirSync(root, { recursive: true });
+		writeFileSync(
+			baselinePath,
+			JSON.stringify({
+				colors: {
+					brand: { $type: "color", $value: { colorSpace: "srgb", components: [0.1, 0.2, 0.3] } },
+				},
+			}),
+		);
+		writeFileSync(currentPath, JSON.stringify(artifact));
+		for (const consumerRoot of [firstRoot, secondRoot, thirdRoot]) {
+			mkdirSync(resolve(consumerRoot, "src"), { recursive: true });
+			writeFileSync(resolve(consumerRoot, "src/pandwind.interop.json"), JSON.stringify(artifact));
+			writeFileSync(
+				resolve(consumerRoot, "src/pandwind-theme.css"),
+				`:root { --color-${consumerRoot.split("/").at(-1)}: #123456; }`,
+			);
+		}
+		const output = await runCli([
+			"--json",
+			"--root",
+			firstRoot,
+			"--consumer-root",
+			`${secondRoot},${thirdRoot}`,
+			"--release-baseline",
+			baselinePath,
+			"--release-current",
+			currentPath,
+		]);
+		const report = JSON.parse(output) as {
+			consumerRoots: string[];
+			changes: Array<{ kind: string; path: string }>;
+		};
+		expect(report.consumerRoots).toEqual([firstRoot, secondRoot, thirdRoot].toSorted());
+		expect(report.changes).toContainEqual(
+			expect.objectContaining({ kind: "value-changed", path: "/colors/brand" }),
+		);
 	});
 });

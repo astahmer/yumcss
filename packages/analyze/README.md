@@ -25,6 +25,32 @@ Add --json for a machine-readable report, --css for generated CSS
 measurements, or --governance for token-usage checks. The analyzer reads
 the project and reports what it found; it does not rewrite your source files.
 
+## Token release impact
+
+Compare a prior token document with the generated `pandwind.interop/3` token
+snapshot, then attach exact usage and coverage evidence from declared consumer
+roots:
+
+```sh
+pnpm exec pandwind-analyze \
+  --root apps/store-a \
+  --consumer-root apps/store-b,apps/store-c \
+  --release-baseline releases/v1.tokens.json \
+  --release-current apps/store-a/src/pandwind.interop.json \
+  --json
+```
+
+The baseline defaults to DTCG; `--release-format` selects another registered
+token input adapter. The current artifact must be a validated `/3` snapshot
+with token data. With one consumer, `--release-current` defaults to that
+consumer's `src/pandwind.interop.json`; multiple consumers require an explicit
+current artifact. The report lists path additions and removals, value, type,
+deprecation, metadata, group, and context changes, and joins exact token paths
+to existing governance usages, suggestions, removal-safety reasons, and
+unknown coverage boundaries. Path changes remain remove-plus-add; the analyzer
+does not guess renames. It reads only the supplied roots and artifact and never
+writes project files.
+
 ## Migration Preview
 
 Open a consumer project in a read-only migration workspace:

@@ -12,7 +12,12 @@ import { createCssBudgetService } from "../analysis-service.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
 import { createCssExtractionService } from "pandwind/vite/css-extract";
-import { buildTokenGraph } from "pandwind-codemod/tw";
+import {
+	buildTokenGraph,
+	parsePandwindInteropArtifact,
+	PANDWIND_INTEROP_TOKEN_SCHEMA,
+	type PandwindInteropTokenSnapshot,
+} from "pandwind-codemod/tw";
 import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
 	flattenTokenGroups,
@@ -250,14 +255,31 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		root,
 	);
 	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);
+	let interopTokens: PandwindInteropTokenSnapshot = {
+		schema: PANDWIND_INTEROP_TOKEN_SCHEMA,
+		state: "unavailable",
+		source: null,
+		fidelity: null,
+		document: null,
+		diagnostics: ["No generated pandwind.interop/3 artifact was found."],
+	};
 	let interopVariables: Record<string, string> = {};
 	try {
-		const interop = JSON.parse(readSourceArtifact(appSrc("pandwind.interop.json")) ?? "{}") as {
-			theme?: { variables?: Record<string, string> };
+		const contents = readSourceArtifact(appSrc("pandwind.interop.json"));
+		if (contents !== undefined) {
+			const interop = parsePandwindInteropArtifact(JSON.parse(contents));
+			interopVariables = { ...interop.theme.variables };
+			interopTokens = interop.tokens;
+		}
+	} catch (error) {
+		interopTokens = {
+			schema: PANDWIND_INTEROP_TOKEN_SCHEMA,
+			state: "unavailable",
+			source: null,
+			fidelity: null,
+			document: null,
+			diagnostics: [error instanceof Error ? error.message : String(error)],
 		};
-		if (interop.theme?.variables !== undefined) interopVariables = interop.theme.variables;
-	} catch {
-		interopVariables = {};
 	}
 	const safelistSource = readSourceArtifact(appSrc("pandwind.safelist.css")) ?? "";
 	const safelistEntries = [...safelistSource.matchAll(/"([^"]+)"/g)].map((m) => m[1] ?? "");
@@ -305,6 +327,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		classDrillDown,
 		analytics,
 		contrastWarnings,
+		interopTokens,
 		cssCrawl: {
 			files: crawled.files.length,
 			unresolved: crawled.unresolved.slice(0, 20),

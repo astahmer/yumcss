@@ -7,3 +7,9 @@ export type {
 	TokenPolicySnapshot,
 	UnusedTokenCandidate,
 } from "./contracts.ts";
+export type {
+	TokenReleaseChange,
+	TokenReleaseChangeKindValue,
+	TokenReleaseConsumerImpact,
+	TokenReleaseReport,
+} from "./release-contracts.ts";

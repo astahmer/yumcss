@@ -31,6 +31,17 @@ export {
 	type UsageCollectorFile,
 } from "./usage-collector.ts";
 export { analyzeTokenGovernance, type TokenGovernanceOptions } from "./service.ts";
+export { compareTokenRelease } from "./release.ts";
+export {
+	TOKEN_RELEASE_CHANGE_KINDS,
+	TOKEN_RELEASE_REPORT_SCHEMA,
+	TokenReleaseChangeKind,
+	type TokenReleaseChange,
+	type TokenReleaseChangeKind as TokenReleaseChangeKindValue,
+	type TokenReleaseComparisonInputs,
+	type TokenReleaseConsumerImpact,
+	type TokenReleaseReport,
+} from "./release-contracts.ts";
 export {
 	deriveProjectGovernanceContext,
 	loadOfficialPresetModule,

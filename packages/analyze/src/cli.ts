@@ -26,7 +26,7 @@ import {
 	formatAuthoredCssImports,
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
-import { runGovernanceLane } from "./governance-lane.ts";
+import { runGovernanceLane, runTokenReleaseLane } from "./governance-lane.ts";
 import { MCP_COMMAND, createNodeMcpValidationPort, runMcpServer } from "./mcp/server.ts";
 
 export interface CliArgs {
@@ -45,6 +45,13 @@ export interface CliArgs {
 	governance: boolean;
 	/** Official preset specifier for the governance lane. */
 	preset: string;
+	/** Explicit baseline token document for read-only release impact analysis. */
+	releaseBaselinePath?: string;
+	/** Optional generated pandwind.interop/3 token snapshot to compare. */
+	releaseCurrentPath?: string;
+	releaseFormat: string;
+	/** Explicit extra consumer roots; empty means the --root project only. */
+	consumerRoots: Array<string>;
 }
 
 /** Per-lane caps for the budgets file (plans/023 CI gate). */
@@ -107,6 +114,18 @@ const optionString = (options: CliOptions, name: string): string | undefined => 
 
 const optionBoolean = (options: CliOptions, name: string): boolean => options[name] === true;
 
+const optionStrings = (options: CliOptions, name: string): Array<string> => {
+	const value = options[name];
+	if (typeof value === "string")
+		return value
+			.split(",")
+			.map((entry) => entry.trim())
+			.filter(Boolean);
+	if (Array.isArray(value))
+		return value.filter((entry): entry is string => typeof entry === "string");
+	return [];
+};
+
 const optionNumber = (options: CliOptions, name: string): number | undefined => {
 	const value = options[name];
 	if (typeof value === "number") return value;
@@ -126,6 +145,19 @@ const configureAnalyzeCommand = (command: Command): void => {
 		.option("--preset <module>", "Official preset used by governance", {
 			default: DEFAULT_GOVERNANCE_PRESET,
 		})
+		.option(
+			"--release-baseline <path>",
+			"Compare this explicit token document to current pandwind.interop/3 tokens",
+		)
+		.option(
+			"--release-current <path>",
+			"Current pandwind.interop/3 artifact; defaults to <consumer>/src/pandwind.interop.json",
+		)
+		.option("--release-format <format>", "Format of the release baseline", { default: "dtcg" })
+		.option(
+			"--consumer-root <dir[,dir...]>",
+			"Explicit consumer project roots for release impact analysis",
+		)
 		.option("--fail-over <bytes>", "Fail when minified CSS exceeds this byte ceiling")
 		.option("--budgets <path>", "JSON file containing CSS budget caps");
 };
@@ -174,6 +206,16 @@ function parseArgs(argv: Array<string>): CliArgs {
 	}
 	const budgets = optionString(options, "budgets");
 	const constants = optionString(options, "constants");
+	const releaseBaseline = optionString(options, "releaseBaseline");
+	const releaseCurrent = optionString(options, "releaseCurrent");
+	const consumerRoots = optionStrings(options, "consumerRoot")
+		.flatMap((value) => value.split(","))
+		.map((path) => path.trim())
+		.filter(Boolean)
+		.map((path) => resolve(process.cwd(), path));
+	if (releaseCurrent !== undefined && releaseBaseline === undefined) {
+		throw new Error("analyze: --release-current requires --release-baseline");
+	}
 	return {
 		patterns: [...cli.args],
 		twPath: resolve(root, optionString(options, "tw") ?? "src/tw.ts"),
@@ -186,6 +228,14 @@ function parseArgs(argv: Array<string>): CliArgs {
 		...(budgets === undefined ? {} : { budgetsPath: resolve(process.cwd(), budgets) }),
 		governance: optionBoolean(options, "governance"),
 		preset: optionString(options, "preset") ?? DEFAULT_GOVERNANCE_PRESET,
+		...(releaseBaseline === undefined
+			? {}
+			: { releaseBaselinePath: resolve(process.cwd(), releaseBaseline) }),
+		...(releaseCurrent === undefined
+			? {}
+			: { releaseCurrentPath: resolve(process.cwd(), releaseCurrent) }),
+		releaseFormat: optionString(options, "releaseFormat") ?? "dtcg",
+		consumerRoots,
 	};
 }
 
@@ -216,6 +266,7 @@ async function runAnalysis(
 	args: CliArgs,
 	dependencies: AnalyzeCliDependencies = {},
 ): Promise<string> {
+	if (args.releaseBaselinePath !== undefined) return runTokenReleaseLane(args);
 	if (args.governance) return runGovernanceLane(args);
 	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*"];
 	const workspace = createAnalysisWorkspace();

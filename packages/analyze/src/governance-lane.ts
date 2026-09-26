@@ -6,11 +6,14 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { parsePandwindInteropArtifact } from "pandwind-codemod/tw";
+import { tokenDocumentCodec } from "pandwind-codemod/swap/token-document";
 import { createAnalysisWorkspace } from "./analysis-service.ts";
 import { parseThemeVars } from "./collect/parsers.ts";
 import {
 	analyzeTokenGovernance,
 	buildGovernancePruneChangeset,
+	compareTokenRelease,
 	loadOfficialPresetModule,
 	projectGovernanceInputs,
 } from "./governance/index.ts";
@@ -69,37 +72,41 @@ function formatGovernanceSummary(
 	);
 }
 
-/** Run the governance lane and return its exact output (JSON or human). */
-export async function runGovernanceLane(args: CliArgs): Promise<string> {
+const isMissingFile = (error: unknown): boolean =>
+	typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT";
+
+const governanceForRoot = async (args: CliArgs, root: string) => {
 	const workspace = createAnalysisWorkspace();
-	const presetLoad = await loadOfficialPresetModule(args.preset, args.root);
+	const presetLoad = await loadOfficialPresetModule(args.preset, root);
 	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);
 	const patternList = args.patterns.length > 0 ? args.patterns : ["src/**/*"];
-	const paths = workspace.collectFiles(patternList, args.root);
+	const paths = workspace.collectFiles(patternList, root);
 	const readFiles = workspace.readFiles(paths);
 	const files = readFiles.map(({ file, content }) => ({
-		file: file.startsWith(args.root + "/") ? file.slice(args.root.length + 1) : file,
+		file: file.startsWith(root + "/") ? file.slice(root.length + 1) : file,
 		content,
 	}));
 
 	let themeVars: Array<{ name: string; value: string }> = [];
 	try {
-		themeVars = parseThemeVars(readFileSync(resolve(args.root, "src/pandwind-theme.css"), "utf8"));
+		themeVars = parseThemeVars(readFileSync(resolve(root, "src/pandwind-theme.css"), "utf8"));
 	} catch {
 		themeVars = [];
 	}
 	let interopVariables: Record<string, string> = {};
+	let interopFailure: string | undefined;
 	try {
-		const interop = JSON.parse(
-			readFileSync(resolve(args.root, "src/pandwind.interop.json"), "utf8"),
-		) as { theme?: { variables?: Record<string, string> } };
-		if (interop.theme?.variables !== undefined) interopVariables = interop.theme.variables;
-	} catch {
-		interopVariables = {};
+		const interop = parsePandwindInteropArtifact(
+			JSON.parse(readFileSync(resolve(root, "src/pandwind.interop.json"), "utf8")),
+		);
+		interopVariables = { ...interop.theme.variables };
+	} catch (error) {
+		if (!isMissingFile(error))
+			interopFailure = error instanceof Error ? error.message : String(error);
 	}
 	let safelistHit = false;
 	try {
-		safelistHit = readFileSync(resolve(args.root, "src/pandwind.safelist.css"), "utf8").includes(
+		safelistHit = readFileSync(resolve(root, "src/pandwind.safelist.css"), "utf8").includes(
 			'@source inline("',
 		);
 	} catch {
@@ -107,18 +114,27 @@ export async function runGovernanceLane(args: CliArgs): Promise<string> {
 	}
 
 	const governance = analyzeTokenGovernance({
-		root: args.root,
+		root,
 		files,
 		policy,
 		tokenContext: {
 			...tokenContext,
 			themeVars,
 			interopVariables,
+			...(interopFailure === undefined
+				? {}
+				: { loaderFailures: [...(tokenContext.loaderFailures ?? []), interopFailure] }),
 		},
 		...(safelistHit ? { boundaryHits: { safelist: ["*"] } } : {}),
 		generatedAt: new Date().toISOString(),
 	});
 	const changeset = buildGovernancePruneChangeset(governance, "app");
+	return { governance, changeset };
+};
+
+/** Run the governance lane and return its exact output (JSON or human). */
+export async function runGovernanceLane(args: CliArgs): Promise<string> {
+	const { governance, changeset } = await governanceForRoot(args, args.root);
 	if (args.json) {
 		return JSON.stringify(
 			{ schema: GOVERNANCE_JSON_SCHEMA, governance, changeset } satisfies GovernanceCliDocument,
@@ -127,4 +143,75 @@ export async function runGovernanceLane(args: CliArgs): Promise<string> {
 		);
 	}
 	return formatGovernanceSummary(governance, changeset);
+}
+
+/** Compare a declared baseline against a validated generated snapshot and explicit consumers. */
+export async function runTokenReleaseLane(args: CliArgs): Promise<string> {
+	if (args.releaseBaselinePath === undefined) {
+		throw new Error("analyze release: --release-baseline is required");
+	}
+	const consumers = [...new Set([args.root, ...args.consumerRoots])];
+	if (consumers.length > 1 && args.releaseCurrentPath === undefined) {
+		throw new Error(
+			"analyze release: --release-current is required when comparing multiple consumer roots",
+		);
+	}
+	const currentPath =
+		args.releaseCurrentPath ?? resolve(consumers[0]!, "src/pandwind.interop.json");
+	const baseline = await tokenDocumentCodec.fromFile(args.releaseFormat, args.releaseBaselinePath);
+	let interop: ReturnType<typeof parsePandwindInteropArtifact>;
+	try {
+		interop = parsePandwindInteropArtifact(JSON.parse(readFileSync(currentPath, "utf8")));
+	} catch (error) {
+		throw new Error(
+			`analyze release: could not load current pandwind.interop/3 artifact '${currentPath}': ${error instanceof Error ? error.message : String(error)}`,
+			{ cause: error },
+		);
+	}
+	if (interop.tokens.state !== "available") {
+		throw new Error(
+			`analyze release: current artifact has no token snapshot: ${interop.tokens.diagnostics.join("; ")}`,
+		);
+	}
+	const reports = [];
+	for (const root of consumers) {
+		reports.push((await governanceForRoot(args, root)).governance);
+	}
+	const report = compareTokenRelease({
+		baseline,
+		current: interop.tokens.document,
+		consumers: reports,
+		generatedAt: new Date().toISOString(),
+	});
+	if (args.json) return `${JSON.stringify(report, null, 2)}\n`;
+	const summary = Object.entries(report.summary)
+		.filter(([, count]) => count > 0)
+		.map(([kind, count]) => `${kind} ${count}`)
+		.join(" · ");
+	const changes = report.changes.map((change) => {
+		const usageCount = change.consumers.reduce(
+			(total, consumer) => total + consumer.usages.length,
+			0,
+		);
+		const suggestionCount = change.consumers.reduce(
+			(total, consumer) => total + consumer.exactSuggestions.length,
+			0,
+		);
+		const boundaryCount = change.consumers.reduce(
+			(total, consumer) =>
+				total + Object.values(consumer.coverageBoundaries).reduce((sum, count) => sum + count, 0),
+			0,
+		);
+		return `${change.kind} ${change.path} · ${usageCount} exact usage(s) · ${suggestionCount} exact suggestion(s) · ${boundaryCount} boundary hit(s)`;
+	});
+	return (
+		[
+			"pandwind analyze — token release impact",
+			`baseline: ${report.baseline.format}@${report.baseline.formatVersion}`,
+			`current: ${report.current.format}@${report.current.formatVersion}`,
+			`consumers: ${report.consumerRoots.join(", ") || "none"}`,
+			`changes: ${summary || "none"}`,
+			...(changes.length === 0 ? [] : ["", ...changes]),
+		].join("\n") + "\n"
+	);
 }
