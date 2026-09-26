@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.interop/2",
+	"schema": "pandwind.interop/3",
 	"generatedFrom": {
 		"types": "types.d.ts",
 		"runtime": "tw.ts",
@@ -32249,5 +32249,708 @@
 			"[data-theme=\"ocean\"]",
 			"[data-theme=\"sunset\"]"
 		]
+	},
+	"tokens": {
+		"schema": "pandwind.interop.tokens/1",
+		"state": "available",
+		"source": {
+			"kind": "configured-token-module",
+			"module": "@pandwind/example-preset",
+			"fingerprint": "ea953068f19752a94d81bca79142600b9ccfbe41264f6912dfb87bd82f628ce5"
+		},
+		"fidelity": {
+			"status": "lossless",
+			"losses": []
+		},
+		"document": {
+			"schema": "pandwind.token-document/1",
+			"format": "preset",
+			"formatVersion": "pandwind.preset/1",
+			"sourceFingerprint": "ea953068f19752a94d81bca79142600b9ccfbe41264f6912dfb87bd82f628ce5",
+			"sourceLosses": [],
+			"root": {
+				"kind": "group",
+				"children": {
+					"colors": {
+						"kind": "group",
+						"children": {
+							"white": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#ffffff"
+								}
+							},
+							"black": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#000000"
+								}
+							},
+							"gray-50": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#f9fafb"
+								}
+							},
+							"gray-100": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#f3f4f6"
+								}
+							},
+							"gray-200": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#e5e7eb"
+								}
+							},
+							"gray-300": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#d1d5db"
+								}
+							},
+							"gray-400": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#9ca3af"
+								}
+							},
+							"gray-500": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#6b7280"
+								}
+							},
+							"gray-600": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#4b5563"
+								}
+							},
+							"gray-700": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#374151"
+								}
+							},
+							"gray-800": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#1f2937"
+								}
+							},
+							"gray-900": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#111827"
+								}
+							},
+							"blue-50": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#ebf8ff"
+								}
+							},
+							"blue-100": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#bee3f8"
+								}
+							},
+							"blue-200": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#90cdf4"
+								}
+							},
+							"blue-300": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#63b3ed"
+								}
+							},
+							"blue-400": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#4299e1"
+								}
+							},
+							"blue-500": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#3182ce"
+								}
+							},
+							"blue-600": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#2b6cb0"
+								}
+							},
+							"blue-700": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#2c5282"
+								}
+							},
+							"blue-800": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#2a4365"
+								}
+							},
+							"blue-900": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#1A365D"
+								}
+							},
+							"red-50": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#FFF5F5"
+								}
+							},
+							"red-100": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#FED7D7"
+								}
+							},
+							"red-200": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#FEB2B2"
+								}
+							},
+							"red-300": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#FC8181"
+								}
+							},
+							"red-400": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#F56565"
+								}
+							},
+							"red-500": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#E53E3E"
+								}
+							},
+							"red-600": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#C53030"
+								}
+							},
+							"red-700": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#9B2C2C"
+								}
+							},
+							"red-800": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#822727"
+								}
+							},
+							"red-900": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#63171B"
+								}
+							},
+							"green-50": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#F7FAFC"
+								}
+							},
+							"green-100": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#EFF6F8"
+								}
+							},
+							"green-200": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#D7E8EE"
+								}
+							},
+							"green-300": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#BFDAE4"
+								}
+							},
+							"green-400": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#90BFD0"
+								}
+							},
+							"green-500": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#60A3BC"
+								}
+							},
+							"green-600": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#5693A9"
+								}
+							},
+							"green-700": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#3A6271"
+								}
+							},
+							"green-800": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#2B4955"
+								}
+							},
+							"green-900": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#1D3138"
+								}
+							},
+							"brand": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#2b6cb0"
+								}
+							},
+							"success": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#60A3BC"
+								}
+							},
+							"error": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "#E53E3E"
+								}
+							}
+						}
+					},
+					"spacing": {
+						"kind": "group",
+						"children": {
+							"4": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "4px"
+								}
+							},
+							"8": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "8px"
+								}
+							},
+							"12": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "12px"
+								}
+							},
+							"16": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "16px"
+								}
+							},
+							"20": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "20px"
+								}
+							},
+							"24": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "24px"
+								}
+							},
+							"button.padding": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "20px"
+								}
+							}
+						}
+					},
+					"radii": {
+						"kind": "group",
+						"children": {
+							"none": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0"
+								}
+							},
+							"sm": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.125rem"
+								}
+							},
+							"base": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.25rem"
+								}
+							},
+							"md": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.375rem"
+								}
+							},
+							"lg": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.5rem"
+								}
+							},
+							"xl": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.75rem"
+								}
+							},
+							"2xl": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1rem"
+								}
+							},
+							"3xl": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.5rem"
+								}
+							},
+							"full": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "9999px"
+								}
+							}
+						}
+					},
+					"fonts": {
+						"kind": "group",
+						"children": {
+							"sans": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "ui-sans-serif, system-ui, sans-serif"
+								}
+							},
+							"serif": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "ui-serif, Georgia, serif"
+								}
+							},
+							"mono": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "ui-monospace, SFMono-Regular, monospace"
+								}
+							}
+						}
+					},
+					"fontSizes": {
+						"kind": "group",
+						"children": {
+							"xs": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.75rem"
+								}
+							},
+							"sm": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.875rem"
+								}
+							},
+							"base": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1rem"
+								}
+							},
+							"lg": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.125rem"
+								}
+							},
+							"xl": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.25rem"
+								}
+							},
+							"2xl": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.5rem"
+								}
+							},
+							"3xl": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.875rem"
+								}
+							},
+							"4xl": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "2.25rem"
+								}
+							}
+						}
+					},
+					"fontWeights": {
+						"kind": "group",
+						"children": {
+							"normal": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "400"
+								}
+							},
+							"medium": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "500"
+								}
+							},
+							"semibold": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "600"
+								}
+							},
+							"bold": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "700"
+								}
+							}
+						}
+					},
+					"lineHeights": {
+						"kind": "group",
+						"children": {
+							"none": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1"
+								}
+							},
+							"tight": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.25"
+								}
+							},
+							"snug": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.375"
+								}
+							},
+							"normal": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.5"
+								}
+							},
+							"relaxed": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "1.625"
+								}
+							},
+							"loose": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "2"
+								}
+							}
+						}
+					},
+					"letterSpacings": {
+						"kind": "group",
+						"children": {
+							"tighter": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "-0.05em"
+								}
+							},
+							"tight": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "-0.025em"
+								}
+							},
+							"normal": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0em"
+								}
+							},
+							"wide": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.025em"
+								}
+							},
+							"wider": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.05em"
+								}
+							},
+							"widest": {
+								"kind": "token",
+								"value": {
+									"kind": "string",
+									"value": "0.1em"
+								}
+							}
+						}
+					},
+					"semantic": {
+						"kind": "group",
+						"children": {
+							"surface": {
+								"kind": "token",
+								"value": {
+									"kind": "contextual",
+									"source": "preset",
+									"values": {
+										"base": {
+											"kind": "string",
+											"value": "colors.$gray-50"
+										},
+										"_dark": {
+											"kind": "string",
+											"value": "colors.$gray-900"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

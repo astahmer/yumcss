@@ -8,6 +8,7 @@ import {
 } from "./artifact-manifest.ts";
 import { extractTwConfigFromSources } from "pandwind/vite/inline";
 import { buildPandwindInteropArtifact } from "./interop-artifact.ts";
+import type { TokenDocument } from "../swap/token-document.ts";
 
 export interface GeneratedDesignSystem {
 	readonly typesDts: string;
@@ -16,6 +17,8 @@ export interface GeneratedDesignSystem {
 	readonly twConflictsTs: string;
 	readonly twBuildTs: string;
 	readonly themeBlock: string;
+	readonly tokenDocument?: TokenDocument;
+	readonly tokenSource?: string;
 	readonly utilityCount: number;
 	readonly variantCount: number;
 }
@@ -44,6 +47,8 @@ export class CodegenArtifactWriter {
 					twConflictsTs: artifacts.twConflictsTs,
 					twBuildTs: artifacts.twBuildTs,
 					themeBlock: artifacts.themeBlock,
+					tokenDocument: artifacts.tokenDocument,
+					tokenSource: artifacts.tokenSource,
 				}),
 				null,
 				"\t",

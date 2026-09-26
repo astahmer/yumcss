@@ -11,7 +11,7 @@ import { dirname, resolve } from "node:path";
 import { cac, type CAC, type Command } from "cac";
 import { CodegenArtifactWriter } from "./codegen-writer.ts";
 import { generateTwBridge } from "./generate-bridge.ts";
-import { loadThemeBlock } from "./codegen-theme-input.ts";
+import { loadThemeBlock, loadTokenDocument } from "./codegen-theme-input.ts";
 import { generateDesignSystem } from "./generate-types.ts";
 import { runTwPrune } from "./prune-theme.ts";
 import { runTwScan } from "pandwind/tw/collect";
@@ -293,6 +293,10 @@ const defaultHandlers: TwCliHandlers = {
 			command.tokensModule === undefined
 				? ""
 				: await loadThemeBlock(command.tokensModule, command.cwd);
+		const tokenDocument =
+			command.tokensModule === undefined
+				? undefined
+				: await loadTokenDocument(command.tokensModule, command.cwd);
 		const source = await generateDesignSystem(
 			readFileSync(command.cssEntry, "utf8"),
 			dirname(command.cssEntry),
@@ -302,7 +306,7 @@ const defaultHandlers: TwCliHandlers = {
 			},
 		);
 		new CodegenArtifactWriter().write(
-			{ ...source, themeBlock },
+			{ ...source, themeBlock, tokenDocument, tokenSource: command.tokensModule },
 			{
 				outDir: command.outDir,
 				agents: command.agents,

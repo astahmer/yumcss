@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { buildPandwindInteropArtifact } from "../src/tw/interop-artifact.ts";
+import {
+	buildPandwindInteropArtifact,
+	parsePandwindInteropArtifact,
+} from "../src/tw/interop-artifact.ts";
+import { parseDtcgTokenDocument } from "../src/swap/token-document.ts";
 
 const types = `
 type BgColorValue = "blue-500" | "red-500";
@@ -29,7 +33,7 @@ describe("pandwind interop artifact", () => {
 			bridge: { "background-color": { "#3182ce": "bg-blue-500" } },
 		});
 
-		expect(artifact.schema).toBe("pandwind.interop/2");
+		expect(artifact.schema).toBe("pandwind.interop/3");
 		expect(artifact.utilities).toEqual([
 			{ key: "bgColor", base: "bg", valueType: "BgColorValue" },
 			{ key: "textColor", base: "text", valueType: "BgColorValue" },
@@ -40,5 +44,42 @@ describe("pandwind interop artifact", () => {
 		expect(artifact.bridge["background-color"]!["#3182ce"]).toBe("bg-blue-500");
 		expect(artifact.theme.variables["--color-brand"]).toBe("#3182ce");
 		expect(artifact.theme.scopes).toEqual(['[data-theme="dark"]']);
+		expect(artifact.tokens).toMatchObject({
+			state: "unavailable",
+			diagnostics: ["No codegen token module was supplied for this artifact."],
+		});
+	});
+
+	test("validates and carries the generated token snapshot with source provenance", () => {
+		const document = parseDtcgTokenDocument(
+			JSON.stringify({
+				colors: {
+					brand: { $type: "color", $value: { colorSpace: "srgb", components: [0.1, 0.2, 0.3] } },
+				},
+			}),
+		);
+		const artifact = buildPandwindInteropArtifact({
+			typesDts: types,
+			twTs: tw,
+			tokenDocument: document,
+			tokenSource: "./tokens.ts",
+		});
+		const parsed = parsePandwindInteropArtifact(JSON.parse(JSON.stringify(artifact)));
+
+		expect(parsed.tokens).toMatchObject({
+			state: "available",
+			source: {
+				kind: "configured-token-module",
+				module: "./tokens.ts",
+				fingerprint: document.sourceFingerprint,
+			},
+			document: {
+				root: {
+					children: {
+						colors: { children: { brand: { value: { kind: "object" } } } },
+					},
+				},
+			},
+		});
 	});
 });

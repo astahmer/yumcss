@@ -1,9 +1,14 @@
 import { extractTwConfigFromSources, type TwConfig } from "pandwind/vite/inline";
 import type { UtilityBridge } from "pandwind/tw";
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
+import { z } from "zod";
+import { parseTokenDocument, type TokenDocument } from "../swap/token-document.ts";
+import type { TokenFormatLoss } from "../swap/token-format-contracts.ts";
 
 /** Stable generated metadata consumed by migration and analysis tooling. */
-export const PANDWIND_INTEROP_SCHEMA = "pandwind.interop/2" as const;
+export const PANDWIND_INTEROP_SCHEMA = "pandwind.interop/3" as const;
+export const PANDWIND_INTEROP_V2_SCHEMA = "pandwind.interop/2" as const;
+export const PANDWIND_INTEROP_TOKEN_SCHEMA = "pandwind.interop.tokens/1" as const;
 
 export interface PandwindInteropUtility {
 	readonly key: string;
@@ -34,6 +39,35 @@ export interface PandwindInteropArtifact {
 		readonly variables: Readonly<Record<string, string>>;
 		readonly scopes: readonly string[];
 	};
+	readonly tokens: PandwindInteropTokenSnapshot;
+}
+
+export type PandwindInteropTokenSnapshot =
+	| {
+			readonly schema: typeof PANDWIND_INTEROP_TOKEN_SCHEMA;
+			readonly state: "available";
+			readonly source: {
+				readonly kind: "configured-token-module";
+				readonly module: string;
+				readonly fingerprint: string;
+			};
+			readonly fidelity: {
+				readonly status: "lossless" | "lossy";
+				readonly losses: readonly TokenFormatLoss[];
+			};
+			readonly document: TokenDocument;
+	  }
+	| {
+			readonly schema: typeof PANDWIND_INTEROP_TOKEN_SCHEMA;
+			readonly state: "unavailable";
+			readonly source: null;
+			readonly fidelity: null;
+			readonly document: null;
+			readonly diagnostics: readonly string[];
+	  };
+
+export interface ExistingPandwindInteropTokenSnapshot {
+	readonly tokens: PandwindInteropTokenSnapshot;
 }
 
 export interface BuildPandwindInteropArtifactOptions {
@@ -44,7 +78,75 @@ export interface BuildPandwindInteropArtifactOptions {
 	readonly twBuildTs?: string;
 	readonly bridge?: UtilityBridge;
 	readonly themeBlock?: string;
+	readonly tokenDocument?: TokenDocument;
+	readonly tokenSource?: string;
+	readonly tokenSnapshot?: PandwindInteropTokenSnapshot;
 }
+
+const TokenLossSchema = z.strictObject({
+	path: z.string(),
+	feature: z.string(),
+	reason: z.string(),
+});
+const TokenSnapshotSchema = z.discriminatedUnion("state", [
+	z.strictObject({
+		schema: z.literal(PANDWIND_INTEROP_TOKEN_SCHEMA),
+		state: z.literal("available"),
+		source: z.strictObject({
+			kind: z.literal("configured-token-module"),
+			module: z.string(),
+			fingerprint: z.string(),
+		}),
+		fidelity: z.strictObject({
+			status: z.enum(["lossless", "lossy"]),
+			losses: z.array(TokenLossSchema),
+		}),
+		document: z.json(),
+	}),
+	z.strictObject({
+		schema: z.literal(PANDWIND_INTEROP_TOKEN_SCHEMA),
+		state: z.literal("unavailable"),
+		source: z.null(),
+		fidelity: z.null(),
+		document: z.null(),
+		diagnostics: z.array(z.string()).min(1),
+	}),
+]);
+
+const PandwindInteropArtifactSchema = z.strictObject({
+	schema: z.literal(PANDWIND_INTEROP_SCHEMA),
+	generatedFrom: z.strictObject({
+		types: z.string(),
+		runtime: z.string(),
+		bridge: z.string(),
+		theme: z.string().optional(),
+	}),
+	utilities: z.array(
+		z.strictObject({ key: z.string(), base: z.string(), valueType: z.string().optional() }),
+	),
+	valueTypes: z.record(z.string(), z.array(z.string())),
+	tw: z.strictObject({ variants: z.json(), conflicts: z.json(), compose: z.json() }),
+	bridge: z.record(z.string(), z.record(z.string(), z.string())),
+	theme: z.strictObject({
+		variables: z.record(z.string(), z.string()),
+		scopes: z.array(z.string()),
+	}),
+	tokens: TokenSnapshotSchema,
+});
+
+export const parsePandwindInteropArtifact = (value: unknown): PandwindInteropArtifact => {
+	const result = PandwindInteropArtifactSchema.safeParse(value);
+	if (!result.success) {
+		throw new Error(
+			`pandwind interop: invalid pandwind.interop/3 artifact: ${result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ")}`,
+		);
+	}
+	const tokens =
+		result.data.tokens.state === "available"
+			? { ...result.data.tokens, document: parseTokenDocument(result.data.tokens.document) }
+			: result.data.tokens;
+	return { ...result.data, tokens } as PandwindInteropArtifact;
+};
 
 const dashCase = (name: string): string =>
 	name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
@@ -127,5 +229,31 @@ export function buildPandwindInteropArtifact(
 		},
 		bridge: options.bridge ?? {},
 		theme: themeMetadata(options.themeBlock ?? ""),
+		tokens:
+			options.tokenSnapshot ??
+			(options.tokenDocument === undefined
+				? {
+						schema: PANDWIND_INTEROP_TOKEN_SCHEMA,
+						state: "unavailable",
+						source: null,
+						fidelity: null,
+						document: null,
+						diagnostics: ["No codegen token module was supplied for this artifact."],
+					}
+				: (() => {
+						const document = parseTokenDocument(options.tokenDocument);
+						const losses = document.sourceLosses ?? [];
+						return {
+							schema: PANDWIND_INTEROP_TOKEN_SCHEMA,
+							state: "available",
+							source: {
+								kind: "configured-token-module",
+								module: options.tokenSource ?? "unspecified token module",
+								fingerprint: document.sourceFingerprint,
+							},
+							fidelity: { status: losses.length === 0 ? "lossless" : "lossy", losses },
+							document,
+						};
+					})()),
 	};
 }

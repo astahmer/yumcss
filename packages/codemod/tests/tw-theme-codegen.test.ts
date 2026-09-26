@@ -29,6 +29,7 @@ import {
 } from "../src/tw/generate-theme.ts";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
 import {
+	loadTokenDocument,
 	loadThemeBlock,
 	resolvePresetConditions,
 	resolveTokenGroups,
@@ -143,6 +144,43 @@ describe("resolveTokenGroups", () => {
 		expect(themeBlock).toContain("--color-surface: var(--color-gray-50);");
 		expect(themeBlock).toContain("--color-surface: var(--color-gray-900);");
 		expect(themeBlock).not.toContain("colors.$");
+	});
+});
+
+describe("loadTokenDocument", () => {
+	test("preserves explicit null values and reports cyclic source values by path", async () => {
+		const document = await loadTokenDocument(
+			resolve(import.meta.dirname, "fixtures/codegen-token-input.mjs"),
+			import.meta.dirname,
+		);
+		const colors = document.root.children.colors;
+		expect(colors?.kind).toBe("group");
+		if (colors?.kind !== "group") throw new Error("expected colors group");
+		expect(colors.children.nullable).toMatchObject({ kind: "token", value: { kind: "null" } });
+		expect(colors.children.circular).toMatchObject({
+			kind: "token",
+			value: { kind: "object", entries: { self: { kind: "null" } } },
+		});
+		const semantic = document.root.children.semantic;
+		expect(semantic?.kind).toBe("group");
+		if (semantic?.kind !== "group") throw new Error("expected semantic group");
+		expect(semantic.children.surface).toMatchObject({
+			kind: "token",
+			value: {
+				kind: "contextual",
+				source: "preset",
+				values: {
+					base: { kind: "string", value: "#ffffff" },
+					dark: { kind: "string", value: "#111111" },
+				},
+			},
+		});
+		expect(document.sourceLosses).toContainEqual(
+			expect.objectContaining({
+				path: "/colors/circular/$value/self",
+				feature: "cyclic value",
+			}),
+		);
 	});
 });
 

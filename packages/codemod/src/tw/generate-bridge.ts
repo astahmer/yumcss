@@ -24,7 +24,14 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { BRIDGE_PROPS, generateUtilityBridge } from "./bridge.ts";
 import { extractTwConfigFromSources } from "pandwind/vite/inline";
-import { buildPandwindInteropArtifact } from "./interop-artifact.ts";
+import {
+	buildPandwindInteropArtifact,
+	parsePandwindInteropArtifact,
+	PANDWIND_INTEROP_SCHEMA,
+	PANDWIND_INTEROP_V2_SCHEMA,
+	type PandwindInteropTokenSnapshot,
+} from "./interop-artifact.ts";
+import { loadTokenDocument } from "./codegen-theme-input.ts";
 
 export interface GenerateTwBridgeOptions {
 	readonly cssEntry: string;
@@ -113,12 +120,24 @@ export const twAdapter = createTwAdapter({
 });
 `;
 
-		writeFileSync(options.outFile, out);
-
 		const interopPath = resolve(dirname(options.outFile), "pandwind.interop.json");
 		const typesPath = resolve(dirname(options.twFile), "types.d.ts");
 		if (existsSync(typesPath)) {
 			const themePath = resolve(dirname(options.outFile), "pandwind-theme.css");
+			const existingInterop = existsSync(interopPath)
+				? (JSON.parse(readFileSync(interopPath, "utf8")) as Record<string, unknown>)
+				: undefined;
+			let tokenSnapshot: PandwindInteropTokenSnapshot | undefined;
+			let tokenDocument = undefined;
+			if (existingInterop?.schema === PANDWIND_INTEROP_SCHEMA) {
+				tokenSnapshot = parsePandwindInteropArtifact(existingInterop).tokens;
+			} else {
+				if (existingInterop !== undefined && existingInterop.schema !== PANDWIND_INTEROP_V2_SCHEMA)
+					throw new Error(
+						`pandwind-codemod tw bridge: unsupported existing interop schema '${String(existingInterop.schema)}'`,
+					);
+				tokenDocument = await loadTokenDocument(options.presetImport, dirname(options.twFile));
+			}
 			const artifact = buildPandwindInteropArtifact({
 				typesDts: readFileSync(typesPath, "utf8"),
 				twTs: twSource,
@@ -127,7 +146,11 @@ export const twAdapter = createTwAdapter({
 				twBuildTs: twBuildSource,
 				bridge,
 				themeBlock: existsSync(themePath) ? readFileSync(themePath, "utf8") : "",
+				...(tokenSnapshot === undefined
+					? { tokenDocument, tokenSource: options.presetImport }
+					: { tokenSnapshot }),
 			});
+			writeFileSync(options.outFile, out);
 			writeFileSync(interopPath, `${JSON.stringify(artifact, null, "\t")}\n`);
 			return {
 				outFile: options.outFile,
@@ -136,6 +159,7 @@ export const twAdapter = createTwAdapter({
 			};
 		}
 
+		writeFileSync(options.outFile, out);
 		return { outFile: options.outFile, propertyCount: Object.keys(bridge).length };
 	}
 }

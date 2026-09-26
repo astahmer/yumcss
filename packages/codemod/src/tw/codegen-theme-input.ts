@@ -2,6 +2,17 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { join, resolve } from "node:path";
 import {
+	createTokenDocument,
+	TOKEN_PRESET_CONTEXT_SOURCE,
+	type TokenDocument,
+	type TokenEntry,
+	type TokenGroup,
+	type TokenJsonValue,
+	type TokenNode,
+	type TokenValue,
+} from "../swap/token-document.ts";
+import { TokenFormatId, type TokenFormatLoss } from "../swap/token-format-contracts.ts";
+import {
 	buildComponentScopes,
 	buildThemeBlock,
 	buildThemeScopes,
@@ -70,6 +81,318 @@ export function resolveTokenGroups(module: Record<string, unknown>): ThemeTokenG
 		}
 	}
 	return undefined;
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isPlainRecord = (value: Record<string, unknown>): boolean => {
+	const prototype = Object.getPrototypeOf(value);
+	return prototype === Object.prototype || prototype === null;
+};
+
+const tokenJsonValue = (
+	value: unknown,
+	path: string,
+	losses: TokenFormatLoss[],
+	seen: WeakSet<object>,
+): TokenValue => {
+	if (typeof value === "string") {
+		const reference = /^\{([^{}]+)\}$/u.exec(value);
+		if (reference === null) return { kind: "string", value };
+		return {
+			kind: "reference",
+			syntax: reference[1]!.startsWith("#/") ? "json-pointer" : "curly",
+			target: reference[1]!,
+			authored: value,
+		};
+	}
+	if (typeof value === "number" && Number.isFinite(value)) return { kind: "number", value };
+	if (typeof value === "boolean") return { kind: "boolean", value };
+	if (value === null) return { kind: "null" };
+	if (Array.isArray(value)) {
+		if (seen.has(value)) {
+			losses.push({
+				path,
+				feature: "cyclic value",
+				reason: "codegen token input contains a cyclic array",
+			});
+			return { kind: "null" };
+		}
+		seen.add(value);
+		const items = value.map((entry, index) =>
+			tokenJsonValue(entry, `${path}/${index}`, losses, seen),
+		);
+		seen.delete(value);
+		return { kind: "array", items };
+	}
+	if (isRecord(value)) {
+		if (!isPlainRecord(value)) {
+			losses.push({
+				path,
+				feature: "non-JSON value",
+				reason: "codegen token input must use plain JSON objects",
+			});
+			return { kind: "null" };
+		}
+		if (seen.has(value)) {
+			losses.push({
+				path,
+				feature: "cyclic value",
+				reason: "codegen token input contains a cyclic object",
+			});
+			return { kind: "null" };
+		}
+		seen.add(value);
+		const entries: Record<string, TokenValue> = {};
+		for (const [key, entry] of Object.entries(value))
+			entries[key] = tokenJsonValue(entry, `${path}/${key}`, losses, seen);
+		seen.delete(value);
+		return { kind: "object", entries };
+	}
+	losses.push({
+		path,
+		feature: "non-JSON value",
+		reason: "codegen snapshot cannot serialize this token value",
+	});
+	return { kind: "null" };
+};
+
+const metadataFromInput = (
+	value: Record<string, unknown>,
+	losses: TokenFormatLoss[],
+	path: string,
+): Pick<TokenEntry, "type" | "description" | "deprecated" | "extensions"> => {
+	const type = value.$type ?? value.type;
+	const description = value.$description ?? value.description;
+	const deprecated = value.$deprecated ?? value.deprecated;
+	const extensions = value.$extensions ?? value.extensions;
+	const result: {
+		type?: string;
+		description?: string;
+		deprecated?: boolean | string;
+		extensions?: Readonly<Record<string, TokenJsonValue>>;
+	} = {};
+	if (typeof type === "string") result.type = type;
+	if (typeof description === "string") result.description = description;
+	if (typeof deprecated === "boolean" || typeof deprecated === "string")
+		result.deprecated = deprecated;
+	if (isRecord(extensions)) {
+		const typedExtensions: Record<string, TokenJsonValue> = {};
+		for (const [key, extension] of Object.entries(extensions)) {
+			const jsonValue = toJsonValue(extension);
+			if (jsonValue === undefined)
+				losses.push({
+					path: `${path}/$extensions/${key}`,
+					feature: "extension value",
+					reason: "extension is not JSON-compatible",
+				});
+			else typedExtensions[key] = jsonValue;
+		}
+		result.extensions = typedExtensions;
+	}
+	return result;
+};
+
+const toJsonValue = (
+	value: unknown,
+	seen: WeakSet<object> = new WeakSet(),
+): TokenJsonValue | undefined => {
+	if (value === null || typeof value === "string" || typeof value === "boolean") return value;
+	if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+	if (Array.isArray(value)) {
+		if (seen.has(value)) return undefined;
+		seen.add(value);
+		const items = value.map((entry) => toJsonValue(entry, seen));
+		seen.delete(value);
+		return items.some((item) => item === undefined)
+			? undefined
+			: items.flatMap((item) => (item === undefined ? [] : [item]));
+	}
+	if (isRecord(value)) {
+		if (!isPlainRecord(value) || seen.has(value)) return undefined;
+		seen.add(value);
+		const entries = Object.entries(value).map(
+			([key, entry]) => [key, toJsonValue(entry, seen)] as const,
+		);
+		seen.delete(value);
+		if (entries.some(([, entry]) => entry === undefined)) return undefined;
+		return Object.fromEntries(
+			entries.map(([key, entry]) => [key, entry === undefined ? null : entry]),
+		);
+	}
+	return undefined;
+};
+
+const tokenEntryFromInput = (
+	value: unknown,
+	path: string,
+	losses: TokenFormatLoss[],
+): TokenEntry => {
+	const wrapper = isRecord(value) ? value : undefined;
+	const wrapped =
+		wrapper !== undefined && (Object.hasOwn(wrapper, "$value") || Object.hasOwn(wrapper, "value"));
+	const rawValue = wrapped
+		? Object.hasOwn(wrapper, "$value")
+			? wrapper.$value
+			: wrapper.value
+		: value;
+	const metadata = wrapper === undefined ? {} : metadataFromInput(wrapper, losses, path);
+	return {
+		kind: "token",
+		...metadata,
+		value: tokenJsonValue(rawValue, `${path}/$value`, losses, new WeakSet()),
+	};
+};
+
+const tokenEntryFromContexts = (
+	value: unknown,
+	contexts: Record<string, unknown>,
+	path: string,
+	losses: TokenFormatLoss[],
+): TokenEntry => ({
+	kind: "token",
+	...(isRecord(value) ? metadataFromInput(value, losses, path) : {}),
+	value: {
+		kind: "contextual",
+		source: TOKEN_PRESET_CONTEXT_SOURCE,
+		values: Object.fromEntries(
+			Object.entries(contexts).map(([context, contextValue]) => [
+				context,
+				tokenJsonValue(contextValue, `${path}/contexts/${context}`, losses, new WeakSet()),
+			]),
+		),
+	},
+});
+
+const groupFromInput = (
+	value: unknown,
+	path: readonly string[],
+	contextNames: ReadonlySet<string>,
+	losses: TokenFormatLoss[],
+	seen: WeakSet<object> = new WeakSet(),
+): TokenGroup => {
+	if (!isRecord(value)) {
+		losses.push({
+			path: `/${path.join("/")}`,
+			feature: "invalid group",
+			reason: "codegen token group is not an object",
+		});
+		return { kind: "group", children: {} };
+	}
+	if (seen.has(value)) {
+		losses.push({
+			path: `/${path.join("/")}`,
+			feature: "cyclic group",
+			reason: "codegen token groups must not contain cycles",
+		});
+		return { kind: "group", children: {} };
+	}
+	seen.add(value);
+	const metadata = metadataFromInput(value, losses, `/${path.join("/")}`);
+	const children: Record<string, TokenNode> = {};
+	let root: TokenEntry | undefined;
+	for (const [name, child] of Object.entries(value)) {
+		if (
+			[
+				"$type",
+				"$description",
+				"$deprecated",
+				"$extensions",
+				"$extends",
+				"type",
+				"description",
+				"deprecated",
+				"extensions",
+			].includes(name)
+		)
+			continue;
+		if (name === "$root") {
+			root = tokenEntryFromInput(child, `/${[...path, "$root"].join("/")}`, losses);
+			continue;
+		}
+		const canonicalName = name.startsWith("$") ? name.slice(1) : name;
+		const childPath = [...path, canonicalName];
+		if (Object.hasOwn(children, canonicalName))
+			losses.push({
+				path: `/${childPath.join("/")}`,
+				feature: "token name collision",
+				reason: `preset names '${name}' and '${canonicalName}' map to the same canonical token path`,
+			});
+		const contextValues = isRecord(child)
+			? isRecord(child.$value)
+				? child.$value
+				: isRecord(child.value)
+					? child.value
+					: child
+			: undefined;
+		const contextEntries = Object.entries(contextValues ?? {}).filter(
+			([key]) => contextNames.has(key) || key === "base",
+		);
+		const metadataKeys = new Set([
+			"$type",
+			"$description",
+			"$deprecated",
+			"$extensions",
+			"type",
+			"description",
+			"deprecated",
+			"extensions",
+		]);
+		const isContextual =
+			contextEntries.some(([key]) => contextNames.has(key)) &&
+			Object.keys(contextValues ?? {}).every(
+				(key) => contextNames.has(key) || key === "base" || metadataKeys.has(key),
+			);
+		if (isContextual) {
+			children[canonicalName] = tokenEntryFromContexts(
+				child,
+				Object.fromEntries(contextEntries),
+				`/${childPath.join("/")}`,
+				losses,
+			);
+		} else if (
+			child === null ||
+			typeof child !== "object" ||
+			Array.isArray(child) ||
+			(isRecord(child) && (Object.hasOwn(child, "$value") || Object.hasOwn(child, "value")))
+		) {
+			children[canonicalName] = tokenEntryFromInput(child, `/${childPath.join("/")}`, losses);
+		} else {
+			children[canonicalName] = groupFromInput(child, childPath, contextNames, losses, seen);
+		}
+	}
+	seen.delete(value);
+	return {
+		kind: "group",
+		...metadata,
+		...(typeof value.$extends === "string" ||
+		(Array.isArray(value.$extends) && value.$extends.every((entry) => typeof entry === "string"))
+			? { extends: value.$extends }
+			: {}),
+		...(root === undefined ? {} : { root }),
+		children,
+	};
+};
+
+/** Create a typed snapshot from the exact token module used by codegen. */
+export async function loadTokenDocument(modulePath: string, base: string): Promise<TokenDocument> {
+	const specifier = await resolveModuleSpecifier(modulePath, base);
+	const module = (await import(specifier)) as Record<string, unknown>;
+	const groups = resolveTokenGroups(module);
+	if (groups === undefined)
+		throw new Error(`pandwind-codemod tw generate: no token groups found in ${modulePath}`);
+	const conditions = resolvePresetConditions(module);
+	const contextNames = new Set(Object.keys(conditions ?? {}));
+	const losses: TokenFormatLoss[] = [];
+	const root = groupFromInput(groups, [], contextNames, losses);
+	return createTokenDocument({
+		format: TokenFormatId.Preset,
+		formatVersion: "pandwind.preset/1",
+		root,
+		sourceLosses: losses,
+		sourceText: JSON.stringify(root),
+	});
 }
 
 /**
