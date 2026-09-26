@@ -37,8 +37,11 @@ export const assign = <T>(...arr: Array<T>) => {
 };
 export const cssVar = (key: string) => `--${key}`;
 const dashCaseRegex = /[A-Z]/g;
+const hasUppercase = /[A-Z]/;
 export const dashCase = (string: string) =>
-	string.replace(dashCaseRegex, (match) => `-${match.toLowerCase()}`);
+	hasUppercase.test(string)
+		? string.replace(dashCaseRegex, (match) => `-${match.toLowerCase()}`)
+		: string;
 
 const separator = "__";
 const identitySeparator = "\u0000";
