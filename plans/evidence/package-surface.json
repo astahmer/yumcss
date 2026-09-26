@@ -222,17 +222,18 @@
 		},
 		{
 			"packageName": "pandwind",
-			"exportPaths": ["./vite", "./unplugin"],
+			"exportPaths": ["./vite", "./vite/preset-context", "./unplugin"],
 			"owner": "integration",
 			"maturity": "stable",
 			"dependencies": ["unplugin"],
 			"externalContract": true,
 			"evidence": [
 				"packages/pandwind/package.json",
+				"packages/pandwind/src/vite/preset-context.ts",
 				"docs/src/content/docs/tooling/vite-plugins.md",
 				"docs/src/content/docs/tooling/multi-bundler.md"
 			],
-			"note": "Bundler integration is explicit and has a separate optional peer lane."
+			"note": "Bundler integration is explicit; the preset-context export exposes resolved property-aware token vocabulary to build tooling."
 		},
 		{
 			"packageName": "pandwind",
@@ -407,7 +408,8 @@
 				"./migration/class-sorter",
 				"./migration/arbitrary-values",
 				"./swap/variant-hoisting",
-				"./swap/token-set"
+				"./swap/token-document",
+				"./swap/token-document/serializer"
 			],
 			"owner": "tooling",
 			"maturity": "experimental",
@@ -415,10 +417,12 @@
 			"externalContract": true,
 			"evidence": [
 				"packages/codemod/package.json",
+				"packages/codemod/tests/token-document.test.ts",
+				"packages/codemod/README.md",
 				"docs/src/content/docs/tooling/codemod.md",
 				"docs/src/content/docs/contributing/architecture.md"
 			],
-			"note": "Narrow published migration helpers for sorting, arbitrary-value handling, variant hoisting, and normalized token-format conversion."
+			"note": "Narrow published migration helpers plus the versioned, loss-aware token document codec and serializer."
 		},
 		{
 			"packageName": "pandwind",

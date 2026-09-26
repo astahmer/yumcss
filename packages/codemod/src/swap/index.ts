@@ -134,6 +134,44 @@ export {
 	externalIdentifier,
 } from "./identifiers.ts";
 export { MigrationDiagnostics } from "./migration-diagnostics.ts";
+export {
+	TOKEN_FORMAT_IDS,
+	TOKEN_FORMAT_SCHEMA,
+	TokenFormatId,
+	TokenFormatLossError,
+} from "./token-format-contracts.ts";
+export type {
+	TokenFormatAdapter,
+	TokenFormatFidelity,
+	TokenFormatLoss,
+	TokenFormatOutput,
+	TokenFormatRegistry,
+} from "./token-format-contracts.ts";
+export {
+	createTokenDocument,
+	parseDtcgResolverDocument,
+	parseDtcgTokenDocument,
+	parseTokenDocument,
+	parseTokenResolverDocument,
+	resolveTokenContext,
+	serializeDtcgTokenDocument,
+	serializeTokenResolverDocument,
+	TOKEN_DOCUMENT_SCHEMA,
+	TOKEN_RESOLVER_SCHEMA,
+} from "./token-document.ts";
+export { TokenDocumentCodec, tokenDocumentCodec } from "./token-document-codec.ts";
+export type {
+	TokenContextSelection,
+	TokenDiagnostic,
+	TokenDocument,
+	TokenEntry,
+	TokenGroup,
+	TokenJsonValue,
+	TokenNode,
+	TokenResolverDocument,
+	TokenSourceLoader,
+	TokenValue,
+} from "./token-document.ts";
 export { ADAPTER_MATRIX_SCHEMA, createBidirectionalAdapterMatrix } from "./adapter-matrix.ts";
 export type {
 	AdapterMatrixCase,
@@ -240,7 +278,6 @@ export type {
 	SemanticContractReport,
 	SemanticContractSuite,
 } from "./semantic-contract-suite.ts";
-export { TokenFormatId } from "./token-format-contracts.ts";
 export { BUILTIN_CODEMOD_ADAPTER_IDS, BUILTIN_STYLE_VALIDATOR_IDS } from "./identifiers.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,

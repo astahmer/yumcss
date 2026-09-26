@@ -457,32 +457,42 @@ describe("token references + single-line output", () => {
 /* tokens subcommand: config-system conversions                        */
 /* ------------------------------------------------------------------ */
 
-import { tokenSetCodec as T } from "../src/swap/token-set.ts";
+import { tokenDocumentCodec as T } from "../src/swap/token-document-codec.ts";
 
-describe("TokenSet conversions", () => {
+describe("TokenDocument conversions", () => {
 	const dtcg = JSON.stringify({
 		colors: { blue: { 500: { $value: "#3182ce" }, 600: { $value: "#2b6cb0" } } },
 		spacing: { 4: { $value: "4px" } },
 	});
 
 	test("DTCG -> @theme css", () => {
-		const set = T.fromDtcgJson(dtcg);
-		const theme = T.toThemeCss(set);
+		const document = T.fromText("dtcg", dtcg);
+		const theme = T.to("theme", document, { allowLossy: true }).text;
 		expect(theme).toContain("--color-blue-500: #3182ce;");
 		expect(theme).toContain("--spacing-4: 4px;");
 	});
 
 	test("@theme css -> DTCG round-trips", () => {
-		const set = T.fromThemeCss(T.toThemeCss(T.fromDtcgJson(dtcg)));
-		expect(set.groups.colors?.["blue-500"]).toBe("#3182ce");
-		expect(set.groups.spacing?.["4"]).toBe("4px");
-		const back = JSON.parse(T.toDtcgJson(set));
-		expect(back.colors.blue[500].$value).toBe("#3182ce");
+		const original = T.fromText("dtcg", dtcg);
+		const theme = T.to("theme", original, { allowLossy: true }).text;
+		const document = T.fromText("theme", theme);
+		expect(document.root.children).toMatchObject({
+			colors: {
+				children: { "blue-500": { kind: "token", value: { kind: "string", value: "#3182ce" } } },
+			},
+			spacing: { children: { "4": { kind: "token", value: { kind: "string", value: "4px" } } } },
+		});
+		const back = JSON.parse(T.to("dtcg", document).text);
+		expect(back.colors["blue-500"].$value).toBe("#3182ce");
 	});
 
 	test("define.preset imports via dynamic import of the real preset", async () => {
-		const set = await T.fromDefinePreset("@pandwind/example-preset");
-		expect(set.groups.colors?.["$blue-500"]).toBe("#3182ce");
+		const document = await T.fromFile("preset", "@pandwind/example-preset");
+		expect(document.root.children).toMatchObject({
+			colors: {
+				children: { "$blue-500": { kind: "token", value: { kind: "string", value: "#3182ce" } } },
+			},
+		});
 	});
 
 	test("panda-config import flattens nested { value } leaves", async () => {
@@ -492,8 +502,12 @@ describe("TokenSet conversions", () => {
 			cfg,
 			`export default { theme: { extend: { tokens: { colors: { blue: { 500: { value: "#3182ce" } } } } } } };\n`,
 		);
-		const set = await T.fromPandaConfig(cfg);
-		expect(set.groups.colors?.["blue-500"]).toBe("#3182ce");
+		const document = await T.fromFile("panda", cfg);
+		expect(document.root.children).toMatchObject({
+			colors: {
+				children: { "blue-500": { kind: "token", value: { kind: "string", value: "#3182ce" } } },
+			},
+		});
 	});
 });
 
@@ -675,34 +689,46 @@ describe("extra token formats", () => {
 		colors: { blue: { 500: { $value: "#3182ce" } } },
 		spacing: { 4: { $value: "4px" } },
 	});
-	const set = T.fromDtcgJson(fixture);
+	const document = T.fromText("dtcg", fixture);
 
 	test("style dictionary round-trips and infers color type", () => {
-		const sd = T.toStyleDictionary(set);
+		const sd = T.to("sd", document, { allowLossy: true }).text;
 		expect(sd).toContain('"value": "#3182ce"');
 		expect(sd).toContain('"type": "color"');
-		const back = T.fromStyleDictionary(sd);
-		expect(back.groups).toEqual(set.groups);
+		const back = T.fromText("sd", sd);
+		expect(back.root.children).toMatchObject({
+			colors: {
+				children: { "blue-500": { kind: "token", value: { kind: "string", value: "#3182ce" } } },
+			},
+		});
 	});
 
 	test("figma tokens round-trips with types always set", () => {
-		const fig = T.toFigmaTokens(set);
+		const fig = T.to("figma", document, { allowLossy: true }).text;
 		expect(fig).toContain('"type": "color"');
 		expect(fig).toContain('"type": "spacing"');
-		const back = T.fromFigmaTokens(fig);
-		expect(back.groups).toEqual(set.groups);
+		const back = T.fromText("figma", fig);
+		expect(back.root.children).toMatchObject({
+			colors: {
+				children: { "blue-500": { kind: "token", value: { kind: "string", value: "#3182ce" } } },
+			},
+		});
 	});
 
 	test(":root css round-trips through the prefix map", () => {
-		const cssOut = T.toRootCss(set);
+		const cssOut = T.to("rootcss", document, { allowLossy: true }).text;
 		expect(cssOut).toContain("--color-blue-500: #3182ce;");
 		expect(cssOut).toContain("--spacing-4: 4px;");
-		const back = T.fromRootCss(cssOut);
-		expect(back.groups).toEqual(set.groups);
+		const back = T.fromText("rootcss", cssOut);
+		expect(back.root.children).toMatchObject({
+			colors: {
+				children: { "blue-500": { kind: "token", value: { kind: "string", value: "#3182ce" } } },
+			},
+		});
 	});
 
 	test("stylex defineVars emits one export per group", () => {
-		const vars = T.toStylexVars(set);
+		const vars = T.to("stylex", document, { allowLossy: true }).text;
 		expect(vars).toContain('import { defineVars } from "@stylexjs/stylex";');
 		expect(vars).toContain("export const colors = defineVars({");
 		expect(vars).toContain('"blue-500": "#3182ce"');

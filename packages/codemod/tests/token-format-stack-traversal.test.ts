@@ -7,21 +7,36 @@ import { literalValueToPlain, parseObjectLiteral, type LitValue } from "../src/s
 
 describe("iterative token tree traversal", () => {
 	test("keeps token format imports equivalent", () => {
-		const source = JSON.stringify({
-			colors: { brand: { $value: "#123456", $description: "brand" } },
+		const dtcgSource = JSON.stringify({
+			colors: { $type: "string", brand: { $value: "#123456", $description: "brand" } },
+		});
+		const styleDictionarySource = JSON.stringify({
 			spacing: { card: { value: "17px", type: "dimension" } },
+		});
+		const figmaSource = JSON.stringify({
 			fontSizes: { heading: { value: "2rem", type: "fontSizes" } },
 		});
 
-		expect(dtcgTokenFormat.importText!(source).groups).toMatchInlineSnapshot(`
-			{
-			  "colors": {
-			    "brand": "#123456",
-			  },
-			}
-		`);
-		expect(styleDictionaryTokenFormat.importText!(source).groups.spacing).toEqual({ card: "17px" });
-		expect(figmaTokenFormat.importText!(source).groups.fontSizes).toEqual({ heading: "2rem" });
+		expect(dtcgTokenFormat.importText!(dtcgSource).root.children).toMatchObject({
+			colors: {
+				kind: "group",
+				children: {
+					brand: {
+						kind: "token",
+						description: "brand",
+						value: { kind: "string", value: "#123456" },
+					},
+				},
+			},
+		});
+		expect(
+			styleDictionaryTokenFormat.importText!(styleDictionarySource).root.children.spacing,
+		).toMatchObject({
+			children: { card: { kind: "token", value: { kind: "string", value: "17px" } } },
+		});
+		expect(figmaTokenFormat.importText!(figmaSource).root.children.fontSizes).toMatchObject({
+			children: { heading: { kind: "token", value: { kind: "string", value: "2rem" } } },
+		});
 	});
 
 	test("handles a deep token tree without recursion", () => {

@@ -14,9 +14,22 @@ import { createSourceWorkspace } from "pandwind/source/workspace";
 import { createEmptyPandwindMeta, loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
-import { tokenSetCodec } from "./swap/token-set.ts";
-import type { TokenFormatId } from "./swap/token-format-contracts.ts";
-import { TokenFormatId as TokenFormat } from "./swap/token-format-contracts.ts";
+import {
+	createTokenDocument,
+	parseDtcgResolverDocument,
+	resolveInlineTokenContext,
+	resolveTokenContext,
+	type TokenContextSelection,
+	type TokenDocument,
+} from "./swap/token-document.ts";
+import { tokenDocumentCodec } from "./swap/token-document-codec.ts";
+import { createLocalTokenSourceLoader } from "./swap/resolver-file-loader.ts";
+import {
+	TOKEN_FORMAT_IDS,
+	TokenFormatId as TokenFormat,
+	TokenFormatLossError,
+	type TokenFormatId,
+} from "./swap/token-format-contracts.ts";
 import { unifiedDiff } from "./diff.ts";
 import { createTwCli } from "./tw/cli.ts";
 import { createRuntimeCli } from "./runtime/cli.ts";
@@ -886,26 +899,23 @@ async function runAdapterRoute(
 	}
 }
 
-/**
- * Token-config conversions (plans/022): DTCG JSON <-> @theme css <->
- * define.preset <-> panda.config tokens. One TokenSet IR in between.
- */
-const TOKEN_FORMATS: readonly TokenFormatId[] = [
-	TokenFormat.Dtcg,
-	TokenFormat.Theme,
-	TokenFormat.Panda,
-	TokenFormat.Preset,
-	TokenFormat.StyleDictionary,
-	TokenFormat.Figma,
-	TokenFormat.RootCss,
-	TokenFormat.StyleX,
-];
+/** Token-document exchange; adapters report any semantics they cannot preserve. */
+const TOKEN_FORMATS: readonly TokenFormatId[] = TOKEN_FORMAT_IDS;
 
 const configureTokensCommand = (command: Command): void => {
 	command
 		.option("-f, --from <format>", "Input token format")
 		.option("-t, --to <format>", "Output token format")
-		.option("-o, --out <file>", "Write the converted token set to a file");
+		.option("-o, --out <file>", "Write the converted token document to a file")
+		.option("--resolver <file>", "Attach a DTCG Resolver document to a DTCG token file")
+		.option("--resolver-out <file>", "Write the DTCG Resolver sidecar document")
+		.option(
+			"--context <source=name[,source=name...]>",
+			"Select explicit token contexts before export",
+		)
+		.option("--allow-lossy", "Allow a conversion that reports fidelity losses")
+		.option("--validate", "Validate the input document without exporting")
+		.option("--report-format <format>", "Report format: text or json", { default: "text" });
 };
 
 const tokenFormat = (value: string | undefined, flag: string): TokenFormatId => {
@@ -921,7 +931,29 @@ interface TokenCliArgs {
 	to: TokenFormatId;
 	input: string;
 	out?: string;
+	resolver?: string;
+	resolverOut?: string;
+	context?: TokenContextSelection;
+	allowLossy: boolean;
+	validate: boolean;
+	reportFormat: "text" | "json";
 }
+
+const tokenContextSelection = (value: string | undefined): TokenContextSelection | undefined => {
+	if (value === undefined) return undefined;
+	const contexts: Record<string, string> = {};
+	for (const selection of value.split(",")) {
+		const separator = selection.indexOf("=");
+		const source = selection.slice(0, separator).trim();
+		const context = selection.slice(separator + 1).trim();
+		if (separator < 1 || source.length === 0 || context.length === 0)
+			throw new Error("codemod tokens: --context must use source=name pairs separated by commas");
+		if (Object.hasOwn(contexts, source))
+			throw new Error(`codemod tokens: --context selects '${source}' more than once`);
+		contexts[source] = context;
+	}
+	return { contexts };
+};
 
 const parseTokenArgs = (argv: readonly string[]): TokenCliArgs => {
 	const cli = cac("pandwind-codemod tokens");
@@ -932,11 +964,27 @@ const parseTokenArgs = (argv: readonly string[]): TokenCliArgs => {
 	validateCommand(cli.matchedCommand);
 	const options = cli.options as CliOptions;
 	const from = tokenFormat(optionString(options, "from"), "from");
+	const reportFormat = optionString(options, "reportFormat") ?? "text";
+	if (reportFormat !== "text" && reportFormat !== "json")
+		throw new Error(
+			`codemod tokens: unknown --report-format '${reportFormat}' (expected text|json)`,
+		);
+	const context = tokenContextSelection(optionString(options, "context"));
 	return {
 		from,
 		to: tokenFormat(optionString(options, "to") ?? from, "to"),
 		input: cli.args[0]!,
 		...(optionString(options, "out") === undefined ? {} : { out: optionString(options, "out") }),
+		...(optionString(options, "resolver") === undefined
+			? {}
+			: { resolver: optionString(options, "resolver") }),
+		...(optionString(options, "resolverOut") === undefined
+			? {}
+			: { resolverOut: optionString(options, "resolverOut") }),
+		...(context === undefined ? {} : { context }),
+		allowLossy: options.allowLossy === true,
+		validate: options.validate === true,
+		reportFormat,
 	};
 };
 
@@ -962,24 +1010,140 @@ const createCodemodCli = (): CAC => {
 };
 
 async function mainTokens(argv: string[]): Promise<void> {
-	const { from, to, input, out } = parseTokenArgs(argv);
-	const set = await tokenSetCodec.fromFile(from, resolve(input));
-
-	const groupCount = Object.keys(set.groups).length;
-	const tokenCount = Object.values(set.groups).reduce((a, g) => a + Object.keys(g).length, 0);
-
-	const result = tokenSetCodec.to(to, set);
-
-	if (out !== undefined) {
-		writeFileSync(resolve(out), result);
-		console.log(
-			`codemod tokens: ${groupCount} group(s), ${tokenCount} token(s) -> ${resolve(out)}`,
+	const {
+		from,
+		to,
+		input,
+		out,
+		resolver,
+		resolverOut,
+		context,
+		allowLossy,
+		validate,
+		reportFormat,
+	} = parseTokenArgs(argv);
+	if (resolver !== undefined && from !== TokenFormat.Dtcg)
+		throw new Error("codemod tokens: --resolver can only accompany --from=dtcg");
+	if (resolverOut !== undefined && to !== TokenFormat.Dtcg)
+		throw new Error("codemod tokens: --resolver-out can only accompany --to=dtcg");
+	if (context !== undefined && validate)
+		throw new Error(
+			"codemod tokens: --context cannot be combined with --validate; validation checks every context",
 		);
-	} else {
-		process.stdout.write(result);
-		console.error(
-			`\n// ${groupCount} group(s), ${tokenCount} token(s), converted ${from} -> ${to}`,
+	if (context !== undefined && resolverOut !== undefined)
+		throw new Error(
+			"codemod tokens: --context selects one state and cannot be combined with --resolver-out",
 		);
+	let document = await tokenDocumentCodec.fromFile(from, resolve(input));
+	if (resolver !== undefined) {
+		const resolverDocument = parseDtcgResolverDocument(readFileSync(resolve(resolver), "utf8"));
+		document = createTokenDocument({
+			format: document.format,
+			formatVersion: document.formatVersion,
+			root: document.root,
+			resolver: resolverDocument,
+			sourceLosses: document.sourceLosses,
+			sourceText: `${document.sourceFingerprint}:${resolverDocument.version}`,
+		});
+	}
+	if (context !== undefined) {
+		const resolved =
+			document.resolver === undefined
+				? resolveInlineTokenContext(document, context)
+				: await resolveTokenContext(
+						document,
+						context,
+						createLocalTokenSourceLoader(resolve(resolver ?? input)),
+					);
+		document = createTokenDocument({
+			format: resolved.format,
+			formatVersion: resolved.formatVersion,
+			root: resolved.root,
+			sourceLosses: resolved.sourceLosses,
+			sourceText: `${resolved.sourceFingerprint}:${JSON.stringify(context.contexts)}`,
+		});
+	}
+	const countTokens = (group: TokenDocument["root"]): number =>
+		Object.values(group.children).reduce(
+			(count, child) => count + (child.kind === "token" ? 1 : countTokens(child)),
+			group.root === undefined ? 0 : 1,
+		);
+	const tokenCount = countTokens(document.root);
+	const baseReport = {
+		schema: "pandwind.token-operation-report/1",
+		input: resolve(input),
+		from,
+		to,
+		tokenCount,
+		...(context === undefined ? {} : { contextSelection: context.contexts }),
+	};
+	if (validate) {
+		const report = {
+			...baseReport,
+			operation: "validate",
+			status: "valid",
+			fidelity: {
+				status: document.sourceLosses?.length ? "lossy" : "lossless",
+				losses: document.sourceLosses ?? [],
+			},
+		};
+		if (reportFormat === "json") process.stdout.write(`${JSON.stringify(report, null, "\t")}\n`);
+		else console.log(`codemod tokens: valid ${from} document, ${tokenCount} token(s)`);
+		return;
+	}
+	try {
+		const output = tokenDocumentCodec.to(to, document, {
+			allowLossy,
+			resolverSidecar: resolverOut !== undefined,
+		});
+		if (resolverOut !== undefined) {
+			if (output.resolverText === undefined)
+				throw new Error(
+					"codemod tokens: --resolver-out requires a Resolver document or contextual token values",
+				);
+			writeFileSync(resolve(resolverOut), output.resolverText);
+		}
+		if (out !== undefined) writeFileSync(resolve(out), output.text);
+		if (reportFormat === "json") {
+			process.stdout.write(
+				`${JSON.stringify(
+					{
+						...baseReport,
+						operation: "convert",
+						status: "converted",
+						outputFile: out === undefined ? undefined : resolve(out),
+						resolverFile: resolverOut === undefined ? undefined : resolve(resolverOut),
+						fidelity: output.fidelity,
+						...(out === undefined ? { output: output.text } : {}),
+					},
+					null,
+					"\t",
+				)}\n`,
+			);
+		} else if (out === undefined) {
+			process.stdout.write(output.text);
+			console.error(`\n// ${tokenCount} token(s), converted ${from} -> ${to}`);
+		} else {
+			console.log(`codemod tokens: ${tokenCount} token(s) -> ${resolve(out)}`);
+		}
+		if (output.fidelity.losses.length > 0 && reportFormat === "text")
+			for (const loss of output.fidelity.losses)
+				console.error(`codemod tokens: loss ${loss.path} · ${loss.feature}: ${loss.reason}`);
+	} catch (error) {
+		if (!(error instanceof TokenFormatLossError)) throw error;
+		const report = {
+			...baseReport,
+			operation: "convert",
+			status: "blocked-lossy-export",
+			fidelity: error.output.fidelity,
+		};
+		if (reportFormat === "json") process.stdout.write(`${JSON.stringify(report, null, "\t")}\n`);
+		else {
+			console.error(error.message);
+			for (const loss of error.output.fidelity.losses)
+				console.error(`  ${loss.path} · ${loss.feature}: ${loss.reason}`);
+		}
+		process.exitCode = 1;
 	}
 }
 

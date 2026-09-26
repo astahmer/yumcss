@@ -21,7 +21,7 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 // Single source of truth for key -> emitted-utility mapping (textColor -> "text").
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
-import type { PandwindInteropArtifact } from "./tw/index.ts";
+import { parsePandwindInteropArtifact, type PandwindInteropArtifact } from "./tw/index.ts";
 import type { AnyTokens } from "pandwind/types/typings";
 
 interface VariantMeta {
@@ -182,10 +182,7 @@ export interface LoadMetaOptions {
 function readInterop(path: string | undefined): PandwindInteropArtifact | undefined {
 	if (path === undefined) return undefined;
 	try {
-		const parsed = JSON.parse(readFileSync(path, "utf8")) as Partial<PandwindInteropArtifact>;
-		if (parsed.schema !== "pandwind.interop/2")
-			throw new Error(`codemod: unsupported pandwind interop schema in ${path}`);
-		return parsed as PandwindInteropArtifact;
+		return parsePandwindInteropArtifact(JSON.parse(readFileSync(path, "utf8")));
 	} catch (error) {
 		if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
 		throw error;

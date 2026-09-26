@@ -1,8 +1,7 @@
 /**
  * Host-app Panda theme ingestion.
  *
- * Loads a panda.config.ts via dynamic import (same mechanism as the
- * define.preset importer in token-set.ts) and flattens the pieces the
+ * Loads a panda.config.ts through the project module loader and flattens the pieces the
  * panda inbound parser needs:
  *
  * - semanticTokens / tokens -> known token PATHS (`fg.muted`, `neutral.700`)

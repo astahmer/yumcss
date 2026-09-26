@@ -33,7 +33,7 @@ describe("project-aware migration metadata", () => {
 			writeFileSync(
 				join(dir, "pandwind.interop.json"),
 				JSON.stringify({
-					schema: "pandwind.interop/2",
+					schema: "pandwind.interop/3",
 					generatedFrom: { types: "types.d.ts", runtime: "tw.ts", bridge: "bridge.ts" },
 					utilities: [
 						{ key: "bgColor", base: "bg", valueType: "BgColorValue" },
@@ -47,6 +47,19 @@ describe("project-aware migration metadata", () => {
 					},
 					bridge: { "background-color": { "#3182ce": "bg-blue-500" } },
 					theme: { variables: {}, scopes: [] },
+					tokens: {
+						schema: "pandwind.interop.tokens/1",
+						state: "available",
+						source: { kind: "configured-token-module", module: "./tokens.ts", fingerprint: "abc" },
+						fidelity: { status: "lossless", losses: [] },
+						document: {
+							schema: "pandwind.token-document/1",
+							format: "dtcg",
+							formatVersion: "2025.10",
+							sourceFingerprint: "abc",
+							root: { kind: "group", children: {} },
+						},
+					},
 				}),
 			);
 			const meta = loadMetaFromSources({ interopPath: join(dir, "pandwind.interop.json") });
@@ -62,13 +75,13 @@ describe("project-aware migration metadata", () => {
 		}
 	});
 
-	test("rejects interop artifacts from the previous schema", () => {
+	test("rejects stale interop artifacts that lack the token snapshot schema", () => {
 		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-meta-"));
 		try {
 			const path = join(dir, "pandwind.interop.json");
-			writeFileSync(path, '{"schema":"pandwind.interop/1"}\n');
+			writeFileSync(path, '{"schema":"pandwind.interop/2"}\n');
 			expect(() => loadMetaFromSources({ interopPath: path })).toThrow(
-				"unsupported pandwind interop schema",
+				"invalid pandwind.interop/3 artifact",
 			);
 		} finally {
 			rmSync(dir, { recursive: true, force: true });

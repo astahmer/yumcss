@@ -1,0 +1,160 @@
+{
+	"$description": "Pinned Pandwind conformance fixture derived from DTCG Format Module 2025.10 examples.",
+	"$extensions": {
+		"com.pandwind.fixture": {
+			"suite": "dtcg-2025-10"
+		}
+	},
+	"color": {
+		"$type": "color",
+		"brand": {
+			"$value": {
+				"colorSpace": "display-p3",
+				"components": [0.6, 0.2, 0.4],
+				"alpha": 0.9
+			}
+		},
+		"brandAlias": {
+			"$value": "{color.brand}"
+		}
+	},
+	"space": {
+		"$type": "dimension",
+		"small": {
+			"$value": {
+				"value": 0.5,
+				"unit": "rem"
+			}
+		},
+		"medium": {
+			"$value": {
+				"value": 1,
+				"unit": "rem"
+			}
+		}
+	},
+	"fontFamily": {
+		"$type": "fontFamily",
+		"primary": {
+			"$value": ["Inter", "sans-serif"]
+		}
+	},
+	"fontWeight": {
+		"$type": "fontWeight",
+		"body": {
+			"$value": 350
+		},
+		"heavy": {
+			"$value": "extra-bold"
+		}
+	},
+	"duration": {
+		"$type": "duration",
+		"quick": {
+			"$value": {
+				"value": 120,
+				"unit": "ms"
+			}
+		}
+	},
+	"easing": {
+		"$type": "cubicBezier",
+		"standard": {
+			"$value": [0.2, 0.7, 0.8, 1]
+		}
+	},
+	"lineHeight": {
+		"$type": "number",
+		"body": {
+			"$value": 1.4
+		}
+	},
+	"strokeStyle": {
+		"$type": "strokeStyle",
+		"dashed": {
+			"$value": {
+				"dashArray": [
+					{
+						"value": 0.25,
+						"unit": "rem"
+					}
+				],
+				"lineCap": "round"
+			}
+		}
+	},
+	"border": {
+		"$type": "border",
+		"focus": {
+			"$value": {
+				"color": "{color.brand}",
+				"width": "{space.small}",
+				"style": "{strokeStyle.dashed}"
+			}
+		}
+	},
+	"transition": {
+		"$type": "transition",
+		"emphasis": {
+			"$value": {
+				"duration": "{duration.quick}",
+				"delay": {
+					"value": 0,
+					"unit": "ms"
+				},
+				"timingFunction": "{easing.standard}"
+			}
+		}
+	},
+	"shadow": {
+		"$type": "shadow",
+		"card": {
+			"$value": [
+				{
+					"color": "{color.brand}",
+					"offsetX": {
+						"value": 0,
+						"unit": "px"
+					},
+					"offsetY": "{space.small}",
+					"blur": "{space.medium}",
+					"spread": {
+						"value": 0,
+						"unit": "px"
+					},
+					"inset": false
+				}
+			]
+		}
+	},
+	"gradient": {
+		"$type": "gradient",
+		"brand": {
+			"$value": [
+				{
+					"color": "{color.brand}",
+					"position": 0
+				},
+				{
+					"color": "{color.brandAlias}",
+					"position": 1
+				}
+			]
+		}
+	},
+	"typography": {
+		"$type": "typography",
+		"body": {
+			"$value": {
+				"fontFamily": "{fontFamily.primary}",
+				"fontSize": "{space.small}",
+				"fontWeight": "{fontWeight.body}",
+				"letterSpacing": {
+					"value": 0,
+					"unit": "px"
+				},
+				"lineHeight": "{lineHeight.body}"
+			}
+		}
+	}
+}

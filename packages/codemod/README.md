@@ -292,22 +292,62 @@ Token spelling is configured independently with
 
 ## Token configs (tokens subcommand)
 
-tokens remains a separate data-format conversion command. It uses one
-normalized TokenSet IR between importers and exporters:
+tokens remains a separate data-format conversion command. Registered format
+adapters exchange a versioned typed `TokenDocument`; each conversion reports
+the information it preserves and any loss it would introduce:
 
 ```sh
 # DTCG JSON -> Tailwind @theme CSS
 pnpm exec pandwind-codemod tokens --from dtcg --to theme tokens.json --out theme.css
 
-# panda.config.ts tokens -> DTCG JSON
-pnpm exec pandwind-codemod tokens --from panda --to dtcg panda.config.ts --out tokens.json
+# panda.config.ts tokens -> DTCG JSON with a Resolver sidecar
+pnpm exec pandwind-codemod tokens --from panda --to dtcg panda.config.ts --resolver-out tokens.resolver.json --out tokens.json
+
+# Select an explicit source context when a single static token state is wanted
+pnpm exec pandwind-codemod tokens --from preset --to dtcg preset.ts --context preset=dark --out dark.tokens.json
 
 # a Pandwind define.preset file -> Panda snippet on stdout
 pnpm exec pandwind-codemod tokens --from preset --to panda src/preset.ts
 ```
 
-Supported formats are dtcg, theme, panda, preset, sd, figma, rootcss, and
-stylex. Use pandwind-codemod tokens --help for the validated format list.
+Supported formats are dtcg, dtcg-resolver, theme, panda, preset, sd, figma,
+rootcss, and stylex. DTCG tokens use the 2025.10 format; Resolver sets and
+modifiers use a separate sidecar. `--resolver-out` writes that sidecar, and
+`--context source=name[,source=name...]` explicitly resolves one or more
+contexts before conversion. Contexts otherwise remain tagged in the document.
+Resolver sources resolve relative to the selected sidecar and must remain
+inside the invocation project root; remote and out-of-root references fail
+closed.
+
+Scalar formats report flattened paths, structured values, references, metadata,
+and context they cannot carry. Conversion stops when fidelity losses exist;
+`--allow-lossy` writes the projected output and includes path-specific loss
+records in the text or JSON report. DTCG export requires a known token type and
+valid values; unsupported entries are only pruned under explicit lossy consent.
+Use `--validate` to check an input document without writing output and
+`--report-format json` for machine-readable diagnostics.
+
+### Token format fidelity
+
+Import and export fidelity is declared by each registered adapter. `partial`
+means the format cannot represent every `TokenDocument` feature; the adapter
+reports concrete losses for the actual document before export.
+
+| Format                | Import   | Export   | Known fidelity boundary                                                                                                                                             |
+| --------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DTCG 2025.10          | Lossless | Partial  | Preserves hierarchy, types, values, references, metadata, and extensions. Unsupported values and contextual data without a Resolver sidecar are reported.           |
+| DTCG Resolver 2025.10 | Lossless | Lossless | Preserves sets, modifiers, contexts, resolution order, and Resolver metadata.                                                                                       |
+| Theme CSS             | Partial  | Partial  | Preserves recognized static theme variables; metadata, structured values, references, Resolver contexts, and unknown at-rules may be lost.                          |
+| Panda                 | Partial  | Partial  | Preserves static scalar values and top-level groups; conditions, aliases, structured values, metadata, and Resolver contexts may be lost.                           |
+| Preset                | Partial  | Partial  | Preserves static scalar values and top-level groups; aliases, structured values, metadata, condition scopes, and Resolver contexts may be lost.                     |
+| Style Dictionary      | Partial  | Partial  | Preserves static values and nested paths; types, descriptions, extensions, structured values, references, Resolver contexts, and other format metadata may be lost. |
+| Figma Tokens          | Partial  | Partial  | Preserves static string values and recognized type groups; Figma metadata, structured values, references, Resolver contexts, and unknown types may be lost.         |
+| Root CSS              | Partial  | Partial  | Preserves root custom properties and static values; cascade, selector/media scope, comments, metadata, and Resolver contexts may be lost.                           |
+| StyleX                | Partial  | Partial  | Preserves static scalar `defineVars` values; conditional values, metadata, dynamic expressions, references, and Resolver contexts may be lost.                      |
+
+The table describes adapter capabilities, not a promise that each conversion
+will lose every listed feature. The report identifies the exact paths and
+features affected by the selected document.
 
 ## Safety and review flags
 
