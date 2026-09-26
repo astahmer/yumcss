@@ -22,7 +22,7 @@ adoption simplicity, real-world proof, and scope discipline.
   safelisting or runtime handling. Dynamic `css()` values use `css.vars()`.
   Globals, fonts, layers, and complex selectors use authored CSS or explicit
   runtime rules; narrow preset-owned flat globals, font faces, and named
-  keyframes have a build-time lane (`define.preset({ web: ... })`), while
+  keyframes have a build-time lane (the third `define.preset(theme, options, web)` argument), while
   component-local keyframes use `css.keyframes`. The limitations are documented in
   `docs/src/content/docs/reference/limitations.md` and the CSS scorecard.
 - "The setup is too dependent on generated files." A normal Tailwind lane

@@ -240,7 +240,7 @@ These records must not be presented as shipped product commitments:
   polish remains optional.
 - Plan 019 is a point-in-time competitive research record, not a feature
   checklist.
-- Plan 028's `define.preset({ web: ... })` contract is shipped for the narrow
+- Plan 028's third-argument `define.preset(theme, options, web)` contract is shipped for the narrow
   build-time surface described in [Preset contracts](/api/presets/); authored
   CSS remains the complete web-global escape hatch for broader syntax.
 - Canvas and build-time Metro support remain extension points without a

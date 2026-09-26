@@ -1131,7 +1131,7 @@ deliberate:
   in `plans/evidence/panda-website-proof.md`.
 - `plans/021-multi-target-backends.md` keeps canvas and build-time Metro
   intentionally deferred until a concrete consumer requires them. Plan 028
-  ships a narrow `define.preset({ web: ... })` build-time surface without
+  ships a narrow third-argument `define.preset(theme, options, web)` build-time surface without
   turning the preset into a second global-CSS language.
 - Runtime-only lazy method accessors were rejected after measurement. The
   shipped compiler-aware runtime pruning removes unused attachments without

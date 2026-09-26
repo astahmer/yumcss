@@ -16,8 +16,8 @@ import "@acme/brand/animations.css";
 import "./app";
 ```
 
-Use this lane for things that are not supported by the narrow build-time
-`define.preset({ web: ... })` contract, including:
+Use this lane for things outside the narrow build-time web contract in the
+third `define.preset(theme, options, web)` argument, including:
 
 - global selectors and resets;
 - `@font-face` declarations;
@@ -36,14 +36,14 @@ export const preset = define.preset(
 	{
 		conditions: {},
 		properties: { color: { $tokens: "colors" } },
-		web: {
-			globals: { ":root": { color: "$brand-900" } },
-			keyframes: {
-				fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
-			},
-			fontFaces: {
-				body: { family: "Brand", src: 'url("/fonts/brand.woff2") format("woff2")' },
-			},
+	},
+	{
+		globals: { ":root": { color: "$brand-900" } },
+		keyframes: {
+			fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+		},
+		fontFaces: {
+			body: { family: "Brand", src: 'url("/fonts/brand.woff2") format("woff2")' },
 		},
 	},
 );

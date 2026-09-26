@@ -20,22 +20,22 @@ const preset = define.preset(
 	{
 		conditions: {},
 		properties: { $all: true, color: { $tokens: "colors" } },
-		web: {
-			globals: {
-				":root": { color: "$brand", "--app-space": "1rem", "--omitted": undefined },
+	},
+	{
+		globals: {
+			":root": { color: "$brand", "--app-space": "1rem", "--omitted": undefined },
+		},
+		keyframes: {
+			"fade-in": {
+				from: { opacity: 0 },
+				to: { opacity: 1 },
 			},
-			keyframes: {
-				"fade-in": {
-					from: { opacity: 0 },
-					to: { opacity: 1 },
-				},
-			},
-			fontFaces: {
-				brand: {
-					family: "Brand",
-					src: 'url("/fonts/brand.woff2") format("woff2")',
-					display: "swap",
-				},
+		},
+		fontFaces: {
+			brand: {
+				family: "Brand",
+				src: 'url("/fonts/brand.woff2") format("woff2")',
+				display: "swap",
 			},
 		},
 	},
@@ -110,8 +110,8 @@ describe("preset.web", () => {
 			{
 				conditions: {},
 				properties: { $all: true },
-				web: { globals: { "@supports (display: grid)": { display: "grid" } } },
 			},
+			{ globals: { "@supports (display: grid)": { display: "grid" } } },
 		);
 
 		expect(() => createStylesheet(broadPreset).gen.web()).toThrow("flat CSS selector");

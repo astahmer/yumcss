@@ -65,7 +65,7 @@ from what the build actually accepts.
 
 Broad globals, fonts, layers, and complex selectors belong naturally in
 authored `.css` files. A preset can also own flat build-time selectors, named
-keyframes, and typed font faces through `define.preset({ web: ... })`; Pandwind
+keyframes, and typed font faces through the third `define.preset(theme, options, web)` argument; Pandwind
 does not force every browser primitive through a TypeScript API. A
 component-local animation remains available through `css.keyframes()`, which
 emits a plain `@keyframes` rule.

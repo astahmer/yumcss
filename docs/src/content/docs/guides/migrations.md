@@ -167,8 +167,8 @@ reason, target capability, and suggested strategy. The usual fixes are:
 - rewrite a styled subject into an explicit host component;
 - map a theme read into a preset token or target theme provider;
 - preserve broad globals/keyframes/font-face as authored CSS, or map
-  preset-owned flat selectors, named keyframes, and typed font faces to
-  `define.preset({ web: ... })`;
+  preset-owned flat selectors, named keyframes, and typed font faces to the
+  third `define.preset(theme, options, web)` argument;
 - register a source plugin transform for framework syntax; or
 - choose a runtime-capable backend instead of forcing static extraction.
 

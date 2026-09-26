@@ -86,7 +86,8 @@ export function Card() {
 
 Use `css.vars()` when a value is only known at runtime. Use `css.keyframes()`
 for a component-local animation. A preset can also own flat build-time globals,
-named keyframes, and typed font faces through `define.preset({ web: ... })`;
+named keyframes, and typed font faces through the third argument to
+`define.preset(theme, options, web)`;
 keep resets, layers, nesting, and broader browser CSS in ordinary authored CSS.
 
 ## The Tailwind compatibility path

@@ -9,15 +9,15 @@ sidebar:
 
 Use each lane for the job it is good at:
 
-| Need                                                        | Recommended lane              | Ownership                                |
-| ----------------------------------------------------------- | ----------------------------- | ---------------------------------------- |
-| Typed local styles and variants already known at build time | `css()` / `createDesignCss()` | Pandwind extraction                      |
-| Tailwind utilities or an existing Tailwind theme            | `tw()`                        | Tailwind compilation                     |
-| Runtime values such as user-selected colors                 | `css.vars()`                  | Inline custom properties, host rendering |
-| Preset-owned flat globals, named keyframes, and font faces  | `define.preset({ web: ... })` | Pandwind build output                    |
-| Resets, layers, and complex selectors                       | Explicit `.css` imports       | The web bundler                          |
-| A component-local animation body                            | `css.keyframes()`             | Pandwind extraction                      |
-| Variant selection and compound conditions                   | External CVA-style package    | Class-string selection                   |
+| Need                                                        | Recommended lane                                       | Ownership                                |
+| ----------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------- |
+| Typed local styles and variants already known at build time | `css()` / `createDesignCss()`                          | Pandwind extraction                      |
+| Tailwind utilities or an existing Tailwind theme            | `tw()`                                                 | Tailwind compilation                     |
+| Runtime values such as user-selected colors                 | `css.vars()`                                           | Inline custom properties, host rendering |
+| Preset-owned flat globals, named keyframes, and font faces  | Third argument to `define.preset(theme, options, web)` | Pandwind build output                    |
+| Resets, layers, and complex selectors                       | Explicit `.css` imports                                | The web bundler                          |
+| A component-local animation body                            | `css.keyframes()`                                      | Pandwind extraction                      |
+| Variant selection and compound conditions                   | External CVA-style package                             | Class-string selection                   |
 
 This keeps the public Pandwind API small while making every output lane
 visible in build output and tooling. See [Preset contracts](/api/presets/) for

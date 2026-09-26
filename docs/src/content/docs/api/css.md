@@ -469,7 +469,7 @@ silently dropped; a body the extractor cannot prove literal stays on the
 runtime call and is reported as an unsupported construct.
 
 This lane is deliberately narrower than authored CSS. For preset-owned
-build-time globals, `define.preset({ web: ... })` supports flat selector rules,
+build-time globals, the third argument to `define.preset(theme, options, web)` supports flat selector rules,
 explicitly named keyframes, and typed font-face descriptors. Keep resets,
 `@property`, cascade layers, nesting, arbitrary at-rules, and host-owned global
 CSS in the authored CSS lane above. The preset web section is build-only and

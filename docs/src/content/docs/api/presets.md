@@ -67,29 +67,31 @@ so an unmapped token keeps its hashed fallback.
 
 ## Build-time web CSS
 
-Use `web` when a design-system preset owns a small amount of browser-global CSS
-that should be emitted with the preset's generated stylesheet:
+Pass `web` as the third argument when a design-system preset owns a small
+amount of browser-global CSS that should be emitted with the generated
+stylesheet. This lets Pandwind type token values after it sees the theme and
+property mappings:
 
 ```ts
 const preset = define.preset(
-	{ config: {}, tokens: { colors: { "$brand-900": "#172554" } } },
+	{ config: {}, tokens: { colors: { "$brand-900": "#172554", $dark: "#f8fafc" } } },
 	{
 		conditions: {},
 		properties: { color: { $tokens: "colors" } },
-		web: {
-			globals: {
-				":root": { color: "$brand-900" },
-				"[data-theme='dark']": { color: "#f8fafc" },
-			},
-			keyframes: {
-				fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
-			},
-			fontFaces: {
-				body: {
-					family: "Brand",
-					src: ['url("/fonts/brand.woff2") format("woff2")'],
-					display: "swap",
-				},
+	},
+	{
+		globals: {
+			":root": { color: "$brand-900" },
+			"[data-theme='dark']": { color: "$dark" },
+		},
+		keyframes: {
+			fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+		},
+		fontFaces: {
+			body: {
+				family: "Brand",
+				src: ['url("/fonts/brand.woff2") format("woff2")'],
+				display: "swap",
 			},
 		},
 	},
@@ -101,7 +103,9 @@ use the same token-variable resolution as ordinary stylesheet declarations;
 nullish values are omitted. `web.keyframes` names are explicit CSS identifiers
 so application code can reference `fadeIn` without a registry or generated
 counter. `web.fontFaces` uses typed descriptor fields and preserves the source
-fallback order.
+fallback order. Declarations for mapped properties accept only tokens from
+their configured groups by default; unmapped CSS properties and custom
+properties accept scalar CSS values.
 
 The build-time stylesheet compiler and Vite/Unplugin output include this CSS;
 route splitting keeps it in the common bucket, and `pandwind.lib/3` artifacts

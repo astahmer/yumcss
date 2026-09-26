@@ -6,17 +6,22 @@ import type {
 	ColorPaletteDefinitions,
 	CssPreset,
 	DefinePresetOptions,
+	PresetWeb,
+	PresetWebStyleObject,
+	PresetWebValue,
 	TokenCatalog,
+	TypedStyleObject,
 } from "./typings.ts";
 
 export * from "./typings.ts";
 
 type PresetDefinition<TConfig extends object, TTokens extends AnyTokens> = Omit<
 	CssPreset<TConfig, TTokens>,
-	"strict"
+	"strict" | "web"
 > & {
 	/** Mapped properties are token-only unless explicitly opened. */
 	strict?: boolean;
+	web?: never;
 };
 
 type EffectiveStrict<TPreset> = TPreset extends { readonly strict?: infer TStrict }
@@ -24,6 +29,59 @@ type EffectiveStrict<TPreset> = TPreset extends { readonly strict?: infer TStric
 		? true
 		: Extract<TStrict, boolean>
 	: true;
+
+type PresetWebStylePreset<
+	TConfig extends object,
+	TTokens extends AnyTokens,
+	TPreset extends PresetDefinition<TConfig, TTokens>,
+> = Omit<TPreset, "strict" | "web"> & {
+	_config: TConfig;
+	tokens: TTokens;
+	strict: EffectiveStrict<TPreset>;
+};
+
+type PresetWebPropertyNames<
+	TConfig extends object,
+	TTokens extends AnyTokens,
+	TPreset extends PresetDefinition<TConfig, TTokens>,
+> =
+	| Exclude<Extract<keyof TPreset["properties"], string>, "$all" | "colorPalette">
+	| (TPreset["properties"] extends { $all: true }
+			? Exclude<Extract<keyof TConfig, string>, "colorPalette">
+			: never);
+
+type PresetWebDeclarationValue<
+	TStyle extends object,
+	TProperty extends string,
+> = TProperty extends keyof TStyle
+	? Extract<TStyle[TProperty], PresetWebValue> | undefined
+	: PresetWebValue;
+
+type TypedPresetWebStyleObject<
+	TConfig extends object,
+	TTokens extends AnyTokens,
+	TPreset extends PresetDefinition<TConfig, TTokens>,
+> = PresetWebStyleObject & {
+	readonly [
+		Property in PresetWebPropertyNames<TConfig, TTokens, TPreset>
+	]?: PresetWebDeclarationValue<
+		TypedStyleObject<PresetWebStylePreset<TConfig, TTokens, TPreset>>,
+		Property
+	>;
+} & {
+	readonly [Condition in Extract<keyof TPreset["conditions"], string>]?: never;
+};
+
+type TypedPresetWeb<
+	TConfig extends object,
+	TTokens extends AnyTokens,
+	TPreset extends PresetDefinition<TConfig, TTokens>,
+> = Omit<PresetWeb, "globals" | "keyframes"> & {
+	readonly globals?: Readonly<Record<string, TypedPresetWebStyleObject<TConfig, TTokens, TPreset>>>;
+	readonly keyframes?: Readonly<
+		Record<string, Readonly<Record<string, TypedPresetWebStyleObject<TConfig, TTokens, TPreset>>>>
+	>;
+};
 
 /**
  * Preserve literal token and CSS config types for a preset theme.
@@ -88,6 +146,9 @@ export const theme = <TTheme extends DefinePresetOptions>(theme: TTheme) => them
  *       backgroundColor: { $tokens: "colors" },
  *     },
  *   },
+ *   {
+ *     globals: { ":root": { backgroundColor: "$brand-500" } },
+ *   },
  * );
  *
  * const css = createCss(preset);
@@ -101,6 +162,8 @@ export const theme = <TTheme extends DefinePresetOptions>(theme: TTheme) => them
  * @param theme - Values, optionally produced by {@link define.theme}.
  * @param preset - Conditions and property-to-token mappings. Strictness
  * defaults to `true` and can be disabled explicitly.
+ * @param web - Flat browser-global declarations typed against theme tokens
+ * and property mappings.
  * @returns A preset carrying both runtime metadata and inferred token types.
  * @see {@link define.tokens} for the raw token layer.
  * @see {@link createCss} for consuming the resulting preset.
@@ -112,22 +175,27 @@ export function preset<
 	TConfig extends TTheme["config"],
 	TTokens extends TTheme["tokens"],
 	TPreset extends PresetDefinition<TConfig, TTokens>,
+	const TWeb extends TypedPresetWeb<TConfig, TTokens, TPreset> | undefined = undefined,
 >(
 	theme: TTheme,
 	preset: TPreset,
-): Omit<TPreset, "strict"> & {
+	web?: TWeb,
+): Omit<TPreset, "strict" | "web"> & {
 	strict: EffectiveStrict<TPreset>;
 	_config: TConfig;
 	tokens: TTokens;
+	web?: TWeb;
 } {
 	return {
 		...preset,
+		...(web === undefined ? {} : { web }),
 		strict: preset.strict ?? true,
 		tokens: theme.tokens,
-	} as unknown as Omit<TPreset, "strict"> & {
+	} as unknown as Omit<TPreset, "strict" | "web"> & {
 		strict: EffectiveStrict<TPreset>;
 		_config: TConfig;
 		tokens: TTokens;
+		web?: TWeb;
 	};
 }
 
