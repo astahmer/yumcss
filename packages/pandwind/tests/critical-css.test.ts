@@ -8,6 +8,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
+import { resolveConfig } from "vite";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { renderCriticalHtml } from "../src/vite/critical-css.ts";
 import { examplePreset } from "@pandwind/example-preset";
@@ -53,6 +54,14 @@ const pluginFor = (dir: string, inlineCritical?: true | { capBytes?: number }) =
 		],
 		inlineCritical,
 	});
+
+const configurePlugin = async (
+	plugin: ReturnType<typeof pandwindCssVite>,
+	dir: string,
+	command: "build" | "serve",
+) => {
+	plugin.configResolved?.(await resolveConfig({ root: dir, configFile: false }, command, "test"));
+};
 
 describe("renderCriticalHtml", () => {
 	test("injects a marked style tag after <head>", () => {
@@ -109,10 +118,10 @@ describe("renderCriticalHtml", () => {
 });
 
 describe("inlineCritical (closeBundle)", () => {
-	test("build injects common+route css into configured html entries", () => {
+	test("build injects common+route css into configured html entries", async () => {
 		const dir = makeProject();
 		const plugin = pluginFor(dir, true);
-		plugin.configResolved?.({ command: "build" });
+		await configurePlugin(plugin, dir, "build");
 		plugin.closeBundle?.();
 
 		const admin = readFileSync(join(dir, "admin.html"), "utf8");
@@ -127,29 +136,29 @@ describe("inlineCritical (closeBundle)", () => {
 		expect(user).not.toContain("width:20px");
 	});
 
-	test("off by default (no inlineCritical -> never writes)", () => {
+	test("off by default (no inlineCritical -> never writes)", async () => {
 		const dir = makeProject();
 		const off = pluginFor(dir);
-		off.configResolved?.({ command: "build" });
+		await configurePlugin(off, dir, "build");
 		off.closeBundle?.();
 		expect(readFileSync(join(dir, "admin.html"), "utf8")).not.toContain("data-pw-critical");
 		expect(readFileSync(join(dir, "user.html"), "utf8")).not.toContain("data-pw-critical");
 	});
 
-	test("serve mode never writes", () => {
+	test("serve mode never writes", async () => {
 		const dir = makeProject();
 		const before = readFileSync(join(dir, "admin.html"), "utf8");
 		const plugin = pluginFor(dir, true);
-		plugin.configResolved?.({ command: "serve" });
+		await configurePlugin(plugin, dir, "serve");
 		plugin.closeBundle?.();
 		expect(readFileSync(join(dir, "admin.html"), "utf8")).toBe(before);
 		expect(existsSync(join(dir, "admin.html"))).toBe(true);
 	});
 
-	test("cap option propagates: tiny cap skips injection", () => {
+	test("cap option propagates: tiny cap skips injection", async () => {
 		const dir = makeProject();
 		const plugin = pluginFor(dir, { capBytes: 32 });
-		plugin.configResolved?.({ command: "build" });
+		await configurePlugin(plugin, dir, "build");
 		plugin.closeBundle?.();
 		expect(readFileSync(join(dir, "admin.html"), "utf8")).not.toContain("data-pw-critical");
 	});
