@@ -43,7 +43,10 @@ const runtimeValue = normalizeCssValue;
 export interface VarCompiler {
 	classFor(key: string): string;
 	escapeClass(cls: string): string;
-	encode(flat: FlatStyles): { atoms: Array<VarAtom>; style: Record<string, string> };
+	encode(
+		flat: FlatStyles,
+		sortedKeys?: readonly string[],
+	): { atoms: Array<VarAtom>; style: Record<string, string> };
 }
 
 type RuntimeValueResolver = (property: string, value: string) => string;
@@ -130,8 +133,11 @@ class DefaultVarCompiler implements VarCompiler {
 		return cls.replace(/:/g, "\\:");
 	}
 
-	encode(flat: FlatStyles): { atoms: Array<VarAtom>; style: Record<string, string> } {
-		const keys = Object.keys(flat);
+	encode(
+		flat: FlatStyles,
+		sortedKeys?: readonly string[],
+	): { atoms: Array<VarAtom>; style: Record<string, string> } {
+		const keys = sortedKeys ?? Object.keys(flat);
 		const singleKey = keys[0];
 		if (keys.length === 1 && singleKey !== undefined && !singleKey.includes("__")) {
 			const raw = flat[singleKey];
@@ -149,7 +155,7 @@ class DefaultVarCompiler implements VarCompiler {
 		}
 		const atoms: Array<VarAtom> = [];
 		const style: Record<string, string> = {};
-		for (const key of keys.toSorted()) {
+		for (const key of sortedKeys ?? keys.toSorted()) {
 			const raw = flat[key];
 			if (!isSafeCssValue(raw) || raw === "") continue;
 			if (!key.includes("__")) {

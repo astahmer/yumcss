@@ -17,13 +17,17 @@ export const attachVars: RuntimeCssAttachment = (css, context) => {
 	);
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
 		const flat = flattenStyles(...styles);
-		if (Object.values(flat).some(isEncodedFirstThatWorks)) {
-			throw new Error(
-				"pandwind: firstThatWorks is a static declaration fallback; use css() or css.class() instead of css.vars().",
-			);
+		const keys = Object.keys(flat);
+		for (const key of keys) {
+			if (isEncodedFirstThatWorks(flat[key])) {
+				throw new Error(
+					"pandwind: firstThatWorks is a static declaration fallback; use css() or css.class() instead of css.vars().",
+				);
+			}
 		}
-		for (const key of Object.keys(flat)) context.validate(key, flat[key]);
-		const { atoms, style } = compiler.encode(flat);
+		for (const key of keys) context.validate(key, flat[key]);
+		keys.sort();
+		const { atoms, style } = compiler.encode(flat, keys);
 		const output: VarsOutput = {
 			class: atoms.map((atom) => atom.cls).join(" "),
 			style,
