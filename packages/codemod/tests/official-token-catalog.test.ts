@@ -632,6 +632,62 @@ describe("official custom-token loaders", () => {
 		expect(emit(createUnoCssAdapter({ moduleLoader: null })).text).toBe('"text-brand-500"');
 	});
 
+	test("does not remap a source token when the target reuses its path for another value", () => {
+		const fixture = {
+			input: 'Source color token "brand.500" resolved to "#123456"',
+		expectedValue: { kind: "literal", value: "#123456" },
+		expectedOutput: 'defaultSystem.css({ color: "#123456" })',
+	};
+	const adapter = createChakraAdapter({ moduleLoader: null });
+	const tokenCatalog = TokenCatalog.fromGroups({
+		colors: { "brand.500": "#ffffff" },
+	})?.contract;
+	const sourceTokenProgram = styleProgramFromRules([
+		{
+			kind: "style",
+			conditions: [],
+			declarations: [
+				{
+					conditions: [],
+					property: "color",
+					value: {
+						kind: "token",
+						ref: "brand.500",
+						authored: "brand.500",
+						resolved: "#123456",
+					},
+				},
+			],
+			children: [],
+			order: 0,
+		},
+	]);
+	const emitContext = {
+		...context,
+		config: { adapter: adapter.id, files: [], values: {}, tokenCatalog },
+		mode: "safe",
+		index: 0,
+	} satisfies AdapterEmitContext;
+	const preservedProgram = adapter.tokenPolicy?.preserve(sourceTokenProgram, emitContext);
+	if (preservedProgram === undefined) throw new Error("Chakra target token policy is required");
+	const result = adapter.emit(preservedProgram, emitContext);
+
+		expect(fixture).toMatchInlineSnapshot(`
+			{
+			  "expectedOutput": "defaultSystem.css({ color: "#123456" })",
+			  "expectedValue": {
+			    "kind": "literal",
+			    "value": "#123456",
+			  },
+			  "input": "Source color token "brand.500" resolved to "#123456"",
+			}
+		`);
+		expect(preservedProgram.declarations[0]?.value).toEqual(fixture.expectedValue);
+		expect(result.text).toBe(fixture.expectedOutput);
+		expect(result.imports ?? []).toEqual([]);
+		expect(result.residuals ?? []).toEqual([]);
+	});
+
 	test("selects only officially verified Tailwind property-aware candidates", () => {
 		const adapter = createTailwindAdapter({ moduleLoader: null });
 		const resolver = {
