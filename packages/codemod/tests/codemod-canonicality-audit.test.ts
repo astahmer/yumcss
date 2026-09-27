@@ -1,8 +1,9 @@
 import { expect, test } from "vitest";
-import { CodemodAdapterId } from "../src/swap/index.ts";
+import { BuiltinHostFramework, CodemodAdapterId } from "../src/swap/index.ts";
 import { createAdapterRouteSpec } from "./route-spec-support.ts";
 
 const pandaToLinaria = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.Linaria);
+const mantineToLinaria = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Linaria);
 
 test("A1 preserves unresolved Panda token references with a configuration residual", () => {
 	const fixture = {
@@ -38,4 +39,41 @@ test("A1 preserves unresolved Panda token references with a configuration residu
 	expect(result.code).toContain('color: "red.300"');
 	expect(result.code).toContain('color: "blue.300"');
 	expect(result.code).not.toContain('import { css } from "@linaria/core";');
+});
+
+test("A2 preserves Mantine color, CSS keyword, and numeric size semantics", () => {
+	const fixture = {
+		input:
+			'import { Box } from "@mantine/core";\n' +
+			'export const App = () => <Box c="blue.6" mx="auto" maw={400} />;',
+		expectedOutput:
+			'import { Box } from "@mantine/core";\n' +
+			'import { css } from "@linaria/core";\n' +
+			"export const App = () => <Box className={css`color: var(--mantine-color-blue-6); margin-left: auto; margin-right: auto; max-width: calc(25rem * var(--mantine-scale));`}/>;",
+	};
+	const result = mantineToLinaria.run({
+		source: fixture.input,
+		file: "App.tsx",
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+	});
+
+	expect(fixture).toMatchInlineSnapshot(`
+		{
+		  "expectedOutput": "import { Box } from "@mantine/core";
+		import { css } from "@linaria/core";
+		export const App = () => <Box className={css\`color: var(--mantine-color-blue-6); margin-left: auto; margin-right: auto; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
+		  "input": "import { Box } from "@mantine/core";
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		}
+	`);
+	expect(result.converted).toBe(1);
+	expect(result.skipped).toBe(0);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toBe(fixture.expectedOutput);
+	expect(result.code).toContain("color: var(--mantine-color-blue-6)");
+	expect(result.code).toContain("margin-left: auto; margin-right: auto");
+	expect(result.code).toContain("max-width: calc(25rem * var(--mantine-scale))");
+	expect(result.code).not.toContain("blue.6");
+	expect(result.code).not.toContain("--mantine-spacing-auto");
+	expect(result.code).not.toContain("max-width: 400;");
 });
