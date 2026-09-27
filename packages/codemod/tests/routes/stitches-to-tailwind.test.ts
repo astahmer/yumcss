@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Tailwind, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Tailwind, "#f97316");
 
+
 test("stitches -> tailwind: migrates concrete stitches syntax to tailwind", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

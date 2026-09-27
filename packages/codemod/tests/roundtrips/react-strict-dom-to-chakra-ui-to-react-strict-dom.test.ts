@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import { css } from \"react-strict-dom\";\nexport const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });";
 const malformedSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;\nconst unfinished = { /* unfinished react-strict-dom */";
 const sourceSemantic = undefined;
-const themedSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"#2563eb\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;";
-const tokenSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"#2563eb\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;";
+const themedSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"#2a57c8\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;";
+const tokenSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"#2a57c8\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -51,7 +53,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -125,9 +127,9 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable
 	`)
 });
 
-test("react-strict-dom -> chakra-ui -> react-strict-dom: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("react-strict-dom -> chakra-ui -> react-strict-dom: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "react-strict-dom -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -221,7 +223,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -257,7 +259,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ padding: "1rem", color: "#2a57c8" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +299,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -332,11 +334,10 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> react-strict-dom | lowering-residual: validation)
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2a57c8" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -354,25 +355,17 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -396,7 +389,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: resolves token values a
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -431,11 +424,10 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: resolves token values a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> react-strict-dom | lowering-residual: validation)
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2a57c8" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -453,25 +445,17 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: resolves token values a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.SolidStyled);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.SolidStyled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.SolidStyled, "#f97316");
+
 
 test("tokenami -> solid-styled: migrates concrete tokenami syntax to solid-styled", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
@@ -48,7 +49,7 @@ test("tokenami -> solid-styled: migrates concrete tokenami syntax to solid-style
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "red" });",
+		export const card = styled.div({ "gap": "1rem", "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,7 +147,7 @@ test("tokenami -> solid-styled: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "#f97316" });",
+		export const card = styled.div({ "gap": "1rem", "color": "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +184,7 @@ test("tokenami -> solid-styled: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "#2563eb" });",
+		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,12 +233,13 @@ test("tokenami -> solid-styled: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "#2563eb" });",
+		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -277,7 +279,7 @@ test("tokenami -> solid-styled: preserves malformed concrete tokenami input", ()
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "red" });
+		export const card = styled.div({ "gap": "1rem", "color": "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

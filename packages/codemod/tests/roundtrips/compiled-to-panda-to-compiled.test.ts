@@ -338,10 +338,9 @@ test("compiled -> panda -> compiled: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> compiled | lowering-residual: validation)
-		export const card = css({ padding: 8, color: "brand.500" });",
-		      "converted": 0,
+		      "code": "import { css } from "@compiled/react";
+		export const card = css({ "padding": 8, "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -359,25 +358,17 @@ test("compiled -> panda -> compiled: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -433,10 +424,9 @@ test("compiled -> panda -> compiled: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> compiled | lowering-residual: validation)
-		export const card = css({ padding: 8, color: "brand.500" });",
-		    "converted": 0,
+		    "code": "import { css } from "@compiled/react";
+		export const card = css({ "padding": 8, "color": "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -454,25 +444,17 @@ test("compiled -> panda -> compiled: resolves token values across both concrete 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Compiled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Compiled, "#f97316");
 
+
 test("styled-components -> compiled: migrates concrete styled-components syntax to compiled", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

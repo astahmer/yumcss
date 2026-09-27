@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.Panda, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.Panda, "#f97316");
 
+
 test("linaria -> panda: migrates concrete linaria syntax to panda", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

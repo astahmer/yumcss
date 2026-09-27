@@ -361,12 +361,11 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> react-strict-dom | lowering-residual: validation)
-		const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
+		      "code": "import { css } from "react-strict-dom";
+
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <div className={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -384,25 +383,17 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -460,12 +451,11 @@ test("react-strict-dom -> pandwind -> react-strict-dom: resolves token values ac
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> react-strict-dom | lowering-residual: validation)
-		const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
+		    "code": "import { css } from "react-strict-dom";
+
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <div className={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -483,25 +473,17 @@ test("react-strict-dom -> pandwind -> react-strict-dom: resolves token values ac
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapte
 const edgeSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: \"red\" } });";
 const malformedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished react-native */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2a57c8\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2a57c8\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("react-native -> chakra-ui: migrates concrete react-native syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("react-native -> chakra-ui: migrates concrete react-native syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -82,8 +85,8 @@ test("react-native -> chakra-ui: migrates concrete react-native syntax to chakra
 	`)
 });
 
-test("react-native -> chakra-ui: carries a documented secondary react-native API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("react-native -> chakra-ui: carries a documented secondary react-native API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "react-native -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -143,7 +146,7 @@ test("react-native -> chakra-ui: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2a57c8" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -257,8 +260,8 @@ test("react-native -> chakra-ui: resolves concrete token values with project con
 	`)
 });
 
-test("react-native -> chakra-ui: preserves malformed concrete react-native input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("react-native -> chakra-ui: preserves malformed concrete react-native input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished react-native */");
 	expectRouteScenarioEvidence(result, "react-native -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

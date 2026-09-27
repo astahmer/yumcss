@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.VanillaExtract, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.VanillaExtract, "#f97316");
 
+
 test("aphrodite -> vanilla-extract: migrates concrete aphrodite syntax to vanilla-extract", () => {
 	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

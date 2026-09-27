@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Bamboo, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Bamboo, "#f97316");
 
+
 test("vue-styled -> bamboo: migrates concrete vue-styled syntax to bamboo", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

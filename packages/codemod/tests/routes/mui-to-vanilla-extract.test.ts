@@ -18,13 +18,14 @@ const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card =
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.VanillaExtract, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.VanillaExtract, "#f97316");
+
 
 test("mui -> vanilla-extract: migrates concrete mui syntax to vanilla-extract", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
@@ -235,7 +236,7 @@ test("mui -> vanilla-extract: resolves concrete token values with project contex
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
-		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

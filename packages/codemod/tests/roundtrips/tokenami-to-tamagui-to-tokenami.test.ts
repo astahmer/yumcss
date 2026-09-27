@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Tamagui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -50,7 +50,7 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "red" });",
+		export const card = styled(View, { gap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { cardGap: "1rem", color: "red" });",
+		export const card = styled(View, { gap: "1rem", color: "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +228,7 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "$colors.brand" });",
+		export const card = styled(View, { gap: "1rem", color: "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -262,7 +262,7 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { cardGap: "1rem", color: "$colors.brand" });",
+		export const card = styled(View, { gap: "1rem", color: "#f97316" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -298,7 +298,7 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "$colors.brand" });",
+		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -332,7 +332,7 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { cardGap: "1rem", color: "$colors.brand" });",
+		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +382,7 @@ test("tokenami -> tamagui -> tokenami: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -416,7 +416,7 @@ test("tokenami -> tamagui -> tokenami: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { cardGap: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

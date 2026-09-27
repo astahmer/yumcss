@@ -270,24 +270,48 @@ test("react-native -> tailwind -> react-native: preserves concrete theme and pro
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		            "react-native-numeric-normalization",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		      "converted": 0,
+		      "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -305,40 +329,56 @@ test("react-native -> tailwind -> react-native: preserves concrete theme and pro
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		      "converted": 0,
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		            "react-native-numeric-normalization",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -358,10 +398,8 @@ test("react-native -> tailwind -> react-native: resolves token values across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		    "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -379,40 +417,56 @@ test("react-native -> tailwind -> react-native: resolves token values across bot
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "react-native-numeric-normalization",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

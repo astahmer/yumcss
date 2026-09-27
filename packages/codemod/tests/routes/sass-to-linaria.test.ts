@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Linaria, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Linaria, "#f97316");
 
+
 test("sass -> linaria: migrates concrete sass syntax to linaria", () => {
 	const result = route.run({ source: happySource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

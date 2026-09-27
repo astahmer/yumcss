@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Mantine, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Mantine, "#f97316");
 
+
 test("stitches -> mantine: migrates concrete stitches syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

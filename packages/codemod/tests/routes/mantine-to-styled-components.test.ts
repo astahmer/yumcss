@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.StyledComponents);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.StyledComponents, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.StyledComponents, "#f97316");
+
 
 test("mantine -> styled-components: migrates concrete mantine syntax to styled-components", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
@@ -48,36 +49,37 @@ test("mantine -> styled-components: migrates concrete mantine syntax to styled-c
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		  "converted": 0,
+		import styled from "styled-components";
+		export const App = () => styled.div({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -268,37 +270,38 @@ test("mantine -> styled-components: preserves malformed concrete mantine input",
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
+		import styled from "styled-components";
+		export const App = () => styled.div({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });
 		const unfinished = { /* unfinished mantine */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

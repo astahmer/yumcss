@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import { globalStyle } from \"@vanilla-extract/css\";\nglobalStyle(\"body\", { margin: 0 });";
 const malformedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished vanilla-extract */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
-const tokenSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const themedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2a57c8\", padding: 8 });";
+const tokenSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2a57c8\", padding: 8 });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.css.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -121,9 +123,9 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable c
 	`)
 });
 
-test("vanilla-extract -> chakra-ui -> vanilla-extract: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+test("vanilla-extract -> chakra-ui -> vanilla-extract: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.css.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "vanilla-extract -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -216,7 +218,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "#2563eb" });",
+		export const card = defaultSystem.css({ padding: "8px", color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -250,7 +252,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8px", color: "#2563eb" });",
+		export const card = style({ padding: "8px", color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -321,10 +323,9 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
-		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
-		      "converted": 0,
+		      "code": "import { style } from "@vanilla-extract/css";
+		export const card = style({ padding: "8px", color: "#2a57c8" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -342,25 +343,17 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -416,10 +409,9 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: resolves token values acr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
-		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
-		    "converted": 0,
+		    "code": "import { style } from "@vanilla-extract/css";
+		export const card = style({ padding: "8px", color: "#2a57c8" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -437,25 +429,17 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: resolves token values acr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

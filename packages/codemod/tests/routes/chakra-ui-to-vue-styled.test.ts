@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -18,16 +19,18 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.VueStyled, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.VueStyled, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.VueStyled, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("chakra-ui -> vue-styled: migrates concrete chakra-ui syntax to vue-styled", () => {
-	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+
+test("chakra-ui -> vue-styled: migrates concrete chakra-ui syntax to vue-styled", async () => {
+	const result = await route.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -48,12 +51,13 @@ test("chakra-ui -> vue-styled: migrates concrete chakra-ui syntax to vue-styled"
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
+		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -84,8 +88,8 @@ test("chakra-ui -> vue-styled: migrates concrete chakra-ui syntax to vue-styled"
 	`)
 });
 
-test("chakra-ui -> vue-styled: carries a documented secondary chakra-ui API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> vue-styled: carries a documented secondary chakra-ui API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "chakra-ui -> vue-styled secondary");
 	expectExplicitResidualEvidence(result);
@@ -147,7 +151,7 @@ test("chakra-ui -> vue-styled: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +188,7 @@ test("chakra-ui -> vue-styled: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,12 +237,13 @@ test("chakra-ui -> vue-styled: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -269,8 +274,8 @@ test("chakra-ui -> vue-styled: resolves concrete token values with project conte
 	`)
 });
 
-test("chakra-ui -> vue-styled: preserves malformed concrete chakra-ui input", () => {
-	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> vue-styled: preserves malformed concrete chakra-ui input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished chakra-ui */");
 	expectRouteScenarioEvidence(result, "chakra-ui -> vue-styled malformed");
 	expectExplicitResidualEvidence(result);
@@ -278,13 +283,14 @@ test("chakra-ui -> vue-styled: preserves malformed concrete chakra-ui input", ()
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });
+		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [

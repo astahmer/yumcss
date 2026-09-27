@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapte
 const edgeSource = "@media (prefers-color-scheme: dark) {\n  .card { color: white; }\n}\n@keyframes pulse {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}";
 const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished authored-css */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: #2563eb; padding: 1rem; }";
-const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const themedSource = ".card { color: #2a57c8; padding: 1rem; }";
+const tokenSource = ".card { color: #2a57c8; padding: 1rem; }";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("authored-css -> chakra-ui: migrates concrete authored-css syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "card.css", semantic: sourceSemantic });
+
+test("authored-css -> chakra-ui: migrates concrete authored-css syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "card.css", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -82,8 +85,8 @@ test("authored-css -> chakra-ui: migrates concrete authored-css syntax to chakra
 	`)
 });
 
-test("authored-css -> chakra-ui: carries a documented secondary authored-css API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "card.css", semantic: sourceSemantic });
+test("authored-css -> chakra-ui: carries a documented secondary authored-css API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "card.css", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "authored-css -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -163,7 +166,7 @@ test("authored-css -> chakra-ui: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -197,7 +200,7 @@ test("authored-css -> chakra-ui: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -243,7 +246,7 @@ test("authored-css -> chakra-ui: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,8 +280,8 @@ test("authored-css -> chakra-ui: resolves concrete token values with project con
 	`)
 });
 
-test("authored-css -> chakra-ui: preserves malformed concrete authored-css input", () => {
-	const result = route.run({ source: malformedSource, file: "card.css", semantic: sourceSemantic });
+test("authored-css -> chakra-ui: preserves malformed concrete authored-css input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "card.css", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished authored-css */");
 	expectRouteScenarioEvidence(result, "authored-css -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

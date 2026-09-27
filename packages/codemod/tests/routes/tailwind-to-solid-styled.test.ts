@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.SolidStyled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.SolidStyled, "#f97316");
 
+
 test("tailwind -> solid-styled: migrates concrete tailwind syntax to solid-styled", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.ReactNative);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.ReactNative, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.ReactNative, "#f97316");
+
 
 test("tokenami -> react-native: migrates concrete tokenami syntax to react-native", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
@@ -48,7 +49,7 @@ test("tokenami -> react-native: migrates concrete tokenami syntax to react-nativ
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "red" });",
+		export const card = StyleSheet.create({ "gap": 16, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +149,7 @@ test("tokenami -> react-native: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "#f97316" });",
+		export const card = StyleSheet.create({ "gap": 16, "color": "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +187,7 @@ test("tokenami -> react-native: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "gap": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,12 +237,13 @@ test("tokenami -> react-native: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "gap": 16, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		        "react-native-numeric-normalization",
 		      ],
@@ -282,7 +284,7 @@ test("tokenami -> react-native: preserves malformed concrete tokenami input", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "red" });
+		export const card = StyleSheet.create({ "gap": 16, "color": "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

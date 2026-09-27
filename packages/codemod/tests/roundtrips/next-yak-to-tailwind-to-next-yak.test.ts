@@ -258,41 +258,37 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[padding:1rem] [color:#2563eb]";",
-		      "converted": 0,
+		      "code": "import { css } from "next-yak";
+		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -333,36 +329,37 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[padding:1rem] text-brand";",
-		      "converted": 0,
+		      "code": "import { css } from "next-yak";
+		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -417,36 +414,37 @@ test("next-yak -> tailwind -> next-yak: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[padding:1rem] text-brand";",
-		    "converted": 0,
+		    "code": "import { css } from "next-yak";
+		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

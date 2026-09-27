@@ -1,3 +1,4 @@
+import { AdapterCapabilityTag } from "./identifiers.ts";
 import { StyleValueKindTag } from "./semantic-ir.ts";
 /**
  * Token-reference helpers (plans/022 follow-up): map resolved values /
@@ -17,7 +18,48 @@ import {
 	type AdapterTokenCatalog,
 	type AdapterTokenPolicy,
 } from "./adapter-contract.ts";
-import type { StyleProgram, StyleValue } from "./semantic-ir.ts";
+import type { StyleProgram, StyleProgramResidual, StyleValue } from "./semantic-ir.ts";
+
+const materializeSourceTokenValue = (
+	value: StyleValue,
+	residuals: StyleProgramResidual[],
+): StyleValue => {
+	if (value.kind !== StyleValueKindTag.Token) return value;
+	if (value.resolved !== undefined)
+		return { kind: StyleValueKindTag.Literal, value: value.resolved };
+	if (
+		!residuals.some(
+			(residual) =>
+				residual.kind === AdapterCapabilityTag.TokenValues && residual.text === value.authored,
+		)
+	)
+		residuals.push({
+			kind: AdapterCapabilityTag.TokenValues,
+			text: value.authored,
+			hint: `source token ${value.ref} has no verified target value`,
+		});
+	return value;
+};
+
+/** Resolve foreign token nodes to CSS values unless a target policy proves a native reference. */
+export function materializeSourceTokenValues(program: StyleProgram): StyleProgram {
+	const residuals = [...program.residuals];
+	const materialize = (declaration: StyleProgram["declarations"][number]) => ({
+		...declaration,
+		value: materializeSourceTokenValue(declaration.value, residuals),
+	});
+	const materializeRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...rule,
+		declarations: rule.declarations.map(materialize),
+		children: rule.children.map(materializeRule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map(materialize),
+		rules: program.rules.map(materializeRule),
+		residuals,
+	};
+}
 
 /** How emitted token references are qualified. */
 export type TokenRefMode = "off" | "bare" | "group";
@@ -71,7 +113,12 @@ export function resolvedStyleValue(
 	return value.kind === StyleValueKindTag.Token ? value.resolved : undefined;
 }
 
-export type TokenGroupForProperty = (property: string) => string | undefined;
+export type TokenGroupForProperty = (property: string) => string | readonly string[] | undefined;
+
+const tokenGroupsFor = (property: string, resolve: TokenGroupForProperty): readonly string[] => {
+	const groups = resolve(property);
+	return groups === undefined ? [] : typeof groups === "string" ? [groups] : groups;
+};
 export type TokenReferenceFormatter = (
 	match: TokenCatalogMatch,
 	property: string,
@@ -92,16 +139,16 @@ export function recoverSourceToken(
 	groupForProperty: TokenGroupForProperty,
 	catalog: TokenCatalog | undefined,
 ): StyleValue {
-	const group = groupForProperty(property);
-	if (group === undefined || catalog === undefined) return value;
+	const groups = tokenGroupsFor(property, groupForProperty);
+	if (groups.length === 0 || catalog === undefined) return value;
 	const match =
 		value.kind === StyleValueKindTag.Token
-			? (catalog.findByReference([group], value.ref) ??
-				(value.resolved === undefined ? undefined : catalog.findUnique([group], value.resolved)))
+			? (catalog.findByReference(groups, value.ref) ??
+				(value.resolved === undefined ? undefined : catalog.findUnique(groups, value.resolved)))
 			: value.kind === StyleValueKindTag.Literal &&
 				  (typeof value.value === "string" || typeof value.value === "number")
-				? (catalog.findByReference([group], String(value.value)) ??
-					catalog.findUnique([group], String(value.value)))
+				? (catalog.findByReference(groups, String(value.value)) ??
+					catalog.findUnique(groups, String(value.value)))
 				: undefined;
 	if (match === undefined) return value;
 	const authored =
@@ -135,9 +182,12 @@ export function createTokenPolicy(
 ): AdapterTokenPolicy {
 	return {
 		schema: ADAPTER_TOKEN_POLICY_SCHEMA,
-		preserve: (program, context) =>
-			resolveCatalog(context)?.preserveProgram(program, groupForProperty, formatReference) ??
-			program,
+		preserve: (program, context) => {
+			const catalog = resolveCatalog(context);
+			return catalog === undefined
+				? materializeSourceTokenValues(program)
+				: catalog.preserveProgram(program, groupForProperty, formatReference);
+		},
 	};
 }
 
@@ -405,30 +455,27 @@ export class TokenCatalog {
 		groupForProperty: TokenGroupForProperty,
 		formatReference: TokenReferenceFormatter = (match) => match.authored,
 	): StyleProgram {
+		const residuals = [...program.residuals];
 		const preserveValue = (
 			value: StyleProgram["declarations"][number]["value"],
 			property: string,
 		): typeof value => {
-			const group = groupForProperty(property);
-			if (group === undefined) return value;
-			const sourceFallback = (): StyleValue =>
-				value.kind === StyleValueKindTag.Token && value.resolved !== undefined
-					? { kind: StyleValueKindTag.Literal, value: value.resolved }
-					: value;
+			const groups = tokenGroupsFor(property, groupForProperty);
+			if (groups.length === 0) return materializeSourceTokenValue(value, residuals);
 			let match: TokenCatalogMatch | undefined;
 			if (value.kind === StyleValueKindTag.Token) {
 				if (value.resolved !== undefined) {
-					const reference = this.findByReference([group], value.ref);
+					const reference = this.findByReference(groups, value.ref);
 					match =
 						reference?.resolved === value.resolved
 							? reference
-							: this.findUnique([group], value.resolved);
+							: this.findUnique(groups, value.resolved);
 				}
 			} else if (
 				value.kind === StyleValueKindTag.Literal &&
 				(typeof value.value === "string" || typeof value.value === "number")
 			)
-				match = this.findUnique([group], String(value.value));
+				match = this.findUnique(groups, String(value.value));
 			const authored =
 				match === undefined
 					? undefined
@@ -443,7 +490,7 @@ export class TokenCatalog {
 				(!/^[A-Za-z0-9_$][A-Za-z0-9_$.-]*$/u.test(authored) &&
 					!/^var\(--[A-Za-z0-9_-]+\)$/u.test(authored))
 			)
-				return sourceFallback();
+				return materializeSourceTokenValue(value, residuals);
 			return {
 				kind: "token",
 				ref: match.ref,
@@ -466,6 +513,7 @@ export class TokenCatalog {
 				value: preserveValue(declaration.value, declaration.property),
 			})),
 			rules: program.rules.map(preserveRule),
+			residuals,
 		};
 	}
 }

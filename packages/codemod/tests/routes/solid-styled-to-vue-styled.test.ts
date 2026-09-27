@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.VueStyled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.VueStyled, "#f97316");
 
+
 test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-styled", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

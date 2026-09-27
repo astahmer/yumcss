@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.VanillaExtract, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.VanillaExtract, "#f97316");
 
+
 test("treat -> vanilla-extract: migrates concrete treat syntax to vanilla-extract", () => {
 	const result = route.run({ source: happySource, file: "styles.treat.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Goober, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Goober, "#f97316");
 
+
 test("sass -> goober: migrates concrete sass syntax to goober", () => {
 	const result = route.run({ source: happySource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

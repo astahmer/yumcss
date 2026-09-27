@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import jss from \"jss\";\nexport const sheet = jss.createStyleSheet({ card: { color: \"red\" } });";
 const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished jss */";
 const sourceSemantic = undefined;
-const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
-const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2563eb\" } });";
+const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2a57c8\" } });";
+const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"#2a57c8\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Jss, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("jss -> chakra-ui -> jss: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("jss -> chakra-ui -> jss: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -121,9 +123,9 @@ test("jss -> chakra-ui -> jss: preserves an actionable concrete round trip", () 
 	`)
 });
 
-test("jss -> chakra-ui -> jss: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("jss -> chakra-ui -> jss: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "jss -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -233,7 +235,7 @@ test("jss -> chakra-ui -> jss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const useStyles = { "card": defaultSystem.css({ color: "#2563eb" }) };",
+		export const useStyles = { "card": defaultSystem.css({ color: "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +269,7 @@ test("jss -> chakra-ui -> jss: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
+		export const useStyles = { "card": createUseStyles({ color: "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -338,10 +340,9 @@ test("jss -> chakra-ui -> jss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> jss | lowering-residual: validation)
-		export const useStyles = { "card": defaultSystem.css({ color: "brand.500" }) };",
-		      "converted": 0,
+		      "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = { "card": createUseStyles({ color: "#2a57c8" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -359,25 +360,17 @@ test("jss -> chakra-ui -> jss: preserves concrete theme and project context vari
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -433,10 +426,9 @@ test("jss -> chakra-ui -> jss: resolves token values across both concrete legs",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> jss | lowering-residual: validation)
-		export const useStyles = { "card": defaultSystem.css({ color: "brand.500" }) };",
-		    "converted": 0,
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = { "card": createUseStyles({ color: "#2a57c8" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -454,25 +446,17 @@ test("jss -> chakra-ui -> jss: resolves token values across both concrete legs",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

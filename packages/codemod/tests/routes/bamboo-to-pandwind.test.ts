@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.Pandwind, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.Pandwind, "#f97316");
 
+
 test("bamboo -> pandwind: migrates concrete bamboo syntax to pandwind", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

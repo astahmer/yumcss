@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.StyleX, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.StyleX, "#f97316");
 
+
 test("solid-styled -> stylex: migrates concrete solid-styled syntax to stylex", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

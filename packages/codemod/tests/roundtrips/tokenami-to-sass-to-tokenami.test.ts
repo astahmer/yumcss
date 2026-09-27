@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Sass);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Sass, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -51,7 +51,7 @@ test("tokenami -> sass -> tokenami: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, residual)
-		export const card = css({ color: "red", "--card-gap": "1rem" });",
+		export const card = css({ color: "red", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("tokenami -> sass -> tokenami: preserves an actionable concrete round trip"
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, residual)
-		export const card = css({ color: "red", "--card-gap": "1rem" });",
+		export const card = css({ color: "red", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -191,7 +191,7 @@ test("tokenami -> sass -> tokenami: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, residual)
-		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -227,7 +227,7 @@ test("tokenami -> sass -> tokenami: preserves concrete theme and project context
 		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, residual)
-		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -242,7 +242,7 @@ test("tokenami -> sass -> tokenami: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, residual)
-		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +278,7 @@ test("tokenami -> sass -> tokenami: preserves concrete theme and project context
 		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, residual)
-		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -307,7 +307,7 @@ test("tokenami -> sass -> tokenami: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, residual)
-		export const card = css({ color: "#2563eb", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -343,7 +343,7 @@ test("tokenami -> sass -> tokenami: resolves token values across both concrete l
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, residual)
-		export const card = css({ color: "#2563eb", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

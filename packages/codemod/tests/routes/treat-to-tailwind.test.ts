@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Tailwind, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Tailwind, "#f97316");
 
+
 test("treat -> tailwind: migrates concrete treat syntax to tailwind", () => {
 	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

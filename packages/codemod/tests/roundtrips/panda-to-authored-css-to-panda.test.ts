@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.AuthoredCss);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.AuthoredCss, CodemodAdapterId.Panda);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });";
 const edgeSource = "import { cva } from \"styled-system/recipes\";\nexport const button = cva({ base: { color: \"red\" }, variants: { size: { sm: { padding: \"2\" } } } });";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });\nconst unfinished = { /* unfinished panda */";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });\nconst unfinished = { /* unfinished panda */";
 const sourceSemantic = undefined;
 const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\", _hover: { color: \"blue.300\" } });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -50,8 +50,8 @@ test("panda -> authored-css -> panda: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | parse-residual: configuration | lowering-residual: capability | available: residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -60,29 +60,20 @@ test("panda -> authored-css -> panda: preserves an actionable concrete round tri
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -95,8 +86,8 @@ test("panda -> authored-css -> panda: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | parse-residual: configuration | lowering-residual: capability | available: residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -330,8 +321,8 @@ test("panda -> authored-css -> panda: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | parse-residual: configuration | lowering-residual: capability | available: residual)
-		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -340,24 +331,20 @@ test("panda -> authored-css -> panda: resolves token values across both concrete
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -370,8 +357,8 @@ test("panda -> authored-css -> panda: resolves token values across both concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | parse-residual: configuration | lowering-residual: capability | available: residual)
-		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

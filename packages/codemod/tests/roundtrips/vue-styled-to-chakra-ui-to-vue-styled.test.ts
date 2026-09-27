@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
 const malformedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished vue-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
-const themedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
-const tokenSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const themedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2a57c8; padding: 1rem;`;";
+const tokenSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2a57c8; padding: 1rem;`;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -99,9 +101,9 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 	`)
 });
 
-test("vue-styled -> chakra-ui -> vue-styled: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("vue-styled -> chakra-ui -> vue-styled: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "vue-styled -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -190,7 +192,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -225,7 +227,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -240,7 +242,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +277,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -304,7 +306,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token values across both c
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -339,7 +341,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token values across both c
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

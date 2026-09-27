@@ -20,7 +20,7 @@ const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nco
 const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
 const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -224,11 +224,10 @@ test("pandwind -> jss -> pandwind: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
-		      "converted": 0,
+		      "code": "import { createUseStyles } from "react-jss";
+
+		export const card = createUseStyles({ padding: "1rem", color: "#f97316" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -246,51 +245,64 @@ test("pandwind -> jss -> pandwind: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
-		      "converted": 0,
+
+		export const card = css.class({ padding: "1rem", color: "brand" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
-		      "converted": 0,
+		      "code": "import { createUseStyles } from "react-jss";
+
+		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -308,41 +320,55 @@ test("pandwind -> jss -> pandwind: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
-		      "converted": 0,
+
+		export const card = css.class({ padding: "1rem", color: "brand" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}

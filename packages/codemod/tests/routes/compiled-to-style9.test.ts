@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.Style9, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.Style9, "#f97316");
 
+
 test("compiled -> style9: migrates concrete compiled syntax to style9", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

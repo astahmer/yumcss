@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Fela);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
@@ -50,9 +50,8 @@ test("mantine -> fela -> mantine: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> fela | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		    "converted": 0,
+		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -60,41 +59,77 @@ test("mantine -> fela -> mantine: preserves an actionable concrete round trip", 
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mantine/core";
+		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		        "kind": "configuration",
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> fela | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
 	`)

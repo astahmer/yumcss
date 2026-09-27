@@ -327,11 +327,10 @@ test("react-strict-dom -> tokenami -> react-strict-dom: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> react-strict-dom | lowering-residual: validation)
-		const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -349,25 +348,17 @@ test("react-strict-dom -> tokenami -> react-strict-dom: preserves concrete theme
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -426,11 +417,10 @@ test("react-strict-dom -> tokenami -> react-strict-dom: resolves token values ac
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> react-strict-dom | lowering-residual: validation)
-		const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -448,25 +438,17 @@ test("react-strict-dom -> tokenami -> react-strict-dom: resolves token values ac
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

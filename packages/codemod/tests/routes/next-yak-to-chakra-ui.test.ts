@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.NextYak, CodemodAdapterId.
 const edgeSource = "import { styled } from \"next-yak\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
 const malformedSource = "import { css } from \"next-yak\";\nexport const card = css`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished next-yak */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
-const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2563eb; padding: 1rem;`;";
+const themedSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2a57c8; padding: 1rem;`;";
+const tokenSource = "import { css } from \"next-yak\";\nexport const card = css`color: #2a57c8; padding: 1rem;`;";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("next-yak -> chakra-ui: migrates concrete next-yak syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
+
+test("next-yak -> chakra-ui: migrates concrete next-yak syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -49,7 +52,7 @@ test("next-yak -> chakra-ui: migrates concrete next-yak syntax to chakra-ui", ()
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });",
+		export const card = defaultSystem.css({ padding: "4", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -83,8 +86,8 @@ test("next-yak -> chakra-ui: migrates concrete next-yak syntax to chakra-ui", ()
 	`)
 });
 
-test("next-yak -> chakra-ui: carries a documented secondary next-yak API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
+test("next-yak -> chakra-ui: carries a documented secondary next-yak API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "next-yak -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -92,7 +95,7 @@ test("next-yak -> chakra-ui: carries a documented secondary next-yak API explici
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +148,7 @@ test("next-yak -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "#2563eb" });",
+		export const card = defaultSystem.css({ padding: "4", color: "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +183,7 @@ test("next-yak -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +230,7 @@ test("next-yak -> chakra-ui: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -261,8 +264,8 @@ test("next-yak -> chakra-ui: resolves concrete token values with project context
 	`)
 });
 
-test("next-yak -> chakra-ui: preserves malformed concrete next-yak input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.tsx", semantic: sourceSemantic });
+test("next-yak -> chakra-ui: preserves malformed concrete next-yak input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished next-yak */");
 	expectRouteScenarioEvidence(result, "next-yak -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);
@@ -271,7 +274,7 @@ test("next-yak -> chakra-ui: preserves malformed concrete next-yak input", () =>
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });
+		export const card = defaultSystem.css({ padding: "4", color: "red" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

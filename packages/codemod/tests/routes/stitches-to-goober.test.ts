@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Goober, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.Goober, "#f97316");
 
+
 test("stitches -> goober: migrates concrete stitches syntax to goober", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

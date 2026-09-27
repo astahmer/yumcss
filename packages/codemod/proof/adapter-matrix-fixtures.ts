@@ -16,6 +16,8 @@ function semanticFor(adapter: string): AdapterContractFixture["semantic"] {
 }
 
 function edgeSource(adapter: string, source: string): string {
+	if (adapter === CodemodAdapterId.ChakraUi)
+		return source.replace("'tomato'", "runtimeTheme.foreground");
 	if (adapter === CodemodAdapterId.Mantine && source.includes("c='red'"))
 		return source.replace("c='red'", "c={theme.foreground}");
 	if (source.includes("'red'")) return source.replaceAll("'red'", "theme.foreground");

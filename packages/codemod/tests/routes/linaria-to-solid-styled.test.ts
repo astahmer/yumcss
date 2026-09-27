@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.SolidStyled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.SolidStyled, "#f97316");
 
+
 test("linaria -> solid-styled: migrates concrete linaria syntax to solid-styled", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

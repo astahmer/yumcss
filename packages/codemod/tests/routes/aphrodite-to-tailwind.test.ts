@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.Tailwind, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.Tailwind, "#f97316");
 
+
 test("aphrodite -> tailwind: migrates concrete aphrodite syntax to tailwind", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
@@ -181,10 +182,8 @@ test("aphrodite -> tailwind: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tailwind | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		    "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -202,25 +201,17 @@ test("aphrodite -> tailwind: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -238,10 +229,8 @@ test("aphrodite -> tailwind: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tailwind | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		  "converted": 0,
+		  "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -259,25 +248,17 @@ test("aphrodite -> tailwind: resolves concrete token values with project context
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs or has residuals",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs or has residuals",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

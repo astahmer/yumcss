@@ -18,13 +18,14 @@ const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nco
 const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
 const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.Mui, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.Mui, "#f97316");
+
 
 test("pandwind -> mui: migrates concrete pandwind syntax to mui", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });

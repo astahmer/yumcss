@@ -20,7 +20,7 @@ const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card =
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
@@ -269,36 +269,36 @@ test("mui -> tailwind -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
-		      "converted": 0,
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -341,36 +341,36 @@ test("mui -> tailwind -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
-		      "converted": 0,
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -427,36 +427,36 @@ test("mui -> tailwind -> mui: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
-		    "converted": 0,
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

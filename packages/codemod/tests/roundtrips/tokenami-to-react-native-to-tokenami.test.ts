@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.ReactNative);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -50,7 +50,7 @@ test("tokenami -> react-native -> tokenami: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "red" });",
+		export const card = StyleSheet.create({ "gap": 16, "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("tokenami -> react-native -> tokenami: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ cardGap: 16, color: "red" });",
+		export const card = css({ gap: 16, color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "#f97316" });",
+		export const card = StyleSheet.create({ "gap": 16, "color": "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -272,7 +272,7 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ cardGap: 16, color: "$colors.brand" });",
+		export const card = css({ gap: 16, color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -308,7 +308,7 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "gap": 16, "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +346,7 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ cardGap: 16, color: "$colors.brand" });",
+		export const card = css({ gap: 16, color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -396,12 +396,13 @@ test("tokenami -> react-native -> tokenami: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "cardGap": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "gap": 16, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		          "react-native-numeric-normalization",
 		        ],
@@ -433,7 +434,7 @@ test("tokenami -> react-native -> tokenami: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ cardGap: 16, color: "$colors.brand" });",
+		export const card = css({ gap: 16, color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

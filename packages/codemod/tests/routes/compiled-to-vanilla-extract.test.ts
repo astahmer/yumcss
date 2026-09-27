@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.VanillaExtract, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.VanillaExtract, "#f97316");
 
+
 test("compiled -> vanilla-extract: migrates concrete compiled syntax to vanilla-extract", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

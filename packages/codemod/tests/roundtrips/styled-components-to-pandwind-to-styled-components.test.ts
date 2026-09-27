@@ -370,14 +370,13 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		      "code": "
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/slot";
+		import styled from "styled-components";
 		const cx = createCx();
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> styled-components | lowering-residual: validation)
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
-		      "converted": 0,
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ padding: "1rem", color: "#2563eb" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -393,25 +392,17 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -476,14 +467,13 @@ test("styled-components -> pandwind -> styled-components: resolves token values 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/slot";
+		import styled from "styled-components";
 		const cx = createCx();
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> styled-components | lowering-residual: validation)
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
-		    "converted": 0,
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ padding: "1rem", color: "#2563eb" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -499,25 +489,17 @@ test("styled-components -> pandwind -> styled-components: resolves token values 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

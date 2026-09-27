@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -18,16 +19,18 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Treat, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Treat, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Treat, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("chakra-ui -> treat: migrates concrete chakra-ui syntax to treat", () => {
-	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+
+test("chakra-ui -> treat: migrates concrete chakra-ui syntax to treat", async () => {
+	const result = await route.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -55,6 +58,7 @@ test("chakra-ui -> treat: migrates concrete chakra-ui syntax to treat", () => {
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -85,8 +89,8 @@ test("chakra-ui -> treat: migrates concrete chakra-ui syntax to treat", () => {
 	`)
 });
 
-test("chakra-ui -> treat: carries a documented secondary chakra-ui API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> treat: carries a documented secondary chakra-ui API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "chakra-ui -> treat secondary");
 	expectExplicitResidualEvidence(result);
@@ -242,12 +246,13 @@ test("chakra-ui -> treat: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
-		export const App = () => <Box bg="#2563eb" p="4" />;",
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -278,8 +283,8 @@ test("chakra-ui -> treat: resolves concrete token values with project context", 
 	`)
 });
 
-test("chakra-ui -> treat: preserves malformed concrete chakra-ui input", () => {
-	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> treat: preserves malformed concrete chakra-ui input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished chakra-ui */");
 	expectRouteScenarioEvidence(result, "chakra-ui -> treat malformed");
 	expectExplicitResidualEvidence(result);
@@ -295,6 +300,7 @@ test("chakra-ui -> treat: preserves malformed concrete chakra-ui input", () => {
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [

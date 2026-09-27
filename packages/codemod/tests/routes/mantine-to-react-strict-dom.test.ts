@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.ReactStrictDom);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.ReactStrictDom, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.ReactStrictDom, "#f97316");
+
 
 test("mantine -> react-strict-dom: migrates concrete mantine syntax to react-strict-dom", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
@@ -48,8 +49,8 @@ test("mantine -> react-strict-dom: migrates concrete mantine syntax to react-str
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> react-strict-dom | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -58,25 +59,21 @@ test("mantine -> react-strict-dom: migrates concrete mantine syntax to react-str
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "react-strict-dom has no host representation for react",
 		      "kind": "host-framework",
@@ -238,7 +235,7 @@ test("mantine -> react-strict-dom: resolves concrete token values with project c
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,8 +280,8 @@ test("mantine -> react-strict-dom: preserves malformed concrete mantine input", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> react-strict-dom | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
+		// pandwind:migrate-skip (route: mantine -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -294,25 +291,21 @@ test("mantine -> react-strict-dom: preserves malformed concrete mantine input", 
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "react-strict-dom has no host representation for react",
 		      "kind": "host-framework",

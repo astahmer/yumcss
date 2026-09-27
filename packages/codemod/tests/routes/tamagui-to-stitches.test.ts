@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Stitches, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Stitches, "#f97316");
 
+
 test("tamagui -> stitches: migrates concrete tamagui syntax to stitches", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

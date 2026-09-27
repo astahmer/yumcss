@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Less);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.Less, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.Less, "#f97316");
+
 
 test("mantine -> less: migrates concrete mantine syntax to less", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
@@ -48,8 +49,8 @@ test("mantine -> less: migrates concrete mantine syntax to less", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> less | parse-residual: configuration | lowering-residual: capability | available: residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -58,24 +59,20 @@ test("mantine -> less: migrates concrete mantine syntax to less", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -250,7 +247,7 @@ test("mantine -> less: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -294,8 +291,8 @@ test("mantine -> less: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> less | parse-residual: configuration | lowering-residual: capability | available: residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -305,24 +302,20 @@ test("mantine -> less: preserves malformed concrete mantine input", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",

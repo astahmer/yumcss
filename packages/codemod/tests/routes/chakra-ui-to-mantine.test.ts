@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -18,16 +19,18 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Mantine, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Mantine, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Mantine, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("chakra-ui -> mantine: migrates concrete chakra-ui syntax to mantine", () => {
-	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+
+test("chakra-ui -> mantine: migrates concrete chakra-ui syntax to mantine", async () => {
+	const result = await route.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -48,7 +51,7 @@ test("chakra-ui -> mantine: migrates concrete chakra-ui syntax to mantine", () =
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
+		export const App = () => <Box  style={{ background: "#fecaca", padding: "1rem" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -82,8 +85,8 @@ test("chakra-ui -> mantine: migrates concrete chakra-ui syntax to mantine", () =
 	`)
 });
 
-test("chakra-ui -> mantine: carries a documented secondary chakra-ui API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> mantine: carries a documented secondary chakra-ui API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "chakra-ui -> mantine secondary");
 	expectExplicitResidualEvidence(result);
@@ -143,7 +146,7 @@ test("chakra-ui -> mantine: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		export const App = () => <Box  style={{ background: "var(--mantine-color-brand-0)", padding: "1rem" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +180,7 @@ test("chakra-ui -> mantine: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		export const App = () => <Box  style={{ background: "var(--mantine-color-brand-0)", padding: "1rem" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +226,7 @@ test("chakra-ui -> mantine: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		export const App = () => <Box  style={{ background: "var(--mantine-color-brand-0)", padding: "1rem" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -257,8 +260,8 @@ test("chakra-ui -> mantine: resolves concrete token values with project context"
 	`)
 });
 
-test("chakra-ui -> mantine: preserves malformed concrete chakra-ui input", () => {
-	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> mantine: preserves malformed concrete chakra-ui input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished chakra-ui */");
 	expectRouteScenarioEvidence(result, "chakra-ui -> mantine malformed");
 	expectExplicitResidualEvidence(result);
@@ -266,7 +269,7 @@ test("chakra-ui -> mantine: preserves malformed concrete chakra-ui input", () =>
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;
+		export const App = () => <Box  style={{ background: "#fecaca", padding: "1rem" }}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

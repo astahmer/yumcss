@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.Style9, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.Style9, "#f97316");
 
+
 test("react-strict-dom -> style9: migrates concrete react-strict-dom syntax to style9", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

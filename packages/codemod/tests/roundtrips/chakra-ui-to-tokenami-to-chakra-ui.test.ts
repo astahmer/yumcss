@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -20,18 +21,19 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tokenami, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tokenami, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tokenami, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = undefined;
 
-test("chakra-ui -> tokenami -> chakra-ui: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> tokenami -> chakra-ui: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -51,7 +53,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
+		export const App = () => <Box className={css({ background: "#fecaca", padding: "1rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +87,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
+		export const App = () => <Box css={{ background: "red.200", padding: "4" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -120,9 +122,9 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves an actionable concrete round
 	`)
 });
 
-test("chakra-ui -> tokenami -> chakra-ui: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> tokenami -> chakra-ui: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "chakra-ui -> tokenami round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -211,7 +213,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ backgroundColor: "$colors.brand", p: "var(--chakra-spacing-4)" })}/>;",
+		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -245,7 +247,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
+		export const App = () => <Box css={{ background: "#f97316", padding: "4" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,7 +284,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ backgroundColor: "$colors.brand", p: "var(--chakra-spacing-4)" })}/>;",
+		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -316,7 +318,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
+		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -367,7 +369,7 @@ test("chakra-ui -> tokenami -> chakra-ui: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ backgroundColor: "$colors.brand", p: "var(--chakra-spacing-4)" })}/>;",
+		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -401,7 +403,7 @@ test("chakra-ui -> tokenami -> chakra-ui: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
+		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

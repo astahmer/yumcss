@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
@@ -51,7 +51,7 @@ test("tokenami -> mantine -> tokenami: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "red", "--card-gap": "1rem" });",
+		export const card = css({ color: "red", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -99,7 +99,7 @@ test("tokenami -> mantine -> tokenami: preserves an actionable concrete round tr
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "red", "--card-gap": "1rem" });",
+		export const card = css({ color: "red", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -215,7 +215,7 @@ test("tokenami -> mantine -> tokenami: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,7 +263,7 @@ test("tokenami -> mantine -> tokenami: preserves concrete theme and project cont
 		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -278,7 +278,7 @@ test("tokenami -> mantine -> tokenami: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -326,7 +326,7 @@ test("tokenami -> mantine -> tokenami: preserves concrete theme and project cont
 		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -355,7 +355,7 @@ test("tokenami -> mantine -> tokenami: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "#2563eb", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -403,7 +403,7 @@ test("tokenami -> mantine -> tokenami: resolves token values across both concret
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "#2563eb", "--card-gap": "1rem" });",
+		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

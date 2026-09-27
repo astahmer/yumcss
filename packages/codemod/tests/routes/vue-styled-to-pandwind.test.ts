@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Pandwind, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.Pandwind, "#f97316");
 
+
 test("vue-styled -> pandwind: migrates concrete vue-styled syntax to pandwind", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.SolidStyled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.SolidStyled, "#f97316");
 
+
 test("css-modules -> solid-styled: migrates concrete css-modules syntax to solid-styled", () => {
 	const result = route.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

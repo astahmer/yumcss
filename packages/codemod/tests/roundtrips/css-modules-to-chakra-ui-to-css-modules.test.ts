@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = ".card { color: red; }\n.primary { composes: card; font-weight: 600; }";
 const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished css-modules */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: #2563eb; padding: 1rem; }";
-const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const themedSource = ".card { color: #2a57c8; padding: 1rem; }";
+const tokenSource = ".card { color: #2a57c8; padding: 1rem; }";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
+test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "Card.module.css", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -49,9 +51,10 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: red; padding: 1rem; }",
-		    "converted": 0,
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
+		export default styles;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -61,8 +64,50 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
+		export const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
+		export default styles;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
 		      },
 		    ],
 		    "outcomes": [
@@ -73,7 +118,12 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "renaming Card.module.css to Card.module.ts requires updating project imports",
+		        "hint": "target lacks framework semantics",
+		        "kind": "framework-semantics",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -81,25 +131,13 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		    "skipped": 1,
 		    "validations": [],
 		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: red; padding: 1rem; }",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
 		}
 	`)
 });
 
-test("css-modules -> chakra-ui -> css-modules: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
+test("css-modules -> chakra-ui -> css-modules: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "css-modules -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -109,10 +147,10 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		    "converted": 0,
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		export const styles = { "card": defaultSystem.css({ color: "red" }), "primary": defaultSystem.css({ color: "red", fontWeight: "semibold" }) };
+		export default styles;",
+		    "converted": 2,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -122,7 +160,7 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		      {
@@ -132,8 +170,76 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
+		export const styles = { "card": defaultSystem.css({ color: "red" }), "primary": defaultSystem.css({ color: "red", fontWeight: "semibold" }) };
+		export default styles;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		          "runtime-and-plugin",
+		        ],
+		        "availableRepresentations": [
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [
+		          {
+		            "hint": "target lacks framework semantics",
+		            "kind": "framework-semantics",
+		          },
+		        ],
 		      },
 		    ],
 		    "outcomes": [
@@ -148,25 +254,27 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "renaming Card.module.css to Card.module.ts requires updating project imports",
+		        "hint": "target lacks framework semantics",
+		        "kind": "framework-semantics",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "target lacks framework semantics",
+		        "kind": "framework-semantics",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 2,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: red; }
-		.primary { composes: card; font-weight: 600; }",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -201,7 +309,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -237,7 +345,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -285,7 +393,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +429,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -383,7 +491,7 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -419,7 +527,7 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

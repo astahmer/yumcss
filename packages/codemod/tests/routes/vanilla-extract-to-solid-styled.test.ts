@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.SolidStyled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.SolidStyled, "#f97316");
 
+
 test("vanilla-extract -> solid-styled: migrates concrete vanilla-extract syntax to solid-styled", () => {
 	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.Emotion, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.Emotion, "#f97316");
 
+
 test("react-strict-dom -> emotion: migrates concrete react-strict-dom syntax to emotion", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

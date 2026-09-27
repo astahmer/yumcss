@@ -253,27 +253,12 @@ test("react-strict-dom -> tailwind -> react-strict-dom: preserves concrete theme
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] [color:#2563eb]" };
-		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
-		    },
-		  },
-		  "blue": {
-		    "forward": {
 		      "changed": true,
-		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
-		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		      "code": "import { html } from "react-strict-dom";
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -291,41 +276,96 @@ test("react-strict-dom -> tailwind -> react-strict-dom: preserves concrete theme
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { html } from "react-strict-dom";
+		const styles = { "card": "[padding:1rem] text-brand" };
+		export const Card = () => <html.div style={styles.card} />;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
 		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
-		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		      "changed": true,
+		      "code": "import { html } from "react-strict-dom";
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -345,11 +385,10 @@ test("react-strict-dom -> tailwind -> react-strict-dom: resolves token values ac
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
-		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		    "code": "import { html } from "react-strict-dom";
+		const styles = { "card": "[padding:1rem] text-brand" };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -367,41 +406,57 @@ test("react-strict-dom -> tailwind -> react-strict-dom: resolves token values ac
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
-		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		    "changed": true,
+		    "code": "import { html } from "react-strict-dom";
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

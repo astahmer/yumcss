@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.Mui, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.Mui, "#f97316");
 
+
 test("tailwind -> mui: migrates concrete tailwind syntax to mui", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -26,13 +26,9 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.VanillaExtract, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.VanillaExtract, "#f97316");
 
+
 test("css-modules -> vanilla-extract: migrates concrete css-modules syntax to vanilla-extract", () => {
-	const result = route.run({
-		source: happySource,
-		file: "Card.module.css",
-		semantic: sourceSemantic,
-		project: blueProject,
-	});
+	const result = route.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -52,10 +48,9 @@ test("css-modules -> vanilla-extract: migrates concrete css-modules syntax to va
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "red" }) };
-		export default styles;",
-		  "converted": 1,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -67,46 +62,41 @@ test("css-modules -> vanilla-extract: migrates concrete css-modules syntax to va
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "renaming Card.module.css to Card.module.css.ts requires updating project imports",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
 
 test("css-modules -> vanilla-extract: carries a documented secondary css-modules API explicitly", () => {
-	const result = route.run({
-		source: edgeSource,
-		file: "Card.module.css",
-		semantic: sourceSemantic,
-		project: blueProject,
-	});
+	const result = route.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "css-modules -> vanilla-extract secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ color: "red" }), "primary": style({ color: "red", fontWeight: "600" }) };
-		export default styles;",
-		  "converted": 2,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -118,7 +108,7 @@ test("css-modules -> vanilla-extract: carries a documented secondary css-modules
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		    {
@@ -130,34 +120,29 @@ test("css-modules -> vanilla-extract: carries a documented secondary css-modules
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "renaming Card.module.css to Card.module.css.ts requires updating project imports",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 2,
+		  "validations": [],
 		}
 	`)
 });
@@ -304,19 +289,14 @@ test("css-modules -> vanilla-extract: resolves concrete token values with projec
 });
 
 test("css-modules -> vanilla-extract: preserves malformed concrete css-modules input", () => {
-	const result = route.run({
-		source: malformedSource,
-		file: "Card.module.css",
-		semantic: sourceSemantic,
-		project: blueProject,
-	});
+	const result = route.run({ source: malformedSource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished css-modules */");
 	expectRouteScenarioEvidence(result, "css-modules -> vanilla-extract malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: parse) */
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
@@ -331,7 +311,7 @@ test("css-modules -> vanilla-extract: preserves malformed concrete css-modules i
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -347,9 +327,15 @@ test("css-modules -> vanilla-extract: preserves malformed concrete css-modules i
 		      "kind": "parse",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "renaming Card.module.css to Card.module.css.ts requires updating project imports",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
 		}
 	`)
 });
+

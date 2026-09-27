@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.StyledComponents, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.StyledComponents, "#f97316");
 
+
 test("aphrodite -> styled-components: migrates concrete aphrodite syntax to styled-components", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

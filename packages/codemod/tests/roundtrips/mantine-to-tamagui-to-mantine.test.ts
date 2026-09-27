@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Tamagui);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
@@ -50,47 +50,71 @@ test("mantine -> tamagui -> mantine: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: configuration | available: residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		import { View, styled } from "@tamagui/core";
+		export const App = () => styled(View, { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mantine/core";
+		import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> mantine | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const App = () => styled(View, { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		        "kind": "configuration",
+		        "hint": "components: component subject: styled(View)",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: configuration | available: residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

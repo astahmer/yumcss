@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.ReactNative, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.ReactNative, "#f97316");
 
+
 test("compiled -> react-native: migrates concrete compiled syntax to react-native", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

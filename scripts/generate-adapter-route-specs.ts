@@ -170,13 +170,19 @@ function configuredSource(adapter: CodemodAdapterId, source: string): string {
 		case CodemodAdapterId.Pandwind:
 			return source.replaceAll('"red"', '"$brand"');
 		case CodemodAdapterId.Panda:
-			return source.replaceAll('"red.300"', '"brand.500"').replaceAll('"blue.300"', '"brand.500"');
+			return source
+				.replaceAll('"red.300"', '"brand.500"')
+				.replaceAll('"blue.300"', '"brand.500"')
+				.replaceAll('"red"', '"brand.500"')
+				.replaceAll('"blue"', '"brand.500"');
 		case CodemodAdapterId.ChakraUi:
-			return source.replaceAll('bg="red.200"', 'bg="brand.500"');
+			return source
+				.replaceAll('bg="red.200"', 'bg="brand.500"')
+				.replaceAll('backgroundColor="red.200"', 'backgroundColor="brand.500"');
 		case CodemodAdapterId.Mui:
 			return source.replaceAll('"red"', '"primary.main"');
 		case CodemodAdapterId.Mantine:
-			return source.replaceAll('"blue.6"', '"brand.0"');
+			return source.replaceAll('"blue.6"', '"brand.0"').replaceAll('"blue"', '"brand.0"');
 		case CodemodAdapterId.Tailwind:
 		case CodemodAdapterId.UnoCSS:
 			return source.replace(/className="[^"]*"/u, 'className="text-brand p-card"');
@@ -187,26 +193,25 @@ function configuredSource(adapter: CodemodAdapterId, source: string): string {
 	}
 }
 
-function themedSource(adapter: CodemodAdapterId, source: string): string {
+function themedSource(adapter: CodemodAdapterId, source: string, color: string): string {
 	if (hasOfficialSourceConfig(adapter)) return configuredSource(adapter, source);
 	return source
-		.replaceAll('"red.300"', '"#2563eb"')
-		.replaceAll('"red.200"', '"#2563eb"')
-		.replaceAll('"blue.6"', '"#2563eb"')
-		.replaceAll('"red"', '"#2563eb"')
-		.replaceAll("color: red", "color: #2563eb")
-		.replaceAll("color: tomato", "color: #2563eb");
+		.replaceAll('"red.300"', JSON.stringify(color))
+		.replaceAll('"red.200"', JSON.stringify(color))
+		.replaceAll('"blue.6"', JSON.stringify(color))
+		.replaceAll('"red"', JSON.stringify(color))
+		.replaceAll("color: red", `color: ${color}`)
+		.replaceAll("color: tomato", `color: ${color}`);
 }
 
-function tokenSource(adapter: CodemodAdapterId, source: string): string {
-	if (adapter === CodemodAdapterId.Tailwind || adapter === CodemodAdapterId.UnoCSS)
-		return source.replace(/className="[^"]*"/u, 'className="text-brand p-card"');
+function tokenSource(adapter: CodemodAdapterId, source: string, color: string): string {
+	if (hasOfficialSourceConfig(adapter)) return configuredSource(adapter, source);
 	return source
-		.replaceAll('"red.300"', '"#2563eb"')
-		.replaceAll('"red.200"', '"#2563eb"')
-		.replaceAll('"blue.6"', '"#2563eb"')
-		.replaceAll('"red"', '"#2563eb"')
-		.replaceAll("color: red", "color: #2563eb");
+		.replaceAll('"red.300"', JSON.stringify(color))
+		.replaceAll('"red.200"', JSON.stringify(color))
+		.replaceAll('"blue.6"', JSON.stringify(color))
+		.replaceAll('"red"', JSON.stringify(color))
+		.replaceAll("color: red", `color: ${color}`);
 }
 
 function edgeSource(adapter: CodemodAdapterId, source: string): string {
@@ -253,13 +258,21 @@ function sourceConstants(
 	source: CodemodAdapterId,
 	target: CodemodAdapterId,
 ): string {
+	const blueColor =
+		source === CodemodAdapterId.ChakraUi || target === CodemodAdapterId.ChakraUi
+			? "#2a57c8"
+			: "#2563eb";
+	const themedInput =
+		source === CodemodAdapterId.ChakraUi && target === CodemodAdapterId.UnoCSS
+			? example.happy.replaceAll('bg="red.200"', 'backgroundColor="red.200"')
+			: example.happy;
 	return [
 		`const happySource = ${JSON.stringify(example.happy)};`,
 		`const edgeSource = ${JSON.stringify(example.edge)};`,
 		`const malformedSource = ${JSON.stringify(example.malformed)};`,
 		`const sourceSemantic = ${example.semantic};`,
-		`const themedSource = ${JSON.stringify(themedSource(source, example.happy))};`,
-		`const tokenSource = ${JSON.stringify(tokenSource(source, example.happy))};`,
+		`const themedSource = ${JSON.stringify(themedSource(source, themedInput, blueColor))};`,
+		`const tokenSource = ${JSON.stringify(tokenSource(source, themedInput, blueColor))};`,
 		// Project loaders resolve the authored token references above. Do not add
 		// synthetic theme metadata to literal source code: that changes a static
 		// expression into a runtime expression and makes round-trip evidence lie.
@@ -267,7 +280,7 @@ function sourceConstants(
 		`const amberSemantic = ${semanticFor(source)};`,
 		`const blueTargetSemantic = ${semanticFor(target)};`,
 		`const amberTargetSemantic = ${semanticFor(target)};`,
-		`const blueProject = createAdapterRouteProject(${identifier(source)}, ${identifier(target)}, "#2563eb");`,
+		`const blueProject = createAdapterRouteProject(${identifier(source)}, ${identifier(target)}, ${JSON.stringify(blueColor)});`,
 		`const amberProject = createAdapterRouteProject(${identifier(source)}, ${identifier(target)}, "#f97316");`,
 	].join("\n");
 }
@@ -276,6 +289,12 @@ function routeSource(source: CodemodAdapterId, target: CodemodAdapterId): string
 	const example = sourceExample(source);
 	const routeFile = targetModuleFile(target, example.file);
 	const edgeFile = targetModuleFile(target, example.edgeFile);
+	const usesInstalledChakraProject =
+		source === CodemodAdapterId.ChakraUi || target === CodemodAdapterId.ChakraUi;
+	const directRun = (input: string): string =>
+		usesInstalledChakraProject
+			? `await route.runAsync({ ${input}, project: installedChakraProject })`
+			: `route.run({ ${input} })`;
 	const frameworkImport =
 		usesBuiltinHostFramework(source) || usesBuiltinHostFramework(target)
 			? "BuiltinHostFramework, "
@@ -286,7 +305,7 @@ import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
-	expectConfiguredProjectEvidence,
+	${usesInstalledChakraProject ? "createInstalledChakraRouteProject,\n\t" : ""}expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
@@ -296,9 +315,10 @@ import {
 
 const route = createAdapterRouteSpec(${identifier(source)}, ${identifier(target)});
 	${sourceConstants(example, source, target)}
+${usesInstalledChakraProject ? "const installedChakraProject = createInstalledChakraRouteProject();\n" : ""}
 
-test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", () => {
-	const result = route.run({ source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic });
+test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", ${usesInstalledChakraProject ? "async " : ""}() => {
+	const result = ${directRun(`source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic`)};
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -318,8 +338,8 @@ test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target}: carries a documented secondary ${source} API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic });
+test("${source} -> ${target}: carries a documented secondary ${source} API explicitly", ${usesInstalledChakraProject ? "async " : ""}() => {
+	const result = ${directRun(`source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic`)};
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "${source} -> ${target} secondary");
 	expectExplicitResidualEvidence(result);
@@ -351,8 +371,8 @@ test("${source} -> ${target}: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target}: preserves malformed concrete ${source} input", () => {
-	const result = route.run({ source: malformedSource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic });
+test("${source} -> ${target}: preserves malformed concrete ${source} input", ${usesInstalledChakraProject ? "async " : ""}() => {
+	const result = ${directRun(`source: malformedSource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic`)};
 	expect(result.code).toContain("/* unfinished ${source} */");
 	expectRouteScenarioEvidence(result, "${source} -> ${target} malformed");
 	expectExplicitResidualEvidence(result);
@@ -368,6 +388,12 @@ function roundTripSource(source: CodemodAdapterId, target: CodemodAdapterId): st
 	const routeFile = targetModuleFile(target, example.file);
 	const edgeFile = targetModuleFile(target, example.edgeFile);
 	const targetFile = example.file;
+	const usesInstalledChakraProject =
+		source === CodemodAdapterId.ChakraUi || target === CodemodAdapterId.ChakraUi;
+	const directRun = (routeName: string, input: string): string =>
+		usesInstalledChakraProject
+			? `await ${routeName}.runAsync({ ${input}, project: installedChakraProject })`
+			: `${routeName}.run({ ${input} })`;
 	const frameworkImport =
 		usesBuiltinHostFramework(source) || usesBuiltinHostFramework(target)
 			? "BuiltinHostFramework, "
@@ -378,7 +404,7 @@ import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
-	expectConfiguredProjectEvidence,
+	${usesInstalledChakraProject ? "createInstalledChakraRouteProject,\n\t" : ""}expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
 	${isClassProjectionTarget(target) ? "expectTargetClassProjection" : "expectActionableRoundTrip"},
@@ -390,11 +416,11 @@ import {
 const forward = createAdapterRouteSpec(${identifier(source)}, ${identifier(target)});
 const reverse = createAdapterRouteSpec(${identifier(target)}, ${identifier(source)});
 	${sourceConstants(example, source, target)}
-	const targetSemantic = ${targetExample.semantic};
+${usesInstalledChakraProject ? "const installedChakraProject = createInstalledChakraRouteProject();\n" : ""}	const targetSemantic = ${targetExample.semantic};
 
-test("${source} -> ${target} -> ${source}: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic });
+test("${source} -> ${target} -> ${source}: preserves an actionable concrete round trip", ${usesInstalledChakraProject ? "async " : ""}() => {
+	const first = ${directRun("forward", `source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic`)};
+	const second = ${directRun("reverse", `source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic`)};
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -411,9 +437,9 @@ test("${source} -> ${target} -> ${source}: preserves an actionable concrete roun
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target} -> ${source}: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic });
+test("${source} -> ${target} -> ${source}: retains the documented secondary API without silent loss", ${usesInstalledChakraProject ? "async " : ""}() => {
+	const first = ${directRun("forward", `source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic`)};
+	const second = ${directRun("reverse", `source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic`)};
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip secondary forward");
 	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip secondary`)}

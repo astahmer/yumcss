@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Mui, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Mui, "#f97316");
 
+
 test("sass -> mui: migrates concrete sass syntax to mui", () => {
 	const result = route.run({ source: happySource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

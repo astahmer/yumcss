@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.Tamagui, CodemodAdapterId.
 const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, ({ theme }) => ({ color: theme.color }));";
 const malformedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished tamagui */";
 const sourceSemantic = undefined;
-const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2a57c8\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2a57c8\", padding: \"$4\" });\nexport const App = () => <Card />;";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("tamagui -> chakra-ui: migrates concrete tamagui syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+
+test("tamagui -> chakra-ui: migrates concrete tamagui syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -84,8 +87,8 @@ test("tamagui -> chakra-ui: migrates concrete tamagui syntax to chakra-ui", () =
 	`)
 });
 
-test("tamagui -> chakra-ui: carries a documented secondary tamagui API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("tamagui -> chakra-ui: carries a documented secondary tamagui API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "tamagui -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -151,7 +154,7 @@ test("tamagui -> chakra-ui: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "#2563eb" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "#2a57c8" }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -270,8 +273,8 @@ test("tamagui -> chakra-ui: resolves concrete token values with project context"
 	`)
 });
 
-test("tamagui -> chakra-ui: preserves malformed concrete tamagui input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+test("tamagui -> chakra-ui: preserves malformed concrete tamagui input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished tamagui */");
 	expectRouteScenarioEvidence(result, "tamagui -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

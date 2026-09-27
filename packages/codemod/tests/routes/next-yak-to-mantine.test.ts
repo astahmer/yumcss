@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Mantine, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Mantine, "#f97316");
 
+
 test("next-yak -> mantine: migrates concrete next-yak syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

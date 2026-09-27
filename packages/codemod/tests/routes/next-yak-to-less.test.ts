@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Less, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Less, "#f97316");
 
+
 test("next-yak -> less: migrates concrete next-yak syntax to less", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

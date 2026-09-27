@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Compiled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, CodemodAdapterId.Compiled, "#f97316");
 
+
 test("next-yak -> compiled: migrates concrete next-yak syntax to compiled", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

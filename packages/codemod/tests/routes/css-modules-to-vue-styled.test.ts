@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.VueStyled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.VueStyled, "#f97316");
 
+
 test("css-modules -> vue-styled: migrates concrete css-modules syntax to vue-styled", () => {
 	const result = route.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.ReactStrictDom, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.ReactStrictDom, "#f97316");
 
+
 test("compiled -> react-strict-dom: migrates concrete compiled syntax to react-strict-dom", () => {
 	const result = route.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -316,10 +316,9 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
-		export const card = css({ padding: 8, color: "brand.500" });",
-		      "converted": 0,
+		      "code": "import { style } from "@vanilla-extract/css";
+		export const card = style({ padding: 8, color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -337,25 +336,17 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -411,10 +402,9 @@ test("vanilla-extract -> panda -> vanilla-extract: resolves token values across 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
-		export const card = css({ padding: 8, color: "brand.500" });",
-		    "converted": 0,
+		    "code": "import { style } from "@vanilla-extract/css";
+		export const card = style({ padding: 8, color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -432,25 +422,17 @@ test("vanilla-extract -> panda -> vanilla-extract: resolves token values across 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

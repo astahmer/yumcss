@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Bamboo, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.Bamboo, "#f97316");
 
+
 test("tamagui -> bamboo: migrates concrete tamagui syntax to bamboo", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

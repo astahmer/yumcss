@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.VueStyled);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.VueStyled, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
@@ -50,9 +50,9 @@ test("mantine -> vue-styled -> mantine: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		    "converted": 0,
+		import styled from "vue-styled-components";
+		export const App = () => styled.div({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -60,40 +60,65 @@ test("mantine -> vue-styled -> mantine: preserves an actionable concrete round t
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mantine/core";
+		import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		export const App = () => styled.div({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		        "kind": "configuration",
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

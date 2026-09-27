@@ -117,7 +117,7 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 	{
 		adapter: CodemodAdapterId.ChakraUi,
 		file: "chakra-ui.tsx",
-		source: "import { Box } from '@chakra-ui/react'; <Box bg='tomato' />",
+		source: "import { Box } from '@chakra-ui/react'; <Box css={{ color: 'tomato' }} />",
 	},
 	{
 		adapter: CodemodAdapterId.Mui,

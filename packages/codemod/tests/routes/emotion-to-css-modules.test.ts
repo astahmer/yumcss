@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Emotion, CodemodAdapterId.CssModules, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Emotion, CodemodAdapterId.CssModules, "#f97316");
 
+
 test("emotion -> css-modules: migrates concrete emotion syntax to css-modules", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

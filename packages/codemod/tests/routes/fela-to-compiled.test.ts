@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Compiled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Compiled, "#f97316");
 
+
 test("fela -> compiled: migrates concrete fela syntax to compiled", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

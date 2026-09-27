@@ -20,7 +20,7 @@ const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nco
 const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
 const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -213,7 +213,7 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "$brand" });",
+		export const card = styled(View, { padding: "1rem", color: "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -249,7 +249,7 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -286,7 +286,7 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "$brand" });",
+		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,7 +322,7 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "$brand" });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [

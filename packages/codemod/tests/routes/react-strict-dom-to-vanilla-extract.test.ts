@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.VanillaExtract, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.VanillaExtract, "#f97316");
 
+
 test("react-strict-dom -> vanilla-extract: migrates concrete react-strict-dom syntax to vanilla-extract", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

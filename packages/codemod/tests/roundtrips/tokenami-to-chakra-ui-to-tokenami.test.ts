@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -15,23 +16,24 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.ChakraUi);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -51,7 +53,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ cardGap: "1rem", color: "red" });",
+		export const card = defaultSystem.css({ gap: "4", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +88,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ cardGap: "1rem", color: "red" });",
+		export const card = css({ gap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -121,9 +123,9 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 	`)
 });
 
-test("tokenami -> chakra-ui -> tokenami: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("tokenami -> chakra-ui -> tokenami: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "tokenami -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -135,7 +137,7 @@ test("tokenami -> chakra-ui -> tokenami: retains the documented secondary API wi
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });",
+		export const card = defaultSystem.css({ padding: "4", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +235,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ cardGap: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ gap: "4", color: "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -268,7 +270,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +307,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ cardGap: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ gap: "4", color: "brand.500" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -340,7 +342,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +393,7 @@ test("tokenami -> chakra-ui -> tokenami: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ cardGap: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ gap: "4", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -426,7 +428,7 @@ test("tokenami -> chakra-ui -> tokenami: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

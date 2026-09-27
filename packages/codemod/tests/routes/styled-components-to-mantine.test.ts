@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Mantine, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Mantine, "#f97316");
 
+
 test("styled-components -> mantine: migrates concrete styled-components syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

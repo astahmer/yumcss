@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import { globalCss } from \"@stitches/react\";\nexport const reset = globalCss({ body: { margin: 0 } });";
 const malformedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished stitches */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
-const tokenSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const themedSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2a57c8\", padding: \"1rem\" });";
+const tokenSource = "import { css } from \"@stitches/react\";\nexport const card = css({ color: \"#2a57c8\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Stitches, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -51,7 +53,7 @@ test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });",
+		export const card = defaultSystem.css({ padding: "4", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -123,9 +125,9 @@ test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round 
 	`)
 });
 
-test("stitches -> chakra-ui -> stitches: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("stitches -> chakra-ui -> stitches: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "stitches -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -219,7 +221,7 @@ test("stitches -> chakra-ui -> stitches: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "#2563eb" });",
+		export const card = defaultSystem.css({ padding: "4", color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -254,7 +256,7 @@ test("stitches -> chakra-ui -> stitches: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ padding: "1rem", color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -293,7 +295,7 @@ test("stitches -> chakra-ui -> stitches: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -326,11 +328,10 @@ test("stitches -> chakra-ui -> stitches: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import { css } from "@stitches/react";
 
-		// pandwind:migrate-skip (route: chakra-ui -> stitches | lowering-residual: validation)
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
-		      "converted": 0,
+		export const card = css({ padding: "1rem", color: "#2a57c8" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -348,25 +349,17 @@ test("stitches -> chakra-ui -> stitches: preserves concrete theme and project co
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -390,7 +383,7 @@ test("stitches -> chakra-ui -> stitches: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -423,11 +416,10 @@ test("stitches -> chakra-ui -> stitches: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import { css } from "@stitches/react";
 
-		// pandwind:migrate-skip (route: chakra-ui -> stitches | lowering-residual: validation)
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
-		    "converted": 0,
+		export const card = css({ padding: "1rem", color: "#2a57c8" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -445,25 +437,17 @@ test("stitches -> chakra-ui -> stitches: resolves token values across both concr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.VueStyled, CodemodAdapterI
 const edgeSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
 const malformedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;\nconst unfinished = { /* unfinished vue-styled */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
-const themedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
-const tokenSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2563eb; padding: 1rem;`;";
+const themedSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2a57c8; padding: 1rem;`;";
+const tokenSource = "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: #2a57c8; padding: 1rem;`;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("vue-styled -> chakra-ui: migrates concrete vue-styled syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("vue-styled -> chakra-ui: migrates concrete vue-styled syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -83,8 +86,8 @@ test("vue-styled -> chakra-ui: migrates concrete vue-styled syntax to chakra-ui"
 	`)
 });
 
-test("vue-styled -> chakra-ui: carries a documented secondary vue-styled API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("vue-styled -> chakra-ui: carries a documented secondary vue-styled API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "vue-styled -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -146,7 +149,7 @@ test("vue-styled -> chakra-ui: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,7 +184,7 @@ test("vue-styled -> chakra-ui: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +231,7 @@ test("vue-styled -> chakra-ui: resolves concrete token values with project conte
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -262,8 +265,8 @@ test("vue-styled -> chakra-ui: resolves concrete token values with project conte
 	`)
 });
 
-test("vue-styled -> chakra-ui: preserves malformed concrete vue-styled input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("vue-styled -> chakra-ui: preserves malformed concrete vue-styled input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished vue-styled */");
 	expectRouteScenarioEvidence(result, "vue-styled -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

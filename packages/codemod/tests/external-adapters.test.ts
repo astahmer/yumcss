@@ -8,6 +8,7 @@ import { AdapterDependencyKindTag } from "../src/swap/adapter-contract.ts";
 import { describe, expect, test } from "vitest";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
+	BuiltinHostFramework,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	createChakraAdapter,
@@ -15,6 +16,23 @@ import {
 	runAdapterMigration,
 } from "../src/swap/index.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import {
+	createAdapterRouteProject,
+	createAdapterRouteSpec,
+	routeEvidence,
+} from "./route-spec-support.ts";
+
+const migrateConfiguredChakra = (source: string, file: string) =>
+	createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind).runAsync({
+		source,
+		file,
+		project: createAdapterRouteProject(
+			CodemodAdapterId.ChakraUi,
+			CodemodAdapterId.Pandwind,
+			"#2a57c8",
+		),
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+	});
 
 describe("CSS-in-JS adapter contract v2", () => {
 	test("registers detection, config, parse, emit, dependencies, and validation for every adapter", () => {
@@ -107,8 +125,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const system = {
 			$$chakra: true as const,
 			_config: {
+				utilities: { color: { values: "colors" } },
 				theme: { tokens: { colors: { brand: { "500": { value: "#123456" } } } } },
 			},
+			properties: new Set(["color"]),
 			token: {
 				var: (path: string) => `var(--chakra-${path.replaceAll(".", "-")})`,
 			},
@@ -119,8 +139,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 					? ({ isValidSystem: (value: unknown) => value === system } as never)
 					: undefined;
 			},
-			async importFile() {
-				return { default: system } as never;
+			async importFile(path) {
+				return path === "/project/chakra.config.ts" ? ({ default: system } as never) : undefined;
 			},
 		};
 		const adapter = createChakraAdapter({ moduleLoader: loader });
@@ -128,6 +148,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			file: "App.tsx",
 			source: "",
 			root: "/project",
+			listFiles: () => ["/project/chakra.config.ts"],
 		});
 		expect(config?.values.chakraConfig).toEqual(system._config);
 		expect(config?.values.officialConfigPackage).toBe("@chakra-ui/react");
@@ -1348,7 +1369,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		[CodemodAdapterId.UnoCSS, "className", "<View"],
 	] as const)("projects static %s React hosts to React Native", (sourceAdapter, removed, host) => {
 		const fixture = {
-			[CodemodAdapterId.ChakraUi]: 'import { Box } from "@chakra-ui/react"; <Box bg="tomato" />',
+			[CodemodAdapterId.ChakraUi]:
+				'import { Box } from "@chakra-ui/react"; <Box css={{ backgroundColor: "tomato" }} />',
 			[CodemodAdapterId.Mui]: 'import { Box } from "@mui/material"; <Box sx={{ color: "red" }} />',
 			[CodemodAdapterId.Mantine]: 'import { Box } from "@mantine/core"; <Box c="red" />',
 			[CodemodAdapterId.Tailwind]: '<div className="[display:flex] [padding:1rem]" />',
@@ -2131,26 +2153,24 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("class={cx((props) =>");
 	});
 
-	test("lowers Chakra, MUI, and Mantine host style props to canonical elements", () => {
-		const chakra = runAdapterMigration(
+	test("lowers Chakra, MUI, and Mantine host style props to canonical elements", async () => {
+		const chakra = await migrateConfiguredChakra(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="tomato" p="16px" _hover={{ bg: "blue" }} data-kind="card" />;',
-			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
+			"App.tsx",
 		);
 		expect(chakra.converted).toBe(1);
 		expect(chakra.skipped).toBe(0);
 		expect(chakra.residuals).toEqual([]);
 		expect(chakra.code).not.toContain('import { Box } from "@chakra-ui/react";');
 		expect(chakra.code).toContain('<div data-kind="card"');
-		expect(chakra.code).toContain(
-			'className={css.class({ padding: "16px", backgroundColor: "tomato"',
-		);
+		expect(chakra.code).toContain('className={css.class({ background: "tomato", padding: "16px"');
 		expect(chakra.code).toContain("_hover");
 		expect(chakra.code).not.toContain('"&:hover"');
 
-		const intrinsicOverride = runAdapterMigration(
+		const intrinsicOverride = await migrateConfiguredChakra(
 			'import { Box, Heading } from "@chakra-ui/react";\n' +
 				'export const App = () => <Box as="aside" p="4"><Heading as="h1" color="red.200">Title</Heading></Box>;',
-			{ from: "chakra-ui", to: "pandwind", file: "Intrinsic.tsx", mode: "safe" },
+			"Intrinsic.tsx",
 		);
 		expect(intrinsicOverride.residuals).toEqual([]);
 		expect(intrinsicOverride.code).toContain("<aside className={css.class({");
@@ -2158,57 +2178,97 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(intrinsicOverride.code).not.toContain('as="aside"');
 		expect(intrinsicOverride.code).not.toContain('as="h1"');
 
-		const merged = runAdapterMigration(
+		const merged = await migrateConfiguredChakra(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box className="existing" bg="tomato" />;',
-			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
+			"App.tsx",
 		);
 		expect(merged.code).toContain(
-			'className={css.props(css.class({ backgroundColor: "tomato" }), "existing").className}',
+			'className={css.props(css.class({ background: "tomato" }), "existing").className}',
 		);
 
-		const spread = runAdapterMigration(
+		const spread = await migrateConfiguredChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'const Card = (props: any) => <Box className="local" bg="tomato" {...props} />;',
-			{ from: "chakra-ui", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			"Card.tsx",
 		);
 		expect(spread.residuals).toEqual([]);
 		expect(spread.code).toContain(
-			'className={css.props(css.class({ backgroundColor: "tomato" }), "local", props?.className).className}',
+			'className={css.props(css.class({ background: "tomato" }), "local", props?.className).className}',
 		);
 		expect(spread.code.indexOf("props} />")).toBeLessThan(
 			spread.code.indexOf("className={css.props(css.class"),
 		);
 
-		const componentSpread = runAdapterMigration(
+		const componentSpread = await migrateConfiguredChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'const Notice = (props: any) => <Box {...props} display="inline-flex" />;\n' +
 				'const App = () => <Notice mt="3" />;',
-			{ from: "chakra-ui", to: "pandwind", file: "Notice.tsx", mode: "safe" },
+			"Notice.tsx",
 		);
 		expect(componentSpread.residuals).toEqual([]);
 		expect(componentSpread.code).toContain(
 			'className={css.props(css.class({ display: "inline-flex" }), props?.className).className}',
 		);
 
-		const appOwnedComponent = runAdapterMigration(
+		const appOwnedComponent = await migrateConfiguredChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'import { Button } from "#ui/button";\n' +
 				'export const App = () => <><Button size="sm" variant="solid" /><Box p="4" /></>;',
-			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
+			"App.tsx",
 		);
 		expect(appOwnedComponent.code).toContain('import { Button } from "#ui/button";');
 		expect(appOwnedComponent.code).toContain('<Button size="sm" variant="solid" />');
 		expect(appOwnedComponent.code).not.toContain('<button size="sm" variant="solid"');
 		expect(appOwnedComponent.code).toContain("<div className={css.class({");
 
-		const separator = runAdapterMigration(
+		const separator = await migrateConfiguredChakra(
 			'import { HStack, StackSeparator } from "@chakra-ui/react";\n' +
 				"export const App = () => <HStack gap={12} separator={<StackSeparator />} />;",
-			{ from: "chakra-ui", to: "pandwind", file: "Separator.tsx", mode: "safe" },
+			"Separator.tsx",
 		);
-		expect(separator.residuals).toEqual([]);
+		expect(separator.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: "component", text: "StackSeparator" }),
+			]),
+		);
 		expect(separator.code).toContain("gap={12}");
 		expect(separator.code).not.toContain("className={");
+		expect(routeEvidence(separator)).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": "import { HStack, StackSeparator } from "@chakra-ui/react";
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: component | available: named-map, residual)
+			export const App = () => <HStack gap={12} separator={<StackSeparator />} />;",
+			  "converted": 0,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "residual",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "outcome": "residual",
+			      "representation": "residual",
+			    },
+			  ],
+			  "residuals": [
+			    {
+			      "hint": "Chakra host 'StackSeparator' has no verified intrinsic projection",
+			      "kind": "component",
+			      "preserved": undefined,
+			    },
+			  ],
+			  "skipped": 1,
+			  "validations": [],
+			}
+		`);
 
 		const nextImage = runAdapterMigration(
 			'import { Box } from "@chakra-ui/react";\n' +
@@ -2220,10 +2280,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(nextImage.code).toContain("fill");
 		expect(nextImage.code).not.toContain("className={css.class({ fill: true");
 
-		const palette = runAdapterMigration(
+		const palette = await migrateConfiguredChakra(
 			'import { VStack, Text } from "@chakra-ui/react";\n' +
 				'export const App = ({ color }) => <VStack colorPalette={color}><Text color="colorPalette.fg">Label</Text></VStack>;',
-			{ from: "chakra-ui", to: "pandwind", file: "Palette.tsx", mode: "safe" },
+			"Palette.tsx",
 		);
 		expect(palette.skipped).toBeGreaterThan(0);
 		expect(palette.residuals).toEqual(
@@ -2236,22 +2296,91 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(palette.code).toContain("colorPalette={color}");
 		expect(palette.code).not.toContain("css.vars({ colorPalette: color");
-		expect(palette.code).toContain('color: "colorPalette.fg"');
-		expect(palette.code).toContain("<p className");
-		expect(palette.code).toContain("</p>");
+		expect(palette.code).toContain('color="colorPalette.fg"');
+		expect(palette.code).toContain("<VStack colorPalette={color}");
+		expect(palette.code).toContain('<Text color="colorPalette.fg">');
+		expect(palette.code).not.toContain("<p className");
+		expect(palette.converted).toBe(0);
+		expect(routeEvidence(palette)).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": "import { VStack, Text } from "@chakra-ui/react";
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | lowering-residual: dynamic | available: named-map, target-native, residual)
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | lowering-residual: emission-empty, token-values | available: static, named-map, residual)
+			export const App = ({ color }) => <VStack colorPalette={color}><Text color="colorPalette.fg">Label</Text></VStack>;",
+			  "converted": 0,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "named-map",
+			        "target-native",
+			        "residual",
+			      ],
+			      "representation": "residual",
+			      "residuals": [
+			        {
+			          "hint": "colorPalette requires a statically known value for this target",
+			          "kind": "dynamic",
+			        },
+			      ],
+			    },
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "outcome": "residual",
+			      "representation": "residual",
+			    },
+			    {
+			      "outcome": "residual",
+			      "representation": "static",
+			    },
+			  ],
+			  "residuals": [
+			    {
+			      "hint": "colorPalette requires a statically known value for this target",
+			      "kind": "dynamic",
+			      "preserved": undefined,
+			    },
+			    {
+			      "hint": "target adapter produced no representable output",
+			      "kind": "emission-empty",
+			      "preserved": undefined,
+			    },
+			    {
+			      "hint": "source token colorPalette.fg has no verified target value",
+			      "kind": "token-values",
+			      "preserved": undefined,
+			    },
+			  ],
+			  "skipped": 2,
+			  "validations": [],
+			}
+		`);
 
-		const staticPalette = runAdapterMigration(
+		const staticPalette = await migrateConfiguredChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'export const App = () => <Box colorPalette="blue" />;',
-			{ from: "chakra-ui", to: "pandwind", file: "StaticPalette.tsx", mode: "safe" },
+			"StaticPalette.tsx",
 		);
 		expect(staticPalette.residuals).toEqual([]);
 		expect(staticPalette.code).toContain('css.class({ colorPalette: "blue" })');
 
-		const conditionalPalette = runAdapterMigration(
+		const conditionalPalette = await migrateConfiguredChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'export const App = ({ enabled }) => <Box colorPalette={enabled ? "blue" : "red"} />;',
-			{ from: "chakra-ui", to: "pandwind", file: "ConditionalPalette.tsx", mode: "safe" },
+			"ConditionalPalette.tsx",
 		);
 		expect(conditionalPalette.skipped).toBe(0);
 		expect(conditionalPalette.residuals).toEqual([]);

@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Aphrodite, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.Aphrodite, "#f97316");
 
+
 test("treat -> aphrodite: migrates concrete treat syntax to aphrodite", () => {
 	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

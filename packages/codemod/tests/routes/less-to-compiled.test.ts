@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.Compiled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.Compiled, "#f97316");
 
+
 test("less -> compiled: migrates concrete less syntax to compiled", () => {
 	const result = route.run({ source: happySource, file: "card.less", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

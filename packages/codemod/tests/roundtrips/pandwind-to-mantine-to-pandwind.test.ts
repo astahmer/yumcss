@@ -20,7 +20,7 @@ const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nco
 const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
 const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
@@ -351,7 +351,7 @@ test("pandwind -> mantine -> pandwind: resolves token values across both concret
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		export const card = css.class({ color: "#2563eb", padding: "1rem" });",
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -400,7 +400,7 @@ test("pandwind -> mantine -> pandwind: resolves token values across both concret
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		export const card = css.class({ color: "#2563eb", padding: "1rem" });",
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

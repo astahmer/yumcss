@@ -6,6 +6,11 @@ import {
 } from "../src/swap/index.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 import type { AdapterParseContext } from "../src/swap/adapter-contract.ts";
+import {
+	createAdapterRouteProject,
+	createAdapterRouteSpec,
+	requireBuiltinAdapterId,
+} from "./route-spec-support.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 const pandwind = CodemodAdapterId.Pandwind;
@@ -62,15 +67,32 @@ function migrate(source: string, from: string, to: string, file: string) {
 	});
 }
 
+const migrateChakra = (source: string, targetId: string, file: string) => {
+	const target = fixtures.get(targetId);
+	if (target === undefined) throw new Error(`missing fixture for ${targetId}`);
+	const targetAdapterId = requireBuiltinAdapterId(targetId);
+	const route = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, targetAdapterId);
+	const project = createAdapterRouteProject(CodemodAdapterId.ChakraUi, targetAdapterId, "#2a57c8");
+	return route.runAsync({
+		source,
+		file,
+		project,
+		semantic: semanticFor(CodemodAdapterId.ChakraUi),
+	});
+};
+
 describe("adapter edge and non-happy matrix", () => {
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
 		"preserves or reports an edge case for %s in every target direction",
-		(sourceId) => {
+		async (sourceId) => {
 			const fixture = fixtures.get(sourceId);
 			if (fixture === undefined) throw new Error(`missing fixture for ${sourceId}`);
 			const edge = edgeSource(sourceId, fixture.source);
 			for (const target of catalog.adapters) {
-				const result = migrate(edge.source, sourceId, target.id, fixture.file);
+				const result =
+					sourceId === CodemodAdapterId.ChakraUi
+						? await migrateChakra(edge.source, target.id, fixture.file)
+						: migrate(edge.source, sourceId, target.id, fixture.file);
 				const explicitEvidence = result.residuals.length > 0 || result.skipped > 0;
 				const unchanged = result.code === edge.source;
 				const converted = result.converted > 0;
@@ -93,12 +115,15 @@ describe("adapter edge and non-happy matrix", () => {
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
 		"keeps malformed %s source recoverable",
-		(sourceId) => {
+		async (sourceId) => {
 			const fixture = fixtures.get(sourceId);
 			if (fixture === undefined) throw new Error(`missing fixture for ${sourceId}`);
 			const malformed = `${fixture.source}\n/* unfinished ${sourceId}`;
 			for (const target of catalog.adapters) {
-				const result = migrate(malformed, sourceId, target.id, fixture.file);
+				const result =
+					sourceId === CodemodAdapterId.ChakraUi
+						? await migrateChakra(malformed, target.id, fixture.file)
+						: migrate(malformed, sourceId, target.id, fixture.file);
 				expect(result.code.length).toBeGreaterThan(0);
 				expect(
 					result.code.includes(`unfinished ${sourceId}`) ||

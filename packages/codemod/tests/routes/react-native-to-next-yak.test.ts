@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.NextYak, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.NextYak, "#f97316");
 
+
 test("react-native -> next-yak: migrates concrete react-native syntax to next-yak", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

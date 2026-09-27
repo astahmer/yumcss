@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.Aphrodite, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.Aphrodite, "#f97316");
 
+
 test("stylex -> aphrodite: migrates concrete stylex syntax to aphrodite", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

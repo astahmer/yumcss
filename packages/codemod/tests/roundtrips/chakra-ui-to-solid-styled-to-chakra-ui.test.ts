@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -20,18 +21,19 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.SolidStyled, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.SolidStyled, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.SolidStyled, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 
-test("chakra-ui -> solid-styled -> chakra-ui: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> solid-styled -> chakra-ui: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,12 +52,13 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
+		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -87,7 +90,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves an actionable concrete r
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
 		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const App = () => styled.div({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
+		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -127,9 +130,9 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves an actionable concrete r
 	`)
 });
 
-test("chakra-ui -> solid-styled -> chakra-ui: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> solid-styled -> chakra-ui: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "chakra-ui -> solid-styled round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -219,7 +222,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -257,7 +260,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
 		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const App = () => styled.div({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -298,7 +301,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -336,7 +339,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
 		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,12 +394,13 @@ test("chakra-ui -> solid-styled -> chakra-ui: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -428,7 +432,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: resolves token values across both 
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
 		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const App = () => styled.div({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
+		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

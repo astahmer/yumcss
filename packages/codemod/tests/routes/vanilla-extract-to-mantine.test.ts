@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } 
 const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Mantine, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Mantine, "#f97316");
 
+
 test("vanilla-extract -> mantine: migrates concrete vanilla-extract syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -20,18 +21,19 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tamagui, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tamagui, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tamagui, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = undefined;
 
-test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,7 +52,7 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
+		export const App = () => styled(View, { background: "#fecaca", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +86,7 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
+		export const App = () => styled(View, { background: "#fecaca", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -119,9 +121,9 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round 
 	`)
 });
 
-test("chakra-ui -> tamagui -> chakra-ui: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> tamagui -> chakra-ui: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "chakra-ui -> tamagui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -208,7 +210,7 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
+		export const App = () => styled(View, { background: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -242,7 +244,7 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
+		export const App = () => styled(View, { background: "#f97316", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +280,7 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
+		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +314,7 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" });",
+		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -362,7 +364,7 @@ test("chakra-ui -> tamagui -> chakra-ui: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
+		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -396,7 +398,7 @@ test("chakra-ui -> tamagui -> chakra-ui: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
+		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

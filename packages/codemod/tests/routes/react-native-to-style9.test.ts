@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Style9, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Style9, "#f97316");
 
+
 test("react-native -> style9: migrates concrete react-native syntax to style9", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

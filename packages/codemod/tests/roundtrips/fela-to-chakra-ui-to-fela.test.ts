@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }), \"button\");";
 const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
-const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
-const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
+const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2a57c8\" }));";
+const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2a57c8\" }));";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("fela -> chakra-ui -> fela: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("fela -> chakra-ui -> fela: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -124,9 +126,9 @@ test("fela -> chakra-ui -> fela: preserves an actionable concrete round trip", (
 	`)
 });
 
-test("fela -> chakra-ui -> fela: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("fela -> chakra-ui -> fela: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "fela -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -216,7 +218,7 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		      "code": "import { createRenderer } from "fela";
 		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
-		export const card = defaultSystem.css({ color: "#2563eb" });",
+		export const card = defaultSystem.css({ color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,7 +253,7 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		export const card = renderer.renderRule({ "color": "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -326,7 +328,7 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		export const card = renderer.renderRule({ "color": "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -416,7 +418,7 @@ test("fela -> chakra-ui -> fela: resolves token values across both concrete legs
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		export const card = renderer.renderRule({ "color": "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

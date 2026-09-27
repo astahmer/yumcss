@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.CssModules, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.CssModules, "#f97316");
 
+
 test("authored-css -> css-modules: migrates concrete authored-css syntax to css-modules", () => {
 	const result = route.run({ source: happySource, file: "card.css", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

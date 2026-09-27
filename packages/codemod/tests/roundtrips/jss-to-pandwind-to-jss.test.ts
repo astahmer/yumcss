@@ -345,11 +345,10 @@ test("jss -> pandwind -> jss: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		export const useStyles = { "card": css.class({ color: "brand" }) };",
-		      "converted": 0,
+		      "code": "import { createUseStyles } from "react-jss";
+
+		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -367,25 +366,17 @@ test("jss -> pandwind -> jss: preserves concrete theme and project context varia
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -442,11 +433,10 @@ test("jss -> pandwind -> jss: resolves token values across both concrete legs", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		export const useStyles = { "card": css.class({ color: "brand" }) };",
-		    "converted": 0,
+		    "code": "import { createUseStyles } from "react-jss";
+
+		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -464,25 +454,17 @@ test("jss -> pandwind -> jss: resolves token values across both concrete legs", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

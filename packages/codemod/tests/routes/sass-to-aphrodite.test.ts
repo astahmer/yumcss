@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Aphrodite, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.Aphrodite, "#f97316");
 
+
 test("sass -> aphrodite: migrates concrete sass syntax to aphrodite", () => {
 	const result = route.run({ source: happySource, file: "card.scss", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

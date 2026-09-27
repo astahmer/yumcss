@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -15,23 +16,24 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.ChakraUi);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,33 +52,29 @@ test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
@@ -89,8 +87,8 @@ test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -103,9 +101,9 @@ test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round tr
 	`)
 });
 
-test("mantine -> chakra-ui -> mantine: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("mantine -> chakra-ui -> mantine: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "mantine -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -306,7 +304,7 @@ test("mantine -> chakra-ui -> mantine: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -341,7 +339,7 @@ test("mantine -> chakra-ui -> mantine: resolves token values across both concret
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

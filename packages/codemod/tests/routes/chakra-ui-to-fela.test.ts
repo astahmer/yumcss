@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -18,16 +19,18 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Fela, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Fela, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Fela, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("chakra-ui -> fela: migrates concrete chakra-ui syntax to fela", () => {
-	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+
+test("chakra-ui -> fela: migrates concrete chakra-ui syntax to fela", async () => {
+	const result = await route.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -47,12 +50,13 @@ test("chakra-ui -> fela: migrates concrete chakra-ui syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => renderer.renderRule({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });",
+		  "code": "export const App = () => renderer.renderRule({ "background": "#fecaca", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -83,8 +87,8 @@ test("chakra-ui -> fela: migrates concrete chakra-ui syntax to fela", () => {
 	`)
 });
 
-test("chakra-ui -> fela: carries a documented secondary chakra-ui API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> fela: carries a documented secondary chakra-ui API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "chakra-ui -> fela secondary");
 	expectExplicitResidualEvidence(result);
@@ -145,7 +149,7 @@ test("chakra-ui -> fela: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" });",
+		    "code": "export const App = () => renderer.renderRule({ "background": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,7 +185,7 @@ test("chakra-ui -> fela: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
+		    "code": "export const App = () => renderer.renderRule({ "background": "#2a57c8", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,12 +233,13 @@ test("chakra-ui -> fela: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => renderer.renderRule({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" });",
+		  "code": "export const App = () => renderer.renderRule({ "background": "#2a57c8", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -265,21 +270,22 @@ test("chakra-ui -> fela: resolves concrete token values with project context", a
 	`)
 });
 
-test("chakra-ui -> fela: preserves malformed concrete chakra-ui input", () => {
-	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> fela: preserves malformed concrete chakra-ui input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished chakra-ui */");
 	expectRouteScenarioEvidence(result, "chakra-ui -> fela malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => renderer.renderRule({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" });
+		  "code": "export const App = () => renderer.renderRule({ "background": "#fecaca", "padding": "1rem" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [

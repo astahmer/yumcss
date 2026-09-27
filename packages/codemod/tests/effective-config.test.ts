@@ -397,7 +397,7 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 				theme: { tokens: { colors: { brand: { "500": { value: "#123456" } } } } },
 			},
 			token: { var: (path: string) => `var(--chakra-${path.replaceAll(".", "-")})` },
-			isValidProperty: (property: string) => ["css", "_midnight", "color"].includes(property),
+			properties: new Set(["css", "_midnight", "color"]),
 		};
 		const loader: ProjectModuleLoader = {
 			async importPackage() {
@@ -412,7 +412,8 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 			file: "src/App.tsx",
 			source: '<Box css={{ _midnight: { color: "brand.500" } }} />',
 			root: "/project",
-			readFile: () => "",
+			readFile: (path) =>
+				path === "/project/src/theme/index.ts" ? "export default system;" : undefined,
 			listFiles: () => ["/project/src/theme/index.ts"],
 		});
 		const parsed = adapter.parse('<Box css={{ _midnight: { color: "brand.500" } }} />', {
@@ -450,10 +451,8 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 			    ],
 			    "property": "color",
 			    "value": {
-			      "authored": "brand.500",
-			      "kind": "token",
-			      "ref": "brand.500",
-			      "resolved": "#123456",
+			      "kind": "literal",
+			      "value": "brand.500",
 			    },
 			  },
 			]
@@ -474,10 +473,8 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 			      ],
 			      "property": "color",
 			      "value": {
-			        "authored": "brand.500",
-			        "kind": "token",
-			        "ref": "brand.500",
-			        "resolved": "#123456",
+			        "kind": "literal",
+			        "value": "brand.500",
 			      },
 			    },
 			  ],
@@ -500,10 +497,8 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 			          ],
 			          "property": "color",
 			          "value": {
-			            "authored": "brand.500",
-			            "kind": "token",
-			            "ref": "brand.500",
-			            "resolved": "#123456",
+			            "kind": "literal",
+			            "value": "brand.500",
 			          },
 			        },
 			      ],

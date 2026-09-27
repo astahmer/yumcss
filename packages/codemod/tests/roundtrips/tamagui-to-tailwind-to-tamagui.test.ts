@@ -256,41 +256,37 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
+		import { View, styled } from "@tamagui/core";
 		export const Card = "[padding:$4] [color:#2563eb]";
-		// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: unknown-utility | available: residual)
-		export const App = () => <View className={Card} />;",
-		      "converted": 0,
+		export const App = () => styled(View, { padding: "$4", color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -334,36 +330,37 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
+		import { View, styled } from "@tamagui/core";
 		export const Card = "[padding:$4] text-brand";
-		// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: unknown-utility | available: residual)
-		export const App = () => <View className={Card} />;",
-		      "converted": 0,
+		export const App = () => styled(View, { padding: "$4", color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -421,36 +418,37 @@ test("tamagui -> tailwind -> tamagui: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
+		import { View, styled } from "@tamagui/core";
 		export const Card = "[padding:$4] text-brand";
-		// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: unknown-utility | available: residual)
-		export const App = () => <View className={Card} />;",
-		    "converted": 0,
+		export const App = () => styled(View, { padding: "$4", color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

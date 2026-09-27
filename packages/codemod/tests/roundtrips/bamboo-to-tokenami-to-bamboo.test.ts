@@ -332,10 +332,9 @@ test("bamboo -> tokenami -> bamboo: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> bamboo | lowering-residual: validation)
-		export const card = css({ color: "$colors.brand" });",
-		      "converted": 0,
+		      "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -351,25 +350,17 @@ test("bamboo -> tokenami -> bamboo: preserves concrete theme and project context
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -425,10 +416,9 @@ test("bamboo -> tokenami -> bamboo: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> bamboo | lowering-residual: validation)
-		export const card = css({ color: "$colors.brand" });",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -444,25 +434,17 @@ test("bamboo -> tokenami -> bamboo: resolves token values across both concrete l
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

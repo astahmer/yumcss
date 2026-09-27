@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.StyleX, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.StyleX, "#f97316");
 
+
 test("treat -> stylex: migrates concrete treat syntax to stylex", () => {
 	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

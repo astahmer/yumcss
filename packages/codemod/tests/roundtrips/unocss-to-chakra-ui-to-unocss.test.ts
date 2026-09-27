@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -25,13 +26,14 @@ const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,7 +52,7 @@ test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;",
+		export const App = () => <chakra.div  css={{ gap: "4", alignItems: "center", display: "flex" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,6 +91,7 @@ test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -120,9 +123,9 @@ test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip
 	`)
 });
 
-test("unocss -> chakra-ui -> unocss: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("unocss -> chakra-ui -> unocss: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "unocss -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -207,7 +210,7 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "#f97316" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -240,13 +243,14 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[padding:card] text-brand"}/>;",
-		      "converted": 1,
+		      "code": "import { chakra } from "@chakra-ui/react";
+		// pandwind:migrate-skip (route: chakra-ui -> unocss | lowering-residual: validation)
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "#f97316" }}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
-		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -260,17 +264,25 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs or has residuals",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs or has residuals",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -279,7 +291,7 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,8 +324,10 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[padding:card] text-brand"}/>;",
-		      "converted": 1,
+		      "code": "import { chakra } from "@chakra-ui/react";
+		// pandwind:migrate-skip (route: chakra-ui -> unocss | lowering-residual: validation)
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -332,17 +346,25 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs or has residuals",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs or has residuals",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -365,7 +387,7 @@ test("unocss -> chakra-ui -> unocss: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -398,8 +420,10 @@ test("unocss -> chakra-ui -> unocss: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[padding:card] text-brand"}/>;",
-		    "converted": 1,
+		    "code": "import { chakra } from "@chakra-ui/react";
+		// pandwind:migrate-skip (route: chakra-ui -> unocss | lowering-residual: validation)
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -418,17 +442,25 @@ test("unocss -> chakra-ui -> unocss: resolves token values across both concrete 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs or has residuals",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs or has residuals",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },

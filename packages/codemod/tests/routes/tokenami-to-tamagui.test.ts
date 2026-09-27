@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Tamagui);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.Tamagui, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.Tamagui, "#f97316");
+
 
 test("tokenami -> tamagui: migrates concrete tokenami syntax to tamagui", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
@@ -48,7 +49,7 @@ test("tokenami -> tamagui: migrates concrete tokenami syntax to tamagui", () => 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "red" });",
+		export const card = styled(View, { gap: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -140,7 +141,7 @@ test("tokenami -> tamagui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "$colors.brand" });",
+		export const card = styled(View, { gap: "1rem", color: "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +174,7 @@ test("tokenami -> tamagui: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "$colors.brand" });",
+		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -218,7 +219,7 @@ test("tokenami -> tamagui: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -260,7 +261,7 @@ test("tokenami -> tamagui: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { cardGap: "1rem", color: "red" });
+		export const card = styled(View, { gap: "1rem", color: "red" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

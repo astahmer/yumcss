@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.StyledComponents, CodemodA
 const edgeSource = "import styled from \"styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
 const malformedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished styled-components */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
-const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
-const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2563eb\", padding: \"1rem\" });";
+const themedSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2a57c8\", padding: \"1rem\" });";
+const tokenSource = "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"#2a57c8\", padding: \"1rem\" });";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("styled-components -> chakra-ui: migrates concrete styled-components syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+
+test("styled-components -> chakra-ui: migrates concrete styled-components syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -48,7 +51,7 @@ test("styled-components -> chakra-ui: migrates concrete styled-components syntax
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -82,8 +85,8 @@ test("styled-components -> chakra-ui: migrates concrete styled-components syntax
 	`)
 });
 
-test("styled-components -> chakra-ui: carries a documented secondary styled-components API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
+test("styled-components -> chakra-ui: carries a documented secondary styled-components API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "styled-components -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -91,7 +94,7 @@ test("styled-components -> chakra-ui: carries a documented secondary styled-comp
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +146,7 @@ test("styled-components -> chakra-ui: loads concrete theme and project context v
 		  "amber": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "#2563eb" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "#2a57c8" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +180,7 @@ test("styled-components -> chakra-ui: loads concrete theme and project context v
 		  "blue": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "brand.500" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "brand.500" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +226,7 @@ test("styled-components -> chakra-ui: resolves concrete token values with projec
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "brand.500" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "brand.500" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -257,8 +260,8 @@ test("styled-components -> chakra-ui: resolves concrete token values with projec
 	`)
 });
 
-test("styled-components -> chakra-ui: preserves malformed concrete styled-components input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+test("styled-components -> chakra-ui: preserves malformed concrete styled-components input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished styled-components */");
 	expectRouteScenarioEvidence(result, "styled-components -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);
@@ -267,7 +270,7 @@ test("styled-components -> chakra-ui: preserves malformed concrete styled-compon
 		  "changed": true,
 		  "code": "import styled from "styled-components";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;
+		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

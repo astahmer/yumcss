@@ -345,11 +345,10 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> vanilla-extract | lowering-residual: validation)
-		export const card = css.class({ padding: 8, color: "brand" });",
-		      "converted": 0,
+		      "code": "import { style } from "@vanilla-extract/css";
+
+		export const card = style({ padding: 8, color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -367,25 +366,17 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -442,11 +433,10 @@ test("vanilla-extract -> pandwind -> vanilla-extract: resolves token values acro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> vanilla-extract | lowering-residual: validation)
-		export const card = css.class({ padding: 8, color: "brand" });",
-		    "converted": 0,
+		    "code": "import { style } from "@vanilla-extract/css";
+
+		export const card = style({ padding: 8, color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -464,25 +454,17 @@ test("vanilla-extract -> pandwind -> vanilla-extract: resolves token values acro
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

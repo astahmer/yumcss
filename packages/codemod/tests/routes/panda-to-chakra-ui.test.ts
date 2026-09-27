@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -13,21 +14,23 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.ChakraUi);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });";
 const edgeSource = "import { cva } from \"styled-system/recipes\";\nexport const button = cva({ base: { color: \"red\" }, variants: { size: { sm: { padding: \"2\" } } } });";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });\nconst unfinished = { /* unfinished panda */";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });\nconst unfinished = { /* unfinished panda */";
 const sourceSemantic = undefined;
 const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\", _hover: { color: \"blue.300\" } });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("panda -> chakra-ui: migrates concrete panda syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("panda -> chakra-ui: migrates concrete panda syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -47,48 +50,44 @@ test("panda -> chakra-ui: migrates concrete panda syntax to chakra-ui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> chakra-ui | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
-		  "converted": 0,
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
+
+		export const card = defaultSystem.css({ color: "red", "&:hover": { color: "blue" } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
 
-test("panda -> chakra-ui: carries a documented secondary panda API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("panda -> chakra-ui: carries a documented secondary panda API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "panda -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -240,86 +239,83 @@ test("panda -> chakra-ui: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> chakra-ui | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
-		  "converted": 0,
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
+
+		export const card = defaultSystem.css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
 
-test("panda -> chakra-ui: preserves malformed concrete panda input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("panda -> chakra-ui: preserves malformed concrete panda input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished panda */");
 	expectRouteScenarioEvidence(result, "panda -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> chakra-ui | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
+
+		export const card = defaultSystem.css({ color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

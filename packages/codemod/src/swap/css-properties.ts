@@ -53,6 +53,7 @@ export const CSS_RAW_PROPERTIES: Readonly<Record<string, true>> = {
 	boxShadow: true,
 	boxSizing: true,
 	clipPath: true,
+	color: true,
 	columnGap: true,
 	columns: true,
 	content: true,

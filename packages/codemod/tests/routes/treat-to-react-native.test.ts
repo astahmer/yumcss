@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.ReactNative, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.ReactNative, "#f97316");
 
+
 test("treat -> react-native: migrates concrete treat syntax to react-native", () => {
 	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

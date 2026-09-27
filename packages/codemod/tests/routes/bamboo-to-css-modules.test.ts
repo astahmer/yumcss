@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.CssModules, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.CssModules, "#f97316");
 
+
 test("bamboo -> css-modules: migrates concrete bamboo syntax to css-modules", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

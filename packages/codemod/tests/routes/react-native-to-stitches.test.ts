@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Stitches, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Stitches, "#f97316");
 
+
 test("react-native -> stitches: migrates concrete react-native syntax to stitches", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

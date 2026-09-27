@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.Jss, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.Jss, "#f97316");
 
+
 test("tailwind -> jss: migrates concrete tailwind syntax to jss", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

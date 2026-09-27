@@ -347,11 +347,10 @@ test("styled-components -> tokenami -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "@tokenami/css";
+		import styled from "styled-components";
 		const cx = createCx();
-		// pandwind:migrate-skip (route: tokenami -> styled-components | lowering-residual: validation)
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "$colors.brand" }), props.className)} />;",
-		      "converted": 0,
+		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -367,25 +366,17 @@ test("styled-components -> tokenami -> styled-components: preserves concrete the
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -444,11 +435,10 @@ test("styled-components -> tokenami -> styled-components: resolves token values 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "@tokenami/css";
+		import styled from "styled-components";
 		const cx = createCx();
-		// pandwind:migrate-skip (route: tokenami -> styled-components | lowering-residual: validation)
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "$colors.brand" }), props.className)} />;",
-		    "converted": 0,
+		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -464,25 +454,17 @@ test("styled-components -> tokenami -> styled-components: resolves token values 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

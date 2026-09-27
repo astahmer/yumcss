@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.C
 const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
 const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2a57c8\", padding: 8 } });";
+const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2a57c8\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("stylex -> chakra-ui: migrates concrete stylex syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("stylex -> chakra-ui: migrates concrete stylex syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -82,8 +85,8 @@ test("stylex -> chakra-ui: migrates concrete stylex syntax to chakra-ui", () => 
 	`)
 });
 
-test("stylex -> chakra-ui: carries a documented secondary stylex API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("stylex -> chakra-ui: carries a documented secondary stylex API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "stylex -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -143,7 +146,7 @@ test("stylex -> chakra-ui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2a57c8" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -257,8 +260,8 @@ test("stylex -> chakra-ui: resolves concrete token values with project context",
 	`)
 });
 
-test("stylex -> chakra-ui: preserves malformed concrete stylex input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("stylex -> chakra-ui: preserves malformed concrete stylex input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished stylex */");
 	expectRouteScenarioEvidence(result, "stylex -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

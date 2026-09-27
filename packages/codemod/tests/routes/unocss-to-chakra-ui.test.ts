@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -23,11 +24,13 @@ const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("unocss -> chakra-ui: migrates concrete unocss syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+
+test("unocss -> chakra-ui: migrates concrete unocss syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -48,7 +51,7 @@ test("unocss -> chakra-ui: migrates concrete unocss syntax to chakra-ui", () => 
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;",
+		export const App = () => <chakra.div  css={{ gap: "4", alignItems: "center", display: "flex" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -82,8 +85,8 @@ test("unocss -> chakra-ui: migrates concrete unocss syntax to chakra-ui", () => 
 	`)
 });
 
-test("unocss -> chakra-ui: carries a documented secondary unocss API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+test("unocss -> chakra-ui: carries a documented secondary unocss API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "unocss -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -142,7 +145,7 @@ test("unocss -> chakra-ui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "#f97316" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,7 +179,7 @@ test("unocss -> chakra-ui: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -222,7 +225,7 @@ test("unocss -> chakra-ui: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -256,8 +259,8 @@ test("unocss -> chakra-ui: resolves concrete token values with project context",
 	`)
 });
 
-test("unocss -> chakra-ui: preserves malformed concrete unocss input", () => {
-	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
+test("unocss -> chakra-ui: preserves malformed concrete unocss input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished unocss */");
 	expectRouteScenarioEvidence(result, "unocss -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);
@@ -265,7 +268,7 @@ test("unocss -> chakra-ui: preserves malformed concrete unocss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;
+		export const App = () => <chakra.div  css={{ gap: "4", alignItems: "center", display: "flex" }}/>;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

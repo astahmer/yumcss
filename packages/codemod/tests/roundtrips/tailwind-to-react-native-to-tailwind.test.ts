@@ -258,10 +258,9 @@ test("tailwind -> react-native -> tailwind: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#f97316" } }).style}/>;",
-		      "converted": 0,
+		      "code": "import { View } from "react-native";
+		export const App = () => <View   style={{ "style": "[padding:18] text-brand" }.style}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -279,25 +278,17 @@ test("tailwind -> react-native -> tailwind: preserves concrete theme and project
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -342,10 +333,9 @@ test("tailwind -> react-native -> tailwind: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
-		      "converted": 0,
+		      "code": "import { View } from "react-native";
+		export const App = () => <View   style={{ "style": "[padding:18] text-brand" }.style}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -363,25 +353,17 @@ test("tailwind -> react-native -> tailwind: preserves concrete theme and project
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -440,10 +422,9 @@ test("tailwind -> react-native -> tailwind: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
-		    "converted": 0,
+		    "code": "import { View } from "react-native";
+		export const App = () => <View   style={{ "style": "[padding:18] text-brand" }.style}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -461,25 +442,17 @@ test("tailwind -> react-native -> tailwind: resolves token values across both co
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

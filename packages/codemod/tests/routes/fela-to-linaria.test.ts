@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Linaria, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Linaria, "#f97316");
 
+
 test("fela -> linaria: migrates concrete fela syntax to linaria", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

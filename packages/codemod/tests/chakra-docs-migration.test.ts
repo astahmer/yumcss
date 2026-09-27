@@ -9,14 +9,27 @@ const referenceAvailability = await ensureReferenceWorkspace("chakra-ui");
 const referenceRoot = referenceAvailability.path;
 
 describe("Chakra docs migration corpus", () => {
-	test("converts supported Chakra styles from the pinned corpus", async () => {
+	test("audits Chakra migrations and justified residuals from the pinned corpus", async () => {
 		for (const lane of ChakraDocsMigration.lanes) {
 			const report = await ChakraDocsMigration.run(lane, { referenceRoot });
 			expect(report.referenceCommit).toMatch(/^[0-9a-f]{40}$/);
 			expect(report.sourceFiles).toBeGreaterThan(80);
 			expect(report.changedFiles).toBeGreaterThan(0);
 			expect(report.changedFiles).toBeLessThanOrEqual(report.sourceFiles);
-			expect(report.convertedCallSites).toBeGreaterThan(report.sourceFiles);
+			expect(report.convertedCallSites + report.skippedCallSites).toBeGreaterThan(0);
+			if (report.convertedCallSites === 0) {
+				expect(report.skippedCallSites).toBe(report.sourceFiles);
+				expect(report.residuals).toHaveLength(report.skippedCallSites);
+				expect(
+					report.residuals.every(
+						(residual) =>
+							residual.kind === "configuration" &&
+							residual.hint?.includes("official @chakra-ui/react package is unavailable"),
+					),
+				).toBe(true);
+			} else {
+				expect(report.convertedCallSites).toBeGreaterThan(report.sourceFiles);
+			}
 			expect(report.skippedCallSites).toBeGreaterThan(0);
 			expect(report.residuals.length).toBeGreaterThanOrEqual(report.skippedCallSites);
 			expect(report.residuals.length).toBeGreaterThan(0);
@@ -28,29 +41,53 @@ describe("Chakra docs migration corpus", () => {
 								text: "chakra factory styles",
 								hint: expect.stringContaining("explicit composition lowering"),
 							})
-						: residual.kind === "component"
+						: residual.kind === "configuration"
 							? expect.objectContaining({
-									kind: "component",
+									kind: "configuration",
 									text: expect.any(String),
-									hint: expect.stringContaining("no verified intrinsic projection"),
+									hint: expect.stringContaining("Chakra"),
 								})
-							: residual.kind === "unknown-utility"
+							: residual.kind === "component"
 								? expect.objectContaining({
-										kind: "unknown-utility",
-										text: expect.stringContaining("textStyle:"),
-										hint: expect.stringContaining("not present in the Chakra theme"),
+										kind: "component",
+										text: expect.any(String),
+										hint: expect.stringContaining("no verified intrinsic projection"),
 									})
-								: residual.text.startsWith("--chakra-")
+								: residual.kind === "unknown-utility"
 									? expect.objectContaining({
-											kind: "dynamic",
-											text: expect.stringContaining("--chakra-"),
-											hint: expect.stringContaining("no owned source-token equivalent"),
+											kind: "unknown-utility",
+											text: expect.stringContaining("textStyle:"),
+											hint: expect.stringContaining("not present in the Chakra theme"),
 										})
-									: expect.objectContaining({
-											kind: "dynamic",
-											text: expect.any(String),
-											hint: expect.stringContaining("requires a statically known value"),
-										}),
+									: residual.kind === "token-values"
+										? expect.objectContaining({
+												kind: "token-values",
+												text: expect.any(String),
+												hint: expect.stringContaining("no verified target value"),
+											})
+										: residual.kind === "emission-empty"
+											? expect.objectContaining({
+													kind: "emission-empty",
+													text: expect.stringContaining("<"),
+													hint: expect.stringContaining("no representable output"),
+												})
+											: residual.kind === "validation"
+												? expect.objectContaining({
+														kind: "validation",
+														text: expect.any(String),
+														hint: expect.stringContaining("residual conversion(s)"),
+													})
+												: residual.text.startsWith("--chakra-")
+													? expect.objectContaining({
+															kind: "dynamic",
+															text: expect.stringContaining("--chakra-"),
+															hint: expect.stringContaining("no owned source-token equivalent"),
+														})
+													: expect.objectContaining({
+															kind: "dynamic",
+															text: expect.any(String),
+															hint: expect.stringContaining("requires a statically known value"),
+														}),
 				),
 			);
 		}

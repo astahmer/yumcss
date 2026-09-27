@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\" } });";
 const malformedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished stylex */";
 const sourceSemantic = undefined;
-const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2a57c8\", padding: 8 } });";
+const tokenSource = "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"#2a57c8\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -121,9 +123,9 @@ test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip
 	`)
 });
 
-test("stylex -> chakra-ui -> stylex: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("stylex -> chakra-ui -> stylex: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "stylex -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -233,7 +235,7 @@ test("stylex -> chakra-ui -> stylex: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +269,7 @@ test("stylex -> chakra-ui -> stylex: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2a57c8" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -338,10 +340,9 @@ test("stylex -> chakra-ui -> stylex: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> stylex | lowering-residual: validation)
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
-		      "converted": 0,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2a57c8" } }).style };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -359,25 +360,17 @@ test("stylex -> chakra-ui -> stylex: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -433,10 +426,9 @@ test("stylex -> chakra-ui -> stylex: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> stylex | lowering-residual: validation)
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2a57c8" } }).style };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -454,25 +446,17 @@ test("stylex -> chakra-ui -> stylex: resolves token values across both concrete 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

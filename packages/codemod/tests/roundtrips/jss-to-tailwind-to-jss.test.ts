@@ -268,15 +268,40 @@ test("jss -> tailwind -> jss: preserves concrete theme and project context varia
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "export const useStyles = { "card": "[color:#2563eb]" };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = createUseStyles({ "card": { color: "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {

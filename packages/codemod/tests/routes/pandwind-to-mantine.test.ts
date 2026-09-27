@@ -18,13 +18,14 @@ const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nco
 const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
 const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.Mantine, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.Mantine, "#f97316");
+
 
 test("pandwind -> mantine: migrates concrete pandwind syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
@@ -271,7 +272,7 @@ test("pandwind -> mantine: resolves concrete token values with project context",
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		export const card = css.class({ color: "#2563eb", padding: "1rem" });",
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

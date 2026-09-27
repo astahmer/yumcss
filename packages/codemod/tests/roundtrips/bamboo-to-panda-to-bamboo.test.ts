@@ -333,9 +333,8 @@ test("bamboo -> panda -> bamboo: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css as sourceCss } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
-		export const card = sourceCss({ color: "brand.500" });",
-		      "converted": 0,
+		export const card = sourceCss({ color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -351,25 +350,17 @@ test("bamboo -> panda -> bamboo: preserves concrete theme and project context va
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -426,9 +417,8 @@ test("bamboo -> panda -> bamboo: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css as sourceCss } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
-		export const card = sourceCss({ color: "brand.500" });",
-		    "converted": 0,
+		export const card = sourceCss({ color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -444,25 +434,17 @@ test("bamboo -> panda -> bamboo: resolves token values across both concrete legs
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

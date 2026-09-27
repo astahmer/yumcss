@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.SolidStyled);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.SolidStyled, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
@@ -50,7 +50,7 @@ test("tokenami -> solid-styled -> tokenami: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "red" });",
+		export const card = styled.div({ "gap": "1rem", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("tokenami -> solid-styled -> tokenami: preserves an actionable concrete rou
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ cardGap: "1rem", color: "red" }), props.class)} />;",
+		export const card = (props) => <div {...props} class={cx(css({ gap: "1rem", color: "red" }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "#f97316" });",
+		export const card = styled.div({ "gap": "1rem", "color": "#f97316" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +275,7 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ cardGap: "1rem", color: "$colors.brand" }), props.class)} />;",
+		export const card = (props) => <div {...props} class={cx(css({ gap: "1rem", color: "$colors.brand" }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "#2563eb" });",
+		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +350,7 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ cardGap: "1rem", color: "$colors.brand" }), props.class)} />;",
+		export const card = (props) => <div {...props} class={cx(css({ gap: "1rem", color: "$colors.brand" }), props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -400,12 +400,13 @@ test("tokenami -> solid-styled -> tokenami: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "cardGap": "1rem", "color": "#2563eb" });",
+		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -438,7 +439,7 @@ test("tokenami -> solid-styled -> tokenami: resolves token values across both co
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@tokenami/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ cardGap: "1rem", color: "$colors.brand" }), props.class)} />;",
+		export const card = (props) => <div {...props} class={cx(css({ gap: "1rem", color: "$colors.brand" }), props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

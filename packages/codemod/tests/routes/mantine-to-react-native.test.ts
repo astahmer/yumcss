@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.ReactNative);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.ReactNative, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.ReactNative, "#f97316");
+
 
 test("mantine -> react-native: migrates concrete mantine syntax to react-native", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
@@ -47,10 +48,9 @@ test("mantine -> react-native: migrates concrete mantine syntax to react-native"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> react-native | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		  "converted": 0,
+		  "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -59,28 +59,29 @@ test("mantine -> react-native: migrates concrete mantine syntax to react-native"
 		        "react-native-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -282,11 +283,10 @@ test("mantine -> react-native: preserves malformed concrete mantine input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> react-native | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
+		  "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;
 		const unfinished = { /* unfinished mantine */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -295,28 +295,29 @@ test("mantine -> react-native: preserves malformed concrete mantine input", () =
 		        "react-native-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

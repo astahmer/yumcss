@@ -268,24 +268,10 @@ test("stylex -> tailwind -> stylex: preserves concrete theme and project context
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
-		    },
-		  },
-		  "blue": {
-		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
-		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
-		      "converted": 0,
+		export const styles = stylex.create({ "card": { padding: "8px", color: "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -303,40 +289,92 @@ test("stylex -> tailwind -> stylex: preserves concrete theme and project context
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "export const styles = { "card": "[padding:8px] text-brand" };",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
 		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
-		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
-		      "converted": 0,
+		export const styles = stylex.create({ "card": { padding: "8px", color: "#2563eb" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -356,10 +394,8 @@ test("stylex -> tailwind -> stylex: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
-		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		    "code": "export const styles = { "card": "[padding:8px] text-brand" };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -377,40 +413,55 @@ test("stylex -> tailwind -> stylex: resolves token values across both concrete l
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
-		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		export const styles = stylex.create({ "card": { padding: "8px", color: "#2563eb" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

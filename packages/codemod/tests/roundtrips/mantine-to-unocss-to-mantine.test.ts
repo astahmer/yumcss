@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.UnoCSS, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
@@ -50,8 +50,8 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -60,34 +60,43 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		        "kind": "configuration",
+		        "hint": "canonical CSS differs or has residuals",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "canonical CSS differs or has residuals",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -327,7 +336,7 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -373,7 +382,7 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

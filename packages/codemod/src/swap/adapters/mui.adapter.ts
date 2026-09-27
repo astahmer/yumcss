@@ -203,7 +203,7 @@ async function officialMuiConfig(
 		context
 			.listFiles?.(context.root)
 			.filter((file) =>
-				/(?:^|[\\/])(?:theme|mui-theme)(?:[\\/](?:index\\.)?(?:ts|tsx|js|mjs|cjs)|\\.(?:ts|tsx|js|mjs|cjs))$/u.test(
+				/(?:^|[\\/])(?:theme|mui-theme)(?:[\\/](?:index\.)?(?:ts|tsx|js|mjs|cjs)|\.(?:ts|tsx|js|mjs|cjs))$/u.test(
 					file,
 				),
 			) ?? [];

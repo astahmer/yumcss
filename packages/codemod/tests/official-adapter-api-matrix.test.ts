@@ -6,7 +6,11 @@ import {
 	runAdapterMigration,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
-import { routeEvidence } from "./route-spec-support.ts";
+import {
+	createAdapterRouteProject,
+	createAdapterRouteSpec,
+	routeEvidence,
+} from "./route-spec-support.ts";
 import { officialApiCases, type OfficialApiCase } from "../src/swap/official-api-cases.ts";
 
 const globalStylesheetSources = new Set([
@@ -15,7 +19,18 @@ const globalStylesheetSources = new Set([
 	CodemodAdapterId.Less,
 ]);
 
-function migrate(api: OfficialApiCase): AdapterMigrationResult {
+const migrate = async (api: OfficialApiCase): Promise<AdapterMigrationResult> => {
+	if (api.adapter === CodemodAdapterId.ChakraUi)
+		return createAdapterRouteSpec(api.adapter, CodemodAdapterId.Pandwind).runAsync({
+			source: api.source,
+			file: api.file,
+			project: createAdapterRouteProject(api.adapter, CodemodAdapterId.Pandwind, "#2a57c8"),
+			semantic: {
+				source: {
+					framework: api.file.endsWith("x") ? BuiltinHostFramework.React : undefined,
+				},
+			},
+		});
 	return runAdapterMigration(api.source, {
 		from: api.adapter,
 		to: CodemodAdapterId.Pandwind,
@@ -30,12 +45,14 @@ function migrate(api: OfficialApiCase): AdapterMigrationResult {
 			},
 		},
 	});
-}
+};
 
 describe("official primary API forms", () => {
-	test("covers every registered adapter with source-specific documented syntax", () => {
+	test("covers every registered adapter with source-specific documented syntax", async () => {
 		const cases = officialApiCases();
-		const results = cases.map((api) => ({ api, result: migrate(api) }));
+		const results = await Promise.all(
+			cases.map(async (api) => ({ api, result: await migrate(api) })),
+		);
 
 		expect(new Set(results.map(({ api }) => api.adapter))).toEqual(
 			new Set(BUILTIN_CODEMOD_ADAPTER_IDS),
@@ -177,7 +194,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
+			export const App = () => <div className={css.class({ background: "#fecaca", padding: "1rem" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1020,7 +1037,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ cardGap: "1rem", color: "red" });",
+			export const card = css.class({ gap: "1rem", color: "red" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

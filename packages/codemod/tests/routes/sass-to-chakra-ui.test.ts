@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.Sass, CodemodAdapterId.Cha
 const edgeSource = "$brand: red;\n.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }";
 const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished sass */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: #2563eb; padding: 1rem; }";
-const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const themedSource = ".card { color: #2a57c8; padding: 1rem; }";
+const tokenSource = ".card { color: #2a57c8; padding: 1rem; }";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Sass, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("sass -> chakra-ui: migrates concrete sass syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "card.scss", semantic: sourceSemantic });
+
+test("sass -> chakra-ui: migrates concrete sass syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "card.scss", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -82,8 +85,8 @@ test("sass -> chakra-ui: migrates concrete sass syntax to chakra-ui", () => {
 	`)
 });
 
-test("sass -> chakra-ui: carries a documented secondary sass API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "card.scss", semantic: sourceSemantic });
+test("sass -> chakra-ui: carries a documented secondary sass API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "card.scss", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "sass -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -148,7 +151,7 @@ test("sass -> chakra-ui: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +185,7 @@ test("sass -> chakra-ui: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +231,7 @@ test("sass -> chakra-ui: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -262,8 +265,8 @@ test("sass -> chakra-ui: resolves concrete token values with project context", a
 	`)
 });
 
-test("sass -> chakra-ui: preserves malformed concrete sass input", () => {
-	const result = route.run({ source: malformedSource, file: "card.scss", semantic: sourceSemantic });
+test("sass -> chakra-ui: preserves malformed concrete sass input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "card.scss", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished sass */");
 	expectRouteScenarioEvidence(result, "sass -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

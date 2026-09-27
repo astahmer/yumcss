@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -18,16 +19,18 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Style9, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Style9, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Style9, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("chakra-ui -> style9: migrates concrete chakra-ui syntax to style9", () => {
-	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+
+test("chakra-ui -> style9: migrates concrete chakra-ui syntax to style9", async () => {
+	const result = await route.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -49,12 +52,13 @@ test("chakra-ui -> style9: migrates concrete chakra-ui syntax to style9", () => 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "background": "#fecaca", "padding": "1rem" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -85,8 +89,8 @@ test("chakra-ui -> style9: migrates concrete chakra-ui syntax to style9", () => 
 	`)
 });
 
-test("chakra-ui -> style9: carries a documented secondary chakra-ui API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> style9: carries a documented secondary chakra-ui API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "chakra-ui -> style9 secondary");
 	expectExplicitResidualEvidence(result);
@@ -149,7 +153,7 @@ test("chakra-ui -> style9: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "background": "#f97316", "padding": "1rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,7 +191,7 @@ test("chakra-ui -> style9: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "background": "#2a57c8", "padding": "1rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,12 +241,13 @@ test("chakra-ui -> style9: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "background": "#2a57c8", "padding": "1rem" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -273,8 +278,8 @@ test("chakra-ui -> style9: resolves concrete token values with project context",
 	`)
 });
 
-test("chakra-ui -> style9: preserves malformed concrete chakra-ui input", () => {
-	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> style9: preserves malformed concrete chakra-ui input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished chakra-ui */");
 	expectRouteScenarioEvidence(result, "chakra-ui -> style9 malformed");
 	expectExplicitResidualEvidence(result);
@@ -283,13 +288,14 @@ test("chakra-ui -> style9: preserves malformed concrete chakra-ui input", () => 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" } }).style)}/>;
+		export const App = () => <Box className={style9(style9.create({ style: { "background": "#fecaca", "padding": "1rem" } }).style)}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [

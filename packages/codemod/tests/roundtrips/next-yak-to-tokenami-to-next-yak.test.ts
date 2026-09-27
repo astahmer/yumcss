@@ -336,10 +336,9 @@ test("next-yak -> tokenami -> next-yak: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> next-yak | lowering-residual: validation)
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
-		      "converted": 0,
+		      "code": "import { css } from "next-yak";
+		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -355,25 +354,17 @@ test("next-yak -> tokenami -> next-yak: preserves concrete theme and project con
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -429,10 +420,9 @@ test("next-yak -> tokenami -> next-yak: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> next-yak | lowering-residual: validation)
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
-		    "converted": 0,
+		    "code": "import { css } from "next-yak";
+		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -448,25 +438,17 @@ test("next-yak -> tokenami -> next-yak: resolves token values across both concre
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

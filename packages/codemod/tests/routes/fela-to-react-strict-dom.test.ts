@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.ReactStrictDom, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.ReactStrictDom, "#f97316");
 
+
 test("fela -> react-strict-dom: migrates concrete fela syntax to react-strict-dom", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

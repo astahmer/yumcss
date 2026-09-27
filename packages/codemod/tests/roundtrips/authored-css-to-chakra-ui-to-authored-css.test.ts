@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "@media (prefers-color-scheme: dark) {\n  .card { color: white; }\n}\n@keyframes pulse {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}";
 const malformedSource = ".card { color: red; padding: 1rem; }\nconst unfinished = { /* unfinished authored-css */";
 const sourceSemantic = undefined;
-const themedSource = ".card { color: #2563eb; padding: 1rem; }";
-const tokenSource = ".card { color: #2563eb; padding: 1rem; }";
+const themedSource = ".card { color: #2a57c8; padding: 1rem; }";
+const tokenSource = ".card { color: #2a57c8; padding: 1rem; }";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("authored-css -> chakra-ui -> authored-css: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "card.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
+test("authored-css -> chakra-ui -> authored-css: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "card.css", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -97,9 +99,9 @@ test("authored-css -> chakra-ui -> authored-css: preserves an actionable concret
 	`)
 });
 
-test("authored-css -> chakra-ui -> authored-css: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "card.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
+test("authored-css -> chakra-ui -> authored-css: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "card.css", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "authored-css -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -211,7 +213,7 @@ test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -245,7 +247,7 @@ test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": false,
 		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -259,7 +261,7 @@ test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -293,7 +295,7 @@ test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": false,
 		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -321,7 +323,7 @@ test("authored-css -> chakra-ui -> authored-css: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -355,7 +357,7 @@ test("authored-css -> chakra-ui -> authored-css: resolves token values across bo
 		  "reverse": {
 		    "changed": false,
 		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
-		.card { color: #2563eb; padding: 1rem; }",
+		.card { color: #2a57c8; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

@@ -327,7 +327,7 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
 
-		export const Card = styled(View, { padding: "$4", color: "brand" });
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -416,7 +416,7 @@ test("tamagui -> pandwind -> tamagui: resolves token values across both concrete
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
 
-		export const Card = styled(View, { padding: "$4", color: "brand" });
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.Goober);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Goober, CodemodAdapterId.Panda);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });";
 const edgeSource = "import { cva } from \"styled-system/recipes\";\nexport const button = cva({ base: { color: \"red\" }, variants: { size: { sm: { padding: \"2\" } } } });";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });\nconst unfinished = { /* unfinished panda */";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });\nconst unfinished = { /* unfinished panda */";
 const sourceSemantic = undefined;
 const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\", _hover: { color: \"blue.300\" } });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -49,10 +49,9 @@ test("panda -> goober -> panda: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> goober | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
-		    "converted": 0,
+		    "code": "import { css } from "goober";
+		export const card = css({ "color": "red", "_hover": { "color": "blue" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -60,39 +59,34 @@ test("panda -> goober -> panda: preserves an actionable concrete round trip", ()
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> goober | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
+		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -382,45 +376,45 @@ test("panda -> goober -> panda: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> goober | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
-		    "converted": 0,
+		    "code": "import { css } from "goober";
+		export const card = css({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> goober | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "brand.500", _hover: { color: "blue.300" } });",
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

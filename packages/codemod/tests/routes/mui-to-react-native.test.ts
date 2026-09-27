@@ -18,13 +18,14 @@ const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card =
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.ReactNative, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.ReactNative, "#f97316");
+
 
 test("mui -> react-native: migrates concrete mui syntax to react-native", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });

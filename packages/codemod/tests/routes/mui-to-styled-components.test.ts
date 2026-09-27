@@ -18,13 +18,14 @@ const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card =
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.StyledComponents, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.StyledComponents, "#f97316");
+
 
 test("mui -> styled-components: migrates concrete mui syntax to styled-components", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });

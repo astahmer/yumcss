@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.Mui);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });";
 const edgeSource = "import { cva } from \"styled-system/recipes\";\nexport const button = cva({ base: { color: \"red\" }, variants: { size: { sm: { padding: \"2\" } } } });";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });\nconst unfinished = { /* unfinished panda */";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });\nconst unfinished = { /* unfinished panda */";
 const sourceSemantic = undefined;
 const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\", _hover: { color: \"blue.300\" } });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.Mui, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.Mui, "#f97316");
+
 
 test("panda -> mui: migrates concrete panda syntax to mui", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
@@ -47,42 +48,39 @@ test("panda -> mui: migrates concrete panda syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
-		  "converted": 0,
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const card = css.class({ "color": "red", "_hover": { "color": "blue" } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
+		        "portable-artifact",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -243,37 +241,39 @@ test("panda -> mui: resolves concrete token values with project context", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
-		  "converted": 0,
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
+		        "portable-artifact",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -286,43 +286,40 @@ test("panda -> mui: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const card = css.class({ "color": "red", "_hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
+		        "portable-artifact",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

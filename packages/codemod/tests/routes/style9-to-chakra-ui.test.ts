@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.Style9, CodemodAdapterId.C
 const edgeSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
 const malformedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished style9 */";
 const sourceSemantic = undefined;
-const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
-const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
+const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2a57c8\" } });";
+const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2a57c8\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("style9 -> chakra-ui: migrates concrete style9 syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("style9 -> chakra-ui: migrates concrete style9 syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -82,8 +85,8 @@ test("style9 -> chakra-ui: migrates concrete style9 syntax to chakra-ui", () => 
 	`)
 });
 
-test("style9 -> chakra-ui: carries a documented secondary style9 API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("style9 -> chakra-ui: carries a documented secondary style9 API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "style9 -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -143,7 +146,7 @@ test("style9 -> chakra-ui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ color: "#2563eb" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "#2a57c8" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -257,8 +260,8 @@ test("style9 -> chakra-ui: resolves concrete token values with project context",
 	`)
 });
 
-test("style9 -> chakra-ui: preserves malformed concrete style9 input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("style9 -> chakra-ui: preserves malformed concrete style9 input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished style9 */");
 	expectRouteScenarioEvidence(result, "style9 -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

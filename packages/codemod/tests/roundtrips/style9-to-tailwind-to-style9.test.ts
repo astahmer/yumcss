@@ -268,15 +268,40 @@ test("style9 -> tailwind -> style9: preserves concrete theme and project context
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "export const styles = { "card": "[color:#2563eb]" };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import style9 from "style9";
+		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "target-native",
+		          "representation": "named-map",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {

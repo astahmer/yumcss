@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.Ch
 const edgeSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
 const malformedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
-const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2a57c8\", padding: 8 });";
+const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2a57c8\", padding: 8 });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("treat -> chakra-ui: migrates concrete treat syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
+
+test("treat -> chakra-ui: migrates concrete treat syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -82,8 +85,8 @@ test("treat -> chakra-ui: migrates concrete treat syntax to chakra-ui", () => {
 	`)
 });
 
-test("treat -> chakra-ui: carries a documented secondary treat API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
+test("treat -> chakra-ui: carries a documented secondary treat API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "treat -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -143,7 +146,7 @@ test("treat -> chakra-ui: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "#2563eb" });",
+		export const card = defaultSystem.css({ padding: "8px", color: "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -257,8 +260,8 @@ test("treat -> chakra-ui: resolves concrete token values with project context", 
 	`)
 });
 
-test("treat -> chakra-ui: preserves malformed concrete treat input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic });
+test("treat -> chakra-ui: preserves malformed concrete treat input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished treat */");
 	expectRouteScenarioEvidence(result, "treat -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

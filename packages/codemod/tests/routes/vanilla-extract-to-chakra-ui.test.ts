@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.VanillaExtract, CodemodAda
 const edgeSource = "import { globalStyle } from \"@vanilla-extract/css\";\nglobalStyle(\"body\", { margin: 0 });";
 const malformedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished vanilla-extract */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
-const tokenSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const themedSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2a57c8\", padding: 8 });";
+const tokenSource = "import { style } from \"@vanilla-extract/css\";\nexport const card = style({ color: \"#2a57c8\", padding: 8 });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("vanilla-extract -> chakra-ui: migrates concrete vanilla-extract syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
+
+test("vanilla-extract -> chakra-ui: migrates concrete vanilla-extract syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -82,8 +85,8 @@ test("vanilla-extract -> chakra-ui: migrates concrete vanilla-extract syntax to 
 	`)
 });
 
-test("vanilla-extract -> chakra-ui: carries a documented secondary vanilla-extract API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
+test("vanilla-extract -> chakra-ui: carries a documented secondary vanilla-extract API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "vanilla-extract -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -149,7 +152,7 @@ test("vanilla-extract -> chakra-ui: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "#2563eb" });",
+		export const card = defaultSystem.css({ padding: "8px", color: "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -263,8 +266,8 @@ test("vanilla-extract -> chakra-ui: resolves concrete token values with project 
 	`)
 });
 
-test("vanilla-extract -> chakra-ui: preserves malformed concrete vanilla-extract input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
+test("vanilla-extract -> chakra-ui: preserves malformed concrete vanilla-extract input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished vanilla-extract */");
 	expectRouteScenarioEvidence(result, "vanilla-extract -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

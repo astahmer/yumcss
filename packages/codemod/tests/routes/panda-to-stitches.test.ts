@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.Stitches);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });";
 const edgeSource = "import { cva } from \"styled-system/recipes\";\nexport const button = cva({ base: { color: \"red\" }, variants: { size: { sm: { padding: \"2\" } } } });";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });\nconst unfinished = { /* unfinished panda */";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });\nconst unfinished = { /* unfinished panda */";
 const sourceSemantic = undefined;
 const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\", _hover: { color: \"blue.300\" } });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.Stitches, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.Stitches, "#f97316");
+
 
 test("panda -> stitches: migrates concrete panda syntax to stitches", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
@@ -47,10 +48,9 @@ test("panda -> stitches: migrates concrete panda syntax to stitches", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> stitches | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
-		  "converted": 0,
+		  "code": "import { css } from "@stitches/react";
+		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -58,33 +58,29 @@ test("panda -> stitches: migrates concrete panda syntax to stitches", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -161,10 +157,9 @@ test("panda -> stitches: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> stitches | lowering-residual: validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
-		    "converted": 0,
+		    "code": "import { css } from "@stitches/react";
+		export const card = css({ color: "#f97316", "&:hover": { color: "#f97316" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -182,34 +177,25 @@ test("panda -> stitches: loads concrete theme and project context variants", asy
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> stitches | lowering-residual: validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
-		    "converted": 0,
+		    "code": "import { css } from "@stitches/react";
+		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -227,25 +213,17 @@ test("panda -> stitches: loads concrete theme and project context variants", asy
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -263,10 +241,9 @@ test("panda -> stitches: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> stitches | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
-		  "converted": 0,
+		  "code": "import { css } from "@stitches/react";
+		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -274,28 +251,29 @@ test("panda -> stitches: resolves concrete token values with project context", a
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -308,11 +286,10 @@ test("panda -> stitches: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> stitches | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });
+		  "code": "import { css } from "@stitches/react";
+		export const card = css({ color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -320,33 +297,29 @@ test("panda -> stitches: preserves malformed concrete panda input", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "residual",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

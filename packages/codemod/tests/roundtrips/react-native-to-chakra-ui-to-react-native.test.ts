@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: \"red\" } });";
 const malformedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });\nconst unfinished = { /* unfinished react-native */";
 const sourceSemantic = undefined;
-const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
-const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2563eb\", padding: 8 } });";
+const themedSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2a57c8\", padding: 8 } });";
+const tokenSource = "import { StyleSheet } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"#2a57c8\", padding: 8 } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("react-native -> chakra-ui -> react-native: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("react-native -> chakra-ui -> react-native: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -122,9 +124,9 @@ test("react-native -> chakra-ui -> react-native: preserves an actionable concret
 	`)
 });
 
-test("react-native -> chakra-ui -> react-native: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("react-native -> chakra-ui -> react-native: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "react-native -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -235,7 +237,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +271,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -342,7 +344,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -430,7 +432,7 @@ test("react-native -> chakra-ui -> react-native: resolves token values across bo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2a57c8" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

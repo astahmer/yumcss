@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });";
 const malformedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"red\", padding: 8 });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
-const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2563eb\", padding: 8 });";
+const themedSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2a57c8\", padding: 8 });";
+const tokenSource = "import { style } from \"treat\";\nexport const card = style({ color: \"#2a57c8\", padding: 8 });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("treat -> chakra-ui -> treat: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
+test("treat -> chakra-ui -> treat: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -121,9 +123,9 @@ test("treat -> chakra-ui -> treat: preserves an actionable concrete round trip",
 	`)
 });
 
-test("treat -> chakra-ui -> treat: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
+test("treat -> chakra-ui -> treat: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "treat -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -233,7 +235,7 @@ test("treat -> chakra-ui -> treat: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "#2563eb" });",
+		export const card = defaultSystem.css({ padding: "8px", color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +269,7 @@ test("treat -> chakra-ui -> treat: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "padding": "8px", "color": "#2563eb" });",
+		export const card = style({ "padding": "8px", "color": "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +341,7 @@ test("treat -> chakra-ui -> treat: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "padding": "8px", "color": "#2563eb" });",
+		export const card = style({ "padding": "8px", "color": "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -426,7 +428,7 @@ test("treat -> chakra-ui -> treat: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "8px", "color": "#2563eb" });",
+		export const card = style({ "padding": "8px", "color": "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

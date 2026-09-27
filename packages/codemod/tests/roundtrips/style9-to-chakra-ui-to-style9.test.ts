@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" }, muted: { opacity: 0.5 } });";
 const malformedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"red\" } });\nconst unfinished = { /* unfinished style9 */";
 const sourceSemantic = undefined;
-const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
-const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2563eb\" } });";
+const themedSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2a57c8\" } });";
+const tokenSource = "import style9 from \"style9\";\nexport const styles = style9.create({ card: { color: \"#2a57c8\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("style9 -> chakra-ui -> style9: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("style9 -> chakra-ui -> style9: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -121,9 +123,9 @@ test("style9 -> chakra-ui -> style9: preserves an actionable concrete round trip
 	`)
 });
 
-test("style9 -> chakra-ui -> style9: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("style9 -> chakra-ui -> style9: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "style9 -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -254,7 +256,7 @@ test("style9 -> chakra-ui -> style9: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ color: "#2563eb" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -288,7 +290,7 @@ test("style9 -> chakra-ui -> style9: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -360,7 +362,7 @@ test("style9 -> chakra-ui -> style9: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2a57c8" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -447,7 +449,7 @@ test("style9 -> chakra-ui -> style9: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2a57c8" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

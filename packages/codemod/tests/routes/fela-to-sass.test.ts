@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Sass, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Sass, "#f97316");
 
+
 test("fela -> sass: migrates concrete fela syntax to sass", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

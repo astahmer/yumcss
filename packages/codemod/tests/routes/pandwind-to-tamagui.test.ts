@@ -18,13 +18,14 @@ const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nco
 const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
 const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.Tamagui, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.Tamagui, "#f97316");
+
 
 test("pandwind -> tamagui: migrates concrete pandwind syntax to tamagui", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
@@ -144,7 +145,7 @@ test("pandwind -> tamagui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "$brand" });",
+		export const card = styled(View, { padding: "1rem", color: "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +179,7 @@ test("pandwind -> tamagui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "$brand" });",
+		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Mui);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.Mui, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.Mui, "#f97316");
+
 
 test("mantine -> mui: migrates concrete mantine syntax to mui", () => {
 	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
@@ -48,33 +49,29 @@ test("mantine -> mui: migrates concrete mantine syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		      "kind": "host-framework",
@@ -230,7 +227,7 @@ test("mantine -> mui: resolves concrete token values with project context", asyn
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,8 +270,8 @@ test("mantine -> mui: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
+		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,25 +279,21 @@ test("mantine -> mui: preserves malformed concrete mantine input", () => {
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
+		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "residual",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		      "kind": "host-framework",

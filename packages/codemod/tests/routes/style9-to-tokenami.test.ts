@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.Tokenami, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.Tokenami, "#f97316");
 
+
 test("style9 -> tokenami: migrates concrete style9 syntax to tokenami", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

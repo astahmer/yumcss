@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.Bamboo, CodemodAdapterId.C
 const edgeSource = "import { css } from \"styled-system/css\";\nexport const card = css({ display: \"flex\", gap: \"4\" });";
 const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\" });\nconst unfinished = { /* unfinished bamboo */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\" });";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\" });";
+const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2a57c8\" });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2a57c8\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Bamboo, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("bamboo -> chakra-ui: migrates concrete bamboo syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("bamboo -> chakra-ui: migrates concrete bamboo syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -83,8 +86,8 @@ test("bamboo -> chakra-ui: migrates concrete bamboo syntax to chakra-ui", () => 
 	`)
 });
 
-test("bamboo -> chakra-ui: carries a documented secondary bamboo API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("bamboo -> chakra-ui: carries a documented secondary bamboo API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "bamboo -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -146,7 +149,7 @@ test("bamboo -> chakra-ui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ color: "#2563eb" });",
+		export const card = defaultSystem.css({ color: "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -262,8 +265,8 @@ test("bamboo -> chakra-ui: resolves concrete token values with project context",
 	`)
 });
 
-test("bamboo -> chakra-ui: preserves malformed concrete bamboo input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("bamboo -> chakra-ui: preserves malformed concrete bamboo input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished bamboo */");
 	expectRouteScenarioEvidence(result, "bamboo -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

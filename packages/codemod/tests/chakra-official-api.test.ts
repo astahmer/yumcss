@@ -1,23 +1,27 @@
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
 	createChakraAdapter,
-	runAdapterMigration,
+	runAdapterMigrationAsync,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
 import { ADAPTER_TOKEN_DEFINITIONS_SCHEMA } from "../src/swap/adapter-contract.ts";
 import { TokenCatalog } from "../src/swap/tokens.ts";
 import { routeEvidence } from "./route-spec-support.ts";
 
-function migrate(
+const projectRoot = resolve(import.meta.dirname, "..");
+
+async function migrate(
 	source: string,
 	from: CodemodAdapterId,
 	to: CodemodAdapterId,
-): AdapterMigrationResult {
-	return runAdapterMigration(source, {
+): Promise<AdapterMigrationResult> {
+	return runAdapterMigrationAsync(source, {
 		from,
 		to,
 		file: "App.tsx",
+		root: projectRoot,
 		mode: "safe",
 		semantic: { source: { framework: "react" } },
 	});
@@ -32,8 +36,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("className={system.css");
 	}
 
-	test("lowers style props", () => {
-		const result = migrate(
+	test("lowers style props", async () => {
+		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="red.200" p="4" />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -44,7 +48,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ padding: "4", backgroundColor: "red.200" })} />;",
+			export const App = () => <div className={css.class({ background: "#fecaca", padding: "1rem" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -78,8 +82,8 @@ describe("Chakra UI official API forms", () => {
 		`);
 	});
 
-	test("does not treat unknown local component props as Chakra style props", () => {
-		const result = migrate(
+	test("does not treat unknown local component props as Chakra style props", async () => {
+		const result = await migrate(
 			[
 				'import { Box } from "@chakra-ui/react";',
 				"type MinMaxInputProps = { filter: string };",
@@ -94,8 +98,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain('css.class({ filter: "subscriberCount" })');
 	});
 
-	test("projects Chakra style props passed to imported local wrappers", () => {
-		const result = migrate(
+	test("preserves props on imported local wrappers without Chakra provenance", async () => {
+		const result = await migrate(
 			[
 				'import { PageContainer } from "./page-container";',
 				'export const App = () => <PageContainer h="full" py="2" />;',
@@ -104,16 +108,14 @@ describe("Chakra UI official API forms", () => {
 			CodemodAdapterId.Pandwind,
 		);
 
-		expect(result.converted).toBe(1);
+		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("<PageContainer className={css.class({");
-		expect(result.code).not.toContain(" h=");
-		expect(result.code).not.toContain(" py=");
+		expect(result.code).toContain('<PageContainer h="full" py="2" />');
 	});
 
-	test("preserves project-imported component identity when projecting Chakra props", () => {
-		const result = migrate(
+	test("preserves project-imported component identity when projecting Chakra props", async () => {
+		const result = await migrate(
 			[
 				'import { Button } from "#ui/button";',
 				'export const App = () => <Button bg="accent.solid" variant="ghost" />;',
@@ -122,15 +124,15 @@ describe("Chakra UI official API forms", () => {
 			CodemodAdapterId.Pandwind,
 		);
 
-		expect(result.converted).toBe(1);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('<Button variant="ghost"');
-		expect(result.code).toContain("className={css.class({");
+		expect(result.code).toContain('<Button bg="accent.solid" variant="ghost" />');
 		expect(result.code).not.toContain("<button");
 	});
 
-	test("does not lower Chakra layout defaults when asChild changes the host contract", () => {
-		const result = migrate(
+	test("does not lower Chakra layout defaults when asChild changes the host contract", async () => {
+		const result = await migrate(
 			[
 				'import { Box } from "@chakra-ui/react";',
 				'export const App = () => <Box asChild><button variant="solid">Run</button></Box>;',
@@ -143,8 +145,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain('display: "flex"');
 	});
 
-	test("lowers the css prop with nested selectors", () => {
-		const result = migrate(
+	test("lowers the css prop with nested selectors", async () => {
+		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box css={{ color: "red.200", "& svg": { color: "blue.200" } }} />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -155,7 +157,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ color: "red.200", "& svg": { color: "blue.200" } })} />;",
+			export const App = () => <div className={css.class({ color: "#fecaca", "& svg": { color: "#bfdbfe" } })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -189,8 +191,8 @@ describe("Chakra UI official API forms", () => {
 		`);
 	});
 
-	test("leaves Panda source for the Panda route", () => {
-		const result = migrate(
+	test("leaves Panda source for the Panda route", async () => {
+		const result = await migrate(
 			[
 				'import { css } from "#styled-system/css";',
 				'import { HStack } from "#styled-system/jsx";',
@@ -212,7 +214,7 @@ describe("Chakra UI official API forms", () => {
 		);
 	});
 
-	test("supports independent, order-insensitive Chakra and Panda passes", () => {
+	test("supports independent, order-insensitive Chakra and Panda passes", async () => {
 		const source = [
 			'import { Box } from "@chakra-ui/react";',
 			'import { css } from "#styled-system/css";',
@@ -220,14 +222,14 @@ describe("Chakra UI official API forms", () => {
 			'export const App = () => <Box p="4" className={pandaClass} />;',
 		].join("\n");
 
-		const chakraFirst = migrate(source, CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind);
-		const chakraThenPanda = migrate(
+		const chakraFirst = await migrate(source, CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind);
+		const chakraThenPanda = await migrate(
 			chakraFirst.code,
 			CodemodAdapterId.Panda,
 			CodemodAdapterId.Pandwind,
 		);
-		const pandaFirst = migrate(source, CodemodAdapterId.Panda, CodemodAdapterId.Pandwind);
-		const pandaThenChakra = migrate(
+		const pandaFirst = await migrate(source, CodemodAdapterId.Panda, CodemodAdapterId.Pandwind);
+		const pandaThenChakra = await migrate(
 			pandaFirst.code,
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -244,15 +246,15 @@ describe("Chakra UI official API forms", () => {
 		for (const result of [chakraThenPanda, pandaThenChakra]) {
 			for (const sourceAdapter of [CodemodAdapterId.ChakraUi, CodemodAdapterId.Panda]) {
 				expect(
-					migrate(result.code, sourceAdapter, CodemodAdapterId.Pandwind).code,
+					(await migrate(result.code, sourceAdapter, CodemodAdapterId.Pandwind)).code,
 					`${sourceAdapter} second pass`,
 				).toBe(result.code);
 			}
 		}
 	});
 
-	test("lowers style-system layout hosts that only use their built-in defaults", () => {
-		const result = migrate(
+	test("lowers style-system layout hosts that only use their built-in defaults", async () => {
+		const result = await migrate(
 			'import { Center } from "@chakra-ui/react";\nexport const App = () => <Center><span>Ready</span></Center>',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -266,21 +268,24 @@ describe("Chakra UI official API forms", () => {
 		);
 	});
 
-	test("lowers the portable Container host without preserving the Panda JSX runtime", () => {
-		const result = migrate(
+	test("preserves Container when its Chakra recipe behavior is not represented", async () => {
+		const result = await migrate(
 			'import { Container } from "@chakra-ui/react";\nexport const App = () => <Container maxW="breakpoint-lg" w="full" mx="auto" />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 		);
 
-		expectStatic(result);
-		expect(result.code).not.toContain("@chakra-ui/react");
-		expect(result.code).toContain("<div className={css.class({");
-		expect(result.code).toContain('maxWidth: "breakpoint-lg"');
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "component" })]),
+		);
+		expect(result.code).toContain('<Container maxW="breakpoint-lg" w="full" mx="auto" />');
+		expect(result.code).toContain('from "@chakra-ui/react"');
 	});
 
-	test("does not reinterpret native JSX attributes as Panda conditions", () => {
-		const result = migrate(
+	test("does not reinterpret native JSX attributes as Panda conditions", async () => {
+		const result = await migrate(
 			'import { Input, Menu } from "@chakra-ui/react";\nexport const App = () => <><Input placeholder="Search" /><Menu.Root open><div /></Menu.Root></>;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -292,9 +297,9 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("open: true");
 	});
 
-	test("normalizes dynamic Chakra grid columns into a CSS repeat expression", () => {
-		const result = migrate(
-			'import { Grid } from "@chakra-ui/react";\nconst count = 3;\nexport const App = () => <Grid gridTemplateColumns={count} />;',
+	test("normalizes dynamic Chakra SimpleGrid columns into a CSS repeat expression", async () => {
+		const result = await migrate(
+			'import { SimpleGrid } from "@chakra-ui/react";\nconst count = 3;\nexport const App = () => <SimpleGrid columns={count} />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 		);
@@ -303,50 +308,56 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("gridTemplateColumns: count");
 	});
 
-	test("lowers Chakra inputs to intrinsic input elements", () => {
-		const result = migrate(
+	test("preserves Chakra input runtime behavior with a typed component residual", async () => {
+		const result = await migrate(
 			'import { Input } from "@chakra-ui/react";\nexport const App = () => <Input placeholder="Search" />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 		);
 
-		expectStatic(result);
-		expect(result.code).toContain('<input placeholder="Search" />');
-		expect(result.code).not.toContain("css.");
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "component" })]),
+		);
+		expect(result.code).toContain('<Input placeholder="Search" />');
+		expect(result.code).toContain('from "@chakra-ui/react"');
 	});
 
-	test("lowers aliased simple Chakra hosts to intrinsic elements without CSS calls", () => {
-		const result = migrate(
+	test("lowers aliased simple Chakra hosts to intrinsic elements without CSS calls", async () => {
+		const result = await migrate(
 			'import { Box, Button, Text as ChakraText } from "@chakra-ui/react";\nexport const App = () => <><Box data-box="true" /><Button type="button">Save</Button><ChakraText>Ready</ChakraText></>;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 		);
 
-		expect(result.converted).toBe(3);
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
+		expect(result.converted).toBe(2);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "component" })]),
+		);
 		expect(result.code).not.toContain("className={defaultSystem.css");
 		expect(result.code).not.toContain("className={system.css");
 		expect(result.code).toContain('<div data-box="true" />');
-		expect(result.code).toContain('<button type="button">Save</button>');
+		expect(result.code).toContain('<Button type="button">Save</Button>');
 		expect(result.code).toContain("<p>Ready</p>");
-		expect(result.code).not.toContain("@chakra-ui/react");
+		expect(result.code).toContain('from "@chakra-ui/react"');
 	});
 
-	test("normalizes static numeric Chakra spacing to target token keys", () => {
-		const result = migrate(
+	test("normalizes static numeric Chakra spacing to target token keys", async () => {
+		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box ml={2} />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 		);
 
 		expectStatic(result);
-		expect(result.code).toContain('marginLeft: "2"');
+		expect(result.code).toContain('marginLeft: "0.5rem"');
 		expect(result.code).not.toContain("--chakra");
 	});
 
-	test("fails closed for keyframes embedded in a Chakra style object", () => {
-		const result = migrate(
+	test("fails closed for keyframes embedded in a Chakra style object", async () => {
+		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box css={{ "@keyframes fade": { from: { opacity: 0 }, to: { opacity: 1 } } }} />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -365,8 +376,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("css.class");
 	});
 
-	test("lowers legacy Chakra prop types to native Pandwind types", () => {
-		const result = migrate(
+	test("lowers legacy Chakra prop types to native Pandwind types", async () => {
+		const result = await migrate(
 			'import { Flex, type FlexProps } from "@chakra-ui/react";\nexport const App = (props: FlexProps) => <Flex {...props} />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -376,8 +387,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("#styled-system/jsx");
 	});
 
-	test("removes replaced type specifiers without corrupting source imports", () => {
-		const result = migrate(
+	test("removes replaced type specifiers without corrupting source imports", async () => {
+		const result = await migrate(
 			[
 				'import type { GroupProps, InputProps } from "@chakra-ui/react";',
 				"export type Props = InputProps & { rootProps?: GroupProps };",
@@ -393,8 +404,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain('from "@chakra-ui/react"');
 	});
 
-	test("keeps converted style props valid in interface extends clauses", () => {
-		const result = migrate(
+	test("keeps converted style props valid in interface extends clauses", async () => {
+		const result = await migrate(
 			[
 				'import type { InputProps } from "@chakra-ui/react";',
 				"interface PasswordVisibilityProps { visible?: boolean }",
@@ -410,8 +421,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("InputProps");
 	});
 
-	test("leaves dynamic Panda css carriers for the Panda route", () => {
-		const result = migrate(
+	test("leaves dynamic Panda css carriers for the Panda route", async () => {
+		const result = await migrate(
 			[
 				'import { css } from "#styled-system/css";',
 				'import { link } from "./link";',
@@ -426,8 +437,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).toContain('import { css } from "#styled-system/css";');
 	});
 
-	test("lowers Chakra boolean style props without leaking DOM attributes", () => {
-		const result = migrate(
+	test("lowers Chakra boolean style props without leaking DOM attributes", async () => {
+		const result = await migrate(
 			'import { Text } from "@chakra-ui/react";\nexport const App = () => <Text fontWeight="700" truncate title="Campaign" />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -441,20 +452,23 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("<ptitle");
 	});
 
-	test("lowers Heading size into the intrinsic host's static style", () => {
-		const result = migrate(
+	test("preserves Heading recipe defaults with a typed component residual", async () => {
+		const result = await migrate(
 			'import { Heading } from "@chakra-ui/react";\nexport const App = () => <Heading size="lg">Title</Heading>;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 		);
 
-		expectStatic(result);
-		expect(result.code).toContain('fontSize: "lg"');
-		expect(result.code).not.toContain(' size="lg"');
-		expect(result.code).toContain("<h2 className={css.class({");
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "component" })]),
+		);
+		expect(result.code).toContain('<Heading size="lg">Title</Heading>');
+		expect(result.code).toContain('from "@chakra-ui/react"');
 	});
 
-	test("expands a known Chakra textStyle", () => {
+	test("expands a known Chakra textStyle", async () => {
 		const adapter = createChakraAdapter();
 		const source =
 			'import { Box } from "@chakra-ui/react";\n' +
@@ -472,6 +486,12 @@ describe("Chakra UI official API forms", () => {
 							textStyles: { sm: { value: { fontSize: "sm", fontWeight: "600" } } },
 						},
 					},
+					chakraSystem: {
+						_config: {
+							theme: { tokens: { colors: {} } },
+							utilities: { color: { values: "colors" } },
+						},
+					},
 				},
 				conditionCatalog: { hover: "&:hover", _hover: "&:hover" },
 			},
@@ -487,15 +507,15 @@ describe("Chakra UI official API forms", () => {
 				}),
 				expect.objectContaining({
 					property: "color",
-					value: { kind: "literal", value: "red.300" },
+					value: { kind: "token", ref: "red.300", authored: "red.300" },
 				}),
 			]),
 		);
 		expect(declarations.some((declaration) => declaration.property === "textStyle")).toBe(false);
 	});
 
-	test("replaces obsolete WebKit-only clamp declarations with lineClamp", () => {
-		const result = migrate(
+	test("replaces obsolete WebKit-only clamp declarations with lineClamp", async () => {
+		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'export const App = () => <Box css={{ display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 2 }} />;',
 			CodemodAdapterId.ChakraUi,
@@ -508,8 +528,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("WebkitLineClamp");
 	});
 
-	test("leaves imported Panda builtin patterns for the Panda route", () => {
-		const result = migrate(
+	test("leaves imported Panda builtin patterns for the Panda route", async () => {
+		const result = await migrate(
 			[
 				'import { css } from "#styled-system/css";',
 				'import { stack } from "#styled-system/patterns";',
@@ -525,14 +545,19 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).toContain('stack({ alignItems: "flex-start" })');
 	});
 
-	test("converts authored Chakra CSS variables to owned token references", () => {
+	test("converts authored Chakra CSS variables to owned token references", async () => {
 		const adapter = createChakraAdapter();
 		const source =
 			'<Box css={{ color: "var(--chakra-colors-accent-solid)", p: "var(--chakra-spacing-4)" }} />;';
 		const config = {
 			adapter: CodemodAdapterId.ChakraUi,
 			files: [],
-			values: {},
+			values: {
+				chakraSystem: {
+					properties: new Set(["color", "padding", "p"]),
+					utility: { shorthands: new Map([["p", "padding"]]) },
+				},
+			},
 			tokenCatalog: TokenCatalog.fromGroups({
 				colors: { "accent.solid": "#123456" },
 				spacing: { "4": "1rem" },
@@ -569,8 +594,8 @@ describe("Chakra UI official API forms", () => {
 		);
 	});
 
-	test("lowers Chakra factory hosts", () => {
-		const result = migrate(
+	test("lowers Chakra factory hosts", async () => {
+		const result = await migrate(
 			'import { chakra } from "@chakra-ui/react";\nexport const App = () => <chakra.button bg="blue.500" color="white" />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -581,7 +606,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <button className={css.class({ backgroundColor: "blue.500", color: "white" })} />;",
+			export const App = () => <button className={css.class({ background: "#3b82f6", color: "#FFFFFF" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -615,8 +640,8 @@ describe("Chakra UI official API forms", () => {
 		`);
 	});
 
-	test("lowers defaultSystem css interop", () => {
-		const result = migrate(
+	test("lowers defaultSystem css interop", async () => {
+		const result = await migrate(
 			'import { defaultSystem } from "@chakra-ui/react";\nexport const card = defaultSystem.css({ color: "red.200", p: "4" });',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -627,7 +652,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "4", color: "red.200" });",
+			export const card = css.class({ padding: "1rem", color: "#fecaca" });",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -661,8 +686,8 @@ describe("Chakra UI official API forms", () => {
 		`);
 	});
 
-	test("lowers custom system css interop", () => {
-		const result = migrate(
+	test("lowers custom system css interop", async () => {
+		const result = await migrate(
 			'import { createSystem, defaultConfig } from "@chakra-ui/react";\nconst system = createSystem(defaultConfig);\nexport const card = system.css({ color: "red.200", p: "4" });',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -673,7 +698,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "4", color: "red.200" });",
+			export const card = css.class({ padding: "1rem", color: "#fecaca" });",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -707,8 +732,8 @@ describe("Chakra UI official API forms", () => {
 		`);
 	});
 
-	test("keeps unsupported Chakra hosts as safe residuals", () => {
-		const result = migrate(
+	test("keeps unsupported Chakra hosts as safe residuals", async () => {
+		const result = await migrate(
 			'import { AbsoluteCenter } from "@chakra-ui/react";\nexport const App = () => <AbsoluteCenter p="4" />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -728,8 +753,8 @@ describe("Chakra UI official API forms", () => {
 		);
 	});
 
-	test("preserves multiline imports for unsupported Chakra hosts", () => {
-		const result = migrate(
+	test("preserves multiline imports for unsupported Chakra hosts", async () => {
+		const result = await migrate(
 			'import {\n\tAbsoluteCenter,\n\tSpinner,\n} from "@chakra-ui/react";\nexport const App = () => <AbsoluteCenter p="4"><Spinner /></AbsoluteCenter>;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
@@ -739,11 +764,14 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).toContain("AbsoluteCenter");
 		expect(result.code).toContain("Spinner");
 		expect(result.code).toContain('from "@chakra-ui/react"');
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "component" })]),
+		);
 	});
 
-	test("lowers Chakra Grid columns without leaking a DOM prop", () => {
-		const result = migrate(
-			'import { Grid } from "@chakra-ui/react";\nexport const App = () => <Grid columns={2} gap="4" />;',
+	test("lowers Chakra SimpleGrid columns without leaking a DOM prop", async () => {
+		const result = await migrate(
+			'import { SimpleGrid } from "@chakra-ui/react";\nexport const App = () => <SimpleGrid columns={2} gap="4" />;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 		);
@@ -753,8 +781,8 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).toContain('gridTemplateColumns: "repeat(2, minmax(0, 1fr))"');
 	});
 
-	test("preserves documented token helpers when they remain runtime expressions", () => {
-		const result = migrate(
+	test("preserves documented token helpers when they remain runtime expressions", async () => {
+		const result = await migrate(
 			'import { defaultSystem } from "@chakra-ui/react";\n' +
 				'export const card = defaultSystem.css({ color: defaultSystem.token("colors.red.200"), backgroundColor: defaultSystem.token.var("colors.blue.200") });',
 			CodemodAdapterId.ChakraUi,
@@ -810,7 +838,7 @@ describe("Chakra UI official API forms", () => {
 		`);
 	});
 
-	test("keeps recipe and composition APIs explicit instead of flattening variants", () => {
+	test("keeps recipe and composition APIs explicit instead of flattening variants", async () => {
 		const sources = {
 			defineRecipe:
 				'import { defineRecipe } from "@chakra-ui/react";\n' +
@@ -829,10 +857,15 @@ describe("Chakra UI official API forms", () => {
 				'import { useSlotRecipe } from "@chakra-ui/react";\nexport const styles = useSlotRecipe(alert);',
 		} as const;
 		const results = Object.fromEntries(
-			Object.entries(sources).map(([name, source]) => [
-				name,
-				migrate(source, CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind),
-			]),
+			await Promise.all(
+				Object.entries(sources).map(
+					async ([name, source]) =>
+						[
+							name,
+							await migrate(source, CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind),
+						] as const,
+				),
+			),
 		);
 
 		for (const result of Object.values(results)) {
@@ -1089,13 +1122,13 @@ describe("Chakra UI official API forms", () => {
 		`);
 	});
 
-	test("uses Chakra's documented style carriers when targeting Chakra", () => {
-		const classHost = migrate(
+	test("uses Chakra's documented style carriers when targeting Chakra", async () => {
+		const classHost = await migrate(
 			'import { css } from "pandwind/css";\nexport const App = () => <div className={css.class({ color: "red" })} />;',
 			CodemodAdapterId.Pandwind,
 			CodemodAdapterId.ChakraUi,
 		);
-		const styledSubject = migrate(
+		const styledSubject = await migrate(
 			'import styled from "styled-components";\nconst Card = styled.div({ color: "red" });\nexport const App = () => <Card />;',
 			CodemodAdapterId.StyledComponents,
 			CodemodAdapterId.ChakraUi,

@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.NextYak);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.NextYak, CodemodAdapterId.Panda);
-	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });";
+	const happySource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });";
 const edgeSource = "import { cva } from \"styled-system/recipes\";\nexport const button = cva({ base: { color: \"red\" }, variants: { size: { sm: { padding: \"2\" } } } });";
-const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });\nconst unfinished = { /* unfinished panda */";
+const malformedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });\nconst unfinished = { /* unfinished panda */";
 const sourceSemantic = undefined;
 const themedSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
-const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"#2563eb\", _hover: { color: \"blue.300\" } });";
+const tokenSource = "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"brand.500\", _hover: { color: \"brand.500\" } });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -49,54 +49,71 @@ test("panda -> next-yak -> panda: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> next-yak | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
+		    "code": "import { css } from "next-yak";
+		export const card = css\`color: red;&:hover { color: blue; }\`;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const card = css\`color: red;&:hover { color: blue; }\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
+		        "hint": "rule-level: 1 semantic rules; nesting: style nested rules",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> next-yak | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -191,9 +208,43 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> next-yak | lowering-residual: validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		      "code": "import { css } from "next-yak";
+		export const card = css\`color: #f97316;&:hover { color: #f97316; }\`;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { css } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const card = css\`color: #f97316;&:hover { color: #f97316; }\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -216,42 +267,55 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
+		          "hint": "rule-level: 1 semantic rules; nesting: style nested rules",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> next-yak | lowering-residual: validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> next-yak | lowering-residual: validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		      "code": "import { css } from "next-yak";
+		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { css } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,33 +338,12 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
+		          "hint": "rule-level: 1 semantic rules; nesting: style nested rules",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> next-yak | lowering-residual: validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -321,49 +364,71 @@ test("panda -> next-yak -> panda: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> next-yak | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		    "code": "import { css } from "next-yak";
+		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
-		        "kind": "configuration",
+		        "hint": "rule-level: 1 semantic rules; nesting: style nested rules",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> next-yak | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

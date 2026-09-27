@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -25,13 +26,14 @@ const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("tailwind -> chakra-ui -> tailwind: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("tailwind -> chakra-ui -> tailwind: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,7 +52,7 @@ test("tailwind -> chakra-ui -> tailwind: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;",
+		export const App = () => <chakra.div  css={{ gap: "4", alignItems: "center", display: "flex" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,6 +91,7 @@ test("tailwind -> chakra-ui -> tailwind: preserves an actionable concrete round 
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -120,9 +123,9 @@ test("tailwind -> chakra-ui -> tailwind: preserves an actionable concrete round 
 	`)
 });
 
-test("tailwind -> chakra-ui -> tailwind: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("tailwind -> chakra-ui -> tailwind: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "tailwind -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -207,7 +210,7 @@ test("tailwind -> chakra-ui -> tailwind: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "#f97316" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -240,13 +243,12 @@ test("tailwind -> chakra-ui -> tailwind: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[padding:card] text-brand"}/>;",
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
-		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -279,7 +281,7 @@ test("tailwind -> chakra-ui -> tailwind: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +314,7 @@ test("tailwind -> chakra-ui -> tailwind: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[padding:card] text-brand"}/>;",
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -365,7 +367,7 @@ test("tailwind -> chakra-ui -> tailwind: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "card", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -398,7 +400,7 @@ test("tailwind -> chakra-ui -> tailwind: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[padding:card] text-brand"}/>;",
+		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

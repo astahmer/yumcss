@@ -225,7 +225,7 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			name: "Tokenami css object",
 			file: "styles.ts",
 			source:
-				'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", "--card-gap": "1rem" });',
+				'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", "--gap": "1rem" });',
 			documentation: "https://tokenami.dev/",
 		},
 		{

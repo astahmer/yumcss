@@ -241,15 +241,44 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
+		      "changed": true,
+		      "code": "/* /* pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
+		export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "named-rules: named style rule: card",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
@@ -292,8 +321,7 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "/* /* pandwind:migrate-skip (route: tailwind -> css-modules | parse-residual: unknown-utility) */ */
-		/* /* pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
+		      "code": "/* /* pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
 		export const styles = { "card": "[padding:1rem] text-brand" };
 		export default styles;",
 		      "converted": 0,
@@ -314,19 +342,10 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		        {
-		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
@@ -338,7 +357,7 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 2,
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
@@ -395,8 +414,7 @@ test("css-modules -> tailwind -> css-modules: resolves token values across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "/* /* pandwind:migrate-skip (route: tailwind -> css-modules | parse-residual: unknown-utility) */ */
-		/* /* pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
+		    "code": "/* /* pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
 		export const styles = { "card": "[padding:1rem] text-brand" };
 		export default styles;",
 		    "converted": 0,
@@ -417,19 +435,10 @@ test("css-modules -> tailwind -> css-modules: resolves token values across both 
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
@@ -441,7 +450,7 @@ test("css-modules -> tailwind -> css-modules: resolves token values across both 
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 2,
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}

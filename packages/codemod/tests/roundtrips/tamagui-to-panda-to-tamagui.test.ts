@@ -326,7 +326,7 @@ test("tamagui -> panda -> tamagui: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "brand.500" });
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +413,7 @@ test("tamagui -> panda -> tamagui: resolves token values across both concrete le
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "brand.500" });
+		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -14,8 +14,12 @@ import type {
 	AdapterConfigContext,
 	AdapterParseContext,
 	AdapterProjectConfig,
+	AdapterTokenPolicy,
 } from "../adapter-contract.ts";
-import { ADAPTER_TOKEN_DEFINITIONS_SCHEMA } from "../adapter-contract.ts";
+import {
+	ADAPTER_TOKEN_DEFINITIONS_SCHEMA,
+	ADAPTER_TOKEN_POLICY_SCHEMA,
+} from "../adapter-contract.ts";
 import type { StyleProgram, StyleProgramResidual, StyleValue } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
@@ -31,172 +35,8 @@ import { isProjectLocalModule } from "../module-specifier.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import type { JsxStyleHostMatch, JsxStylePropSelector } from "../jsx-style-host.ts";
 import { canonicalizeSourceHost } from "../host-component-rewriter.ts";
-import { createTokenPolicy, recoverSourceToken, TokenCatalog } from "../tokens.ts";
+import { materializeSourceTokenValues, recoverSourceToken, TokenCatalog } from "../tokens.ts";
 import { CSS_RAW_PROPERTIES } from "../css-properties.ts";
-
-const styleProps = [
-	"css",
-	"__css",
-	"bg",
-	"bgColor",
-	"background",
-	"backgroundColor",
-	"color",
-	"p",
-	"px",
-	"py",
-	"pt",
-	"pr",
-	"pb",
-	"pl",
-	"m",
-	"mx",
-	"my",
-	"mt",
-	"mr",
-	"mb",
-	"ml",
-	"w",
-	"h",
-	"width",
-	"height",
-	"minW",
-	"maxW",
-	"minH",
-	"maxH",
-	"boxSize",
-	"display",
-	"flex",
-	"flexDirection",
-	"flexDir",
-	"direction",
-	"wrap",
-	"pos",
-	"align",
-	"alignItems",
-	"justify",
-	"justifyContent",
-	"gap",
-	"rowGap",
-	"columnGap",
-	"fontSize",
-	"fontWeight",
-	"lineHeight",
-	"letterSpacing",
-	"fontFamily",
-	"textDecoration",
-	"textDecorationColor",
-	"textDecorationThickness",
-	"textUnderlineOffset",
-	"border",
-	"borderWidth",
-	"borderTopWidth",
-	"borderRightWidth",
-	"borderBottomWidth",
-	"borderLeftWidth",
-	"borderStyle",
-	"borderColor",
-	"borderTop",
-	"borderRight",
-	"borderBottom",
-	"borderLeft",
-	"borderTopColor",
-	"borderRightColor",
-	"borderBottomColor",
-	"borderLeftColor",
-	"borderRadius",
-	"rounded",
-	"shadow",
-	"boxShadow",
-	"position",
-	"padding",
-	"paddingTop",
-	"paddingRight",
-	"paddingBottom",
-	"paddingLeft",
-	"margin",
-	"marginTop",
-	"marginRight",
-	"marginBottom",
-	"marginLeft",
-	"top",
-	"right",
-	"bottom",
-	"left",
-	"inset",
-	"insetStart",
-	"insetEnd",
-	"ps",
-	"pe",
-	"paddingX",
-	"paddingY",
-	"marginX",
-	"marginY",
-	"insetX",
-	"insetY",
-	"ms",
-	"me",
-	"overflow",
-	"overflowX",
-	"overflowY",
-	"opacity",
-	"zIndex",
-	"visibility",
-	"alignSelf",
-	"alignContent",
-	"justifySelf",
-	"flexGrow",
-	"flexShrink",
-	"flexBasis",
-	"flexWrap",
-	"gridTemplateColumns",
-	"gridTemplateRows",
-	"columns",
-	"gridColumn",
-	"gridRow",
-	"order",
-	"objectFit",
-	"aspectRatio",
-	"scrollMarginTop",
-	"scrollMargin",
-	"transition",
-	"transform",
-	"filter",
-	"backdropFilter",
-	"outline",
-	"outlineWidth",
-	"outlineStyle",
-	"outlineColor",
-	"outlineOffset",
-	"backgroundImage",
-	"bgImage",
-	"fill",
-	"stroke",
-	"lineClamp",
-	"textOverflow",
-	"textStyle",
-	"truncate",
-	"srOnly",
-	"clipPath",
-	"textAlign",
-	"textTransform",
-	"whiteSpace",
-	"cursor",
-	"_hover",
-	"_focus",
-	"_active",
-	"_disabled",
-	"_before",
-	"_after",
-	"borderTopRadius",
-	"borderBottomRadius",
-	"borderStartRadius",
-	"borderEndRadius",
-	"borderStartWidth",
-	"borderEndWidth",
-	"borderStartColor",
-	"borderEndColor",
-] as const;
 
 const nativeConditionAttributeCollisions = new Set([
 	"checked",
@@ -211,6 +51,15 @@ const nativeConditionAttributeCollisions = new Set([
 	"required",
 	"selected",
 ]);
+const nativeChakraHostAttributes = new Set([
+	"class",
+	"className",
+	"id",
+	"role",
+	"style",
+	"tabIndex",
+	"title",
+]);
 
 function isSpacingProperty(property: string): boolean {
 	return (
@@ -220,134 +69,6 @@ function isSpacingProperty(property: string): boolean {
 		property === "margin" ||
 		property.startsWith("margin")
 	);
-}
-
-const propertyAliases = {
-	bg: "backgroundColor",
-	bgColor: "backgroundColor",
-	rounded: "borderRadius",
-	w: "width",
-	h: "height",
-	p: "padding",
-	px: ["paddingLeft", "paddingRight"],
-	py: ["paddingTop", "paddingBottom"],
-	pt: "paddingTop",
-	pr: "paddingRight",
-	pb: "paddingBottom",
-	pl: "paddingLeft",
-	m: "margin",
-	mx: ["marginLeft", "marginRight"],
-	my: ["marginTop", "marginBottom"],
-	mt: "marginTop",
-	mr: "marginRight",
-	mb: "marginBottom",
-	ml: "marginLeft",
-	minW: "minWidth",
-	maxW: "maxWidth",
-	minH: "minHeight",
-	maxH: "maxHeight",
-	boxSize: ["width", "height"],
-	columns: "gridTemplateColumns",
-	templateColumns: "gridTemplateColumns",
-	align: "alignItems",
-	justify: "justifyContent",
-	direction: "flexDirection",
-	flexDir: "flexDirection",
-	wrap: "flexWrap",
-	pos: "position",
-	shadow: "boxShadow",
-	ps: "paddingInlineStart",
-	pe: "paddingInlineEnd",
-	ms: "marginInlineStart",
-	me: "marginInlineEnd",
-	marginX: "marginInline",
-	marginY: "marginBlock",
-	paddingX: "paddingInline",
-	paddingY: "paddingBlock",
-	insetX: "insetInline",
-	insetY: "insetBlock",
-	insetStart: "insetInlineStart",
-	insetEnd: "insetInlineEnd",
-	bgImage: "backgroundImage",
-	borderTopRadius: ["borderStartStartRadius", "borderStartEndRadius"],
-	borderBottomRadius: ["borderEndStartRadius", "borderEndEndRadius"],
-	borderStartRadius: ["borderStartStartRadius", "borderEndStartRadius"],
-	borderEndRadius: ["borderStartEndRadius", "borderEndEndRadius"],
-	borderStartWidth: "borderInlineStartWidth",
-	borderEndWidth: "borderInlineEndWidth",
-	borderStartColor: "borderInlineStartColor",
-	borderEndColor: "borderInlineEndColor",
-} as const;
-
-function chakraValue(property: string, value: StyleValue, targetId?: string): StyleValue {
-	if (targetId === CodemodAdapterId.Pandwind) {
-		if (
-			value.kind === StyleValueKindTag.Literal &&
-			typeof value.value === "number" &&
-			isSpacingProperty(property) &&
-			value.value !== 0
-		)
-			return { kind: StyleValueKindTag.Literal, value: String(value.value) };
-		return value;
-	}
-	if (value.kind !== StyleValueKindTag.Literal) return value;
-	if (typeof value.value === "number" && isSpacingProperty(property)) {
-		if (value.value === 0) return { kind: "literal", value: 0 };
-		const absolute = Math.abs(value.value);
-		const variable = `var(--chakra-spacing-${absolute})`;
-		return {
-			kind: "literal",
-			value: value.value < 0 ? `calc(${variable} * -1)` : variable,
-		};
-	}
-	if (typeof value.value !== "string") return value;
-	if (/^(?:-?\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw|svh|svw)$/.test(value.value)) return value;
-	const tokenName = /^(?:[A-Za-z][A-Za-z0-9_.-]*|\d+[A-Za-z][A-Za-z0-9_.-]*)$/.test(value.value);
-	if (isSpacingProperty(property) && /^-?\d+(?:\.\d+)?$/.test(value.value)) {
-		const absolute = value.value.replace(/^-/, "");
-		const variable = `var(--chakra-spacing-${absolute})`;
-		return {
-			kind: "literal",
-			value: value.value.startsWith("-") ? `calc(${variable} * -1)` : variable,
-		};
-	}
-	if ((property === "borderRadius" || property === "rounded") && tokenName)
-		return { kind: "literal", value: `var(--chakra-radii-${value.value})` };
-	if (property === "fontWeight" && tokenName)
-		return { kind: "literal", value: `var(--chakra-font-weights-${value.value})` };
-	if (property === "fontSize" && tokenName)
-		return { kind: "literal", value: `var(--chakra-font-sizes-${value.value})` };
-	if (property === "lineHeight" && tokenName)
-		return { kind: "literal", value: `var(--chakra-line-heights-${value.value})` };
-	if (property === "letterSpacing" && tokenName)
-		return { kind: "literal", value: `var(--chakra-letter-spacings-${value.value})` };
-	const numericDimension = /^\d+(?:\.\d+)?$/.test(value.value);
-	if (
-		["width", "height", "minWidth", "maxWidth", "minHeight", "maxHeight"].includes(property) &&
-		(tokenName || numericDimension)
-	)
-		return { kind: "literal", value: `var(--chakra-sizes-${value.value})` };
-	if (property === "fontFamily" && tokenName)
-		return { kind: "literal", value: `var(--chakra-fonts-${value.value})` };
-	if (property === "shadow" && tokenName)
-		return { kind: "literal", value: `var(--chakra-shadows-${value.value})` };
-	if (
-		property === "color" ||
-		property === "backgroundColor" ||
-		property === "borderColor" ||
-		property === "bg" ||
-		property === "bgColor"
-	) {
-		if (/^[A-Za-z][\w-]*(?:\.[\w-]+)+(?:\/[\w-]+)?$/.test(value.value))
-			return {
-				kind: "literal",
-				value: `var(--chakra-colors-${value.value
-					.replaceAll(".", "-")
-					.replace("colorPalette", "color-palette")
-					.replace("/", "-")})`,
-			};
-	}
-	return value;
 }
 
 function chakraTokenSource(adapter: string | undefined): boolean {
@@ -362,13 +83,6 @@ const chakraNativeUtilityDeclarations = (
 ):
 	| readonly { readonly property: string; readonly value: string | boolean | number }[]
 	| undefined => {
-	if (
-		property === "gridTemplateColumns" &&
-		typeof value === "number" &&
-		Number.isInteger(value) &&
-		value > 0
-	)
-		return [{ property, value: `repeat(${value}, minmax(0, 1fr))` }];
 	if (property === "truncate") {
 		return value === true
 			? [
@@ -479,6 +193,7 @@ function expandChakraTextStyle(
 	const conditionKinds = Object.fromEntries(
 		Object.keys(conditionValues).map((name) => [name, inferSemanticConditionKind(name)]),
 	);
+	const propertyAliases = chakraSourceVocabulary(context).propertyAliases;
 	const expanded = styleProgramFromSourceObject(serialized.slice(1, -1), {
 		conditionKinds,
 		conditionValues,
@@ -501,68 +216,161 @@ function expandChakraTextStyle(
 	};
 }
 
-function lowerChakraHeadingSize(program: StyleProgram): StyleProgram {
-	const openingTag = program.source?.hostOpenTag;
-	if (openingTag === undefined || sourceHostTag(openingTag) !== "Heading") return program;
-	const sizeStart = /\ssize\s*=\s*/u.exec(openingTag);
-	if (sizeStart === null) return program;
-	const valueStart = sizeStart.index + sizeStart[0].length;
-	const firstValueCharacter = openingTag[valueStart];
-	if (firstValueCharacter === undefined) return program;
-	let value: StyleValue;
-	let attributeEnd: number;
-	if (firstValueCharacter === '"' || firstValueCharacter === "'") {
-		const end = openingTag.indexOf(firstValueCharacter, valueStart + 1);
-		if (end < 0) return program;
-		value = { kind: StyleValueKindTag.Literal, value: openingTag.slice(valueStart + 1, end) };
-		attributeEnd = end + 1;
-	} else if (firstValueCharacter === "{") {
-		const block = SourcePass.matchBlock(openingTag, valueStart);
-		if (block === null) return program;
-		const expression = block.body.trim();
-		if (expression.length === 0) return program;
-		value = { kind: StyleValueKindTag.Dynamic, expression };
-		attributeEnd = block.end;
-	} else {
-		return program;
+function lowerChakraComponentDeclaration(
+	component: string | undefined,
+	declaration: StyleProgram["declarations"][number],
+	context: AdapterParseContext,
+): {
+	readonly declaration?: StyleProgram["declarations"][number];
+	readonly residual?: StyleProgramResidual;
+} {
+	const alias = CHAKRA_COMPONENT_PROPERTY_ALIASES[component ?? ""]?.[declaration.property];
+	if (alias === undefined) return { declaration };
+	if (declaration.property === "inline") {
+		if (
+			declaration.value.kind !== StyleValueKindTag.Literal ||
+			typeof declaration.value.value !== "boolean"
+		)
+			return {
+				residual: {
+					kind: StyleProgramResidualKindTag.Dynamic,
+					text: "inline",
+					hint: "Chakra inline layout props require a static boolean for intrinsic lowering",
+				},
+			};
+		const display =
+			component === "Grid"
+				? declaration.value.value
+					? "inline-grid"
+					: "grid"
+				: declaration.value.value
+					? "inline-flex"
+					: "flex";
+		return {
+			declaration: {
+				...declaration,
+				property: alias,
+				value: { kind: StyleValueKindTag.Literal, value: display },
+			},
+		};
 	}
-	const rootIndex = program.rules.findIndex(
-		(rule) =>
-			rule.kind === StyleRuleKindTag.Style &&
-			rule.name === undefined &&
-			rule.conditions.length === 0,
-	);
-	const root = rootIndex < 0 ? undefined : program.rules[rootIndex];
-	if (root === undefined) return program;
-	const declaration = {
-		conditions: [],
-		property: "fontSize",
-		value,
-	} satisfies StyleProgram["declarations"][number];
-	const source = program.source;
-	const rawAttribute = openingTag.slice(sizeStart.index, attributeEnd);
-	const hostStyleAttributes = new Set(source?.hostStyleAttributes ?? []);
-	hostStyleAttributes.add(rawAttribute);
-	const rootDeclarations = root.declarations.filter(
-		(declaration) => declaration.property !== "size",
-	);
-	const rules = program.rules.map((rule, index) =>
-		index === rootIndex ? { ...rule, declarations: [...rootDeclarations, declaration] } : rule,
-	);
-	return {
-		...program,
-		rules,
-		declarations: [...rootDeclarations, declaration],
-		source: {
-			...source,
-			hostStyleAttributes: [...hostStyleAttributes],
-		},
-	};
+	if (component === "SimpleGrid" && declaration.property === "columns") {
+		if (declaration.value.kind === StyleValueKindTag.Dynamic) {
+			return {
+				declaration: {
+					...declaration,
+					property: alias,
+					value: {
+						...declaration.value,
+						expression: `\`repeat(\${${declaration.value.expression}}, minmax(0, 1fr))\``,
+					},
+				},
+			};
+		}
+		if (declaration.value.kind !== StyleValueKindTag.Literal)
+			return {
+				residual: {
+					kind: StyleProgramResidualKindTag.Dynamic,
+					text: "columns",
+					hint: "SimpleGrid columns requires a static or expression integer",
+				},
+			};
+		const count = Number(declaration.value.value);
+		if (!Number.isInteger(count) || count < 1)
+			return {
+				residual: {
+					kind: StyleProgramResidualKindTag.UnknownUtility,
+					text: `columns: ${String(declaration.value.value)}`,
+					hint: "SimpleGrid columns requires a positive integer for intrinsic lowering",
+				},
+			};
+		return {
+			declaration: {
+				...declaration,
+				property: alias,
+				value: {
+					kind: StyleValueKindTag.Literal,
+					value: `repeat(${count}, minmax(0, 1fr))`,
+				},
+			},
+		};
+	}
+	if (component === "SimpleGrid" && declaration.property === "minChildWidth") {
+		const rawValue =
+			declaration.value.kind === StyleValueKindTag.Literal
+				? String(declaration.value.value)
+				: undefined;
+		const sizeToken =
+			rawValue === undefined
+				? undefined
+				: TokenCatalog.fromContract(context.config.tokenCatalog)?.findByReference(
+						["sizes"],
+						rawValue,
+					);
+		const minimum =
+			sizeToken?.resolved ??
+			(rawValue !== undefined &&
+			/^(?:0|(?:\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw|svh|svw))$/u.test(rawValue)
+				? rawValue
+				: undefined);
+		if (minimum === undefined)
+			return {
+				residual: {
+					kind: StyleProgramResidualKindTag.UnknownUtility,
+					text: `minChildWidth: ${rawValue ?? "dynamic value"}`,
+					hint: "SimpleGrid minChildWidth requires a verified Chakra size token or static CSS length",
+				},
+			};
+		return {
+			declaration: {
+				...declaration,
+				property: alias,
+				value: {
+					kind: StyleValueKindTag.Literal,
+					value: `repeat(auto-fit, minmax(${minimum}, 1fr))`,
+				},
+			},
+		};
+	}
+	if (component === "GridItem" && ["colSpan", "rowSpan"].includes(declaration.property)) {
+		if (declaration.value.kind !== StyleValueKindTag.Literal) {
+			return {
+				residual: {
+					kind: StyleProgramResidualKindTag.Dynamic,
+					text: declaration.property,
+					hint: "GridItem span lowering requires a static value",
+				},
+			};
+		}
+		const span = String(declaration.value.value);
+		if (span !== "auto" && (!/^\d+$/u.test(span) || Number(span) < 1))
+			return {
+				residual: {
+					kind: StyleProgramResidualKindTag.UnknownUtility,
+					text: `${declaration.property}: ${span}`,
+					hint: "GridItem span must be auto or a positive integer",
+				},
+			};
+		return {
+			declaration: {
+				...declaration,
+				property: alias,
+				value: {
+					kind: StyleValueKindTag.Literal,
+					value: span === "auto" ? span : `span ${span} / span ${span}`,
+				},
+			},
+		};
+	}
+	return { declaration: { ...declaration, property: alias } };
 }
 
 /** Lower Chakra utilities before the target emitter sees the program. */
 function lowerChakraProgram(program: StyleProgram, context: AdapterParseContext): StyleProgram {
-	program = lowerChakraHeadingSize(program);
+	const component = chakraSourceComponentNameFromTag(
+		sourceHostTag(program.source?.hostOpenTag ?? ""),
+		context,
+	);
 	const residuals: StyleProgramResidual[] = [...program.residuals];
 	const keyframeConditions = new Set<string>();
 	const collectKeyframeConditions = (rule: StyleProgram["rules"][number]): void => {
@@ -581,40 +389,31 @@ function lowerChakraProgram(program: StyleProgram, context: AdapterParseContext)
 	const lowerRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => {
 		const declarations: Array<StyleProgram["declarations"][number]> = [];
 		for (const declaration of rule.declarations) {
-			if (declaration.property === "textStyle") {
-				const expanded = expandChakraTextStyle(declaration, context);
+			const componentLowering =
+				rule.name === undefined && rule.conditions.length === 0
+					? lowerChakraComponentDeclaration(component, declaration, context)
+					: { declaration };
+			if (componentLowering.residual !== undefined) residuals.push(componentLowering.residual);
+			if (componentLowering.declaration === undefined) continue;
+			const normalized = componentLowering.declaration;
+			if (normalized.property === "textStyle") {
+				const expanded = expandChakraTextStyle(normalized, context);
 				declarations.push(...expanded.declarations);
 				residuals.push(...expanded.residuals);
 				continue;
 			}
-			if (
-				declaration.property === "gridTemplateColumns" &&
-				declaration.value.kind === StyleValueKindTag.Dynamic
-			) {
-				declarations.push({
-					...declaration,
-					value: {
-						...declaration.value,
-						expression: `\`repeat(\${${declaration.value.expression}}, minmax(0, 1fr))\``,
-					},
-				});
+			if (normalized.value.kind !== StyleValueKindTag.Literal) {
+				declarations.push(normalized);
 				continue;
 			}
-			if (declaration.value.kind !== StyleValueKindTag.Literal) {
-				declarations.push(declaration);
-				continue;
-			}
-			const utility = chakraNativeUtilityDeclarations(
-				declaration.property,
-				declaration.value.value,
-			);
+			const utility = chakraNativeUtilityDeclarations(normalized.property, normalized.value.value);
 			if (utility === undefined) {
-				declarations.push(declaration);
+				declarations.push(normalized);
 				continue;
 			}
 			for (const item of utility)
 				declarations.push({
-					...declaration,
+					...normalized,
 					property: item.property,
 					value: chakraOfficialValue(
 						item.property,
@@ -673,41 +472,29 @@ function valueTransformPropertyFrom(
 	return typeof alias === "string" ? alias : property;
 }
 
-function chakraTokenGroup(property: string): string | undefined {
-	if (
-		property === "color" ||
-		property === "background" ||
-		property === "backgroundColor" ||
-		property === "borderColor" ||
-		property.endsWith("Color")
-	)
-		return "colors";
-	if (property === "borderRadius") return "radii";
-	if (property === "fontWeight") return "fontWeights";
-	if (property === "fontSize") return "fontSizes";
-	if (property === "lineHeight") return "lineHeights";
-	if (property === "letterSpacing") return "letterSpacings";
-	if (property === "fontFamily") return "fonts";
-	if (property === "boxShadow") return "shadows";
-	if (
-		property === "padding" ||
-		property.startsWith("padding") ||
-		property === "margin" ||
-		property.startsWith("margin") ||
-		property === "gap" ||
-		property.endsWith("Gap")
-	)
-		return "spacing";
-	if (
-		property === "width" ||
-		property === "height" ||
-		property === "minWidth" ||
-		property === "maxWidth" ||
-		property === "minHeight" ||
-		property === "maxHeight"
-	)
-		return "sizes";
-	return undefined;
+function chakraTokenGroups(property: string, config: AdapterProjectConfig): readonly string[] {
+	const system = config.values.chakraSystem as ChakraSystemLike | undefined;
+	if (system === undefined) return [];
+	const utilityProperty = system.utility?.resolveShorthand?.(property) ?? property;
+	const systemConfig = recordValue(system._config);
+	const officialUtilities = recordValue(systemConfig?.utilities);
+	const propertyConfig = recordValue(officialUtilities?.[utilityProperty]);
+	const groups: string[] = [];
+	if (typeof propertyConfig?.values === "string") groups.push(propertyConfig.values);
+	for (const valueType of system.utility?.getTypes?.().get(utilityProperty) ?? []) {
+		const group = /^Tokens\["([^"]+)"\]$/u.exec(valueType)?.[1];
+		if (group !== undefined) groups.push(group);
+	}
+	const tokenDefinitions = config.tokenDefinitions;
+	const officialTheme = recordValue(systemConfig?.theme);
+	const knownGroups = new Set([
+		...Object.keys(config.tokenCatalog?.groups ?? {}),
+		...Object.keys(tokenDefinitions?.raw ?? {}),
+		...Object.keys(tokenDefinitions?.semantic ?? {}),
+		...Object.keys(recordValue(officialTheme?.tokens) ?? {}),
+		...Object.keys(recordValue(officialTheme?.semanticTokens) ?? {}),
+	]);
+	return [...new Set(groups)].filter((group) => knownGroups.has(group));
 }
 
 const chakraCssVariableGroup = (group: string): string =>
@@ -912,11 +699,11 @@ function recoverChakraCssVariable(
 	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
 	const variable = /^var\((--chakra-[^)]+)\)$/u.exec(value.value)?.[1];
 	if (variable === undefined) return value;
-	const propertyGroup = chakraTokenGroup(property);
+	const propertyGroups = chakraTokenGroups(property, context.config);
 	const definitions = chakraTokenDefinitionPaths(context);
 	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 	const match = definitions.find((candidate) => {
-		if (propertyGroup !== undefined && candidate.group !== propertyGroup) return false;
+		if (propertyGroups.length > 0 && !propertyGroups.includes(candidate.group)) return false;
 		const prefix = `--chakra-${chakraCssVariableGroup(candidate.group)}-`;
 		return (
 			variable === `${prefix}${chakraCssVariablePath(candidate.path)}` ||
@@ -936,79 +723,52 @@ function recoverChakraCssVariable(
 	};
 }
 
-const CHAKRA_TOKEN_POLICY = createTokenPolicy(chakraTokenGroup, (match) => match.ref);
-
-function hasConfigToken(config: unknown, group: string, token: string): boolean {
-	if (typeof config !== "object" || config === null) return false;
-	const root = config as Record<string, unknown>;
-	const theme = root.theme;
-	if (typeof theme !== "object" || theme === null) return false;
-	for (const collection of ["tokens", "semanticTokens"]) {
-		let current: unknown = (theme as Record<string, unknown>)[collection];
-		for (const segment of [group, ...token.split(".")]) {
-			if (typeof current !== "object" || current === null) {
-				current = undefined;
-				break;
-			}
-			current = (current as Record<string, unknown>)[segment];
-		}
-		if (typeof current === "object" && current !== null && "value" in current) return true;
-	}
-	return false;
-}
+const CHAKRA_TOKEN_POLICY: AdapterTokenPolicy = {
+	schema: ADAPTER_TOKEN_POLICY_SCHEMA,
+	preserve: (program, context) => {
+		const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
+		return catalog === undefined
+			? materializeSourceTokenValues(program)
+			: catalog.preserveProgram(
+					program,
+					(property) => chakraTokenGroups(property, context.config),
+					(match) => match.ref,
+				);
+	},
+};
 
 function chakraOfficialValue(
 	property: string,
 	value: StyleValue,
 	context: AdapterParseContext,
 ): StyleValue {
-	const fallback = chakraValue(property, value, context.targetId);
 	if (
 		context.targetId === CodemodAdapterId.Pandwind &&
 		property === "colorPalette" &&
 		value.kind === StyleValueKindTag.Dynamic
 	)
 		return { ...value, lowering: StyleDynamicLoweringTag.StaticOnly };
-	if (
-		context.targetId === CodemodAdapterId.Pandwind &&
-		property === "gridTemplateColumns" &&
-		value.kind === StyleValueKindTag.Literal &&
-		typeof value.value === "number" &&
-		Number.isInteger(value.value) &&
-		value.value > 0
-	)
-		return {
-			kind: StyleValueKindTag.Literal,
-			value: `repeat(${value.value}, minmax(0, 1fr))`,
-		};
-	if (context.targetId === CodemodAdapterId.Pandwind)
-		return recoverSourceToken(
-			recoverChakraCssVariable(fallback, property, context),
-			property,
-			chakraTokenGroup,
-			TokenCatalog.fromContract(context.config.tokenCatalog),
-		);
-	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return fallback;
-	const system = context.config.values.chakraSystem as ChakraSystemLike | undefined;
-	const config = context.config.values.chakraConfig;
-	const group = chakraTokenGroup(property);
-	if (
-		system?.token?.var === undefined ||
-		group === undefined ||
-		!hasConfigToken(config, group, value.value)
-	)
-		return fallback;
+	const candidate = recoverChakraCssVariable(value, property, context);
 	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
-	const token = catalog?.findByReference([group], value.value);
-	if (token !== undefined)
-		return {
-			kind: "token",
-			ref: token.ref,
-			authored: value.value,
-			resolved: token.resolved,
-		};
-	const resolved = system.token.var(`${group}.${value.value}`);
-	return typeof resolved === "string" ? { kind: "literal", value: resolved } : fallback;
+	const groups = chakraTokenGroups(property, context.config);
+	const recovered = recoverSourceToken(candidate, property, () => groups, catalog);
+	if (recovered.kind === StyleValueKindTag.Token) return recovered;
+	if (candidate.kind !== StyleValueKindTag.Literal) return candidate;
+	const reference = String(candidate.value);
+	if (groups.includes("spacing") && reference === "0") return candidate;
+	if (
+		!(
+			/^[A-Za-z][\w-]*(?:\.[A-Za-z0-9_-]+)+(?:\/[A-Za-z0-9_-]+)?$/u.test(reference) ||
+			(groups.includes("spacing") && /^-?\d+(?:\.\d+)?$/u.test(reference))
+		) ||
+		groups.length === 0
+	)
+		return candidate;
+	return {
+		kind: StyleValueKindTag.Token,
+		ref: reference,
+		authored: reference,
+	};
 }
 
 interface ChakraSystemLike {
@@ -1017,9 +777,8 @@ interface ChakraSystemLike {
 	readonly properties?: ReadonlySet<string>;
 	readonly utility?: {
 		readonly shorthands?: ReadonlyMap<string, string>;
-	};
-	readonly token?: {
-		readonly var?: (path: string) => string;
+		readonly resolveShorthand?: (property: string) => string;
+		readonly getTypes?: () => ReadonlyMap<string, string[]>;
 	};
 }
 
@@ -1032,19 +791,6 @@ interface ChakraPackage {
 const recordValue = (value: unknown): Record<string, unknown> | undefined => {
 	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
 	return value as Record<string, unknown>;
-};
-
-const withoutDefaults = (value: unknown, defaults: unknown): unknown => {
-	if (Object.is(value, defaults)) return undefined;
-	const valueRecord = recordValue(value);
-	if (valueRecord === undefined) return value;
-	const defaultRecord = recordValue(defaults);
-	const result: Record<string, unknown> = {};
-	for (const [key, child] of Object.entries(valueRecord)) {
-		const withoutDefault = withoutDefaults(child, defaultRecord?.[key]);
-		if (withoutDefault !== undefined) result[key] = withoutDefault;
-	}
-	return Object.keys(result).length === 0 ? undefined : result;
 };
 
 const mergeTokenTrees = (
@@ -1101,38 +847,6 @@ const addChakraBreakpoints = (catalog: Record<string, string>, value: unknown): 
 	}
 };
 
-const NATIVE_CSS_CONDITIONS: Readonly<Record<string, string>> = {
-	hover: "&:hover",
-	focus: "&:focus",
-	focusVisible: "&:focus-visible",
-	focusWithin: "&:focus-within",
-	active: "&:active",
-	disabled: "&:disabled",
-	checked: "&:checked",
-	indeterminate: "&:indeterminate",
-	visited: "&:visited",
-	readOnly: "&:read-only",
-	readWrite: "&:read-write",
-	empty: "&:empty",
-	first: "&:first-of-type",
-	last: "&:last-of-type",
-	only: "&:only-child",
-	even: "&:nth-of-type(even)",
-	odd: "&:nth-of-type(odd)",
-	before: "&::before",
-	after: "&::after",
-	selection: "&::selection",
-	marker: "&::marker",
-	file: "&::file-selector-button",
-};
-
-const addNativeCssConditions = (catalog: Record<string, string>): void => {
-	for (const [name, selector] of Object.entries(NATIVE_CSS_CONDITIONS)) {
-		if (catalog[name] === undefined) catalog[name] = selector;
-		if (catalog[`_${name}`] === undefined) catalog[`_${name}`] = catalog[name]!;
-	}
-};
-
 const chakraConditionCatalog = (
 	chakra: ChakraPackage,
 	config: Record<string, unknown>,
@@ -1144,7 +858,6 @@ const chakraConditionCatalog = (
 	addChakraConditions(catalog, recordValue(config.conditions)?.extend);
 	addChakraBreakpoints(catalog, recordValue(recordValue(defaultConfig.theme)?.breakpoints));
 	addChakraBreakpoints(catalog, recordValue(recordValue(config.theme)?.breakpoints));
-	addNativeCssConditions(catalog);
 	return catalog;
 };
 
@@ -1163,31 +876,29 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 			? Object.keys(CSS_RAW_PROPERTIES).filter((property) => property !== "content")
 			: [];
 	const sourceConditionNames = new Set(Object.keys(context.config.conditionCatalog ?? {}));
-	const targetStyleProps =
-		context.targetId === CodemodAdapterId.Pandwind ? [...styleProps, "colorPalette"] : styleProps;
 	const knownProperties = new Set<string>([
-		...targetStyleProps,
 		...sourceValueProperties,
 		...(system?.properties ?? []),
 	]);
-	const resolvedAliases =
-		context.targetId === CodemodAdapterId.Pandwind
-			? {
-					...propertyAliases,
-					...(aliases === undefined ? {} : Object.fromEntries(aliases)),
-				}
-			: aliases === undefined
-				? propertyAliases
-				: Object.fromEntries(aliases);
+	const chakraTheme = recordValue(recordValue(context.config.values.chakraConfig)?.theme);
+	if (Object.keys(recordValue(chakraTheme?.textStyles) ?? {}).length > 0)
+		knownProperties.add("textStyle");
+	const resolvedAliases = aliases === undefined ? {} : Object.fromEntries(aliases);
 	const resolvedProperties = [...knownProperties];
 	return {
 		styleProps: (property, openingTag) =>
 			(property === "size" && sourceHostTag(openingTag ?? "") === "Heading") ||
 			property === "css" ||
 			knownProperties.has(property) ||
+			Object.hasOwn(
+				CHAKRA_COMPONENT_PROPERTY_ALIASES[
+					chakraSourceComponentNameFromTag(sourceHostTag(openingTag ?? ""), context) ?? ""
+				] ?? {},
+				property,
+			) ||
 			(sourceConditionNames.has(property) && !nativeConditionAttributeCollisions.has(property)) ||
 			(property.startsWith("_") && sourceConditionNames.has(property.replace(/^_/, ""))) ||
-			(context.targetId === CodemodAdapterId.Pandwind && Object.hasOwn(resolvedAliases, property)),
+			Object.hasOwn(resolvedAliases, property),
 		propertyAliases: resolvedAliases,
 		valueTransformProperties: [
 			...new Set([
@@ -1230,7 +941,7 @@ async function officialChakraConfig(
 		context
 			.listFiles?.(context.root)
 			.filter((candidate) =>
-				/(?:^|[\\/])(?:src[\\/])?theme(?:[\\/](?:index\.)?(?:ts|tsx|js|mjs|cjs)|\.(?:ts|tsx|js|mjs|cjs))$/u.test(
+				/(?:^|[\\/])(?:[^\\/]+[\\/])*(?:theme|chakra\.config)(?:[\\/](?:index\.)?(?:ts|tsx|js|mjs|cjs)|\.(?:ts|tsx|js|mjs|cjs))$/u.test(
 					candidate,
 				),
 			) ?? [];
@@ -1239,10 +950,14 @@ async function officialChakraConfig(
 		"src/theme.tsx",
 		"src/theme.js",
 		"src/theme.mjs",
+		"src/chakra.config.ts",
+		"src/chakra.config.js",
 		"theme.ts",
 		"theme.tsx",
 		"theme.js",
 		"theme.mjs",
+		"chakra.config.ts",
+		"chakra.config.js",
 		...(discovered ?? []),
 	];
 	const chakra = await loader.importPackage<ChakraPackage>("@chakra-ui/react", context.root);
@@ -1261,33 +976,20 @@ async function officialChakraConfig(
 					"the official @chakra-ui/react package is unavailable for a discovered theme module",
 				)
 			: fallback;
-	for (const candidate of new Set(candidates)) {
-		const path = candidate.startsWith(context.root)
-			? candidate
-			: joinDocumentPath(context.root, candidate);
-		// Preserve candidate priority: the first project theme wins.
-		const module = await loader.importFile<Record<string, unknown>>(path);
-		if (module === undefined) continue;
-		const exported = [module.default, ...Object.values(module)];
-		const existingSystem = exported.find((value) => chakra.isValidSystem?.(value) === true) as
-			| ChakraSystemLike
-			| undefined;
-		const config =
-			existingSystem?._config ??
-			exported.map(chakraConfigCandidate).find((value) => value !== undefined);
-		if (config === undefined) continue;
-		const sourceConfig = recordValue(withoutDefaults(config, chakra.defaultConfig)) ?? {};
-		const sourceTheme = recordValue(sourceConfig.theme) ?? {};
-		const rawTokens = recordValue(sourceTheme.tokens) ?? {};
-		const semanticTokens = recordValue(sourceTheme.semanticTokens) ?? {};
+	const projectConfig = (
+		config: Record<string, unknown>,
+		system: ChakraSystemLike | undefined,
+		path?: string,
+	): import("../adapter-contract.ts").AdapterProjectConfig => {
+		const effectiveConfig = system?._config ?? config;
+		const theme = recordValue(effectiveConfig.theme) ?? {};
+		const rawTokens = recordValue(theme.tokens) ?? {};
+		const semanticTokens = recordValue(theme.semanticTokens) ?? {};
 		const colorPalettes = chakraColorPaletteSources(mergeTokenTrees(rawTokens, semanticTokens));
-		const system =
-			existingSystem ??
-			(chakra.createSystem?.(chakra.defaultConfig ?? {}, config) as ChakraSystemLike | undefined);
 		return {
 			...fallback,
-			files: [...fallback.files, path],
-			conditionCatalog: chakraConditionCatalog(chakra, sourceConfig),
+			...(path === undefined ? {} : { files: [...fallback.files, path] }),
+			conditionCatalog: chakraConditionCatalog(chakra, effectiveConfig),
 			tokenCatalog: TokenCatalog.fromNested(mergeTokenTrees(rawTokens, semanticTokens))?.contract,
 			tokenDefinitions: {
 				schema: ADAPTER_TOKEN_DEFINITIONS_SCHEMA,
@@ -1296,13 +998,58 @@ async function officialChakraConfig(
 			},
 			...(Object.keys(colorPalettes).length === 0 ? {} : { colorPalettes }),
 			values: {
-				chakraConfig: sourceConfig,
+				chakraConfig: effectiveConfig,
 				...(system === undefined ? {} : { chakraSystem: system }),
 				officialConfigPackage: "@chakra-ui/react",
 			},
 		};
+	};
+	for (const candidate of new Set(candidates)) {
+		const path = candidate.startsWith(context.root)
+			? candidate
+			: joinDocumentPath(context.root, candidate);
+		// Preserve candidate priority: the first project theme wins.
+		const module = await loader.importFile<Record<string, unknown>>(path);
+		const isDiscovered = discovered.includes(candidate) || context.readFile?.(path) !== undefined;
+		if (module === undefined) {
+			if (isDiscovered)
+				return AdapterEvidence.configurationFailure(
+					fallback,
+					path,
+					"the official Chakra loader could not evaluate a discovered theme module",
+				);
+			continue;
+		}
+		const exported = [module.default, ...Object.values(module)];
+		const existingSystem = exported.find((value) => chakra.isValidSystem?.(value) === true) as
+			| ChakraSystemLike
+			| undefined;
+		const config =
+			existingSystem?._config ??
+			exported.map(chakraConfigCandidate).find((value) => value !== undefined);
+		if (config === undefined) {
+			if (isDiscovered)
+				return AdapterEvidence.configurationFailure(
+					fallback,
+					path,
+					"the discovered module does not expose a supported Chakra system or config",
+				);
+			continue;
+		}
+		const system =
+			existingSystem ??
+			(chakra.createSystem?.(chakra.defaultConfig ?? {}, config) as ChakraSystemLike | undefined);
+		return projectConfig(config, system, path);
 	}
-	return fallback;
+	const defaultConfig = chakra.defaultConfig ?? {};
+	const defaultSystem = chakra.createSystem?.(defaultConfig);
+	if (defaultSystem === undefined && Object.keys(defaultConfig).length === 0)
+		return AdapterEvidence.configurationFailure(
+			fallback,
+			"@chakra-ui/react",
+			"the installed package exposes neither its default config nor the system factory",
+		);
+	return projectConfig(defaultConfig, defaultSystem);
 }
 
 function preserveSeparatorGap(host: JsxStyleHostMatch): readonly string[] {
@@ -1421,14 +1168,14 @@ function qualifyFirstChakraIntrinsicHost(code: string): {
 	return opening === undefined ? { code, imports: [] } : qualifyChakraIntrinsicHost(code, opening);
 }
 
-const CHAKRA_SOURCE_COMPONENTS = {
+const CHAKRA_SOURCE_COMPONENTS: Readonly<Record<string, string | undefined>> = {
 	Box: "div",
 	Text: "p",
-	Heading: "h2",
-	Button: "button",
-	Link: "a",
+	Heading: undefined,
+	Button: undefined,
+	Link: undefined,
 	Image: "img",
-	Input: "input",
+	Input: undefined,
 	Span: "span",
 	GridItem: "div",
 	WrapItem: "div",
@@ -1440,7 +1187,7 @@ const CHAKRA_SOURCE_COMPONENTS = {
 	Grid: "div",
 	SimpleGrid: "div",
 	Wrap: "div",
-	Container: "div",
+	Container: undefined,
 	AbsoluteCenter: undefined,
 	Badge: undefined,
 	Card: undefined,
@@ -1453,77 +1200,63 @@ const CHAKRA_SOURCE_COMPONENTS = {
 	Portal: undefined,
 	Separator: undefined,
 	StackSeparator: undefined,
-} as const;
+};
+
+const CHAKRA_COMPONENT_PROPERTY_ALIASES: Readonly<
+	Record<string, Readonly<Record<string, string>>>
+> = {
+	Flex: {
+		direction: "flexDirection",
+		align: "alignItems",
+		justify: "justifyContent",
+		wrap: "flexWrap",
+		basis: "flexBasis",
+		grow: "flexGrow",
+		shrink: "flexShrink",
+		inline: "display",
+	},
+	Stack: {
+		direction: "flexDirection",
+		align: "alignItems",
+		justify: "justifyContent",
+		wrap: "flexWrap",
+	},
+	HStack: { align: "alignItems", justify: "justifyContent", wrap: "flexWrap" },
+	VStack: { align: "alignItems", justify: "justifyContent", wrap: "flexWrap" },
+	Center: { inline: "display" },
+	Grid: {
+		templateAreas: "gridTemplateAreas",
+		autoColumns: "gridAutoColumns",
+		column: "gridColumn",
+		row: "gridRow",
+		autoFlow: "gridAutoFlow",
+		autoRows: "gridAutoRows",
+		templateRows: "gridTemplateRows",
+		templateColumns: "gridTemplateColumns",
+		inline: "display",
+	},
+	SimpleGrid: { columns: "gridTemplateColumns", minChildWidth: "gridTemplateColumns" },
+	GridItem: {
+		area: "gridArea",
+		colSpan: "gridColumn",
+		colStart: "gridColumnStart",
+		colEnd: "gridColumnEnd",
+		rowSpan: "gridRow",
+		rowStart: "gridRowStart",
+		rowEnd: "gridRowEnd",
+	},
+	Image: { fit: "objectFit", align: "objectPosition" },
+	Wrap: {
+		align: "alignItems",
+		justify: "justifyContent",
+		direction: "flexDirection",
+	},
+};
 
 const CHAKRA_SOURCE_MODULES = ["@chakra-ui/react"] as const;
 
 const isChakraSourceModule = (moduleSpecifier: string): boolean =>
 	moduleSpecifier === "@chakra-ui/react" || moduleSpecifier.startsWith("@chakra-ui/react/");
-
-const CHAKRA_LOCAL_STYLE_PROPS = new Set([
-	"aspectRatio",
-	"background",
-	"backgroundColor",
-	"bg",
-	"bgColor",
-	"border",
-	"borderColor",
-	"borderRadius",
-	"borderWidth",
-	"boxSize",
-	"color",
-	"display",
-	"flex",
-	"flexDir",
-	"flexDirection",
-	"gap",
-	"gridTemplateColumns",
-	"gridTemplateRows",
-	"h",
-	"height",
-	"justify",
-	"justifyContent",
-	"m",
-	"margin",
-	"marginBottom",
-	"marginInline",
-	"marginLeft",
-	"marginRight",
-	"marginTop",
-	"maxH",
-	"maxW",
-	"minH",
-	"minW",
-	"mx",
-	"my",
-	"overflow",
-	"p",
-	"padding",
-	"paddingBottom",
-	"paddingInline",
-	"paddingLeft",
-	"paddingRight",
-	"paddingTop",
-	"pb",
-	"pl",
-	"pos",
-	"pr",
-	"pt",
-	"px",
-	"py",
-	"position",
-	"rounded",
-	"shadow",
-	"textAlign",
-	"w",
-	"width",
-	"zIndex",
-]);
-
-const chakraLocalStyleAttributePattern = new RegExp(
-	`<[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)?\\s+(?:${[...CHAKRA_LOCAL_STYLE_PROPS].join("|")})\\s*=`,
-	"u",
-);
 
 const isChakraSourceHost = (host: JsxStyleHostMatch, context: AdapterParseContext): boolean => {
 	const tag = sourceHostTag(host.openingTag);
@@ -1532,8 +1265,7 @@ const isChakraSourceHost = (host: JsxStyleHostMatch, context: AdapterParseContex
 	if (localName === undefined) return false;
 	const binding = context.resolveBinding?.(localName) ?? context.bindings?.binding(localName);
 	if (binding !== undefined) {
-		if (isProjectLocalModule(binding.source))
-			return host.styleAttributes.some((attribute) => CHAKRA_LOCAL_STYLE_PROPS.has(attribute.name));
+		if (isProjectLocalModule(binding.source)) return false;
 		if (!isChakraSourceModule(binding.source)) return false;
 		return !hasChakraNativeHostBlockedProp(host, context);
 	}
@@ -1564,7 +1296,7 @@ const CHAKRA_NATIVE_HOST_BLOCKED_PROPS: Readonly<Record<string, readonly string[
 		"size",
 		"variant",
 	],
-	Image: ["as", "asChild", "fallback", "fallbackSrc", "fit", "ignoreFallback"],
+	Image: ["as", "asChild", "fallback", "fallbackSrc", "ignoreFallback"],
 	Input: [
 		"as",
 		"asChild",
@@ -1583,50 +1315,33 @@ const CHAKRA_NATIVE_HOST_BLOCKED_PROPS: Readonly<Record<string, readonly string[
 		"size",
 		"variant",
 	],
-	GridItem: [
-		"as",
-		"asChild",
-		"colEnd",
-		"colSpan",
-		"colStart",
-		"renderRoot",
-		"rowEnd",
-		"rowSpan",
-		"rowStart",
-	],
+	GridItem: ["as", "asChild", "renderRoot"],
 	Flex: ["as", "asChild", "colorPalette", "component", "renderRoot", "size", "variant"],
 	Stack: [
-		"align",
 		"as",
 		"asChild",
 		"colorPalette",
 		"component",
-		"direction",
-		"justify",
 		"renderRoot",
 		"separator",
 		"size",
 		"variant",
 	],
 	HStack: [
-		"align",
 		"as",
 		"asChild",
 		"colorPalette",
 		"component",
-		"justify",
 		"renderRoot",
 		"separator",
 		"size",
 		"variant",
 	],
 	VStack: [
-		"align",
 		"as",
 		"asChild",
 		"colorPalette",
 		"component",
-		"justify",
 		"renderRoot",
 		"separator",
 		"size",
@@ -1643,15 +1358,19 @@ const CHAKRA_NATIVE_HOST_BLOCKED_PROPS: Readonly<Record<string, readonly string[
 const chakraSourceComponentName = (
 	host: JsxStyleHostMatch,
 	context: AdapterParseContext,
-): string | undefined => {
-	const tag = sourceHostTag(host.openingTag);
+): string | undefined => chakraSourceComponentNameFromTag(sourceHostTag(host.openingTag), context);
+
+function chakraSourceComponentNameFromTag(
+	tag: string | undefined,
+	context: AdapterParseContext,
+): string | undefined {
 	if (tag === undefined) return undefined;
 	const localName = tag.split(".", 1)[0];
 	if (localName === undefined) return undefined;
 	const binding = context.resolveBinding?.(localName) ?? context.bindings?.binding(localName);
 	if (binding !== undefined && isChakraSourceModule(binding.source)) return binding.importedName;
-	return tag.startsWith("styled.") ? tag.slice(tag.lastIndexOf(".") + 1) : tag;
-};
+	return tag.slice(tag.lastIndexOf(".") + 1);
+}
 
 const chakraSourceComponentTag = (component: string): string | undefined =>
 	Object.entries(CHAKRA_SOURCE_COMPONENTS).find(([name]) => name === component)?.[1];
@@ -1689,12 +1408,49 @@ const chakraSourceComponentsForContext = (
 };
 
 const isChakraNativeHost = (host: JsxStyleHostMatch, context: AdapterParseContext): boolean => {
-	if (host.styleAttributes.length > 0 || !isChakraSourceHost(host, context)) return false;
+	if (
+		host.styleAttributes.length > 0 ||
+		host.attributes.some(
+			(attribute) =>
+				!attribute.name.startsWith("data-") &&
+				!attribute.name.startsWith("aria-") &&
+				!nativeChakraHostAttributes.has(attribute.name),
+		) ||
+		!isChakraSourceHost(host, context)
+	)
+		return false;
 	const component = chakraSourceComponentName(host, context);
 	if (component === undefined || chakraSourceComponentTag(component) === undefined) return false;
 	return (
 		!host.attributes.some((attribute) => attribute.name.startsWith("_")) &&
 		!hasChakraNativeHostBlockedProp(host, context)
+	);
+};
+
+const isUnprojectedChakraHost = (
+	host: JsxStyleHostMatch,
+	context: AdapterParseContext,
+): boolean => {
+	if (context.targetId !== CodemodAdapterId.Pandwind) return false;
+	const sourceStyleProps = chakraSourceVocabulary(context).styleProps;
+	const hasSourceStyleProps = host.attributes.some((attribute) =>
+		typeof sourceStyleProps === "function"
+			? sourceStyleProps(attribute.name, host.openingTag)
+			: sourceStyleProps.includes(attribute.name),
+	);
+	if (hasSourceStyleProps) return false;
+	const tag = sourceHostTag(host.openingTag);
+	if (tag === undefined || tag.startsWith("chakra.")) return false;
+	const localName = tag.split(".", 1)[0];
+	if (localName === undefined) return false;
+	const binding = context.resolveBinding?.(localName) ?? context.bindings?.binding(localName);
+	const component = chakraSourceComponentName(host, context);
+	if (component === undefined) return false;
+	if (binding !== undefined && !isChakraSourceModule(binding.source)) return false;
+	if (binding === undefined && !Object.hasOwn(CHAKRA_SOURCE_COMPONENTS, component)) return false;
+	return (
+		!Object.hasOwn(CHAKRA_SOURCE_COMPONENTS, component) ||
+		CHAKRA_SOURCE_COMPONENTS[component] === undefined
 	);
 };
 
@@ -1725,21 +1481,26 @@ function removeUnusedChakraSystemBootstrap(code: string): string {
 
 const CHAKRA_HOST_DEFAULTS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
 	Flex: { display: "flex" },
-	Stack: { display: "flex", flexDirection: "column" },
-	HStack: { display: "flex", flexDirection: "row" },
-	VStack: { display: "flex", flexDirection: "column" },
+	Stack: { display: "flex", flexDirection: "column", gap: "0.5rem" },
+	HStack: { display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" },
+	VStack: { display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" },
 	Center: { display: "flex", alignItems: "center", justifyContent: "center" },
 	Grid: { display: "grid" },
 	SimpleGrid: { display: "grid" },
-	Wrap: { display: "flex", flexWrap: "wrap" },
+	Wrap: { display: "flex", flexWrap: "wrap", gap: "0.5rem" },
+	WrapItem: { display: "flex", alignItems: "flex-start" },
+	Image: { objectFit: "cover" },
 };
 
-function applyChakraHostDefaults(program: StyleProgram): StyleProgram {
+function applyChakraHostDefaults(
+	program: StyleProgram,
+	context: AdapterParseContext,
+): StyleProgram {
 	const openingTag = program.source?.hostOpenTag;
 	if (openingTag === undefined) return program;
-	const sourceTag = /^<\s*([A-Za-z_$][\w$.-]*)/u.exec(openingTag)?.[1];
-	if (sourceTag === undefined) return program;
-	const defaults = CHAKRA_HOST_DEFAULTS[sourceTag];
+	const component = chakraSourceComponentNameFromTag(sourceHostTag(openingTag), context);
+	if (component === undefined) return program;
+	const defaults = CHAKRA_HOST_DEFAULTS[component];
 	if (defaults === undefined) return program;
 	const rootIndex = program.rules.findIndex(
 		(rule) =>
@@ -1749,8 +1510,11 @@ function applyChakraHostDefaults(program: StyleProgram): StyleProgram {
 	);
 	const rootRule = rootIndex < 0 ? undefined : program.rules[rootIndex];
 	if (rootRule === undefined) return program;
+	const componentAliases = CHAKRA_COMPONENT_PROPERTY_ALIASES[component] ?? {};
 	const existingProperties = new Set(
-		rootRule.declarations.map((declaration) => declaration.property),
+		rootRule.declarations.map(
+			(declaration) => componentAliases[declaration.property] ?? declaration.property,
+		),
 	);
 	const declarations = Object.entries(defaults)
 		.filter(([property]) => !existingProperties.has(property))
@@ -1776,8 +1540,8 @@ const isChakraLayoutHostWithoutStyles = (
 		hasChakraNativeHostBlockedProp(host, context)
 	)
 		return false;
-	const tag = sourceHostTag(host.openingTag);
-	return tag !== undefined && Object.hasOwn(CHAKRA_HOST_DEFAULTS, tag);
+	const component = chakraSourceComponentName(host, context);
+	return component !== undefined && Object.hasOwn(CHAKRA_HOST_DEFAULTS, component);
 };
 
 function replaceChakraClassAttribute(
@@ -1964,7 +1728,15 @@ export function createChakraAdapter(
 				styleProps: [],
 				matchWithoutStyleProps: true,
 				hostGuard: isChakraLayoutHostWithoutStyles,
-				transform: (program) => applyChakraHostDefaults(program),
+				transform: (program, context) => applyChakraHostDefaults(program, context),
+			},
+			{
+				name: "chakra-unprojected-component-host",
+				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
+				form: CodemodCallPatternFormTag.JsxStyle,
+				styleProps: [],
+				matchWithoutStyleProps: true,
+				hostGuard: isUnprojectedChakraHost,
 			},
 			{
 				name: "chakra-native-host",
@@ -2039,16 +1811,7 @@ export function createChakraAdapter(
 			"framework-semantics": "partial",
 			components: "partial",
 		}),
-		detect: (context, fallback) => {
-			const detected = fallback();
-			if (detected.matched || !chakraLocalStyleAttributePattern.test(context.source))
-				return detected;
-			return {
-				matched: true,
-				confidence: 0.6,
-				evidence: [...detected.evidence, "Chakra-compatible JSX style prop"],
-			};
-		},
+		detect: (_context, fallback) => fallback(),
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		migration: {
 			rewrite: ({ source, code, file, targetId, sourceConfig, project, complete }) => {
@@ -2213,6 +1976,7 @@ export function createChakraAdapter(
 								chakraSourceComponentsForContext(context),
 								"Chakra",
 							),
+							context,
 						),
 						context,
 					),

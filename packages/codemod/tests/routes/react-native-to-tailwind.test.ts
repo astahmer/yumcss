@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Tailwind, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.Tailwind, "#f97316");
 
+
 test("react-native -> tailwind: migrates concrete react-native syntax to tailwind", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
@@ -179,10 +180,8 @@ test("react-native -> tailwind: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		    "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -200,25 +199,17 @@ test("react-native -> tailwind: loads concrete theme and project context variant
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -236,10 +227,8 @@ test("react-native -> tailwind: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		  "converted": 0,
+		  "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -257,25 +246,17 @@ test("react-native -> tailwind: resolves concrete token values with project cont
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs or has residuals",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs or has residuals",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

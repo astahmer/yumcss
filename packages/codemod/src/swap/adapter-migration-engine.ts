@@ -55,6 +55,7 @@ import {
 import { simplifyPandwindStaticStyles } from "./static-style-simplifier.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 import { StyleProgramCore } from "./style-program-core.ts";
+import { materializeSourceTokenValues } from "./tokens.ts";
 import {
 	derivedFileOutcomes,
 	hasTargetHostPort,
@@ -1042,7 +1043,9 @@ function runAdapterMigrationInternal(
 					: { representationKind: targetRepresentationKind }),
 			},
 		};
-		const emissionProgram = targetAdapter.tokenPolicy?.preserve(program, emitContext) ?? program;
+		const emissionProgram =
+			targetAdapter.tokenPolicy?.preserve(program, emitContext) ??
+			materializeSourceTokenValues(program);
 		const emitted = targetAdapter.emit(emissionProgram, emitContext);
 		if (emitted.text.trim() === "") {
 			const emptyEmission = {

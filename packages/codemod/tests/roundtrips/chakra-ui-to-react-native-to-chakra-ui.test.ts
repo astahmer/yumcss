@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -20,18 +21,19 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.ReactNative, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.ReactNative, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.ReactNative, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = undefined;
 
-test("chakra-ui -> react-native -> chakra-ui: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> react-native -> chakra-ui: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,12 +52,13 @@ test("chakra-ui -> react-native -> chakra-ui: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View    style={StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "background": "#fecaca", "padding": 16 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		          "react-native-numeric-normalization",
 		        ],
@@ -88,7 +91,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves an actionable concrete r
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => <View    style={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": defaultSystem.css({ background: "red.200", padding: "16px" }) }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -123,9 +126,9 @@ test("chakra-ui -> react-native -> chakra-ui: preserves an actionable concrete r
 	`)
 });
 
-test("chakra-ui -> react-native -> chakra-ui: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> react-native -> chakra-ui: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "chakra-ui -> react-native round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -216,7 +219,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "background": "#f97316", "padding": 16 } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -255,7 +258,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { View } from "react-native";
 		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => <View    style={{ "style": defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": defaultSystem.css({ background: "#f97316", padding: "16px" }) }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -291,7 +294,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "background": "#2a57c8", "padding": 16 } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,7 +333,7 @@ test("chakra-ui -> react-native -> chakra-ui: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { View } from "react-native";
 		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => <View    style={{ "style": defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": defaultSystem.css({ background: "brand.500", padding: "16px" }) }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -380,12 +383,13 @@ test("chakra-ui -> react-native -> chakra-ui: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View    style={StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style}/>;",
+		export const App = () => <View    style={StyleSheet.create({ style: { "background": "#2a57c8", "padding": 16 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		          "react-native-numeric-normalization",
 		        ],
@@ -418,7 +422,7 @@ test("chakra-ui -> react-native -> chakra-ui: resolves token values across both 
 		    "changed": true,
 		    "code": "import { View } from "react-native";
 		import { defaultSystem } from "@chakra-ui/react";
-		export const App = () => <View    style={{ "style": defaultSystem.css({ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": defaultSystem.css({ background: "brand.500", padding: "16px" }) }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

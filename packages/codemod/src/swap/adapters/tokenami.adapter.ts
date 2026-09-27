@@ -161,7 +161,13 @@ function tokenamiGridValue(
 }
 
 function tokenamiTokenGroup(property: string): string | undefined {
-	if (property === "color" || property.endsWith("Color")) return "colors";
+	if (
+		property === "color" ||
+		property === "background" ||
+		property === "backgroundColor" ||
+		property.endsWith("Color")
+	)
+		return "colors";
 	if (property === "borderRadius") return "radii";
 	if (/^(?:padding|margin|gap|inset)/u.test(property)) return "spacing";
 	if (/^(?:width|height|minWidth|maxWidth|minHeight|maxHeight)$/u.test(property)) return "sizes";
@@ -276,10 +282,15 @@ function decodeProperty(
 	property: string,
 	aliases: Readonly<Record<string, string | readonly string[]>>,
 ): { property: string; conditions: readonly StyleCondition[] } {
-	const encoded = property.startsWith("--") ? property.slice(2) : property;
+	const isCustomCssVariable = property.startsWith("---");
+	const encoded = isCustomCssVariable
+		? property.slice(3)
+		: property.startsWith("--")
+			? property.slice(2)
+			: property;
 	const parts = encoded.split("_").filter(Boolean);
 	const alias = parts.pop() ?? encoded;
-	const mapped = aliases[alias] ?? camelCase(alias);
+	const mapped = aliases[alias] ?? (isCustomCssVariable ? `--${alias}` : camelCase(alias));
 	return {
 		property: typeof mapped === "string" ? mapped : (mapped[0] ?? camelCase(alias)),
 		conditions: parts.map(condition),
@@ -353,7 +364,7 @@ function tokenamiSourceValue(
 		return {
 			kind: StyleValueKindTag.Token,
 			ref: reference,
-			authored: reference,
+			authored: value.value,
 		};
 	return match === undefined
 		? value

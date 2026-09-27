@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, ({ theme }) => ({ color: theme.color }));";
 const malformedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished tamagui */";
 const sourceSemantic = undefined;
-const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
-const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2563eb\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const themedSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2a57c8\", padding: \"$4\" });\nexport const App = () => <Card />;";
+const tokenSource = "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"#2a57c8\", padding: \"$4\" });\nexport const App = () => <Card />;";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -87,7 +89,7 @@ test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = (props) => styled(View, { padding: "$4", color: "red" });
+		export const Card = (props) => styled(View, { padding: "1rem", color: "red" });
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -122,9 +124,9 @@ test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round tr
 	`)
 });
 
-test("tamagui -> chakra-ui -> tamagui: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+test("tamagui -> chakra-ui -> tamagui: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "tamagui -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -217,7 +219,7 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "#2563eb" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "#2a57c8" }} />;
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -253,7 +255,7 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = (props) => styled(View, { padding: "$4", color: "#2563eb" });
+		export const Card = (props) => styled(View, { padding: "1rem", color: "#2a57c8" });
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -326,7 +328,7 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = (props) => styled(View, { padding: "$4", color: "brand.500" });
+		export const Card = (props) => styled(View, { padding: "1rem", color: "#2a57c8" });
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +415,7 @@ test("tamagui -> chakra-ui -> tamagui: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = (props) => styled(View, { padding: "$4", color: "brand.500" });
+		export const Card = (props) => styled(View, { padding: "1rem", color: "#2a57c8" });
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],

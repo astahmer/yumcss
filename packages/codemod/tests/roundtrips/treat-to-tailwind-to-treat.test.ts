@@ -269,9 +269,9 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[padding:8] [color:#2563eb]";",
-		      "converted": 0,
+		      "code": "import { style } from "treat";
+		export const card = style({ "padding": "8", "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -279,33 +279,29 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -346,9 +342,9 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[padding:8] text-brand";",
-		      "converted": 0,
+		      "code": "import { style } from "treat";
+		export const card = style({ "padding": "8", "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -356,28 +352,29 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -432,9 +429,9 @@ test("treat -> tailwind -> treat: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[padding:8] text-brand";",
-		    "converted": 0,
+		    "code": "import { style } from "treat";
+		export const card = style({ "padding": "8", "color": "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -442,28 +439,29 @@ test("treat -> tailwind -> treat: resolves token values across both concrete leg
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

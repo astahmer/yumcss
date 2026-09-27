@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ReactStrictDom, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, CodemodAdapterId.ReactStrictDom, "#f97316");
 
+
 test("tamagui -> react-strict-dom: migrates concrete tamagui syntax to react-strict-dom", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

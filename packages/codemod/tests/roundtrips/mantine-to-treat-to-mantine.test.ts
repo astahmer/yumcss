@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Treat);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
@@ -50,8 +50,8 @@ test("mantine -> treat -> mantine: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> treat | parse-residual: configuration | lowering-residual: capability | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -60,25 +60,21 @@ test("mantine -> treat -> mantine: preserves an actionable concrete round trip",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		        "kind": "capability",
@@ -91,8 +87,8 @@ test("mantine -> treat -> mantine: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> treat | parse-residual: configuration | lowering-residual: capability | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -321,7 +317,7 @@ test("mantine -> treat -> mantine: resolves token values across both concrete le
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> treat | lowering-residual: capability | available: static, named-map, residual)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -359,7 +355,7 @@ test("mantine -> treat -> mantine: resolves token values across both concrete le
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: mantine -> treat | lowering-residual: capability | available: static, named-map, residual)
-		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

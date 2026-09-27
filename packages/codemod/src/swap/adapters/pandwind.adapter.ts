@@ -35,6 +35,7 @@ import {
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
 	CodemodAdapterId,
+	AdapterCapabilityTag,
 	CodemodPatternId,
 	CodemodStyleIdentity,
 	StyleProgramCompositionKind,
@@ -62,6 +63,7 @@ import {
 	normalizeTokenKey,
 	TokenCatalog,
 	TokenReferenceFormat,
+	materializeSourceTokenValues,
 } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import {
@@ -492,10 +494,51 @@ function preserveKnownPresetTokens(
 		(context?.project === undefined
 			? undefined
 			: TokenCatalog.fromContract(context.sourceConfig?.tokenCatalog));
-	if (catalog === undefined) return program;
-	return catalog.preserveProgram(program, pandwindTokenGroup, (match) =>
-		formatTokenReference(match, context?.tokenReferenceFormat ?? TokenReferenceFormat.Preserve),
-	);
+	if (catalog !== undefined)
+		return catalog.preserveProgram(program, pandwindTokenGroup, (match) =>
+			formatTokenReference(match, context?.tokenReferenceFormat ?? TokenReferenceFormat.Preserve),
+		);
+	return program.source?.adapter === CodemodAdapterId.Pandwind
+		? program
+		: materializeSourceTokenValues(program);
+}
+
+function unresolvedForeignTokenResiduals(program: StyleProgram): StyleProgram["residuals"] {
+	if (program.source?.adapter === CodemodAdapterId.Pandwind) return [];
+	const residuals: StyleProgram["residuals"][number][] = [];
+	const addResidual = (residual: StyleProgram["residuals"][number]) => {
+		if (
+			residuals.some(
+				(existing) => existing.kind === residual.kind && existing.text === residual.text,
+			)
+		)
+			return;
+		residuals.push(residual);
+	};
+	const visit = (rule: StyleRule): void => {
+		for (const declaration of rule.declarations) {
+			const tokenValue = declaration.value;
+			if (tokenValue.kind !== StyleValueKindTag.Token || tokenValue.resolved !== undefined)
+				continue;
+			const existing = program.residuals.find(
+				(residual) =>
+					residual.kind === AdapterCapabilityTag.TokenValues &&
+					residual.text === tokenValue.authored,
+			);
+			if (existing !== undefined) {
+				addResidual(existing);
+				continue;
+			}
+			addResidual({
+				kind: AdapterCapabilityTag.TokenValues,
+				text: tokenValue.authored,
+				hint: `source token ${tokenValue.ref} has no verified target value`,
+			});
+		}
+		for (const child of rule.children) visit(child);
+	};
+	for (const rule of program.rules) visit(rule);
+	return residuals;
 }
 
 const conditionQuery = (kind: string, value: string): string => {
@@ -2513,6 +2556,16 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				// never inferred back from generated JavaScript.
 				semantic: outputProgram,
 			});
+			const unresolvedTokenResiduals = unresolvedForeignTokenResiduals(outputProgram);
+			if (unresolvedTokenResiduals.length > 0) {
+				const additionalResiduals = unresolvedTokenResiduals.filter(
+					(residual) =>
+						!outputProgram.residuals.some(
+							(existing) => existing.kind === residual.kind && existing.text === residual.text,
+						),
+				);
+				return finalize({ text: "", imports: [], residuals: additionalResiduals });
+			}
 			if (
 				program.source?.pattern === CodemodPatternId.CssTemplate &&
 				program.source.hostOpenTag === undefined

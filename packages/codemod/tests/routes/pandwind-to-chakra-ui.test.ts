@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -18,16 +19,18 @@ const edgeSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nco
 const malformedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished pandwind */";
 const sourceSemantic = undefined;
 const themedSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
-const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"#2563eb\", padding: \"1rem\" });";
+const tokenSource = "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"$brand\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("pandwind -> chakra-ui: migrates concrete pandwind syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("pandwind -> chakra-ui: migrates concrete pandwind syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -49,7 +52,7 @@ test("pandwind -> chakra-ui: migrates concrete pandwind syntax to chakra-ui", ()
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });",
+		export const card = defaultSystem.css({ padding: "4", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -83,8 +86,8 @@ test("pandwind -> chakra-ui: migrates concrete pandwind syntax to chakra-ui", ()
 	`)
 });
 
-test("pandwind -> chakra-ui: carries a documented secondary pandwind API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("pandwind -> chakra-ui: carries a documented secondary pandwind API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "pandwind -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -146,7 +149,7 @@ test("pandwind -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "#f97316" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,7 +184,7 @@ test("pandwind -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +231,7 @@ test("pandwind -> chakra-ui: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -262,8 +265,8 @@ test("pandwind -> chakra-ui: resolves concrete token values with project context
 	`)
 });
 
-test("pandwind -> chakra-ui: preserves malformed concrete pandwind input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("pandwind -> chakra-ui: preserves malformed concrete pandwind input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished pandwind */");
 	expectRouteScenarioEvidence(result, "pandwind -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);
@@ -272,7 +275,7 @@ test("pandwind -> chakra-ui: preserves malformed concrete pandwind input", () =>
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });
+		export const card = defaultSystem.css({ padding: "4", color: "red" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

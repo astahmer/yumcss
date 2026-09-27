@@ -244,7 +244,7 @@ const mantineTokenGroup = (property: string): string | undefined => {
 
 const MANTINE_TOKEN_POLICY = createTokenPolicy(mantineTokenGroup, (match, property) => {
 	const namespace =
-		property === "color" || property.endsWith("Color")
+		property === "color" || property === "background" || property.endsWith("Color")
 			? "color"
 			: property === "fontSize"
 				? "font-size"
@@ -409,7 +409,7 @@ async function officialMantineConfig(
 		context
 			.listFiles?.(context.root)
 			.filter((file) =>
-				/(?:^|[\\/])(?:theme|mantine-theme)(?:[\\/](?:index\\.)?(?:ts|tsx|js|mjs|cjs)|\\.(?:ts|tsx|js|mjs|cjs))$/u.test(
+				/(?:^|[\\/])(?:theme|mantine-theme)(?:[\\/](?:index\.)?(?:ts|tsx|js|mjs|cjs)|\.(?:ts|tsx|js|mjs|cjs))$/u.test(
 					file,
 				),
 			) ?? [];

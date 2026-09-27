@@ -1,5 +1,7 @@
+import { resolve } from "node:path";
 import { expect } from "vitest";
 import {
+	BUILTIN_CODEMOD_ADAPTER_IDS,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
@@ -9,7 +11,10 @@ import {
 	type AdapterMigrationOptions,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
-import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import {
+	NODE_PROJECT_MODULE_LOADER,
+	type ProjectModuleLoader,
+} from "../src/swap/project-module-loader.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 
@@ -34,6 +39,31 @@ interface AdapterRouteProject {
 
 const routeProjectRoot = "/virtual/pandwind-route-project";
 
+const installedChakraProjectRoot = resolve(import.meta.dirname, "..");
+
+const installedChakraModuleLoader: ProjectModuleLoader = {
+	importPackage: (packageName, root) =>
+		packageName === "@chakra-ui/react"
+			? NODE_PROJECT_MODULE_LOADER.importPackage(packageName, root)
+			: Promise.resolve(undefined),
+	importFile: async () => undefined,
+};
+
+export function requireBuiltinAdapterId(adapter: string): CodemodAdapterId {
+	const identifier = BUILTIN_CODEMOD_ADAPTER_IDS.find((candidate) => candidate === adapter);
+	if (identifier === undefined) throw new Error(`unknown built-in adapter identifier: ${adapter}`);
+	return identifier;
+}
+
+export function createInstalledChakraRouteProject(): AdapterRouteProject {
+	return {
+		root: installedChakraProjectRoot,
+		files: {},
+		moduleLoader: installedChakraModuleLoader,
+		loaderCalls: { packages: [], files: [] },
+	};
+}
+
 function routeProjectFiles(
 	adapter: CodemodAdapterId,
 	color: string,
@@ -52,15 +82,15 @@ function routeProjectFiles(
 			};
 		case CodemodAdapterId.ChakraUi:
 			return {
-				[`${routeProjectRoot}/theme.ts`]: `export default { theme: { tokens: { colors: { brand: { 500: { value: ${quotedColor} } } } } } };`,
+				[`${routeProjectRoot}/chakra.config.ts`]: `export default { theme: { tokens: { colors: { brand: { 500: { value: ${quotedColor} } } }, spacing: { card: { value: "1.125rem" } } } } };`,
 			};
 		case CodemodAdapterId.Mui:
 			return {
-				[`${routeProjectRoot}/src/theme.ts`]: `export default { palette: { primary: { main: ${quotedColor} } }, spacing: { card: "1.125rem" } };`,
+				[`${routeProjectRoot}/mui-theme.ts`]: `export default { palette: { primary: { main: ${quotedColor} } }, spacing: { card: "1.125rem" } };`,
 			};
 		case CodemodAdapterId.Mantine:
 			return {
-				[`${routeProjectRoot}/src/theme.ts`]: `export default { colors: { brand: [${quotedColor}] }, spacing: { card: "1.125rem" } };`,
+				[`${routeProjectRoot}/mantine-theme.ts`]: `export default { colors: { brand: [${quotedColor}] }, spacing: { card: "1.125rem" } };`,
 			};
 		case CodemodAdapterId.Tailwind:
 			return {
@@ -88,14 +118,17 @@ function routeProjectLoader(
 	adapters: ReadonlySet<CodemodAdapterId>,
 	color: string,
 	loaderCalls: AdapterRouteProject["loaderCalls"],
+	files: Readonly<Record<string, string>>,
 ): ProjectModuleLoader {
 	const theme = {
 		colors: { brand: { 500: { value: color } } },
 		spacing: { card: "1.125rem" },
 	};
 	return {
-		async importPackage<T>(packageName: string): Promise<T | undefined> {
+		async importPackage<T>(packageName: string, _root: string): Promise<T | undefined> {
 			loaderCalls.packages.push(packageName);
+			if (hasAdapter(adapters, CodemodAdapterId.ChakraUi) && packageName === "@chakra-ui/react")
+				return NODE_PROJECT_MODULE_LOADER.importPackage(packageName, installedChakraProjectRoot);
 			if (hasAdapter(adapters, CodemodAdapterId.Panda)) {
 				if (packageName === "@pandacss/config")
 					return {
@@ -123,19 +156,6 @@ function routeProjectLoader(
 						},
 					},
 				} as T;
-			if (hasAdapter(adapters, CodemodAdapterId.ChakraUi) && packageName === "@chakra-ui/react")
-				return {
-					defaultConfig: {},
-					isValidSystem: () => false,
-					createSystem: (_defaults: unknown, config: unknown) => ({
-						_config: config,
-						properties: new Set(["color", "backgroundColor", "padding", "bg"]),
-						utility: { shorthands: new Map([["bg", "backgroundColor"]]) },
-						token: {
-							var: (path: string) => `var(--chakra-${path.replaceAll(".", "-").replace("/", "-")})`,
-						},
-					}),
-				} as T;
 			if (
 				hasAdapter(adapters, CodemodAdapterId.Mui) &&
 				(packageName === "@mui/system" || packageName === "@mui/material")
@@ -162,6 +182,14 @@ function routeProjectLoader(
 								if (candidate === "bg-brand") return `.bg-brand{background-color:${color}}`;
 								if (candidate === "p-card") return ".p-card{padding:1.125rem}";
 								if (candidate === "brand-button") return `.brand-button{background-color:${color}}`;
+								const arbitrary = /^\[([^:]+):(.+)\]$/u.exec(candidate);
+								if (arbitrary?.[1] !== undefined && arbitrary[2] !== undefined) {
+									const escaped = candidate.replace(
+										/[^A-Za-z0-9_-]/gu,
+										(character) => `\\${character}`,
+									);
+									return `.${escaped}{${arbitrary[1]}:${arbitrary[2]}}`;
+								}
 								return null;
 							}),
 						theme: {
@@ -217,25 +245,29 @@ function routeProjectLoader(
 		},
 		async importFile<T>(file: string): Promise<T | undefined> {
 			loaderCalls.files.push(file);
-			// Several ecosystems conventionally discover `src/theme.ts`. A shared
-			// project loader must still return the right module export for each
-			// official loader; otherwise the first adapter in the route silently
-			// masquerades as every other theme system.
-			if (file.endsWith("/src/theme.ts")) {
-				const modules: Record<string, unknown> = {};
-				if (hasAdapter(adapters, CodemodAdapterId.ChakraUi))
-					modules.chakraTheme = { theme: { tokens: theme } };
-				if (hasAdapter(adapters, CodemodAdapterId.Mui))
-					modules.muiTheme = {
+			if (files[file] === undefined) return undefined;
+			if (hasAdapter(adapters, CodemodAdapterId.ChakraUi) && file.endsWith("/chakra.config.ts"))
+				return {
+					default: {
+						theme: {
+							tokens: {
+								colors: { brand: { 500: { value: color } } },
+								spacing: { card: { value: "1.125rem" } },
+							},
+						},
+					},
+				} as T;
+			if (hasAdapter(adapters, CodemodAdapterId.Mui) && file.endsWith("/mui-theme.ts"))
+				return {
+					default: {
 						palette: { primary: { main: color } },
 						spacing: { card: "1.125rem" },
-					};
-				if (hasAdapter(adapters, CodemodAdapterId.Mantine))
-					modules.mantineTheme = { colors: { brand: [color] }, spacing: { card: "1.125rem" } };
-				if (Object.keys(modules).length > 0) return modules as T;
-			}
-			if (hasAdapter(adapters, CodemodAdapterId.ChakraUi) && file.endsWith("/theme.ts"))
-				return { chakraTheme: { theme: { tokens: theme } } } as T;
+					},
+				} as T;
+			if (hasAdapter(adapters, CodemodAdapterId.Mantine) && file.endsWith("/mantine-theme.ts"))
+				return {
+					default: { colors: { brand: [color] }, spacing: { card: "1.125rem" } },
+				} as T;
 			if (hasAdapter(adapters, CodemodAdapterId.Tokenami) && file.includes("tokenami.config."))
 				return {
 					default: { tokens: { colors: { brand: { value: color } } } },
@@ -260,7 +292,7 @@ export function createAdapterRouteProject(
 		root: routeProjectRoot,
 		files,
 		loaderCalls,
-		moduleLoader: routeProjectLoader(adapters, color, loaderCalls),
+		moduleLoader: routeProjectLoader(adapters, color, loaderCalls, files),
 	};
 }
 
@@ -419,6 +451,7 @@ function configuredTargetTokenMarkers(target: CodemodAdapterId): readonly string
 		case CodemodAdapterId.Mantine:
 			return ["--mantine-color-brand", "--mantine-spacing-card"];
 		case CodemodAdapterId.Tailwind:
+			return ["text-brand", "bg-brand", "p-card", "--color-brand"];
 		case CodemodAdapterId.UnoCSS:
 			return ["text-brand", "bg-brand", "p-card"];
 		case CodemodAdapterId.Tokenami:
@@ -462,7 +495,7 @@ export function expectConfiguredTargetTokenEvidence(
 	).toBe(true);
 }
 
-/** A literal blue fixture must remain literal when the target project is amber. */
+/** Literal output is safer when no unique target token has the same value. */
 export function expectConfiguredTargetTokenAbsence(
 	result: AdapterMigrationResult,
 	target: CodemodAdapterId,

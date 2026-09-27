@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.Cha
 const edgeSource = "import { createComponent } from \"react-fela\";\nexport const Card = createComponent(() => ({ color: \"red\" }), \"button\");";
 const malformedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));\nconst unfinished = { /* unfinished fela */";
 const sourceSemantic = undefined;
-const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
-const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2563eb\" }));";
+const themedSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2a57c8\" }));";
+const tokenSource = "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: \"#2a57c8\" }));";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("fela -> chakra-ui: migrates concrete fela syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("fela -> chakra-ui: migrates concrete fela syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -84,8 +87,8 @@ test("fela -> chakra-ui: migrates concrete fela syntax to chakra-ui", () => {
 	`)
 });
 
-test("fela -> chakra-ui: carries a documented secondary fela API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("fela -> chakra-ui: carries a documented secondary fela API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "fela -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -148,7 +151,7 @@ test("fela -> chakra-ui: loads concrete theme and project context variants", asy
 		    "code": "import { createRenderer } from "fela";
 		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
-		export const card = defaultSystem.css({ color: "#2563eb" });",
+		export const card = defaultSystem.css({ color: "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -266,8 +269,8 @@ test("fela -> chakra-ui: resolves concrete token values with project context", a
 	`)
 });
 
-test("fela -> chakra-ui: preserves malformed concrete fela input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("fela -> chakra-ui: preserves malformed concrete fela input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished fela */");
 	expectRouteScenarioEvidence(result, "fela -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);

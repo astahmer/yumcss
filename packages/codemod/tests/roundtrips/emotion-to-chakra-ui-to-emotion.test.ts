@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -19,19 +20,20 @@ const reverse = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapter
 const edgeSource = "import { css } from \"@emotion/css\";\nexport const card = css`color: red; padding: 1rem;`;";
 const malformedSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished emotion */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
-const tokenSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const themedSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"#2a57c8\", padding: \"1rem\" });";
+const tokenSource = "import { css } from \"@emotion/css\";\nexport const card = css({ color: \"#2a57c8\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Emotion, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Emotion, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Emotion, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
-test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -51,7 +53,7 @@ test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });",
+		export const card = defaultSystem.css({ padding: "4", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -121,9 +123,9 @@ test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round tr
 	`)
 });
 
-test("emotion -> chakra-ui -> emotion: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+test("emotion -> chakra-ui -> emotion: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "emotion -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -135,7 +137,7 @@ test("emotion -> chakra-ui -> emotion: retains the documented secondary API with
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });",
+		export const card = defaultSystem.css({ padding: "4", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +236,7 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "#2563eb" });",
+		export const card = defaultSystem.css({ padding: "4", color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +271,7 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ padding: "1rem", color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -306,7 +308,7 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,11 +341,10 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import { css } from "@emotion/css";
 
-		// pandwind:migrate-skip (route: chakra-ui -> emotion | lowering-residual: validation)
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
-		      "converted": 0,
+		export const card = css({ padding: "1rem", color: "#2a57c8" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -359,25 +360,17 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -401,7 +394,7 @@ test("emotion -> chakra-ui -> emotion: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -434,11 +427,10 @@ test("emotion -> chakra-ui -> emotion: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import { css } from "@emotion/css";
 
-		// pandwind:migrate-skip (route: chakra-ui -> emotion | lowering-residual: validation)
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
-		    "converted": 0,
+		export const card = css({ padding: "1rem", color: "#2a57c8" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -454,25 +446,17 @@ test("emotion -> chakra-ui -> emotion: resolves token values across both concret
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

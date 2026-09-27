@@ -26,6 +26,7 @@ const amberTargetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.VueStyled, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Less, CodemodAdapterId.VueStyled, "#f97316");
 
+
 test("less -> vue-styled: migrates concrete less syntax to vue-styled", () => {
 	const result = route.run({ source: happySource, file: "card.less", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);

@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Tailwind);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Mantine);
-	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;";
+	const happySource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;";
 const edgeSource = "import { Button } from \"@mantine/core\";\nexport const App = () => <Button styles={{ root: { color: \"red\" } }} />;";
-const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue.6\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
+const malformedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"blue\" mx=\"auto\" maw={400} />;\nconst unfinished = { /* unfinished mantine */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
-const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"#2563eb\" mx=\"auto\" maw={400} />;";
+const tokenSource = "import { Box } from \"@mantine/core\";\nexport const App = () => <Box c=\"brand.0\" mx=\"auto\" maw={400} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
@@ -50,9 +50,8 @@ test("mantine -> tailwind -> mantine: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		    "converted": 0,
+		export const App = () => <Box className={"[margin-inline:auto] [color:blue] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -60,41 +59,63 @@ test("mantine -> tailwind -> mantine: preserves an actionable concrete round tri
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: configuration | available: named-map, residual)
-		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box style={{ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -227,41 +248,36 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
-		      "converted": 0,
+		export const App = () => <Box style={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -305,41 +321,36 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
-		      "converted": 0,
+		export const App = () => <Box style={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -397,41 +408,36 @@ test("mantine -> tailwind -> mantine: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
-		    "converted": 0,
+		export const App = () => <Box style={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

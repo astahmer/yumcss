@@ -730,10 +730,20 @@ function equivalentTailwindDeclaration(
 	);
 }
 
-function tailwindPropertyAwareUtility(declaration: StyleDeclaration): string | undefined {
+function tailwindPropertyAwareUtility(
+	declaration: StyleDeclaration,
+	catalog?: TokenCatalog,
+): string | undefined {
 	const resolved = resolvedStyleValue(declaration.value);
 	if (resolved === undefined) return undefined;
-	const value = utilityValue(resolved);
+	const backgroundToken =
+		declaration.property === "background"
+			? catalog?.findUnique(["colors"], String(resolved))
+			: undefined;
+	const value =
+		backgroundToken === undefined
+			? utilityValue(resolved)
+			: `var(--color-${backgroundToken.ref.replaceAll(".", "-")})`;
 	const candidates: Readonly<Record<string, string>> = {
 		padding: `p-[${value}]`,
 		paddingInline: `px-[${value}]`,
@@ -757,6 +767,7 @@ function tailwindPropertyAwareUtility(declaration: StyleDeclaration): string | u
 		rowGap: `gap-y-[${value}]`,
 		columnGap: `gap-x-[${value}]`,
 		backgroundColor: `bg-[${value}]`,
+		background: `[background:${value}]`,
 		color: `text-[${value}]`,
 		borderRadius: `rounded-[${value}]`,
 		borderTopLeftRadius: `rounded-tl-[${value}]`,
@@ -815,7 +826,7 @@ function emitTailwind(
 			official === undefined
 				? tailwindTokenUtility(declaration, catalog)
 				: official.slice(prefix.length);
-		const propertyAware = tailwindPropertyAwareUtility(declaration);
+		const propertyAware = tailwindPropertyAwareUtility(declaration, catalog);
 		let selected = false;
 		for (const candidate of [official, named === official ? undefined : named, propertyAware]) {
 			if (candidate === undefined) continue;
@@ -1479,10 +1490,8 @@ async function officialConfig(
 		const resolver: TailwindOfficialUtilityResolver = {
 			resolve(token) {
 				if (cache.has(token)) return cache.get(token);
-				const resolved = resolveTailwindDeclarations(
-					parseEngineCss(system.candidatesToCss([token])[0] ?? "", token),
-					theme,
-				);
+				const generatedCss = system.candidatesToCss([token])[0] ?? "";
+				const resolved = resolveTailwindDeclarations(parseEngineCss(generatedCss, token), theme);
 				cache.set(token, resolved);
 				return resolved;
 			},

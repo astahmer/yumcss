@@ -265,36 +265,37 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> bamboo | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[color:#2563eb]";",
-		      "converted": 0,
+		      "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {

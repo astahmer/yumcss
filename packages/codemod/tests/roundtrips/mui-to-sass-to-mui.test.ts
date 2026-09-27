@@ -20,7 +20,7 @@ const edgeSource = "import { styled } from \"@mui/system\";\nexport const Card =
 const malformedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;\nconst unfinished = { /* unfinished mui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
-const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"#2563eb\", p: 2 }} />;";
+const tokenSource = "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"primary.main\", p: 2 }} />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
@@ -317,7 +317,7 @@ test("mui -> sass -> mui: resolves token values across both concrete legs", asyn
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
-		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -353,7 +353,7 @@ test("mui -> sass -> mui: resolves token values across both concrete legs", asyn
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
 		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
-		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

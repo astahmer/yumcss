@@ -13,18 +13,19 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.UnoCSS);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.UnoCSS, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tokenami, CodemodAdapterId.UnoCSS, "#f97316");
+
 
 test("tokenami -> unocss: migrates concrete tokenami syntax to unocss", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
@@ -47,7 +48,7 @@ test("tokenami -> unocss: migrates concrete tokenami syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[card-gap:1rem] [color:red]";",
+		  "code": "export const card = "[gap:1rem] [color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +144,7 @@ test("tokenami -> unocss: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = "[card-gap:1rem] text-brand";",
+		    "code": "export const card = "[gap:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +180,7 @@ test("tokenami -> unocss: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = "[card-gap:1rem] text-brand";",
+		    "code": "export const card = "[gap:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,12 +228,13 @@ test("tokenami -> unocss: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[card-gap:1rem] text-brand";",
+		  "code": "export const card = "[gap:1rem] text-brand";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -271,7 +273,7 @@ test("tokenami -> unocss: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[card-gap:1rem] [color:red]";
+		  "code": "export const card = "[gap:1rem] [color:red]";
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

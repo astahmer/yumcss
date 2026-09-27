@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -18,16 +19,18 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.StyleX, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.StyleX, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.StyleX, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("chakra-ui -> stylex: migrates concrete chakra-ui syntax to stylex", () => {
-	const result = route.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
+
+test("chakra-ui -> stylex: migrates concrete chakra-ui syntax to stylex", async () => {
+	const result = await route.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -48,7 +51,7 @@ test("chakra-ui -> stylex: migrates concrete chakra-ui syntax to stylex", () => 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" } }).style;",
+		export const App = () => stylex.create({ style: { background: "#fecaca", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -84,8 +87,8 @@ test("chakra-ui -> stylex: migrates concrete chakra-ui syntax to stylex", () => 
 	`)
 });
 
-test("chakra-ui -> stylex: carries a documented secondary chakra-ui API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> stylex: carries a documented secondary chakra-ui API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "chakra-ui -> stylex secondary");
 	expectExplicitResidualEvidence(result);
@@ -146,10 +149,9 @@ test("chakra-ui -> stylex: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> stylex | lowering-residual: validation)
-		export const App = () => <Box bg="brand.500" p="4" />;",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { background: "#f97316", padding: "1rem" } }).style;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -167,34 +169,25 @@ test("chakra-ui -> stylex: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> stylex | lowering-residual: validation)
-		export const App = () => <Box bg="brand.500" p="4" />;",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { background: "#2a57c8", padding: "1rem" } }).style;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -212,25 +205,17 @@ test("chakra-ui -> stylex: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -249,7 +234,7 @@ test("chakra-ui -> stylex: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" } }).style;",
+		export const App = () => stylex.create({ style: { background: "#2a57c8", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -285,8 +270,8 @@ test("chakra-ui -> stylex: resolves concrete token values with project context",
 	`)
 });
 
-test("chakra-ui -> stylex: preserves malformed concrete chakra-ui input", () => {
-	const result = route.run({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic });
+test("chakra-ui -> stylex: preserves malformed concrete chakra-ui input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished chakra-ui */");
 	expectRouteScenarioEvidence(result, "chakra-ui -> stylex malformed");
 	expectExplicitResidualEvidence(result);
@@ -294,7 +279,7 @@ test("chakra-ui -> stylex: preserves malformed concrete chakra-ui input", () => 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" } }).style;
+		export const App = () => stylex.create({ style: { background: "#fecaca", padding: "1rem" } }).style;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

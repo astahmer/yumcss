@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.ReactStrictDom, CodemodAda
 const edgeSource = "import { css } from \"react-strict-dom\";\nexport const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });";
 const malformedSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;\nconst unfinished = { /* unfinished react-strict-dom */";
 const sourceSemantic = undefined;
-const themedSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"#2563eb\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;";
-const tokenSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"#2563eb\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;";
+const themedSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"#2a57c8\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;";
+const tokenSource = "import { css, html } from \"react-strict-dom\";\nconst styles = css.create({ card: { color: \"#2a57c8\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("react-strict-dom -> chakra-ui: migrates concrete react-strict-dom syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
+
+test("react-strict-dom -> chakra-ui: migrates concrete react-strict-dom syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -49,7 +52,7 @@ test("react-strict-dom -> chakra-ui: migrates concrete react-strict-dom syntax t
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -84,8 +87,8 @@ test("react-strict-dom -> chakra-ui: migrates concrete react-strict-dom syntax t
 	`)
 });
 
-test("react-strict-dom -> chakra-ui: carries a documented secondary react-strict-dom API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("react-strict-dom -> chakra-ui: carries a documented secondary react-strict-dom API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "react-strict-dom -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -152,7 +155,7 @@ test("react-strict-dom -> chakra-ui: loads concrete theme and project context va
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,7 +191,7 @@ test("react-strict-dom -> chakra-ui: loads concrete theme and project context va
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +239,7 @@ test("react-strict-dom -> chakra-ui: resolves concrete token values with project
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,8 +274,8 @@ test("react-strict-dom -> chakra-ui: resolves concrete token values with project
 	`)
 });
 
-test("react-strict-dom -> chakra-ui: preserves malformed concrete react-strict-dom input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
+test("react-strict-dom -> chakra-ui: preserves malformed concrete react-strict-dom input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished react-strict-dom */");
 	expectRouteScenarioEvidence(result, "react-strict-dom -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);
@@ -281,7 +284,7 @@ test("react-strict-dom -> chakra-ui: preserves malformed concrete react-strict-d
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -17,17 +18,19 @@ const route = createAdapterRouteSpec(CodemodAdapterId.Goober, CodemodAdapterId.C
 const edgeSource = "import { styled } from \"goober\";\nexport const Card = styled.div`color: red; padding: 1rem;`;";
 const malformedSource = "import { css } from \"goober\";\nexport const card = css({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished goober */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"goober\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
-const tokenSource = "import { css } from \"goober\";\nexport const card = css({ color: \"#2563eb\", padding: \"1rem\" });";
+const themedSource = "import { css } from \"goober\";\nexport const card = css({ color: \"#2a57c8\", padding: \"1rem\" });";
+const tokenSource = "import { css } from \"goober\";\nexport const card = css({ color: \"#2a57c8\", padding: \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
-const blueProject = createAdapterRouteProject(CodemodAdapterId.Goober, CodemodAdapterId.ChakraUi, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.Goober, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Goober, CodemodAdapterId.ChakraUi, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 
-test("goober -> chakra-ui: migrates concrete goober syntax to chakra-ui", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+
+test("goober -> chakra-ui: migrates concrete goober syntax to chakra-ui", async () => {
+	const result = await route.runAsync({ source: happySource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -49,7 +52,7 @@ test("goober -> chakra-ui: migrates concrete goober syntax to chakra-ui", () => 
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });",
+		export const card = defaultSystem.css({ padding: "4", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -83,8 +86,8 @@ test("goober -> chakra-ui: migrates concrete goober syntax to chakra-ui", () => 
 	`)
 });
 
-test("goober -> chakra-ui: carries a documented secondary goober API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+test("goober -> chakra-ui: carries a documented secondary goober API explicitly", async () => {
+	const result = await route.runAsync({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "goober -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
@@ -146,7 +149,7 @@ test("goober -> chakra-ui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "#2563eb" });",
+		export const card = defaultSystem.css({ padding: "4", color: "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,7 +184,7 @@ test("goober -> chakra-ui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +231,7 @@ test("goober -> chakra-ui: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -262,8 +265,8 @@ test("goober -> chakra-ui: resolves concrete token values with project context",
 	`)
 });
 
-test("goober -> chakra-ui: preserves malformed concrete goober input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+test("goober -> chakra-ui: preserves malformed concrete goober input", async () => {
+	const result = await route.runAsync({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic, project: installedChakraProject });
 	expect(result.code).toContain("/* unfinished goober */");
 	expectRouteScenarioEvidence(result, "goober -> chakra-ui malformed");
 	expectExplicitResidualEvidence(result);
@@ -272,7 +275,7 @@ test("goober -> chakra-ui: preserves malformed concrete goober input", () => {
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "1rem", color: "red" });
+		export const card = defaultSystem.css({ padding: "4", color: "red" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

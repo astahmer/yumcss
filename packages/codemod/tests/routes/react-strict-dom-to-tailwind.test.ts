@@ -26,6 +26,7 @@ const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.Tailwind, "#2563eb");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, CodemodAdapterId.Tailwind, "#f97316");
 
+
 test("react-strict-dom -> tailwind: migrates concrete react-strict-dom syntax to tailwind", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
@@ -185,11 +186,10 @@ test("react-strict-dom -> tailwind: loads concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
-		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		    "code": "import { html } from "react-strict-dom";
+		const styles = { "card": "[padding:1rem] text-brand" };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,25 +207,17 @@ test("react-strict-dom -> tailwind: loads concrete theme and project context var
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -243,11 +235,10 @@ test("react-strict-dom -> tailwind: resolves concrete token values with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
-		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		  "code": "import { html } from "react-strict-dom";
+		const styles = { "card": "[padding:1rem] text-brand" };
 		export const Card = () => <html.div style={styles.card} />;",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -265,25 +256,17 @@ test("react-strict-dom -> tailwind: resolves concrete token values with project 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs or has residuals",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs or has residuals",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

@@ -11,6 +11,11 @@ import {
 import type { AdapterParseContext } from "../src/swap/adapter-contract.ts";
 import { StyleHostRepresentationKind } from "../src/swap/identifiers.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
+import {
+	createAdapterRouteProject,
+	createAdapterRouteSpec,
+	requireBuiltinAdapterId,
+} from "./route-spec-support.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 const pandwind = CodemodAdapterId.Pandwind;
@@ -121,18 +126,42 @@ function migrateTo(
 	});
 }
 
+const migrateToAsync = (
+	source: string,
+	from: string,
+	to: string,
+	file: string,
+	semantic?: ReturnType<typeof sourceSemantic>,
+) => {
+	fixtureFor(from);
+	fixtureFor(to);
+	const sourceAdapterId = requireBuiltinAdapterId(from);
+	const targetAdapterId = requireBuiltinAdapterId(to);
+	const project = createAdapterRouteProject(sourceAdapterId, targetAdapterId, "#2a57c8");
+	const route = createAdapterRouteSpec(sourceAdapterId, targetAdapterId);
+	return route.runAsync({
+		source,
+		file,
+		project,
+		...(semantic === undefined ? {} : { semantic }),
+	});
+};
+
 describe("bidirectional registered adapter matrix", () => {
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
 		"lowers %s to Pandwind with a valid semantic result",
-		(adapterId) => {
+		async (adapterId) => {
 			const fixture = fixtureFor(adapterId);
-			const result = migrateTo(
-				fixture.source,
-				adapterId,
-				pandwind,
-				fixture.file,
-				sourceSemantic(adapterId),
-			);
+			const result =
+				adapterId === CodemodAdapterId.ChakraUi
+					? await migrateToAsync(
+							fixture.source,
+							adapterId,
+							pandwind,
+							fixture.file,
+							sourceSemantic(adapterId),
+						)
+					: migrateTo(fixture.source, adapterId, pandwind, fixture.file, sourceSemantic(adapterId));
 			if (adapterId === pandwind) {
 				expect(result.code).toBe(fixture.source);
 				expect(result.changed).toBe(false);
@@ -250,18 +279,27 @@ describe("bidirectional registered adapter matrix", () => {
 		},
 	);
 
-	test("executes every registered source-to-target route with explicit outcome evidence", () => {
+	test("executes every registered source-to-target route with explicit outcome evidence", async () => {
 		const outcomes: string[] = [];
 		for (const sourceAdapter of catalog.adapters) {
 			const fixture = fixtureFor(sourceAdapter.id);
 			for (const targetAdapter of catalog.adapters) {
-				const result = migrateTo(
-					fixture.source,
-					sourceAdapter.id,
-					targetAdapter.id,
-					fixture.file,
-					sourceSemantic(sourceAdapter.id),
-				);
+				const result =
+					sourceAdapter.id === CodemodAdapterId.ChakraUi
+						? await migrateToAsync(
+								fixture.source,
+								sourceAdapter.id,
+								targetAdapter.id,
+								fixture.file,
+								sourceSemantic(sourceAdapter.id),
+							)
+						: migrateTo(
+								fixture.source,
+								sourceAdapter.id,
+								targetAdapter.id,
+								fixture.file,
+								sourceSemantic(sourceAdapter.id),
+							);
 				const residualEvidence =
 					result.residuals.length +
 					result.skipped +
@@ -461,8 +499,8 @@ describe("composed cross-ecosystem routes", () => {
 		tokens: examplePreset.tokens,
 	});
 
-	test("Chakra UI -> Pandwind -> Tailwind completes without residuals", () => {
-		const chakra = migrateTo(
+	test("Chakra UI -> Pandwind -> Tailwind completes without residuals", async () => {
+		const chakra = await migrateToAsync(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'export const Card = () => <Box color="red" padding="1rem" />;',
 			CodemodAdapterId.ChakraUi,
@@ -504,15 +542,21 @@ describe("composed cross-ecosystem routes", () => {
 		expect(chakra.code).toContain('backgroundColor: "#3182ce"');
 	});
 
-	test("Chakra UI -> Tailwind preserves the JSX host while lowering style props", () => {
-		const result = migrateTo(
-			'import { Box } from "@chakra-ui/react";\n' +
-				'export const Card = () => <Box color="red" padding="1rem" />;',
+	test("Chakra UI -> Tailwind preserves the JSX host while lowering style props", async () => {
+		const route = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tailwind);
+		const project = createAdapterRouteProject(
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Tailwind,
-			"Card.tsx",
-			sourceSemantic(CodemodAdapterId.ChakraUi),
+			"#2a57c8",
 		);
+		const result = await route.runAsync({
+			source:
+				'import { Box } from "@chakra-ui/react";\n' +
+				'export const Card = () => <Box color="red" padding="1rem" />;',
+			file: "Card.tsx",
+			semantic: sourceSemantic(CodemodAdapterId.ChakraUi),
+			project,
+		});
 
 		expect(result.residuals).toEqual([]);
 		expect(result.skipped).toBe(0);

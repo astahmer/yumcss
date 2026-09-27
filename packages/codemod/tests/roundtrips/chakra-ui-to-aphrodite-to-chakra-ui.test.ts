@@ -4,6 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -20,18 +21,19 @@ const edgeSource = "import { defineRecipe, useRecipe } from \"@chakra-ui/react\"
 const malformedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;\nconst unfinished = { /* unfinished chakra-ui */";
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
-const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"#2563eb\" p=\"4\" />;";
+const tokenSource = "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"brand.500\" p=\"4\" />;";
 const blueSemantic = { source: { framework: BuiltinHostFramework.React } };
 const amberSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
-const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Aphrodite, "#2563eb");
+const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Aphrodite, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.Aphrodite, "#f97316");
+const installedChakraProject = createInstalledChakraRouteProject();
 	const targetSemantic = undefined;
 
-test("chakra-ui -> aphrodite -> chakra-ui: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> aphrodite -> chakra-ui: preserves an actionable concrete round trip", async () => {
+	const first = await forward.runAsync({ source: happySource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -51,12 +53,13 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves an actionable concrete roun
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "background": "#fecaca", "padding": "1rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -87,7 +90,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ "style": { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" } }}/>;",
+		export const App = () => <Box css={{ "style": { background: "red.200", padding: "4" } }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -122,9 +125,9 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves an actionable concrete roun
 	`)
 });
 
-test("chakra-ui -> aphrodite -> chakra-ui: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+test("chakra-ui -> aphrodite -> chakra-ui: retains the documented secondary API without silent loss", async () => {
+	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "chakra-ui -> aphrodite round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -215,7 +218,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "background": "#f97316", "padding": "1rem" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -252,7 +255,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ "style": { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" } }}/>;",
+		export const App = () => <Box css={{ "style": { background: "#f97316", padding: "4" } }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +292,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "background": "#2a57c8", "padding": "1rem" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -326,7 +329,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ "style": { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" } }}/>;",
+		export const App = () => <Box css={{ "style": { background: "brand.500", padding: "4" } }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,12 +380,13 @@ test("chakra-ui -> aphrodite -> chakra-ui: resolves token values across both con
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "background": "#2a57c8", "padding": "1rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -413,7 +417,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: resolves token values across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ "style": { backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" } }}/>;",
+		export const App = () => <Box css={{ "style": { background: "brand.500", padding: "4" } }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

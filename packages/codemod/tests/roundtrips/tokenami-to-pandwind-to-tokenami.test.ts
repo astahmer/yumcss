@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Pandwind);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -51,7 +51,7 @@ test("tokenami -> pandwind -> tokenami: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ cardGap: "1rem", color: "red" });",
+		export const card = css.class({ gap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("tokenami -> pandwind -> tokenami: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ cardGap: "1rem", color: "red" });",
+		export const card = css({ gap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("tokenami -> pandwind -> tokenami: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ cardGap: "1rem", color: "brand" });",
+		export const card = css.class({ gap: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -272,7 +272,7 @@ test("tokenami -> pandwind -> tokenami: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -309,7 +309,7 @@ test("tokenami -> pandwind -> tokenami: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ cardGap: "1rem", color: "brand" });",
+		export const card = css.class({ gap: "1rem", color: "brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -344,7 +344,7 @@ test("tokenami -> pandwind -> tokenami: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -395,7 +395,7 @@ test("tokenami -> pandwind -> tokenami: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ cardGap: "1rem", color: "brand" });",
+		export const card = css.class({ gap: "1rem", color: "brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +430,7 @@ test("tokenami -> pandwind -> tokenami: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ cardGap: "1rem", color: "$colors.brand" });",
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

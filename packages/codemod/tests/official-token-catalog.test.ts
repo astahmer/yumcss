@@ -102,18 +102,23 @@ describe("official custom-token loaders", () => {
 			$$chakra: true as const,
 			_config: {
 				theme: { tokens: { colors: { brand: { "500": { value: "#123456" } } } } },
+				utilities: { color: { values: "colors" } },
 			},
+			properties: new Set(["color"]),
 			token: { var: (path: string) => `var(--chakra-${path.replaceAll(".", "-")})` },
 		};
 		const loader: ProjectModuleLoader = {
 			async importPackage() {
 				return { isValidSystem: (value: unknown) => value === system } as never;
 			},
-			async importFile() {
-				return { default: system } as never;
+			async importFile(path) {
+				return path === "/project/chakra.config.ts" ? ({ default: system } as never) : undefined;
 			},
 		};
-		const config = await createChakraAdapter({ moduleLoader: loader }).loadConfigAsync?.(context);
+		const config = await createChakraAdapter({ moduleLoader: loader }).loadConfigAsync?.({
+			...context,
+			listFiles: () => ["/project/chakra.config.ts"],
+		});
 
 		expect(config?.tokenCatalog?.groups).toMatchInlineSnapshot(`
 			{
@@ -359,7 +364,19 @@ describe("official custom-token loaders", () => {
 		const emit = (id: CodemodAdapterId) => {
 			const adapter = adapters.get(id);
 			expect(adapter?.tokenPolicy).toBeDefined();
-			const config = { adapter: id, files: [], values: {}, tokenCatalog: catalog };
+			const config = {
+				adapter: id,
+				files: [],
+				values:
+					id === CodemodAdapterId.ChakraUi
+						? {
+								chakraSystem: {
+									_config: { utilities: { color: { values: "colors" } } },
+								},
+							}
+						: {},
+				tokenCatalog: catalog,
+			};
 			const emitContext = { ...context, config, mode: "safe" as const, index: 0 };
 			const program = adapter!.tokenPolicy!.preserve(literalProgram, emitContext);
 			return adapter!.emit(program, emitContext).text;
@@ -377,7 +394,19 @@ describe("official custom-token loaders", () => {
 		const preserve = (adapter: StyleAdapter) =>
 			adapter.tokenPolicy!.preserve(literalProgram, {
 				...context,
-				config: { adapter: adapter.id, files: [], values: {}, tokenCatalog: catalog },
+				config: {
+					adapter: adapter.id,
+					files: [],
+					values:
+						adapter.id === CodemodAdapterId.ChakraUi
+							? {
+									chakraSystem: {
+										_config: { utilities: { color: { values: "colors" } } },
+									},
+								}
+							: {},
+					tokenCatalog: catalog,
+				},
 				mode: "safe",
 				index: 0,
 			});
@@ -875,6 +904,7 @@ describe("official custom-token loaders", () => {
 			$$chakra: true as const,
 			_config: {
 				theme: { tokens: { spacing: { card: { value: "13px" } } } },
+				utilities: { padding: { values: "spacing" } },
 			},
 			properties: new Set(["css", "customSpacing"]),
 			utility: { shorthands: new Map([["customSpacing", "padding"]]) },

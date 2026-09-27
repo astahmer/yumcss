@@ -55,6 +55,7 @@ describe("custom design-system context resolution", () => {
 		const system = {
 			$$chakra: true as const,
 			_config: {
+				utilities: { color: { values: "colors" } },
 				theme: {
 					tokens: {
 						colors: { brand: { "500": { value: "#123456" } } },
@@ -100,12 +101,24 @@ describe("custom design-system context resolution", () => {
 	});
 
 	test("resolves custom Panda tokens through the official config loader", async () => {
+		const system = {
+			$$chakra: true as const,
+			_config: {
+				utilities: { color: { values: "colors" } },
+				theme: {
+					tokens: {
+						colors: { brand: { "500": { value: "#123456" } } },
+					},
+				},
+			},
+			properties: ["color"],
+		};
 		const loader: ProjectModuleLoader = {
 			async importPackage(packageName) {
 				if (packageName === "@chakra-ui/react")
 					return {
 						defaultConfig: {},
-						isValidSystem: () => false,
+						isValidSystem: (value: unknown) => value === system,
 					} as never;
 				return packageName === "@pandacss/config"
 					? ({
@@ -121,8 +134,8 @@ describe("custom design-system context resolution", () => {
 						} as never)
 					: undefined;
 			},
-			async importFile() {
-				return undefined;
+			async importFile(file) {
+				return file === `${root}/src/theme.ts` ? ({ default: system } as never) : undefined;
 			},
 		};
 		const sourceAdapter = createPandaAdapter({ moduleLoader: loader });

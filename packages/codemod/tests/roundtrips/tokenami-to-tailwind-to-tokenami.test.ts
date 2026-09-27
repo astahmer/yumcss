@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Tailwind);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
 const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--card-gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"#2563eb\", \"--card-gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -49,7 +49,7 @@ test("tokenami -> tailwind -> tokenami: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[card-gap:1rem] [color:red]";",
+		    "code": "export const card = "[gap:1rem] [color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("tokenami -> tailwind -> tokenami: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ cardGap: "1rem", color: "red" });",
+		export const card = css({ gap: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("tokenami -> tailwind -> tokenami: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[card-gap:1rem] text-brand";",
+		      "code": "export const card = "[gap:1rem] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -265,42 +265,43 @@ test("tokenami -> tailwind -> tokenami: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> tokenami | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[card-gap:1rem] text-brand";",
-		      "converted": 0,
+		      "code": "import { css } from "@tokenami/css";
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[card-gap:1rem] text-brand";",
+		      "code": "export const card = "[gap:1rem] text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -336,36 +337,37 @@ test("tokenami -> tailwind -> tokenami: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> tokenami | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[card-gap:1rem] text-brand";",
-		      "converted": 0,
+		      "code": "import { css } from "@tokenami/css";
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
+		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "residual",
+		          "representation": "static",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tailwind utility requires the project engine or a custom preset",
-		          "kind": "unknown-utility",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -385,12 +387,13 @@ test("tokenami -> tailwind -> tokenami: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[card-gap:1rem] text-brand";",
+		    "code": "export const card = "[gap:1rem] text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -420,36 +423,37 @@ test("tokenami -> tailwind -> tokenami: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> tokenami | parse-residual: unknown-utility | available: named-map, residual)
-		export const card = "[card-gap:1rem] text-brand";",
-		    "converted": 0,
+		    "code": "import { css } from "@tokenami/css";
+		export const card = css({ gap: "1rem", color: "$colors.brand" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tailwind utility requires the project engine or a custom preset",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

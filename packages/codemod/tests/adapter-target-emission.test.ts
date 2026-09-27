@@ -14,6 +14,7 @@ import {
 	SwapSourceId,
 } from "../src/swap/index.ts";
 import { NODE_PROJECT_MODULE_LOADER } from "../src/swap/project-module-loader.ts";
+import { createAdapterRouteProject, createAdapterRouteSpec } from "./route-spec-support.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 const nodeCatalog = createBuiltinCodemodCatalog(NODE_PROJECT_MODULE_LOADER);
@@ -40,6 +41,14 @@ function migrate(source: string, from: CodemodAdapterId, to: CodemodAdapterId, f
 		adapterRegistry: catalog.registry,
 	});
 }
+
+const migrateChakra = (source: string, to: CodemodAdapterId, file = "Card.tsx") =>
+	createAdapterRouteSpec(CodemodAdapterId.ChakraUi, to).runAsync({
+		source,
+		file,
+		project: createAdapterRouteProject(CodemodAdapterId.ChakraUi, to, "#2a57c8"),
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+	});
 
 describe("target adapter emission contract", () => {
 	test("preserves the JSX host when targeting Pandwind's tw dialect", async () => {
@@ -91,12 +100,11 @@ describe("target adapter emission contract", () => {
 		`);
 	});
 
-	test("keeps finite literal conditional values on the static class path", () => {
-		const result = migrate(
+	test("keeps finite literal conditional values on the static class path", async () => {
+		const result = await migrateChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				"export const App = ({ noHistoricalData }: { noHistoricalData: boolean }) => " +
 				'<Box color={noHistoricalData ? "fg.muted" : "red"} fontSize="xs" />;',
-			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 			"SyncCell.tsx",
 		);
@@ -109,11 +117,10 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("style=");
 	});
 
-	test("emits literal responsive JSX styles as one static class", () => {
-		const result = migrate(
-			'import { Field } from "@chakra-ui/react";\n' +
-				'export const App = () => <Field label="Action" flex="1" minW={{ base: "full", md: "260px" }} />;',
-			CodemodAdapterId.ChakraUi,
+	test("emits literal responsive JSX styles as one static class", async () => {
+		const result = await migrateChakra(
+			'import { Box } from "@chakra-ui/react";\n' +
+				'export const App = () => <Box data-label="Action" flex="1" minW={{ base: "full", md: "260px" }} />;',
 			CodemodAdapterId.Pandwind,
 			"Filters.tsx",
 		);
@@ -121,10 +128,16 @@ describe("target adapter emission contract", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain(
-			'className={css.class({ flex: "1", minWidth: { base: "full", md: "260px" } })}',
+			'className={css.class({ flex: "1", minWidth: "100%", "@media (min-width: 768px)": { minWidth: "260px" } })}',
 		);
+		expect(result.code).not.toContain('from "@chakra-ui/react"');
 		expect(result.code).not.toContain("css.props");
 		expect(result.code).not.toContain("css.vars");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			export const App = () => <div data-label="Action" className={css.class({ flex: "1", minWidth: "100%", "@media (min-width: 768px)": { minWidth: "260px" } })} />;"
+		`);
 	});
 
 	test("preserves an exported styled component subject as a component", () => {
@@ -198,17 +211,16 @@ describe("target adapter emission contract", () => {
 
 	test.each([CodemodAdapterId.Tailwind, CodemodAdapterId.UnoCSS] as const)(
 		"projects JSX style-prop hosts through the shared %s host port exactly once",
-		(target) => {
-			const result = migrate(
+		async (target) => {
+			const result = await migrateChakra(
 				'import { Box } from "@chakra-ui/react";\n' +
 					'export const App = () => <Box bg="tomato" />;',
-				CodemodAdapterId.ChakraUi,
 				target,
 			);
 
 			expect(result.skipped, `${CodemodAdapterId.ChakraUi} -> ${target}`).toBe(0);
 			expect(result.residuals).toEqual([]);
-			expect(result.code).toContain('className={"[background-color:tomato]"}');
+			expect(result.code).toContain('className={"[background:tomato]"}');
 			expect(result.code).not.toMatch(/\bclassName\s*=\s*\{\s*<Box/u);
 		},
 	);
@@ -218,11 +230,10 @@ describe("target adapter emission contract", () => {
 		CodemodAdapterId.VanillaExtract,
 		CodemodAdapterId.Tailwind,
 		CodemodAdapterId.UnoCSS,
-	] as const)("projects a dynamic JSX style prop onto %s's class carrier", (target) => {
-		const result = migrate(
+	] as const)("projects a dynamic JSX style prop onto %s's class carrier", async (target) => {
+		const result = await migrateChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				"export const App = () => <Box bg={theme.foreground} />;",
-			CodemodAdapterId.ChakraUi,
 			target,
 		);
 		if (target === CodemodAdapterId.VanillaExtract) {
@@ -409,25 +420,22 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("<Card />");
 	});
 
-	test("uses Mantine's host style prop for dynamic JSX styles", () => {
-		const result = runAdapterMigration(
+	test("uses Mantine's host style prop for dynamic JSX styles", async () => {
+		const result = await migrateChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				"export const App = () => <Box bg={theme.foreground} />;",
-			{
-				from: CodemodAdapterId.ChakraUi,
-				to: CodemodAdapterId.Mantine,
-				file: "App.tsx",
-				mode: "safe",
-				readFile: () => undefined,
-				adapterRegistry: catalog.registry,
-				semantic: { source: { framework: BuiltinHostFramework.React } },
-			},
+			CodemodAdapterId.Mantine,
+			"App.tsx",
 		);
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("style={{ backgroundColor: theme.foreground }}");
+		expect(result.code).toContain("style={{ background: theme.foreground }}");
 		expect(result.code).not.toContain("bg={theme.foreground}");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { Box } from "@mantine/core";
+			export const App = () => <Box  style={{ background: theme.foreground }}/>;"
+		`);
 	});
 
 	test("preserves scalar template interpolation in Next-yak's runtime template", () => {
@@ -503,7 +511,7 @@ describe("target adapter emission contract", () => {
 		]);
 		const result = runAdapterMigration(
 			'import { Box } from "@chakra-ui/react";\n' +
-				"export const App = () => <Box bg={theme.foreground} />;",
+				"export const App = () => <Box css={{ backgroundColor: theme.foreground }} />;",
 			{
 				from: CodemodAdapterId.ChakraUi,
 				to: substituteId,

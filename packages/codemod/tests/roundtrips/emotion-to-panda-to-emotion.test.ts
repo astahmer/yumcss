@@ -332,10 +332,9 @@ test("emotion -> panda -> emotion: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> emotion | lowering-residual: validation)
-		export const card = css({ padding: "1rem", color: "brand.500" });",
-		      "converted": 0,
+		      "code": "import { css } from "@emotion/css";
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -351,25 +350,17 @@ test("emotion -> panda -> emotion: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -425,10 +416,9 @@ test("emotion -> panda -> emotion: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> emotion | lowering-residual: validation)
-		export const card = css({ padding: "1rem", color: "brand.500" });",
-		    "converted": 0,
+		    "code": "import { css } from "@emotion/css";
+		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -444,25 +434,17 @@ test("emotion -> panda -> emotion: resolves token values across both concrete le
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

@@ -338,10 +338,9 @@ test("stylex -> tokenami -> stylex: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> stylex | lowering-residual: validation)
-		export const styles = { "card": css({ padding: "8px", color: "$colors.brand" }) };",
-		      "converted": 0,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -359,25 +358,17 @@ test("stylex -> tokenami -> stylex: preserves concrete theme and project context
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -433,10 +424,9 @@ test("stylex -> tokenami -> stylex: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> stylex | lowering-residual: validation)
-		export const styles = { "card": css({ padding: "8px", color: "$colors.brand" }) };",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -454,25 +444,17 @@ test("stylex -> tokenami -> stylex: resolves token values across both concrete l
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
