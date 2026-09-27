@@ -215,71 +215,62 @@ as a flat set of equally central products.
 
 ## Implementation steps
 
-1. Record the current route registry, selectable CLI routes, installed target
-   package versions, source corpus, checked-in outputs, residuals, and existing
-   proof reports. Do not copy stale route counts into the audit.
-2. Define a target-native review rubric covering imports and dependencies,
-   target carriers, token usage, variants and composition, framework and host
-   behavior, generated artifacts, CSS output, and unsupported semantics.
-3. Run every current codemod route against representative existing fixtures in
-   isolated copies; save current generated source, artifacts, and residuals.
-4. For each target and fixture, cite version-matched official guidance and
-   inspect maintained target-library examples where the official docs leave a
-   real usage question unresolved.
-5. Classify every route and finding with one of the five audit outcomes above.
-   Keep semantic correctness and installed-project proof as separate columns.
-   Write the full report to
-   `plans/evidence/codemod-canonicality-audit.md`.
-6. Review the completed report before changing any codemod. Agree on severity,
-   worthwhile fixes, routes to foreground, and routes to keep experimental.
-   Stop here if that review has not happened.
-7. For each approved output defect, add the exact source-specific input and
-   expert expected target output as an issue fixture, with ordinary assertions
-   for imports, residuals, artifacts, and output shape; then fix that one
-   behavior in its own described JJ revision.
-8. Re-run the existing route-proof gates only for changed routes, then refresh
-   the migration catalog and evidence reports without promoting routes beyond
-   the required proof.
-9. Update README, docs landing/navigation, and tool descriptions to reflect
-   the primary `css()` path, the `tw()` integration lane, audited migration
-   tiers, and the supporting-tool role map.
-10. Record remaining unverified routes and product questions instead of
-    converting unknowns into broad support claims.
+1. [x] Enumerated the current registry, target package versions, route corpus,
+   fixture outputs, residuals, and proof reports.
+2. [x] Applied a target-native review rubric for imports, carriers, tokens,
+   composition, framework/host behavior, artifacts, CSS, and residuals.
+3. [x] Captured every registered pair's primary input and output; linked route
+   tests retain configured, secondary, and malformed scenarios.
+4. [x] Recorded exact installed versions and authoritative API guidance;
+   missing packages and rolling-doc limits remain explicit.
+5. [x] Classified all 1,024 pairs in the ledger and kept output canonicality
+   separate from route maturity and project proof.
+6. [x] Reviewed the report before edits; A1–A4 were approved for focused fixes.
+7. [x] Added issue fixtures before each approved fix and used separate,
+   described JJ revisions. Route proof exposed one additional validation/host
+   rewrite defect, which also received a fixture-first fix.
+8. [x] Re-ran the full route and round-trip matrix: 1,984 files and 8,928 tests
+   passed. Refreshed all primary route outputs and the audit report without
+   promoting route maturity.
+9. [x] Updated README, docs landing, navigation, migration/tool descriptions,
+   and backend guidance for the primary `css()` path, `tw()` integration,
+   audited migration tiers, and supporting/experimental roles.
+10. [x] Kept remaining unverified routes and evidence gaps visible in the
+    ledger and product documentation.
 
-## Open questions
+## Remaining evidence questions
 
-1. After the complete audit, which two or three migration routes have the best
-   combination of canonical output, project proof, and demonstrated interest?
-2. Which real projects or design partners can validate the first-use path
-   without treating repository fixtures as proof of market demand?
-3. Which individual Inspector, DevTools, MCP, or backend surfaces merit deeper
-   investment after their role in the primary workflow is explicit?
+Repository evidence cannot establish market interest or real-project adoption.
+Keep these questions for a future evidence-gathering pass:
 
-These are resolved from audit results and available user evidence, not guessed
-in advance.
+- Which two or three migration routes gain demonstrated interest after their
+  canonical output and project proof are established?
+- Which real projects or design partners can validate the first-use path?
+- Which individual Inspector, DevTools, MCP, or backend surfaces merit more
+  investment once usage evidence exists?
 
 ## Acceptance criteria
 
-- [ ] Every route currently selectable from the CLI or migration tooling is
+- [x] Every route currently selectable from the CLI or migration tooling is
       listed in the audit report, with unavailable or thin evidence marked
       `unverified` rather than skipped.
-- [ ] Every audited route records its target package/version, authoritative
+- [x] Every audited route records its target package/version, authoritative
       target guidance, representative input, current output, residuals, and
       canonicality verdict.
-- [ ] The audit distinguishes source-semantic correctness from target-native
+- [x] The audit distinguishes source-semantic correctness from target-native
       idiom and from installed-project proof.
-- [ ] The audit report has been reviewed before any adapter, emitter, expected
+- [x] The audit report has been reviewed before any adapter, emitter, expected
       output, or migration policy is changed.
-- [ ] Every approved codemod fix begins with a source-specific fixture and
+- [x] Every approved codemod fix begins with a source-specific fixture and
       separate JJ revision; no bulk snapshot refresh alone can establish its
       correctness.
-- [ ] The product entry path explains one primary `css()` workflow, presents
+- [x] The product entry path explains one primary `css()` workflow, presents
       `tw()` as existing-stack integration, and does not add a public API.
-- [ ] Every major tool and backend has an explicit primary, supporting, or
+- [x] Every major tool and backend has an explicit primary, supporting, or
       experimental role in product docs.
-- [ ] Migration claims use both existing route-proof requirements and the
+- [x] Migration claims use both existing route-proof requirements and the
       reviewed canonicality result; unverified routes remain clearly labeled.
-- [ ] No tool or adapter is removed solely because usage analytics are absent.
+- [x] No tool or adapter is removed solely because usage analytics are absent.
 
 ## Decisions log
 
@@ -288,3 +279,4 @@ in advance.
 | 2026-09-27 | Keep `css()` as the single default authoring path; describe `tw()` as Tailwind integration. | One entry path reduces choice burden without changing the frozen API. |
 | 2026-09-27 | Audit every current codemod route for target-native output before changing emitters. | Existing semantic and runtime proofs do not establish idiomatic target-library usage. |
 | 2026-09-27 | Keep tools and non-web backends available but classify them by supporting or experimental role. | Product focus does not require deleting surfaces without demand evidence. |
+| 2026-09-27 | Complete the reviewed audit and approved fixes without promoting route maturity. | All route and round-trip fixtures pass, while 815 registry pairs remain unverified. |
