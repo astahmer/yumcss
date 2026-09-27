@@ -14,10 +14,11 @@ adoption simplicity, real-world proof, and scope discipline.
 ## The criticism people will make
 
 - "Why use Pandwind instead of Tailwind, Panda, StyleX, or vanilla-extract?"
-  Pandwind currently combines typed Tailwind objects, atomic CSS-in-JS, design
-  system CSS, migration tooling, many adapters, non-web backends, the Inspector,
-  DevTools, Playground, and MCP. The value is clear mainly for teams migrating
-  or intentionally mixing styling ecosystems.
+  Pandwind's primary path is typed `css()` objects with build-time atomic CSS;
+  `tw()` supports projects keeping Tailwind, while migration and other tools
+  support teams evaluating a move. The repository still combines many adapters,
+  non-web backends, the Inspector, DevTools, Playground, and MCP, so the product
+  can look broader than the first-use path.
 - "This is not actually zero-runtime CSS." Dynamic `tw()` values require
   safelisting or runtime handling. Dynamic `css()` values use `css.vars()`.
   Globals, fonts, layers, and complex selectors use authored CSS or explicit
@@ -35,7 +36,7 @@ adoption simplicity, real-world proof, and scope discipline.
   ownership, and raw/gzip budget check. Generated project files remain a real
   adoption cost.
 - "The core package is too large conceptually." The repository currently
-  exposes 105 exported paths across five packages, including experimental
+  exposes 107 exported paths across five packages, including experimental
   integrations and tooling. The runtime package no longer hard-depends on
   Tailwind's loader, Oxc, PostCSS, Unplugin, or CAC, but the product still
   asks users to understand more lanes than a focused styling library would.

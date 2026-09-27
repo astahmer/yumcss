@@ -118,14 +118,14 @@ a separate top-level product promise.
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-| --- | --- | --- |
-| Authoring API | Preserve `css()`, `tw()`, `cx()`, presets, and existing strategies | API surface is frozen; product focus comes from hierarchy and workflow. |
-| Target-library truth | Use exact installed versions, official versioned docs, and project configuration | Avoid judging generated output against remembered or guessed conventions. |
-| Audit scope | Include every route selectable through the current CLI or migration tooling | The audit must expose the real catalog's quality, including weak or unverified routes. |
-| Audit execution | Read-only against isolated fixtures or disposable copies | Capture current behavior without changing adapter or user source. |
-| Route promotion | Keep existing route-proof gates and add canonical-output review | Idiomatic source does not replace semantic, build, SSR, or browser evidence. |
-| Tool boundaries | Classify tools by their role in the primary workflow; defer deletion decisions | A supporting or experimental surface can remain available without leading the product story. |
+| Choice               | Decision                                                                         | Rationale                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Authoring API        | Preserve `css()`, `tw()`, `cx()`, presets, and existing strategies               | API surface is frozen; product focus comes from hierarchy and workflow.                      |
+| Target-library truth | Use exact installed versions, official versioned docs, and project configuration | Avoid judging generated output against remembered or guessed conventions.                    |
+| Audit scope          | Include every route selectable through the current CLI or migration tooling      | The audit must expose the real catalog's quality, including weak or unverified routes.       |
+| Audit execution      | Read-only against isolated fixtures or disposable copies                         | Capture current behavior without changing adapter or user source.                            |
+| Route promotion      | Keep existing route-proof gates and add canonical-output review                  | Idiomatic source does not replace semantic, build, SSR, or browser evidence.                 |
+| Tool boundaries      | Classify tools by their role in the primary workflow; defer deletion decisions   | A supporting or experimental surface can remain available without leading the product story. |
 
 ### Architecture
 
@@ -160,13 +160,13 @@ Each audit row uses one of these outcomes:
 
 ### Product surface roles
 
-| Role | Surfaces | Rule |
-| --- | --- | --- |
-| Primary authoring | `css()` and the short Vite setup; `createDesignCss()` as an advanced syntax | First path shown to a new Pandwind user. |
-| Existing-stack integration | `tw()`, `cx()`, token and class strategies | Explain as ways to work with an existing stack, not competing starting points. |
-| Migration | Codemod CLI and Migration Preview | Show supported routes, target-native output, residuals, and evidence per route. |
-| Supporting tools | Playground, Analyzer, Inspector, Studio, DevTools, MCP | Teach or validate the primary workflows; keep maturity and limitations visible. |
-| Research / experimental | Long-tail adapters and non-web backends | Keep discoverable for interested users, but out of the main adoption promise until real demand and proof support promotion. |
+| Role                       | Surfaces                                                                    | Rule                                                                                                                        |
+| -------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Primary authoring          | `css()` and the short Vite setup; `createDesignCss()` as an advanced syntax | First path shown to a new Pandwind user.                                                                                    |
+| Existing-stack integration | `tw()`, `cx()`, token and class strategies                                  | Explain as ways to work with an existing stack, not competing starting points.                                              |
+| Migration                  | Codemod CLI and Migration Preview                                           | Show supported routes, target-native output, residuals, and evidence per route.                                             |
+| Supporting tools           | Playground, Analyzer, Inspector, Studio, DevTools, MCP                      | Teach or validate the primary workflows; keep maturity and limitations visible.                                             |
+| Research / experimental    | Long-tail adapters and non-web backends                                     | Keep discoverable for interested users, but out of the main adoption promise until real demand and proof support promotion. |
 
 This role map does not authorize deleting tools or splitting packages. Any
 future removal or package-boundary change needs its own evidence and plan.
@@ -206,37 +206,38 @@ as a flat set of equally central products.
 
 ### Common interactions
 
-| User action | Result |
-| --- | --- |
-| Start a new Pandwind project | One short `css()` setup with a working example. |
-| Keep an existing Tailwind project | A clearly labeled `tw()` integration guide with generated-file ownership and verification steps. |
-| Evaluate a migration | A route-specific preview with target-native output, residuals, and proof level. |
-| Explore advanced or experimental tools | Clear labels show the tool's supporting role and current evidence boundary. |
+| User action                            | Result                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Start a new Pandwind project           | One short `css()` setup with a working example.                                                  |
+| Keep an existing Tailwind project      | A clearly labeled `tw()` integration guide with generated-file ownership and verification steps. |
+| Evaluate a migration                   | A route-specific preview with target-native output, residuals, and proof level.                  |
+| Explore advanced or experimental tools | Clear labels show the tool's supporting role and current evidence boundary.                      |
 
 ## Implementation steps
 
 1. [x] Enumerated the current registry, target package versions, route corpus,
-   fixture outputs, residuals, and proof reports.
+       fixture outputs, residuals, and proof reports.
 2. [x] Applied a target-native review rubric for imports, carriers, tokens,
-   composition, framework/host behavior, artifacts, CSS, and residuals.
+       composition, framework/host behavior, artifacts, CSS, and residuals.
 3. [x] Captured every registered pair's primary input and output; linked route
-   tests retain configured, secondary, and malformed scenarios.
+       tests retain configured, secondary, and malformed scenarios.
 4. [x] Recorded exact installed versions and authoritative API guidance;
-   missing packages and rolling-doc limits remain explicit.
+       missing packages and rolling-doc limits remain explicit.
 5. [x] Classified all 1,024 pairs in the ledger and kept output canonicality
-   separate from route maturity and project proof.
+       separate from route maturity and project proof.
 6. [x] Reviewed the report before edits; A1–A4 were approved for focused fixes.
 7. [x] Added issue fixtures before each approved fix and used separate,
-   described JJ revisions. Route proof exposed one additional validation/host
-   rewrite defect, which also received a fixture-first fix.
+       described JJ revisions. Route proof exposed one additional validation/host
+       rewrite defect, which also received a fixture-first fix.
 8. [x] Re-ran the full route and round-trip matrix: 1,984 files and 8,928 tests
-   passed. Refreshed all primary route outputs and the audit report without
-   promoting route maturity.
+       passed. Refreshed all primary route outputs and the audit report without
+       promoting route maturity.
 9. [x] Updated README, docs landing, navigation, migration/tool descriptions,
-   and backend guidance for the primary `css()` path, `tw()` integration,
-   audited migration tiers, and supporting/experimental roles.
+       backend guidance, and the current criticism page for the primary `css()`
+       path, `tw()` integration, audited migration tiers, and
+       supporting/experimental roles.
 10. [x] Kept remaining unverified routes and evidence gaps visible in the
-    ledger and product documentation.
+        ledger and product documentation.
 
 ## Remaining evidence questions
 
@@ -274,9 +275,9 @@ Keep these questions for a future evidence-gathering pass:
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-| --- | --- | --- |
-| 2026-09-27 | Keep `css()` as the single default authoring path; describe `tw()` as Tailwind integration. | One entry path reduces choice burden without changing the frozen API. |
-| 2026-09-27 | Audit every current codemod route for target-native output before changing emitters. | Existing semantic and runtime proofs do not establish idiomatic target-library usage. |
-| 2026-09-27 | Keep tools and non-web backends available but classify them by supporting or experimental role. | Product focus does not require deleting surfaces without demand evidence. |
-| 2026-09-27 | Complete the reviewed audit and approved fixes without promoting route maturity. | All route and round-trip fixtures pass, while 815 registry pairs remain unverified. |
+| Date       | Decision                                                                                        | Rationale                                                                             |
+| ---------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 2026-09-27 | Keep `css()` as the single default authoring path; describe `tw()` as Tailwind integration.     | One entry path reduces choice burden without changing the frozen API.                 |
+| 2026-09-27 | Audit every current codemod route for target-native output before changing emitters.            | Existing semantic and runtime proofs do not establish idiomatic target-library usage. |
+| 2026-09-27 | Keep tools and non-web backends available but classify them by supporting or experimental role. | Product focus does not require deleting surfaces without demand evidence.             |
+| 2026-09-27 | Complete the reviewed audit and approved fixes without promoting route maturity.                | All route and round-trip fixtures pass, while 815 registry pairs remain unverified.   |
