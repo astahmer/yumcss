@@ -637,6 +637,7 @@ describe("official custom-token loaders", () => {
 			input: 'Source color token "brand.500" resolved to "#123456"',
 		expectedValue: { kind: "literal", value: "#123456" },
 		expectedOutput: 'defaultSystem.css({ color: "#123456" })',
+		expectedImports: ['import { defaultSystem } from "@chakra-ui/react";'],
 	};
 	const adapter = createChakraAdapter({ moduleLoader: null });
 	const tokenCatalog = TokenCatalog.fromGroups({
@@ -674,6 +675,9 @@ describe("official custom-token loaders", () => {
 
 		expect(fixture).toMatchInlineSnapshot(`
 			{
+			  "expectedImports": [
+			    "import { defaultSystem } from "@chakra-ui/react";",
+			  ],
 			  "expectedOutput": "defaultSystem.css({ color: "#123456" })",
 			  "expectedValue": {
 			    "kind": "literal",
@@ -684,7 +688,7 @@ describe("official custom-token loaders", () => {
 		`);
 		expect(preservedProgram.declarations[0]?.value).toEqual(fixture.expectedValue);
 		expect(result.text).toBe(fixture.expectedOutput);
-		expect(result.imports ?? []).toEqual([]);
+		expect(result.imports ?? []).toEqual(fixture.expectedImports);
 		expect(result.residuals ?? []).toEqual([]);
 	});
 

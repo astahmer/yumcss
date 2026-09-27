@@ -411,15 +411,24 @@ export class TokenCatalog {
 		): typeof value => {
 			const group = groupForProperty(property);
 			if (group === undefined) return value;
-			const match =
-				value.kind === StyleValueKindTag.Token
-					? (this.findByReference([group], value.ref) ??
-						this.findUnique([group], value.resolved ?? "") ??
-						undefined)
-					: value.kind === StyleValueKindTag.Literal &&
-						  (typeof value.value === "string" || typeof value.value === "number")
-						? this.findUnique([group], String(value.value))
-						: undefined;
+			const sourceFallback = () =>
+				value.kind === StyleValueKindTag.Token && value.resolved !== undefined
+					? { kind: StyleValueKindTag.Literal, value: value.resolved }
+					: value;
+			let match: TokenCatalogMatch | undefined;
+			if (value.kind === StyleValueKindTag.Token) {
+				if (value.resolved !== undefined) {
+					const reference = this.findByReference([group], value.ref);
+					match =
+						reference?.resolved === value.resolved
+							? reference
+							: this.findUnique([group], value.resolved);
+				}
+			} else if (
+				value.kind === StyleValueKindTag.Literal &&
+				(typeof value.value === "string" || typeof value.value === "number")
+			)
+				match = this.findUnique([group], String(value.value));
 			const authored =
 				match === undefined
 					? undefined
@@ -434,7 +443,7 @@ export class TokenCatalog {
 				(!/^[A-Za-z0-9_$][A-Za-z0-9_$.-]*$/u.test(authored) &&
 					!/^var\(--[A-Za-z0-9_-]+\)$/u.test(authored))
 			)
-				return value;
+				return sourceFallback();
 			return {
 				kind: "token",
 				ref: match.ref,
