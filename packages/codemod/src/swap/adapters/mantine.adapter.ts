@@ -21,32 +21,6 @@ import {
 	StyleRepresentationKind,
 } from "../identifiers.ts";
 
-const mantineTokenGroup = (property: string): string | undefined => {
-	if (property === "color" || property.endsWith("Color")) return "colors";
-	if (property === "borderRadius") return "radii";
-	if (/^(?:padding|margin|gap|inset)/u.test(property)) return "spacing";
-	if (property === "fontSize") return "fontSizes";
-	if (property === "lineHeight") return "lineHeights";
-	if (property === "boxShadow") return "shadows";
-	return undefined;
-};
-
-const MANTINE_TOKEN_POLICY = createTokenPolicy(mantineTokenGroup, (match, property) => {
-	const namespace =
-		property === "color" || property.endsWith("Color")
-			? "color"
-			: property === "fontSize"
-				? "font-size"
-				: property === "lineHeight"
-					? "line-height"
-					: property === "borderRadius"
-						? "radius"
-						: property === "boxShadow"
-							? "shadow"
-							: "spacing";
-	return `var(--mantine-${namespace}-${match.ref.replaceAll(".", "-")})`;
-});
-
 function hasScalarDynamicProgram(program: StyleProgram): boolean {
 	return StyleProgramAnalysis.hasScalarDynamic(program);
 }
@@ -229,13 +203,95 @@ const propertyAliases = {
 	size: ["width", "height"],
 	ms: "marginInlineStart",
 	me: "marginInlineEnd",
-	mx: ["marginLeft", "marginRight"],
-	my: ["marginTop", "marginBottom"],
+	mx: "marginInline",
+	my: "marginBlock",
 	ps: "paddingInlineStart",
 	pe: "paddingInlineEnd",
-	px: ["paddingLeft", "paddingRight"],
-	py: ["paddingTop", "paddingBottom"],
+	px: "paddingInline",
+	py: "paddingBlock",
 } as const;
+
+function mantineProperties(property: string): readonly string[] {
+	const alias = Object.entries(propertyAliases).find(([name]) => name === property)?.[1];
+	if (typeof alias === "string") return [alias];
+	if (alias !== undefined) return alias;
+	return [property];
+}
+
+const mantineTokenGroup = (property: string): string | undefined => {
+	const properties = mantineProperties(property);
+	if (
+		properties.some(
+			(candidate) =>
+				candidate === "color" || candidate === "background" || candidate.endsWith("Color"),
+		)
+	)
+		return "colors";
+	if (properties.includes("borderRadius")) return "radii";
+	if (
+		properties.some(
+			(candidate) =>
+				/^(?:padding|margin|gap|inset)/u.test(candidate) ||
+				/^(?:min|max)?(?:width|height)$/u.test(candidate),
+		)
+	)
+		return "spacing";
+	if (properties.includes("fontSize")) return "fontSizes";
+	if (properties.includes("lineHeight")) return "lineHeights";
+	if (properties.includes("boxShadow")) return "shadows";
+	return undefined;
+};
+
+const MANTINE_TOKEN_POLICY = createTokenPolicy(mantineTokenGroup, (match, property) => {
+	const namespace =
+		property === "color" || property.endsWith("Color")
+			? "color"
+			: property === "fontSize"
+				? "font-size"
+				: property === "lineHeight"
+					? "line-height"
+					: property === "borderRadius"
+					? "radius"
+					: property === "boxShadow"
+						? "shadow"
+						: "spacing";
+	return `var(--mantine-${namespace}-${match.ref.replaceAll(".", "-")})`;
+});
+
+const MANTINE_SCALED_PROPERTIES = new Set([
+	"margin",
+	"marginBlock",
+	"marginInline",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
+	"marginInlineStart",
+	"marginInlineEnd",
+	"padding",
+	"paddingBlock",
+	"paddingInline",
+	"paddingTop",
+	"paddingRight",
+	"paddingBottom",
+	"paddingLeft",
+	"paddingInlineStart",
+	"paddingInlineEnd",
+	"width",
+	"height",
+	"minWidth",
+	"maxWidth",
+	"minHeight",
+	"maxHeight",
+	"top",
+	"right",
+	"bottom",
+	"left",
+	"inset",
+	"letterSpacing",
+]);
+
+const MANTINE_TOKEN_REFERENCE = /^[A-Za-z][\w-]*(?:\.[\w-]+)+$/u;
 
 interface MantineThemeLike {
 	readonly spacing?: unknown;
@@ -318,22 +374,19 @@ function resolveMantineValue(
 ): string | number | undefined {
 	const direct = resolveThemePath(theme, value);
 	if (direct !== undefined) return direct;
+	const group = mantineTokenGroup(property);
 	const collection =
-		property === "color" || property === "c"
+		group === "colors"
 			? theme?.colors
-			: property === "fontSize" || property === "fz"
+			: group === "fontSizes"
 				? theme?.fontSizes
-				: property === "lineHeight" || property === "lh"
+				: group === "lineHeights"
 					? theme?.lineHeights
-					: property === "borderRadius" || property === "radius" || property === "bdrs"
+					: group === "radii"
 						? theme?.radius
-						: property === "boxShadow" || property === "shadow"
+						: group === "shadows"
 							? theme?.shadows
-							: /^(?:m|m[trblseixy]|p|p[trblseixy])$/.test(property) ||
-								  property === "margin" ||
-								  property.startsWith("margin") ||
-								  property === "padding" ||
-								  property.startsWith("padding")
+							: group === "spacing"
 								? theme?.spacing
 								: undefined;
 	const collectionValue = resolveValuePath(collection, value);
@@ -420,45 +473,86 @@ async function officialMantineConfig(
 	return fallback;
 }
 
+function mantineRem(value: string | number): string | undefined {
+	const numeric =
+		typeof value === "number"
+			? value
+			: Number(value.endsWith("px") ? value.slice(0, -2) : value);
+	if (!Number.isFinite(numeric)) return undefined;
+	if (numeric === 0) return "0rem";
+	return `calc(${numeric / 16}rem * var(--mantine-scale))`;
+}
+
 function mantineValue(
 	property: string,
 	value: StyleValue,
 	theme?: MantineThemeLike,
-	targetId?: string,
 ): StyleValue {
-	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
+	if (value.kind !== StyleValueKindTag.Literal) return value;
+	const resolved =
+		typeof value.value === "string"
+			? resolveMantineValue(property, value.value, theme)
+			: undefined;
+	if (resolved !== undefined) return { kind: StyleValueKindTag.Literal, value: resolved };
+	const properties = mantineProperties(property);
+	const scaled = properties.some((candidate) => MANTINE_SCALED_PROPERTIES.has(candidate));
+	if (scaled && (typeof value.value === "string" || typeof value.value === "number")) {
+		const rem = mantineRem(value.value);
+		if (rem !== undefined) return { kind: StyleValueKindTag.Literal, value: rem };
+	}
+	if (typeof value.value !== "string") return value;
+	const isMargin = properties.some(
+		(candidate) => candidate === "margin" || candidate.startsWith("margin"),
+	);
+	if (isMargin && value.value === "auto") return value;
 	if (/^(?:-?\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw)$/.test(value.value)) return value;
-	const resolved = resolveMantineValue(property, value.value, theme);
-	if (resolved !== undefined) return { kind: "literal", value: resolved };
-	if (targetId === CodemodAdapterId.Pandwind) return value;
 	if (
-		(/^(?:m|m[trblseixy]|p|p[trblseixy])$/.test(property) ||
-			property === "margin" ||
-			property.startsWith("margin") ||
-			property === "padding" ||
-			property.startsWith("padding")) &&
+		isMargin &&
 		/^[A-Za-z][\w-]*$/.test(value.value)
 	)
-		return { kind: "literal", value: `var(--mantine-spacing-${value.value})` };
+		return { kind: StyleValueKindTag.Literal, value: `var(--mantine-spacing-${value.value})` };
 	if (
-		(property === "fontSize" ||
-			property === "lineHeight" ||
-			property === "fz" ||
-			property === "lh") &&
+		(properties.includes("fontSize") || properties.includes("lineHeight")) &&
 		/^[A-Za-z][\w-]*$/.test(value.value)
 	)
 		return {
-			kind: "literal",
-			value: `var(--mantine-${property === "fontSize" || property === "fz" ? "font-size" : "line-height"}-${value.value})`,
+			kind: StyleValueKindTag.Literal,
+			value: `var(--mantine-${properties.includes("fontSize") ? "font-size" : "line-height"}-${value.value})`,
 		};
 	if (
-		(property === "color" || property === "c") &&
+		properties.includes("color") &&
 		/^(?:red|blue|green|black|white|gray|grey|transparent|currentColor)$/i.test(value.value)
 	)
 		return value;
-	if ((property === "color" || property === "c") && /^[A-Za-z][\w-]*$/.test(value.value))
-		return { kind: "literal", value: `var(--mantine-color-${value.value})` };
+	if (properties.includes("color") && /^[A-Za-z][\w-]*$/.test(value.value))
+		return { kind: StyleValueKindTag.Literal, value: `var(--mantine-color-${value.value})` };
 	return value;
+}
+
+function unresolvedMantineTokenResiduals(
+	program: StyleProgram,
+	theme: MantineThemeLike | undefined,
+): StyleProgram["residuals"] {
+	const residuals = new Map<string, StyleProgram["residuals"][number]>();
+	const inspect = (declaration: StyleProgram["declarations"][number]) => {
+		const value = declaration.value;
+		if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return;
+		if (!MANTINE_TOKEN_REFERENCE.test(value.value)) return;
+		if (mantineTokenGroup(declaration.property) === undefined) return;
+		if (resolveMantineValue(declaration.property, value.value, theme) !== undefined) return;
+		residuals.set(`${declaration.property}:${value.value}`, {
+			kind: StyleProgramResidualKindTag.Configuration,
+			text: value.value,
+			hint: `Mantine token reference '${value.value}' is unresolved without verified theme metadata`,
+		});
+	};
+	const visit = (rule: StyleProgram["rules"][number]) => {
+		rule.declarations.forEach(inspect);
+		rule.children.forEach(visit);
+	};
+	program.declarations.forEach(inspect);
+	program.rules.forEach(visit);
+	return [...residuals.values()];
 }
 
 const MANTINE_SOURCE_COMPONENTS = {
@@ -626,7 +720,6 @@ export function createMantineAdapter(
 								property,
 								value,
 								context.config.values.mantineTheme as MantineThemeLike | undefined,
-								context.targetId,
 							),
 							property,
 							mantineTokenGroup,
@@ -680,13 +773,22 @@ export function createMantineAdapter(
 		...adapter,
 		parse(source: string, context: AdapterParseContext) {
 			const parsed = adapter.parse(source, context);
-			if (context.targetId !== CodemodAdapterId.Pandwind) return parsed;
+			const theme = context.config.values.mantineTheme as MantineThemeLike | undefined;
 			return {
 				...parsed,
-				matches: parsed.matches.map((match) => ({
-					...match,
-					program: canonicalizeSourceHost(match.program, MANTINE_SOURCE_COMPONENTS, "Mantine"),
-				})),
+				matches: parsed.matches.map((match) => {
+					const program =
+						context.targetId === CodemodAdapterId.Pandwind
+							? canonicalizeSourceHost(match.program, MANTINE_SOURCE_COMPONENTS, "Mantine")
+							: match.program;
+					const residuals = unresolvedMantineTokenResiduals(program, theme);
+					return residuals.length === 0
+						? { ...match, program }
+						: {
+								...match,
+								program: { ...program, residuals: [...program.residuals, ...residuals] },
+							};
+				}),
 			};
 		},
 	};
