@@ -131,11 +131,11 @@ test("A4 keeps Mantine hosts valid across Emotion, Chakra, and MUI routes", () =
 			'export const App = () => <Box className={css({ color: "#123456" })}/>;',
 		chakraOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: named-map, residual)\n" +
+			"export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
 			'<Box c="#123456" />;',
 		muiOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: named-map, residual)\n" +
+			"export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
 			'<Box c="#123456" />;',
 	};
 	const options = {
@@ -150,7 +150,7 @@ test("A4 keeps Mantine hosts valid across Emotion, Chakra, and MUI routes", () =
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "chakraOutput": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box c="#123456" />;",
 		  "emotionOutput": "import { Box } from "@mantine/core";
 		import { css } from "@emotion/css";
@@ -158,7 +158,7 @@ test("A4 keeps Mantine hosts valid across Emotion, Chakra, and MUI routes", () =
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="#123456" />;",
 		  "muiOutput": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box c="#123456" />;",
 		}
 	`);

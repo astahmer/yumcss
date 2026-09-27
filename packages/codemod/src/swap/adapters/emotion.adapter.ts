@@ -1,5 +1,6 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { StyleProgramResidualKindTag, StyleRuleKindTag } from "../semantic-ir.ts";
+import type { StyleProgram } from "../semantic-ir.ts";
 import {
 	CodemodCallPatternKindTag,
 	CodemodCallPatternFormTag,
@@ -102,6 +103,140 @@ function detectEmotion(
 		directory = dirnameDocumentPath(directory);
 	}
 	return fallback();
+}
+
+function canRewriteEmotionHost(program: StyleProgram): boolean {
+	const openingTag = program.source?.hostOpenTag;
+	if (openingTag === undefined) return true;
+	if ((program.source.hostStyleAttributes ?? []).some((attribute) => /^style\s*=/u.test(attribute)))
+		return false;
+	const classAttributes = [...openingTag.matchAll(/(?:^|\s)(?:className|class)\s*=/gu)];
+	const classNames = [
+		...openingTag.matchAll(/(?:^|\s)className\s*=\s*(?:\{[^{}]*\}|["'][^"']*["'])/gu),
+	];
+	if (classAttributes.length !== classNames.length || classNames.length > 1) return false;
+	const staticClass = /(?:^|\s)className\s*=\s*(["'])([^"']*)\1/u.exec(openingTag);
+	return staticClass?.[2]?.includes("\\") !== true;
+}
+
+function rewriteEmotionHost({
+	code,
+	program,
+	emittedExpression,
+}: {
+	readonly code: string;
+	readonly program: StyleProgram;
+	readonly emittedExpression: string;
+}): {
+	readonly code: string;
+	readonly imports: readonly string[];
+	readonly residuals: StyleProgram["residuals"];
+} {
+	const openingTag = program.source?.hostOpenTag;
+	if (openingTag === undefined)
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: emittedExpression,
+					hint: "Emotion class projection requires a source JSX host",
+				},
+			],
+		};
+	if ((program.source.hostStyleAttributes ?? []).some((attribute) => /^style\s*=/u.test(attribute)))
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: openingTag,
+					hint: "Emotion class projection cannot preserve the inline priority of a Mantine style prop",
+				},
+			],
+		};
+	const openingIndex = code.indexOf(openingTag);
+	if (openingIndex < 0)
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: openingTag,
+					hint: "Emotion class projection could not locate the source JSX host",
+				},
+			],
+		};
+	let host = openingTag;
+	for (const attribute of program.source.hostStyleAttributes ?? []) {
+		const index = host.indexOf(attribute);
+		if (index < 0) continue;
+		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
+		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
+	}
+	const classExpression = /(^|\s)className\s*=\s*\{([^{}]*)\}/u.exec(host);
+	const staticClass = /(^|\s)className\s*=\s*(["'])([^"']*)\2/u.exec(host);
+	if (classExpression !== null && staticClass !== null)
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: host,
+					hint: "Emotion class projection found multiple className attributes",
+				},
+			],
+		};
+	let imports: readonly string[] = [];
+	if (classExpression !== null) {
+		host = host.replace(
+			classExpression[0],
+			`${classExpression[1]}className={cx(${classExpression[2]}, ${emittedExpression})}`,
+		);
+		imports = ['import { cx } from "@emotion/css";'];
+	} else if (staticClass !== null) {
+		if (staticClass[3]?.includes("\\") === true)
+			return {
+				code,
+				imports: [],
+				residuals: [
+					{
+						kind: StyleProgramResidualKindTag.HostFramework,
+						text: host,
+						hint: "Emotion class projection cannot safely decode the existing className string",
+					},
+				],
+			};
+		host = host.replace(
+			staticClass[0],
+			`${staticClass[1]}className={cx(${JSON.stringify(staticClass[3] ?? "")}, ${emittedExpression})}`,
+		);
+		imports = ['import { cx } from "@emotion/css";'];
+	} else {
+		if (/(?:^|\s)(?:className|class)\s*=/u.test(host))
+			return {
+				code,
+				imports: [],
+				residuals: [
+					{
+						kind: StyleProgramResidualKindTag.HostFramework,
+						text: host,
+						hint: "Emotion class projection cannot safely merge the existing host class",
+					},
+				],
+			};
+		const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
+		host = `${host.slice(0, insertion).replace(/[ \t]+$/u, "")} className={${emittedExpression}}${host.slice(insertion)}`;
+	}
+	return {
+		code: `${code.slice(0, openingIndex)}${host}${code.slice(openingIndex + openingTag.length)}`,
+		imports,
+		residuals: [],
+	};
 }
 
 export default defineCodemodAdapter({
@@ -246,9 +381,14 @@ export default defineCodemodAdapter({
 	migration: {
 		targetPolicy: {
 			handlesHostRewrites: true,
+			handlesSourceHostAttributes: true,
 			handlesFrameworkSemantics: true,
 			hostRepresentation: StyleHostRepresentationKind.Class,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+			resolveHostRepresentation: ({ program }) =>
+				canRewriteEmotionHost(program) ? StyleHostRepresentationKind.Class : undefined,
+			rewriteHost: ({ code, program, emittedExpression }) =>
+				rewriteEmotionHost({ code, program, emittedExpression }),
 		},
 		rewrite: ({ code, targetId, complete }) => {
 			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };

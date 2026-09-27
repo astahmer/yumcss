@@ -1358,6 +1358,31 @@ function sourceHostTag(openingTag: string): string | undefined {
 	return /^<\s*([A-Za-z_$][\w$.-]*)/u.exec(openingTag)?.[1];
 }
 
+function isChakraOwnedHost(source: string, openingTag: string): boolean {
+	const tag = sourceHostTag(openingTag);
+	if (tag === undefined) return false;
+	if (/^[a-z]/u.test(tag)) return true;
+	const parts = tag.split(".");
+	if (parts.length > 1) {
+		const namespace = parts[0];
+		return (
+			namespace !== undefined &&
+			new RegExp(
+				`import\\s+\\*\\s+as\\s+${namespace.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s+from\\s+["']@chakra-ui/react["']`,
+			).test(source)
+		);
+	}
+	for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']@chakra-ui\/react["']/gu)) {
+		const localNames = match[1]
+			?.split(",")
+			.filter((specifier) => !/^type\s+/u.test(specifier.trim()))
+			.map((specifier) => specifier.trim().split(/\s+as\s+/u).at(-1))
+			.map((name) => name?.trim());
+		if (localNames?.includes(tag) === true) return true;
+	}
+	return false;
+}
+
 function qualifyChakraIntrinsicHost(
 	code: string,
 	openingTag: string,
@@ -2040,6 +2065,8 @@ export function createChakraAdapter(
 			targetPolicy: {
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
+				hostContextRequiredHint:
+					"Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 				hostRepresentation: StyleHostRepresentationKind.StyleProp,
 				hostFrameworks: [BuiltinHostFramework.React, BuiltinHostFramework.Preact],
 				handlesSourceHostAttributes: true,
@@ -2063,8 +2090,14 @@ export function createChakraAdapter(
 						framework,
 						emittedExpression,
 					}),
-				resolveHostRepresentation: ({ framework, hasHostContext, program }) => {
+				resolveHostRepresentation: ({ framework, hasHostContext, program, source }) => {
 					if (!hasHostContext && program.source?.subject === undefined) return undefined;
+					const openingTag = program.source?.hostOpenTag;
+					if (
+						openingTag !== undefined &&
+						!isChakraOwnedHost(source ?? "", openingTag)
+					)
+						return undefined;
 					return framework === undefined ||
 						framework === BuiltinHostFramework.React ||
 						framework === BuiltinHostFramework.Preact

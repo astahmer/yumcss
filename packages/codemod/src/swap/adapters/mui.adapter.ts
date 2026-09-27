@@ -439,20 +439,25 @@ function tagForOpening(opening: string | undefined): string | undefined {
 }
 
 function isKnownMuiComponent(source: string, tag: string): boolean {
-	if (tag === "Box") return true;
-	const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	return new RegExp(
-		`import\\s+\\{[^}]*\\b${escaped}(?:\\s+as\\s+${escaped})?\\b[^}]*\\}\\s+from\\s+["']@mui\\/(?:material|system)["']`,
-	).test(source);
-}
-
-function isStaticProgram(program: StyleProgram): boolean {
-	return (
-		program.residuals.length === 0 &&
-		StyleProgramAnalysis.declarations(program).every(
-			(declaration) => declaration.value.kind !== StyleValueKindTag.Dynamic,
-		)
-	);
+	const parts = tag.split(".");
+	if (parts.length > 1) {
+		const namespace = parts[0];
+		return (
+			namespace !== undefined &&
+			new RegExp(
+				`import\\s+\\*\\s+as\\s+${namespace.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s+from\\s+["']@mui\\/(?:material|system)["']`,
+			).test(source)
+		);
+	}
+	for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']@mui\/(?:material|system)["']/gu)) {
+		const localNames = match[1]
+			?.split(",")
+			.filter((specifier) => !/^type\s+/u.test(specifier.trim()))
+			.map((specifier) => specifier.trim().split(/\s+as\s+/u).at(-1))
+			.map((name) => name?.trim());
+		if (localNames?.includes(tag) === true) return true;
+	}
+	return false;
 }
 
 function hasScalarDynamicProgram(program: StyleProgram): boolean {
@@ -633,26 +638,22 @@ export function createMuiAdapter(
 				handlesHostRewrites: true,
 				requiresHostContext: true,
 				hostContextRequiredHint:
-					"MUI sx styles require a host component prop; no standalone sx() API exists",
+					"MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 				hostRepresentation: StyleHostRepresentationKind.Component,
-				resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) =>
-					program.source?.subject === undefined && !hasHostContext
-						? StyleHostRepresentationKind.Class
-						: (framework === undefined || framework === BuiltinHostFramework.React) &&
-							  program.source?.subject === undefined
-							? (() => {
-									const host = findHostUse(source ?? "", binding);
-									const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
-									if (tag === undefined) return undefined;
-									return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
-										? StyleHostRepresentationKind.StyleProp
-										: isStaticProgram(program)
-											? StyleHostRepresentationKind.Class
-											: undefined;
-								})()
-							: framework === undefined || framework === BuiltinHostFramework.React
-								? StyleHostRepresentationKind.Component
-								: undefined,
+				resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) => {
+					if (program.source?.subject !== undefined)
+						return framework === undefined || framework === BuiltinHostFramework.React
+							? StyleHostRepresentationKind.Component
+							: undefined;
+					if (!hasHostContext) return StyleHostRepresentationKind.Class;
+					if (framework !== undefined && framework !== BuiltinHostFramework.React) return undefined;
+					const host = findHostUse(source ?? "", binding);
+					const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
+					if (tag === undefined) return undefined;
+					return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
+						? StyleHostRepresentationKind.StyleProp
+						: undefined;
+				},
 				standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 				resolveRepresentation: ({ program, hostRepresentation }) =>
 					hostRepresentation === StyleHostRepresentationKind.Class &&
