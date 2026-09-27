@@ -9,13 +9,13 @@ sidebar:
 tools answer different questions; you do not need to run all of them to use
 Pandwind:
 
-| Surface | Product role |
-| --- | --- |
-| `css()` and Vite extraction | Primary authoring and build path. |
-| `tw()` and `createDesignCss()` | Supporting workflows for existing Tailwind projects and named design systems. |
-| Playground, Inspector, Analyzer, Studio, DevTools, and MCP | Supporting tools for learning, inspection, and verification. |
-| Codemod and Migration Preview | Supporting migration tools; every route keeps its own proof status. |
-| Long-tail adapters and non-web backends | Research or experimental until target-project proof exists. |
+| Surface                                                    | Product role                                                                  |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `css()` and Vite extraction                                | Primary authoring and build path.                                             |
+| `tw()` and `createDesignCss()`                             | Supporting workflows for existing Tailwind projects and named design systems. |
+| Playground, Inspector, Analyzer, Studio, DevTools, and MCP | Supporting tools for learning, inspection, and verification.                  |
+| Codemod and Migration Preview                              | Supporting migration tools; every route keeps its own proof status.           |
+| Long-tail adapters and non-web backends                    | Research or experimental until target-project proof exists.                   |
 
 | You want to know…                        | Use…                  |
 | ---------------------------------------- | --------------------- |

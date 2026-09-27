@@ -11,13 +11,13 @@ needs something special.
 
 ## Start here
 
-| If you…                                     | Start with                                                       | Why                                                                                          |
-| ------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| are writing new styled components           | [`css()`](./docs/src/content/docs/api/css.md)                    | The primary Pandwind path: typed CSS objects in, deterministic atomic CSS out.              |
-| already use Tailwind and want typed objects | [`tw()`](./docs/src/content/docs/api/tw.md)                      | Keep Tailwind as the stylesheet engine and generate types from the project you have.        |
-| need a named design vocabulary              | [`createDesignCss()`](./docs/src/content/docs/api/design-css.md) | Give reusable components terms such as `$frame`, `$layout`, and `$text`.                     |
-| need to combine existing classes            | [`cx()`](./docs/src/content/docs/api/cx.md)                      | Compose Pandwind output with ordinary class strings and styles from other libraries.        |
-| are evaluating a move from another library  | [Migration guide](./docs/src/content/docs/guides/migrations.md)  | Preview route-specific output, residuals, and proof before applying a diff.                 |
+| If you…                                     | Start with                                                       | Why                                                                                  |
+| ------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| are writing new styled components           | [`css()`](./docs/src/content/docs/api/css.md)                    | The primary Pandwind path: typed CSS objects in, deterministic atomic CSS out.       |
+| already use Tailwind and want typed objects | [`tw()`](./docs/src/content/docs/api/tw.md)                      | Keep Tailwind as the stylesheet engine and generate types from the project you have. |
+| need a named design vocabulary              | [`createDesignCss()`](./docs/src/content/docs/api/design-css.md) | Give reusable components terms such as `$frame`, `$layout`, and `$text`.             |
+| need to combine existing classes            | [`cx()`](./docs/src/content/docs/api/cx.md)                      | Compose Pandwind output with ordinary class strings and styles from other libraries. |
+| are evaluating a move from another library  | [Migration guide](./docs/src/content/docs/guides/migrations.md)  | Preview route-specific output, residuals, and proof before applying a diff.          |
 
 ## See it in action
 

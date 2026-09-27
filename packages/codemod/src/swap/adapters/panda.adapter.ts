@@ -140,7 +140,8 @@ function unresolvedPandaTokenResiduals(
 		const value = declaration.value;
 		if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return;
 		if (!PANDA_TOKEN_REFERENCE.test(value.value)) return;
-		const property = theme?.utilityCatalog.resolveProperty(declaration.property) ?? declaration.property;
+		const property =
+			theme?.utilityCatalog.resolveProperty(declaration.property) ?? declaration.property;
 		const group = pandaTokenGroup(property);
 		if (group === undefined || catalog?.findByReference([group], value.value) !== undefined) return;
 		residuals.set(`${property}:${value.value}`, {

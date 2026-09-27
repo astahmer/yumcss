@@ -251,10 +251,10 @@ const MANTINE_TOKEN_POLICY = createTokenPolicy(mantineTokenGroup, (match, proper
 				: property === "lineHeight"
 					? "line-height"
 					: property === "borderRadius"
-					? "radius"
-					: property === "boxShadow"
-						? "shadow"
-						: "spacing";
+						? "radius"
+						: property === "boxShadow"
+							? "shadow"
+							: "spacing";
 	return `var(--mantine-${namespace}-${match.ref.replaceAll(".", "-")})`;
 });
 
@@ -475,24 +475,16 @@ async function officialMantineConfig(
 
 function mantineRem(value: string | number): string | undefined {
 	const numeric =
-		typeof value === "number"
-			? value
-			: Number(value.endsWith("px") ? value.slice(0, -2) : value);
+		typeof value === "number" ? value : Number(value.endsWith("px") ? value.slice(0, -2) : value);
 	if (!Number.isFinite(numeric)) return undefined;
 	if (numeric === 0) return "0rem";
 	return `calc(${numeric / 16}rem * var(--mantine-scale))`;
 }
 
-function mantineValue(
-	property: string,
-	value: StyleValue,
-	theme?: MantineThemeLike,
-): StyleValue {
+function mantineValue(property: string, value: StyleValue, theme?: MantineThemeLike): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal) return value;
 	const resolved =
-		typeof value.value === "string"
-			? resolveMantineValue(property, value.value, theme)
-			: undefined;
+		typeof value.value === "string" ? resolveMantineValue(property, value.value, theme) : undefined;
 	if (resolved !== undefined) return { kind: StyleValueKindTag.Literal, value: resolved };
 	const properties = mantineProperties(property);
 	const scaled = properties.some((candidate) => MANTINE_SCALED_PROPERTIES.has(candidate));
@@ -506,10 +498,7 @@ function mantineValue(
 	);
 	if (isMargin && value.value === "auto") return value;
 	if (/^(?:-?\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw)$/.test(value.value)) return value;
-	if (
-		isMargin &&
-		/^[A-Za-z][\w-]*$/.test(value.value)
-	)
+	if (isMargin && /^[A-Za-z][\w-]*$/.test(value.value))
 		return { kind: StyleValueKindTag.Literal, value: `var(--mantine-spacing-${value.value})` };
 	if (
 		(properties.includes("fontSize") || properties.includes("lineHeight")) &&

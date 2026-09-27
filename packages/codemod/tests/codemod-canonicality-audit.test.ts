@@ -77,9 +77,7 @@ test("A2 preserves unresolved Mantine theme values with a configuration residual
 	expect(result.converted).toBe(0);
 	expect(result.skipped).toBe(1);
 	expect(result.residuals).toEqual(
-		expect.arrayContaining([
-			expect.objectContaining({ kind: "configuration", text: "blue.6" }),
-		]),
+		expect.arrayContaining([expect.objectContaining({ kind: "configuration", text: "blue.6" })]),
 	);
 	expect(result.code).toBe(fixture.expectedOutput);
 	expect(result.code).toContain('c="blue.6"');
@@ -148,7 +146,11 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 		source: fixture.input,
 		file: "App.tsx",
 		semantic: { source: { framework: BuiltinHostFramework.React } },
-		project: createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS, "#2563eb"),
+		project: createAdapterRouteProject(
+			CodemodAdapterId.Mantine,
+			CodemodAdapterId.UnoCSS,
+			"#2563eb",
+		),
 	});
 
 	expect(result.code).toBe(fixture.expectedOutput);
@@ -210,8 +212,7 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 test("A4 keeps Mantine hosts valid across Emotion, Chakra, and MUI routes", () => {
 	const fixture = {
 		input:
-			'import { Box } from "@mantine/core";\n' +
-			'export const App = () => <Box c="#123456" />;',
+			'import { Box } from "@mantine/core";\n' + 'export const App = () => <Box c="#123456" />;',
 		emotionOutput:
 			'import { Box } from "@mantine/core";\n' +
 			'import { css } from "@emotion/css";\n' +
@@ -255,7 +256,7 @@ test("A4 keeps Mantine hosts valid across Emotion, Chakra, and MUI routes", () =
 	expect(emotion.code).toBe(fixture.emotionOutput);
 	expect(emotion.code).toContain('import { Box } from "@mantine/core";');
 	expect(emotion.code).toContain('import { css } from "@emotion/css";');
-	expect(emotion.code).toContain("<Box className={css({ color: \"#123456\" })}");
+	expect(emotion.code).toContain('<Box className={css({ color: "#123456" })}');
 	expect(emotion.code).not.toContain("export const App = () => css(");
 	expect(emotion.code).not.toContain('c="#123456"');
 

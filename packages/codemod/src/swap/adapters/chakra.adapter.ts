@@ -1372,11 +1372,18 @@ function isChakraOwnedHost(source: string, openingTag: string): boolean {
 			).test(source)
 		);
 	}
-	for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']@chakra-ui\/react["']/gu)) {
+	for (const match of source.matchAll(
+		/import\s*\{([^}]+)\}\s*from\s*["']@chakra-ui\/react["']/gu,
+	)) {
 		const localNames = match[1]
 			?.split(",")
 			.filter((specifier) => !/^type\s+/u.test(specifier.trim()))
-			.map((specifier) => specifier.trim().split(/\s+as\s+/u).at(-1))
+			.map((specifier) =>
+				specifier
+					.trim()
+					.split(/\s+as\s+/u)
+					.at(-1),
+			)
 			.map((name) => name?.trim());
 		if (localNames?.includes(tag) === true) return true;
 	}
@@ -2093,10 +2100,7 @@ export function createChakraAdapter(
 				resolveHostRepresentation: ({ framework, hasHostContext, program, source }) => {
 					if (!hasHostContext && program.source?.subject === undefined) return undefined;
 					const openingTag = program.source?.hostOpenTag;
-					if (
-						openingTag !== undefined &&
-						!isChakraOwnedHost(source ?? "", openingTag)
-					)
+					if (openingTag !== undefined && !isChakraOwnedHost(source ?? "", openingTag))
 						return undefined;
 					return framework === undefined ||
 						framework === BuiltinHostFramework.React ||

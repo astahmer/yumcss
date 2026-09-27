@@ -12,12 +12,12 @@ steps 1–4 and 6 landed; canvas deferred). This is the guide to the
 
 ## Product role and evidence
 
-| Surface | Product role |
-| --- | --- |
-| CSS backend and Vite extraction | Primary path for new Pandwind code. |
-| React Strict DOM backend | Supporting integration for projects already using that host. |
+| Surface                           | Product role                                                                                    |
+| --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| CSS backend and Vite extraction   | Primary path for new Pandwind code.                                                             |
+| React Strict DOM backend          | Supporting integration for projects already using that host.                                    |
 | React Native and OpenTUI backends | Experimental targets; these examples describe the renderer contract, not broad app-level proof. |
-| Canvas backend | Deferred. |
+| Canvas backend                    | Deferred.                                                                                       |
 
 Use the web CSS path as the default. Non-web backends remain research or
 experimental until target-project behavior has exact proof; a shared style IR

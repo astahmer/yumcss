@@ -449,11 +449,18 @@ function isKnownMuiComponent(source: string, tag: string): boolean {
 			).test(source)
 		);
 	}
-	for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']@mui\/(?:material|system)["']/gu)) {
+	for (const match of source.matchAll(
+		/import\s*\{([^}]+)\}\s*from\s*["']@mui\/(?:material|system)["']/gu,
+	)) {
 		const localNames = match[1]
 			?.split(",")
 			.filter((specifier) => !/^type\s+/u.test(specifier.trim()))
-			.map((specifier) => specifier.trim().split(/\s+as\s+/u).at(-1))
+			.map((specifier) =>
+				specifier
+					.trim()
+					.split(/\s+as\s+/u)
+					.at(-1),
+			)
 			.map((name) => name?.trim());
 		if (localNames?.includes(tag) === true) return true;
 	}
