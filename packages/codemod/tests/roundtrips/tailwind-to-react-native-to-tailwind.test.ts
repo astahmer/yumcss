@@ -136,9 +136,8 @@ test("tailwind -> react-native -> tailwind: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
-		<View   style={StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style}/>;",
+		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,39 +181,14 @@ test("tailwind -> react-native -> tailwind: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { View } from "react-native";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
-		<View   style={StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style}/>;",
+		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "rule-level: 2 semantic rules; ordering: ordered semantic rules",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

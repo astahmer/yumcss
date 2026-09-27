@@ -135,7 +135,7 @@ test("tailwind -> treat -> tailwind: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> treat | lowering-residual: validation)
-		<div className={style({ "color": "rebeccapurple", "md": { "display": "flex" } })}/>;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,42 +179,13 @@ test("tailwind -> treat -> tailwind: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> treat | lowering-residual: validation)
-		<div className={style({ "color": "rebeccapurple", "md": { "display": "flex" } })}/>;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "custom-property",
-		          "residual",
-		        ],
-		        "representation": "custom-property",
-		        "residuals": [
-		          {
-		            "hint": "bind --pandwind-dynamic-1yz0ew8 at runtime for target tailwind",
-		            "kind": "dynamic-custom-property",
-		          },
-		        ],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "custom-property",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "bind --pandwind-dynamic-1yz0ew8 at runtime for target tailwind",
-		        "kind": "dynamic-custom-property",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

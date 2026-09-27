@@ -47,8 +47,9 @@ test("mui -> emotion: migrates concrete mui syntax to emotion", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "red" });",
+		  "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -141,8 +142,9 @@ test("mui -> emotion: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "#f97316" });",
+		    "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "#f97316" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -175,8 +177,9 @@ test("mui -> emotion: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "#2563eb" });",
+		    "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -221,8 +224,9 @@ test("mui -> emotion: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "#2563eb" });",
+		  "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -264,8 +268,9 @@ test("mui -> emotion: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "red" });
+		  "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

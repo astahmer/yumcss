@@ -48,40 +48,38 @@ test("mantine -> stylex: migrates concrete mantine syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400px" } }).style;",
-		  "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> stylex | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -149,14 +147,13 @@ test("mantine -> stylex: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { color: "#f97316", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400px" } }).style;",
+		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -187,14 +184,13 @@ test("mantine -> stylex: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { color: "#2563eb", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400px" } }).style;",
+		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -237,14 +233,13 @@ test("mantine -> stylex: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { color: "#2563eb", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400px" } }).style;",
+		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -283,41 +278,39 @@ test("mantine -> stylex: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400px" } }).style;
+		export const App = () => // pandwind:migrate-skip (route: mantine -> stylex | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

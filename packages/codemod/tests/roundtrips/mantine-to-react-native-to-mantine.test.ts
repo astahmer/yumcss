@@ -49,9 +49,10 @@ test("mantine -> react-native -> mantine: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
-		    "converted": 1,
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -60,77 +61,41 @@ test("mantine -> react-native -> mantine: preserves an actionable concrete round
 		          "react-native-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		        "kind": "configuration",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -227,12 +192,13 @@ test("mantine -> react-native -> mantine: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#f97316", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		            "react-native-numeric-normalization",
 		          ],
@@ -265,7 +231,7 @@ test("mantine -> react-native -> mantine: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
 		export const App = () => <View     style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "color": "#f97316", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		StyleSheet.create({ style: { "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,12 +280,13 @@ test("mantine -> react-native -> mantine: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		            "react-native-numeric-normalization",
 		          ],
@@ -352,7 +319,7 @@ test("mantine -> react-native -> mantine: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
 		export const App = () => <View     style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -415,12 +382,13 @@ test("mantine -> react-native -> mantine: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		          "react-native-numeric-normalization",
 		        ],
@@ -453,7 +421,7 @@ test("mantine -> react-native -> mantine: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
 		export const App = () => <View     style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

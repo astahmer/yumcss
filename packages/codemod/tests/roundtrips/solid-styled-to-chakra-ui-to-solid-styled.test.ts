@@ -74,7 +74,7 @@ test("solid-styled -> chakra-ui -> solid-styled: preserves an actionable concret
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for solid",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -136,7 +136,7 @@ test("solid-styled -> chakra-ui -> solid-styled: retains the documented secondar
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for solid",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -213,7 +213,7 @@ test("solid-styled -> chakra-ui -> solid-styled: preserves concrete theme and pr
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "chakra-ui has no host representation for solid",
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -263,7 +263,7 @@ test("solid-styled -> chakra-ui -> solid-styled: preserves concrete theme and pr
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "chakra-ui has no host representation for solid",
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -327,7 +327,7 @@ test("solid-styled -> chakra-ui -> solid-styled: resolves token values across bo
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for solid",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

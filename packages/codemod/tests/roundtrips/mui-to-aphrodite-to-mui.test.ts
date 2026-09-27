@@ -112,7 +112,7 @@ test("mui -> aphrodite -> mui: preserves an actionable concrete round trip", () 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -299,7 +299,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -374,7 +374,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -463,7 +463,7 @@ test("mui -> aphrodite -> mui: resolves token values across both concrete legs",
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

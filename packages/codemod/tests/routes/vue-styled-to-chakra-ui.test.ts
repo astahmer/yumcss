@@ -72,7 +72,7 @@ test("vue-styled -> chakra-ui: migrates concrete vue-styled syntax to chakra-ui"
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "chakra-ui has no host representation for vue",
+		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -116,7 +116,7 @@ test("vue-styled -> chakra-ui: carries a documented secondary vue-styled API exp
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "chakra-ui has no host representation for vue",
+		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -169,7 +169,7 @@ test("vue-styled -> chakra-ui: loads concrete theme and project context variants
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for vue",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -204,7 +204,7 @@ test("vue-styled -> chakra-ui: loads concrete theme and project context variants
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for vue",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -251,7 +251,7 @@ test("vue-styled -> chakra-ui: resolves concrete token values with project conte
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "chakra-ui has no host representation for vue",
+		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -296,7 +296,7 @@ test("vue-styled -> chakra-ui: preserves malformed concrete vue-styled input", (
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "chakra-ui has no host representation for vue",
+		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

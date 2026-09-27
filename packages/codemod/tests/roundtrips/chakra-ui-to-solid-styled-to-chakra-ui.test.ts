@@ -115,7 +115,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves an actionable concrete r
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "chakra-ui has no host representation for solid",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -285,7 +285,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "chakra-ui has no host representation for solid",
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -364,7 +364,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "chakra-ui has no host representation for solid",
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -456,7 +456,7 @@ test("chakra-ui -> solid-styled -> chakra-ui: resolves token values across both 
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "chakra-ui has no host representation for solid",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

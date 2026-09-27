@@ -93,7 +93,7 @@ test("tailwind -> jss: carries a documented secondary tailwind API explicitly", 
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> jss | lowering-residual: validation)
-		<div className={jss.createStyleSheet({ style: { color: "rebeccapurple", md: { display: "flex" } } }).attach().classes.style}/>;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

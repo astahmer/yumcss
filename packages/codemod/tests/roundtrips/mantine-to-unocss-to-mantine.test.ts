@@ -50,8 +50,9 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[color:blue.6] [margin-left:var(--mantine-spacing-auto)] [margin-right:var(--mantine-spacing-auto)] [max-width:400]"}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -59,63 +60,41 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -211,12 +190,14 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"text-brand [margin-left:var(--mantine-spacing-auto)] [margin-right:var(--mantine-spacing-auto)] [max-width:400]"}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		<Box c="brand.0" mx="auto" maw={400} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -230,65 +211,54 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs or has residuals",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs or has residuals",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400" }}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		<Box c="brand.0" mx="auto" maw={400} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"text-brand [margin-left:var(--mantine-spacing-auto)] [margin-right:var(--mantine-spacing-auto)] [max-width:400]"}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		<Box c="brand.0" mx="auto" maw={400} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -302,53 +272,40 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs or has residuals",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs or has residuals",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400" }}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		<Box c="brand.0" mx="auto" maw={400} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -369,12 +326,14 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"text-brand [margin-left:var(--mantine-spacing-auto)] [margin-right:var(--mantine-spacing-auto)] [max-width:400]"}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		<Box c="#2563eb" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -388,53 +347,40 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs or has residuals",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs or has residuals",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: "400" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		<Box c="#2563eb" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

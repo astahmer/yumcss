@@ -93,7 +93,7 @@ test("unocss -> style9: carries a documented secondary unocss API explicitly", (
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> style9 | lowering-residual: validation)
-		<div className={style9(style9.create({ style: { "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } } }).style)}/>;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

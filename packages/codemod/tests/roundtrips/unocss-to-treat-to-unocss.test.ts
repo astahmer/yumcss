@@ -135,7 +135,7 @@ test("unocss -> treat -> unocss: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
-		<div className={style({ "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } })}/>;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,42 +179,13 @@ test("unocss -> treat -> unocss: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": false,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
-		<div className={style({ "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } })}/>;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "custom-property",
-		          "residual",
-		        ],
-		        "representation": "custom-property",
-		        "residuals": [
-		          {
-		            "hint": "bind --pandwind-dynamic-1yz0ew8 at runtime for target unocss",
-		            "kind": "dynamic-custom-property",
-		          },
-		        ],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "custom-property",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "bind --pandwind-dynamic-1yz0ew8 at runtime for target unocss",
-		        "kind": "dynamic-custom-property",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

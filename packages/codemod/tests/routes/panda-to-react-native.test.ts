@@ -47,9 +47,10 @@ test("panda -> react-native: migrates concrete panda syntax to react-native", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "color": "red.300", "_hover": { "color": "blue.300" } });",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -58,29 +59,33 @@ test("panda -> react-native: migrates concrete panda syntax to react-native", ()
 		        "react-native-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -241,9 +246,10 @@ test("panda -> react-native: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -252,29 +258,28 @@ test("panda -> react-native: resolves concrete token values with project context
 		        "react-native-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -287,10 +292,11 @@ test("panda -> react-native: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "color": "red.300", "_hover": { "color": "blue.300" } });
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -299,29 +305,33 @@ test("panda -> react-native: preserves malformed concrete panda input", () => {
 		        "react-native-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

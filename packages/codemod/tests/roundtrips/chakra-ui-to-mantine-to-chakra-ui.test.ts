@@ -84,8 +84,9 @@ test("chakra-ui -> mantine -> chakra-ui: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		<Box  style={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -101,19 +102,19 @@ test("chakra-ui -> mantine -> chakra-ui: preserves an actionable concrete round 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -243,8 +244,9 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		<Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -260,19 +262,19 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -313,8 +315,9 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		<Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -330,19 +333,19 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -397,8 +400,9 @@ test("chakra-ui -> mantine -> chakra-ui: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--mantine-color-brand-0)" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		<Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -414,19 +418,19 @@ test("chakra-ui -> mantine -> chakra-ui: resolves token values across both concr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

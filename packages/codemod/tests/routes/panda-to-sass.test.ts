@@ -47,10 +47,10 @@ test("panda -> sass: migrates concrete panda syntax to sass", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> sass | parse-residual: configuration | available: residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -58,29 +58,32 @@ test("panda -> sass: migrates concrete panda syntax to sass", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -243,10 +246,10 @@ test("panda -> sass: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> sass | parse-residual: configuration | available: residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -254,29 +257,27 @@ test("panda -> sass: resolves concrete token values with project context", async
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -289,11 +290,11 @@ test("panda -> sass: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> sass | parse-residual: configuration | available: residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -301,29 +302,32 @@ test("panda -> sass: preserves malformed concrete panda input", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

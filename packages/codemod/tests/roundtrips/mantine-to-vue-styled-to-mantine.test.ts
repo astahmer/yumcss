@@ -50,9 +50,9 @@ test("mantine -> vue-styled -> mantine: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -60,65 +60,40 @@ test("mantine -> vue-styled -> mantine: preserves an actionable concrete round t
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mantine/core";
-		import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
-		styled.div({ "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		        "kind": "configuration",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -216,12 +191,13 @@ test("mantine -> vue-styled -> mantine: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "color": "#f97316", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
+		export const App = () => styled.div({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -254,7 +230,7 @@ test("mantine -> vue-styled -> mantine: preserves concrete theme and project con
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
-		styled.div({ "color": "#f97316", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
+		styled.div({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -292,12 +268,13 @@ test("mantine -> vue-styled -> mantine: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
+		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -330,7 +307,7 @@ test("mantine -> vue-styled -> mantine: preserves concrete theme and project con
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
-		styled.div({ "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
+		styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,12 +359,13 @@ test("mantine -> vue-styled -> mantine: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
+		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -420,7 +398,7 @@ test("mantine -> vue-styled -> mantine: resolves token values across both concre
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
 		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
-		styled.div({ "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 });",
+		styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

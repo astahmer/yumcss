@@ -110,7 +110,7 @@ test("mui -> bamboo -> mui: preserves an actionable concrete round trip", () => 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -293,7 +293,7 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -366,7 +366,7 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -453,7 +453,7 @@ test("mui -> bamboo -> mui: resolves token values across both concrete legs", as
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

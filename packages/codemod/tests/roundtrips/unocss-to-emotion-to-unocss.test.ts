@@ -50,7 +50,7 @@ test("unocss -> emotion -> unocss: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => css({ gap: "1rem", alignItems: "center", display: "flex" });",
+		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,7 +83,7 @@ test("unocss -> emotion -> unocss: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
+		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -207,7 +207,7 @@ test("unocss -> emotion -> unocss: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "1.125rem", color: "#f97316" });",
+		export const App = () => <div className={css({ padding: "1.125rem", color: "#f97316" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -241,8 +241,8 @@ test("unocss -> emotion -> unocss: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const App = () => // pandwind:migrate-skip (route: emotion -> unocss | lowering-residual: validation)
-		css({ padding: "1.125rem", color: "#f97316" });",
+		export const App = () => <div className={// pandwind:migrate-skip (route: emotion -> unocss | lowering-residual: validation)
+		css({ padding: "1.125rem", color: "#f97316" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -288,7 +288,7 @@ test("unocss -> emotion -> unocss: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,8 +322,8 @@ test("unocss -> emotion -> unocss: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const App = () => // pandwind:migrate-skip (route: emotion -> unocss | lowering-residual: validation)
-		css({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => <div className={// pandwind:migrate-skip (route: emotion -> unocss | lowering-residual: validation)
+		css({ padding: "1.125rem", color: "#2563eb" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -383,7 +383,7 @@ test("unocss -> emotion -> unocss: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -417,8 +417,8 @@ test("unocss -> emotion -> unocss: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => // pandwind:migrate-skip (route: emotion -> unocss | lowering-residual: validation)
-		css({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => <div className={// pandwind:migrate-skip (route: emotion -> unocss | lowering-residual: validation)
+		css({ padding: "1.125rem", color: "#2563eb" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

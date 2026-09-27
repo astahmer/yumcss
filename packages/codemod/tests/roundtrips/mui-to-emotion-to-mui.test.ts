@@ -49,8 +49,9 @@ test("mui -> emotion -> mui: preserves an actionable concrete round trip", () =>
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "red" });",
+		    "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,10 +84,11 @@ test("mui -> emotion -> mui: preserves an actionable concrete round trip", () =>
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "red" });",
-		    "converted": 1,
+		    "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css({ padding: "16px", color: "red" })}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -95,7 +97,6 @@ test("mui -> emotion -> mui: preserves an actionable concrete round trip", () =>
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -103,19 +104,19 @@ test("mui -> emotion -> mui: preserves an actionable concrete round trip", () =>
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -231,8 +232,9 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "#f97316" });",
+		      "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "#f97316" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -265,10 +267,11 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
-		      "converted": 1,
+		      "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css({ padding: "16px", color: "#f97316" })}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -277,7 +280,6 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -285,26 +287,27 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "#2563eb" });",
+		      "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -337,10 +340,11 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
-		      "converted": 1,
+		      "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css({ padding: "16px", color: "#2563eb" })}/>;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -349,7 +353,6 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -357,19 +360,19 @@ test("mui -> emotion -> mui: preserves concrete theme and project context varian
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -389,8 +392,9 @@ test("mui -> emotion -> mui: resolves token values across both concrete legs", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "16px", color: "#2563eb" });",
+		    "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -423,10 +427,11 @@ test("mui -> emotion -> mui: resolves token values across both concrete legs", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
-		    "converted": 1,
+		    "code": "import { Box } from "@mui/material";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css({ padding: "16px", color: "#2563eb" })}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -435,7 +440,6 @@ test("mui -> emotion -> mui: resolves token values across both concrete legs", a
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -443,19 +447,19 @@ test("mui -> emotion -> mui: resolves token values across both concrete legs", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

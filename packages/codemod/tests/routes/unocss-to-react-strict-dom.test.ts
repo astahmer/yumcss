@@ -93,7 +93,7 @@ test("unocss -> react-strict-dom: carries a documented secondary unocss API expl
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> react-strict-dom | lowering-residual: validation)
-		<html.div style={css.create({ style: { hover: { backgroundColor: "black" }, md: { display: "flex" } } }).style} />;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

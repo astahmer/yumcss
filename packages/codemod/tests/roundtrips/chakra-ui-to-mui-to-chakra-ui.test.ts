@@ -50,8 +50,9 @@ test("chakra-ui -> mui -> chakra-ui: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  sx={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		<Box bg="red.200" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -67,53 +68,32 @@ test("chakra-ui -> mui -> chakra-ui: preserves an actionable concrete round trip
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		<Box bg="red.200" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -209,7 +189,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -233,26 +213,18 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -267,7 +239,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,26 +263,18 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -339,7 +303,7 @@ test("chakra-ui -> mui -> chakra-ui: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="#2563eb" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -363,26 +327,18 @@ test("chakra-ui -> mui -> chakra-ui: resolves token values across both concrete 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="#2563eb" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -48,37 +48,36 @@ test("mantine -> next-yak: migrates concrete mantine syntax to next-yak", () => 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { css } from "next-yak";
-		export const App = () => css\`color: blue.6; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
-		  "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -144,7 +143,7 @@ test("mantine -> next-yak: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`color: #f97316; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		export const App = () => css\`margin-inline: auto; color: #f97316; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +178,7 @@ test("mantine -> next-yak: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		export const App = () => css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -226,7 +225,7 @@ test("mantine -> next-yak: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		export const App = () => css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -269,38 +268,37 @@ test("mantine -> next-yak: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { css } from "next-yak";
-		export const App = () => css\`color: blue.6; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;
+		export const App = () => // pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

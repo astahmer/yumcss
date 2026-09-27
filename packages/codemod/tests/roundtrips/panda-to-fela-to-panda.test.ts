@@ -49,8 +49,10 @@ test("panda -> fela -> panda: preserves an actionable concrete round trip", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "red.300", "_hover": { "color": "blue.300" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> fela | parse-residual: configuration | available: named-map, residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -58,63 +60,46 @@ test("panda -> fela -> panda: preserves an actionable concrete round trip", () =
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
-		    "converted": 1,
+		export const card = // pandwind:migrate-skip (route: panda -> fela | parse-residual: configuration | available: named-map, residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -373,8 +358,10 @@ test("panda -> fela -> panda: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> fela | parse-residual: configuration | available: named-map, residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -382,63 +369,41 @@ test("panda -> fela -> panda: resolves token values across both concrete legs", 
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ color: "brand.500", _hover: { color: "blue.300" } });",
-		    "converted": 1,
+		export const card = // pandwind:migrate-skip (route: panda -> fela | parse-residual: configuration | available: named-map, residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

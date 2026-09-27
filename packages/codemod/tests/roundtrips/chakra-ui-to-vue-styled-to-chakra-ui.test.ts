@@ -115,7 +115,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "chakra-ui has no host representation for vue",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -285,7 +285,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "chakra-ui has no host representation for vue",
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -364,7 +364,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "chakra-ui has no host representation for vue",
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -456,7 +456,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token values across both co
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "chakra-ui has no host representation for vue",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

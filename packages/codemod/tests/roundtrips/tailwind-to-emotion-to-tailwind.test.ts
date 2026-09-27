@@ -50,7 +50,7 @@ test("tailwind -> emotion -> tailwind: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => css({ gap: "1rem", alignItems: "center", display: "flex" });",
+		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,7 +83,7 @@ test("tailwind -> emotion -> tailwind: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
+		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -207,7 +207,7 @@ test("tailwind -> emotion -> tailwind: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "1.125rem", color: "#f97316" });",
+		export const App = () => <div className={css({ padding: "1.125rem", color: "#f97316" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -240,7 +240,7 @@ test("tailwind -> emotion -> tailwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +278,7 @@ test("tailwind -> emotion -> tailwind: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("tailwind -> emotion -> tailwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -363,7 +363,7 @@ test("tailwind -> emotion -> tailwind: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => css({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -396,7 +396,7 @@ test("tailwind -> emotion -> tailwind: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "p-card text-brand";",
+		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

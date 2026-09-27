@@ -74,7 +74,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for vue",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -136,7 +136,7 @@ test("vue-styled -> chakra-ui -> vue-styled: retains the documented secondary AP
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for vue",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -213,7 +213,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "chakra-ui has no host representation for vue",
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -263,7 +263,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "chakra-ui has no host representation for vue",
+		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -327,7 +327,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token values across both c
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for vue",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

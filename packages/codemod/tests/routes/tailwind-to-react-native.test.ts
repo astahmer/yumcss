@@ -93,9 +93,8 @@ test("tailwind -> react-native: carries a documented secondary tailwind API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "react-native";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
-		<View   style={StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style}/>;",
+		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

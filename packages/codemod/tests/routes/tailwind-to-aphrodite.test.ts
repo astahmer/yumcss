@@ -93,7 +93,7 @@ test("tailwind -> aphrodite: carries a documented secondary tailwind API explici
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | lowering-residual: validation)
-		<div className={css(StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style)}/>;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

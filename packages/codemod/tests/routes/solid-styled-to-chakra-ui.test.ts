@@ -72,7 +72,7 @@ test("solid-styled -> chakra-ui: migrates concrete solid-styled syntax to chakra
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "chakra-ui has no host representation for solid",
+		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -116,7 +116,7 @@ test("solid-styled -> chakra-ui: carries a documented secondary solid-styled API
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "chakra-ui has no host representation for solid",
+		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -169,7 +169,7 @@ test("solid-styled -> chakra-ui: loads concrete theme and project context varian
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for solid",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -204,7 +204,7 @@ test("solid-styled -> chakra-ui: loads concrete theme and project context varian
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "chakra-ui has no host representation for solid",
+		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -251,7 +251,7 @@ test("solid-styled -> chakra-ui: resolves concrete token values with project con
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "chakra-ui has no host representation for solid",
+		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -296,7 +296,7 @@ test("solid-styled -> chakra-ui: preserves malformed concrete solid-styled input
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "chakra-ui has no host representation for solid",
+		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

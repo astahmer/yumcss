@@ -136,7 +136,7 @@ test("tailwind -> react-strict-dom -> tailwind: retains the documented secondary
 		  "forward": {
 		    "changed": true,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> react-strict-dom | lowering-residual: validation)
-		<html.div style={css.create({ style: { color: "rebeccapurple", md: { display: "flex" } } }).style} />;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("tailwind -> react-strict-dom -> tailwind: retains the documented secondary
 		  "reverse": {
 		    "changed": false,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> react-strict-dom | lowering-residual: validation)
-		<html.div style={css.create({ style: { color: "rebeccapurple", md: { display: "flex" } } }).style} />;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

@@ -136,7 +136,7 @@ test("unocss -> react-strict-dom -> unocss: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> react-strict-dom | lowering-residual: validation)
-		<html.div style={css.create({ style: { hover: { backgroundColor: "black" }, md: { display: "flex" } } }).style} />;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("unocss -> react-strict-dom -> unocss: retains the documented secondary API
 		  "reverse": {
 		    "changed": false,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> react-strict-dom | lowering-residual: validation)
-		<html.div style={css.create({ style: { hover: { backgroundColor: "black" }, md: { display: "flex" } } }).style} />;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

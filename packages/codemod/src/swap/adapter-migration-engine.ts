@@ -1039,54 +1039,12 @@ function runAdapterMigrationInternal(
 			});
 			continue;
 		}
-		if (
-			targetComponentProjection &&
-			program.source?.subject === undefined &&
-			bindingBeforeMatch !== undefined &&
-			program.source?.framework === undefined &&
-			sourceSubject !== undefined
-		) {
-			const tag = componentTagForSubject(sourceSubject);
-			const framework = hostFramework;
-			if (tag !== undefined && framework !== undefined && hostRepresentation !== undefined)
-				targetComponentRewrites.push({
-					program,
-					binding: bindingBeforeMatch,
-					tag,
-					framework,
-					sourceFramework: sourceHostFramework,
-					emittedExpression: emitted.text,
-					representation: hostRepresentation,
-				});
-		}
 		// Preserve target-owned residuals in the public report as well as in
 		// validation. A failed validation is an aggregate consequence; it must
 		// not hide the precise semantic reason emitted by the target adapter.
 		residuals.push(...emitted.residuals);
 		residuals.push(...(emitted.preservedResiduals ?? []));
 		const emittedForValidation = MigrationOutput.validationSource(emitted.text, program);
-		if (
-			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&
-			!targetComponentProjection &&
-			!targetHostProjection &&
-			hasHostContext &&
-			emittedHostRepresentation !== undefined &&
-			program.source?.subject === undefined &&
-			(program.source?.hostOpenTag === undefined ||
-				targetAdapter.migration.targetPolicy.handlesSourceHostAttributes === true)
-		) {
-			targetHostRewrites.push({
-				program,
-				emittedExpression: emitted.text,
-				sourceModules: sourceOwnership.modules,
-				representation: emittedHostRepresentation,
-				representationKind: targetRepresentationKind,
-				residuals: carrierResiduals,
-				...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
-				...(hostFramework === undefined ? {} : { framework: hostFramework }),
-				...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
-			});
-		}
 		// A portable artifact emission already carries its semantic program from
 		// the registry. Reparsing the TS carrier through the target parser would
 		// only fabricate parse residuals for valid emitted source.
@@ -1164,6 +1122,48 @@ function runAdapterMigrationInternal(
 				),
 			});
 			continue;
+		}
+		if (
+			targetComponentProjection &&
+			program.source?.subject === undefined &&
+			bindingBeforeMatch !== undefined &&
+			program.source?.framework === undefined &&
+			sourceSubject !== undefined
+		) {
+			const tag = componentTagForSubject(sourceSubject);
+			const framework = hostFramework;
+			if (tag !== undefined && framework !== undefined && hostRepresentation !== undefined)
+				targetComponentRewrites.push({
+					program,
+					binding: bindingBeforeMatch,
+					framework,
+					sourceFramework: sourceHostFramework,
+					tag,
+					emittedExpression: emitted.text,
+					representation: hostRepresentation,
+				});
+		}
+		if (
+			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&
+			!targetComponentProjection &&
+			!targetHostProjection &&
+			hasHostContext &&
+			emittedHostRepresentation !== undefined &&
+			program.source?.subject === undefined &&
+			(program.source?.hostOpenTag === undefined ||
+				targetAdapter.migration.targetPolicy.handlesSourceHostAttributes === true)
+		) {
+			targetHostRewrites.push({
+				program,
+				emittedExpression: emitted.text,
+				sourceModules: sourceOwnership.modules,
+				representation: emittedHostRepresentation,
+				representationKind: targetRepresentationKind,
+				residuals: carrierResiduals,
+				...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
+				...(hostFramework === undefined ? {} : { framework: hostFramework }),
+				...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
+			});
 		}
 		collectGeneratedFiles(emitted.generatedFiles);
 		for (const statement of emitted.imports ?? []) imports.add(statement);

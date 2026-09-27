@@ -93,7 +93,7 @@ test("unocss -> treat: carries a documented secondary unocss API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
-		<div className={style({ "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } })}/>;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

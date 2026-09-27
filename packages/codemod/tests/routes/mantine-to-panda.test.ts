@@ -48,37 +48,36 @@ test("mantine -> panda: migrates concrete mantine syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
-		  "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> panda | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -144,7 +143,7 @@ test("mantine -> panda: loads concrete theme and project context variants", asyn
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ color: "brand.500", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+		export const App = () => <Box className={css({ marginInline: "auto", color: "brand.500", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +178,7 @@ test("mantine -> panda: loads concrete theme and project context variants", asyn
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ color: "brand.500", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+		export const App = () => <Box className={css({ marginInline: "auto", color: "brand.500", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -226,7 +225,7 @@ test("mantine -> panda: resolves concrete token values with project context", as
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ color: "brand.500", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+		export const App = () => <Box className={css({ marginInline: "auto", color: "brand.500", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -269,38 +268,37 @@ test("mantine -> panda: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;
+		export const App = () => // pandwind:migrate-skip (route: mantine -> panda | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

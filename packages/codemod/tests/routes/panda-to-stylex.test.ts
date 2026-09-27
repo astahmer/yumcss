@@ -47,9 +47,10 @@ test("panda -> stylex: migrates concrete panda syntax to stylex", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { color: "red.300", "&:hover": { color: "blue.300" } } }).style;",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -57,29 +58,33 @@ test("panda -> stylex: migrates concrete panda syntax to stylex", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -248,9 +253,10 @@ test("panda -> stylex: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { color: "#2563eb", "&:hover": { color: "blue.300" } } }).style;",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -258,29 +264,28 @@ test("panda -> stylex: resolves concrete token values with project context", asy
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -293,10 +298,11 @@ test("panda -> stylex: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { color: "red.300", "&:hover": { color: "blue.300" } } }).style;
+		  "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -304,29 +310,33 @@ test("panda -> stylex: preserves malformed concrete panda input", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

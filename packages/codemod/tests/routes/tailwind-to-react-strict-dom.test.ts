@@ -93,7 +93,7 @@ test("tailwind -> react-strict-dom: carries a documented secondary tailwind API 
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> react-strict-dom | lowering-residual: validation)
-		<html.div style={css.create({ style: { color: "rebeccapurple", md: { display: "flex" } } }).style} />;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

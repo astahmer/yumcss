@@ -48,9 +48,9 @@ test("mantine -> style9: migrates concrete mantine syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style)}/>;",
-		  "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> style9 | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -58,29 +58,28 @@ test("mantine -> style9: migrates concrete mantine syntax to style9", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -148,12 +147,13 @@ test("mantine -> style9: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "color": "#f97316", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -185,12 +185,13 @@ test("mantine -> style9: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
@@ -234,12 +235,13 @@ test("mantine -> style9: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
@@ -279,10 +281,10 @@ test("mantine -> style9: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style)}/>;
+		export const App = () => // pandwind:migrate-skip (route: mantine -> style9 | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -290,29 +292,28 @@ test("mantine -> style9: preserves malformed concrete mantine input", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

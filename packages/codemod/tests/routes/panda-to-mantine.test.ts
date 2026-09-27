@@ -48,7 +48,7 @@ test("panda -> mantine: migrates concrete panda syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		export const card = // pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
 		css({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -56,42 +56,33 @@ test("panda -> mantine: migrates concrete panda syntax to mantine", () => {
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
+		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -276,7 +267,7 @@ test("panda -> mantine: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		export const card = // pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
 		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -284,42 +275,28 @@ test("panda -> mantine: resolves concrete token values with project context", as
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -333,7 +310,7 @@ test("panda -> mantine: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		export const card = // pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
 		css({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 0,
@@ -342,42 +319,33 @@ test("panda -> mantine: preserves malformed concrete panda input", () => {
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
+		      "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });

@@ -48,8 +48,9 @@ test("chakra-ui -> mui: migrates concrete chakra-ui syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  sx={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
-		  "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		<Box bg="red.200" p="4" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -65,19 +66,19 @@ test("chakra-ui -> mui: migrates concrete chakra-ui syntax to mui", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -143,7 +144,7 @@ test("chakra-ui -> mui: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -167,26 +168,18 @@ test("chakra-ui -> mui: loads concrete theme and project context variants", asyn
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -210,21 +203,13 @@ test("chakra-ui -> mui: loads concrete theme and project context variants", asyn
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -241,7 +226,7 @@ test("chakra-ui -> mui: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		<Box bg="#2563eb" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -265,21 +250,13 @@ test("chakra-ui -> mui: resolves concrete token values with project context", as
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -293,9 +270,10 @@ test("chakra-ui -> mui: preserves malformed concrete chakra-ui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  sx={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		<Box bg="red.200" p="4" />;
 		const unfinished = { /* unfinished chakra-ui */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -311,19 +289,19 @@ test("chakra-ui -> mui: preserves malformed concrete chakra-ui input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

@@ -48,36 +48,35 @@ test("mantine -> tamagui: migrates concrete mantine syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 });",
-		  "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: configuration | available: residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -142,7 +141,7 @@ test("mantine -> tamagui: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { color: "#f97316", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 });",
+		export const App = () => styled(View, { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,7 +175,7 @@ test("mantine -> tamagui: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { color: "#2563eb", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 });",
+		export const App = () => styled(View, { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -222,7 +221,7 @@ test("mantine -> tamagui: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { color: "#2563eb", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 });",
+		export const App = () => styled(View, { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -264,37 +263,36 @@ test("mantine -> tamagui: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 });
+		export const App = () => // pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: configuration | available: residual)
+		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

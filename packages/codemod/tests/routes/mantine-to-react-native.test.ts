@@ -47,9 +47,10 @@ test("mantine -> react-native: migrates concrete mantine syntax to react-native"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
-		  "converted": 1,
+		  "code": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -58,29 +59,28 @@ test("mantine -> react-native: migrates concrete mantine syntax to react-native"
 		        "react-native-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -148,12 +148,13 @@ test("mantine -> react-native: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#f97316", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		          "react-native-numeric-normalization",
 		        ],
@@ -185,12 +186,13 @@ test("mantine -> react-native: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		          "react-native-numeric-normalization",
 		        ],
@@ -234,12 +236,13 @@ test("mantine -> react-native: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#2563eb", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
+		        "token-fallback",
 		        "dynamic-and-theme",
 		        "react-native-numeric-normalization",
 		      ],
@@ -279,10 +282,11 @@ test("mantine -> react-native: preserves malformed concrete mantine input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "color": "blue.6", "marginLeft": "var(--mantine-spacing-auto)", "marginRight": "var(--mantine-spacing-auto)", "maxWidth": 400 } }).style}/>;
+		  "code": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -291,29 +295,28 @@ test("mantine -> react-native: preserves malformed concrete mantine input", () =
 		        "react-native-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

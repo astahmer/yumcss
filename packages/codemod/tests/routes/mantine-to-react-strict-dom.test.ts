@@ -48,7 +48,7 @@ test("mantine -> react-strict-dom: migrates concrete mantine syntax to react-str
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> react-strict-dom | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
 		<Box c="blue.6" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -58,21 +58,25 @@ test("mantine -> react-strict-dom: migrates concrete mantine syntax to react-str
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "react-strict-dom has no host representation for react",
 		      "kind": "host-framework",
@@ -279,7 +283,7 @@ test("mantine -> react-strict-dom: preserves malformed concrete mantine input", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> react-strict-dom | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
 		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
@@ -290,21 +294,25 @@ test("mantine -> react-strict-dom: preserves malformed concrete mantine input", 
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "react-strict-dom has no host representation for react",
 		      "kind": "host-framework",

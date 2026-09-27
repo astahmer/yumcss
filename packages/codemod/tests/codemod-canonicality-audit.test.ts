@@ -1,12 +1,17 @@
 import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../src/swap/index.ts";
-import { createAdapterRouteSpec } from "./route-spec-support.ts";
+import {
+	createAdapterRouteProject,
+	createAdapterRouteSpec,
+	routeEvidence,
+} from "./route-spec-support.ts";
 
 const pandaToLinaria = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.Linaria);
 const mantineToLinaria = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Linaria);
 const mantineToEmotion = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Emotion);
 const mantineToChakra = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.ChakraUi);
 const mantineToMui = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Mui);
+const mantineToUnoCSS = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS);
 
 test("A1 preserves unresolved Panda token references with a configuration residual", () => {
 	const fixture = {
@@ -118,6 +123,88 @@ test("A2 maps Mantine auto spacing and numeric dimensions to CSS semantics", () 
 	expect(result.code).toContain("max-width: calc(25rem * var(--mantine-scale))");
 	expect(result.code).not.toContain("--mantine-spacing-auto");
 	expect(result.code).not.toContain("max-width: 400;");
+});
+
+test("A2 preserves Mantine source props when target validation rejects emitted CSS", async () => {
+	const fixture = {
+		input:
+			'import { Box } from "@mantine/core";\n' +
+			'export const App = () => <Box c="brand.0" mx="auto" maw={400} />;',
+		expectedOutput:
+			'import { Box } from "@mantine/core";\n' +
+			"export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)\n" +
+			'<Box c="brand.0" mx="auto" maw={400} />;',
+	};
+	expect(fixture).toMatchInlineSnapshot(`
+		{
+		  "expectedOutput": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		<Box c="brand.0" mx="auto" maw={400} />;",
+		  "input": "import { Box } from "@mantine/core";
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
+		}
+	`);
+	const result = await mantineToUnoCSS.runAsync({
+		source: fixture.input,
+		file: "App.tsx",
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+		project: createAdapterRouteProject(CodemodAdapterId.Mantine, CodemodAdapterId.UnoCSS, "#2563eb"),
+	});
+
+	expect(result.code).toBe(fixture.expectedOutput);
+	expect(result.converted).toBe(0);
+	expect(result.skipped).toBe(1);
+	expect(result.code).not.toContain("className=");
+	expect(result.code).not.toContain("style=");
+	expect(result.residuals.map((residual) => residual.kind)).toContain("validation");
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		<Box c="brand.0" mx="auto" maw={400} />;",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
+		    {
+		      "applied": [
+		        "token-fallback",
+		        "dynamic-and-theme",
+		      ],
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
+		    },
+		  ],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "canonical CSS differs or has residuals",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [
+		    {
+		      "differences": [
+		        "canonical CSS differs or has residuals",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("A4 keeps Mantine hosts valid across Emotion, Chakra, and MUI routes", () => {

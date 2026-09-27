@@ -136,7 +136,7 @@ test("tailwind -> aphrodite -> tailwind: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | lowering-residual: validation)
-		<div className={css(StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style)}/>;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,37 +180,13 @@ test("tailwind -> aphrodite -> tailwind: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | lowering-residual: validation)
-		<div className={css(StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style)}/>;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "rule-level: 2 semantic rules; ordering: ordered semantic rules",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

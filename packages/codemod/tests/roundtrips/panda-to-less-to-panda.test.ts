@@ -49,10 +49,10 @@ test("panda -> less -> panda: preserves an actionable concrete round trip", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> less | parse-residual: configuration | available: residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -60,36 +60,39 @@ test("panda -> less -> panda: preserves an actionable concrete round trip", () =
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red.300", "_hover": { "color": "blue.300" } });",
+		import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> less | parse-residual: configuration | available: residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -121,17 +124,12 @@ test("panda -> less -> panda: preserves an actionable concrete round trip", () =
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}
@@ -462,10 +460,10 @@ test("panda -> less -> panda: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> less | parse-residual: configuration | available: residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -473,36 +471,34 @@ test("panda -> less -> panda: resolves token values across both concrete legs", 
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
+		import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> less | parse-residual: configuration | available: residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -534,17 +530,12 @@ test("panda -> less -> panda: resolves token values across both concrete legs", 
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "stylesheet migration requires a single local class selector",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 4,
+		    "skipped": 3,
 		    "validations": [],
 		  },
 		}

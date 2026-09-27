@@ -135,7 +135,7 @@ test("unocss -> jss -> unocss: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
-		<div className={jss.createStyleSheet({ style: { hover: { backgroundColor: "black" }, md: { display: "flex" } } }).attach().classes.style}/>;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,37 +179,13 @@ test("unocss -> jss -> unocss: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": false,
 		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
-		<div className={jss.createStyleSheet({ style: { hover: { backgroundColor: "black" }, md: { display: "flex" } } }).attach().classes.style}/>;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

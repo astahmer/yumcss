@@ -50,7 +50,7 @@ test("mantine -> authored-css -> mantine: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> authored-css | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> authored-css | parse-residual: configuration | available: residual)
 		<Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -60,42 +60,33 @@ test("mantine -> authored-css -> mantine: preserves an actionable concrete round
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "4 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		        "kind": "configuration",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "4 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
 		import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> authored-css | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> authored-css | parse-residual: configuration | available: residual)
 		<Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -338,7 +329,7 @@ test("mantine -> authored-css -> mantine: preserves concrete theme and project c
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "4 residual conversion(s)",
+		          "hint": "3 residual conversion(s)",
 		          "kind": "validation",
 		          "preserved": undefined,
 		        },
@@ -347,7 +338,7 @@ test("mantine -> authored-css -> mantine: preserves concrete theme and project c
 		      "validations": [
 		        {
 		          "differences": [
-		            "4 residual conversion(s)",
+		            "3 residual conversion(s)",
 		          ],
 		          "lossiness": "lossy",
 		          "valid": false,
@@ -447,7 +438,7 @@ test("mantine -> authored-css -> mantine: preserves concrete theme and project c
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "4 residual conversion(s)",
+		          "hint": "3 residual conversion(s)",
 		          "kind": "validation",
 		          "preserved": undefined,
 		        },
@@ -456,7 +447,7 @@ test("mantine -> authored-css -> mantine: preserves concrete theme and project c
 		      "validations": [
 		        {
 		          "differences": [
-		            "4 residual conversion(s)",
+		            "3 residual conversion(s)",
 		          ],
 		          "lossiness": "lossy",
 		          "valid": false,
@@ -570,7 +561,7 @@ test("mantine -> authored-css -> mantine: resolves token values across both conc
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "4 residual conversion(s)",
+		        "hint": "3 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -579,7 +570,7 @@ test("mantine -> authored-css -> mantine: resolves token values across both conc
 		    "validations": [
 		      {
 		        "differences": [
-		          "4 residual conversion(s)",
+		          "3 residual conversion(s)",
 		        ],
 		        "lossiness": "lossy",
 		        "valid": false,

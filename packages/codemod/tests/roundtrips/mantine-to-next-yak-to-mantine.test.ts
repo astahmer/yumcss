@@ -50,86 +50,49 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { css } from "next-yak";
-		export const App = () => css\`color: blue.6; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mantine/core";
-		import { css } from "next-yak";
-		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: blue.6; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		export const App = () => // pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		        "kind": "configuration",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: configuration | available: named-map, residual)
+		<Box c="blue.6" mx="auto" maw={400} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -224,7 +187,7 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`color: #f97316; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		export const App = () => css\`margin-inline: auto; color: #f97316; max-width: calc(25rem * var(--mantine-scale));\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -260,7 +223,7 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
 		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #f97316; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		css\`margin-inline: auto; color: #f97316; max-width: calc(25rem * var(--mantine-scale));\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,7 +273,7 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		export const App = () => css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +309,7 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
 		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -410,7 +373,7 @@ test("mantine -> next-yak -> mantine: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		export const App = () => css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -446,7 +409,7 @@ test("mantine -> next-yak -> mantine: resolves token values across both concrete
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
 		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; margin-left: var(--mantine-spacing-auto); margin-right: var(--mantine-spacing-auto); max-width: 400;\`;",
+		css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

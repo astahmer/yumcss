@@ -93,9 +93,8 @@ test("unocss -> react-native: carries a documented secondary unocss API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "react-native";
-		export const App = () => // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
-		<View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } } }).style}/>;",
+		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

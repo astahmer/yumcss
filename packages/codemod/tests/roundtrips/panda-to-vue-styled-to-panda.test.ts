@@ -49,9 +49,10 @@ test("panda -> vue-styled -> panda: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "color": "red.300", "_hover": { "color": "blue.300" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> vue-styled | parse-residual: configuration | available: named-map, residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -59,64 +60,46 @@ test("panda -> vue-styled -> panda: preserves an actionable concrete round trip"
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Panda token reference 'red.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		import { defineComponent, h } from "vue";
-		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "red.300", _hover: { color: "blue.300" } }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		export const card = // pandwind:migrate-skip (route: panda -> vue-styled | parse-residual: configuration | available: named-map, residual)
+		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -379,9 +362,10 @@ test("panda -> vue-styled -> panda: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "blue.300" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> vue-styled | parse-residual: configuration | available: named-map, residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -389,64 +373,41 @@ test("panda -> vue-styled -> panda: resolves token values across both concrete l
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		import { defineComponent, h } from "vue";
-		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ color: "brand.500", _hover: { color: "blue.300" } }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		export const card = // pandwind:migrate-skip (route: panda -> vue-styled | parse-residual: configuration | available: named-map, residual)
+		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

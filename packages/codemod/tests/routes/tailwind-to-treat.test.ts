@@ -93,7 +93,7 @@ test("tailwind -> treat: carries a documented secondary tailwind API explicitly"
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> treat | lowering-residual: validation)
-		<div className={style({ "color": "rebeccapurple", "md": { "display": "flex" } })}/>;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

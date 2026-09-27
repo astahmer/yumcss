@@ -48,7 +48,7 @@ test("mantine -> css-modules: migrates concrete mantine syntax to css-modules", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | parse-residual: configuration | available: residual)
 		<Box c="blue.6" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -58,36 +58,27 @@ test("mantine -> css-modules: migrates concrete mantine syntax to css-modules", 
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "4 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "4 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -189,7 +180,7 @@ test("mantine -> css-modules: loads concrete theme and project context variants"
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "4 residual conversion(s)",
+		        "hint": "3 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -198,7 +189,7 @@ test("mantine -> css-modules: loads concrete theme and project context variants"
 		    "validations": [
 		      {
 		        "differences": [
-		          "4 residual conversion(s)",
+		          "3 residual conversion(s)",
 		        ],
 		        "lossiness": "lossy",
 		        "valid": false,
@@ -233,7 +224,7 @@ test("mantine -> css-modules: loads concrete theme and project context variants"
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "4 residual conversion(s)",
+		        "hint": "3 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -242,7 +233,7 @@ test("mantine -> css-modules: loads concrete theme and project context variants"
 		    "validations": [
 		      {
 		        "differences": [
-		          "4 residual conversion(s)",
+		          "3 residual conversion(s)",
 		        ],
 		        "lossiness": "lossy",
 		        "valid": false,
@@ -289,7 +280,7 @@ test("mantine -> css-modules: resolves concrete token values with project contex
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "4 residual conversion(s)",
+		      "hint": "3 residual conversion(s)",
 		      "kind": "validation",
 		      "preserved": undefined,
 		    },
@@ -298,7 +289,7 @@ test("mantine -> css-modules: resolves concrete token values with project contex
 		  "validations": [
 		    {
 		      "differences": [
-		        "4 residual conversion(s)",
+		        "3 residual conversion(s)",
 		      ],
 		      "lossiness": "lossy",
 		      "valid": false,
@@ -317,7 +308,7 @@ test("mantine -> css-modules: preserves malformed concrete mantine input", () =>
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | lowering-residual: validation)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> css-modules | parse-residual: configuration | available: residual)
 		<Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
@@ -328,36 +319,27 @@ test("mantine -> css-modules: preserves malformed concrete mantine input", () =>
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "static",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "4 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
+		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "4 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });

@@ -93,7 +93,7 @@ test("unocss -> jss: carries a documented secondary unocss API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
-		<div className={jss.createStyleSheet({ style: { hover: { backgroundColor: "black" }, md: { display: "flex" } } }).attach().classes.style}/>;",
+		<div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -215,7 +215,7 @@ test("chakra-ui -> compiled -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> compiled | lowering-residual: validation)
-		<Box className={css({ "backgroundColor": "brand.500", "p": "var(--chakra-spacing-4)" })}/>;",
+		<Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -257,39 +257,17 @@ test("chakra-ui -> compiled -> chakra-ui: preserves concrete theme and project c
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> compiled | lowering-residual: validation)
-		<Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
-		      "converted": 1,
+		<Box bg="brand.500" p="4" />;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -297,7 +275,7 @@ test("chakra-ui -> compiled -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> compiled | lowering-residual: validation)
-		<Box className={css({ "backgroundColor": "brand.500", "p": "var(--chakra-spacing-4)" })}/>;",
+		<Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,39 +317,17 @@ test("chakra-ui -> compiled -> chakra-ui: preserves concrete theme and project c
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> compiled | lowering-residual: validation)
-		<Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
-		      "converted": 1,
+		<Box bg="brand.500" p="4" />;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}

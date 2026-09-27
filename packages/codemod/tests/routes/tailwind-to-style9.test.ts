@@ -93,7 +93,7 @@ test("tailwind -> style9: carries a documented secondary tailwind API explicitly
 		{
 		  "changed": true,
 		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> style9 | lowering-residual: validation)
-		<div className={style9(style9.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style)}/>;",
+		<div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
