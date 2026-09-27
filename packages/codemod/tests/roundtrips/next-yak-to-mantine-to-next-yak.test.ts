@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.NextYak, Codemod
 
 test("next-yak -> mantine -> next-yak: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -98,8 +98,8 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -114,7 +114,7 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 
 test("next-yak -> mantine -> next-yak: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "next-yak -> mantine round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -157,8 +157,8 @@ test("next-yak -> mantine -> next-yak: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const Card = (props) => // pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: dynamic | available: named-map, residual)
-		<div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
+		    "code": "// pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: dynamic | available: named-map, residual)
+		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -199,9 +199,9 @@ test("next-yak -> mantine -> next-yak: retains the documented secondary API with
 
 test("next-yak -> mantine -> next-yak: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.Mantine);
@@ -225,8 +225,8 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,8 +273,8 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -288,8 +288,8 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -336,8 +336,8 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -353,7 +353,7 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 
 test("next-yak -> mantine -> next-yak: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.NextYak, CodemodAdapterId.Mantine);
 	expectRouteScenarioEvidence(first, "next-yak -> mantine round-trip token forward");
@@ -365,8 +365,8 @@ test("next-yak -> mantine -> next-yak: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -413,8 +413,8 @@ test("next-yak -> mantine -> next-yak: resolves token values across both concret
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

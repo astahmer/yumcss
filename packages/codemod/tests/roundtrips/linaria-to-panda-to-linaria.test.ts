@@ -134,8 +134,8 @@ test("linaria -> panda -> linaria: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-		export const Card = // pandwind:migrate-skip (route: linaria -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: linaria -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,8 +169,8 @@ test("linaria -> panda -> linaria: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@linaria/react";
-		export const Card = // pandwind:migrate-skip (route: linaria -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: linaria -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -317,8 +317,8 @@ test("linaria -> panda -> linaria: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> linaria | lowering-residual: validation)
-		css({ padding: "1rem", color: "brand.500" });",
+		// pandwind:migrate-skip (route: panda -> linaria | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "brand.500" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -412,8 +412,8 @@ test("linaria -> panda -> linaria: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> linaria | lowering-residual: validation)
-		css({ padding: "1rem", color: "brand.500" });",
+		// pandwind:migrate-skip (route: panda -> linaria | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "brand.500" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

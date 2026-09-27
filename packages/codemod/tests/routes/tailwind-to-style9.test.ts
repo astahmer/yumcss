@@ -92,8 +92,8 @@ test("tailwind -> style9: carries a documented secondary tailwind API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> style9 | lowering-residual: validation)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: tailwind -> style9 | lowering-residual: validation)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

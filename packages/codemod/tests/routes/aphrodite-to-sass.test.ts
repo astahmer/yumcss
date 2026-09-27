@@ -48,8 +48,8 @@ test("aphrodite -> sass: migrates concrete aphrodite syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -60,7 +60,6 @@ test("aphrodite -> sass: migrates concrete aphrodite syntax to sass", () => {
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -69,12 +68,17 @@ test("aphrodite -> sass: migrates concrete aphrodite syntax to sass", () => {
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -94,8 +98,8 @@ test("aphrodite -> sass: carries a documented secondary aphrodite API explicitly
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> sass | capability-blocked: named-rules: named style rule: fonts; nesting: style nested rules | available: static, residual, portable-artifact)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: fonts; nesting: style nested rules | available: static, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -106,7 +110,6 @@ test("aphrodite -> sass: carries a documented secondary aphrodite API explicitly
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -115,12 +118,17 @@ test("aphrodite -> sass: carries a documented secondary aphrodite API explicitly
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: fonts; nesting: style nested rules",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -149,8 +157,8 @@ test("aphrodite -> sass: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -161,7 +169,6 @@ test("aphrodite -> sass: loads concrete theme and project context variants", asy
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -170,12 +177,17 @@ test("aphrodite -> sass: loads concrete theme and project context variants", asy
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -186,8 +198,8 @@ test("aphrodite -> sass: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -198,7 +210,6 @@ test("aphrodite -> sass: loads concrete theme and project context variants", asy
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -207,12 +218,17 @@ test("aphrodite -> sass: loads concrete theme and project context variants", asy
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -235,8 +251,8 @@ test("aphrodite -> sass: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -247,7 +263,6 @@ test("aphrodite -> sass: resolves concrete token values with project context", a
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -256,12 +271,17 @@ test("aphrodite -> sass: resolves concrete token values with project context", a
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -281,8 +301,8 @@ test("aphrodite -> sass: preserves malformed concrete aphrodite input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> sass | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		StyleSheet.create({ card: { color: "red", padding: 8 } });
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -294,7 +314,6 @@ test("aphrodite -> sass: preserves malformed concrete aphrodite input", () => {
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -303,12 +322,17 @@ test("aphrodite -> sass: preserves malformed concrete aphrodite input", () => {
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, Codemod
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.VanillaExtract, "#f97316");
 
 test("pandwind -> vanilla-extract: migrates concrete pandwind syntax to vanilla-extract", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -86,7 +86,7 @@ test("pandwind -> vanilla-extract: migrates concrete pandwind syntax to vanilla-
 });
 
 test("pandwind -> vanilla-extract: carries a documented secondary pandwind API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "pandwind -> vanilla-extract secondary");
 	expectExplicitResidualEvidence(result);
@@ -94,8 +94,9 @@ test("pandwind -> vanilla-extract: carries a documented secondary pandwind API e
 		{
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> vanilla-extract | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> vanilla-extract | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -132,8 +133,8 @@ test("pandwind -> vanilla-extract: carries a documented secondary pandwind API e
 });
 
 test("pandwind -> vanilla-extract: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Pandwind, CodemodAdapterId.VanillaExtract);
@@ -148,8 +149,9 @@ test("pandwind -> vanilla-extract: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> vanilla-extract | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> vanilla-extract | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -193,8 +195,9 @@ test("pandwind -> vanilla-extract: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> vanilla-extract | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> vanilla-extract | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -240,7 +243,7 @@ test("pandwind -> vanilla-extract: loads concrete theme and project context vari
 });
 
 test("pandwind -> vanilla-extract: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Pandwind, CodemodAdapterId.VanillaExtract);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.VanillaExtract, "pandwind -> vanilla-extract token config");
@@ -288,7 +291,7 @@ test("pandwind -> vanilla-extract: resolves concrete token values with project c
 });
 
 test("pandwind -> vanilla-extract: preserves malformed concrete pandwind input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished pandwind */");
 	expectRouteScenarioEvidence(result, "pandwind -> vanilla-extract malformed");
 	expectExplicitResidualEvidence(result);

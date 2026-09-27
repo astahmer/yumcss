@@ -50,8 +50,8 @@ test("mantine -> tailwind -> mantine: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: configuration | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,8 +86,8 @@ test("mantine -> tailwind -> mantine: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: configuration | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -113,8 +113,8 @@ test("mantine -> tailwind -> mantine: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: host-framework | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -149,8 +149,8 @@ test("mantine -> tailwind -> mantine: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> tailwind | parse-residual: host-framework | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -227,8 +227,8 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,8 +305,8 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -397,8 +397,8 @@ test("mantine -> tailwind -> mantine: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

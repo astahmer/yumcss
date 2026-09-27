@@ -48,8 +48,8 @@ test("panda -> mantine: migrates concrete panda syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,8 +96,8 @@ test("panda -> mantine: carries a documented secondary panda API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> mantine | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -159,8 +159,8 @@ test("panda -> mantine: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -207,8 +207,8 @@ test("panda -> mantine: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -267,8 +267,8 @@ test("panda -> mantine: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -310,8 +310,8 @@ test("panda -> mantine: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });
+		// pandwind:migrate-skip (route: panda -> mantine | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 0,
 		  "generatedFiles": [],

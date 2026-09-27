@@ -269,8 +269,8 @@ test("mui -> tailwind -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"[padding:16px] text-brand"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,8 +341,8 @@ test("mui -> tailwind -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"[padding:16px] text-brand"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -427,8 +427,8 @@ test("mui -> tailwind -> mui: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"[padding:16px] text-brand"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

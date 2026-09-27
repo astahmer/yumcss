@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, Codemod
 
 test("tamagui -> sass -> tamagui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.scss", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("tamagui -> sass -> tamagui: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "red", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -80,58 +80,27 @@ test("tamagui -> sass -> tamagui: preserves an actionable concrete round trip", 
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "red", padding: "$4" });
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 4,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -140,7 +109,7 @@ test("tamagui -> sass -> tamagui: preserves an actionable concrete round trip", 
 
 test("tamagui -> sass -> tamagui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.scss", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "tamagui -> sass round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -151,8 +120,8 @@ test("tamagui -> sass -> tamagui: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> sass | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,52 +153,26 @@ test("tamagui -> sass -> tamagui: retains the documented secondary API without s
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> sass | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 3,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -238,9 +181,9 @@ test("tamagui -> sass -> tamagui: retains the documented secondary API without s
 
 test("tamagui -> sass -> tamagui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.scss", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.scss", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Sass);
@@ -264,8 +207,8 @@ test("tamagui -> sass -> tamagui: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -294,58 +237,27 @@ test("tamagui -> sass -> tamagui: preserves concrete theme and project context v
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		      "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "residual",
-		          ],
-		          "representation": "residual",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 4,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -353,8 +265,8 @@ test("tamagui -> sass -> tamagui: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -383,58 +295,27 @@ test("tamagui -> sass -> tamagui: preserves concrete theme and project context v
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		      "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "residual",
-		          ],
-		          "representation": "residual",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 4,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -444,7 +325,7 @@ test("tamagui -> sass -> tamagui: preserves concrete theme and project context v
 
 test("tamagui -> sass -> tamagui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "card.scss", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Sass);
 	expectRouteScenarioEvidence(first, "tamagui -> sass round-trip token forward");
@@ -456,8 +337,8 @@ test("tamagui -> sass -> tamagui: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -486,58 +367,27 @@ test("tamagui -> sass -> tamagui: resolves token values across both concrete leg
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> sass | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 4,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

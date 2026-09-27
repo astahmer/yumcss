@@ -89,8 +89,8 @@ test("tailwind -> tamagui: carries a documented secondary tailwind API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> tamagui | capability-blocked: named-conditions: named: md | available: static, residual)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | capability-blocked: named-conditions: named: md | available: static, residual)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

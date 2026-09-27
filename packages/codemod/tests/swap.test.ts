@@ -461,8 +461,24 @@ import { tokenDocumentCodec as T } from "../src/swap/token-document-codec.ts";
 
 describe("TokenDocument conversions", () => {
 	const dtcg = JSON.stringify({
-		colors: { blue: { 500: { $value: "#3182ce" }, 600: { $value: "#2b6cb0" } } },
-		spacing: { 4: { $value: "4px" } },
+		colors: {
+			$type: "color",
+			blue: {
+				500: {
+					$value: {
+						colorSpace: "srgb",
+						components: [49 / 255, 130 / 255, 206 / 255],
+					},
+				},
+				600: {
+					$value: {
+						colorSpace: "srgb",
+						components: [43 / 255, 108 / 255, 176 / 255],
+					},
+				},
+			},
+		},
+		spacing: { $type: "dimension", 4: { $value: { value: 4, unit: "px" } } },
 	});
 
 	test("DTCG -> @theme css", () => {
@@ -472,7 +488,32 @@ describe("TokenDocument conversions", () => {
 		expect(theme).toContain("--spacing-4: 4px;");
 	});
 
-	test("@theme css -> DTCG round-trips", () => {
+	test("omits an unsupported DTCG color space from scalar CSS output", () => {
+		const document = T.fromText(
+			"dtcg",
+			JSON.stringify({
+				colors: {
+					$type: "color",
+					accent: {
+						$value: { colorSpace: "display-p3", components: [0.4, 0.5, 0.6] },
+					},
+				},
+			}),
+		);
+		const output = T.to("theme", document, { allowLossy: true });
+
+		expect(output.text).toMatchInlineSnapshot(`"@theme {\n}\n"`);
+		expect(output.fidelity.losses).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					path: "/colors/accent/$value",
+					feature: "unrepresentable value",
+				}),
+			]),
+		);
+	});
+
+	test("@theme css retains scalar values and reports lost DTCG types", () => {
 		const original = T.fromText("dtcg", dtcg);
 		const theme = T.to("theme", original, { allowLossy: true }).text;
 		const document = T.fromText("theme", theme);
@@ -482,8 +523,22 @@ describe("TokenDocument conversions", () => {
 			},
 			spacing: { children: { "4": { kind: "token", value: { kind: "string", value: "4px" } } } },
 		});
-		const back = JSON.parse(T.to("dtcg", document).text);
-		expect(back.colors["blue-500"].$value).toBe("#3182ce");
+		expect(() => T.to("dtcg", document)).toThrow("exporting to dtcg would lose");
+		const output = T.to("dtcg", document, { allowLossy: true });
+		expect(output.fidelity.losses).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					path: "/colors/blue-500/$type",
+					feature: "unsupported DTCG token",
+				}),
+				expect.objectContaining({
+					path: "/colors/blue-600/$type",
+					feature: "unsupported DTCG token",
+				}),
+				expect.objectContaining({ path: "/spacing/4/$type", feature: "unsupported DTCG token" }),
+			]),
+		);
+		expect(output.text).not.toContain("$value");
 	});
 
 	test("define.preset imports via dynamic import of the real preset", async () => {
@@ -686,8 +741,18 @@ describe("--dedup: repeated identical literals hoist to a constant", () => {
 
 describe("extra token formats", () => {
 	const fixture = JSON.stringify({
-		colors: { blue: { 500: { $value: "#3182ce" } } },
-		spacing: { 4: { $value: "4px" } },
+		colors: {
+			$type: "color",
+			blue: {
+				500: {
+					$value: {
+						colorSpace: "srgb",
+						components: [49 / 255, 130 / 255, 206 / 255],
+					},
+				},
+			},
+		},
+		spacing: { $type: "dimension", 4: { $value: { value: 4, unit: "px" } } },
 	});
 	const document = T.fromText("dtcg", fixture);
 

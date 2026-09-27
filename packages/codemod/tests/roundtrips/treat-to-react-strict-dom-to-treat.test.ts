@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAd
 
 test("treat -> react-strict-dom -> treat: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("treat -> react-strict-dom -> treat: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -95,8 +95,8 @@ test("treat -> react-strict-dom -> treat: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -111,7 +111,7 @@ test("treat -> react-strict-dom -> treat: preserves an actionable concrete round
 
 test("treat -> react-strict-dom -> treat: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "treat -> react-strict-dom round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -122,8 +122,8 @@ test("treat -> react-strict-dom -> treat: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,8 +167,8 @@ test("treat -> react-strict-dom -> treat: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -183,9 +183,9 @@ test("treat -> react-strict-dom -> treat: retains the documented secondary API w
 
 test("treat -> react-strict-dom -> treat: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.treat.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.ReactStrictDom);
@@ -209,8 +209,8 @@ test("treat -> react-strict-dom -> treat: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -254,8 +254,8 @@ test("treat -> react-strict-dom -> treat: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -269,8 +269,8 @@ test("treat -> react-strict-dom -> treat: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,8 +314,8 @@ test("treat -> react-strict-dom -> treat: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -331,7 +331,7 @@ test("treat -> react-strict-dom -> treat: preserves concrete theme and project c
 
 test("treat -> react-strict-dom -> treat: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.ReactStrictDom);
 	expectRouteScenarioEvidence(first, "treat -> react-strict-dom round-trip token forward");
@@ -343,8 +343,8 @@ test("treat -> react-strict-dom -> treat: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -388,8 +388,8 @@ test("treat -> react-strict-dom -> treat: resolves token values across both conc
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

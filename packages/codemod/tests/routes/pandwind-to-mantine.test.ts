@@ -48,8 +48,9 @@ test("pandwind -> mantine: migrates concrete pandwind syntax to mantine", () => 
 		{
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "red", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,8 +106,9 @@ test("pandwind -> mantine: carries a documented secondary pandwind API explicitl
 		{
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> mantine | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> mantine | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -157,8 +159,9 @@ test("pandwind -> mantine: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -205,8 +208,9 @@ test("pandwind -> mantine: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -265,8 +269,9 @@ test("pandwind -> mantine: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "#2563eb", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
+		export const card = css.class({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -322,8 +327,9 @@ test("pandwind -> mantine: preserves malformed concrete pandwind input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
-		css.class({ color: "red", padding: "1rem" });
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
+		export const card = css.class({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 0,
 		  "generatedFiles": [],

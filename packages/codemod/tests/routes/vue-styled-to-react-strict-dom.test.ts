@@ -48,8 +48,8 @@ test("vue-styled -> react-strict-dom: migrates concrete vue-styled syntax to rea
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,8 +94,8 @@ test("vue-styled -> react-strict-dom: carries a documented secondary vue-styled 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,8 +149,8 @@ test("vue-styled -> react-strict-dom: loads concrete theme and project context v
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,8 +186,8 @@ test("vue-styled -> react-strict-dom: loads concrete theme and project context v
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,8 +235,8 @@ test("vue-styled -> react-strict-dom: resolves concrete token values with projec
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,8 +281,8 @@ test("vue-styled -> react-strict-dom: preserves malformed concrete vue-styled in
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 0,
 		  "generatedFiles": [],

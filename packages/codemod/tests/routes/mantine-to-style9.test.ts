@@ -48,8 +48,8 @@ test("mantine -> style9: migrates concrete mantine syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> style9 | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> style9 | parse-residual: configuration | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +93,8 @@ test("mantine -> style9: carries a documented secondary mantine API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> style9 | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> style9 | parse-residual: host-framework | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,8 +281,8 @@ test("mantine -> style9: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> style9 | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;
+		// pandwind:migrate-skip (route: mantine -> style9 | parse-residual: configuration | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
 		  "generatedFiles": [],

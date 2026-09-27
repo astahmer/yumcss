@@ -56,11 +56,14 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			from: CodemodAdapterId.CssModules,
 			to: CodemodAdapterId.Pandwind,
 			file: "styles.module.css",
+			root: "/project",
+			readFile: () => undefined,
+			listFiles: () => [],
 			mode: "safe",
 			adapterRegistry: catalog.registry,
 		});
 
-		expect(result.changed).toBe(false);
+		expect(result.changed).toBe(true);
 		expect(result.converted).toBe(0);
 		// Global-selector rules fail closed, so the whole file is skipped:
 		// preserved source under the visible marker plus the capability
@@ -72,8 +75,8 @@ describe("non-CSS-in-JS source adapter contract", () => {
 		);
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "changed": false,
-			  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+			  "changed": true,
+			  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 			:global(.reset) { margin: 0; } .card { color: red; }",
 			  "converted": 0,
 			  "dependencies": [],
@@ -239,6 +242,9 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			from: CodemodAdapterId.CssModules,
 			to: CodemodAdapterId.Pandwind,
 			file: "styles.module.css",
+			root: "/project",
+			readFile: () => undefined,
+			listFiles: () => [],
 			mode: "safe",
 			adapterRegistry: catalog.registry,
 		});

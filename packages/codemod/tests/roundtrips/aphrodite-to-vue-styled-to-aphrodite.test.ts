@@ -86,8 +86,8 @@ test("aphrodite -> vue-styled -> aphrodite: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "padding": 8, "color": "red" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,8 +137,8 @@ test("aphrodite -> vue-styled -> aphrodite: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,8 +174,8 @@ test("aphrodite -> vue-styled -> aphrodite: retains the documented secondary API
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -252,8 +252,8 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -327,8 +327,8 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -416,8 +416,8 @@ test("aphrodite -> vue-styled -> aphrodite: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

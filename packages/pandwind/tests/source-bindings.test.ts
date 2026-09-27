@@ -44,6 +44,24 @@ describe("source binding index", () => {
 		expect(index.fromModule("@emotion/react")).toHaveLength(2);
 	});
 
+	test("indexes every source-bearing module reference with its literal range", () => {
+		const source = [
+			'import "./styles.less";',
+			'const loadStyles = () => import("./styles.less");',
+			'const styles = require("./styles.less");',
+			'export { styles } from "./styles.less";',
+			'// import "./styles.less";',
+			'const note = "import ./styles.less";',
+		].join("\n");
+		const index = SourceBindings.fromDocument({ file: "references.ts", source });
+
+		expect(
+			index.moduleReferences
+				.filter((reference) => reference.source === "./styles.less")
+				.map(({ range }) => source.slice(range.start, range.end)),
+		).toEqual(Array.from({ length: 4 }, () => '"./styles.less"'));
+	});
+
 	test("records re-exported names without confusing them with local imports", () => {
 		const index = SourceBindings.fromDocument({
 			file: "index.ts",

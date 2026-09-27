@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, 
 
 test("react-strict-dom -> authored-css -> react-strict-dom: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves an actiona
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		css.create({ card: { color: "red", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -63,7 +63,6 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves an actiona
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -72,12 +71,17 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves an actiona
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -87,75 +91,16 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves an actiona
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		css.create({ card: { color: "red", padding: "1rem" } });
+		    "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 5,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -164,7 +109,7 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves an actiona
 
 test("react-strict-dom -> authored-css -> react-strict-dom: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "react-strict-dom -> authored-css round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -175,8 +120,8 @@ test("react-strict-dom -> authored-css -> react-strict-dom: retains the document
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const pulse = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: nesting: keyframes nested rules | available: static, residual)
-		css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: nesting: keyframes nested rules | available: static, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -204,55 +149,26 @@ test("react-strict-dom -> authored-css -> react-strict-dom: retains the document
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css } from "react-strict-dom";
-		export const pulse = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: nesting: keyframes nested rules | available: static, residual)
-		css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		    "code": "import { css } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: nesting: keyframes nested rules | available: static, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 3,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -261,9 +177,9 @@ test("react-strict-dom -> authored-css -> react-strict-dom: retains the document
 
 test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.css", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactStrictDom, CodemodAdapterId.AuthoredCss);
@@ -287,8 +203,8 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -300,7 +216,6 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 		          "availableRepresentations": [
 		            "static",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -309,12 +224,17 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
 		          "hint": "named-rules: named style rule: card",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -324,75 +244,16 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		      "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "residual",
-		          "residuals": [],
-		        },
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "residual",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 5,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -400,8 +261,8 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -413,7 +274,6 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 		          "availableRepresentations": [
 		            "static",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -422,12 +282,17 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
 		          "hint": "named-rules: named style rule: card",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -437,75 +302,16 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		      "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "residual",
-		          "residuals": [],
-		        },
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "residual",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet migration requires a single local class selector",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 5,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -515,7 +321,7 @@ test("react-strict-dom -> authored-css -> react-strict-dom: preserves concrete t
 
 test("react-strict-dom -> authored-css -> react-strict-dom: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactStrictDom, CodemodAdapterId.AuthoredCss);
 	expectRouteScenarioEvidence(first, "react-strict-dom -> authored-css round-trip token forward");
@@ -527,8 +333,8 @@ test("react-strict-dom -> authored-css -> react-strict-dom: resolves token value
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -540,7 +346,6 @@ test("react-strict-dom -> authored-css -> react-strict-dom: resolves token value
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -549,12 +354,17 @@ test("react-strict-dom -> authored-css -> react-strict-dom: resolves token value
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -564,75 +374,16 @@ test("react-strict-dom -> authored-css -> react-strict-dom: resolves token value
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse, capability)
-		import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		    "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet migration requires a single local class selector",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 5,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

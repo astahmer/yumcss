@@ -30,8 +30,8 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, Codem
 	const targetSemantic = undefined;
 
 test("aphrodite -> treat -> aphrodite: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -49,7 +49,7 @@ test("aphrodite -> treat -> aphrodite: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const styles = { "card": style({ "padding": 8, "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -124,8 +124,8 @@ test("aphrodite -> treat -> aphrodite: preserves an actionable concrete round tr
 });
 
 test("aphrodite -> treat -> aphrodite: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
+	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "aphrodite -> treat round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -136,8 +136,8 @@ test("aphrodite -> treat -> aphrodite: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> treat | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> treat | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,8 +173,8 @@ test("aphrodite -> treat -> aphrodite: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> treat | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> treat | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -188,10 +188,10 @@ test("aphrodite -> treat -> aphrodite: retains the documented secondary API with
 });
 
 test("aphrodite -> treat -> aphrodite: preserves concrete theme and project context variants", async () => {
-	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.treat.ts", semantic: amberTargetSemantic, project: amberProject });
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.Treat);
@@ -214,7 +214,7 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@/styles.treat";
+		      "code": "import { style } from "treat";
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -288,7 +288,7 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@/styles.treat";
+		      "code": "import { style } from "treat";
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -364,8 +364,8 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 });
 
 test("aphrodite -> treat -> aphrodite: resolves token values across both concrete legs", async () => {
-	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.Treat);
 	expectRouteScenarioEvidence(first, "aphrodite -> treat round-trip token forward");
@@ -376,7 +376,7 @@ test("aphrodite -> treat -> aphrodite: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const styles = { "card": style({ "padding": 8, "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

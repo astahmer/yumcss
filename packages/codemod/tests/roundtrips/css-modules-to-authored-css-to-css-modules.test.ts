@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, Code
 
 test("css-modules -> authored-css -> css-modules: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -48,8 +48,8 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -74,7 +74,7 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		        "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -83,9 +83,9 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		// pandwind:migrate-skip (lowering-residual: capability)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -110,7 +110,7 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
+		        "hint": "global stylesheet selectors cannot move into CSS Modules without rewriting class-name consumers",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -124,7 +124,7 @@ test("css-modules -> authored-css -> css-modules: preserves an actionable concre
 
 test("css-modules -> authored-css -> css-modules: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "css-modules -> authored-css round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -133,8 +133,8 @@ test("css-modules -> authored-css -> css-modules: retains the documented seconda
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -175,18 +175,18 @@ test("css-modules -> authored-css -> css-modules: retains the documented seconda
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		        "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability, composition)
-		// pandwind:migrate-skip (lowering-residual: capability)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -226,13 +226,8 @@ test("css-modules -> authored-css -> css-modules: retains the documented seconda
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
+		        "hint": "global stylesheet selectors cannot move into CSS Modules without rewriting class-name consumers",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "preprocessor or CSS Modules composition needs its source context",
-		        "kind": "composition",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -245,9 +240,9 @@ test("css-modules -> authored-css -> css-modules: retains the documented seconda
 
 test("css-modules -> authored-css -> css-modules: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.css", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.AuthoredCss);
@@ -269,8 +264,8 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		{
 		  "amber": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -295,7 +290,7 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		          "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -304,9 +299,9 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		// pandwind:migrate-skip (lowering-residual: capability)
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -331,7 +326,7 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet migration requires a single local class selector",
+		          "hint": "global stylesheet selectors cannot move into CSS Modules without rewriting class-name consumers",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -342,8 +337,8 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		  },
 		  "blue": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -368,7 +363,7 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		          "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -377,9 +372,9 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		// pandwind:migrate-skip (lowering-residual: capability)
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -404,7 +399,7 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "stylesheet migration requires a single local class selector",
+		          "hint": "global stylesheet selectors cannot move into CSS Modules without rewriting class-name consumers",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -419,7 +414,7 @@ test("css-modules -> authored-css -> css-modules: preserves concrete theme and p
 
 test("css-modules -> authored-css -> css-modules: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.AuthoredCss);
 	expectRouteScenarioEvidence(first, "css-modules -> authored-css round-trip token forward");
@@ -429,8 +424,8 @@ test("css-modules -> authored-css -> css-modules: resolves token values across b
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -455,7 +450,7 @@ test("css-modules -> authored-css -> css-modules: resolves token values across b
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		        "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -464,9 +459,9 @@ test("css-modules -> authored-css -> css-modules: resolves token values across b
 		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
-		// pandwind:migrate-skip (lowering-residual: capability)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -491,7 +486,7 @@ test("css-modules -> authored-css -> css-modules: resolves token values across b
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "stylesheet migration requires a single local class selector",
+		        "hint": "global stylesheet selectors cannot move into CSS Modules without rewriting class-name consumers",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

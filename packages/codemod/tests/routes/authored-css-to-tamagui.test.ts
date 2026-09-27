@@ -47,10 +47,9 @@ test("authored-css -> tamagui: migrates concrete authored-css syntax to tamagui"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "red" }) };
-		export default styles;",
-		  "converted": 1,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -65,19 +64,19 @@ test("authored-css -> tamagui: migrates concrete authored-css syntax to tamagui"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -90,10 +89,15 @@ test("authored-css -> tamagui: carries a documented secondary authored-css API e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": styled(View, { "from": { opacity: "0" }, "to": { opacity: "1" } }) };
-		export default styles;",
-		  "converted": 2,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		@media (prefers-color-scheme: dark) {
+		  .card { color: white; }
+		}
+		@keyframes pulse {
+		  from { opacity: 0; }
+		  to { opacity: 1; }
+		}",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -117,28 +121,23 @@ test("authored-css -> tamagui: carries a documented secondary authored-css API e
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 2,
+		  "validations": [],
 		}
 	`)
 });
@@ -160,10 +159,9 @@ test("authored-css -> tamagui: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -178,26 +176,25 @@ test("authored-css -> tamagui: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -212,19 +209,19 @@ test("authored-css -> tamagui: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -240,10 +237,9 @@ test("authored-css -> tamagui: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
-		export default styles;",
-		  "converted": 1,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -258,19 +254,19 @@ test("authored-css -> tamagui: resolves concrete token values with project conte
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -282,8 +278,8 @@ test("authored-css -> tamagui: preserves malformed concrete authored-css input",
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished authored-css */",
 		  "converted": 0,
@@ -309,6 +305,11 @@ test("authored-css -> tamagui: preserves malformed concrete authored-css input",
 		    {
 		      "hint": "stylesheet block is unbalanced",
 		      "kind": "parse",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

@@ -48,8 +48,8 @@ test("mantine -> tamagui: migrates concrete mantine syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: configuration | available: residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: configuration | available: residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -90,8 +90,8 @@ test("mantine -> tamagui: carries a documented secondary mantine API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: host-framework | available: residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: host-framework | available: residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -263,8 +263,8 @@ test("mantine -> tamagui: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: configuration | available: residual)
-		<Box c="blue.6" mx="auto" maw={400} />;
+		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: configuration | available: residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
 		  "generatedFiles": [],

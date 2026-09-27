@@ -86,8 +86,8 @@ test("jss -> vue-styled -> jss: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "red" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const useStyles = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,8 +173,8 @@ test("jss -> vue-styled -> jss: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const sheet = { "card": // pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "red" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const sheet = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -275,8 +275,8 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,8 +350,8 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -439,8 +439,8 @@ test("jss -> vue-styled -> jss: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

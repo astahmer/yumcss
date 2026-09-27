@@ -50,8 +50,8 @@ test("panda -> stylex -> panda: preserves an actionable concrete round trip", ()
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -91,8 +91,8 @@ test("panda -> stylex -> panda: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -118,8 +118,8 @@ test("panda -> stylex -> panda: retains the documented secondary API without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> stylex | capability-blocked: composition: 1 composition edge(s) | available: static, named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> stylex | capability-blocked: composition: 1 composition edge(s) | available: static, named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -155,8 +155,8 @@ test("panda -> stylex -> panda: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> stylex | capability-blocked: composition: 1 composition edge(s) | available: static, named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> stylex | capability-blocked: composition: 1 composition edge(s) | available: static, named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -196,8 +196,8 @@ test("panda -> stylex -> panda: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -241,8 +241,8 @@ test("panda -> stylex -> panda: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -256,8 +256,8 @@ test("panda -> stylex -> panda: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -301,8 +301,8 @@ test("panda -> stylex -> panda: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -330,8 +330,8 @@ test("panda -> stylex -> panda: resolves token values across both concrete legs"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -366,8 +366,8 @@ test("panda -> stylex -> panda: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> stylex | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

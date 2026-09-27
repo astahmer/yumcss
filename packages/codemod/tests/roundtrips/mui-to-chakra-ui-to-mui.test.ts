@@ -50,8 +50,8 @@ test("mui -> chakra-ui -> mui: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "red", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,8 +85,8 @@ test("mui -> chakra-ui -> mui: preserves an actionable concrete round trip", () 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "red", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -210,8 +210,8 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -245,8 +245,8 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -260,8 +260,8 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -295,8 +295,8 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -324,8 +324,8 @@ test("mui -> chakra-ui -> mui: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "#2563eb", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -359,8 +359,8 @@ test("mui -> chakra-ui -> mui: resolves token values across both concrete legs",
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "#2563eb", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

@@ -346,8 +346,9 @@ test("linaria -> pandwind -> linaria: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> linaria | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "brand" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> linaria | lowering-residual: validation)
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -442,8 +443,9 @@ test("linaria -> pandwind -> linaria: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> linaria | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "brand" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> linaria | lowering-residual: validation)
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

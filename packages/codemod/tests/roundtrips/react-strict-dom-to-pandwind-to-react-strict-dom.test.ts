@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactStrictDom, 
 
 test("react-strict-dom -> pandwind -> react-strict-dom: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -127,7 +127,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves an actionable 
 
 test("react-strict-dom -> pandwind -> react-strict-dom: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "react-strict-dom -> pandwind round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -176,8 +176,8 @@ test("react-strict-dom -> pandwind -> react-strict-dom: retains the documented s
 		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { defaultPreset } from "pandwind/preset/default";
 		const runtimeCss = createRuntimeCss(defaultPreset);
-		export const pulse = // pandwind:migrate-skip (route: pandwind -> react-strict-dom | lowering-residual: validation)
-		(() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
+		// pandwind:migrate-skip (route: pandwind -> react-strict-dom | lowering-residual: validation)
+		export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,9 +224,9 @@ test("react-strict-dom -> pandwind -> react-strict-dom: retains the documented s
 
 test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactStrictDom, CodemodAdapterId.Pandwind);
@@ -362,8 +362,9 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const styles = { "card": // pandwind:migrate-skip (route: pandwind -> react-strict-dom | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "brand" }) };
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> react-strict-dom | lowering-residual: validation)
+		const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export const Card = () => <div className={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -412,7 +413,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme
 
 test("react-strict-dom -> pandwind -> react-strict-dom: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactStrictDom, CodemodAdapterId.Pandwind);
 	expectRouteScenarioEvidence(first, "react-strict-dom -> pandwind round-trip token forward");
@@ -460,8 +461,9 @@ test("react-strict-dom -> pandwind -> react-strict-dom: resolves token values ac
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const styles = { "card": // pandwind:migrate-skip (route: pandwind -> react-strict-dom | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "brand" }) };
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> react-strict-dom | lowering-residual: validation)
+		const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

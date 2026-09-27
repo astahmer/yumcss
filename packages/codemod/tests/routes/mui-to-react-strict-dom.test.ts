@@ -48,8 +48,8 @@ test("mui -> react-strict-dom: migrates concrete mui syntax to react-strict-dom"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "red", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,8 +94,8 @@ test("mui -> react-strict-dom: carries a documented secondary mui API explicitly
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		export const Card = // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: validation)
-		styled("div")({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -156,8 +156,8 @@ test("mui -> react-strict-dom: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -193,8 +193,8 @@ test("mui -> react-strict-dom: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,8 +242,8 @@ test("mui -> react-strict-dom: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "#2563eb", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -288,8 +288,8 @@ test("mui -> react-strict-dom: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "red", p: 2 }} />;
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 0,
 		  "generatedFiles": [],

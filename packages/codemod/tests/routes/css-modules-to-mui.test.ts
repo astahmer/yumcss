@@ -46,8 +46,8 @@ test("css-modules -> mui: migrates concrete css-modules syntax to mui", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -59,7 +59,7 @@ test("css-modules -> mui: migrates concrete css-modules syntax to mui", () => {
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -71,8 +71,8 @@ test("css-modules -> mui: migrates concrete css-modules syntax to mui", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		      "kind": "host-framework",
+		      "hint": "renaming Card.module.css to Card.module.ts requires updating project imports",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -89,8 +89,8 @@ test("css-modules -> mui: carries a documented secondary css-modules API explici
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		  "converted": 0,
@@ -103,7 +103,7 @@ test("css-modules -> mui: carries a documented secondary css-modules API explici
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		    {
@@ -113,7 +113,7 @@ test("css-modules -> mui: carries a documented secondary css-modules API explici
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -129,13 +129,8 @@ test("css-modules -> mui: carries a documented secondary css-modules API explici
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		      "kind": "host-framework",
+		      "hint": "renaming Card.module.css to Card.module.ts requires updating project imports",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -161,8 +156,8 @@ test("css-modules -> mui: loads concrete theme and project context variants", as
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,8 +190,8 @@ test("css-modules -> mui: loads concrete theme and project context variants", as
 		    "validations": [],
 		  },
 		  "blue": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -241,8 +236,8 @@ test("css-modules -> mui: resolves concrete token values with project context", 
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -284,8 +279,8 @@ test("css-modules -> mui: preserves malformed concrete css-modules input", () =>
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, host-framework)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
@@ -298,7 +293,7 @@ test("css-modules -> mui: preserves malformed concrete css-modules input", () =>
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -315,12 +310,12 @@ test("css-modules -> mui: preserves malformed concrete css-modules input", () =>
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		      "kind": "host-framework",
+		      "hint": "renaming Card.module.css to Card.module.ts requires updating project imports",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 2,
+		  "skipped": 1,
 		  "validations": [],
 		}
 	`)

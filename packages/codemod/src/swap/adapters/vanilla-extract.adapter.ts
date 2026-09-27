@@ -116,6 +116,12 @@ export default defineCodemodAdapter({
 	configFiles: ["package.json"],
 	migration: {
 		targetPolicy: {
+			moduleFile: {
+				acceptedSuffixes: [".css.ts"],
+				outputExtension: ".css.ts",
+				importSpecifierExtension: ".css.ts",
+				unsupportedFileHint: "Vanilla Extract styles must be emitted from a .css.ts module",
+			},
 			handlesHostRewrites: true,
 			dynamicClassCarrier: true,
 			handlesFrameworkSemantics: true,

@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, Codemo
 
 test("tailwind -> vue-styled -> tailwind: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -86,8 +86,8 @@ test("tailwind -> vue-styled -> tailwind: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
+		// pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const App = () => styled.div({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -126,7 +126,7 @@ test("tailwind -> vue-styled -> tailwind: preserves an actionable concrete round
 
 test("tailwind -> vue-styled -> tailwind: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "tailwind -> vue-styled round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -136,8 +136,8 @@ test("tailwind -> vue-styled -> tailwind: retains the documented secondary API w
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> vue-styled | lowering-residual: validation)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> vue-styled | lowering-residual: validation)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,8 +180,8 @@ test("tailwind -> vue-styled -> tailwind: retains the documented secondary API w
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> vue-styled | lowering-residual: validation)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> vue-styled | lowering-residual: validation)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -196,9 +196,9 @@ test("tailwind -> vue-styled -> tailwind: retains the documented secondary API w
 
 test("tailwind -> vue-styled -> tailwind: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.VueStyled);
@@ -257,8 +257,8 @@ test("tailwind -> vue-styled -> tailwind: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "padding": "1.125rem", "color": "#f97316" });",
+		// pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const App = () => styled.div({ "padding": "1.125rem", "color": "#f97316" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -332,8 +332,8 @@ test("tailwind -> vue-styled -> tailwind: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
+		// pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const App = () => styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -373,7 +373,7 @@ test("tailwind -> vue-styled -> tailwind: preserves concrete theme and project c
 
 test("tailwind -> vue-styled -> tailwind: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.VueStyled);
 	expectRouteScenarioEvidence(first, "tailwind -> vue-styled round-trip token forward");
@@ -421,8 +421,8 @@ test("tailwind -> vue-styled -> tailwind: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
+		// pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const App = () => styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

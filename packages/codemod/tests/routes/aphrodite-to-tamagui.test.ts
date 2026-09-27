@@ -48,8 +48,8 @@ test("aphrodite -> tamagui: migrates concrete aphrodite syntax to tamagui", () =
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -91,8 +91,8 @@ test("aphrodite -> tamagui: carries a documented secondary aphrodite API explici
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,8 +143,8 @@ test("aphrodite -> tamagui: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,8 +177,8 @@ test("aphrodite -> tamagui: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,8 +223,8 @@ test("aphrodite -> tamagui: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,8 +266,8 @@ test("aphrodite -> tamagui: preserves malformed concrete aphrodite input", () =>
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "red", padding: 8 } });
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 0,
 		  "generatedFiles": [],

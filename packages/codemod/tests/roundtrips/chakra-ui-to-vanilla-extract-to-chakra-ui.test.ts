@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, Codemo
 
 test("chakra-ui -> vanilla-extract -> chakra-ui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,9 +50,9 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves an actionable concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="red.200" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -70,53 +70,32 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves an actionable concret
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="red.200" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -124,7 +103,7 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves an actionable concret
 
 test("chakra-ui -> vanilla-extract -> chakra-ui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "chakra-ui -> vanilla-extract round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -135,8 +114,8 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: retains the documented secondar
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -165,6 +144,11 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: retains the documented secondar
 		        "kind": "composition",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -172,8 +156,8 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: retains the documented secondar
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -189,9 +173,9 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: retains the documented secondar
 
 test("chakra-ui -> vanilla-extract -> chakra-ui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.css.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ChakraUi, CodemodAdapterId.VanillaExtract);
@@ -214,8 +198,8 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -240,27 +224,19 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves concrete theme and pr
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
+		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -274,8 +250,8 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -300,27 +276,19 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves concrete theme and pr
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
+		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -336,7 +304,7 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves concrete theme and pr
 
 test("chakra-ui -> vanilla-extract -> chakra-ui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ChakraUi, CodemodAdapterId.VanillaExtract);
 	expectRouteScenarioEvidence(first, "chakra-ui -> vanilla-extract round-trip token forward");
@@ -348,9 +316,9 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="#2563eb" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -368,53 +336,32 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: resolves token values across bo
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ backgroundColor: "brand.500", p: "var(--chakra-spacing-4)" }}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: chakra-ui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="#2563eb" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

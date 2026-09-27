@@ -415,7 +415,9 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			listFiles: () => ["/project/uno.config.ts"],
 			adapterRegistry: createStyleAdapterRegistry([adapter, pandwind]),
 		});
-		expect(result.changed).toBe(false);
+		expect(result.changed).toBe(true);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain('<div className="brand" />');
 		expect(result.skipped).toBe(1);
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([

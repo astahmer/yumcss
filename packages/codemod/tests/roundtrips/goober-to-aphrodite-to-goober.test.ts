@@ -136,8 +136,8 @@ test("goober -> aphrodite -> goober: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "goober";
-		export const Card = // pandwind:migrate-skip (route: goober -> aphrodite | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: goober -> aphrodite | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,8 +173,8 @@ test("goober -> aphrodite -> goober: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "goober";
-		export const Card = // pandwind:migrate-skip (route: goober -> aphrodite | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: goober -> aphrodite | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

@@ -131,8 +131,8 @@ test("unocss -> mui -> unocss: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -165,8 +165,8 @@ test("unocss -> mui -> unocss: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -205,8 +205,8 @@ test("unocss -> mui -> unocss: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -247,8 +247,8 @@ test("unocss -> mui -> unocss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -261,8 +261,8 @@ test("unocss -> mui -> unocss: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -303,8 +303,8 @@ test("unocss -> mui -> unocss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -331,8 +331,8 @@ test("unocss -> mui -> unocss: resolves token values across both concrete legs",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -373,8 +373,8 @@ test("unocss -> mui -> unocss: resolves token values across both concrete legs",
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

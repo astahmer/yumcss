@@ -92,8 +92,8 @@ test("chakra-ui -> bamboo: carries a documented secondary chakra-ui API explicit
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> bamboo | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> bamboo | parse-residual: composition | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -144,8 +144,8 @@ test("chakra-ui -> bamboo: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> bamboo | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> bamboo | lowering-residual: validation)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,8 +187,8 @@ test("chakra-ui -> bamboo: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> bamboo | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> bamboo | lowering-residual: validation)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

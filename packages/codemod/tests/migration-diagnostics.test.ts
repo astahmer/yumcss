@@ -4,6 +4,10 @@ import {
 	MigrationSkipReason,
 	StyleRepresentationKind,
 } from "../src/swap/index.ts";
+import {
+	migrationCommentStyleForFile,
+	migrationSkipMarker,
+} from "../src/swap/migration-diagnostics.ts";
 
 const residual = (kind: string) => ({ kind, text: kind });
 
@@ -89,5 +93,29 @@ describe("migration diagnostics", () => {
 
 		expect(marker).toContain("route: styled-components -> unocss");
 		expect(marker).toContain("components: component subject");
+	});
+
+	test("uses comment syntax accepted by stylesheet and component documents", () => {
+		expect(migrationCommentStyleForFile("Card.module.css")).toBe("block");
+		expect(migrationCommentStyleForFile("App.vue")).toBe("markup");
+		expect(migrationCommentStyleForFile("App.vue", "embedded-code")).toBe("line");
+		expect(
+			migrationSkipMarker(
+				{
+					marker: "pandwind:migrate-skip",
+					loweringResiduals: [residual("capability")],
+				},
+				"block",
+			),
+		).toBe("/* pandwind:migrate-skip (lowering-residual: capability) */");
+		expect(
+			migrationSkipMarker(
+				{
+					marker: "pandwind:migrate-skip",
+					loweringResiduals: [residual("capability")],
+				},
+				"markup",
+			),
+		).toBe("<!-- pandwind:migrate-skip (lowering-residual: capability) -->");
 	});
 });

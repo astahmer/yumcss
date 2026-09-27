@@ -30,8 +30,8 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAd
 	const targetSemantic = undefined;
 
 test("panda -> treat -> panda: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("panda -> treat -> panda: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -91,8 +91,8 @@ test("panda -> treat -> panda: preserves an actionable concrete round trip", () 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -106,8 +106,8 @@ test("panda -> treat -> panda: preserves an actionable concrete round trip", () 
 });
 
 test("panda -> treat -> panda: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
+	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "panda -> treat round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -118,8 +118,8 @@ test("panda -> treat -> panda: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> treat | lowering-residual: composition | available: named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> treat | lowering-residual: composition | available: named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -160,8 +160,8 @@ test("panda -> treat -> panda: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> treat | lowering-residual: composition | available: named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> treat | lowering-residual: composition | available: named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -175,10 +175,10 @@ test("panda -> treat -> panda: retains the documented secondary API without sile
 });
 
 test("panda -> treat -> panda: preserves concrete theme and project context variants", async () => {
-	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.treat.ts", semantic: amberTargetSemantic, project: amberProject });
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Panda, CodemodAdapterId.Treat);
@@ -200,7 +200,7 @@ test("panda -> treat -> panda: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@/styles.treat";
+		      "code": "import { style } from "treat";
 		export const card = style({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -273,7 +273,7 @@ test("panda -> treat -> panda: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@/styles.treat";
+		      "code": "import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -348,8 +348,8 @@ test("panda -> treat -> panda: preserves concrete theme and project context vari
 });
 
 test("panda -> treat -> panda: resolves token values across both concrete legs", async () => {
-	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Panda, CodemodAdapterId.Treat);
 	expectRouteScenarioEvidence(first, "panda -> treat round-trip token forward");
@@ -361,8 +361,8 @@ test("panda -> treat -> panda: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -397,8 +397,8 @@ test("panda -> treat -> panda: resolves token values across both concrete legs",
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

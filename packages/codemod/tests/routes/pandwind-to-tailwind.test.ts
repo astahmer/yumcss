@@ -93,8 +93,9 @@ test("pandwind -> tailwind: carries a documented secondary pandwind API explicit
 		{
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> tailwind | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> tailwind | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

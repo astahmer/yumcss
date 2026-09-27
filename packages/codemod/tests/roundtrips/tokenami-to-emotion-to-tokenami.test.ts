@@ -228,8 +228,8 @@ test("tokenami -> emotion -> tokenami: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
-		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
+		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -271,8 +271,8 @@ test("tokenami -> emotion -> tokenami: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
-		css({ "--card-gap": "1rem", color: "$colors.brand" });",
+		// pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
+		export const card = css({ "--card-gap": "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -308,8 +308,8 @@ test("tokenami -> emotion -> tokenami: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
-		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
+		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,8 +351,8 @@ test("tokenami -> emotion -> tokenami: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
-		css({ "--card-gap": "1rem", color: "$colors.brand" });",
+		// pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
+		export const card = css({ "--card-gap": "1rem", color: "$colors.brand" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [

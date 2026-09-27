@@ -95,8 +95,8 @@ test("react-strict-dom -> style9: carries a documented secondary react-strict-do
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const pulse = // pandwind:migrate-skip (route: react-strict-dom -> style9 | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule; nesting: keyframes nested rules | available: static, named-map, residual)
-		css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		// pandwind:migrate-skip (route: react-strict-dom -> style9 | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule; nesting: keyframes nested rules | available: static, named-map, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

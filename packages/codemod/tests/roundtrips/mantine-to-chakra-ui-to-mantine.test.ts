@@ -50,8 +50,8 @@ test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,8 +89,8 @@ test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -116,8 +116,8 @@ test("mantine -> chakra-ui -> mantine: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: host-framework | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -150,8 +150,8 @@ test("mantine -> chakra-ui -> mantine: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: host-framework | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -191,8 +191,8 @@ test("mantine -> chakra-ui -> mantine: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -226,8 +226,8 @@ test("mantine -> chakra-ui -> mantine: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -241,8 +241,8 @@ test("mantine -> chakra-ui -> mantine: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,8 +276,8 @@ test("mantine -> chakra-ui -> mantine: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -305,8 +305,8 @@ test("mantine -> chakra-ui -> mantine: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="#2563eb" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -340,8 +340,8 @@ test("mantine -> chakra-ui -> mantine: resolves token values across both concret
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="#2563eb" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

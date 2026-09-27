@@ -180,8 +180,8 @@ test("react-native -> tailwind: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,8 +237,8 @@ test("react-native -> tailwind: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

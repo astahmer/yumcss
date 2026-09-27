@@ -23,6 +23,17 @@ function migrate(source: string, from: CodemodAdapterId, file: string) {
 	});
 }
 
+const migrationEvidence = (result: Awaited<ReturnType<typeof runAdapterMigrationAsync>>) => ({
+	changed: result.changed,
+	code: result.code,
+	converted: result.converted,
+	skipped: result.skipped,
+	outputExtension: result.outputExtension,
+	fileChanges: (result.fileChanges ?? []).map(({ path, content }) => ({ path, content })),
+	sourceMaps: result.sourceMaps ?? [],
+	residuals: result.residuals.map(({ kind, hint }) => ({ kind, hint })),
+});
+
 describe("stylesheet source adapters", () => {
 	test("maps local CSS rules into StyleProgram before a target projection", () => {
 		const parsed = parseStylesheetPrograms(
@@ -242,7 +253,7 @@ describe("stylesheet source adapters", () => {
 		`);
 	});
 
-	test("converts a simple CSS Module into a typed Pandwind module", () => {
+	test("preserves a CSS Module when consumers cannot be inventoried", () => {
 		const result = migrate(
 			".card { color: red; padding: 1rem; }",
 			CodemodAdapterId.CssModules,
@@ -250,15 +261,15 @@ describe("stylesheet source adapters", () => {
 		);
 
 		expect(result.changed).toBe(true);
-		expect(result.converted).toBe(1);
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.outputExtension).toBe(".ts");
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+		);
+		expect(result.outputExtension).toBeUndefined();
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
-			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
-			export default styles;"
+			"/* pandwind:migrate-skip (lowering-residual: capability) */
+			.card { color: red; padding: 1rem; }"
 		`);
 	});
 
@@ -273,6 +284,7 @@ describe("stylesheet source adapters", () => {
 			file: "Card.module.css",
 			root: ".",
 			readFile: (file) => files.get(file.replace(/^\.\//u, "")),
+			listFiles: () => [...files.keys()],
 			mode: "safe",
 			adapterRegistry: catalog.registry,
 		});
@@ -609,11 +621,72 @@ describe("stylesheet source adapters", () => {
 		`);
 	});
 
+	test("preserves a CSS Module when a listed consumer cannot be read", () => {
+		const source = ".card { color: red; }";
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.CssModules,
+			to: CodemodAdapterId.Treat,
+			file: "Card.module.css",
+			root: "/project",
+			readFile: () => undefined,
+			listFiles: () => ["src/App.tsx"],
+			mode: "safe",
+			adapterRegistry: catalog.registry,
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.outputExtension).toBeUndefined();
+		expect(result.code).toContain(source);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: "renaming Card.module.css to Card.module.treat requires updating project imports",
+				}),
+			]),
+		);
+	});
+
+	test("preserves a CSS Module when a listed consumer cannot be parsed", () => {
+		const source = ".card { color: red; }";
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.CssModules,
+			to: CodemodAdapterId.Treat,
+			file: "Card.module.css",
+			root: "/project",
+			readFile: () => 'import styles from "../Card.module.css";\nexport const App = <div',
+			listFiles: () => ["src/App.tsx"],
+			mode: "safe",
+			adapterRegistry: catalog.registry,
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.outputExtension).toBeUndefined();
+		expect(result.code).toContain(source);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: "renaming Card.module.css to Card.module.treat requires updating project imports",
+				}),
+			]),
+		);
+	});
+
 	test("fails closed for CSS Module composition instead of dropping it", () => {
 		const source = ".card { composes: base; color: red; }";
-		const result = migrate(source, CodemodAdapterId.CssModules, "Card.module.css");
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.CssModules,
+			to: CodemodAdapterId.Pandwind,
+			file: "Card.module.css",
+			root: ".",
+			readFile: () => undefined,
+			listFiles: () => [],
+			mode: "safe",
+			adapterRegistry: catalog.registry,
+		});
 
-		expect(result.changed).toBe(false);
+		expect(result.changed).toBe(true);
 		expect(result.code).toContain("pandwind:migrate-skip");
 		expect(result.code).toContain(source);
 		expect(result.converted).toBe(0);
@@ -622,8 +695,8 @@ describe("stylesheet source adapters", () => {
 		]);
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "changed": false,
-			  "code": "// pandwind:migrate-skip (lowering-residual: composition)
+			  "changed": true,
+			  "code": "/* pandwind:migrate-skip (lowering-residual: composition) */
 			.card { composes: base; color: red; }",
 			  "converted": 0,
 			  "dependencies": [],
@@ -721,20 +794,21 @@ describe("stylesheet source adapters", () => {
 	});
 
 	test("preserves Sass interpolation and Less mixin semantics", () => {
-		for (const [from, file, source, residualKind] of [
-			[CodemodAdapterId.Sass, "styles.scss", ".card { color: #{$tone}; }", "composition"],
-			[CodemodAdapterId.Less, "styles.less", ".card { .rounded(); color: red; }", "parse"],
+		for (const [from, file, source] of [
+			[CodemodAdapterId.Sass, "styles.scss", ".card { color: #{$tone}; }"],
+			[CodemodAdapterId.Less, "styles.less", ".card { .rounded(); color: red; }"],
 		] as const) {
 			const result = migrate(source, from, file);
-			expect(result.changed).toBe(false);
+			expect(result.changed).toBe(true);
 			expect(result.code).toContain("pandwind:migrate-skip");
 			expect(result.code).toContain(source);
-			expect(result.residuals.some((residual) => residual.kind === residualKind)).toBe(true);
+			expect(result.residuals.length).toBeGreaterThan(0);
+			expect(result.outputExtension).toBeUndefined();
 		}
 	});
 
 	test("uses the installed Sass compiler through the adapter port", async () => {
-		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
+		const authored = catalog.registry.get(CodemodAdapterId.AuthoredCss);
 		const sass = createSassAdapter({
 			async importPackage<T>() {
 				return {
@@ -749,6 +823,136 @@ describe("stylesheet source adapters", () => {
 		});
 		const result = await runAdapterMigrationAsync(".card { color: $tone; }", {
 			from: CodemodAdapterId.Sass,
+			to: CodemodAdapterId.AuthoredCss,
+			file: "styles.scss",
+			root: "/project",
+			readFile: () => undefined,
+			listFiles: () => [],
+			adapterRegistry: createStyleAdapterRegistry([sass, authored!]),
+			mode: "safe",
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(".card { color: red; }");
+		expect(result.outputExtension).toBe(".css");
+		expect(migrationEvidence(result)).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": ".card { color: red; }",
+			  "converted": 1,
+			  "fileChanges": [],
+			  "outputExtension": ".css",
+			  "residuals": [],
+			  "skipped": 0,
+			  "sourceMaps": [],
+			}
+		`);
+	});
+
+	test("rewrites static stylesheet imports when a preprocessor output changes extension", async () => {
+		const less = createLessAdapter({
+			async importPackage<T>() {
+				return { render: async () => ({ css: ".card { color: red; }" }) } as T;
+			},
+			async importFile() {
+				return undefined;
+			},
+		});
+		const authored = catalog.registry.get(CodemodAdapterId.AuthoredCss);
+		const consumer = '/* @import "./card.less"; */\n@import "./card.less";\n.page { color: blue; }';
+		const scriptConsumer = [
+			'import "./card.less";',
+			'const loadStyles = () => import("./card.less");',
+			'const styles = require("./card.less");',
+			'export { styles } from "./card.less";',
+			'// import "./card.less";',
+			'const note = "import ./card.less";',
+		].join("\n");
+		const files = new Map([
+			["/project/src/main.scss", consumer],
+			["/project/src/main.ts", scriptConsumer],
+		]);
+		const result = await runAdapterMigrationAsync(".card { color: @tone; }", {
+			from: CodemodAdapterId.Less,
+			to: CodemodAdapterId.AuthoredCss,
+			file: "src/card.less",
+			root: "/project",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+			adapterRegistry: createStyleAdapterRegistry([less, authored!]),
+			mode: "safe",
+		});
+
+		expect(result.outputExtension).toBe(".css");
+		expect(result.fileChanges).toEqual([
+			{
+				path: "src/main.scss",
+				content: '/* @import "./card.less"; */\n@import "./card.css";\n.page { color: blue; }',
+				expectedContent: consumer,
+			},
+			{
+				path: "src/main.ts",
+				content: [
+					'import "./card.css";',
+					'const loadStyles = () => import("./card.css");',
+					'const styles = require("./card.css");',
+					'export { styles } from "./card.css";',
+					'// import "./card.less";',
+					'const note = "import ./card.less";',
+				].join("\n"),
+				expectedContent: scriptConsumer,
+			},
+		]);
+		expect(migrationEvidence(result)).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": ".card { color: red; }",
+			  "converted": 1,
+			  "fileChanges": [
+			    {
+			      "content": "/* @import "./card.less"; */
+			@import "./card.css";
+			.page { color: blue; }",
+			      "path": "src/main.scss",
+			    },
+			    {
+			      "content": "import "./card.css";
+			const loadStyles = () => import("./card.css");
+			const styles = require("./card.css");
+			export { styles } from "./card.css";
+			// import "./card.less";
+			const note = "import ./card.less";",
+			      "path": "src/main.ts",
+			    },
+			  ],
+			  "outputExtension": ".css",
+			  "residuals": [],
+			  "skipped": 0,
+			  "sourceMaps": [],
+			}
+		`);
+	});
+
+	test("preserves global Sass when runtime output would need consumer rewrites", async () => {
+		let compilerCalls = 0;
+		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
+		const sass = createSassAdapter({
+			async importPackage<T>() {
+				return {
+					compileString: (source: string) => {
+						compilerCalls++;
+						return { css: source.replace("$tone", "red") };
+					},
+				} as T;
+			},
+			async importFile() {
+				return undefined;
+			},
+		});
+		const source = ".card { color: $tone; }";
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Sass,
 			to: CodemodAdapterId.Pandwind,
 			file: "styles.scss",
 			root: "/project",
@@ -756,120 +960,36 @@ describe("stylesheet source adapters", () => {
 			mode: "safe",
 		});
 
-		expect(result.converted).toBe(1);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('color: "red"');
-		expect(result).toMatchInlineSnapshot(`
+		expect(compilerCalls).toBe(0);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.code).toContain(source);
+		expect(result.outputExtension).toBeUndefined();
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+		);
+		expect(migrationEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ color: "red" }) };
-			export default styles;",
-			  "converted": 1,
-			  "dependencies": [
-			    {
-			      "packages": [
-			        {
-			          "kind": "runtime",
-			          "name": "pandwind",
-			        },
-			      ],
-			    },
-			  ],
+			  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			.card { color: $tone; }",
+			  "converted": 0,
 			  "fileChanges": [],
-			  "generatedFiles": [],
-			  "loweringPlans": [
+			  "outputExtension": undefined,
+			  "residuals": [
 			    {
-			      "applied": [],
-			      "availableRepresentations": [
-			        "static",
-			        "named-map",
-			        "residual",
-			      ],
-			      "program": {
-			        "canonicalization": undefined,
-			        "compositions": [],
-			        "declarations": [],
-			        "emissionHints": [],
-			        "plugins": [],
-			        "residuals": [],
-			        "rules": [
-			          {
-			            "children": [],
-			            "conditions": [],
-			            "declarations": [
-			              {
-			                "conditions": [],
-			                "property": "color",
-			                "value": {
-			                  "kind": "literal",
-			                  "value": "red",
-			                },
-			              },
-			            ],
-			            "kind": "style",
-			            "name": undefined,
-			            "order": 0,
-			            "selector": undefined,
-			            "source": {
-			              "adapter": "sass",
-			              "end": 21,
-			              "file": "styles.scss",
-			              "start": 0,
-			            },
-			          },
-			        ],
-			        "runtime": undefined,
-			        "schema": "pandwind.style-program/4",
-			        "source": {
-			          "adapter": "sass",
-			          "end": 21,
-			          "file": "styles.scss",
-			          "start": 0,
-			        },
-			        "sourceMap": [
-			          {
-			            "adapter": "sass",
-			            "end": 21,
-			            "file": "styles.scss",
-			            "start": 0,
-			          },
-			        ],
-			        "themes": [],
-			      },
-			      "representation": "static",
-			      "residuals": [],
+			      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			      "kind": "capability",
 			    },
 			  ],
-			  "outcomes": [
-			    {
-			      "outcome": "static",
-			      "representation": "static",
-			      "sourceStart": 0,
-			      "sourceText": ".card { color: red; }",
-			    },
-			  ],
-			  "outputExtension": ".ts",
-			  "reports": [],
-			  "residuals": [],
-			  "skipped": 0,
-			  "validations": [
-			    {
-			      "canonicalSource": "&{color:red}",
-			      "canonicalTarget": "&{color:red}",
-			      "differences": [],
-			      "lossiness": "lossless",
-			      "residuals": [],
-			      "valid": true,
-			    },
-			  ],
+			  "skipped": 1,
+			  "sourceMaps": [],
 			}
 		`);
 	});
 
 	test("fails closed when an official Less/Sass compiler cannot be loaded", async () => {
-		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
+		const authored = catalog.registry.get(CodemodAdapterId.AuthoredCss);
 		const sass = createSassAdapter({
 			async importPackage() {
 				return undefined;
@@ -880,16 +1000,19 @@ describe("stylesheet source adapters", () => {
 		});
 		const result = await runAdapterMigrationAsync(".card { color: red; }", {
 			from: CodemodAdapterId.Sass,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.AuthoredCss,
 			file: "styles.scss",
 			root: "/project",
-			adapterRegistry: createStyleAdapterRegistry([sass, pandwind!]),
+			readFile: () => undefined,
+			listFiles: () => [],
+			adapterRegistry: createStyleAdapterRegistry([sass, authored!]),
 			mode: "safe",
 		});
 
-		expect(result.changed).toBe(false);
+		expect(result.changed).toBe(true);
 		expect(result.code).toContain("pandwind:migrate-skip");
 		expect(result.code).toContain(".card { color: red; }");
+		expect(result.outputExtension).toBeUndefined();
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "configuration" })]),
 		);
@@ -915,6 +1038,8 @@ describe("stylesheet source adapters", () => {
 			to: CodemodAdapterId.AuthoredCss,
 			file: "styles.scss",
 			root: "/project",
+			readFile: () => undefined,
+			listFiles: () => [],
 			adapterRegistry: createStyleAdapterRegistry([sass, authored!]),
 			mode: "safe",
 		});
@@ -924,102 +1049,17 @@ describe("stylesheet source adapters", () => {
 		expect(result.code).toBe(".card { color: red; }");
 		expect(result.sourceMaps).toEqual(['{"version":3,"sources":["styles.scss"]}']);
 		expect(result.residuals).toEqual([]);
-		expect(result).toMatchInlineSnapshot(`
+		expect(migrationEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
 			  "code": ".card { color: red; }",
 			  "converted": 1,
-			  "dependencies": [],
 			  "fileChanges": [],
-			  "generatedFiles": [],
-			  "loweringPlans": [
-			    {
-			      "applied": [
-			        "dynamic-and-theme",
-			      ],
-			      "availableRepresentations": [
-			        "static",
-			        "residual",
-			      ],
-			      "program": {
-			        "canonicalization": undefined,
-			        "compositions": [],
-			        "declarations": [],
-			        "emissionHints": [],
-			        "plugins": [],
-			        "residuals": [],
-			        "rules": [
-			          {
-			            "children": [],
-			            "conditions": [],
-			            "declarations": [
-			              {
-			                "conditions": [],
-			                "property": "color",
-			                "value": {
-			                  "kind": "literal",
-			                  "value": "red",
-			                },
-			              },
-			            ],
-			            "kind": "style",
-			            "name": "card",
-			            "order": 0,
-			            "selector": ".card",
-			            "source": {
-			              "adapter": "authored-css",
-			              "end": 21,
-			              "file": "styles.scss",
-			              "start": 0,
-			            },
-			          },
-			        ],
-			        "runtime": undefined,
-			        "schema": "pandwind.style-program/4",
-			        "source": {
-			          "adapter": "authored-css",
-			          "end": 21,
-			          "file": "styles.scss",
-			          "start": 0,
-			        },
-			        "sourceMap": [
-			          {
-			            "adapter": "authored-css",
-			            "end": 21,
-			            "file": "styles.scss",
-			            "start": 0,
-			          },
-			        ],
-			        "themes": undefined,
-			      },
-			      "representation": "static",
-			      "residuals": [],
-			    },
-			  ],
-			  "outcomes": [
-			    {
-			      "outcome": "static",
-			      "representation": "static",
-			      "sourceStart": 0,
-			      "sourceText": ".card { color: red; }",
-			    },
-			  ],
 			  "outputExtension": ".css",
-			  "reports": [],
 			  "residuals": [],
 			  "skipped": 0,
 			  "sourceMaps": [
 			    "{"version":3,"sources":["styles.scss"]}",
-			  ],
-			  "validations": [
-			    {
-			      "canonicalSource": ".card{color:red}",
-			      "canonicalTarget": ".card{color:red}",
-			      "differences": [],
-			      "lossiness": "lossless",
-			      "residuals": [],
-			      "valid": true,
-			    },
 			  ],
 			}
 		`);
@@ -1042,6 +1082,8 @@ describe("stylesheet source adapters", () => {
 			to: CodemodAdapterId.AuthoredCss,
 			file: "styles.less",
 			root: "/project",
+			readFile: () => undefined,
+			listFiles: () => [],
 			adapterRegistry: createStyleAdapterRegistry([less, authored!]),
 			mode: "safe",
 		});
@@ -1050,100 +1092,16 @@ describe("stylesheet source adapters", () => {
 		expect(result.outputExtension).toBe(".css");
 		expect(result.code).toBe(".card { color: red; }");
 		expect(result.residuals).toEqual([]);
-		expect(result).toMatchInlineSnapshot(`
+		expect(migrationEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
 			  "code": ".card { color: red; }",
 			  "converted": 1,
-			  "dependencies": [],
 			  "fileChanges": [],
-			  "generatedFiles": [],
-			  "loweringPlans": [
-			    {
-			      "applied": [
-			        "dynamic-and-theme",
-			      ],
-			      "availableRepresentations": [
-			        "static",
-			        "residual",
-			      ],
-			      "program": {
-			        "canonicalization": undefined,
-			        "compositions": [],
-			        "declarations": [],
-			        "emissionHints": [],
-			        "plugins": [],
-			        "residuals": [],
-			        "rules": [
-			          {
-			            "children": [],
-			            "conditions": [],
-			            "declarations": [
-			              {
-			                "conditions": [],
-			                "property": "color",
-			                "value": {
-			                  "kind": "literal",
-			                  "value": "red",
-			                },
-			              },
-			            ],
-			            "kind": "style",
-			            "name": "card",
-			            "order": 0,
-			            "selector": ".card",
-			            "source": {
-			              "adapter": "authored-css",
-			              "end": 21,
-			              "file": "styles.less",
-			              "start": 0,
-			            },
-			          },
-			        ],
-			        "runtime": undefined,
-			        "schema": "pandwind.style-program/4",
-			        "source": {
-			          "adapter": "authored-css",
-			          "end": 21,
-			          "file": "styles.less",
-			          "start": 0,
-			        },
-			        "sourceMap": [
-			          {
-			            "adapter": "authored-css",
-			            "end": 21,
-			            "file": "styles.less",
-			            "start": 0,
-			          },
-			        ],
-			        "themes": undefined,
-			      },
-			      "representation": "static",
-			      "residuals": [],
-			    },
-			  ],
-			  "outcomes": [
-			    {
-			      "outcome": "static",
-			      "representation": "static",
-			      "sourceStart": 0,
-			      "sourceText": ".card { color: red; }",
-			    },
-			  ],
 			  "outputExtension": ".css",
-			  "reports": [],
 			  "residuals": [],
 			  "skipped": 0,
-			  "validations": [
-			    {
-			      "canonicalSource": ".card{color:red}",
-			      "canonicalTarget": ".card{color:red}",
-			      "differences": [],
-			      "lossiness": "lossless",
-			      "residuals": [],
-			      "valid": true,
-			    },
-			  ],
+			  "sourceMaps": [],
 			}
 		`);
 	});

@@ -94,8 +94,8 @@ test("stitches -> react-native: carries a documented secondary stitches API expl
 		{
 		  "changed": true,
 		  "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

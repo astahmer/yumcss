@@ -18,7 +18,7 @@ const treat = makeExtraAdapter({
 			{ name: "createTheme", status: AdapterOfficialApiStatusTag.CompatibilityOnly },
 		],
 	},
-	modules: ["@/styles.treat", "treat"],
+	modules: ["treat"],
 	packages: { packages: [{ name: "treat", kind: AdapterDependencyKindTag.Development }] },
 	detect: [/from\s+["'](?:treat|[^"']+\.treat)["']/g, /\b(?:style|createTheme)\s*\(\s*\{/g],
 	call: /\bstyle\s*\(\s*\{/g,
@@ -31,7 +31,7 @@ const treat = makeExtraAdapter({
 			hint: "Treat createTheme requires theme-aware target lowering",
 		},
 	],
-	targetImports: ['import { style } from "@/styles.treat";'],
+	targetImports: ['import { style } from "treat";'],
 	migration: {
 		prepareDynamic: ({ targetId, program }) => ({
 			handled:
@@ -46,6 +46,12 @@ const treat = makeExtraAdapter({
 	},
 	sourceObjectOptions: { emissionHints: [StyleProgramEmissionHint.RuntimeClass] },
 	targetPolicy: {
+		moduleFile: {
+			acceptedSuffixes: [".treat.ts", ".treat.js"],
+			outputExtension: ".treat.ts",
+			importSpecifierExtension: ".treat",
+			unsupportedFileHint: "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		},
 		handlesHostRewrites: true,
 		dynamicClassCarrier: true,
 		handlesFrameworkSemantics: true,

@@ -48,8 +48,8 @@ test("emotion -> mantine: migrates concrete emotion syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = // pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", padding: "1rem" });",
+		// pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,8 +105,8 @@ test("emotion -> mantine: carries a documented secondary emotion API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = // pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
-		css\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -171,8 +171,8 @@ test("emotion -> mantine: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = // pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,8 +219,8 @@ test("emotion -> mantine: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = // pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -279,8 +279,8 @@ test("emotion -> mantine: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = // pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -336,8 +336,8 @@ test("emotion -> mantine: preserves malformed concrete emotion input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = // pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", padding: "1rem" });
+		// pandwind:migrate-skip (route: emotion -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 0,
 		  "generatedFiles": [],

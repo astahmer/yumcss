@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, C
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Treat, "#f97316");
 
 test("vanilla-extract -> treat: migrates concrete vanilla-extract syntax to treat", () => {
-	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.css.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -47,7 +47,7 @@ test("vanilla-extract -> treat: migrates concrete vanilla-extract syntax to trea
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 		export const card = style({ "padding": 8, "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -85,7 +85,7 @@ test("vanilla-extract -> treat: migrates concrete vanilla-extract syntax to trea
 });
 
 test("vanilla-extract -> treat: carries a documented secondary vanilla-extract API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.css.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "vanilla-extract -> treat secondary");
 	expectExplicitResidualEvidence(result);
@@ -131,8 +131,8 @@ test("vanilla-extract -> treat: carries a documented secondary vanilla-extract A
 });
 
 test("vanilla-extract -> treat: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.css.treat.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.css.treat.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VanillaExtract, CodemodAdapterId.Treat);
@@ -147,7 +147,7 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +222,7 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 });
 
 test("vanilla-extract -> treat: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.css.treat.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VanillaExtract, CodemodAdapterId.Treat);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Treat, "vanilla-extract -> treat token config");
@@ -231,7 +231,7 @@ test("vanilla-extract -> treat: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 		export const card = style({ "padding": 8, "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -269,14 +269,14 @@ test("vanilla-extract -> treat: resolves concrete token values with project cont
 });
 
 test("vanilla-extract -> treat: preserves malformed concrete vanilla-extract input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.css.treat.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished vanilla-extract */");
 	expectRouteScenarioEvidence(result, "vanilla-extract -> treat malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 		export const card = style({ "padding": 8, "color": "red" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

@@ -850,8 +850,8 @@ describe("Chakra UI official API forms", () => {
 			  "cva": {
 			    "changed": true,
 			    "code": "import { defaultSystem } from "@chakra-ui/react";
-			export const button = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			defaultSystem.cva({ base: { color: "white" } });",
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			export const button = defaultSystem.cva({ base: { color: "white" } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -884,8 +884,8 @@ describe("Chakra UI official API forms", () => {
 			  "defineRecipe": {
 			    "changed": true,
 			    "code": "import { defineRecipe } from "@chakra-ui/react";
-			export const button = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			defineRecipe({ base: { color: "white" }, variants: { size: { sm: { p: "2" } } } });",
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			export const button = defineRecipe({ base: { color: "white" }, variants: { size: { sm: { p: "2" } } } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -918,8 +918,8 @@ describe("Chakra UI official API forms", () => {
 			  "defineSlotRecipe": {
 			    "changed": true,
 			    "code": "import { defineSlotRecipe } from "@chakra-ui/react";
-			export const alert = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			defineSlotRecipe({ slots: ["title"], base: { title: { color: "red" } } });",
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			export const alert = defineSlotRecipe({ slots: ["title"], base: { title: { color: "red" } } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -952,8 +952,8 @@ describe("Chakra UI official API forms", () => {
 			  "factory": {
 			    "changed": true,
 			    "code": "import { chakra } from "@chakra-ui/react";
-			export const Link = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			chakra("a", { base: { color: "red.500" } });",
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			export const Link = chakra("a", { base: { color: "red.500" } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -986,8 +986,8 @@ describe("Chakra UI official API forms", () => {
 			  "sva": {
 			    "changed": true,
 			    "code": "import { defaultSystem } from "@chakra-ui/react";
-			export const alert = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			defaultSystem.sva({ slots: ["title"], base: { title: { color: "red" } } });",
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			export const alert = defaultSystem.sva({ slots: ["title"], base: { title: { color: "red" } } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1020,8 +1020,8 @@ describe("Chakra UI official API forms", () => {
 			  "useRecipe": {
 			    "changed": true,
 			    "code": "import { useRecipe } from "@chakra-ui/react";
-			export const styles = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			useRecipe(button);",
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			export const styles = useRecipe(button);",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1054,8 +1054,8 @@ describe("Chakra UI official API forms", () => {
 			  "useSlotRecipe": {
 			    "changed": true,
 			    "code": "import { useSlotRecipe } from "@chakra-ui/react";
-			export const styles = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			useSlotRecipe(alert);",
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			export const styles = useSlotRecipe(alert);",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [

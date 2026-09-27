@@ -48,8 +48,8 @@ test("vanilla-extract -> react-strict-dom: migrates concrete vanilla-extract syn
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -165,8 +165,8 @@ test("vanilla-extract -> react-strict-dom: loads concrete theme and project cont
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -210,8 +210,8 @@ test("vanilla-extract -> react-strict-dom: loads concrete theme and project cont
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -267,8 +267,8 @@ test("vanilla-extract -> react-strict-dom: resolves concrete token values with p
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -321,8 +321,8 @@ test("vanilla-extract -> react-strict-dom: preserves malformed concrete vanilla-
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 0,
 		  "generatedFiles": [],

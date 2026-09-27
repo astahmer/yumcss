@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.VanillaExtract, 
 
 test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves an actio
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -95,8 +95,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves an actio
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -111,7 +111,7 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves an actio
 
 test("vanilla-extract -> react-strict-dom -> vanilla-extract: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "vanilla-extract -> react-strict-dom round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -183,9 +183,9 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: retains the docume
 
 test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.css.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VanillaExtract, CodemodAdapterId.ReactStrictDom);
@@ -209,8 +209,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -254,8 +254,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves concrete
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -269,8 +269,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,8 +314,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves concrete
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -331,7 +331,7 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves concrete
 
 test("vanilla-extract -> react-strict-dom -> vanilla-extract: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VanillaExtract, CodemodAdapterId.ReactStrictDom);
 	expectRouteScenarioEvidence(first, "vanilla-extract -> react-strict-dom round-trip token forward");
@@ -343,8 +343,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: resolves token val
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -388,8 +388,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: resolves token val
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

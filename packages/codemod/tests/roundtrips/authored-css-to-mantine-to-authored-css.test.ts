@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, Cod
 
 test("authored-css -> mantine -> authored-css: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "card.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -48,8 +48,8 @@ test("authored-css -> mantine -> authored-css: preserves an actionable concrete 
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -61,7 +61,7 @@ test("authored-css -> mantine -> authored-css: preserves an actionable concrete 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
@@ -73,8 +73,8 @@ test("authored-css -> mantine -> authored-css: preserves an actionable concrete 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -83,7 +83,7 @@ test("authored-css -> mantine -> authored-css: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -99,7 +99,7 @@ test("authored-css -> mantine -> authored-css: preserves an actionable concrete 
 
 test("authored-css -> mantine -> authored-css: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "card.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "authored-css -> mantine round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -108,8 +108,8 @@ test("authored-css -> mantine -> authored-css: retains the documented secondary 
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, rule-level)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		@media (prefers-color-scheme: dark) {
 		  .card { color: white; }
 		}
@@ -127,7 +127,7 @@ test("authored-css -> mantine -> authored-css: retains the documented secondary 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		      {
@@ -153,13 +153,8 @@ test("authored-css -> mantine -> authored-css: retains the documented secondary 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Mantine standalone style projection supports style rules only",
-		        "kind": "rule-level",
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -168,7 +163,7 @@ test("authored-css -> mantine -> authored-css: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework, rule-level)
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		@media (prefers-color-scheme: dark) {
 		  .card { color: white; }
 		}
@@ -190,9 +185,9 @@ test("authored-css -> mantine -> authored-css: retains the documented secondary 
 
 test("authored-css -> mantine -> authored-css: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "card.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "card.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.AuthoredCss, CodemodAdapterId.Mantine);
@@ -214,8 +209,8 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 		{
 		  "amber": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -227,7 +222,7 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
@@ -239,8 +234,8 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		          "kind": "host-framework",
+		          "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -249,7 +244,7 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -262,8 +257,8 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 		  },
 		  "blue": {
 		    "forward": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -275,7 +270,7 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
@@ -287,8 +282,8 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		          "kind": "host-framework",
+		          "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -297,7 +292,7 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -314,7 +309,7 @@ test("authored-css -> mantine -> authored-css: preserves concrete theme and proj
 
 test("authored-css -> mantine -> authored-css: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "card.css", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.AuthoredCss, CodemodAdapterId.Mantine);
 	expectRouteScenarioEvidence(first, "authored-css -> mantine round-trip token forward");
@@ -324,8 +319,8 @@ test("authored-css -> mantine -> authored-css: resolves token values across both
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -337,7 +332,7 @@ test("authored-css -> mantine -> authored-css: resolves token values across both
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
@@ -349,8 +344,8 @@ test("authored-css -> mantine -> authored-css: resolves token values across both
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -359,7 +354,7 @@ test("authored-css -> mantine -> authored-css: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],

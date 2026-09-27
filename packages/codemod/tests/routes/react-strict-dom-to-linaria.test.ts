@@ -95,8 +95,8 @@ test("react-strict-dom -> linaria: carries a documented secondary react-strict-d
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const pulse = // pandwind:migrate-skip (route: react-strict-dom -> linaria | capability-blocked: keyframes: keyframes rule | available: static, named-map, residual)
-		css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		// pandwind:migrate-skip (route: react-strict-dom -> linaria | capability-blocked: keyframes: keyframes rule | available: static, named-map, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

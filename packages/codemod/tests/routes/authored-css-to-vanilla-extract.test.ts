@@ -47,10 +47,9 @@ test("authored-css -> vanilla-extract: migrates concrete authored-css syntax to 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "red" }) };
-		export default styles;",
-		  "converted": 1,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -62,25 +61,25 @@ test("authored-css -> vanilla-extract: migrates concrete authored-css syntax to 
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -93,10 +92,15 @@ test("authored-css -> vanilla-extract: carries a documented secondary authored-c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { keyframes, style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ "@media (prefers-color-scheme: dark)": { color: "white" } }), "pulse": keyframes({ "from": { opacity: "0" }, "to": { opacity: "1" } }) };
-		export default styles;",
-		  "converted": 2,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		@media (prefers-color-scheme: dark) {
+		  .card { color: white; }
+		}
+		@keyframes pulse {
+		  from { opacity: 0; }
+		  to { opacity: 1; }
+		}",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -108,7 +112,7 @@ test("authored-css -> vanilla-extract: carries a documented secondary authored-c
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		    {
@@ -126,28 +130,23 @@ test("authored-css -> vanilla-extract: carries a documented secondary authored-c
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 2,
+		  "validations": [],
 		}
 	`)
 });
@@ -169,10 +168,9 @@ test("authored-css -> vanilla-extract: loads concrete theme and project context 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -184,32 +182,31 @@ test("authored-css -> vanilla-extract: loads concrete theme and project context 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -221,25 +218,25 @@ test("authored-css -> vanilla-extract: loads concrete theme and project context 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -255,10 +252,9 @@ test("authored-css -> vanilla-extract: resolves concrete token values with proje
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
-		export default styles;",
-		  "converted": 1,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -270,25 +266,25 @@ test("authored-css -> vanilla-extract: resolves concrete token values with proje
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -300,8 +296,8 @@ test("authored-css -> vanilla-extract: preserves malformed concrete authored-css
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished authored-css */",
 		  "converted": 0,
@@ -316,7 +312,7 @@ test("authored-css -> vanilla-extract: preserves malformed concrete authored-css
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -330,6 +326,11 @@ test("authored-css -> vanilla-extract: preserves malformed concrete authored-css
 		    {
 		      "hint": "stylesheet block is unbalanced",
 		      "kind": "parse",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

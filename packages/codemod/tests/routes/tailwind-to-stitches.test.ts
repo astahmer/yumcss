@@ -92,8 +92,8 @@ test("tailwind -> stitches: carries a documented secondary tailwind API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> stitches | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: tailwind -> stitches | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

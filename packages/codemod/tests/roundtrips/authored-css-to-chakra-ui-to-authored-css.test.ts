@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.AuthoredCss, Cod
 
 test("authored-css -> chakra-ui -> authored-css: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "card.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -49,10 +49,9 @@ test("authored-css -> chakra-ui -> authored-css: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }) };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -62,67 +61,36 @@ test("authored-css -> chakra-ui -> authored-css: preserves an actionable concret
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: framework-semantics | available: residual, portable-artifact)
-		defaultSystem.css({ padding: "1rem", color: "red" }) };
-		export default styles;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		          "runtime-and-plugin",
-		        ],
-		        "availableRepresentations": [
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -131,7 +99,7 @@ test("authored-css -> chakra-ui -> authored-css: preserves an actionable concret
 
 test("authored-css -> chakra-ui -> authored-css: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "card.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "card.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "authored-css -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -140,8 +108,8 @@ test("authored-css -> chakra-ui -> authored-css: retains the documented secondar
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: rule-level)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		@media (prefers-color-scheme: dark) {
 		  .card { color: white; }
 		}
@@ -159,7 +127,7 @@ test("authored-css -> chakra-ui -> authored-css: retains the documented secondar
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		      {
@@ -185,17 +153,17 @@ test("authored-css -> chakra-ui -> authored-css: retains the documented secondar
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Chakra standalone css projection supports style rules only",
-		        "kind": "rule-level",
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: rule-level)
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		@media (prefers-color-scheme: dark) {
 		  .card { color: white; }
 		}
@@ -217,9 +185,9 @@ test("authored-css -> chakra-ui -> authored-css: retains the documented secondar
 
 test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "card.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "card.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi);
@@ -242,10 +210,9 @@ test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and pr
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "#2563eb" }) };
-		export default styles;",
-		      "converted": 1,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -255,77 +222,45 @@ test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and pr
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: framework-semantics | available: residual, portable-artifact)
-		defaultSystem.css({ padding: "1rem", color: "#2563eb" }) };
-		export default styles;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		            "runtime-and-plugin",
-		          ],
-		          "availableRepresentations": [
-		            "residual",
-		            "portable-artifact",
-		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
-		        },
-		      ],
-		      "outcomes": [
-		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "residual",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
+		          "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
-		export default styles;",
-		      "converted": 1,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -335,67 +270,36 @@ test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and pr
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: framework-semantics | available: residual, portable-artifact)
-		defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
-		export default styles;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		            "runtime-and-plugin",
-		          ],
-		          "availableRepresentations": [
-		            "residual",
-		            "portable-artifact",
-		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
-		        },
-		      ],
-		      "outcomes": [
-		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "residual",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
+		          "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -405,7 +309,7 @@ test("authored-css -> chakra-ui -> authored-css: preserves concrete theme and pr
 
 test("authored-css -> chakra-ui -> authored-css: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "card.css", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "card.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.AuthoredCss, CodemodAdapterId.ChakraUi);
 	expectRouteScenarioEvidence(first, "authored-css -> chakra-ui round-trip token forward");
@@ -416,10 +320,9 @@ test("authored-css -> chakra-ui -> authored-css: resolves token values across bo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -429,67 +332,36 @@ test("authored-css -> chakra-ui -> authored-css: resolves token values across bo
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": // pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: framework-semantics | available: residual, portable-artifact)
-		defaultSystem.css({ padding: "1rem", color: "brand.500" }) };
-		export default styles;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		          "runtime-and-plugin",
-		        ],
-		        "availableRepresentations": [
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

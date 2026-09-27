@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents
 
 test("styled-components -> less -> styled-components: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.less", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("styled-components -> less -> styled-components: preserves an actionable co
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ color: "red", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -62,7 +62,6 @@ test("styled-components -> less -> styled-components: preserves an actionable co
 		        ],
 		        "availableRepresentations": [
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "residual",
 		        "residuals": [
@@ -76,7 +75,7 @@ test("styled-components -> less -> styled-components: preserves an actionable co
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
@@ -90,33 +89,26 @@ test("styled-components -> less -> styled-components: preserves an actionable co
 		        "kind": "framework-semantics",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ color: "red", padding: "1rem" });",
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 2,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -125,7 +117,7 @@ test("styled-components -> less -> styled-components: preserves an actionable co
 
 test("styled-components -> less -> styled-components: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "card.less", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "styled-components -> less round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -136,8 +128,8 @@ test("styled-components -> less -> styled-components: retains the documented sec
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -148,7 +140,6 @@ test("styled-components -> less -> styled-components: retains the documented sec
 		        ],
 		        "availableRepresentations": [
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "residual",
 		        "residuals": [
@@ -162,7 +153,7 @@ test("styled-components -> less -> styled-components: retains the documented sec
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
@@ -176,43 +167,26 @@ test("styled-components -> less -> styled-components: retains the documented sec
 		        "kind": "framework-semantics",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 4,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -221,9 +195,9 @@ test("styled-components -> less -> styled-components: retains the documented sec
 
 test("styled-components -> less -> styled-components: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "card.less", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "card.less", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Less);
@@ -247,8 +221,8 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -259,7 +233,6 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		          ],
 		          "availableRepresentations": [
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "residual",
 		          "residuals": [
@@ -273,7 +246,7 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "residual",
 		        },
 		      ],
 		      "residuals": [
@@ -287,33 +260,26 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
 		      "outcomes": [],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 2,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -321,8 +287,8 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,7 +299,6 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		          ],
 		          "availableRepresentations": [
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "residual",
 		          "residuals": [
@@ -347,7 +312,7 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "residual",
 		        },
 		      ],
 		      "residuals": [
@@ -361,33 +326,26 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		          "kind": "framework-semantics",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
 		      "outcomes": [],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 2,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -397,7 +355,7 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 
 test("styled-components -> less -> styled-components: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "card.less", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Less);
 	expectRouteScenarioEvidence(first, "styled-components -> less round-trip token forward");
@@ -409,8 +367,8 @@ test("styled-components -> less -> styled-components: resolves token values acro
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -421,7 +379,6 @@ test("styled-components -> less -> styled-components: resolves token values acro
 		        ],
 		        "availableRepresentations": [
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "residual",
 		        "residuals": [
@@ -435,7 +392,7 @@ test("styled-components -> less -> styled-components: resolves token values acro
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
@@ -449,33 +406,26 @@ test("styled-components -> less -> styled-components: resolves token values acro
 		        "kind": "framework-semantics",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 2,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

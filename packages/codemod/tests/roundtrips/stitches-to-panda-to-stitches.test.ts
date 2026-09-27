@@ -134,8 +134,8 @@ test("stitches -> panda -> stitches: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> panda | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> panda | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,8 +169,8 @@ test("stitches -> panda -> stitches: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> panda | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> panda | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -317,8 +317,8 @@ test("stitches -> panda -> stitches: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stitches | lowering-residual: validation)
-		css({ padding: "1rem", color: "brand.500" });",
+		// pandwind:migrate-skip (route: panda -> stitches | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "brand.500" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -412,8 +412,8 @@ test("stitches -> panda -> stitches: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> stitches | lowering-residual: validation)
-		css({ padding: "1rem", color: "brand.500" });",
+		// pandwind:migrate-skip (route: panda -> stitches | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "brand.500" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -146,8 +146,8 @@ test("tokenami -> jss: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
-		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
+		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,8 +191,8 @@ test("tokenami -> jss: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
-		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
+		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

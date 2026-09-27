@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, Codem
 
 test("aphrodite -> tamagui -> aphrodite: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("aphrodite -> tamagui -> aphrodite: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,8 +84,8 @@ test("aphrodite -> tamagui -> aphrodite: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -100,7 +100,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves an actionable concrete round 
 
 test("aphrodite -> tamagui -> aphrodite: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "aphrodite -> tamagui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -111,8 +111,8 @@ test("aphrodite -> tamagui -> aphrodite: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -145,8 +145,8 @@ test("aphrodite -> tamagui -> aphrodite: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -161,9 +161,9 @@ test("aphrodite -> tamagui -> aphrodite: retains the documented secondary API wi
 
 test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.Tamagui);
@@ -187,8 +187,8 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -221,8 +221,8 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -236,8 +236,8 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,8 +270,8 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -287,7 +287,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 
 test("aphrodite -> tamagui -> aphrodite: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.Tamagui);
 	expectRouteScenarioEvidence(first, "aphrodite -> tamagui round-trip token forward");
@@ -299,8 +299,8 @@ test("aphrodite -> tamagui -> aphrodite: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -333,8 +333,8 @@ test("aphrodite -> tamagui -> aphrodite: resolves token values across both concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

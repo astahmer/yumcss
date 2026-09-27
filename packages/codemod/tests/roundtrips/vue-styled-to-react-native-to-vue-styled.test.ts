@@ -50,8 +50,8 @@ test("vue-styled -> react-native -> vue-styled: preserves an actionable concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,8 +88,8 @@ test("vue-styled -> react-native -> vue-styled: preserves an actionable concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -115,8 +115,8 @@ test("vue-styled -> react-native -> vue-styled: retains the documented secondary
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -153,8 +153,8 @@ test("vue-styled -> react-native -> vue-styled: retains the documented secondary
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -195,8 +195,8 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -233,8 +233,8 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -248,8 +248,8 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -286,8 +286,8 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -315,8 +315,8 @@ test("vue-styled -> react-native -> vue-styled: resolves token values across bot
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -353,8 +353,8 @@ test("vue-styled -> react-native -> vue-styled: resolves token values across bot
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

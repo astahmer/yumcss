@@ -48,8 +48,8 @@ test("panda -> css-modules: migrates concrete panda syntax to css-modules", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> css-modules | parse-residual: configuration | available: residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> css-modules | parse-residual: configuration | lowering-residual: capability | available: residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -81,6 +81,11 @@ test("panda -> css-modules: migrates concrete panda syntax to css-modules", () =
 		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -97,8 +102,8 @@ test("panda -> css-modules: carries a documented secondary panda API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> css-modules | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, residual, portable-artifact)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> css-modules | lowering-residual: capability | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -109,7 +114,6 @@ test("panda -> css-modules: carries a documented secondary panda API explicitly"
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -118,12 +122,17 @@ test("panda -> css-modules: carries a documented secondary panda API explicitly"
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-conditions: named: size; composition: 1 composition edge(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -150,10 +159,10 @@ test("panda -> css-modules: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: panda -> css-modules | lowering-residual: capability | available: static, residual)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -163,7 +172,6 @@ test("panda -> css-modules: loads concrete theme and project context variants", 
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -171,26 +179,26 @@ test("panda -> css-modules: loads concrete theme and project context variants", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "brand.500", "_hover": { "color": "brand.500" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: panda -> css-modules | lowering-residual: capability | available: static, residual)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -200,7 +208,6 @@ test("panda -> css-modules: loads concrete theme and project context variants", 
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -208,19 +215,19 @@ test("panda -> css-modules: loads concrete theme and project context variants", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -237,8 +244,8 @@ test("panda -> css-modules: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> css-modules | parse-residual: configuration | available: residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> css-modules | parse-residual: configuration | lowering-residual: capability | available: residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -265,6 +272,11 @@ test("panda -> css-modules: resolves concrete token values with project context"
 		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -281,8 +293,8 @@ test("panda -> css-modules: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> css-modules | parse-residual: configuration | available: residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });
+		// pandwind:migrate-skip (route: panda -> css-modules | parse-residual: configuration | lowering-residual: capability | available: residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -313,6 +325,11 @@ test("panda -> css-modules: preserves malformed concrete panda input", () => {
 		    {
 		      "hint": "Panda token reference 'blue.300' is unresolved without verified theme metadata",
 		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

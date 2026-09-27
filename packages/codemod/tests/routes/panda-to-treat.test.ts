@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAda
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAdapterId.Treat, "#f97316");
 
 test("panda -> treat: migrates concrete panda syntax to treat", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -48,8 +48,8 @@ test("panda -> treat: migrates concrete panda syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -90,7 +90,7 @@ test("panda -> treat: migrates concrete panda syntax to treat", () => {
 });
 
 test("panda -> treat: carries a documented secondary panda API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "panda -> treat secondary");
 	expectExplicitResidualEvidence(result);
@@ -98,8 +98,8 @@ test("panda -> treat: carries a documented secondary panda API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> treat | lowering-residual: composition | available: named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> treat | lowering-residual: composition | available: named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -141,8 +141,8 @@ test("panda -> treat: carries a documented secondary panda API explicitly", () =
 });
 
 test("panda -> treat: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Panda, CodemodAdapterId.Treat);
@@ -156,7 +156,7 @@ test("panda -> treat: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const card = style({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -193,7 +193,7 @@ test("panda -> treat: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +233,7 @@ test("panda -> treat: loads concrete theme and project context variants", async 
 });
 
 test("panda -> treat: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Panda, CodemodAdapterId.Treat);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Treat, "panda -> treat token config");
@@ -243,8 +243,8 @@ test("panda -> treat: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -280,7 +280,7 @@ test("panda -> treat: resolves concrete token values with project context", asyn
 });
 
 test("panda -> treat: preserves malformed concrete panda input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished panda */");
 	expectRouteScenarioEvidence(result, "panda -> treat malformed");
 	expectExplicitResidualEvidence(result);
@@ -288,8 +288,8 @@ test("panda -> treat: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });
+		// pandwind:migrate-skip (route: panda -> treat | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 0,
 		  "generatedFiles": [],

@@ -333,8 +333,8 @@ test("bamboo -> panda -> bamboo: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
-		sourceCss({ color: "brand.500" });",
+		// pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
+		export const card = sourceCss({ color: "brand.500" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -426,8 +426,8 @@ test("bamboo -> panda -> bamboo: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
-		sourceCss({ color: "brand.500" });",
+		// pandwind:migrate-skip (route: panda -> bamboo | lowering-residual: validation)
+		export const card = sourceCss({ color: "brand.500" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdap
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Fela, CodemodAdapterId.Treat, "#f97316");
 
 test("fela -> treat: migrates concrete fela syntax to treat", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -48,7 +48,7 @@ test("fela -> treat: migrates concrete fela syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const renderer = createRenderer();
 		export const card = style({ "color": "red" });",
 		  "converted": 1,
@@ -87,7 +87,7 @@ test("fela -> treat: migrates concrete fela syntax to treat", () => {
 });
 
 test("fela -> treat: carries a documented secondary fela API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "fela -> treat secondary");
 	expectExplicitResidualEvidence(result);
@@ -95,8 +95,8 @@ test("fela -> treat: carries a documented secondary fela API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> treat | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
-		createComponent(() => ({ color: "red" }), "button");",
+		// pandwind:migrate-skip (route: fela -> treat | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -133,8 +133,8 @@ test("fela -> treat: carries a documented secondary fela API explicitly", () => 
 });
 
 test("fela -> treat: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Fela, CodemodAdapterId.Treat);
@@ -150,7 +150,7 @@ test("fela -> treat: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const renderer = createRenderer();
 		export const card = style({ "color": "#2563eb" });",
 		    "converted": 1,
@@ -188,7 +188,7 @@ test("fela -> treat: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const renderer = createRenderer();
 		export const card = style({ "color": "#2563eb" });",
 		    "converted": 1,
@@ -228,7 +228,7 @@ test("fela -> treat: loads concrete theme and project context variants", async (
 });
 
 test("fela -> treat: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Fela, CodemodAdapterId.Treat);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Treat, "fela -> treat token config");
@@ -238,7 +238,7 @@ test("fela -> treat: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const renderer = createRenderer();
 		export const card = style({ "color": "#2563eb" });",
 		  "converted": 1,
@@ -277,7 +277,7 @@ test("fela -> treat: resolves concrete token values with project context", async
 });
 
 test("fela -> treat: preserves malformed concrete fela input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished fela */");
 	expectRouteScenarioEvidence(result, "fela -> treat malformed");
 	expectExplicitResidualEvidence(result);
@@ -285,7 +285,7 @@ test("fela -> treat: preserves malformed concrete fela input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const renderer = createRenderer();
 		export const card = style({ "color": "red" });
 		const unfinished = { /* unfinished fela */",

@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Stitches, Codemo
 
 test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -125,7 +125,7 @@ test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round 
 
 test("stitches -> chakra-ui -> stitches: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "stitches -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -136,8 +136,8 @@ test("stitches -> chakra-ui -> stitches: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,8 +176,8 @@ test("stitches -> chakra-ui -> stitches: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -192,9 +192,9 @@ test("stitches -> chakra-ui -> stitches: retains the documented secondary API wi
 
 test("stitches -> chakra-ui -> stitches: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Stitches, CodemodAdapterId.ChakraUi);
@@ -328,8 +328,8 @@ test("stitches -> chakra-ui -> stitches: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = // pandwind:migrate-skip (route: chakra-ui -> stitches | lowering-residual: validation)
-		defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		// pandwind:migrate-skip (route: chakra-ui -> stitches | lowering-residual: validation)
+		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +377,7 @@ test("stitches -> chakra-ui -> stitches: preserves concrete theme and project co
 
 test("stitches -> chakra-ui -> stitches: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Stitches, CodemodAdapterId.ChakraUi);
 	expectRouteScenarioEvidence(first, "stitches -> chakra-ui round-trip token forward");
@@ -425,8 +425,8 @@ test("stitches -> chakra-ui -> stitches: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = // pandwind:migrate-skip (route: chakra-ui -> stitches | lowering-residual: validation)
-		defaultSystem.css({ padding: "1rem", color: "brand.500" });",
+		// pandwind:migrate-skip (route: chakra-ui -> stitches | lowering-residual: validation)
+		export const card = defaultSystem.css({ padding: "1rem", color: "brand.500" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

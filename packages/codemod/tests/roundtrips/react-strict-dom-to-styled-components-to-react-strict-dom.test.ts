@@ -87,8 +87,8 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves an ac
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		styled.div({ padding: "1rem", color: "red" }) };
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		const styles = { "card": styled.div({ padding: "1rem", color: "red" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -178,8 +178,8 @@ test("react-strict-dom -> styled-components -> react-strict-dom: retains the doc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { keyframes } from "styled-components";
-		export const pulse = // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: validation)
-		keyframes({ "from": { opacity: 0 }, "to": { opacity: 1 } });",
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: validation)
+		export const pulse = keyframes({ "from": { opacity: 0 }, "to": { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -289,8 +289,8 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		styled.div({ padding: "1rem", color: "#2563eb" }) };
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -371,8 +371,8 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		styled.div({ padding: "1rem", color: "#2563eb" }) };
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -467,8 +467,8 @@ test("react-strict-dom -> styled-components -> react-strict-dom: resolves token 
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		styled.div({ padding: "1rem", color: "#2563eb" }) };
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

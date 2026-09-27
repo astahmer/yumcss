@@ -48,8 +48,8 @@ test("tokenami -> mantine: migrates concrete tokenami syntax to mantine", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", "--card-gap": "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red", "--card-gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,8 +105,8 @@ test("tokenami -> mantine: carries a documented secondary tokenami API explicitl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		css.compose({ color: "red", padding: "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const card = css.compose({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -170,8 +170,8 @@ test("tokenami -> mantine: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -218,8 +218,8 @@ test("tokenami -> mantine: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "$colors.brand", "--card-gap": "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "$colors.brand", "--card-gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -278,8 +278,8 @@ test("tokenami -> mantine: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", "--card-gap": "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", "--card-gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -335,8 +335,8 @@ test("tokenami -> mantine: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", "--card-gap": "1rem" });
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red", "--card-gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 0,
 		  "generatedFiles": [],

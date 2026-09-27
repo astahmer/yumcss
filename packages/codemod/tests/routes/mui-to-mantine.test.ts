@@ -91,8 +91,8 @@ test("mui -> mantine: carries a documented secondary mui API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		export const Card = // pandwind:migrate-skip (route: mui -> mantine | lowering-residual: host-framework, validation)
-		styled("div")({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: mui -> mantine | lowering-residual: host-framework, validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

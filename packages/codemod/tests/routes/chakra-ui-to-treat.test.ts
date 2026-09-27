@@ -48,9 +48,9 @@ test("chakra-ui -> treat: migrates concrete chakra-ui syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" })}/>;",
-		  "converted": 1,
+		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="red.200" p="4" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -68,19 +68,19 @@ test("chakra-ui -> treat: migrates concrete chakra-ui syntax to treat", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -94,8 +94,8 @@ test("chakra-ui -> treat: carries a documented secondary chakra-ui API explicitl
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> treat | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> treat | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -124,6 +124,11 @@ test("chakra-ui -> treat: carries a documented secondary chakra-ui API explicitl
 		      "kind": "composition",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -148,9 +153,9 @@ test("chakra-ui -> treat: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "backgroundColor": "#f97316", "p": "var(--chakra-spacing-4)" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="brand.500" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -169,26 +174,26 @@ test("chakra-ui -> treat: loads concrete theme and project context variants", as
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="brand.500" p="4" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,19 +212,19 @@ test("chakra-ui -> treat: loads concrete theme and project context variants", as
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -236,9 +241,9 @@ test("chakra-ui -> treat: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "backgroundColor": "#2563eb", "p": "var(--chakra-spacing-4)" })}/>;",
-		  "converted": 1,
+		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="#2563eb" p="4" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +261,19 @@ test("chakra-ui -> treat: resolves concrete token values with project context", 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -282,10 +287,10 @@ test("chakra-ui -> treat: preserves malformed concrete chakra-ui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--chakra-colors-red-200)" })}/>;
+		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box bg="red.200" p="4" />;
 		const unfinished = { /* unfinished chakra-ui */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -303,19 +308,19 @@ test("chakra-ui -> treat: preserves malformed concrete chakra-ui input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodA
 
 test("stylex -> css-modules -> stylex: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "red", padding: 8 } });",
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -62,7 +62,6 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -71,12 +70,17 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -86,27 +90,15 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "red", padding: 8 } });",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 2,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -115,7 +107,7 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 
 test("stylex -> css-modules -> stylex: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "stylex -> css-modules round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -126,8 +118,8 @@ test("stylex -> css-modules -> stylex: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "red" } });",
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -138,7 +130,6 @@ test("stylex -> css-modules -> stylex: retains the documented secondary API with
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -147,12 +138,17 @@ test("stylex -> css-modules -> stylex: retains the documented secondary API with
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -162,27 +158,15 @@ test("stylex -> css-modules -> stylex: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "red" } });",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 2,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -191,9 +175,9 @@ test("stylex -> css-modules -> stylex: retains the documented secondary API with
 
 test("stylex -> css-modules -> stylex: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.CssModules);
@@ -217,8 +201,8 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -229,7 +213,6 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		          "availableRepresentations": [
 		            "static",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -238,12 +221,17 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
 		          "hint": "named-rules: named style rule: card",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -253,27 +241,15 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
 		      "outcomes": [],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 2,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -281,8 +257,8 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -293,7 +269,6 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		          "availableRepresentations": [
 		            "static",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -302,12 +277,17 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
 		          "hint": "named-rules: named style rule: card",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -317,27 +297,15 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
 		      "outcomes": [],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 2,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -347,7 +315,7 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 
 test("stylex -> css-modules -> stylex: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.CssModules);
 	expectRouteScenarioEvidence(first, "stylex -> css-modules round-trip token forward");
@@ -359,8 +327,8 @@ test("stylex -> css-modules -> stylex: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -371,7 +339,6 @@ test("stylex -> css-modules -> stylex: resolves token values across both concret
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -380,12 +347,17 @@ test("stylex -> css-modules -> stylex: resolves token values across both concret
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -395,27 +367,15 @@ test("stylex -> css-modules -> stylex: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 2,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

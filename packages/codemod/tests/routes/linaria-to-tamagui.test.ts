@@ -90,8 +90,8 @@ test("linaria -> tamagui: carries a documented secondary linaria API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@linaria/react";
-		export const Card = // pandwind:migrate-skip (route: linaria -> tamagui | capability-blocked: components: component subject: styled.div | available: static, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: linaria -> tamagui | capability-blocked: components: component subject: styled.div | available: static, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

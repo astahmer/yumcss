@@ -137,8 +137,9 @@ test("pandwind -> jss -> pandwind: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +183,9 @@ test("pandwind -> jss -> pandwind: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -223,8 +225,9 @@ test("pandwind -> jss -> pandwind: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -268,8 +271,9 @@ test("pandwind -> jss -> pandwind: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -283,8 +287,9 @@ test("pandwind -> jss -> pandwind: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -328,8 +333,9 @@ test("pandwind -> jss -> pandwind: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],

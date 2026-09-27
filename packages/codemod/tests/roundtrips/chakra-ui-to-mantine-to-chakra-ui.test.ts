@@ -84,8 +84,8 @@ test("chakra-ui -> mantine -> chakra-ui: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box  style={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box  style={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" }}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -133,8 +133,8 @@ test("chakra-ui -> mantine -> chakra-ui: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> mantine | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> mantine | parse-residual: composition | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -168,8 +168,8 @@ test("chakra-ui -> mantine -> chakra-ui: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> mantine | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> mantine | parse-residual: composition | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -244,8 +244,8 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -315,8 +315,8 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -400,8 +400,8 @@ test("chakra-ui -> mantine -> chakra-ui: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box  style={{ backgroundColor: "var(--mantine-color-brand-0)", p: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -93,8 +93,8 @@ test("tamagui -> chakra-ui: carries a documented secondary tamagui API explicitl
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> chakra-ui | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

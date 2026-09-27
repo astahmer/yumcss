@@ -90,8 +90,8 @@ test("compiled -> tamagui: carries a documented secondary compiled API explicitl
 		{
 		  "changed": true,
 		  "code": "import { cssMap } from "@compiled/react";
-		export const colors = // pandwind:migrate-skip (route: compiled -> tamagui | capability-blocked: named-rules: named style rule: red | available: static, residual)
-		cssMap({ red: { color: "red" } });",
+		// pandwind:migrate-skip (route: compiled -> tamagui | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		export const colors = cssMap({ red: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

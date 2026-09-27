@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAd
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodAdapterId.Treat, "#f97316");
 
 test("style9 -> treat: migrates concrete style9 syntax to treat", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -47,7 +47,7 @@ test("style9 -> treat: migrates concrete style9 syntax to treat", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 		export const styles = { "card": style({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -85,14 +85,14 @@ test("style9 -> treat: migrates concrete style9 syntax to treat", () => {
 });
 
 test("style9 -> treat: carries a documented secondary style9 API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "style9 -> treat secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 		export const styles = { "card": style({ "color": "red" }), "muted": style({ "opacity": 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -130,8 +130,8 @@ test("style9 -> treat: carries a documented secondary style9 API explicitly", ()
 });
 
 test("style9 -> treat: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.Treat);
@@ -146,7 +146,7 @@ test("style9 -> treat: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,7 +182,7 @@ test("style9 -> treat: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -221,7 +221,7 @@ test("style9 -> treat: loads concrete theme and project context variants", async
 });
 
 test("style9 -> treat: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.Treat);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Treat, "style9 -> treat token config");
@@ -230,7 +230,7 @@ test("style9 -> treat: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -268,14 +268,14 @@ test("style9 -> treat: resolves concrete token values with project context", asy
 });
 
 test("style9 -> treat: preserves malformed concrete style9 input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished style9 */");
 	expectRouteScenarioEvidence(result, "style9 -> treat malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 		export const styles = { "card": style({ "color": "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

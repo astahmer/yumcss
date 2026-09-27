@@ -47,9 +47,9 @@ test("tailwind -> vanilla-extract: migrates concrete tailwind syntax to vanilla-
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
-		  "converted": 1,
+		  "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -67,19 +67,19 @@ test("tailwind -> vanilla-extract: migrates concrete tailwind syntax to vanilla-
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -92,8 +92,8 @@ test("tailwind -> vanilla-extract: carries a documented secondary tailwind API e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> vanilla-extract | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -122,6 +122,11 @@ test("tailwind -> vanilla-extract: carries a documented secondary tailwind API e
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -145,9 +150,9 @@ test("tailwind -> vanilla-extract: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#f97316" })}/>;",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -165,25 +170,25 @@ test("tailwind -> vanilla-extract: loads concrete theme and project context vari
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#2563eb" })}/>;",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -201,19 +206,19 @@ test("tailwind -> vanilla-extract: loads concrete theme and project context vari
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -229,9 +234,9 @@ test("tailwind -> vanilla-extract: resolves concrete token values with project c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#2563eb" })}/>;",
-		  "converted": 1,
+		  "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -249,19 +254,19 @@ test("tailwind -> vanilla-extract: resolves concrete token values with project c
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -274,10 +279,10 @@ test("tailwind -> vanilla-extract: preserves malformed concrete tailwind input",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ gap: "1rem", alignItems: "center", display: "flex" })}/>;
+		  "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
 		const unfinished = { /* unfinished tailwind */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -295,19 +300,19 @@ test("tailwind -> vanilla-extract: preserves malformed concrete tailwind input",
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

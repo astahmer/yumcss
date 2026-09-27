@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdap
 
 test("mui -> react-strict-dom -> mui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("mui -> react-strict-dom -> mui: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "red", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,8 +87,8 @@ test("mui -> react-strict-dom -> mui: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "red", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -103,7 +103,7 @@ test("mui -> react-strict-dom -> mui: preserves an actionable concrete round tri
 
 test("mui -> react-strict-dom -> mui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "mui -> react-strict-dom round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -114,8 +114,8 @@ test("mui -> react-strict-dom -> mui: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: validation)
-		styled("div")({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -159,8 +159,8 @@ test("mui -> react-strict-dom -> mui: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: validation)
-		styled("div")({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -175,9 +175,9 @@ test("mui -> react-strict-dom -> mui: retains the documented secondary API witho
 
 test("mui -> react-strict-dom -> mui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.ReactStrictDom);
@@ -200,8 +200,8 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -237,8 +237,8 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -252,8 +252,8 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,8 +289,8 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -306,7 +306,7 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 
 test("mui -> react-strict-dom -> mui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.ReactStrictDom);
 	expectRouteScenarioEvidence(first, "mui -> react-strict-dom round-trip token forward");
@@ -318,8 +318,8 @@ test("mui -> react-strict-dom -> mui: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "#2563eb", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -355,8 +355,8 @@ test("mui -> react-strict-dom -> mui: resolves token values across both concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box sx={{ color: "#2563eb", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

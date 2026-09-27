@@ -50,8 +50,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: preserves an actionable c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		css.create({ card: { color: "red", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -85,8 +85,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: preserves an actionable c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		css.create({ card: { color: "red", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -146,8 +146,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: retains the documented se
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const pulse = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: named-map, target-native, residual)
-		styled(View, { "from": { opacity: 0 }, "to": { opacity: 1 } });",
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: named-map, target-native, residual)
+		export const pulse = styled(View, { "from": { opacity: 0 }, "to": { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -212,8 +212,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,8 +247,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: preserves concrete theme 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -263,8 +263,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,8 +298,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: preserves concrete theme 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -328,8 +328,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: resolves token values acr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -363,8 +363,8 @@ test("react-strict-dom -> tamagui -> react-strict-dom: resolves token values acr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodA
 
 test("stylex -> tailwind -> stylex: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -124,7 +124,7 @@ test("stylex -> tailwind -> stylex: preserves an actionable concrete round trip"
 
 test("stylex -> tailwind -> stylex: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "stylex -> tailwind round-trip secondary forward");
 	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "stylex -> tailwind round-trip secondary");
@@ -209,9 +209,9 @@ test("stylex -> tailwind -> stylex: retains the documented secondary API without
 
 test("stylex -> tailwind -> stylex: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.Tailwind);
@@ -283,8 +283,8 @@ test("stylex -> tailwind -> stylex: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -328,8 +328,8 @@ test("stylex -> tailwind -> stylex: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -345,7 +345,7 @@ test("stylex -> tailwind -> stylex: preserves concrete theme and project context
 
 test("stylex -> tailwind -> stylex: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.Tailwind);
 	expectRouteScenarioEvidence(first, "stylex -> tailwind round-trip token forward");
@@ -357,8 +357,8 @@ test("stylex -> tailwind -> stylex: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -402,8 +402,8 @@ test("stylex -> tailwind -> stylex: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": false,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
-		stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: validation)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

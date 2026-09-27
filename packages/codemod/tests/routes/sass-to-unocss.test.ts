@@ -47,9 +47,9 @@ test("sass -> unocss: migrates concrete sass syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:1rem] [color:red]" };
-		export default styles;",
-		  "converted": 1,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -61,25 +61,25 @@ test("sass -> unocss: migrates concrete sass syntax to unocss", () => {
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -91,8 +91,8 @@ test("sass -> unocss: carries a documented secondary sass API explicitly", () =>
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		$brand: red;
 		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
@@ -123,17 +123,12 @@ test("sass -> unocss: carries a documented secondary sass API explicitly", () =>
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "rule-level: 1 semantic rules; selectors: selector: .card; nesting: style nested rules",
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 1,
 		  "validations": [],
 		}
 	`)
@@ -156,9 +151,9 @@ test("sass -> unocss: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,31 +165,31 @@ test("sass -> unocss: loads concrete theme and project context variants", async 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:1rem] text-brand" };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -206,25 +201,25 @@ test("sass -> unocss: loads concrete theme and project context variants", async 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -240,9 +235,9 @@ test("sass -> unocss: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:1rem] text-brand" };
-		export default styles;",
-		  "converted": 1,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: #2563eb; padding: 1rem; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -254,25 +249,25 @@ test("sass -> unocss: resolves concrete token values with project context", asyn
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -284,8 +279,8 @@ test("sass -> unocss: preserves malformed concrete sass input", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,
@@ -300,7 +295,7 @@ test("sass -> unocss: preserves malformed concrete sass input", () => {
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -314,6 +309,11 @@ test("sass -> unocss: preserves malformed concrete sass input", () => {
 		    {
 		      "hint": "stylesheet block is unbalanced",
 		      "kind": "parse",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

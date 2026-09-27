@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, Codemo
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.VanillaExtract, "#f97316");
 
 test("aphrodite -> vanilla-extract: migrates concrete aphrodite syntax to vanilla-extract", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -85,7 +85,7 @@ test("aphrodite -> vanilla-extract: migrates concrete aphrodite syntax to vanill
 });
 
 test("aphrodite -> vanilla-extract: carries a documented secondary aphrodite API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "aphrodite -> vanilla-extract secondary");
 	expectExplicitResidualEvidence(result);
@@ -93,8 +93,8 @@ test("aphrodite -> vanilla-extract: carries a documented secondary aphrodite API
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = // pandwind:migrate-skip (route: aphrodite -> vanilla-extract | lowering-residual: validation)
-		StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		// pandwind:migrate-skip (route: aphrodite -> vanilla-extract | lowering-residual: validation)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -139,8 +139,8 @@ test("aphrodite -> vanilla-extract: carries a documented secondary aphrodite API
 });
 
 test("aphrodite -> vanilla-extract: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.VanillaExtract);
@@ -230,7 +230,7 @@ test("aphrodite -> vanilla-extract: loads concrete theme and project context var
 });
 
 test("aphrodite -> vanilla-extract: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.VanillaExtract);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.VanillaExtract, "aphrodite -> vanilla-extract token config");
@@ -277,7 +277,7 @@ test("aphrodite -> vanilla-extract: resolves concrete token values with project 
 });
 
 test("aphrodite -> vanilla-extract: preserves malformed concrete aphrodite input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished aphrodite */");
 	expectRouteScenarioEvidence(result, "aphrodite -> vanilla-extract malformed");
 	expectExplicitResidualEvidence(result);

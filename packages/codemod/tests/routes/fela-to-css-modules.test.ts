@@ -48,11 +48,10 @@ test("fela -> css-modules: migrates concrete fela syntax to css-modules", () => 
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "red" });",
-		  "converted": 1,
+		// pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | available: static, residual)
+		export const card = renderer.renderRule(() => ({ color: "red" }));",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -62,7 +61,6 @@ test("fela -> css-modules: migrates concrete fela syntax to css-modules", () => 
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -70,19 +68,19 @@ test("fela -> css-modules: migrates concrete fela syntax to css-modules", () => 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -96,8 +94,8 @@ test("fela -> css-modules: carries a documented secondary fela API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> css-modules | capability-blocked: components: component subject: styled("button") | available: static, residual, portable-artifact)
-		createComponent(() => ({ color: "red" }), "button");",
+		// pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled("button") | available: static, residual)
+		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -108,7 +106,6 @@ test("fela -> css-modules: carries a documented secondary fela API explicitly", 
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -117,12 +114,17 @@ test("fela -> css-modules: carries a documented secondary fela API explicitly", 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "components: component subject: styled("button")",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -151,11 +153,10 @@ test("fela -> css-modules: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "#2563eb" });",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | available: static, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -165,7 +166,6 @@ test("fela -> css-modules: loads concrete theme and project context variants", a
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -173,28 +173,27 @@ test("fela -> css-modules: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "#2563eb" });",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | available: static, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -204,7 +203,6 @@ test("fela -> css-modules: loads concrete theme and project context variants", a
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -212,19 +210,19 @@ test("fela -> css-modules: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -241,11 +239,10 @@ test("fela -> css-modules: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "#2563eb" });",
-		  "converted": 1,
+		// pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | available: static, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -255,7 +252,6 @@ test("fela -> css-modules: resolves concrete token values with project context",
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -263,19 +259,19 @@ test("fela -> css-modules: resolves concrete token values with project context",
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -289,12 +285,11 @@ test("fela -> css-modules: preserves malformed concrete fela input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "red" });
+		// pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | available: static, residual)
+		export const card = renderer.renderRule(() => ({ color: "red" }));
 		const unfinished = { /* unfinished fela */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -304,7 +299,6 @@ test("fela -> css-modules: preserves malformed concrete fela input", () => {
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -312,19 +306,19 @@ test("fela -> css-modules: preserves malformed concrete fela input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

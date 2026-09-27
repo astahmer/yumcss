@@ -48,8 +48,8 @@ test("styled-components -> linaria: migrates concrete styled-components syntax t
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
-		styled.div({ color: "red", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,8 +94,8 @@ test("styled-components -> linaria: carries a documented secondary styled-compon
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,8 +149,8 @@ test("styled-components -> linaria: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,8 +186,8 @@ test("styled-components -> linaria: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,8 +235,8 @@ test("styled-components -> linaria: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,8 +281,8 @@ test("styled-components -> linaria: preserves malformed concrete styled-componen
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
-		styled.div({ color: "red", padding: "1rem" });
+		// pandwind:migrate-skip (route: styled-components -> linaria | capability-blocked: framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 0,
 		  "generatedFiles": [],

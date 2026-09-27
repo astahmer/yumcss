@@ -47,8 +47,9 @@ test("sass -> less: migrates concrete sass syntax to less", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": ".card{padding:1rem;color:red}",
-		  "converted": 1,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -65,19 +66,19 @@ test("sass -> less: migrates concrete sass syntax to less", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "renaming card.scss to card.less requires updating project imports",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -89,8 +90,8 @@ test("sass -> less: carries a documented secondary sass API explicitly", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting, capability)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		$brand: red;
 		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
@@ -120,17 +121,12 @@ test("sass -> less: carries a documented secondary sass API explicitly", () => {
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "named-rules: named style rule: card; nesting: style nested rules",
+		      "hint": "renaming card.scss to card.less requires updating project imports",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 3,
+		  "skipped": 1,
 		  "validations": [],
 		}
 	`)
@@ -275,8 +271,8 @@ test("sass -> less: preserves malformed concrete sass input", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,
@@ -304,6 +300,11 @@ test("sass -> less: preserves malformed concrete sass input", () => {
 		    {
 		      "hint": "stylesheet block is unbalanced",
 		      "kind": "parse",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "renaming card.scss to card.less requires updating project imports",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

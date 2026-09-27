@@ -58,7 +58,7 @@ describe("Panda generated-system source ownership", () => {
 	it("migrates a custom package.json Panda alias", () => {
 		const source = [
 			'import { css as pandaCss } from "#design-system/css";',
-			"export const card = pandaCss({ color: 'red.500', padding: '4' });",
+			"export const card = pandaCss({ color: 'red', padding: '4' });",
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Panda,
@@ -108,7 +108,7 @@ describe("Panda generated-system source ownership", () => {
 			'import { Box } from "@chakra-ui/react";',
 			'import { css as pandaCss } from "#design-system/css";',
 			'export const App = () => <Box p="4" />;',
-			"export const card = pandaCss({ color: 'red.500' });",
+			"export const card = pandaCss({ color: 'red' });",
 		].join("\n");
 		const options = {
 			file: `${root}/app.tsx`,

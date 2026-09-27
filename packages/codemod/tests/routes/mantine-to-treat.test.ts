@@ -48,8 +48,8 @@ test("mantine -> treat: migrates concrete mantine syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> treat | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> treat | parse-residual: configuration | lowering-residual: capability | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -77,6 +77,11 @@ test("mantine -> treat: migrates concrete mantine syntax to treat", () => {
 		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -93,8 +98,8 @@ test("mantine -> treat: carries a documented secondary mantine API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> treat | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> treat | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -122,6 +127,11 @@ test("mantine -> treat: carries a documented secondary mantine API explicitly", 
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -146,9 +156,9 @@ test("mantine -> treat: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -167,26 +177,26 @@ test("mantine -> treat: loads concrete theme and project context variants", asyn
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -205,19 +215,19 @@ test("mantine -> treat: loads concrete theme and project context variants", asyn
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -234,9 +244,9 @@ test("mantine -> treat: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" })}/>;",
-		  "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -255,19 +265,19 @@ test("mantine -> treat: resolves concrete token values with project context", as
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -281,8 +291,8 @@ test("mantine -> treat: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> treat | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;
+		// pandwind:migrate-skip (route: mantine -> treat | parse-residual: configuration | lowering-residual: capability | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -309,6 +319,11 @@ test("mantine -> treat: preserves malformed concrete mantine input", () => {
 		    {
 		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
 		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

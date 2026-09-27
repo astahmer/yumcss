@@ -134,8 +134,8 @@ test("stitches -> tokenami -> stitches: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> tokenami | capability-blocked: global-rules: global rule | available: static, named-map, residual)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> tokenami | capability-blocked: global-rules: global rule | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,8 +169,8 @@ test("stitches -> tokenami -> stitches: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> tokenami | capability-blocked: global-rules: global rule | available: static, named-map, residual)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> tokenami | capability-blocked: global-rules: global rule | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -317,8 +317,8 @@ test("stitches -> tokenami -> stitches: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> stitches | lowering-residual: validation)
-		css({ padding: "1rem", color: "$colors.brand" });",
+		// pandwind:migrate-skip (route: tokenami -> stitches | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -412,8 +412,8 @@ test("stitches -> tokenami -> stitches: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> stitches | lowering-residual: validation)
-		css({ padding: "1rem", color: "$colors.brand" });",
+		// pandwind:migrate-skip (route: tokenami -> stitches | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

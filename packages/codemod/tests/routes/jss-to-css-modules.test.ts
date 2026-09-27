@@ -48,8 +48,8 @@ test("jss -> css-modules: migrates concrete jss syntax to css-modules", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "red" } });",
+		// pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -60,7 +60,6 @@ test("jss -> css-modules: migrates concrete jss syntax to css-modules", () => {
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -69,12 +68,17 @@ test("jss -> css-modules: migrates concrete jss syntax to css-modules", () => {
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -94,8 +98,8 @@ test("jss -> css-modules: carries a documented secondary jss API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		export const sheet = // pandwind:migrate-skip (route: jss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		jss.createStyleSheet({ card: { color: "red" } });",
+		// pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -106,7 +110,6 @@ test("jss -> css-modules: carries a documented secondary jss API explicitly", ()
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -115,12 +118,17 @@ test("jss -> css-modules: carries a documented secondary jss API explicitly", ()
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -149,8 +157,8 @@ test("jss -> css-modules: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -161,7 +169,6 @@ test("jss -> css-modules: loads concrete theme and project context variants", as
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -170,12 +177,17 @@ test("jss -> css-modules: loads concrete theme and project context variants", as
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -186,8 +198,8 @@ test("jss -> css-modules: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -198,7 +210,6 @@ test("jss -> css-modules: loads concrete theme and project context variants", as
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -207,12 +218,17 @@ test("jss -> css-modules: loads concrete theme and project context variants", as
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -235,8 +251,8 @@ test("jss -> css-modules: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -247,7 +263,6 @@ test("jss -> css-modules: resolves concrete token values with project context", 
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -256,12 +271,17 @@ test("jss -> css-modules: resolves concrete token values with project context", 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -281,8 +301,8 @@ test("jss -> css-modules: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		createUseStyles({ card: { color: "red" } });
+		// pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -294,7 +314,6 @@ test("jss -> css-modules: preserves malformed concrete jss input", () => {
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -303,12 +322,17 @@ test("jss -> css-modules: preserves malformed concrete jss input", () => {
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

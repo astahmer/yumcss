@@ -48,8 +48,8 @@ test("mantine -> chakra-ui: migrates concrete mantine syntax to chakra-ui", () =
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,8 +96,8 @@ test("mantine -> chakra-ui: carries a documented secondary mantine API explicitl
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: host-framework | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +147,8 @@ test("mantine -> chakra-ui: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +182,8 @@ test("mantine -> chakra-ui: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,8 +229,8 @@ test("mantine -> chakra-ui: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="#2563eb" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,8 +273,8 @@ test("mantine -> chakra-ui: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
 		  "generatedFiles": [],

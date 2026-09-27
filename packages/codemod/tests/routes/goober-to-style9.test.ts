@@ -93,8 +93,8 @@ test("goober -> style9: carries a documented secondary goober API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { styled } from "goober";
-		export const Card = // pandwind:migrate-skip (route: goober -> style9 | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: goober -> style9 | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -48,8 +48,8 @@ test("mantine -> less: migrates concrete mantine syntax to less", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> less | parse-residual: configuration | available: residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> less | parse-residual: configuration | lowering-residual: capability | available: residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -76,6 +76,11 @@ test("mantine -> less: migrates concrete mantine syntax to less", () => {
 		      "kind": "configuration",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -92,8 +97,8 @@ test("mantine -> less: carries a documented secondary mantine API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> less | parse-residual: host-framework | lowering-residual: framework-semantics | available: residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> less | parse-residual: host-framework | lowering-residual: framework-semantics, capability | available: residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -131,6 +136,11 @@ test("mantine -> less: carries a documented secondary mantine API explicitly", (
 		      "kind": "framework-semantics",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -155,8 +165,8 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> less | lowering-residual: validation)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,27 +190,19 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "3 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "3 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> less | lowering-residual: validation)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,21 +226,13 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "3 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "3 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -255,8 +249,8 @@ test("mantine -> less: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> less | lowering-residual: validation)
-		<Box c="#2563eb" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -280,21 +274,13 @@ test("mantine -> less: resolves concrete token values with project context", asy
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "3 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "3 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -308,8 +294,8 @@ test("mantine -> less: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> less | parse-residual: configuration | available: residual)
-		<Box c="blue.6" mx="auto" maw={400} />;
+		// pandwind:migrate-skip (route: mantine -> less | parse-residual: configuration | lowering-residual: capability | available: residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -335,6 +321,11 @@ test("mantine -> less: preserves malformed concrete mantine input", () => {
 		    {
 		      "hint": "Mantine token reference 'blue.6' is unresolved without verified theme metadata",
 		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

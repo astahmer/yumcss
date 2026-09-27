@@ -672,6 +672,7 @@ export {
 	type SourceCallSite,
 	type SourceBindingIndex,
 	type SourceExportAll,
+	type SourceModuleReference,
 	type SourceReexport,
 	type SourceHostUse,
 } from "./source-bindings.ts";

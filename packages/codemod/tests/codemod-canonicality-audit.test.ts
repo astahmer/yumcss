@@ -20,16 +20,16 @@ test("A1 preserves unresolved Panda token references with a configuration residu
 			'export const card = css({ color: "red.300", _hover: { color: "blue.300" } });',
 		expectedOutput:
 			'import { css } from "styled-system/css";\n' +
-			"export const card = // pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
-			'css({ color: "red.300", _hover: { color: "blue.300" } });',
+			"// pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
+			'export const card = css({ color: "red.300", _hover: { color: "blue.300" } });',
 	};
 	const result = pandaToLinaria.run({ source: fixture.input, file: "styles.ts" });
 
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "expectedOutput": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "input": "import { css } from "styled-system/css";
 		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		}
@@ -56,8 +56,8 @@ test("A2 preserves unresolved Mantine theme values with a configuration residual
 			'export const App = () => <Box c="blue.6" mx="auto" maw={400} />;',
 		expectedOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"export const App = () => // pandwind:migrate-skip (route: mantine -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
-			'<Box c="blue.6" mx="auto" maw={400} />;',
+			"// pandwind:migrate-skip (route: mantine -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
+			'export const App = () => <Box c="blue.6" mx="auto" maw={400} />;',
 	};
 	const result = mantineToLinaria.run({
 		source: fixture.input,
@@ -68,8 +68,8 @@ test("A2 preserves unresolved Mantine theme values with a configuration residual
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "expectedOutput": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> linaria | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> linaria | parse-residual: configuration | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		}
@@ -130,14 +130,14 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 			'export const App = () => <Box c="brand.0" mx="auto" maw={400} />;',
 		expectedOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)\n" +
-			'<Box c="brand.0" mx="auto" maw={400} />;',
+			"// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)\n" +
+			'export const App = () => <Box c="brand.0" mx="auto" maw={400} />;',
 	};
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "expectedOutput": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		}
@@ -163,8 +163,8 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -219,12 +219,12 @@ export const App = () => <Box c="#123456" />;`,
 			'export const App = () => <Box className={css({ color: "#123456" })}/>;',
 		chakraOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
-			'<Box c="#123456" />;',
+			"// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
+			'export const App = () => <Box c="#123456" />;',
 		muiOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
-			'<Box c="#123456" />;',
+			"// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
+			'export const App = () => <Box c="#123456" />;',
 	};
 	const options = {
 		source: fixture.input,
@@ -238,16 +238,16 @@ export const App = () => <Box c="#123456" />;`,
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "chakraOutput": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="#123456" />;",
+		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="#123456" />;",
 		  "emotionOutput": "import { Box } from "@mantine/core";
 		import { css } from "@emotion/css";
 		export const App = () => <Box className={css({ color: "#123456" })}/>;",
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="#123456" />;",
 		  "muiOutput": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		<Box c="#123456" />;",
+		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box c="#123456" />;",
 		}
 	`);
 	expect(emotion.converted).toBe(1);

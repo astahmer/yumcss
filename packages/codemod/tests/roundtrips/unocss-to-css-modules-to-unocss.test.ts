@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodA
 
 test("unocss -> css-modules -> unocss: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -49,8 +49,8 @@ test("unocss -> css-modules -> unocss: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: validation)
-		<div className="[display:flex] [align-items:center] [gap:1rem]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -74,39 +74,24 @@ test("unocss -> css-modules -> unocss: preserves an actionable concrete round tr
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "3 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "3 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: validation)
-		<div className="[display:flex] [align-items:center] [gap:1rem]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -115,7 +100,7 @@ test("unocss -> css-modules -> unocss: preserves an actionable concrete round tr
 
 test("unocss -> css-modules -> unocss: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "unocss -> css-modules round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -125,8 +110,8 @@ test("unocss -> css-modules -> unocss: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-conditions: named: hover | available: static, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-conditions: named: hover | available: static, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -154,27 +139,25 @@ test("unocss -> css-modules -> unocss: retains the documented secondary API with
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-conditions: named: hover | available: static, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-conditions: named: hover | available: static, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -183,9 +166,9 @@ test("unocss -> css-modules -> unocss: retains the documented secondary API with
 
 test("unocss -> css-modules -> unocss: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.CssModules);
@@ -207,8 +190,8 @@ test("unocss -> css-modules -> unocss: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -232,47 +215,32 @@ test("unocss -> css-modules -> unocss: preserves concrete theme and project cont
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "2 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "2 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
+		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -296,39 +264,24 @@ test("unocss -> css-modules -> unocss: preserves concrete theme and project cont
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "2 residual conversion(s)",
-		          "kind": "validation",
+		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "2 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
 		      "outcomes": [],
-		      "residuals": [
-		        {
-		          "hint": "stylesheet statement is preserved outside the style program",
-		          "kind": "parse",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -338,7 +291,7 @@ test("unocss -> css-modules -> unocss: preserves concrete theme and project cont
 
 test("unocss -> css-modules -> unocss: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.CssModules);
 	expectRouteScenarioEvidence(first, "unocss -> css-modules round-trip token forward");
@@ -349,8 +302,8 @@ test("unocss -> css-modules -> unocss: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -374,39 +327,24 @@ test("unocss -> css-modules -> unocss: resolves token values across both concret
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: parse)
-		export const App = () => // pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
 		    "outcomes": [],
-		    "residuals": [
-		      {
-		        "hint": "stylesheet statement is preserved outside the style program",
-		        "kind": "parse",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

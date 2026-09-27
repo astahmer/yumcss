@@ -48,8 +48,8 @@ test("vue-styled -> authored-css: migrates concrete vue-styled syntax to authore
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -60,7 +60,6 @@ test("vue-styled -> authored-css: migrates concrete vue-styled syntax to authore
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -74,7 +73,7 @@ test("vue-styled -> authored-css: migrates concrete vue-styled syntax to authore
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -86,6 +85,11 @@ test("vue-styled -> authored-css: migrates concrete vue-styled syntax to authore
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -104,8 +108,8 @@ test("vue-styled -> authored-css: carries a documented secondary vue-styled API 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -116,7 +120,6 @@ test("vue-styled -> authored-css: carries a documented secondary vue-styled API 
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -130,7 +133,7 @@ test("vue-styled -> authored-css: carries a documented secondary vue-styled API 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -142,6 +145,11 @@ test("vue-styled -> authored-css: carries a documented secondary vue-styled API 
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -169,8 +177,8 @@ test("vue-styled -> authored-css: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,7 +189,6 @@ test("vue-styled -> authored-css: loads concrete theme and project context varia
 		        ],
 		        "availableRepresentations": [
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "residual",
 		        "residuals": [
@@ -195,7 +202,7 @@ test("vue-styled -> authored-css: loads concrete theme and project context varia
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
@@ -207,6 +214,11 @@ test("vue-styled -> authored-css: loads concrete theme and project context varia
 		      {
 		        "hint": "target lacks framework semantics",
 		        "kind": "framework-semantics",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -216,8 +228,8 @@ test("vue-styled -> authored-css: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +240,6 @@ test("vue-styled -> authored-css: loads concrete theme and project context varia
 		        ],
 		        "availableRepresentations": [
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "residual",
 		        "residuals": [
@@ -242,7 +253,7 @@ test("vue-styled -> authored-css: loads concrete theme and project context varia
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
@@ -254,6 +265,11 @@ test("vue-styled -> authored-css: loads concrete theme and project context varia
 		      {
 		        "hint": "target lacks framework semantics",
 		        "kind": "framework-semantics",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -275,8 +291,8 @@ test("vue-styled -> authored-css: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -287,7 +303,6 @@ test("vue-styled -> authored-css: resolves concrete token values with project co
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -301,7 +316,7 @@ test("vue-styled -> authored-css: resolves concrete token values with project co
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -313,6 +328,11 @@ test("vue-styled -> authored-css: resolves concrete token values with project co
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -331,8 +351,8 @@ test("vue-styled -> authored-css: preserves malformed concrete vue-styled input"
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: red; padding: 1rem;\`;
+		// pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -344,7 +364,6 @@ test("vue-styled -> authored-css: preserves malformed concrete vue-styled input"
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -358,7 +377,7 @@ test("vue-styled -> authored-css: preserves malformed concrete vue-styled input"
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -370,6 +389,11 @@ test("vue-styled -> authored-css: preserves malformed concrete vue-styled input"
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

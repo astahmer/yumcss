@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Goober, CodemodAd
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Goober, CodemodAdapterId.VanillaExtract, "#f97316");
 
 test("goober -> vanilla-extract: migrates concrete goober syntax to vanilla-extract", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -85,7 +85,7 @@ test("goober -> vanilla-extract: migrates concrete goober syntax to vanilla-extr
 });
 
 test("goober -> vanilla-extract: carries a documented secondary goober API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "goober -> vanilla-extract secondary");
 	expectExplicitResidualEvidence(result);
@@ -93,8 +93,8 @@ test("goober -> vanilla-extract: carries a documented secondary goober API expli
 		{
 		  "changed": true,
 		  "code": "import { styled } from "goober";
-		export const Card = // pandwind:migrate-skip (route: goober -> vanilla-extract | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: goober -> vanilla-extract | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -131,8 +131,8 @@ test("goober -> vanilla-extract: carries a documented secondary goober API expli
 });
 
 test("goober -> vanilla-extract: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Goober, CodemodAdapterId.VanillaExtract);
@@ -222,7 +222,7 @@ test("goober -> vanilla-extract: loads concrete theme and project context varian
 });
 
 test("goober -> vanilla-extract: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Goober, CodemodAdapterId.VanillaExtract);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.VanillaExtract, "goober -> vanilla-extract token config");
@@ -269,7 +269,7 @@ test("goober -> vanilla-extract: resolves concrete token values with project con
 });
 
 test("goober -> vanilla-extract: preserves malformed concrete goober input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished goober */");
 	expectRouteScenarioEvidence(result, "goober -> vanilla-extract malformed");
 	expectExplicitResidualEvidence(result);

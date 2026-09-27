@@ -47,8 +47,8 @@ test("tailwind -> css-modules: migrates concrete tailwind syntax to css-modules"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: validation)
-		<div className="[display:flex] [align-items:center] [gap:1rem]" />;",
+		  "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -72,21 +72,13 @@ test("tailwind -> css-modules: migrates concrete tailwind syntax to css-modules"
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "3 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "3 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -99,8 +91,8 @@ test("tailwind -> css-modules: carries a documented secondary tailwind API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> css-modules | capability-blocked: named-conditions: named: md | available: static, residual)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, residual)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -128,6 +120,11 @@ test("tailwind -> css-modules: carries a documented secondary tailwind API expli
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -151,8 +148,8 @@ test("tailwind -> css-modules: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,26 +173,18 @@ test("tailwind -> css-modules: loads concrete theme and project context variants
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,21 +208,13 @@ test("tailwind -> css-modules: loads concrete theme and project context variants
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -249,8 +230,8 @@ test("tailwind -> css-modules: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		  "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -274,21 +255,13 @@ test("tailwind -> css-modules: resolves concrete token values with project conte
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -301,8 +274,8 @@ test("tailwind -> css-modules: preserves malformed concrete tailwind input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: validation)
-		<div className="[display:flex] [align-items:center] [gap:1rem]" />;
+		  "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | available: static, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -327,21 +300,13 @@ test("tailwind -> css-modules: preserves malformed concrete tailwind input", () 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "3 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "3 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });

@@ -50,8 +50,8 @@ test("panda -> react-native -> panda: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -92,8 +92,8 @@ test("panda -> react-native -> panda: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -119,8 +119,8 @@ test("panda -> react-native -> panda: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> react-native | lowering-residual: composition | available: named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> react-native | lowering-residual: composition | available: named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -162,8 +162,8 @@ test("panda -> react-native -> panda: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> react-native | lowering-residual: composition | available: named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> react-native | lowering-residual: composition | available: named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -365,8 +365,8 @@ test("panda -> react-native -> panda: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -402,8 +402,8 @@ test("panda -> react-native -> panda: resolves token values across both concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> react-native | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

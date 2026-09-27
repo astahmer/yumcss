@@ -47,53 +47,8 @@ test("unocss -> treat: migrates concrete unocss syntax to treat", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
-		export const App = () => <div className={style({ "gap": "1rem", "alignItems": "center", "display": "flex" })}/>;",
-		  "converted": 1,
-		  "generatedFiles": [],
-		  "loweringPlans": [
-		    {
-		      "applied": [
-		        "dynamic-and-theme",
-		      ],
-		      "availableRepresentations": [
-		        "static",
-		        "named-map",
-		        "residual",
-		      ],
-		      "representation": "static",
-		      "residuals": [],
-		    },
-		  ],
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`)
-});
-
-test("unocss -> treat: carries a documented secondary unocss API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
-	expectRouteScenarioEvidence(result, "unocss -> treat secondary");
-	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> treat | lowering-residual: validation)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -118,21 +73,58 @@ test("unocss -> treat: carries a documented secondary unocss API explicitly", ()
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
+		  "validations": [],
+		}
+	`)
+});
+
+test("unocss -> treat: carries a documented secondary unocss API explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(result, "unocss -> treat secondary");
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
+		  "converted": 0,
+		  "generatedFiles": [],
+		  "loweringPlans": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
+		      "applied": [
+		        "dynamic-and-theme",
 		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "availableRepresentations": [
+		        "static",
+		        "named-map",
+		        "residual",
+		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -153,9 +145,9 @@ test("unocss -> treat: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
-		export const App = () => <div className={style({ "padding": "1.125rem", "color": "#f97316" })}/>;",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -173,25 +165,25 @@ test("unocss -> treat: loads concrete theme and project context variants", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
-		export const App = () => <div className={style({ "padding": "1.125rem", "color": "#2563eb" })}/>;",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -209,19 +201,19 @@ test("unocss -> treat: loads concrete theme and project context variants", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -237,9 +229,9 @@ test("unocss -> treat: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
-		export const App = () => <div className={style({ "padding": "1.125rem", "color": "#2563eb" })}/>;",
-		  "converted": 1,
+		  "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -257,19 +249,19 @@ test("unocss -> treat: resolves concrete token values with project context", asy
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -282,10 +274,10 @@ test("unocss -> treat: preserves malformed concrete unocss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
-		export const App = () => <div className={style({ "gap": "1rem", "alignItems": "center", "display": "flex" })}/>;
+		  "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
 		const unfinished = { /* unfinished unocss */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -303,19 +295,19 @@ test("unocss -> treat: preserves malformed concrete unocss input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

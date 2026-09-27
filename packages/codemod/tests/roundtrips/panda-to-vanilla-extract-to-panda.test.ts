@@ -30,8 +30,8 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Panda, CodemodAd
 	const targetSemantic = undefined;
 
 test("panda -> vanilla-extract -> panda: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("panda -> vanilla-extract -> panda: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -91,8 +91,8 @@ test("panda -> vanilla-extract -> panda: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
-		css({ color: "red.300", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -106,8 +106,8 @@ test("panda -> vanilla-extract -> panda: preserves an actionable concrete round 
 });
 
 test("panda -> vanilla-extract -> panda: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+	const first = forward.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "panda -> vanilla-extract round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -118,8 +118,8 @@ test("panda -> vanilla-extract -> panda: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -165,8 +165,8 @@ test("panda -> vanilla-extract -> panda: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		export const button = // pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
-		cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -180,10 +180,10 @@ test("panda -> vanilla-extract -> panda: retains the documented secondary API wi
 });
 
 test("panda -> vanilla-extract -> panda: preserves concrete theme and project context variants", async () => {
-	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.css.ts", semantic: amberTargetSemantic, project: amberProject });
+	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Panda, CodemodAdapterId.VanillaExtract);
@@ -206,8 +206,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,8 +251,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -266,8 +266,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,8 +311,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
-		css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | lowering-residual: validation)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -327,8 +327,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 });
 
 test("panda -> vanilla-extract -> panda: resolves token values across both concrete legs", async () => {
-	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
+	const first = await forward.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Panda, CodemodAdapterId.VanillaExtract);
 	expectRouteScenarioEvidence(first, "panda -> vanilla-extract round-trip token forward");
@@ -340,8 +340,8 @@ test("panda -> vanilla-extract -> panda: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -376,8 +376,8 @@ test("panda -> vanilla-extract -> panda: resolves token values across both concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
-		css({ color: "#2563eb", _hover: { color: "blue.300" } });",
+		// pandwind:migrate-skip (route: panda -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ color: "#2563eb", _hover: { color: "blue.300" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

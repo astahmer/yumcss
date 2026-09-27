@@ -86,8 +86,8 @@ test("style9 -> vue-styled -> style9: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "red" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,9 +173,9 @@ test("style9 -> vue-styled -> style9: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "red" }), "muted": // pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "opacity": 0.5 }) };",
+		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "red" }), "muted": styled.div({ "opacity": 0.5 }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -297,8 +297,8 @@ test("style9 -> vue-styled -> style9: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -372,8 +372,8 @@ test("style9 -> vue-styled -> style9: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -461,8 +461,8 @@ test("style9 -> vue-styled -> style9: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

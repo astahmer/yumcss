@@ -48,8 +48,8 @@ test("treat -> mantine: migrates concrete treat syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,8 +105,8 @@ test("treat -> mantine: carries a documented secondary treat API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -171,8 +171,8 @@ test("treat -> mantine: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,8 +219,8 @@ test("treat -> mantine: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -279,8 +279,8 @@ test("treat -> mantine: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -336,8 +336,8 @@ test("treat -> mantine: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "red", padding: 8 });
+		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 0,
 		  "generatedFiles": [],

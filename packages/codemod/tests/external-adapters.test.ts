@@ -1052,7 +1052,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 	test("projects a Pandwind class binding onto MUI's sx host prop", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\n' +
+			'import { Box } from "@mui/material";\n' +
+				'import { css } from "pandwind/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <Box className={card} />;",
 			{ from: "pandwind", to: "mui", file: "Card.tsx", mode: "safe" },
@@ -1080,7 +1081,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect.arrayContaining([
 				expect.objectContaining({
 					kind: "host-framework",
-					hint: expect.stringContaining("MUI sx styles require a host component prop"),
+					hint: expect.stringContaining("MUI-owned component"),
 				}),
 			]),
 		);
@@ -1149,21 +1150,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("String(theme.foreground)");
 	});
 
-	test("lowers a function-valued styled subject through a static class and host wrapper", () => {
+	test("preserves a function-valued styled subject when Vanilla Extract needs a separate module", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
 				"const Card = styled.div((props) => ({ color: props.color }));\n" +
 				'export const App = () => <Card color="red" />;',
 			{ from: "styled-components", to: "vanilla-extract", file: "Card.tsx", mode: "safe" },
 		);
-		expect(result.converted).toBe(1);
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("var(--pandwind-dynamic-");
-		expect(result.code).toContain("(props) => props.color");
-		expect(result.code).toContain("style={{");
-		expect(result.code).toContain("props.color)(props)");
-		expect(result.code).toContain("...props.style");
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+		);
+		expect(result.code).toContain("styled.div((props)");
+		expect(result.code).toContain('<Card color="red" />');
 	});
 
 	test("keeps a function-valued subject residual on a target without a function carrier", () => {
@@ -1268,7 +1268,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		(target, carrier, targetImport) => {
 			const result = runAdapterMigration(
 				'import styled from "styled-components";\nconst Card = styled.div({ color: "red" });',
-				{ from: "styled-components", to: target, file: "Card.tsx", mode: "safe" },
+				{
+					from: "styled-components",
+					to: target,
+					file: target === "vanilla-extract" ? "Card.css.ts" : "Card.tsx",
+					mode: "safe",
+				},
 			);
 			expect(result.converted).toBe(1);
 			expect(result.skipped).toBe(0);
@@ -1484,13 +1489,26 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test.each(["mui", "tokenami"] as const)(
-		"normalizes Mantine spacing aliases before cross-adapter validation (%s)",
+		"normalizes Mantine property aliases before cross-adapter validation (%s)",
 		(target) => {
-			const result = runAdapterMigration(
+			const source =
 				'import { Box } from "@mantine/core";\n' +
-					'export function Card() { return <Box c="red" p="md" />; }',
-				{ from: "mantine", to: target, file: "Card.tsx", mode: "safe" },
-			);
+				'export function Card() { return <Box c="red" p="16px" />; }';
+			const result = runAdapterMigration(source, {
+				from: "mantine",
+				to: target,
+				file: "Card.tsx",
+				mode: "safe",
+			});
+			if (target === "mui") {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBe(1);
+				expect(result.residuals).toEqual(
+					expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+				);
+				expect(result.code.replace(/^\/\/ pandwind:migrate-skip[^\r\n]*\r?\n/gmu, "")).toBe(source);
+				return;
+			}
 			expect(result.converted).toBe(1);
 			expect(result.skipped).toBe(0);
 			expect(result.residuals).toEqual([]);
@@ -1940,7 +1958,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 			const result = runAdapterMigration(
 				`import { globalCss } from "@stitches/react";\n` +
 					`globalCss({ body: { margin: 0 }, button: { color: "red" } });`,
-				{ from: "stitches", to: target, file: "global.ts", mode: "safe" },
+				{
+					from: "stitches",
+					to: target,
+					file: target === "vanilla-extract" ? "global.css.ts" : "global.ts",
+					mode: "safe",
+				},
 			);
 			if (target === "stitches") {
 				expect(result.changed).toBe(false);
@@ -1959,7 +1982,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const result = runAdapterMigration(
 			'import { globalCss } from "@stitches/react";\n' +
 				'globalCss({ body: { margin: 0 }, button: { color: "red" } });',
-			{ from: "stitches", to: "vanilla-extract", file: "global.ts", mode: "safe" },
+			{ from: "stitches", to: "vanilla-extract", file: "global.css.ts", mode: "safe" },
 		);
 
 		expect(result.converted).toBe(1);

@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Style9, CodemodA
 
 test("style9 -> solid-styled -> style9: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -86,8 +86,8 @@ test("style9 -> solid-styled -> style9: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		styled.div({ "color": "red" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -126,7 +126,7 @@ test("style9 -> solid-styled -> style9: preserves an actionable concrete round t
 
 test("style9 -> solid-styled -> style9: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "style9 -> solid-styled round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -173,9 +173,9 @@ test("style9 -> solid-styled -> style9: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		styled.div({ "color": "red" }), "muted": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		styled.div({ "opacity": 0.5 }) };",
+		// pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "red" }), "muted": styled.div({ "opacity": 0.5 }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,9 +235,9 @@ test("style9 -> solid-styled -> style9: retains the documented secondary API wit
 
 test("style9 -> solid-styled -> style9: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.SolidStyled);
@@ -297,8 +297,8 @@ test("style9 -> solid-styled -> style9: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -372,8 +372,8 @@ test("style9 -> solid-styled -> style9: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -413,7 +413,7 @@ test("style9 -> solid-styled -> style9: preserves concrete theme and project con
 
 test("style9 -> solid-styled -> style9: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Style9, CodemodAdapterId.SolidStyled);
 	expectRouteScenarioEvidence(first, "style9 -> solid-styled round-trip token forward");
@@ -461,8 +461,8 @@ test("style9 -> solid-styled -> style9: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		styled.div({ "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

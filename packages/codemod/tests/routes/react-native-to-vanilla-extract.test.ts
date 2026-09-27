@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, Code
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ReactNative, CodemodAdapterId.VanillaExtract, "#f97316");
 
 test("react-native -> vanilla-extract: migrates concrete react-native syntax to vanilla-extract", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -85,7 +85,7 @@ test("react-native -> vanilla-extract: migrates concrete react-native syntax to 
 });
 
 test("react-native -> vanilla-extract: carries a documented secondary react-native API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "react-native -> vanilla-extract secondary");
 	expectExplicitResidualEvidence(result);
@@ -130,8 +130,8 @@ test("react-native -> vanilla-extract: carries a documented secondary react-nati
 });
 
 test("react-native -> vanilla-extract: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.VanillaExtract);
@@ -221,7 +221,7 @@ test("react-native -> vanilla-extract: loads concrete theme and project context 
 });
 
 test("react-native -> vanilla-extract: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ReactNative, CodemodAdapterId.VanillaExtract);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.VanillaExtract, "react-native -> vanilla-extract token config");
@@ -268,7 +268,7 @@ test("react-native -> vanilla-extract: resolves concrete token values with proje
 });
 
 test("react-native -> vanilla-extract: preserves malformed concrete react-native input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished react-native */");
 	expectRouteScenarioEvidence(result, "react-native -> vanilla-extract malformed");
 	expectExplicitResidualEvidence(result);

@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, Codemod
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, CodemodAdapterId.Treat, "#f97316");
 
 test("pandwind -> treat: migrates concrete pandwind syntax to treat", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -47,7 +47,7 @@ test("pandwind -> treat: migrates concrete pandwind syntax to treat", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 
 		export const card = style({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
@@ -86,7 +86,7 @@ test("pandwind -> treat: migrates concrete pandwind syntax to treat", () => {
 });
 
 test("pandwind -> treat: carries a documented secondary pandwind API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "pandwind -> treat secondary");
 	expectExplicitResidualEvidence(result);
@@ -94,8 +94,9 @@ test("pandwind -> treat: carries a documented secondary pandwind API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> treat | lowering-residual: validation)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> treat | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -140,8 +141,8 @@ test("pandwind -> treat: carries a documented secondary pandwind API explicitly"
 });
 
 test("pandwind -> treat: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Pandwind, CodemodAdapterId.Treat);
@@ -155,7 +156,7 @@ test("pandwind -> treat: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 
 		export const card = style({ "padding": "1rem", "color": "#f97316" });",
 		    "converted": 1,
@@ -193,7 +194,7 @@ test("pandwind -> treat: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		    "converted": 1,
@@ -234,7 +235,7 @@ test("pandwind -> treat: loads concrete theme and project context variants", asy
 });
 
 test("pandwind -> treat: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Pandwind, CodemodAdapterId.Treat);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.Treat, "pandwind -> treat token config");
@@ -243,7 +244,7 @@ test("pandwind -> treat: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 
 		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
 		  "converted": 1,
@@ -282,14 +283,14 @@ test("pandwind -> treat: resolves concrete token values with project context", a
 });
 
 test("pandwind -> treat: preserves malformed concrete pandwind input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.treat.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished pandwind */");
 	expectRouteScenarioEvidence(result, "pandwind -> treat malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
+		  "code": "import { style } from "treat";
 
 		export const card = style({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished pandwind */",

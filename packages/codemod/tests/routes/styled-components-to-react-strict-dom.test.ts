@@ -48,8 +48,8 @@ test("styled-components -> react-strict-dom: migrates concrete styled-components
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div({ color: "red", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,8 +94,8 @@ test("styled-components -> react-strict-dom: carries a documented secondary styl
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,8 +149,8 @@ test("styled-components -> react-strict-dom: loads concrete theme and project co
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,8 +186,8 @@ test("styled-components -> react-strict-dom: loads concrete theme and project co
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,8 +235,8 @@ test("styled-components -> react-strict-dom: resolves concrete token values with
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,8 +281,8 @@ test("styled-components -> react-strict-dom: preserves malformed concrete styled
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div({ color: "red", padding: "1rem" });
+		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 0,
 		  "generatedFiles": [],

@@ -47,7 +47,7 @@ test("less -> authored-css: migrates concrete less syntax to authored-css", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -72,7 +72,7 @@ test("less -> authored-css: migrates concrete less syntax to authored-css", () =
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "preprocessor features require the official compiler to inline before authored-css output",
+		      "hint": "renaming card.less to card.css requires updating project imports",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -91,7 +91,7 @@ test("less -> authored-css: carries a documented secondary less API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		@brand: red;
 		.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
@@ -116,7 +116,12 @@ test("less -> authored-css: carries a documented secondary less API explicitly",
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "preprocessor features require the official compiler to inline before authored-css output",
+		      "hint": "stylesheet statement is preserved outside the style program",
+		      "kind": "parse",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "renaming card.less to card.css requires updating project imports",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -143,7 +148,7 @@ test("less -> authored-css: loads concrete theme and project context variants", 
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
+		    "changed": true,
 		    "code": ".card { color: #2563eb; padding: 1rem; }",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +182,7 @@ test("less -> authored-css: loads concrete theme and project context variants", 
 		    ],
 		  },
 		  "blue": {
-		    "changed": false,
+		    "changed": true,
 		    "code": ".card { color: #2563eb; padding: 1rem; }",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +228,7 @@ test("less -> authored-css: resolves concrete token values with project context"
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
+		  "changed": true,
 		  "code": ".card { color: #2563eb; padding: 1rem; }",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -267,7 +272,7 @@ test("less -> authored-css: preserves malformed concrete less input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished less */",
 		  "converted": 0,
@@ -293,7 +298,12 @@ test("less -> authored-css: preserves malformed concrete less input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "preprocessor features require the official compiler to inline before authored-css output",
+		      "hint": "stylesheet block is unbalanced",
+		      "kind": "parse",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "renaming card.less to card.css requires updating project imports",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

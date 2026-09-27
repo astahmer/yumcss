@@ -48,9 +48,9 @@ test("mui -> vanilla-extract: migrates concrete mui syntax to vanilla-extract", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ padding: "16px", color: "red" })}/>;",
-		  "converted": 1,
+		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -68,19 +68,19 @@ test("mui -> vanilla-extract: migrates concrete mui syntax to vanilla-extract", 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -93,9 +93,10 @@ test("mui -> vanilla-extract: carries a documented secondary mui API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const Card = style({ padding: 8, color: "red" });",
-		  "converted": 1,
+		  "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -113,19 +114,19 @@ test("mui -> vanilla-extract: carries a documented secondary mui API explicitly"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -147,9 +148,9 @@ test("mui -> vanilla-extract: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ padding: "16px", color: "#f97316" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -167,26 +168,26 @@ test("mui -> vanilla-extract: loads concrete theme and project context variants"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ padding: "16px", color: "#2563eb" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -204,19 +205,19 @@ test("mui -> vanilla-extract: loads concrete theme and project context variants"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -233,9 +234,9 @@ test("mui -> vanilla-extract: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ padding: "16px", color: "#2563eb" })}/>;",
-		  "converted": 1,
+		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -253,19 +254,19 @@ test("mui -> vanilla-extract: resolves concrete token values with project contex
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -279,10 +280,10 @@ test("mui -> vanilla-extract: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ padding: "16px", color: "red" })}/>;
+		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;
 		const unfinished = { /* unfinished mui */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -300,19 +301,19 @@ test("mui -> vanilla-extract: preserves malformed concrete mui input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

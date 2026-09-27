@@ -134,8 +134,8 @@ test("linaria -> tokenami -> linaria: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-		export const Card = // pandwind:migrate-skip (route: linaria -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: linaria -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,8 +169,8 @@ test("linaria -> tokenami -> linaria: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@linaria/react";
-		export const Card = // pandwind:migrate-skip (route: linaria -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: linaria -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -317,8 +317,8 @@ test("linaria -> tokenami -> linaria: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> linaria | lowering-residual: validation)
-		css({ padding: "1rem", color: "$colors.brand" });",
+		// pandwind:migrate-skip (route: tokenami -> linaria | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -412,8 +412,8 @@ test("linaria -> tokenami -> linaria: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> linaria | lowering-residual: validation)
-		css({ padding: "1rem", color: "$colors.brand" });",
+		// pandwind:migrate-skip (route: tokenami -> linaria | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

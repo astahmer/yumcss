@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodA
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Linaria, CodemodAdapterId.VanillaExtract, "#f97316");
 
 test("linaria -> vanilla-extract: migrates concrete linaria syntax to vanilla-extract", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -85,7 +85,7 @@ test("linaria -> vanilla-extract: migrates concrete linaria syntax to vanilla-ex
 });
 
 test("linaria -> vanilla-extract: carries a documented secondary linaria API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "linaria -> vanilla-extract secondary");
 	expectExplicitResidualEvidence(result);
@@ -93,8 +93,8 @@ test("linaria -> vanilla-extract: carries a documented secondary linaria API exp
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@linaria/react";
-		export const Card = // pandwind:migrate-skip (route: linaria -> vanilla-extract | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: linaria -> vanilla-extract | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -131,8 +131,8 @@ test("linaria -> vanilla-extract: carries a documented secondary linaria API exp
 });
 
 test("linaria -> vanilla-extract: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Linaria, CodemodAdapterId.VanillaExtract);
@@ -222,7 +222,7 @@ test("linaria -> vanilla-extract: loads concrete theme and project context varia
 });
 
 test("linaria -> vanilla-extract: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Linaria, CodemodAdapterId.VanillaExtract);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.VanillaExtract, "linaria -> vanilla-extract token config");
@@ -269,7 +269,7 @@ test("linaria -> vanilla-extract: resolves concrete token values with project co
 });
 
 test("linaria -> vanilla-extract: preserves malformed concrete linaria input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished linaria */");
 	expectRouteScenarioEvidence(result, "linaria -> vanilla-extract malformed");
 	expectExplicitResidualEvidence(result);

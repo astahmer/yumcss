@@ -91,8 +91,9 @@ test("pandwind -> tamagui: carries a documented secondary pandwind API explicitl
 		{
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-conditions: named: card | available: static, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-conditions: named: card | available: static, residual)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

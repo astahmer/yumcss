@@ -48,8 +48,8 @@ test("chakra-ui -> less: migrates concrete chakra-ui syntax to less", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: validation)
-		<Box bg="red.200" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box bg="red.200" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -73,21 +73,13 @@ test("chakra-ui -> less: migrates concrete chakra-ui syntax to less", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -101,8 +93,8 @@ test("chakra-ui -> less: carries a documented secondary chakra-ui API explicitly
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: framework-semantics | available: residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: framework-semantics, capability | available: residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -141,6 +133,11 @@ test("chakra-ui -> less: carries a documented secondary chakra-ui API explicitly
 		      "kind": "framework-semantics",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -165,8 +162,8 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,27 +187,19 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,21 +223,13 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -265,8 +246,8 @@ test("chakra-ui -> less: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: validation)
-		<Box bg="#2563eb" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box bg="#2563eb" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -290,21 +271,13 @@ test("chakra-ui -> less: resolves concrete token values with project context", a
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -318,8 +291,8 @@ test("chakra-ui -> less: preserves malformed concrete chakra-ui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: validation)
-		<Box bg="red.200" p="4" />;
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box bg="red.200" p="4" />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -344,21 +317,13 @@ test("chakra-ui -> less: preserves malformed concrete chakra-ui input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });

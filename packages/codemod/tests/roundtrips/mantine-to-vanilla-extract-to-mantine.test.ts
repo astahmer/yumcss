@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Mantine, Codemod
 
 test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,8 +50,8 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: configuration | lowering-residual: capability | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -79,6 +79,11 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 		        "kind": "configuration",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -86,8 +91,8 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: configuration | lowering-residual: capability | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -102,7 +107,7 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 
 test("mantine -> vanilla-extract -> mantine: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "mantine -> vanilla-extract round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -113,8 +118,8 @@ test("mantine -> vanilla-extract -> mantine: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -142,6 +147,11 @@ test("mantine -> vanilla-extract -> mantine: retains the documented secondary AP
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -149,8 +159,8 @@ test("mantine -> vanilla-extract -> mantine: retains the documented secondary AP
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -165,9 +175,9 @@ test("mantine -> vanilla-extract -> mantine: retains the documented secondary AP
 
 test("mantine -> vanilla-extract -> mantine: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.css.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.VanillaExtract);
@@ -190,9 +200,9 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -210,62 +220,41 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -283,53 +272,32 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -338,7 +306,7 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 
 test("mantine -> vanilla-extract -> mantine: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mantine, CodemodAdapterId.VanillaExtract);
 	expectRouteScenarioEvidence(first, "mantine -> vanilla-extract round-trip token forward");
@@ -350,9 +318,9 @@ test("mantine -> vanilla-extract -> mantine: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box className={style({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -370,53 +338,32 @@ test("mantine -> vanilla-extract -> mantine: resolves token values across both c
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

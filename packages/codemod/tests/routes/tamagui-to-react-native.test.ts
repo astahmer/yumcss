@@ -48,8 +48,8 @@ test("tamagui -> react-native: migrates concrete tamagui syntax to react-native"
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "red", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -96,8 +96,8 @@ test("tamagui -> react-native: carries a documented secondary tamagui API explic
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | parse-residual: function-dynamic | lowering-residual: host-framework | capability-blocked: components: component subject: View | available: named-map, residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> react-native | parse-residual: function-dynamic | lowering-residual: host-framework | capability-blocked: components: component subject: View | available: named-map, residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -161,8 +161,8 @@ test("tamagui -> react-native: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -200,8 +200,8 @@ test("tamagui -> react-native: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -251,8 +251,8 @@ test("tamagui -> react-native: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -299,8 +299,8 @@ test("tamagui -> react-native: preserves malformed concrete tamagui input", () =
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "red", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 0,

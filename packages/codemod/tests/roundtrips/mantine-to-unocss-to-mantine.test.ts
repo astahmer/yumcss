@@ -50,8 +50,8 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | parse-residual: configuration | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,8 +86,8 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | parse-residual: configuration | available: named-map, residual)
-		<Box c="blue.6" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | parse-residual: configuration | available: named-map, residual)
+		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -113,8 +113,8 @@ test("mantine -> unocss -> mantine: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> unocss | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | parse-residual: host-framework | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -149,8 +149,8 @@ test("mantine -> unocss -> mantine: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		export const App = () => <Button // pandwind:migrate-skip (route: mantine -> unocss | parse-residual: host-framework | available: named-map, residual)
-		styles={{ root: { color: "red" } }} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | parse-residual: host-framework | available: named-map, residual)
+		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -190,8 +190,8 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -236,8 +236,8 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -251,8 +251,8 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -297,8 +297,8 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		<Box c="brand.0" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -326,8 +326,8 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		<Box c="#2563eb" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -372,8 +372,8 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
-		<Box c="#2563eb" mx="auto" maw={400} />;",
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		export const App = () => <Box c="#2563eb" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

@@ -48,8 +48,8 @@ test("style9 -> authored-css: migrates concrete style9 syntax to authored-css", 
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "red" } });",
+		// pandwind:migrate-skip (route: style9 -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -60,7 +60,6 @@ test("style9 -> authored-css: migrates concrete style9 syntax to authored-css", 
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -69,12 +68,17 @@ test("style9 -> authored-css: migrates concrete style9 syntax to authored-css", 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -94,8 +98,8 @@ test("style9 -> authored-css: carries a documented secondary style9 API explicit
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		// pandwind:migrate-skip (route: style9 -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -106,7 +110,6 @@ test("style9 -> authored-css: carries a documented secondary style9 API explicit
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -115,12 +118,17 @@ test("style9 -> authored-css: carries a documented secondary style9 API explicit
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -149,8 +157,8 @@ test("style9 -> authored-css: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -161,7 +169,6 @@ test("style9 -> authored-css: loads concrete theme and project context variants"
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -170,12 +177,17 @@ test("style9 -> authored-css: loads concrete theme and project context variants"
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -186,8 +198,8 @@ test("style9 -> authored-css: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -198,7 +210,6 @@ test("style9 -> authored-css: loads concrete theme and project context variants"
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -207,12 +218,17 @@ test("style9 -> authored-css: loads concrete theme and project context variants"
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -235,8 +251,8 @@ test("style9 -> authored-css: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -247,7 +263,6 @@ test("style9 -> authored-css: resolves concrete token values with project contex
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -256,12 +271,17 @@ test("style9 -> authored-css: resolves concrete token values with project contex
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -281,8 +301,8 @@ test("style9 -> authored-css: preserves malformed concrete style9 input", () => 
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> authored-css | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		style9.create({ card: { color: "red" } });
+		// pandwind:migrate-skip (route: style9 -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "red" } });
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -294,7 +314,6 @@ test("style9 -> authored-css: preserves malformed concrete style9 input", () => 
 		      "availableRepresentations": [
 		        "static",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -303,12 +322,17 @@ test("style9 -> authored-css: preserves malformed concrete style9 input", () => 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

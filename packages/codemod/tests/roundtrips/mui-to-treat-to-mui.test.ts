@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdap
 
 test("mui -> treat -> mui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -50,51 +50,15 @@ test("mui -> treat -> mui: preserves an actionable concrete round trip", () => {
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "padding": "16px", "color": "red" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
 		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		style({ "padding": "16px", "color": "red" })}/>;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
 		        "availableRepresentations": [
 		          "static",
 		          "named-map",
@@ -112,12 +76,25 @@ test("mui -> treat -> mui: preserves an actionable concrete round trip", () => {
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
-		        "kind": "host-framework",
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { Box } from "@mui/material";
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -126,7 +103,7 @@ test("mui -> treat -> mui: preserves an actionable concrete round trip", () => {
 
 test("mui -> treat -> mui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "mui -> treat round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -136,9 +113,10 @@ test("mui -> treat -> mui: retains the documented secondary API without silent l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
-		export const Card = style({ "padding": 8, "color": "red" });",
-		    "converted": 1,
+		    "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -156,55 +134,32 @@ test("mui -> treat -> mui: retains the documented secondary API without silent l
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -212,9 +167,9 @@ test("mui -> treat -> mui: retains the documented secondary API without silent l
 
 test("mui -> treat -> mui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.treat.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Treat);
@@ -237,9 +192,9 @@ test("mui -> treat -> mui: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "padding": "16px", "color": "#f97316" })}/>;",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -257,54 +212,31 @@ test("mui -> treat -> mui: preserves concrete theme and project context variants
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		style({ "padding": "16px", "color": "#f97316" })}/>;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
 		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
-		          "kind": "host-framework",
+		          "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { Box } from "@mui/material";
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -312,9 +244,9 @@ test("mui -> treat -> mui: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "padding": "16px", "color": "#2563eb" })}/>;",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -332,54 +264,31 @@ test("mui -> treat -> mui: preserves concrete theme and project context variants
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		style({ "padding": "16px", "color": "#2563eb" })}/>;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
 		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
-		          "kind": "host-framework",
+		          "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { Box } from "@mui/material";
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -389,7 +298,7 @@ test("mui -> treat -> mui: preserves concrete theme and project context variants
 
 test("mui -> treat -> mui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Treat);
 	expectRouteScenarioEvidence(first, "mui -> treat round-trip token forward");
@@ -401,9 +310,9 @@ test("mui -> treat -> mui: resolves token values across both concrete legs", asy
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={style({ "padding": "16px", "color": "#2563eb" })}/>;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -421,54 +330,31 @@ test("mui -> treat -> mui: resolves token values across both concrete legs", asy
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { style } from "@/styles.treat";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		style({ "padding": "16px", "color": "#2563eb" })}/>;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
-		        "kind": "host-framework",
+		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { Box } from "@mui/material";
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

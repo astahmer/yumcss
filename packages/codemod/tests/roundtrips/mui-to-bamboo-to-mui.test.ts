@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdap
 
 test("mui -> bamboo -> mui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -86,8 +86,8 @@ test("mui -> bamboo -> mui: preserves an actionable concrete round trip", () => 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css({ padding: "16px", color: "red" })}/>;",
+		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -124,7 +124,7 @@ test("mui -> bamboo -> mui: preserves an actionable concrete round trip", () => 
 
 test("mui -> bamboo -> mui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "mui -> bamboo round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -208,9 +208,9 @@ test("mui -> bamboo -> mui: retains the documented secondary API without silent 
 
 test("mui -> bamboo -> mui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Bamboo);
@@ -269,8 +269,8 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css({ padding: "16px", color: "#f97316" })}/>;",
+		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box className={css({ padding: "16px", color: "#f97316" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -342,8 +342,8 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css({ padding: "16px", color: "#2563eb" })}/>;",
+		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -381,7 +381,7 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 
 test("mui -> bamboo -> mui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Bamboo);
 	expectRouteScenarioEvidence(first, "mui -> bamboo round-trip token forward");
@@ -429,8 +429,8 @@ test("mui -> bamboo -> mui: resolves token values across both concrete legs", as
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css({ padding: "16px", color: "#2563eb" })}/>;",
+		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

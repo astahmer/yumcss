@@ -48,8 +48,8 @@ test("solid-styled -> authored-css: migrates concrete solid-styled syntax to aut
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -60,7 +60,6 @@ test("solid-styled -> authored-css: migrates concrete solid-styled syntax to aut
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -74,7 +73,7 @@ test("solid-styled -> authored-css: migrates concrete solid-styled syntax to aut
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -86,6 +85,11 @@ test("solid-styled -> authored-css: migrates concrete solid-styled syntax to aut
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -104,8 +108,8 @@ test("solid-styled -> authored-css: carries a documented secondary solid-styled 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -116,7 +120,6 @@ test("solid-styled -> authored-css: carries a documented secondary solid-styled 
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -130,7 +133,7 @@ test("solid-styled -> authored-css: carries a documented secondary solid-styled 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -142,6 +145,11 @@ test("solid-styled -> authored-css: carries a documented secondary solid-styled 
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -169,8 +177,8 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,7 +189,6 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		        ],
 		        "availableRepresentations": [
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "residual",
 		        "residuals": [
@@ -195,7 +202,7 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
@@ -207,6 +214,11 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		      {
 		        "hint": "target lacks framework semantics",
 		        "kind": "framework-semantics",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -216,8 +228,8 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +240,6 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		        ],
 		        "availableRepresentations": [
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "residual",
 		        "residuals": [
@@ -242,7 +253,7 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
@@ -254,6 +265,11 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		      {
 		        "hint": "target lacks framework semantics",
 		        "kind": "framework-semantics",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -275,8 +291,8 @@ test("solid-styled -> authored-css: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -287,7 +303,6 @@ test("solid-styled -> authored-css: resolves concrete token values with project 
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -301,7 +316,7 @@ test("solid-styled -> authored-css: resolves concrete token values with project 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -313,6 +328,11 @@ test("solid-styled -> authored-css: resolves concrete token values with project 
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -331,8 +351,8 @@ test("solid-styled -> authored-css: preserves malformed concrete solid-styled in
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics | capability-blocked: components: component subject: styled.div | available: residual, portable-artifact)
-		styled.div\`color: red; padding: 1rem;\`;
+		// pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -344,7 +364,6 @@ test("solid-styled -> authored-css: preserves malformed concrete solid-styled in
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -358,7 +377,7 @@ test("solid-styled -> authored-css: preserves malformed concrete solid-styled in
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -370,6 +389,11 @@ test("solid-styled -> authored-css: preserves malformed concrete solid-styled in
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],

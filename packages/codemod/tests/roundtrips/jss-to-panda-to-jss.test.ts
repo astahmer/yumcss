@@ -339,8 +339,8 @@ test("jss -> panda -> jss: preserves concrete theme and project context variants
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: panda -> jss | lowering-residual: validation)
-		css({ color: "brand.500" }) };",
+		// pandwind:migrate-skip (route: panda -> jss | lowering-residual: validation)
+		export const useStyles = { "card": css({ color: "brand.500" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -434,8 +434,8 @@ test("jss -> panda -> jss: resolves token values across both concrete legs", asy
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: panda -> jss | lowering-residual: validation)
-		css({ color: "brand.500" }) };",
+		// pandwind:migrate-skip (route: panda -> jss | lowering-residual: validation)
+		export const useStyles = { "card": css({ color: "brand.500" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

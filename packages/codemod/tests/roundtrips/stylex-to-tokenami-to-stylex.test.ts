@@ -339,8 +339,8 @@ test("stylex -> tokenami -> stylex: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: tokenami -> stylex | lowering-residual: validation)
-		css({ padding: "8px", color: "$colors.brand" }) };",
+		// pandwind:migrate-skip (route: tokenami -> stylex | lowering-residual: validation)
+		export const styles = { "card": css({ padding: "8px", color: "$colors.brand" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -434,8 +434,8 @@ test("stylex -> tokenami -> stylex: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: tokenami -> stylex | lowering-residual: validation)
-		css({ padding: "8px", color: "$colors.brand" }) };",
+		// pandwind:migrate-skip (route: tokenami -> stylex | lowering-residual: validation)
+		export const styles = { "card": css({ padding: "8px", color: "$colors.brand" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

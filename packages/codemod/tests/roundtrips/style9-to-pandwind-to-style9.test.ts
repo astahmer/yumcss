@@ -89,8 +89,9 @@ test("style9 -> pandwind -> style9: preserves an actionable concrete round trip"
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		css.group({ card: { color: "red" } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,8 +188,9 @@ test("style9 -> pandwind -> style9: retains the documented secondary API without
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -300,8 +302,9 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		css.group({ card: { color: "#2563eb" } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -386,8 +389,9 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		css.group({ card: { color: "brand" } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "brand" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -487,8 +491,9 @@ test("style9 -> pandwind -> style9: resolves token values across both concrete l
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		css.group({ card: { color: "brand" } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "brand" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

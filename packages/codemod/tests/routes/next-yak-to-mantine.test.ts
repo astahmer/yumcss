@@ -48,8 +48,8 @@ test("next-yak -> mantine: migrates concrete next-yak syntax to mantine", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -156,8 +156,8 @@ test("next-yak -> mantine: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -204,8 +204,8 @@ test("next-yak -> mantine: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -264,8 +264,8 @@ test("next-yak -> mantine: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -321,8 +321,8 @@ test("next-yak -> mantine: preserves malformed concrete next-yak input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: red; padding: 1rem;\`;
+		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 0,
 		  "generatedFiles": [],

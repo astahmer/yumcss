@@ -346,8 +346,9 @@ test("stylex -> pandwind -> stylex: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: pandwind -> stylex | lowering-residual: validation)
-		css.class({ padding: "8px", color: "brand" }) };",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> stylex | lowering-residual: validation)
+		export const styles = { "card": css.class({ padding: "8px", color: "brand" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -442,8 +443,9 @@ test("stylex -> pandwind -> stylex: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: pandwind -> stylex | lowering-residual: validation)
-		css.class({ padding: "8px", color: "brand" }) };",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> stylex | lowering-residual: validation)
+		export const styles = { "card": css.class({ padding: "8px", color: "brand" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

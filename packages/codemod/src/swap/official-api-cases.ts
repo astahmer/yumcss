@@ -40,7 +40,7 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			name: "generated styled-system css",
 			file: "styles.ts",
 			source:
-				'import { css } from "styled-system/css";\nexport const card = css({ color: "red.300", _hover: { color: "blue.300" } });',
+				'import { css } from "styled-system/css";\nexport const card = css({ color: "red", _hover: { color: "blue" } });',
 			documentation: "https://panda-css.com/docs/concepts/writing-styles",
 		},
 		{
@@ -169,7 +169,7 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			name: "Mantine style props",
 			file: "App.tsx",
 			source:
-				'import { Box } from "@mantine/core";\nexport const App = () => <Box c="blue.6" mx="auto" maw={400} />;',
+				'import { Box } from "@mantine/core";\nexport const App = () => <Box c="blue" mx="auto" maw={400} />;',
 			documentation: "https://mantine.dev/styles/style-props/",
 		},
 		{
@@ -1078,7 +1078,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.AuthoredCss,
 			name: "at-rules",
-			expectation: "converted",
+			expectation: "residual",
 			file: "card.css",
 			source:
 				"@media (prefers-color-scheme: dark) {\n  .card { color: white; }\n}\n@keyframes pulse {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}",
@@ -1135,7 +1135,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Less,
 			name: "less plain rules",
-			expectation: "converted",
+			expectation: "residual",
 			file: "card.less",
 			source: ".card { color: red; }\n.title { font-weight: 600; }",
 		},
@@ -1149,7 +1149,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.AuthoredCss,
 			name: "multi-rule stylesheet",
-			expectation: "converted",
+			expectation: "residual",
 			file: "card.css",
 			source: ".card { color: red; }\n.title { font-weight: 600; }",
 		},

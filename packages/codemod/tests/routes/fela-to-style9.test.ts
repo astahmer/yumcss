@@ -95,8 +95,8 @@ test("fela -> style9: carries a documented secondary fela API explicitly", () =>
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> style9 | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
-		createComponent(() => ({ color: "red" }), "button");",
+		// pandwind:migrate-skip (route: fela -> style9 | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

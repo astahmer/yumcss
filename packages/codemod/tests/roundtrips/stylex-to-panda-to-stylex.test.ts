@@ -339,8 +339,8 @@ test("stylex -> panda -> stylex: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
-		css({ padding: "8px", color: "brand.500" }) };",
+		// pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
+		export const styles = { "card": css({ padding: "8px", color: "brand.500" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -434,8 +434,8 @@ test("stylex -> panda -> stylex: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": // pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
-		css({ padding: "8px", color: "brand.500" }) };",
+		// pandwind:migrate-skip (route: panda -> stylex | lowering-residual: validation)
+		export const styles = { "card": css({ padding: "8px", color: "brand.500" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

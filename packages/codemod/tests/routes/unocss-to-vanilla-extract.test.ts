@@ -47,9 +47,9 @@ test("unocss -> vanilla-extract: migrates concrete unocss syntax to vanilla-extr
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
-		  "converted": 1,
+		  "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -67,19 +67,19 @@ test("unocss -> vanilla-extract: migrates concrete unocss syntax to vanilla-extr
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -92,8 +92,8 @@ test("unocss -> vanilla-extract: carries a documented secondary unocss API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -122,6 +122,11 @@ test("unocss -> vanilla-extract: carries a documented secondary unocss API expli
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -145,9 +150,9 @@ test("unocss -> vanilla-extract: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#f97316" })}/>;",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -165,25 +170,25 @@ test("unocss -> vanilla-extract: loads concrete theme and project context varian
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#2563eb" })}/>;",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -201,19 +206,19 @@ test("unocss -> vanilla-extract: loads concrete theme and project context varian
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -229,9 +234,9 @@ test("unocss -> vanilla-extract: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#2563eb" })}/>;",
-		  "converted": 1,
+		  "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -249,19 +254,19 @@ test("unocss -> vanilla-extract: resolves concrete token values with project con
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -274,10 +279,10 @@ test("unocss -> vanilla-extract: preserves malformed concrete unocss input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ gap: "1rem", alignItems: "center", display: "flex" })}/>;
+		  "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
 		const unfinished = { /* unfinished unocss */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -295,19 +300,19 @@ test("unocss -> vanilla-extract: preserves malformed concrete unocss input", () 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

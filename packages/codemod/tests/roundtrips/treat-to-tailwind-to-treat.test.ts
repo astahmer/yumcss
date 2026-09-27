@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAd
 
 test("treat -> tailwind -> treat: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -84,7 +84,7 @@ test("treat -> tailwind -> treat: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const card = style({ "padding": "8", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -124,7 +124,7 @@ test("treat -> tailwind -> treat: preserves an actionable concrete round trip", 
 
 test("treat -> tailwind -> treat: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "treat -> tailwind round-trip secondary forward");
 	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "treat -> tailwind round-trip secondary");
@@ -169,7 +169,7 @@ test("treat -> tailwind -> treat: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
+		    "code": "import { style } from "treat";
 		export const card = style({ "padding": "8", "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -209,9 +209,9 @@ test("treat -> tailwind -> treat: retains the documented secondary API without s
 
 test("treat -> tailwind -> treat: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.treat.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.Tailwind);
@@ -269,8 +269,8 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
-		"[padding:8] [color:#2563eb]";",
+		      "code": "// pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
+		export const card = "[padding:8] [color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,8 +346,8 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const card = // pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
-		"[padding:8] text-brand";",
+		      "code": "// pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
+		export const card = "[padding:8] text-brand";",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -386,7 +386,7 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 
 test("treat -> tailwind -> treat: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.Tailwind);
 	expectRouteScenarioEvidence(first, "treat -> tailwind round-trip token forward");
@@ -432,8 +432,8 @@ test("treat -> tailwind -> treat: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const card = // pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
-		"[padding:8] text-brand";",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> treat | parse-residual: unknown-utility | available: named-map, residual)
+		export const card = "[padding:8] text-brand";",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

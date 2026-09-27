@@ -95,8 +95,8 @@ test("tamagui -> compiled: carries a documented secondary tamagui API explicitly
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> compiled | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> compiled | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

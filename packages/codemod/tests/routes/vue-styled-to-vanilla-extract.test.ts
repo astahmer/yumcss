@@ -27,7 +27,7 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, Codemo
 const amberProject = createAdapterRouteProject(CodemodAdapterId.VueStyled, CodemodAdapterId.VanillaExtract, "#f97316");
 
 test("vue-styled -> vanilla-extract: migrates concrete vue-styled syntax to vanilla-extract", () => {
-	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -86,7 +86,7 @@ test("vue-styled -> vanilla-extract: migrates concrete vue-styled syntax to vani
 });
 
 test("vue-styled -> vanilla-extract: carries a documented secondary vue-styled API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "vue-styled -> vanilla-extract secondary");
 	expectExplicitResidualEvidence(result);
@@ -132,8 +132,8 @@ test("vue-styled -> vanilla-extract: carries a documented secondary vue-styled A
 });
 
 test("vue-styled -> vanilla-extract: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: "styles.css.ts", semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.VanillaExtract);
@@ -225,7 +225,7 @@ test("vue-styled -> vanilla-extract: loads concrete theme and project context va
 });
 
 test("vue-styled -> vanilla-extract: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: "styles.css.ts", semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.VueStyled, CodemodAdapterId.VanillaExtract);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.VanillaExtract, "vue-styled -> vanilla-extract token config");
@@ -273,7 +273,7 @@ test("vue-styled -> vanilla-extract: resolves concrete token values with project
 });
 
 test("vue-styled -> vanilla-extract: preserves malformed concrete vue-styled input", () => {
-	const result = route.run({ source: malformedSource, file: "styles.ts", semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: "styles.css.ts", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished vue-styled */");
 	expectRouteScenarioEvidence(result, "vue-styled -> vanilla-extract malformed");
 	expectExplicitResidualEvidence(result);

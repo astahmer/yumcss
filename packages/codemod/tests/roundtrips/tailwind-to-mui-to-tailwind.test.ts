@@ -131,8 +131,8 @@ test("tailwind -> mui -> tailwind: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -165,8 +165,8 @@ test("tailwind -> mui -> tailwind: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -205,8 +205,8 @@ test("tailwind -> mui -> tailwind: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -247,8 +247,8 @@ test("tailwind -> mui -> tailwind: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -261,8 +261,8 @@ test("tailwind -> mui -> tailwind: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -303,8 +303,8 @@ test("tailwind -> mui -> tailwind: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		      "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -331,8 +331,8 @@ test("tailwind -> mui -> tailwind: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -373,8 +373,8 @@ test("tailwind -> mui -> tailwind: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

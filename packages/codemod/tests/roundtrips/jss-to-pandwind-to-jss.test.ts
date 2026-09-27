@@ -346,8 +346,9 @@ test("jss -> pandwind -> jss: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.class({ color: "brand" }) };",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
+		export const useStyles = { "card": css.class({ color: "brand" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -442,8 +443,9 @@ test("jss -> pandwind -> jss: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
-		css.class({ color: "brand" }) };",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> jss | lowering-residual: validation)
+		export const useStyles = { "card": css.class({ color: "brand" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

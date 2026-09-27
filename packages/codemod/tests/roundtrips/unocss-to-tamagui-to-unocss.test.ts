@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodA
 
 test("unocss -> tamagui -> unocss: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -83,8 +83,8 @@ test("unocss -> tamagui -> unocss: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => // pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		styled(View, { gap: "1rem", alignItems: "center", display: "flex" });",
+		// pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const App = () => styled(View, { gap: "1rem", alignItems: "center", display: "flex" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -123,7 +123,7 @@ test("unocss -> tamagui -> unocss: preserves an actionable concrete round trip",
 
 test("unocss -> tamagui -> unocss: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "unocss -> tamagui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -133,8 +133,8 @@ test("unocss -> tamagui -> unocss: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tamagui | capability-blocked: named-conditions: named: hover | available: static, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> tamagui | capability-blocked: named-conditions: named: hover | available: static, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,8 +166,8 @@ test("unocss -> tamagui -> unocss: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> tamagui | capability-blocked: named-conditions: named: hover | available: static, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> tamagui | capability-blocked: named-conditions: named: hover | available: static, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -182,9 +182,9 @@ test("unocss -> tamagui -> unocss: retains the documented secondary API without 
 
 test("unocss -> tamagui -> unocss: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.Tamagui);
@@ -240,8 +240,8 @@ test("unocss -> tamagui -> unocss: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => // pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		styled(View, { padding: "1.125rem", color: "#f97316" });",
+		// pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const App = () => styled(View, { padding: "1.125rem", color: "#f97316" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,8 +312,8 @@ test("unocss -> tamagui -> unocss: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => // pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		styled(View, { padding: "1.125rem", color: "#2563eb" });",
+		// pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -353,7 +353,7 @@ test("unocss -> tamagui -> unocss: preserves concrete theme and project context 
 
 test("unocss -> tamagui -> unocss: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.Tamagui);
 	expectRouteScenarioEvidence(first, "unocss -> tamagui round-trip token forward");
@@ -398,8 +398,8 @@ test("unocss -> tamagui -> unocss: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => // pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		styled(View, { padding: "1.125rem", color: "#2563eb" });",
+		// pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -93,8 +93,8 @@ test("stitches -> stylex: carries a documented secondary stitches API explicitly
 		{
 		  "changed": true,
 		  "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> stylex | lowering-residual: validation)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> stylex | lowering-residual: validation)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -139,8 +139,8 @@ test("fela -> style9 -> fela: retains the documented secondary API without silen
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> style9 | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
-		createComponent(() => ({ color: "red" }), "button");",
+		// pandwind:migrate-skip (route: fela -> style9 | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,8 +176,8 @@ test("fela -> style9 -> fela: retains the documented secondary API without silen
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> style9 | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
-		createComponent(() => ({ color: "red" }), "button");",
+		// pandwind:migrate-skip (route: fela -> style9 | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

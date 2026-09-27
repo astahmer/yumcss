@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, Code
 
 test("css-modules -> unocss -> css-modules: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -49,9 +49,9 @@ test("css-modules -> unocss -> css-modules: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:1rem] [color:red]" };
-		export default styles;",
-		    "converted": 1,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -63,61 +63,36 @@ test("css-modules -> unocss -> css-modules: preserves an actionable concrete rou
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		{ "card": "[padding:1rem] [color:red]" };
-		export default styles;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card",
+		        "hint": "renaming Card.module.css to Card.module.ts requires updating project imports",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; padding: 1rem; }",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -126,7 +101,7 @@ test("css-modules -> unocss -> css-modules: preserves an actionable concrete rou
 
 test("css-modules -> unocss -> css-modules: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.module.css", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "css-modules -> unocss round-trip secondary forward");
 	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "css-modules -> unocss round-trip secondary");
@@ -136,66 +111,9 @@ test("css-modules -> unocss -> css-modules: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:red]", "primary": "[color:red] [font-weight:600]" };
-		export default styles;",
-		    "converted": 2,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		{ "card": "[color:red]", "primary": "[color:red] [font-weight:600]" };
-		export default styles;",
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -205,27 +123,56 @@ test("css-modules -> unocss -> css-modules: retains the documented secondary API
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "residual",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card",
+		        "hint": "renaming Card.module.css to Card.module.ts requires updating project imports",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 2,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.card { color: red; }
+		.primary { composes: card; font-weight: 600; }",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -234,9 +181,9 @@ test("css-modules -> unocss -> css-modules: retains the documented secondary API
 
 test("css-modules -> unocss -> css-modules: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.UnoCSS);
@@ -295,8 +242,8 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		{ "card": "[padding:1rem] [color:#2563eb]" };
+		      "code": "/* /* pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
+		export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -308,7 +255,6 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		          "availableRepresentations": [
 		            "static",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -317,12 +263,17 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
 		          "hint": "named-rules: named style rule: card",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -370,8 +321,8 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const styles = // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		{ "card": "[padding:1rem] text-brand" };
+		      "code": "/* /* pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
+		export const styles = { "card": "[padding:1rem] text-brand" };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -383,7 +334,6 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		          "availableRepresentations": [
 		            "static",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -392,12 +342,17 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "portable-artifact",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
 		          "hint": "named-rules: named style rule: card",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -412,7 +367,7 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 
 test("css-modules -> unocss -> css-modules: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.UnoCSS);
 	expectRouteScenarioEvidence(first, "css-modules -> unocss round-trip token forward");
@@ -459,8 +414,8 @@ test("css-modules -> unocss -> css-modules: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const styles = // pandwind:migrate-skip (route: unocss -> css-modules | capability-blocked: named-rules: named style rule: card | available: static, residual, portable-artifact)
-		{ "card": "[padding:1rem] text-brand" };
+		    "code": "/* /* pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
+		export const styles = { "card": "[padding:1rem] text-brand" };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -472,7 +427,6 @@ test("css-modules -> unocss -> css-modules: resolves token values across both co
 		        "availableRepresentations": [
 		          "static",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -481,12 +435,17 @@ test("css-modules -> unocss -> css-modules: resolves token values across both co
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
 		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

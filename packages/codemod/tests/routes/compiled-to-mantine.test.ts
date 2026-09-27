@@ -48,8 +48,8 @@ test("compiled -> mantine: migrates concrete compiled syntax to mantine", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,8 +105,8 @@ test("compiled -> mantine: carries a documented secondary compiled API explicitl
 		{
 		  "changed": true,
 		  "code": "import { cssMap } from "@compiled/react";
-		export const colors = // pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
-		cssMap({ red: { color: "red" } });",
+		// pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
+		export const colors = cssMap({ red: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -171,8 +171,8 @@ test("compiled -> mantine: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,8 +219,8 @@ test("compiled -> mantine: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -279,8 +279,8 @@ test("compiled -> mantine: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -336,8 +336,8 @@ test("compiled -> mantine: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", padding: 8 });
+		// pandwind:migrate-skip (route: compiled -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 0,
 		  "generatedFiles": [],

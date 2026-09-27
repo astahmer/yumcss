@@ -48,8 +48,8 @@ test("bamboo -> mantine: migrates concrete bamboo syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red" });",
+		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,8 +105,8 @@ test("bamboo -> mantine: carries a documented secondary bamboo API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
-		css({ display: "flex", gap: "4" });",
+		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ display: "flex", gap: "4" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -171,8 +171,8 @@ test("bamboo -> mantine: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb" });",
+		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,8 +219,8 @@ test("bamboo -> mantine: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb" });",
+		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -279,8 +279,8 @@ test("bamboo -> mantine: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb" });",
+		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -336,8 +336,8 @@ test("bamboo -> mantine: preserves malformed concrete bamboo input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red" });
+		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 0,
 		  "generatedFiles": [],

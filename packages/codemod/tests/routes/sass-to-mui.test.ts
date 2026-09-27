@@ -46,8 +46,8 @@ test("sass -> mui: migrates concrete sass syntax to mui", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -59,7 +59,7 @@ test("sass -> mui: migrates concrete sass syntax to mui", () => {
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -71,8 +71,8 @@ test("sass -> mui: migrates concrete sass syntax to mui", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		      "kind": "host-framework",
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -89,8 +89,8 @@ test("sass -> mui: carries a documented secondary sass API explicitly", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		$brand: red;
 		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
@@ -119,12 +119,12 @@ test("sass -> mui: carries a documented secondary sass API explicitly", () => {
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "nested stylesheet rules require selector-aware lowering",
-		      "kind": "nesting",
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 2,
+		  "skipped": 1,
 		  "validations": [],
 		}
 	`)
@@ -146,8 +146,8 @@ test("sass -> mui: loads concrete theme and project context variants", async () 
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -159,7 +159,7 @@ test("sass -> mui: loads concrete theme and project context variants", async () 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
@@ -171,8 +171,8 @@ test("sass -> mui: loads concrete theme and project context variants", async () 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		        "kind": "host-framework",
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -180,8 +180,8 @@ test("sass -> mui: loads concrete theme and project context variants", async () 
 		    "validations": [],
 		  },
 		  "blue": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -193,7 +193,7 @@ test("sass -> mui: loads concrete theme and project context variants", async () 
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
@@ -205,8 +205,8 @@ test("sass -> mui: loads concrete theme and project context variants", async () 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		        "kind": "host-framework",
+		        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -226,8 +226,8 @@ test("sass -> mui: resolves concrete token values with project context", async (
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: host-framework)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -239,7 +239,7 @@ test("sass -> mui: resolves concrete token values with project context", async (
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -251,8 +251,8 @@ test("sass -> mui: resolves concrete token values with project context", async (
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		      "kind": "host-framework",
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -269,8 +269,8 @@ test("sass -> mui: preserves malformed concrete sass input", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse, host-framework)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,
@@ -283,7 +283,7 @@ test("sass -> mui: preserves malformed concrete sass input", () => {
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -300,12 +300,12 @@ test("sass -> mui: preserves malformed concrete sass input", () => {
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		      "kind": "host-framework",
+		      "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 2,
+		  "skipped": 1,
 		  "validations": [],
 		}
 	`)

@@ -135,8 +135,9 @@ test("pandwind -> emotion -> pandwind: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> emotion | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> emotion | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,8 +171,9 @@ test("pandwind -> emotion -> pandwind: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> emotion | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> emotion | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -211,8 +213,9 @@ test("pandwind -> emotion -> pandwind: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -254,8 +257,9 @@ test("pandwind -> emotion -> pandwind: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -269,8 +273,9 @@ test("pandwind -> emotion -> pandwind: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,8 +317,9 @@ test("pandwind -> emotion -> pandwind: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
-		css.class({ color: "$brand", padding: "1rem" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
+		export const card = css.class({ color: "$brand", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],

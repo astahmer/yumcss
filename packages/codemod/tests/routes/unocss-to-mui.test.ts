@@ -89,8 +89,8 @@ test("unocss -> mui: carries a documented secondary unocss API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -140,8 +140,8 @@ test("unocss -> mui: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +182,8 @@ test("unocss -> mui: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,8 +236,8 @@ test("unocss -> mui: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
-		<div className="text-brand p-card" />;",
+		  "code": "// pandwind:migrate-skip (route: unocss -> mui | lowering-residual: validation)
+		export const App = () => <div className="text-brand p-card" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

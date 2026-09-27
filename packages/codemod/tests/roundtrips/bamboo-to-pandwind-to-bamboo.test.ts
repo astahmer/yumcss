@@ -340,8 +340,9 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | lowering-residual: validation)
-		css.class({ color: "brand" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> bamboo | lowering-residual: validation)
+		export const card = css.class({ color: "brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -434,8 +435,9 @@ test("bamboo -> pandwind -> bamboo: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | lowering-residual: validation)
-		css.class({ color: "brand" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> bamboo | lowering-residual: validation)
+		export const card = css.class({ color: "brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

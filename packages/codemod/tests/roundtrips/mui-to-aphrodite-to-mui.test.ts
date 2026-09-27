@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdap
 
 test("mui -> aphrodite -> mui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -88,8 +88,8 @@ test("mui -> aphrodite -> mui: preserves an actionable concrete round trip", () 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		StyleSheet.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -126,7 +126,7 @@ test("mui -> aphrodite -> mui: preserves an actionable concrete round trip", () 
 
 test("mui -> aphrodite -> mui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "mui -> aphrodite round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -212,9 +212,9 @@ test("mui -> aphrodite -> mui: retains the documented secondary API without sile
 
 test("mui -> aphrodite -> mui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Aphrodite);
@@ -275,8 +275,8 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		StyleSheet.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,8 +350,8 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -389,7 +389,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 
 test("mui -> aphrodite -> mui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Aphrodite);
 	expectRouteScenarioEvidence(first, "mui -> aphrodite round-trip token forward");
@@ -439,8 +439,8 @@ test("mui -> aphrodite -> mui: resolves token values across both concrete legs",
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

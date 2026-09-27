@@ -1,5 +1,9 @@
 import type { ProjectModuleLoader } from "./project-module-loader.ts";
-import { MigrationDiagnostics } from "./migration-diagnostics.ts";
+import {
+	migrationCommentStyleForFile,
+	migrationSkipMarker,
+	type MigrationCommentStyle,
+} from "./migration-diagnostics.ts";
 import type {
 	AdapterConfigContext,
 	AdapterProjectConfig,
@@ -57,16 +61,15 @@ function configurationResult(
 	residuals: readonly StyleProgramResidual[],
 	marker: string,
 	detail: string,
+	commentStyle: MigrationCommentStyle,
 ): AdapterMigrationResult {
+	const code =
+		migrationSkipMarker({ marker, configurationResiduals: residuals }, commentStyle) +
+		"\n" +
+		source;
 	return {
-		code:
-			MigrationDiagnostics.skipMarker({
-				marker,
-				configurationResiduals: residuals,
-			}) +
-			"\n" +
-			source,
-		changed: false,
+		code,
+		changed: code !== source,
 		converted: 0,
 		skipped: 1,
 		reports: [],
@@ -92,6 +95,7 @@ function configurationFailure(
 	source: string,
 	detail: string,
 	marker = "pandwind:migrate-skip",
+	commentStyle: MigrationCommentStyle = "line",
 ): AdapterMigrationResult {
 	return configurationResult(
 		source,
@@ -104,6 +108,7 @@ function configurationFailure(
 		],
 		marker,
 		"official project configuration could not be loaded",
+		commentStyle,
 	);
 }
 
@@ -111,12 +116,14 @@ function configurationResiduals(
 	source: string,
 	residuals: readonly StyleProgramResidual[],
 	marker: string,
+	commentStyle: MigrationCommentStyle,
 ): AdapterMigrationResult {
 	return configurationResult(
 		source,
 		residuals,
 		marker,
 		"official project configuration could not be loaded",
+		commentStyle,
 	);
 }
 
@@ -159,7 +166,12 @@ function prepareResolvedMigration(
 ): PreparationResult {
 	const residuals = [...(configs.source.residuals ?? []), ...(configs.target.residuals ?? [])];
 	if (residuals.length > 0)
-		return configurationResiduals(source, residuals, options.skipMarker ?? "pandwind:migrate-skip");
+		return configurationResiduals(
+			source,
+			residuals,
+			options.skipMarker ?? "pandwind:migrate-skip",
+			migrationCommentStyleForFile(options.file),
+		);
 	return {
 		sourceAdapter: route.source,
 		targetAdapter: route.target,
@@ -216,6 +228,7 @@ export async function prepareMigrationAsync(
 			source,
 			error instanceof Error ? error.message : String(error),
 			options.skipMarker,
+			migrationCommentStyleForFile(options.file),
 		);
 	}
 }

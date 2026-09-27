@@ -14,6 +14,17 @@ import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 const pandwind = CodemodAdapterId.Pandwind;
+const globalStylesheetSources = new Set<string>([
+	CodemodAdapterId.AuthoredCss,
+	CodemodAdapterId.Sass,
+	CodemodAdapterId.Less,
+]);
+const stylesheetTargets = new Set<string>([
+	CodemodAdapterId.AuthoredCss,
+	CodemodAdapterId.CssModules,
+	CodemodAdapterId.Sass,
+	CodemodAdapterId.Less,
+]);
 
 /**
  * Component subjects need a host use in order to prove that the migration
@@ -103,6 +114,7 @@ function migrateTo(
 		to,
 		file,
 		...(semantic === undefined ? {} : { semantic }),
+		...(from === CodemodAdapterId.CssModules ? { root: "/project", listFiles: () => [] } : {}),
 		readFile: () => undefined,
 		adapterRegistry: catalog.registry,
 		mode: "safe",
@@ -127,6 +139,16 @@ describe("bidirectional registered adapter matrix", () => {
 				expect(result.skipped).toBe(0);
 				return;
 			}
+			if (globalStylesheetSources.has(adapterId)) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBeGreaterThan(0);
+				expect(result.residuals).toEqual(
+					expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+				);
+				expect(result.code).toContain("pandwind:migrate-skip");
+				expect(result.code.endsWith(fixture.source)).toBe(true);
+				return;
+			}
 			expect(
 				result.residuals,
 				`${adapterId} -> ${pandwind}: ${JSON.stringify(result.residuals)}`,
@@ -140,12 +162,18 @@ describe("bidirectional registered adapter matrix", () => {
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
 		"emits a valid Pandwind source to %s",
 		(targetId) => {
+			const targetFile =
+				targetId === CodemodAdapterId.Treat
+					? "Card.treat.ts"
+					: targetId === CodemodAdapterId.VanillaExtract
+						? "Card.css.ts"
+						: "Card.tsx";
 			const result = migrateTo(
 				'import { css } from "pandwind/css";\n' +
 					'const card = css.class({ color: "red", padding: "1rem" });',
 				pandwind,
 				targetId,
-				"Card.tsx",
+				targetFile,
 			);
 			if (targetId === pandwind) {
 				expect(result.changed).toBe(false);
@@ -171,6 +199,16 @@ describe("bidirectional registered adapter matrix", () => {
 				expect(result.skipped).toBeGreaterThan(0);
 				expect(result.residuals.length).toBeGreaterThan(0);
 				expect(result.code).toContain("pandwind:migrate-skip");
+				return;
+			}
+			if (stylesheetTargets.has(targetId)) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBeGreaterThan(0);
+				expect(result.residuals).toEqual(
+					expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+				);
+				expect(result.code).toContain("pandwind:migrate-skip");
+				expect(result.code).toContain("css.class");
 				return;
 			}
 			expect(
@@ -351,6 +389,17 @@ describe("composed cross-ecosystem routes", () => {
 			{ source: { framework: "react" } },
 		);
 
+		if (targetId === CodemodAdapterId.Treat || targetId === CodemodAdapterId.VanillaExtract) {
+			expect(result.converted).toBe(0);
+			expect(result.skipped).toBeGreaterThan(0);
+			expect(result.residuals).toEqual(
+				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+			);
+			expect(result.code).toContain("styled.div");
+			expect(result.code).toContain("<Card />");
+			return;
+		}
+
 		expect(result.residuals, `${CodemodAdapterId.StyledComponents} -> ${targetId}`).toEqual([]);
 		expect(result.skipped).toBe(0);
 		expect(result.code).toContain("<div className={Card} />");
@@ -367,10 +416,13 @@ describe("composed cross-ecosystem routes", () => {
 			{ source: { framework: "react" } },
 		);
 
-		expect(result.residuals).toEqual([]);
-		expect(result.skipped).toBe(0);
-		expect(result.code).toContain("const Card = style({");
-		expect(result.code).toContain("<div className={Card} />");
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+		);
+		expect(result.code).toContain("styled.div");
+		expect(result.code).toContain("<Card />");
 	});
 
 	test("folds a resolved theme interpolation before class-target emission", () => {
@@ -393,10 +445,12 @@ describe("composed cross-ecosystem routes", () => {
 			},
 		);
 
-		expect(result.residuals).toEqual([]);
-		expect(result.skipped).toBe(0);
-		expect(result.code).toContain('color: "red"');
-		expect(result.code).not.toContain("theme.colors.foreground");
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+		);
+		expect(result.code).toContain("theme.colors.foreground");
 	});
 
 	const appDir = resolve(import.meta.dirname, "../../../examples/example/src");

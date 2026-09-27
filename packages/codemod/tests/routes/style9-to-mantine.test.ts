@@ -48,8 +48,8 @@ test("style9 -> mantine: migrates concrete style9 syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "red" } });",
+		// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const styles = style9.create({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,8 +105,8 @@ test("style9 -> mantine: carries a documented secondary style9 API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -171,8 +171,8 @@ test("style9 -> mantine: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,8 +219,8 @@ test("style9 -> mantine: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -279,8 +279,8 @@ test("style9 -> mantine: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -336,8 +336,8 @@ test("style9 -> mantine: preserves malformed concrete style9 input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ card: { color: "red" } });
+		// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const styles = style9.create({ card: { color: "red" } });
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 0,
 		  "generatedFiles": [],

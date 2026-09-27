@@ -333,8 +333,8 @@ test("emotion -> panda -> emotion: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> emotion | lowering-residual: validation)
-		css({ padding: "1rem", color: "brand.500" });",
+		// pandwind:migrate-skip (route: panda -> emotion | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "brand.500" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -426,8 +426,8 @@ test("emotion -> panda -> emotion: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> emotion | lowering-residual: validation)
-		css({ padding: "1rem", color: "brand.500" });",
+		// pandwind:migrate-skip (route: panda -> emotion | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "brand.500" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

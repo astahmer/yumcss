@@ -27,7 +27,12 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.CssModules, Codem
 const amberProject = createAdapterRouteProject(CodemodAdapterId.CssModules, CodemodAdapterId.VanillaExtract, "#f97316");
 
 test("css-modules -> vanilla-extract: migrates concrete css-modules syntax to vanilla-extract", () => {
-	const result = route.run({ source: happySource, file: "Card.module.css", semantic: sourceSemantic });
+	const result = route.run({
+		source: happySource,
+		file: "Card.module.css",
+		semantic: sourceSemantic,
+		project: blueProject,
+	});
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -86,7 +91,12 @@ test("css-modules -> vanilla-extract: migrates concrete css-modules syntax to va
 });
 
 test("css-modules -> vanilla-extract: carries a documented secondary css-modules API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic });
+	const result = route.run({
+		source: edgeSource,
+		file: "Card.module.css",
+		semantic: sourceSemantic,
+		project: blueProject,
+	});
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "css-modules -> vanilla-extract secondary");
 	expectExplicitResidualEvidence(result);
@@ -294,14 +304,19 @@ test("css-modules -> vanilla-extract: resolves concrete token values with projec
 });
 
 test("css-modules -> vanilla-extract: preserves malformed concrete css-modules input", () => {
-	const result = route.run({ source: malformedSource, file: "Card.module.css", semantic: sourceSemantic });
+	const result = route.run({
+		source: malformedSource,
+		file: "Card.module.css",
+		semantic: sourceSemantic,
+		project: blueProject,
+	});
 	expect(result.code).toContain("/* unfinished css-modules */");
 	expectRouteScenarioEvidence(result, "css-modules -> vanilla-extract malformed");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: parse)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: parse) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
@@ -338,4 +353,3 @@ test("css-modules -> vanilla-extract: preserves malformed concrete css-modules i
 		}
 	`)
 });
-

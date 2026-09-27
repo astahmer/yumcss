@@ -50,6 +50,7 @@ export const NodeKind = defineNodeKinds({
 	ImportDefaultSpecifier: "ImportDefaultSpecifier",
 	ImportNamespaceSpecifier: "ImportNamespaceSpecifier",
 	ImportSpecifier: "ImportSpecifier",
+	ImportExpression: "ImportExpression",
 	JSXAttribute: "JSXAttribute",
 	JSXElement: "JSXElement",
 	JSXEmptyExpression: "JSXEmptyExpression",

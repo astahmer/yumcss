@@ -339,8 +339,8 @@ test("jss -> tokenami -> jss: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
-		css({ color: "$colors.brand" }) };",
+		// pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
+		export const useStyles = { "card": css({ color: "$colors.brand" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -434,8 +434,8 @@ test("jss -> tokenami -> jss: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const useStyles = { "card": // pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
-		css({ color: "$colors.brand" }) };",
+		// pandwind:migrate-skip (route: tokenami -> jss | lowering-residual: validation)
+		export const useStyles = { "card": css({ color: "$colors.brand" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

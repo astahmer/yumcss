@@ -50,8 +50,8 @@ test("vue-styled -> stylex -> vue-styled: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,8 +87,8 @@ test("vue-styled -> stylex -> vue-styled: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -114,8 +114,8 @@ test("vue-styled -> stylex -> vue-styled: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -151,8 +151,8 @@ test("vue-styled -> stylex -> vue-styled: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -193,8 +193,8 @@ test("vue-styled -> stylex -> vue-styled: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -230,8 +230,8 @@ test("vue-styled -> stylex -> vue-styled: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -245,8 +245,8 @@ test("vue-styled -> stylex -> vue-styled: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,8 +282,8 @@ test("vue-styled -> stylex -> vue-styled: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -311,8 +311,8 @@ test("vue-styled -> stylex -> vue-styled: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -348,8 +348,8 @@ test("vue-styled -> stylex -> vue-styled: resolves token values across both conc
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: #2563eb; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

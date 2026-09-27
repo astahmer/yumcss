@@ -95,8 +95,8 @@ test("react-strict-dom -> jss: carries a documented secondary react-strict-dom A
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const pulse = // pandwind:migrate-skip (route: react-strict-dom -> jss | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
-		css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		// pandwind:migrate-skip (route: react-strict-dom -> jss | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

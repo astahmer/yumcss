@@ -25,7 +25,7 @@ import type {
 } from "./adapter-contract.ts";
 import type { StyleLoweringPlan } from "./lowering.ts";
 import { MigrationOutput } from "./migration-output.ts";
-import { MigrationDiagnostics } from "./migration-diagnostics.ts";
+import { migrationCommentStyleForFile, migrationSkipMarker } from "./migration-diagnostics.ts";
 import type {
 	AdapterMigrationOptions,
 	AdapterMigrationOutcome,
@@ -264,6 +264,14 @@ function runAdapterMigrationInternal(
 		const rendered = SourcePass.markerText(source, options.file, index, text);
 		return `${rendered}\n`;
 	};
+	const migrationSkipMarkerText = (
+		input: Parameters<typeof migrationSkipMarker>[0],
+		location: "document" | "embedded-code",
+	) => migrationSkipMarker(input, migrationCommentStyleForFile(options.file, location));
+	const skipMarkerEdit = (index: number, text: string) => {
+		const start = source.lastIndexOf("\n", index - 1) + 1;
+		return { start, end: start, text: renderSkipMarker(index, text) };
+	};
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const imports = new Set<string>();
 	const generatedStatements = new Set<string>();
@@ -383,12 +391,15 @@ function runAdapterMigrationInternal(
 			end: 0,
 			text: renderSkipMarker(
 				0,
-				MigrationDiagnostics.skipMarker({
-					marker,
-					sourceAdapter: sourceAdapter.id,
-					targetAdapter: targetAdapter.id,
-					parseResiduals: unpreservedParseResiduals,
-				}),
+				migrationSkipMarkerText(
+					{
+						marker,
+						sourceAdapter: sourceAdapter.id,
+						targetAdapter: targetAdapter.id,
+						parseResiduals: unpreservedParseResiduals,
+					},
+					"document",
+				),
 			),
 		});
 	}
@@ -433,6 +444,29 @@ function runAdapterMigrationInternal(
 			support.hasHostBindingUse(bindings, bindingBeforeMatch) ||
 			support.hasInlineHostUse(bindings, match.start, source) ||
 			support.hasComponentBindingUse(bindings, bindingBeforeMatch);
+		const moduleFile = targetPolicy?.moduleFile;
+		const moduleFileResiduals =
+			moduleFile !== undefined &&
+			!moduleFile.acceptedSuffixes.some((suffix) => options.file.endsWith(suffix))
+				? [
+						{
+							kind: StyleProgramResidualKindTag.Capability,
+							text: match.sourceText,
+							hint: moduleFile.unsupportedFileHint,
+						},
+					]
+				: [];
+		const targetPreflightResiduals = [
+			...moduleFileResiduals,
+			...(targetPolicy?.preflight?.({
+				file: options.file,
+				source,
+				program,
+				hasHostContext,
+			}) ?? []),
+		];
+		if (targetPreflightResiduals.length > 0)
+			loweringResiduals = [...loweringResiduals, ...targetPreflightResiduals];
 		const discardableStaticSubject =
 			sourceSubject !== undefined &&
 			bindingBeforeMatch === undefined &&
@@ -612,23 +646,24 @@ function runAdapterMigrationInternal(
 						hint:
 							preview?.residuals[0]?.hint ?? "dynamic values need a host-bound class/style carrier",
 					});
-					edits.push({
-						start: match.start,
-						end: match.start,
-						text: renderSkipMarker(
+					edits.push(
+						skipMarkerEdit(
 							match.start,
-							MigrationDiagnostics.skipMarker({
-								marker,
-								loweringResiduals: [
-									{
-										kind: StyleProgramResidualKindTag.DynamicValues,
-										text: match.sourceText,
-										hint: "dynamic values require a host-bound class/style carrier",
-									},
-								],
-							}),
+							migrationSkipMarkerText(
+								{
+									marker,
+									loweringResiduals: [
+										{
+											kind: StyleProgramResidualKindTag.DynamicValues,
+											text: match.sourceText,
+											hint: "dynamic values require a host-bound class/style carrier",
+										},
+									],
+								},
+								"embedded-code",
+							),
 						),
-					});
+					);
 					continue;
 				}
 				if (dynamicHandledWithTarget || preview?.residuals.length === 0) {
@@ -961,22 +996,23 @@ function runAdapterMigrationInternal(
 						]),
 				...loweringResiduals,
 			);
-			edits.push({
-				start: match.start,
-				end: match.start,
-				text: renderSkipMarker(
+			edits.push(
+				skipMarkerEdit(
 					match.start,
-					MigrationDiagnostics.skipMarker({
-						marker,
-						sourceAdapter: sourceAdapter.id,
-						targetAdapter: targetAdapter.id,
-						parseResiduals: program.residuals,
-						loweringResiduals,
-						blockers: effectiveReport.blockers,
-						availableRepresentations: lowering.availableRepresentations,
-					}),
+					migrationSkipMarkerText(
+						{
+							marker,
+							sourceAdapter: sourceAdapter.id,
+							targetAdapter: targetAdapter.id,
+							parseResiduals: program.residuals,
+							loweringResiduals,
+							blockers: effectiveReport.blockers,
+							availableRepresentations: lowering.availableRepresentations,
+						},
+						"embedded-code",
+					),
 				),
-			});
+			);
 			continue;
 		}
 		residuals.push(...loweringResiduals);
@@ -1023,20 +1059,21 @@ function runAdapterMigrationInternal(
 				detail: emptyEmission.hint,
 			});
 			residuals.push(emptyEmission, ...emitted.residuals);
-			edits.push({
-				start: match.start,
-				end: match.start,
-				text: renderSkipMarker(
+			edits.push(
+				skipMarkerEdit(
 					match.start,
-					MigrationDiagnostics.skipMarker({
-						marker,
-						sourceAdapter: sourceAdapter.id,
-						targetAdapter: targetAdapter.id,
-						loweringResiduals: [emptyEmission, ...emitted.residuals],
-						availableRepresentations: lowering.availableRepresentations,
-					}),
+					migrationSkipMarkerText(
+						{
+							marker,
+							sourceAdapter: sourceAdapter.id,
+							targetAdapter: targetAdapter.id,
+							loweringResiduals: [emptyEmission, ...emitted.residuals],
+							availableRepresentations: lowering.availableRepresentations,
+						},
+						"embedded-code",
+					),
 				),
-			});
+			);
 			continue;
 		}
 		// Preserve target-owned residuals in the public report as well as in
@@ -1101,26 +1138,27 @@ function runAdapterMigrationInternal(
 				text: emitted.text,
 				hint: validation.differences.join("; "),
 			});
-			edits.push({
-				start: match.start,
-				end: match.start,
-				text: renderSkipMarker(
+			edits.push(
+				skipMarkerEdit(
 					match.start,
-					MigrationDiagnostics.skipMarker({
-						marker,
-						sourceAdapter: sourceAdapter.id,
-						targetAdapter: targetAdapter.id,
-						loweringResiduals: [
-							...emitted.residuals,
-							{
-								kind: "validation",
-								text: emitted.text,
-								hint: validation.differences.join("; "),
-							},
-						],
-					}),
+					migrationSkipMarkerText(
+						{
+							marker,
+							sourceAdapter: sourceAdapter.id,
+							targetAdapter: targetAdapter.id,
+							loweringResiduals: [
+								...emitted.residuals,
+								{
+									kind: "validation",
+									text: emitted.text,
+									hint: validation.differences.join("; "),
+								},
+							],
+						},
+						"embedded-code",
+					),
 				),
-			});
+			);
 			continue;
 		}
 		if (
@@ -1251,7 +1289,11 @@ function runAdapterMigrationInternal(
 			...(emissionDetail === undefined || emissionDetail === "" ? {} : { detail: emissionDetail }),
 		});
 	}
-	const edited = SourcePass.applyEdits(source, withoutDuplicateSkipMarkers(source, edits, marker));
+	const appliedEdits = withoutDuplicateSkipMarkers(source, edits, marker);
+	const appliedSkipMarkerEdits = appliedEdits.filter(
+		(edit) => edit.start === edit.end && edit.text.includes(marker),
+	);
+	const edited = SourcePass.applyEdits(source, appliedEdits);
 	let runtimeEdited = edited;
 	let needsCx = false;
 	for (const request of targetHostRewrites) {
@@ -1430,12 +1472,15 @@ function runAdapterMigrationInternal(
 			runtimeEdited =
 				renderSkipMarker(
 					0,
-					MigrationDiagnostics.skipMarker({
-						marker,
-						sourceAdapter: sourceAdapter.id,
-						targetAdapter: targetAdapter.id,
-						loweringResiduals: documentRewrite.residuals,
-					}),
+					migrationSkipMarkerText(
+						{
+							marker,
+							sourceAdapter: sourceAdapter.id,
+							targetAdapter: targetAdapter.id,
+							loweringResiduals: documentRewrite.residuals,
+						},
+						"document",
+					),
 				) + source;
 			converted = 0;
 			skipped = 1;
@@ -1454,12 +1499,15 @@ function runAdapterMigrationInternal(
 		runtimeEdited =
 			renderSkipMarker(
 				0,
-				MigrationDiagnostics.skipMarker({
-					marker,
-					sourceAdapter: sourceAdapter.id,
-					targetAdapter: targetAdapter.id,
-					loweringResiduals: generatedFileResiduals,
-				}),
+				migrationSkipMarkerText(
+					{
+						marker,
+						sourceAdapter: sourceAdapter.id,
+						targetAdapter: targetAdapter.id,
+						loweringResiduals: generatedFileResiduals,
+					},
+					"document",
+				),
 			) + source;
 		converted = 0;
 		skipped = Math.max(1, skipped);
@@ -1535,7 +1583,7 @@ function runAdapterMigrationInternal(
 	const targetUsesPandwindCss =
 		imports.has('import { createUnsafeCss } from "pandwind/unsafe/css";') ||
 		imports.has('import { createRuntimeCss } from "pandwind/css/runtime";');
-	if (!targetUsesPandwindCss)
+	if (converted > 0 && skipped === 0 && residuals.length === 0 && !targetUsesPandwindCss)
 		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createUnsafeCss();"]);
 	const outputFile = support.fileWithExtension(options.file, outputExtension);
 	for (const statement of generatedStatements)
@@ -1562,6 +1610,8 @@ function runAdapterMigrationInternal(
 		code = simplifyPandwindStaticStyles(code, outputFile, {
 			hoistStaticStyles: options.hoistStaticStyles,
 		}).code;
+	if (converted > 0 && skipped === 0 && residuals.length === 0)
+		for (const edit of appliedSkipMarkerEdits) code = code.replace(edit.text, "");
 	return {
 		code,
 		...(outputExtension === undefined ? {} : { outputExtension }),

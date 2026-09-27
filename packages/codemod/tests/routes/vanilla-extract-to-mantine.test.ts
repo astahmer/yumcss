@@ -48,8 +48,8 @@ test("vanilla-extract -> mantine: migrates concrete vanilla-extract syntax to ma
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -171,8 +171,8 @@ test("vanilla-extract -> mantine: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,8 +219,8 @@ test("vanilla-extract -> mantine: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -279,8 +279,8 @@ test("vanilla-extract -> mantine: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -336,8 +336,8 @@ test("vanilla-extract -> mantine: preserves malformed concrete vanilla-extract i
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
-		style({ color: "red", padding: 8 });
+		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 0,
 		  "generatedFiles": [],

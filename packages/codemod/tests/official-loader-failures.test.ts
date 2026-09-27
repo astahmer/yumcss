@@ -5,9 +5,13 @@ import {
 	createChakraAdapter,
 	createMantineAdapter,
 	createMuiAdapter,
+	createPandwindAdapter,
+	createStyleAdapterRegistry,
+	createBuiltinCodemodCatalog,
 	createTailwindAdapter,
 	createTokenamiAdapter,
 	createUnoCssAdapter,
+	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 
@@ -170,5 +174,45 @@ describe("official project-context loaders", () => {
 
 		expect(config?.residuals ?? []).toEqual([]);
 		expect(config?.values.officialConfigPackages).toBeUndefined();
+	});
+
+	test("marks a stylesheet migration changed when config loading adds a CSS-safe residual", async () => {
+		const source = ".card { color: red; }";
+		const catalog = createBuiltinCodemodCatalog();
+		const authoredCss = catalog.registry.get(CodemodAdapterId.AuthoredCss)!;
+		const pandwind = createPandwindAdapter();
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.AuthoredCss,
+			to: CodemodAdapterId.Pandwind,
+			file: "styles.css",
+			adapterRegistry: createStyleAdapterRegistry([
+				authoredCss,
+				{
+					...pandwind,
+					async loadConfigAsync(context) {
+						return {
+							...pandwind.loadConfig(context),
+							residuals: [
+								{
+									kind: StyleProgramResidualKindTag.Configuration,
+									text: "Pandwind project configuration",
+									hint: "configuration evidence is unavailable",
+								},
+							],
+						};
+					},
+				},
+			]),
+			mode: "safe",
+		});
+
+		expect(result.changed).toBe(true);
+		expect(result.code).toMatch(/^\/\* pandwind:migrate-skip /u);
+		expect(result.code).toContain(source);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: StyleProgramResidualKindTag.Configuration }),
+			]),
+		);
 	});
 });

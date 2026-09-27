@@ -93,8 +93,8 @@ test("next-yak -> react-strict-dom: carries a documented secondary next-yak API 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		export const Card = // pandwind:migrate-skip (route: next-yak -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: next-yak -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

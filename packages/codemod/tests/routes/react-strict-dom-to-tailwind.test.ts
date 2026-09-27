@@ -94,8 +94,8 @@ test("react-strict-dom -> tailwind: carries a documented secondary react-strict-
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const pulse = // pandwind:migrate-skip (route: react-strict-dom -> tailwind | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
-		css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -186,8 +186,8 @@ test("react-strict-dom -> tailwind: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -244,8 +244,8 @@ test("react-strict-dom -> tailwind: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		const styles = // pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
-		css.create({ card: { color: "#2563eb", padding: "1rem" } });
+		// pandwind:migrate-skip (route: react-strict-dom -> tailwind | lowering-residual: validation)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
 		  "generatedFiles": [],

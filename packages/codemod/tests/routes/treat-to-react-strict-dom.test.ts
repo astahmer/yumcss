@@ -48,8 +48,8 @@ test("treat -> react-strict-dom: migrates concrete treat syntax to react-strict-
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -102,8 +102,8 @@ test("treat -> react-strict-dom: carries a documented secondary treat API explic
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -165,8 +165,8 @@ test("treat -> react-strict-dom: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -210,8 +210,8 @@ test("treat -> react-strict-dom: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -267,8 +267,8 @@ test("treat -> react-strict-dom: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -321,8 +321,8 @@ test("treat -> react-strict-dom: preserves malformed concrete treat input", () =
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = // pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
-		style({ color: "red", padding: 8 });
+		// pandwind:migrate-skip (route: treat -> react-strict-dom | lowering-residual: validation)
+		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 0,
 		  "generatedFiles": [],

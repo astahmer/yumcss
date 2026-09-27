@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Treat, CodemodAd
 
 test("treat -> solid-styled -> treat: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -86,7 +86,7 @@ test("treat -> solid-styled -> treat: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const cx = createCx();
 		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "red" }), props.class)} />;",
 		    "converted": 1,
@@ -127,7 +127,7 @@ test("treat -> solid-styled -> treat: preserves an actionable concrete round tri
 
 test("treat -> solid-styled -> treat: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.treat.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.treat.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "treat -> solid-styled round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -174,7 +174,7 @@ test("treat -> solid-styled -> treat: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const cx = createCx();
 		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "red" }), props.class)} />;",
 		    "converted": 1,
@@ -215,9 +215,9 @@ test("treat -> solid-styled -> treat: retains the documented secondary API witho
 
 test("treat -> solid-styled -> treat: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.treat.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.treat.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.SolidStyled);
@@ -277,7 +277,7 @@ test("treat -> solid-styled -> treat: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const cx = createCx();
 		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "#2563eb" }), props.class)} />;",
 		      "converted": 1,
@@ -353,7 +353,7 @@ test("treat -> solid-styled -> treat: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const cx = createCx();
 		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "#2563eb" }), props.class)} />;",
 		      "converted": 1,
@@ -395,7 +395,7 @@ test("treat -> solid-styled -> treat: preserves concrete theme and project conte
 
 test("treat -> solid-styled -> treat: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.treat.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.treat.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Treat, CodemodAdapterId.SolidStyled);
 	expectRouteScenarioEvidence(first, "treat -> solid-styled round-trip token forward");
@@ -443,7 +443,7 @@ test("treat -> solid-styled -> treat: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@/styles.treat";
+		import { style } from "treat";
 		const cx = createCx();
 		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "#2563eb" }), props.class)} />;",
 		    "converted": 1,

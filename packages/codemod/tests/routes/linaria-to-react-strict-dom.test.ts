@@ -93,8 +93,8 @@ test("linaria -> react-strict-dom: carries a documented secondary linaria API ex
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@linaria/react";
-		export const Card = // pandwind:migrate-skip (route: linaria -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div\`color: red; padding: 1rem;\`;",
+		// pandwind:migrate-skip (route: linaria -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

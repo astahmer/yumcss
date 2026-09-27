@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, Codemo
 
 test("chakra-ui -> styled-components -> chakra-ui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -84,8 +84,8 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves an actionable concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		styled.div({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
+		// pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const App = () => styled.div({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -122,7 +122,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves an actionable concr
 
 test("chakra-ui -> styled-components -> chakra-ui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "chakra-ui -> styled-components round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -133,8 +133,8 @@ test("chakra-ui -> styled-components -> chakra-ui: retains the documented second
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> styled-components | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> styled-components | parse-residual: composition | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -168,8 +168,8 @@ test("chakra-ui -> styled-components -> chakra-ui: retains the documented second
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> styled-components | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> styled-components | parse-residual: composition | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -185,9 +185,9 @@ test("chakra-ui -> styled-components -> chakra-ui: retains the documented second
 
 test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ChakraUi, CodemodAdapterId.StyledComponents);
@@ -210,8 +210,8 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -253,8 +253,8 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -268,8 +268,8 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,8 +311,8 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
-		<Box bg="brand.500" p="4" />;",
+		// pandwind:migrate-skip (route: chakra-ui -> styled-components | lowering-residual: validation)
+		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -328,7 +328,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 
 test("chakra-ui -> styled-components -> chakra-ui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.ChakraUi, CodemodAdapterId.StyledComponents);
 	expectRouteScenarioEvidence(first, "chakra-ui -> styled-components round-trip token forward");
@@ -374,8 +374,8 @@ test("chakra-ui -> styled-components -> chakra-ui: resolves token values across 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		styled.div({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
+		// pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const App = () => styled.div({ backgroundColor: "#2563eb", p: "var(--chakra-spacing-4)" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

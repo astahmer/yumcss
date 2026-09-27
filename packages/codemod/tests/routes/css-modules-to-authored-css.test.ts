@@ -46,8 +46,8 @@ test("css-modules -> authored-css: migrates concrete css-modules syntax to autho
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -72,7 +72,7 @@ test("css-modules -> authored-css: migrates concrete css-modules syntax to autho
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		      "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -90,8 +90,8 @@ test("css-modules -> authored-css: carries a documented secondary css-modules AP
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		  "converted": 0,
@@ -132,12 +132,12 @@ test("css-modules -> authored-css: carries a documented secondary css-modules AP
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		      "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 1,
+		  "skipped": 2,
 		  "validations": [],
 		}
 	`)
@@ -159,8 +159,8 @@ test("css-modules -> authored-css: loads concrete theme and project context vari
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -185,7 +185,7 @@ test("css-modules -> authored-css: loads concrete theme and project context vari
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		        "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -194,8 +194,8 @@ test("css-modules -> authored-css: loads concrete theme and project context vari
 		    "validations": [],
 		  },
 		  "blue": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		    "changed": true,
+		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -220,7 +220,7 @@ test("css-modules -> authored-css: loads concrete theme and project context vari
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		        "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -241,8 +241,8 @@ test("css-modules -> authored-css: resolves concrete token values with project c
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -267,7 +267,7 @@ test("css-modules -> authored-css: resolves concrete token values with project c
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		      "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -285,8 +285,8 @@ test("css-modules -> authored-css: preserves malformed concrete css-modules inpu
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": false,
-		  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+		  "changed": true,
+		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished css-modules */",
 		  "converted": 0,
@@ -312,7 +312,12 @@ test("css-modules -> authored-css: preserves malformed concrete css-modules inpu
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "CSS Modules local class scoping does not survive the authored-css target",
+		      "hint": "stylesheet block is unbalanced",
+		      "kind": "parse",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "CSS Modules local class scoping cannot be preserved by stylesheet-family output",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

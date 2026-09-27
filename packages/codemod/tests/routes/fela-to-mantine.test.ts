@@ -49,8 +49,8 @@ test("fela -> mantine: migrates concrete fela syntax to mantine", () => {
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		renderer.renderRule(() => ({ color: "red" }));",
+		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		export const card = renderer.renderRule(() => ({ color: "red" }));",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -106,8 +106,8 @@ test("fela -> mantine: carries a documented secondary fela API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> mantine | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
-		createComponent(() => ({ color: "red" }), "button");",
+		// pandwind:migrate-skip (route: fela -> mantine | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -160,8 +160,8 @@ test("fela -> mantine: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		renderer.renderRule(() => ({ color: "#2563eb" }));",
+		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -209,8 +209,8 @@ test("fela -> mantine: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		renderer.renderRule(() => ({ color: "#2563eb" }));",
+		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -270,8 +270,8 @@ test("fela -> mantine: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		renderer.renderRule(() => ({ color: "#2563eb" }));",
+		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -328,8 +328,8 @@ test("fela -> mantine: preserves malformed concrete fela input", () => {
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		renderer.renderRule(() => ({ color: "red" }));
+		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		export const card = renderer.renderRule(() => ({ color: "red" }));
 		const unfinished = { /* unfinished fela */",
 		  "converted": 0,
 		  "generatedFiles": [],

@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Pandwind, Codemo
 
 test("pandwind -> tamagui -> pandwind: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -85,12 +85,9 @@ test("pandwind -> tamagui -> pandwind: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fmduj8", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -127,7 +124,7 @@ test("pandwind -> tamagui -> pandwind: preserves an actionable concrete round tr
 
 test("pandwind -> tamagui -> pandwind: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "pandwind -> tamagui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -138,8 +135,9 @@ test("pandwind -> tamagui -> pandwind: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-conditions: named: card | available: static, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-conditions: named: card | available: static, residual)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,8 +170,9 @@ test("pandwind -> tamagui -> pandwind: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const styles = // pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-conditions: named: card | available: static, residual)
-		css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-conditions: named: card | available: static, residual)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -188,9 +187,9 @@ test("pandwind -> tamagui -> pandwind: retains the documented secondary API with
 
 test("pandwind -> tamagui -> pandwind: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Pandwind, CodemodAdapterId.Tamagui);
@@ -248,19 +247,11 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
-		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fmduj8", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = css.class({ padding: "1rem", color: "$brand" });",
 		      "converted": 1,
-		      "generatedFiles": [
-		        {
-		          "path": "__pandwind/slot.tsx",
-		          "purpose": "shared static component slot helper",
-		        },
-		      ],
+		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
@@ -329,19 +320,11 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
-		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: "1rem", color: "$brand" }), stableClass: "pw-1fmduj8", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = css.class({ padding: "1rem", color: "$brand" });",
 		      "converted": 1,
-		      "generatedFiles": [
-		        {
-		          "path": "__pandwind/slot.tsx",
-		          "purpose": "shared static component slot helper",
-		        },
-		      ],
+		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
@@ -377,7 +360,7 @@ test("pandwind -> tamagui -> pandwind: preserves concrete theme and project cont
 
 test("pandwind -> tamagui -> pandwind: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Pandwind, CodemodAdapterId.Tamagui);
 	expectRouteScenarioEvidence(first, "pandwind -> tamagui round-trip token forward");
@@ -424,19 +407,11 @@ test("pandwind -> tamagui -> pandwind: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
-		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-1fmduj8", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 1,
-		    "generatedFiles": [
-		      {
-		        "path": "__pandwind/slot.tsx",
-		        "purpose": "shared static component slot helper",
-		      },
-		    ],
+		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],

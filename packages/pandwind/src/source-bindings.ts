@@ -39,6 +39,11 @@ export interface SourceExportAll {
 	readonly range: SourceRange;
 }
 
+export interface SourceModuleReference {
+	readonly source: string;
+	readonly range: SourceRange;
+}
+
 export interface SourceCallSite {
 	readonly kind: SourceCallSiteKind;
 	readonly start: number;
@@ -69,6 +74,8 @@ export interface SourceBindingIndex {
 	readonly bindings: readonly SourceBinding[];
 	readonly reexports: readonly SourceReexport[];
 	readonly exportAllSources: readonly SourceExportAll[];
+	/** AST ranges for static imports, re-exports, dynamic imports, and require calls. */
+	readonly moduleReferences: readonly SourceModuleReference[];
 	/** AST-owned calls and tagged templates with resolved imported bindings. */
 	readonly callSites: readonly SourceCallSite[];
 	/** JSX component and attribute uses resolved from AST ranges. */
@@ -284,12 +291,14 @@ function collectBindings(program: OxcNode): {
 	bindings: SourceBinding[];
 	reexports: SourceReexport[];
 	exportAllSources: SourceExportAll[];
+	moduleReferences: SourceModuleReference[];
 	declared: Set<string>;
 	shadowedScopes: ShadowedScope[];
 } {
 	const bindings: SourceBinding[] = [];
 	const reexports: SourceReexport[] = [];
 	const exportAllSources: SourceExportAll[] = [];
+	const moduleReferences: SourceModuleReference[] = [];
 	const declared = new Set<string>();
 	const shadowedScopes: ShadowedScope[] = [];
 	const addShadowedScope = (names: readonly string[], body: unknown): void => {
@@ -303,6 +312,8 @@ function collectBindings(program: OxcNode): {
 			const source = sourceOf(node);
 			if (source === undefined) return;
 			const nodeRange = rangeOf(node, { start: 0, end: 0 });
+			const sourceNode = (node as { source?: unknown }).source;
+			moduleReferences.push({ source, range: rangeOf(sourceNode, nodeRange) });
 			for (const rawSpecifier of (node as { specifiers?: unknown[] }).specifiers ?? []) {
 				if (rawSpecifier === null || typeof rawSpecifier !== "object") continue;
 				const specifier = rawSpecifier as {
@@ -341,6 +352,8 @@ function collectBindings(program: OxcNode): {
 			const source = sourceOf(node);
 			if (source === undefined) return;
 			const nodeRange = rangeOf(node, { start: 0, end: 0 });
+			const sourceNode = (node as { source?: unknown }).source;
+			moduleReferences.push({ source, range: rangeOf(sourceNode, nodeRange) });
 			for (const rawSpecifier of (node as { specifiers?: unknown[] }).specifiers ?? []) {
 				if (rawSpecifier === null || typeof rawSpecifier !== "object") continue;
 				const specifier = rawSpecifier as { local?: unknown; exported?: unknown };
@@ -358,10 +371,35 @@ function collectBindings(program: OxcNode): {
 
 		if (node.type === NodeKind.ExportAllDeclaration) {
 			const source = sourceOf(node);
-			if (source !== undefined)
+			if (source !== undefined) {
+				const sourceNode = (node as { source?: unknown }).source;
+				const nodeRange = rangeOf(node, { start: 0, end: 0 });
 				exportAllSources.push({
 					source,
-					range: rangeOf(node, { start: 0, end: 0 }),
+					range: nodeRange,
+				});
+				moduleReferences.push({ source, range: rangeOf(sourceNode, nodeRange) });
+			}
+		}
+
+		if (node.type === NodeKind.ImportExpression) {
+			const sourceNode = (node as { source?: unknown }).source;
+			const source = nodeName(sourceNode);
+			if (source !== undefined)
+				moduleReferences.push({
+					source,
+					range: rangeOf(sourceNode, rangeOf(node, { start: 0, end: 0 })),
+				});
+		}
+
+		if (node.type === NodeKind.CallExpression) {
+			const call = node as { callee?: unknown; arguments?: unknown[] };
+			const argument = call.arguments?.[0];
+			const source = nodeName(argument);
+			if (nodeName(call.callee) === "require" && source !== undefined)
+				moduleReferences.push({
+					source,
+					range: rangeOf(argument, rangeOf(node, { start: 0, end: 0 })),
 				});
 		}
 
@@ -403,7 +441,7 @@ function collectBindings(program: OxcNode): {
 			addShadowedScope(names, (node as { body?: unknown }).body);
 		}
 	});
-	return { bindings, reexports, exportAllSources, declared, shadowedScopes };
+	return { bindings, reexports, exportAllSources, moduleReferences, declared, shadowedScopes };
 }
 
 const memberCallee = (node: unknown): { localName: string; property?: string } | undefined => {
@@ -547,6 +585,7 @@ export class SourceBindings {
 	private readonly entries: readonly SourceBinding[];
 	private readonly exported: readonly SourceReexport[];
 	private readonly exportedAll: readonly SourceExportAll[];
+	private readonly references: readonly SourceModuleReference[];
 	private readonly calls: readonly SourceCallSite[];
 	private readonly hosts: readonly SourceHostUse[];
 	private readonly shadowed: ReadonlySet<string>;
@@ -556,6 +595,7 @@ export class SourceBindings {
 		entries: readonly SourceBinding[],
 		exported: readonly SourceReexport[],
 		exportedAll: readonly SourceExportAll[],
+		references: readonly SourceModuleReference[],
 		calls: readonly SourceCallSite[],
 		hosts: readonly SourceHostUse[],
 		shadowed: ReadonlySet<string>,
@@ -564,6 +604,7 @@ export class SourceBindings {
 		this.entries = entries;
 		this.exported = exported;
 		this.exportedAll = exportedAll;
+		this.references = references;
 		this.calls = calls;
 		this.hosts = hosts;
 		this.shadowed = shadowed;
@@ -578,6 +619,7 @@ export class SourceBindings {
 			collected.bindings,
 			collected.reexports,
 			collected.exportAllSources,
+			collected.moduleReferences,
 			collectCallSites(program, collected.bindings),
 			collectHostUses(program),
 			shadowed,
@@ -644,6 +686,7 @@ export class SourceBindings {
 			bindings,
 			collected.flatMap(({ reexports }) => reexports),
 			collected.flatMap(({ exportAllSources }) => exportAllSources),
+			collected.flatMap(({ moduleReferences }) => moduleReferences),
 			programs.flatMap((program) => collectCallSites(program, bindings)),
 			[...programs.flatMap((program) => collectHostUses(program)), ...extraHosts],
 			new Set([...importedNames].filter((name) => declared.has(name))),
@@ -661,6 +704,10 @@ export class SourceBindings {
 
 	get exportAllSources(): readonly SourceExportAll[] {
 		return this.exportedAll;
+	}
+
+	get moduleReferences(): readonly SourceModuleReference[] {
+		return this.references;
 	}
 
 	get callSites(): readonly SourceCallSite[] {

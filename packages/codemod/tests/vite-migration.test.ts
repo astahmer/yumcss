@@ -101,8 +101,8 @@ export function App() {
 			import styled, { ThemeProvider } from "styled-components";
 
 			export function App() {
-					return // pandwind:migrate-skip (route: styled-components -> tailwind | parse-residual: runtime-context | available: named-map, residual)
-			<ThemeProvider theme={{ color: "red" }}><div /></ThemeProvider>;
+			// pandwind:migrate-skip (route: styled-components -> tailwind | parse-residual: runtime-context | available: named-map, residual)
+					return <ThemeProvider theme={{ color: "red" }}><div /></ThemeProvider>;
 			}
 			",
 			  "map": null,

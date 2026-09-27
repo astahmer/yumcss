@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, Codemo
 
 test("tailwind -> react-native -> tailwind: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -126,7 +126,7 @@ test("tailwind -> react-native -> tailwind: preserves an actionable concrete rou
 
 test("tailwind -> react-native -> tailwind: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "tailwind -> react-native round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -136,8 +136,8 @@ test("tailwind -> react-native -> tailwind: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,8 +181,8 @@ test("tailwind -> react-native -> tailwind: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
-		<div className="[color:rebeccapurple] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -197,9 +197,9 @@ test("tailwind -> react-native -> tailwind: retains the documented secondary API
 
 test("tailwind -> react-native -> tailwind: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.ReactNative);
@@ -259,8 +259,8 @@ test("tailwind -> react-native -> tailwind: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		StyleSheet.create({ style: { "padding": 18, "color": "#f97316" } }).style}/>;",
+		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
+		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#f97316" } }).style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -343,8 +343,8 @@ test("tailwind -> react-native -> tailwind: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
+		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
+		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -392,7 +392,7 @@ test("tailwind -> react-native -> tailwind: preserves concrete theme and project
 
 test("tailwind -> react-native -> tailwind: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.ReactNative);
 	expectRouteScenarioEvidence(first, "tailwind -> react-native round-trip token forward");
@@ -441,8 +441,8 @@ test("tailwind -> react-native -> tailwind: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
-		StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
+		// pandwind:migrate-skip (route: react-native -> tailwind | lowering-residual: validation)
+		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -226,6 +226,13 @@ function happySource(adapter: CodemodAdapterId): { file: string; source: string 
 	return { file: contractFixture.file, source: contractFixture.source };
 }
 
+function targetModuleFile(target: CodemodAdapterId, file: string): string {
+	if (!file.endsWith(".ts")) return file;
+	if (target === CodemodAdapterId.Treat) return file.replace(/\.ts$/u, ".treat.ts");
+	if (target === CodemodAdapterId.VanillaExtract) return file.replace(/\.ts$/u, ".css.ts");
+	return file;
+}
+
 function sourceExample(adapter: CodemodAdapterId) {
 	const happy = happySource(adapter);
 	const secondary = officialApiFamilyCases().find(
@@ -267,6 +274,8 @@ function sourceConstants(
 
 function routeSource(source: CodemodAdapterId, target: CodemodAdapterId): string {
 	const example = sourceExample(source);
+	const routeFile = targetModuleFile(target, example.file);
+	const edgeFile = targetModuleFile(target, example.edgeFile);
 	const frameworkImport =
 		usesBuiltinHostFramework(source) || usesBuiltinHostFramework(target)
 			? "BuiltinHostFramework, "
@@ -289,7 +298,7 @@ const route = createAdapterRouteSpec(${identifier(source)}, ${identifier(target)
 	${sourceConstants(example, source, target)}
 
 test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", () => {
-	const result = route.run({ source: happySource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
+	const result = route.run({ source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic });
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -310,7 +319,7 @@ test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", 
 });
 
 test("${source} -> ${target}: carries a documented secondary ${source} API explicitly", () => {
-	const result = route.run({ source: edgeSource, file: ${JSON.stringify(example.edgeFile)}, semantic: sourceSemantic });
+	const result = route.run({ source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(result, "${source} -> ${target} secondary");
 	expectExplicitResidualEvidence(result);
@@ -318,8 +327,8 @@ test("${source} -> ${target}: carries a documented secondary ${source} API expli
 });
 
 test("${source} -> ${target}: loads concrete theme and project context variants", async () => {
-	const blue = await route.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
-	const amber = await route.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
+	const blue = await route.runAsync({ source: themedSource, file: ${JSON.stringify(routeFile)}, semantic: blueSemantic, project: blueProject });
+	const amber = await route.runAsync({ source: themedSource, file: ${JSON.stringify(routeFile)}, semantic: amberSemantic, project: amberProject });
 	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
@@ -333,7 +342,7 @@ ${usesLiteralThemedSource(source) ? `\texpectConfiguredTargetTokenAbsence(amber,
 });
 
 test("${source} -> ${target}: resolves concrete token values with project context", async () => {
-	const result = await route.runAsync({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+	const result = await route.runAsync({ source: tokenSource, file: ${JSON.stringify(routeFile)}, semantic: blueSemantic, project: blueProject });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
 	expectConfiguredTargetTokenEvidence(result, ${identifier(target)}, "${source} -> ${target} token config");
@@ -343,7 +352,7 @@ test("${source} -> ${target}: resolves concrete token values with project contex
 });
 
 test("${source} -> ${target}: preserves malformed concrete ${source} input", () => {
-	const result = route.run({ source: malformedSource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
+	const result = route.run({ source: malformedSource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished ${source} */");
 	expectRouteScenarioEvidence(result, "${source} -> ${target} malformed");
 	expectExplicitResidualEvidence(result);
@@ -356,6 +365,9 @@ test("${source} -> ${target}: preserves malformed concrete ${source} input", () 
 function roundTripSource(source: CodemodAdapterId, target: CodemodAdapterId): string {
 	const example = sourceExample(source);
 	const targetExample = sourceExample(target);
+	const routeFile = targetModuleFile(target, example.file);
+	const edgeFile = targetModuleFile(target, example.edgeFile);
+	const targetFile = example.file;
 	const frameworkImport =
 		usesBuiltinHostFramework(source) || usesBuiltinHostFramework(target)
 			? "BuiltinHostFramework, "
@@ -381,8 +393,8 @@ const reverse = createAdapterRouteSpec(${identifier(target)}, ${identifier(sourc
 	const targetSemantic = ${targetExample.semantic};
 
 test("${source} -> ${target} -> ${source}: preserves an actionable concrete round trip", () => {
-	const first = forward.run({ source: happySource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: targetSemantic });
+	const first = forward.run({ source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -400,8 +412,8 @@ test("${source} -> ${target} -> ${source}: preserves an actionable concrete roun
 });
 
 test("${source} -> ${target} -> ${source}: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: ${JSON.stringify(example.edgeFile)}, semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: targetSemantic });
+	const first = forward.run({ source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip secondary forward");
 	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip secondary`)}
@@ -411,10 +423,10 @@ test("${source} -> ${target} -> ${source}: retains the documented secondary API 
 });
 
 test("${source} -> ${target} -> ${source}: preserves concrete theme and project context variants", async () => {
-	const firstBlue = await forward.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
-	const firstAmber = await forward.runAsync({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: ${JSON.stringify(targetExample.file)}, semantic: amberTargetSemantic, project: amberProject });
+	const firstBlue = await forward.runAsync({ source: themedSource, file: ${JSON.stringify(routeFile)}, semantic: blueSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: ${JSON.stringify(targetFile)}, semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = await forward.runAsync({ source: themedSource, file: ${JSON.stringify(routeFile)}, semantic: amberSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: ${JSON.stringify(targetFile)}, semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
@@ -435,8 +447,8 @@ ${usesLiteralThemedSource(source) ? `\texpectConfiguredTargetTokenAbsence(firstA
 });
 
 test("${source} -> ${target} -> ${source}: resolves token values across both concrete legs", async () => {
-	const first = await forward.runAsync({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
+	const first = await forward.runAsync({ source: tokenSource, file: ${JSON.stringify(routeFile)}, semantic: blueSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: ${JSON.stringify(targetFile)}, semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip token forward");

@@ -92,8 +92,8 @@ test("unocss -> solid-styled: carries a documented secondary unocss API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> solid-styled | lowering-residual: validation)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		  "code": "// pandwind:migrate-skip (route: unocss -> solid-styled | lowering-residual: validation)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

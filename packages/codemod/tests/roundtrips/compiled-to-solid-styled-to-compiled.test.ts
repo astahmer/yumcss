@@ -174,8 +174,8 @@ test("compiled -> solid-styled -> compiled: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const colors = { "red": // pandwind:migrate-skip (route: solid-styled -> compiled | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		styled.div({ "color": "red" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> compiled | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const colors = { "red": styled.div({ "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

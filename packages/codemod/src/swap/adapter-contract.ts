@@ -479,6 +479,20 @@ export interface AdapterFileMigration {
 }
 
 export interface AdapterTargetMigrationPolicy {
+	/** Reject source file contexts the target's compiler or module format cannot consume. */
+	readonly preflight?: (context: {
+		readonly file: string;
+		readonly source: string;
+		readonly program: StyleProgram;
+		readonly hasHostContext: boolean;
+	}) => readonly StyleProgramResidual[];
+	/** File contract for targets whose compiler only processes dedicated style modules. */
+	readonly moduleFile?: {
+		readonly acceptedSuffixes: readonly string[];
+		readonly outputExtension: string;
+		readonly importSpecifierExtension: string;
+		readonly unsupportedFileHint: string;
+	};
 	readonly handlesHostRewrites?: boolean;
 	/**
 	 * Opt into the shared static CSS-variable carrier for scalar dynamic values

@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.Tamagui, Codemod
 
 test("tamagui -> style9 -> tamagui: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -89,8 +89,8 @@ test("tamagui -> style9 -> tamagui: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		style9.create({ style: { "padding": "$4", "color": "red" } }).style);
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "red" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -127,7 +127,7 @@ test("tamagui -> style9 -> tamagui: preserves an actionable concrete round trip"
 
 test("tamagui -> style9 -> tamagui: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "tamagui -> style9 round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -138,8 +138,8 @@ test("tamagui -> style9 -> tamagui: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> style9 | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> style9 | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,8 +179,8 @@ test("tamagui -> style9 -> tamagui: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> style9 | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> style9 | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -195,9 +195,9 @@ test("tamagui -> style9 -> tamagui: retains the documented secondary API without
 
 test("tamagui -> style9 -> tamagui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Style9);
@@ -260,8 +260,8 @@ test("tamagui -> style9 -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -336,8 +336,8 @@ test("tamagui -> style9 -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -375,7 +375,7 @@ test("tamagui -> style9 -> tamagui: preserves concrete theme and project context
 
 test("tamagui -> style9 -> tamagui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tamagui, CodemodAdapterId.Style9);
 	expectRouteScenarioEvidence(first, "tamagui -> style9 round-trip token forward");
@@ -426,8 +426,8 @@ test("tamagui -> style9 -> tamagui: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

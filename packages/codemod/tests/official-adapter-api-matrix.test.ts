@@ -9,11 +9,20 @@ import {
 import { routeEvidence } from "./route-spec-support.ts";
 import { officialApiCases, type OfficialApiCase } from "../src/swap/official-api-cases.ts";
 
+const globalStylesheetSources = new Set([
+	CodemodAdapterId.AuthoredCss,
+	CodemodAdapterId.Sass,
+	CodemodAdapterId.Less,
+]);
+
 function migrate(api: OfficialApiCase): AdapterMigrationResult {
 	return runAdapterMigration(api.source, {
 		from: api.adapter,
 		to: CodemodAdapterId.Pandwind,
 		file: api.file,
+		...(api.adapter === CodemodAdapterId.CssModules
+			? { root: "/project", readFile: () => undefined, listFiles: () => [] }
+			: {}),
 		mode: "safe",
 		semantic: {
 			source: {
@@ -35,6 +44,16 @@ describe("official primary API forms", () => {
 			if (api.adapter === CodemodAdapterId.Pandwind) {
 				expect(result.skipped, `${api.adapter}/${api.name}: ${api.documentation}`).toBe(0);
 				expect(result.residuals, `${api.adapter}/${api.name}: ${api.documentation}`).toEqual([]);
+				continue;
+			}
+			if (globalStylesheetSources.has(api.adapter)) {
+				expect(result.converted, `${api.adapter}/${api.name}`).toBe(0);
+				expect(result.skipped, `${api.adapter}/${api.name}`).toBeGreaterThan(0);
+				expect(result.residuals, `${api.adapter}/${api.name}`).toEqual(
+					expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+				);
+				expect(result.code).toContain("pandwind:migrate-skip");
+				expect(result.code.endsWith(api.source)).toBe(true);
 				continue;
 			}
 			expect(result.converted, `${api.adapter}/${api.name}: ${api.documentation}`).toBeGreaterThan(
@@ -87,11 +106,9 @@ describe("official primary API forms", () => {
 			  },
 			  "authored-css/css rule": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
-			export default styles;",
-			    "converted": 1,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			.card { color: red; padding: 1rem; }",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -101,25 +118,25 @@ describe("official primary API forms", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
+			    "residuals": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
+			        "preserved": undefined,
 			      },
 			    ],
+			    "skipped": 1,
+			    "validations": [],
 			  },
 			  "bamboo/styled-system css object": {
 			    "changed": true,
@@ -406,11 +423,9 @@ describe("official primary API forms", () => {
 			  },
 			  "less/less rule": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
-			export default styles;",
-			    "converted": 1,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			.card { color: red; padding: 1rem; }",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -420,25 +435,25 @@ describe("official primary API forms", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
+			    "residuals": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
+			        "preserved": undefined,
 			      },
 			    ],
+			    "skipped": 1,
+			    "validations": [],
 			  },
 			  "linaria/css template": {
 			    "changed": true,
@@ -479,7 +494,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ color: "blue.6", marginLeft: "auto", marginRight: "auto", maxWidth: 400 })} />;",
+			export const App = () => <div className={css.class({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -584,7 +599,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ color: "red.300", _hover: { color: "blue.300" } });",
+			export const card = css.class({ color: "red", _hover: { color: "blue" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -714,11 +729,9 @@ describe("official primary API forms", () => {
 			  },
 			  "sass/scss rule": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
-			export default styles;",
-			    "converted": 1,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			.card { color: red; padding: 1rem; }",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -728,25 +741,25 @@ describe("official primary API forms", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
+			    "residuals": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
+			        "preserved": undefined,
 			      },
 			    ],
+			    "skipped": 1,
+			    "validations": [],
 			  },
 			  "solid-styled/solid styled template": {
 			    "changed": true,

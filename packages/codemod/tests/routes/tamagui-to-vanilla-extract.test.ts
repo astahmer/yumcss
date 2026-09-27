@@ -47,11 +47,11 @@ test("tamagui -> vanilla-extract: migrates concrete tamagui syntax to vanilla-ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { style } from "@vanilla-extract/css";
-		export const Card = style({ padding: "$4", color: "red" });
-		export const App = () => <View className={Card} />;",
-		  "converted": 1,
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
+		export const App = () => <Card />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,19 +69,19 @@ test("tamagui -> vanilla-extract: migrates concrete tamagui syntax to vanilla-ex
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -95,8 +95,8 @@ test("tamagui -> vanilla-extract: carries a documented secondary tamagui API exp
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> vanilla-extract | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -129,6 +129,11 @@ test("tamagui -> vanilla-extract: carries a documented secondary tamagui API exp
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -153,11 +158,11 @@ test("tamagui -> vanilla-extract: loads concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { style } from "@vanilla-extract/css";
-		export const Card = style({ padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
-		    "converted": 1,
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
+		export const App = () => <Card />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -175,27 +180,27 @@ test("tamagui -> vanilla-extract: loads concrete theme and project context varia
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { style } from "@vanilla-extract/css";
-		export const Card = style({ padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
-		    "converted": 1,
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
+		export const App = () => <Card />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -213,19 +218,19 @@ test("tamagui -> vanilla-extract: loads concrete theme and project context varia
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -241,11 +246,11 @@ test("tamagui -> vanilla-extract: resolves concrete token values with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { style } from "@vanilla-extract/css";
-		export const Card = style({ padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
-		  "converted": 1,
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
+		export const App = () => <Card />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -263,19 +268,19 @@ test("tamagui -> vanilla-extract: resolves concrete token values with project co
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -288,12 +293,12 @@ test("tamagui -> vanilla-extract: preserves malformed concrete tamagui input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { style } from "@vanilla-extract/css";
-		export const Card = style({ padding: "$4", color: "red" });
-		export const App = () => <View className={Card} />;
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
+		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -311,19 +316,19 @@ test("tamagui -> vanilla-extract: preserves malformed concrete tamagui input", (
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

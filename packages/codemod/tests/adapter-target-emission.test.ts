@@ -225,6 +225,16 @@ describe("target adapter emission contract", () => {
 			CodemodAdapterId.ChakraUi,
 			target,
 		);
+		if (target === CodemodAdapterId.VanillaExtract) {
+			expect(result.converted).toBe(0);
+			expect(result.skipped).toBeGreaterThan(0);
+			expect(result.residuals).toEqual(
+				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+			);
+			expect(result.code).toContain("bg={theme.foreground}");
+			expect(result.code).not.toContain("className");
+			return;
+		}
 
 		expect(result.skipped, `${CodemodAdapterId.ChakraUi} -> ${target}`).toBe(0);
 		expect(result.residuals).toEqual([]);
@@ -330,6 +340,16 @@ describe("target adapter emission contract", () => {
 				semantic: { source: { framework: BuiltinHostFramework.React } },
 			},
 		);
+		if (target === CodemodAdapterId.VanillaExtract) {
+			expect(result.converted).toBe(0);
+			expect(result.skipped).toBeGreaterThan(0);
+			expect(result.residuals).toEqual(
+				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+			);
+			expect(result.code).toContain("styled.div({ color: theme.foreground })");
+			expect(result.code).toContain("<Card />");
+			return;
+		}
 
 		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
 		expect(result.residuals).toEqual([]);
@@ -450,6 +470,16 @@ describe("target adapter emission contract", () => {
 				semantic: { source: { framework: BuiltinHostFramework.React } },
 			},
 		);
+		if (target === CodemodAdapterId.VanillaExtract || target === CodemodAdapterId.Treat) {
+			expect(result.converted).toBe(0);
+			expect(result.skipped).toBeGreaterThan(0);
+			expect(result.residuals).toEqual(
+				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+			);
+			expect(result.code).toContain("theme.foreground");
+			expect(result.code).toContain("<Card />");
+			return;
+		}
 
 		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
 		expect(result.residuals).toEqual([]);
@@ -687,6 +717,16 @@ describe("target adapter emission contract", () => {
 			]),
 		);
 		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toMatchInlineSnapshot(`
+			"<script setup>
+			import { ref } from "vue";
+			import styled from "vue-styled-components";
+			const active = ref(true);
+			// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+			const Card = styled.div({ color: "red" });
+			</script>
+			<template><Card v-if="active" /></template>"
+		`);
 		expect(result.code).toContain("vue-styled-components");
 		expect(result.outputExtension).toBeUndefined();
 	});
@@ -717,25 +757,25 @@ describe("target adapter emission contract", () => {
 		},
 	);
 
-	test("uses a portable static artifact for an unknown custom component", () => {
-		const result = migrate(
+	test("preserves a Pandwind class binding for an unknown custom component", () => {
+		const source =
 			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
-				"const css = createUnsafeCss();\n" +
-				'const card = css.class({ color: "red" });\n' +
-				"export const App = () => <CustomCard className={card} />;",
-			CodemodAdapterId.Pandwind,
-			CodemodAdapterId.Mui,
-		);
+			"const css = createUnsafeCss();\n" +
+			'const card = css.class({ color: "red" });\n' +
+			"export const App = () => <CustomCard className={card} />;";
+		const result = migrate(source, CodemodAdapterId.Pandwind, CodemodAdapterId.Mui);
 
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+		);
+		expect(result.code.replace(/^\/\/ pandwind:migrate-skip[^\r\n]*\r?\n/gmu, "")).toBe(source);
 		expect(result.code).toContain("className={card}");
 		expect(result.code).not.toContain("sx={card}");
 		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toContain("css.class");
-		expect(result.outcomes).toMatchObject([
-			{ outcome: "portable-artifact", representation: "portable-artifact" },
-		]);
+		expect(result.outcomes).toMatchObject([{ outcome: "residual", representation: "static" }]);
 	});
 
 	test("uses a portable static artifact for a standalone MUI style value", () => {
@@ -915,6 +955,16 @@ describe("target adapter emission contract", () => {
 			CodemodAdapterId.Pandwind,
 			target,
 		);
+		if (target === CodemodAdapterId.VanillaExtract || target === CodemodAdapterId.Treat) {
+			expect(result.converted).toBe(0);
+			expect(result.skipped).toBeGreaterThan(0);
+			expect(result.residuals).toEqual(
+				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+			);
+			expect(result.code).toContain("css.class");
+			expect(result.code).toContain("className={card}");
+			return;
+		}
 
 		expect(result.converted, `${CodemodAdapterId.Pandwind} -> ${target}`).toBe(1);
 		expect(result.skipped).toBe(0);

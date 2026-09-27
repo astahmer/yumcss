@@ -48,8 +48,8 @@ test("style9 -> tamagui: migrates concrete style9 syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		style9.create({ card: { color: "red" } });",
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -91,8 +91,8 @@ test("style9 -> tamagui: carries a documented secondary style9 API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,8 +143,8 @@ test("style9 -> tamagui: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,8 +177,8 @@ test("style9 -> tamagui: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,8 +223,8 @@ test("style9 -> tamagui: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		style9.create({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,8 +266,8 @@ test("style9 -> tamagui: preserves malformed concrete style9 input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		style9.create({ card: { color: "red" } });
+		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "red" } });
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 0,
 		  "generatedFiles": [],

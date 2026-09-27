@@ -48,8 +48,8 @@ test("compiled -> react-strict-dom: migrates concrete compiled syntax to react-s
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		css({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
+		export const card = css({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -156,8 +156,8 @@ test("compiled -> react-strict-dom: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		css({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -201,8 +201,8 @@ test("compiled -> react-strict-dom: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		css({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -258,8 +258,8 @@ test("compiled -> react-strict-dom: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		css({ color: "#2563eb", padding: 8 });",
+		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -312,8 +312,8 @@ test("compiled -> react-strict-dom: preserves malformed concrete compiled input"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		css({ color: "red", padding: 8 });
+		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
+		export const card = css({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 0,
 		  "generatedFiles": [],

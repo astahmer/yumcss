@@ -134,8 +134,8 @@ test("chakra-ui -> tailwind -> chakra-ui: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> tailwind | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> tailwind | parse-residual: composition | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -171,8 +171,8 @@ test("chakra-ui -> tailwind -> chakra-ui: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> tailwind | parse-residual: composition | available: named-map, residual)
-		defineRecipe({ base: { color: "red" } });
+		// pandwind:migrate-skip (route: chakra-ui -> tailwind | parse-residual: composition | available: named-map, residual)
+		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -250,8 +250,8 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -323,8 +323,8 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -409,8 +409,8 @@ test("chakra-ui -> tailwind -> chakra-ui: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => // pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
-		<Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
+		// pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: unknown-utility | available: named-map, residual)
+		export const App = () => <Box className={"bg-brand [p:var(--chakra-spacing-4)]"}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

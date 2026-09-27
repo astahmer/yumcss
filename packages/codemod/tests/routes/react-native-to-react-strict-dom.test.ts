@@ -48,8 +48,8 @@ test("react-native -> react-strict-dom: migrates concrete react-native syntax to
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -102,8 +102,8 @@ test("react-native -> react-strict-dom: carries a documented secondary react-nat
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
+		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
+		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -165,8 +165,8 @@ test("react-native -> react-strict-dom: loads concrete theme and project context
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -210,8 +210,8 @@ test("react-native -> react-strict-dom: loads concrete theme and project context
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -267,8 +267,8 @@ test("react-native -> react-strict-dom: resolves concrete token values with proj
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -321,8 +321,8 @@ test("react-native -> react-strict-dom: preserves malformed concrete react-nativ
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		StyleSheet.create({ card: { color: "red", padding: 8 } });
+		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 0,
 		  "generatedFiles": [],

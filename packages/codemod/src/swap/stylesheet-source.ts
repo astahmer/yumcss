@@ -11,7 +11,7 @@ import {
 	type StyleProgramResidual,
 	type StyleRule,
 } from "./semantic-ir.ts";
-import { MigrationDiagnostics } from "./migration-diagnostics.ts";
+import { migrationSkipMarker } from "./migration-diagnostics.ts";
 import { MigrationOutput } from "./migration-output.ts";
 import { inspectAdapterCapabilities } from "./capabilities.ts";
 import type {
@@ -42,6 +42,9 @@ const enum StylesheetSourceNodeKindTag {
 	AtRule = "at-rule",
 	Statement = "statement",
 }
+
+const stylesheetSkipMarker = (input: Parameters<typeof migrationSkipMarker>[0]) =>
+	migrationSkipMarker(input, "block");
 
 export interface StylesheetSourceNode {
 	readonly kind: `${StylesheetSourceNodeKindTag}`;
@@ -127,6 +130,129 @@ function stylesheetFamilyExtension(config: AdapterProjectConfig): string | undef
 	if (family === CodemodAdapterId.Sass) return ".scss";
 	if (family === CodemodAdapterId.Less) return ".less";
 	if (family === CodemodAdapterId.AuthoredCss) return ".css";
+	return undefined;
+}
+
+function consumerSourceHasParseErrors(file: string, source: string): boolean {
+	if (/\.(?:css|scss|sass|less)$/iu.test(file))
+		return new PlainStylesheetSource().parse(source).residuals.length > 0;
+	try {
+		return SOURCE_SCANNER_SERVICE.scan({ file, source }).diagnostics.some(
+			(diagnostic) => diagnostic.kind === "parse",
+		);
+	} catch {
+		return true;
+	}
+}
+
+function preserveUnsupportedStylesheetMigration(
+	context: AdapterFileMigrationContext,
+	hint: string,
+	port: StylesheetSourcePort,
+): AdapterFileMigrationResult {
+	const parsed = parseStylesheetPrograms(
+		context.source,
+		{
+			file: context.file,
+			source: context.source,
+			root: context.root,
+			config: context.sourceConfig,
+			...(context.readFile === undefined ? {} : { readFile: context.readFile }),
+		},
+		port,
+	);
+	const residual: StyleProgramResidual = {
+		kind: StyleProgramResidualKindTag.Capability,
+		text: context.file,
+		hint,
+	};
+	const loweringPlans: StyleLoweringPlan[] = parsed.matches.map((match) => ({
+		...STYLE_LOWERING_REGISTRY.plan({
+			program: match.program,
+			target: context.target.capabilities,
+			mode: "safe",
+		}),
+	}));
+	const outcomes: AdapterMigrationOutcome[] = parsed.matches.map((match) => ({
+		sourceStart: match.start,
+		sourceText: match.sourceText,
+		outcome: StyleMigrationOutcome.Residual,
+		representation: StyleRepresentationKind.Residual,
+		detail: hint,
+	}));
+	const code =
+		stylesheetSkipMarker({
+			marker: "pandwind:migrate-skip",
+			loweringResiduals: [residual],
+		}) +
+		"\n" +
+		context.source;
+	return {
+		code,
+		changed: code !== context.source,
+		converted: 0,
+		skipped: Math.max(1, parsed.matches.length),
+		generatedFiles: [],
+		fileChanges: [],
+		loweringPlans,
+		outcomes,
+		residuals: [...parsed.residuals, residual],
+		dependencies: [],
+	};
+}
+
+function stylesheetFileMigrationBoundary(context: AdapterFileMigrationContext): string | undefined {
+	const sourceIsCssModules = context.sourceConfig.adapter === CodemodAdapterId.CssModules;
+	const targetFamily = context.targetConfig.values[STYLESHEET_FAMILY_CONFIG_KEY];
+	const targetIsCssModules = targetFamily === CodemodAdapterId.CssModules;
+	const targetExtension = stylesheetFamilyExtension(context.targetConfig);
+	const targetModuleFile = context.target.migration?.targetPolicy?.moduleFile;
+	const outputExtension = targetExtension ?? targetModuleFile?.outputExtension ?? ".ts";
+	const importSpecifierExtension = targetModuleFile?.importSpecifierExtension ?? outputExtension;
+	const targetImportFile = `${context.file.replace(/\.[^.]+$/u, "")}${importSpecifierExtension}`;
+	const globalRulesNeedClassMap =
+		!sourceIsCssModules && (targetFamily === undefined || targetIsCssModules);
+	const cssModuleScopeWouldBeLost =
+		sourceIsCssModules && targetFamily !== undefined && !targetIsCssModules;
+	const sourceFile =
+		context.root === undefined
+			? joinDocumentPath(context.file)
+			: joinDocumentPath(context.root, context.file);
+	const projectRoot = context.root;
+	const listFiles = context.listFiles;
+	const readFile = context.readFile;
+	const unsafeConsumer =
+		projectRoot === undefined || listFiles === undefined || readFile === undefined
+			? false
+			: listFiles(projectRoot).some((listedFile) => {
+					const consumerFile = isAbsoluteDocumentPath(listedFile)
+						? joinDocumentPath(listedFile)
+						: joinDocumentPath(projectRoot, listedFile);
+					if (consumerFile === sourceFile) return false;
+					if (
+						!SOURCE_SCANNER_SERVICE.isSupportedFile(consumerFile) &&
+						!/\.(?:css|scss|sass|less)$/iu.test(consumerFile)
+					)
+						return false;
+					const source = readFile(listedFile);
+					return source === undefined || consumerSourceHasParseErrors(consumerFile, source);
+				});
+	const outputRenameNeedsReferenceUpdates =
+		!targetIsCssModules &&
+		targetImportFile !== context.file &&
+		(context.root === undefined ||
+			context.listFiles === undefined ||
+			context.readFile === undefined ||
+			unsafeConsumer);
+	if (globalRulesNeedClassMap || cssModuleScopeWouldBeLost || outputRenameNeedsReferenceUpdates) {
+		return globalRulesNeedClassMap && targetIsCssModules
+			? "global stylesheet selectors cannot move into CSS Modules without rewriting class-name consumers"
+			: globalRulesNeedClassMap
+				? "global stylesheet selectors cannot become an unreferenced class map"
+				: cssModuleScopeWouldBeLost
+					? "CSS Modules local class scoping cannot be preserved by stylesheet-family output"
+					: `renaming ${context.file} to ${targetImportFile} requires updating project imports`;
+	}
 	return undefined;
 }
 
@@ -795,6 +921,10 @@ export function createStylesheetFileMigration(
 ): AdapterFileMigration {
 	return {
 		run(context): AdapterFileMigrationResult {
+			const boundaryHint = stylesheetFileMigrationBoundary(context);
+			if (boundaryHint !== undefined) {
+				return preserveUnsupportedStylesheetMigration(context, boundaryHint, port);
+			}
 			if (context.target.id === CodemodAdapterId.AuthoredCss) {
 				// The conservative skip is still a lowering decision per parsed
 				// rule; the matrix/contract gates consume the same evidence the
@@ -845,7 +975,7 @@ export function createStylesheetFileMigration(
 				const code =
 					capabilityResiduals.length === 0
 						? context.source
-						: MigrationDiagnostics.skipMarker({
+						: stylesheetSkipMarker({
 								marker: "pandwind:migrate-skip",
 								loweringResiduals: capabilityResiduals,
 							}) +
@@ -853,14 +983,7 @@ export function createStylesheetFileMigration(
 							context.source;
 				return {
 					code,
-					outputExtension:
-						context.sourceConfig.adapter === CodemodAdapterId.Sass ||
-						context.sourceConfig.adapter === CodemodAdapterId.Less
-							? ".css"
-							: undefined,
-					changed:
-						context.sourceConfig.adapter === CodemodAdapterId.Sass ||
-						context.sourceConfig.adapter === CodemodAdapterId.Less,
+					changed: code !== context.source,
 					converted: 0,
 					skipped: capabilityResiduals.length === 0 ? 0 : 1,
 					generatedFiles: [],
@@ -1079,7 +1202,7 @@ export function createStylesheetFileMigration(
 					detail: "stylesheet migration preserved the source with residuals",
 				}));
 				const code =
-					MigrationDiagnostics.skipMarker({
+					stylesheetSkipMarker({
 						marker: "pandwind:migrate-skip",
 						loweringResiduals: skipResiduals,
 					}) +
@@ -1087,7 +1210,7 @@ export function createStylesheetFileMigration(
 					context.source;
 				return {
 					code,
-					changed: false,
+					changed: code !== context.source,
 					converted: 0,
 					skipped: Math.max(1, skipResiduals.length),
 					generatedFiles: [],
@@ -1141,6 +1264,11 @@ export function createStylesheetFileMigration(
 			]
 				.filter((line) => line.length > 0)
 				.join("\n");
+			const targetModuleFile = context.target.migration?.targetPolicy?.moduleFile;
+			const outputExtension = targetModuleFile?.outputExtension ?? ".ts";
+			const importSpecifierExtension =
+				targetModuleFile?.importSpecifierExtension ?? outputExtension;
+			const outputFileStem = context.file.replace(/\.[^.]+$/u, "");
 			// The migration owns canonical parity evidence for stylesheet files:
 			// reparse every emitted entry through the target adapter and validate
 			// the semantic round trip exactly like the call-site path does.
@@ -1199,7 +1327,7 @@ export function createStylesheetFileMigration(
 					}),
 				);
 				const code =
-					MigrationDiagnostics.skipMarker({
+					stylesheetSkipMarker({
 						marker: "pandwind:migrate-skip",
 						loweringResiduals: validationResiduals,
 					}) +
@@ -1207,7 +1335,7 @@ export function createStylesheetFileMigration(
 					context.source;
 				return {
 					code,
-					changed: false,
+					changed: code !== context.source,
 					converted: 0,
 					skipped: Math.max(1, validationResiduals.length),
 					generatedFiles: [],
@@ -1227,14 +1355,14 @@ export function createStylesheetFileMigration(
 			}
 			return {
 				code,
-				outputExtension: ".ts",
+				outputExtension,
 				changed: code !== context.source,
 				converted: entries.length,
 				skipped: 0,
 				generatedFiles: [],
 				fileChanges:
 					context.sourceConfig.adapter === CodemodAdapterId.CssModules
-						? cssModuleConsumerChanges(context, `${context.file.replace(/\.[^.]+$/u, "")}.ts`)
+						? stylesheetConsumerChanges(context, `${outputFileStem}${importSpecifierExtension}`)
 						: [],
 				residuals: [],
 				dependencies: [context.target.dependencies],
@@ -1305,14 +1433,23 @@ function stylesheetFamilyArtifact(
 					);
 		return context.target.validate(match.program, targetProgram, reparsed.residuals);
 	});
+	const targetExtension = stylesheetFamilyExtension(context.targetConfig);
+	const outputPathNeedsRename =
+		targetExtension !== undefined && !context.file.endsWith(targetExtension);
+	const outputFile =
+		outputPathNeedsRename && targetExtension !== undefined
+			? `${context.file.replace(/\.[^.]+$/u, "")}${targetExtension}`
+			: context.file;
 	return {
 		code,
-		outputExtension: stylesheetFamilyExtension(context.targetConfig),
-		changed: code !== context.source,
+		...(outputPathNeedsRename && targetExtension !== undefined
+			? { outputExtension: targetExtension }
+			: {}),
+		changed: code !== context.source || outputPathNeedsRename,
 		converted: matches.length,
 		skipped: 0,
 		generatedFiles: [],
-		fileChanges: [],
+		fileChanges: outputPathNeedsRename ? stylesheetConsumerChanges(context, outputFile) : [],
 		residuals: [],
 		dependencies: [context.target.dependencies],
 		validations,
@@ -1327,9 +1464,10 @@ export function createPreprocessorFileMigration(
 	return {
 		run: base.run,
 		runAsync: async (context) => {
+			if (stylesheetFileMigrationBoundary(context) !== undefined) return base.run(context);
 			if (compiler === undefined) {
 				const code =
-					MigrationDiagnostics.skipMarker({
+					stylesheetSkipMarker({
 						marker: "pandwind:migrate-skip",
 						configurationResiduals: [
 							{
@@ -1343,7 +1481,7 @@ export function createPreprocessorFileMigration(
 					context.source;
 				return {
 					code,
-					changed: false,
+					changed: code !== context.source,
 					converted: 0,
 					skipped: 1,
 					generatedFiles: [],
@@ -1367,7 +1505,7 @@ export function createPreprocessorFileMigration(
 				});
 			} catch (error) {
 				const code =
-					MigrationDiagnostics.skipMarker({
+					stylesheetSkipMarker({
 						marker: "pandwind:migrate-skip",
 						configurationResiduals: [
 							{
@@ -1381,7 +1519,7 @@ export function createPreprocessorFileMigration(
 					context.source;
 				return {
 					code,
-					changed: false,
+					changed: code !== context.source,
 					converted: 0,
 					skipped: 1,
 					generatedFiles: [],
@@ -1441,21 +1579,25 @@ export function createPreprocessorFileMigration(
 				const code =
 					residuals.length === 0
 						? compiled.css
-						: MigrationDiagnostics.skipMarker({
+						: stylesheetSkipMarker({
 								marker: "pandwind:migrate-skip",
 								loweringResiduals: residuals,
 							}) +
 							"\n" +
 							compiled.css;
+				const outputPathNeedsRename = !context.file.endsWith(".css");
+				const outputFile = outputPathNeedsRename
+					? `${context.file.replace(/\.[^.]+$/u, "")}.css`
+					: context.file;
 				return {
 					code,
-					outputExtension: ".css",
-					changed: compiled.css !== context.source,
+					...(outputPathNeedsRename ? { outputExtension: ".css" } : {}),
+					changed: code !== context.source || outputPathNeedsRename,
 					converted,
 					skipped,
 					generatedFiles: [],
 					loweringPlans: plans,
-					fileChanges: [],
+					fileChanges: outputPathNeedsRename ? stylesheetConsumerChanges(context, outputFile) : [],
 					residuals,
 					validations,
 					outcomes: parsed.matches.map((match, index) => ({
@@ -1499,7 +1641,7 @@ export function createPreprocessorFileMigration(
 	};
 }
 
-function cssModuleConsumerChanges(
+function stylesheetConsumerChanges(
 	context: Parameters<AdapterFileMigration["run"]>[0],
 	outputFile: string,
 ): readonly import("./adapter-contract.ts").AdapterFileChange[] {
@@ -1512,7 +1654,7 @@ function cssModuleConsumerChanges(
 		const consumerFile = isAbsoluteDocumentPath(listedFile)
 			? joinDocumentPath(listedFile)
 			: joinDocumentPath(context.root, listedFile);
-		if (consumerFile === sourceFile || /\.(?:css|scss|sass|less)$/iu.test(consumerFile)) continue;
+		if (consumerFile === sourceFile) continue;
 		const source = context.readFile?.(listedFile);
 		if (source === undefined) continue;
 		const targetFile = isAbsoluteDocumentPath(outputFile)
@@ -1521,29 +1663,63 @@ function cssModuleConsumerChanges(
 		const oldSpecifier = relativeDocumentPath(dirnameDocumentPath(consumerFile), sourceFile);
 		const newSpecifier = relativeDocumentPath(dirnameDocumentPath(consumerFile), targetFile);
 		const normalizedOld = oldSpecifier.replace(/^\.\//u, "");
-		let hasStaticImport = false;
-		try {
-			const scanned = SOURCE_SCANNER_SERVICE.scan({
-				file: consumerFile,
-				source,
-			});
-			const bindings = SourceBindings.fromDocument(scanned.document);
-			hasStaticImport = bindings.fromModule(oldSpecifier).length > 0;
-		} catch {
-			// A malformed consumer is not safe to rewrite from a text match.
-		}
-		if (!hasStaticImport) continue;
 		let changed = false;
-		const code = source.replace(
-			/(\bfrom\s*|\bimport\s*\(|\brequire\s*\()(["'])([^"']+)(["'])/gu,
-			(full, prefix: string, quote: string, specifier: string, close: string) => {
-				if (specifier.replace(/^\.\//u, "") !== normalizedOld) return full;
+		const isStylesheet = /\.(?:css|scss|sass|less)$/iu.test(consumerFile);
+		let code = source;
+		if (isStylesheet) {
+			const importStatements = new PlainStylesheetSource()
+				.parse(source)
+				.nodes.filter(
+					(node) =>
+						node.kind === StylesheetSourceNodeKindTag.Statement &&
+						/^@(?:import|use|forward)\s/u.test(node.prelude),
+				);
+			code = source.replace(
+				/(@(?:import|use|forward)\s+(?:url\(\s*)?)(["'])([^"']+)(["'])(\s*\)?)/gu,
+				(
+					full,
+					prefix: string,
+					quote: string,
+					specifier: string,
+					close: string,
+					suffix: string,
+					offset: number,
+				) => {
+					if (
+						!importStatements.some(
+							(statement) => offset >= statement.start && offset < statement.end,
+						)
+					)
+						return full;
+					if (specifier.replace(/^\.\//u, "") !== normalizedOld) return full;
+					changed = true;
+					const relativePrefix = specifier.startsWith("./") ? "./" : "";
+					return `${prefix}${quote}${relativePrefix}${newSpecifier}${close}${suffix}`;
+				},
+			);
+		} else {
+			let references: ReturnType<typeof SourceBindings.fromDocument>["moduleReferences"] = [];
+			try {
+				const scanned = SOURCE_SCANNER_SERVICE.scan({ file: consumerFile, source });
+				if (!scanned.diagnostics.some((diagnostic) => diagnostic.kind === "parse")) {
+					references = SourceBindings.fromDocument(scanned.document).moduleReferences;
+				}
+			} catch {
+				// A malformed consumer is not safe to rewrite.
+			}
+			const matchingReferences = references
+				.filter((reference) => reference.source.replace(/^\.\//u, "") === normalizedOld)
+				.toSorted((left, right) => right.range.start - left.range.start);
+			for (const reference of matchingReferences) {
+				if (reference.range.start < 0 || reference.range.end > source.length) continue;
+				const quote = source[reference.range.start];
+				if ((quote !== '"' && quote !== "'") || source[reference.range.end - 1] !== quote) continue;
+				const relativePrefix = reference.source.startsWith("./") ? "./" : "";
+				code = `${code.slice(0, reference.range.start)}${quote}${relativePrefix}${newSpecifier}${quote}${code.slice(reference.range.end)}`;
 				changed = true;
-				const relativePrefix = specifier.startsWith("./") ? "./" : "";
-				return `${prefix}${quote}${relativePrefix}${newSpecifier}${close}`;
-			},
-		);
-		if (changed) {
+			}
+		}
+		if (changed && code !== source) {
 			const path = isAbsoluteDocumentPath(listedFile)
 				? relativeDocumentPath(context.root, listedFile)
 				: joinDocumentPath(listedFile);

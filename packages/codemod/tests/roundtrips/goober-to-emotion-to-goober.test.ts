@@ -168,8 +168,8 @@ test("goober -> emotion -> goober: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-		export const Card = // pandwind:migrate-skip (route: emotion -> goober | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ padding: "1rem", color: "red" });",
+		// pandwind:migrate-skip (route: emotion -> goober | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div({ padding: "1rem", color: "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

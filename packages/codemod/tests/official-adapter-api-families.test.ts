@@ -49,13 +49,19 @@ async function migrate(api: OfficialApiFamilyCase): Promise<AdapterMigrationResu
 		from: api.adapter,
 		to: CodemodAdapterId.Pandwind,
 		file: api.file ?? "App.tsx",
+		...(api.adapter === CodemodAdapterId.CssModules
+			? { root: "/project", readFile: () => undefined, listFiles: () => [] }
+			: {}),
 		mode: "safe",
 		semantic: { source: { framework: BuiltinHostFramework.React } },
 	});
 }
 
 function withoutMigrationMarkers(code: string): string {
-	return code.replace(/\/\/ pandwind:migrate-skip[^\n]*\n/g, "");
+	return code
+		.replace(/^[ \t]*\/\/ pandwind:migrate-skip[^\n]*\r?\n/gmu, "")
+		.replace(/^[ \t]*\/\* pandwind:migrate-skip[^\n]*\*\/[ \t]*\r?\n/gmu, "")
+		.replace(/^[ \t]*<!-- pandwind:migrate-skip[^\n]*-->[ \t]*\r?\n/gmu, "");
 }
 
 function normalizeSource(code: string): string {
@@ -265,14 +271,15 @@ describe("official adapter API families", () => {
 			  },
 			  "authored-css/at-rules": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
-			const css = createUnsafeCss();
-			const runtimeCss = createRuntimeCss(defaultPreset);
-			export const styles = { "card": css.class({ _osDark: { color: "white" } }), "pulse": (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
-			export default styles;",
-			    "converted": 2,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			@media (prefers-color-scheme: dark) {
+			  .card { color: white; }
+			}
+			@keyframes pulse {
+			  from { opacity: 0; }
+			  to { opacity: 1; }
+			}",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -282,7 +289,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			      {
@@ -298,36 +305,30 @@ describe("official adapter API families", () => {
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			      {
-			        "outcome": "target-native",
-			        "representation": "named-map",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
+			    "residuals": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
-			      },
-			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
+			        "preserved": undefined,
 			      },
 			    ],
+			    "skipped": 2,
+			    "validations": [],
 			  },
 			  "authored-css/multi-rule stylesheet": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
-			export default styles;",
-			    "converted": 2,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			.card { color: red; }
+			.title { font-weight: 600; }",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -337,7 +338,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			      {
@@ -347,38 +348,33 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
+			    "residuals": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
-			      },
-			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
+			        "preserved": undefined,
 			      },
 			    ],
+			    "skipped": 2,
+			    "validations": [],
 			  },
 			  "authored-css/non-class selectors": {
-			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+			    "changed": true,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 			:root { --brand: red; }
 			[data-theme="dark"] .card { color: white; }",
 			    "converted": 0,
@@ -417,12 +413,7 @@ describe("official adapter API families", () => {
 			    ],
 			    "residuals": [
 			      {
-			        "hint": "stylesheet migration requires a single local class selector",
-			        "kind": "capability",
-			        "preserved": undefined,
-			      },
-			      {
-			        "hint": "stylesheet migration requires a single local class selector",
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
 			        "kind": "capability",
 			        "preserved": undefined,
 			      },
@@ -495,8 +486,8 @@ describe("official adapter API families", () => {
 			  "chakra-ui/recipe usage": {
 			    "changed": true,
 			    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-			const buttonRecipe = // pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
-			defineRecipe({ base: { color: "red" } });
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			const buttonRecipe = defineRecipe({ base: { color: "red" } });
 			export const button = useRecipe({ recipe: buttonRecipe });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -648,8 +639,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { ClassNames } from "@compiled/react";
 			const color = "red";
-			export const Card = () => // pandwind:migrate-skip (route: compiled -> pandwind | parse-residual: component | available: named-map, residual)
-			<ClassNames>{({ css }) => <button className={css({ color })} />}</ClassNames>;",
+			// pandwind:migrate-skip (route: compiled -> pandwind | parse-residual: component | available: named-map, residual)
+			export const Card = () => <ClassNames>{({ css }) => <button className={css({ color })} />}</ClassNames>;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -844,8 +835,8 @@ describe("official adapter API families", () => {
 			    ],
 			  },
 			  "css-modules/global pseudo and descendant selectors": {
-			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+			    "changed": true,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 			:global(.footer) { color: gray; }",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1226,8 +1217,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createRenderer } from "fela";
 			const plugin = (element) => element;
-			export const renderer = // pandwind:migrate-skip (route: fela -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createRenderer({ plugins: [plugin] });",
+			// pandwind:migrate-skip (route: fela -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const renderer = createRenderer({ plugins: [plugin] });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1473,8 +1464,8 @@ describe("official adapter API families", () => {
 			    ],
 			  },
 			  "less/less mixin call": {
-			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: capability, parse)
+			    "changed": true,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 			.shadow() { box-shadow: 0 1px 2px black; }
 			.card { .shadow(); color: red; }",
 			    "converted": 0,
@@ -1512,13 +1503,8 @@ describe("official adapter API families", () => {
 			    ],
 			    "residuals": [
 			      {
-			        "hint": "stylesheet migration requires a single local class selector",
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
 			        "kind": "capability",
-			        "preserved": undefined,
-			      },
-			      {
-			        "hint": "stylesheet declaration requires a property and value",
-			        "kind": "parse",
 			        "preserved": undefined,
 			      },
 			    ],
@@ -1527,11 +1513,10 @@ describe("official adapter API families", () => {
 			  },
 			  "less/less plain rules": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
-			export default styles;",
-			    "converted": 2,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			.card { color: red; }
+			.title { font-weight: 600; }",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
@@ -1541,7 +1526,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			      {
@@ -1551,38 +1536,33 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
+			    "residuals": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
-			      },
-			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
+			        "preserved": undefined,
 			      },
 			    ],
+			    "skipped": 2,
+			    "validations": [],
 			  },
 			  "less/less variables and nesting": {
-			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+			    "changed": true,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 			@brand: red;
 			.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 			    "converted": 0,
@@ -1611,12 +1591,12 @@ describe("official adapter API families", () => {
 			        "preserved": undefined,
 			      },
 			      {
-			        "hint": "nested stylesheet rules require selector-aware lowering",
-			        "kind": "nesting",
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
 			        "preserved": undefined,
 			      },
 			    ],
-			    "skipped": 2,
+			    "skipped": 1,
 			    "validations": [],
 			  },
 			  "linaria/css prop": {
@@ -1696,8 +1676,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "// pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			import { MantineProvider } from "@mantine/core";
-			export const App = () => // pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: runtime-context | available: named-map, residual)
-			<MantineProvider theme={{ colors: { brand: ["red"] } }}><div /></MantineProvider>;",
+			// pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			export const App = () => <MantineProvider theme={{ colors: { brand: ["red"] } }}><div /></MantineProvider>;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1748,8 +1728,8 @@ describe("official adapter API families", () => {
 			  "mantine/classNames API": {
 			    "changed": true,
 			    "code": "import { Button } from "@mantine/core";
-			export const App = () => <Button // pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: host-framework | available: named-map, residual)
-			classNames={{ root: "button-root" }} />;",
+			// pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: host-framework | available: named-map, residual)
+			export const App = () => <Button classNames={{ root: "button-root" }} />;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1782,8 +1762,8 @@ describe("official adapter API families", () => {
 			  "mantine/styles API": {
 			    "changed": true,
 			    "code": "import { Button } from "@mantine/core";
-			export const App = () => <Button // pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: host-framework | available: named-map, residual)
-			styles={{ root: { color: "red" } }} />;",
+			// pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: host-framework | available: named-map, residual)
+			export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1817,8 +1797,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			import { ThemeProvider } from "@mui/material";
-			export const App = () => // pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
-			<ThemeProvider theme={{ palette: { primary: { main: "red" } } }}><div /></ThemeProvider>;",
+			// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			export const App = () => <ThemeProvider theme={{ palette: { primary: { main: "red" } } }}><div /></ThemeProvider>;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1904,8 +1884,8 @@ describe("official adapter API families", () => {
 			  "mui/theme callback": {
 			    "changed": true,
 			    "code": "import { styled } from "@mui/system";
-			export const Card = // pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
-			styled("div")(({ theme }) => ({ color: theme.palette.primary.main }));",
+			// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			export const Card = styled("div")(({ theme }) => ({ color: theme.palette.primary.main }));",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2228,8 +2208,8 @@ describe("official adapter API families", () => {
 			  "react-native/Platform.select context": {
 			    "changed": true,
 			    "code": "import { Platform } from "react-native";
-			export const style = // pandwind:migrate-skip (route: react-native -> pandwind | parse-residual: framework-semantics | available: named-map, residual)
-			Platform.select({ ios: { padding: 8 }, android: { padding: 4 } });",
+			// pandwind:migrate-skip (route: react-native -> pandwind | parse-residual: framework-semantics | available: named-map, residual)
+			export const style = Platform.select({ ios: { padding: 8 }, android: { padding: 4 } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2334,8 +2314,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { compat } from "react-strict-dom";
 			import { Text } from "react-native";
-			export const Label = () => // pandwind:migrate-skip (route: react-strict-dom -> pandwind | parse-residual: capability | available: named-map, residual)
-			<compat.native as="text">{(props) => <Text {...props} />}</compat.native>;",
+			// pandwind:migrate-skip (route: react-strict-dom -> pandwind | parse-residual: capability | available: named-map, residual)
+			export const Label = () => <compat.native as="text">{(props) => <Text {...props} />}</compat.native>;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2368,8 +2348,8 @@ describe("official adapter API families", () => {
 			  "react-strict-dom/css.createTheme context": {
 			    "changed": true,
 			    "code": "import { css } from "react-strict-dom";
-			export const theme = // pandwind:migrate-skip (route: react-strict-dom -> pandwind | parse-residual: configuration | available: named-map, residual)
-			css.createTheme({ accent: "red" });",
+			// pandwind:migrate-skip (route: react-strict-dom -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const theme = css.createTheme({ accent: "red" });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2472,8 +2452,8 @@ describe("official adapter API families", () => {
 			    ],
 			  },
 			  "sass/scss mixins": {
-			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: capability, parse)
+			    "changed": true,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 			@mixin flex($gap) { display: flex; gap: $gap; }
 			.card { @include flex(1rem); }",
 			    "converted": 0,
@@ -2502,17 +2482,17 @@ describe("official adapter API families", () => {
 			        "preserved": undefined,
 			      },
 			      {
-			        "hint": "stylesheet declaration requires a property and value",
-			        "kind": "parse",
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
 			        "preserved": undefined,
 			      },
 			    ],
-			    "skipped": 2,
+			    "skipped": 1,
 			    "validations": [],
 			  },
 			  "sass/scss module use": {
-			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+			    "changed": true,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 			@use "sass:math";
 			.card { padding: 1rem; }",
 			    "converted": 0,
@@ -2525,7 +2505,7 @@ describe("official adapter API families", () => {
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "named-map",
 			        "residuals": [],
 			      },
 			    ],
@@ -2541,13 +2521,18 @@ describe("official adapter API families", () => {
 			        "kind": "parse",
 			        "preserved": undefined,
 			      },
+			      {
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
 			    ],
 			    "skipped": 1,
 			    "validations": [],
 			  },
 			  "sass/scss variables and nesting": {
-			    "changed": false,
-			    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+			    "changed": true,
+			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
 			$brand: red;
 			.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 			    "converted": 0,
@@ -2576,12 +2561,12 @@ describe("official adapter API families", () => {
 			        "preserved": undefined,
 			      },
 			      {
-			        "hint": "nested stylesheet rules require selector-aware lowering",
-			        "kind": "nesting",
+			        "hint": "global stylesheet selectors cannot become an unreferenced class map",
+			        "kind": "capability",
 			        "preserved": undefined,
 			      },
 			    ],
-			    "skipped": 2,
+			    "skipped": 1,
 			    "validations": [],
 			  },
 			  "solid-styled/prop callback": {
@@ -2899,8 +2884,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "// pandwind:migrate-skip (route: styled-components -> pandwind | parse-residual: runtime-context | available: named-map, residual)
 			import { ThemeProvider } from "styled-components";
-			export const App = () => // pandwind:migrate-skip (route: styled-components -> pandwind | parse-residual: runtime-context | available: named-map, residual)
-			<ThemeProvider theme={{ colors: { brand: "red" } }}><div /></ThemeProvider>;",
+			// pandwind:migrate-skip (route: styled-components -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			export const App = () => <ThemeProvider theme={{ colors: { brand: "red" } }}><div /></ThemeProvider>;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3207,8 +3192,8 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import * as stylex from "@stylexjs/stylex";
 			import { vars } from "./vars";
-			export const theme = // pandwind:migrate-skip (route: stylex -> pandwind | parse-residual: configuration | available: named-map, residual)
-			stylex.createTheme(vars, { accent: "blue" });",
+			// pandwind:migrate-skip (route: stylex -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const theme = stylex.createTheme(vars, { accent: "blue" });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3348,8 +3333,8 @@ describe("official adapter API families", () => {
 			  },
 			  "tailwind/arbitrary utility": {
 			    "changed": true,
-			    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
-			<div className="[color:rebeccapurple] md:[display:flex]" />;",
+			    "code": "// pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+			export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3410,8 +3395,8 @@ describe("official adapter API families", () => {
 			  },
 			  "tailwind/custom variant candidate": {
 			    "changed": true,
-			    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
-			<div className="[&[data-state=active]]:[color:red]" />;",
+			    "code": "// pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+			export const App = () => <div className="[&[data-state=active]]:[color:red]" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3457,8 +3442,8 @@ describe("official adapter API families", () => {
 			  },
 			  "tailwind/unknown project utility": {
 			    "changed": true,
-			    "code": "export const App = () => // pandwind:migrate-skip (route: tailwind -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
-			<div className="btn-primary" />;",
+			    "code": "// pandwind:migrate-skip (route: tailwind -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
+			export const App = () => <div className="btn-primary" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3520,8 +3505,8 @@ describe("official adapter API families", () => {
 			  "tamagui/styled theme callback": {
 			    "changed": true,
 			    "code": "import { styled, View } from "tamagui";
-			export const Card = // pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: function-dynamic | available: named-map, residual)
-			styled(View, ({ theme }) => ({ color: theme.color }));",
+			// pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: function-dynamic | available: named-map, residual)
+			export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3637,8 +3622,8 @@ describe("official adapter API families", () => {
 			  "treat/createTheme context": {
 			    "changed": true,
 			    "code": "import { createTheme } from "treat";
-			export const theme = // pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createTheme({ colors: { brand: "red" } });",
+			// pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const theme = createTheme({ colors: { brand: "red" } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3717,8 +3702,8 @@ describe("official adapter API families", () => {
 			  },
 			  "unocss/unknown shortcut": {
 			    "changed": true,
-			    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
-			<div className="btn-primary" />;",
+			    "code": "// pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
+			export const App = () => <div className="btn-primary" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3750,8 +3735,8 @@ describe("official adapter API families", () => {
 			  },
 			  "unocss/variant utility": {
 			    "changed": true,
-			    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> pandwind | lowering-residual: capability, validation)
-			<div className="hover:[background-color:black] md:[display:flex]" />;",
+			    "code": "// pandwind:migrate-skip (route: unocss -> pandwind | lowering-residual: capability, validation)
+			export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3798,8 +3783,8 @@ describe("official adapter API families", () => {
 			  "vanilla-extract/createTheme": {
 			    "changed": true,
 			    "code": "import { createTheme } from "@vanilla-extract/css";
-			export const themeClass = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createTheme({ colors: { brand: "red" } });",
+			// pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const themeClass = createTheme({ colors: { brand: "red" } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -4037,8 +4022,8 @@ describe("official adapter API families", () => {
 			  "vanilla-extract/theme contract": {
 			    "changed": true,
 			    "code": "import { createThemeContract } from "@vanilla-extract/css";
-			export const vars = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createThemeContract({ colors: { brand: null } });",
+			// pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const vars = createThemeContract({ colors: { brand: null } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -4109,10 +4094,11 @@ describe("official adapter API families", () => {
 			  "vue-styled/theme callback": {
 			    "changed": true,
 			    "code": "<script setup>
-			import { createUnsafeCss } from "pandwind/unsafe/css";
-			const css = createUnsafeCss();
+			import { createRuntimeCss } from "pandwind/css/runtime";
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
 
-			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-e5b0p9", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-e5b0p9"; return component; })();
+			const Card = (props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }) => { const style = runtimeCss.vars({ color: (props => props.color)(props) }); const ResolvedComponent = props.as ?? "div"; const { as: _as, ...rest } = props; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => !key.startsWith("$"))); const attrs = {}; return <ResolvedComponent {...attrs} {...forwarded} className={runtimeCss.props(style, props.className).className} style={{ ...props.style, ...style.style }} />; };
 			</script>
 			<template><Card color="red" /></template>",
 			    "converted": 1,

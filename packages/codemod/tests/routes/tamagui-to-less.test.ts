@@ -48,8 +48,8 @@ test("tamagui -> less: migrates concrete tamagui syntax to less", () => {
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> less | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "red", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> less | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -78,6 +78,11 @@ test("tamagui -> less: migrates concrete tamagui syntax to less", () => {
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -94,8 +99,8 @@ test("tamagui -> less: carries a documented secondary tamagui API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> less | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> less | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -127,6 +132,11 @@ test("tamagui -> less: carries a documented secondary tamagui API explicitly", (
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -152,8 +162,8 @@ test("tamagui -> less: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> less | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> less | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -182,6 +192,11 @@ test("tamagui -> less: loads concrete theme and project context variants", async
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -189,8 +204,8 @@ test("tamagui -> less: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> less | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> less | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -216,6 +231,11 @@ test("tamagui -> less: loads concrete theme and project context variants", async
 		    "residuals": [
 		      {
 		        "hint": "components: component subject: styled(View)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -238,8 +258,8 @@ test("tamagui -> less: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> less | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> less | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -268,6 +288,11 @@ test("tamagui -> less: resolves concrete token values with project context", asy
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -284,8 +309,8 @@ test("tamagui -> less: preserves malformed concrete tamagui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> less | capability-blocked: components: component subject: styled(View) | available: static, residual)
-		styled(View, { color: "red", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> less | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 0,
@@ -312,6 +337,11 @@ test("tamagui -> less: preserves malformed concrete tamagui input", () => {
 		  "residuals": [
 		    {
 		      "hint": "components: component subject: styled(View)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

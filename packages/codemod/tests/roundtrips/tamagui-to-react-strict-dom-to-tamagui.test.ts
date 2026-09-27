@@ -50,8 +50,8 @@ test("tamagui -> react-strict-dom -> tamagui: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "red", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,8 +88,8 @@ test("tamagui -> react-strict-dom -> tamagui: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "red", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,8 +116,8 @@ test("tamagui -> react-strict-dom -> tamagui: retains the documented secondary A
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | parse-residual: function-dynamic | lowering-residual: host-framework | capability-blocked: components: component subject: View | available: named-map, residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | parse-residual: function-dynamic | lowering-residual: host-framework | capability-blocked: components: component subject: View | available: named-map, residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -162,8 +162,8 @@ test("tamagui -> react-strict-dom -> tamagui: retains the documented secondary A
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | parse-residual: function-dynamic | lowering-residual: host-framework | capability-blocked: components: component subject: View | available: named-map, residual)
-		styled(View, ({ theme }) => ({ color: theme.color }));",
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | parse-residual: function-dynamic | lowering-residual: host-framework | capability-blocked: components: component subject: View | available: named-map, residual)
+		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -204,8 +204,8 @@ test("tamagui -> react-strict-dom -> tamagui: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -242,8 +242,8 @@ test("tamagui -> react-strict-dom -> tamagui: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -258,8 +258,8 @@ test("tamagui -> react-strict-dom -> tamagui: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -296,8 +296,8 @@ test("tamagui -> react-strict-dom -> tamagui: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -326,8 +326,8 @@ test("tamagui -> react-strict-dom -> tamagui: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -364,8 +364,8 @@ test("tamagui -> react-strict-dom -> tamagui: resolves token values across both 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
-		styled(View, { color: "#2563eb", padding: "$4" });
+		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

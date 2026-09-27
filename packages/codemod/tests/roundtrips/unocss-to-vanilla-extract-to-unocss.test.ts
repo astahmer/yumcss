@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodA
 
 test("unocss -> vanilla-extract -> unocss: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -49,9 +49,9 @@ test("unocss -> vanilla-extract -> unocss: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -69,54 +69,31 @@ test("unocss -> vanilla-extract -> unocss: preserves an actionable concrete roun
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -124,7 +101,7 @@ test("unocss -> vanilla-extract -> unocss: preserves an actionable concrete roun
 
 test("unocss -> vanilla-extract -> unocss: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.css.ts", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "unocss -> vanilla-extract round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -134,8 +111,8 @@ test("unocss -> vanilla-extract -> unocss: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -164,14 +141,19 @@ test("unocss -> vanilla-extract -> unocss: retains the documented secondary API 
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		<div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -186,9 +168,9 @@ test("unocss -> vanilla-extract -> unocss: retains the documented secondary API 
 
 test("unocss -> vanilla-extract -> unocss: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.css.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.VanillaExtract);
@@ -210,45 +192,8 @@ test("unocss -> vanilla-extract -> unocss: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#f97316" })}/>;",
-		      "converted": 1,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={// pandwind:migrate-skip (route: vanilla-extract -> unocss | lowering-residual: validation)
-		style({ padding: "1.125rem", color: "#f97316" })}/>;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,65 +218,32 @@ test("unocss -> vanilla-extract -> unocss: preserves concrete theme and project 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
+		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
-		        },
-		      ],
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#2563eb" })}/>;",
-		      "converted": 1,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={// pandwind:migrate-skip (route: vanilla-extract -> unocss | lowering-residual: validation)
-		style({ padding: "1.125rem", color: "#2563eb" })}/>;",
+		      "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -356,21 +268,25 @@ test("unocss -> vanilla-extract -> unocss: preserves concrete theme and project 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
+		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
-		        },
-		      ],
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -379,7 +295,7 @@ test("unocss -> vanilla-extract -> unocss: preserves concrete theme and project 
 
 test("unocss -> vanilla-extract -> unocss: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.css.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.UnoCSS, CodemodAdapterId.VanillaExtract);
 	expectRouteScenarioEvidence(first, "unocss -> vanilla-extract round-trip token forward");
@@ -390,45 +306,8 @@ test("unocss -> vanilla-extract -> unocss: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={style({ padding: "1.125rem", color: "#2563eb" })}/>;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const App = () => <div className={// pandwind:migrate-skip (route: vanilla-extract -> unocss | lowering-residual: validation)
-		style({ padding: "1.125rem", color: "#2563eb" })}/>;",
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -453,21 +332,25 @@ test("unocss -> vanilla-extract -> unocss: resolves token values across both con
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		export const App = () => <div className="text-brand p-card" />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
 		  },
 		}
 	`)

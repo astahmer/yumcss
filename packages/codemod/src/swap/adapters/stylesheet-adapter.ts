@@ -8,12 +8,8 @@ import type {
 	AdapterProjectConfig,
 	AdapterDependencies,
 } from "../adapter-contract.ts";
-import {
-	AdapterOfficialApiStatusTag,
-	CodemodAdapterId,
-	StyleRepresentationKind,
-} from "../identifiers.ts";
-import { StyleProgramResidualKindTag, StyleRuleKindTag } from "../semantic-ir.ts";
+import { AdapterOfficialApiStatusTag, CodemodAdapterId } from "../identifiers.ts";
+import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import {
 	createPreprocessorFileMigration,
 	createStylesheetFileMigration,
@@ -93,18 +89,13 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 					? baseMigration
 					: createPreprocessorFileMigration(baseMigration, definition.compiler),
 			targetPolicy: {
-				// Stylesheet targets own authored documents, not TS call-site
-				// carriers. A standalone static class expression still has a
-				// portable home in the generated artifact, so it resolves to the
-				// shared portable carrier instead of splicing selector-less
-				// declarations into the host source.
-				resolveRepresentation: ({ program, hasHostContext }) =>
-					hasHostContext === false &&
-					program.source?.hostOpenTag === undefined &&
-					program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style) &&
-					program.residuals.length === 0
-						? StyleRepresentationKind.PortableArtifact
-						: undefined,
+				preflight: ({ source }) => [
+					{
+						kind: StyleProgramResidualKindTag.Capability,
+						text: source,
+						hint: `${definition.name} emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact`,
+					},
+				],
 			},
 		},
 		emit: (program, renderers) => ({

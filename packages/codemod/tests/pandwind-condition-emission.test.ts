@@ -4,7 +4,7 @@ import { CodemodAdapterId, runAdapterMigration } from "../src/swap/index.ts";
 test("Pandwind emission keeps built-in condition keys", () => {
 	const result = runAdapterMigration(
 		'import { css } from "styled-system/css";\n' +
-			'export const card = css({ color: "red.300", _hover: { color: "blue.300" } });',
+			'export const card = css({ color: "red", _hover: { color: "blue" } });',
 		{
 			from: CodemodAdapterId.Panda,
 			to: CodemodAdapterId.Pandwind,
@@ -14,14 +14,14 @@ test("Pandwind emission keeps built-in condition keys", () => {
 	);
 
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('_hover: { color: "blue.300" }');
+	expect(result.code).toContain('_hover: { color: "blue" }');
 	expect(result.code).not.toContain('"&:hover"');
 });
 
 test("Pandwind emission keeps authored preset condition keys", () => {
 	const result = runAdapterMigration(
 		'import { css } from "styled-system/css";\n' +
-			'export const card = css({ _focus: { color: "blue.300" } });',
+			'export const card = css({ _focus: { color: "blue" } });',
 		{
 			from: CodemodAdapterId.Panda,
 			to: CodemodAdapterId.Pandwind,
@@ -31,14 +31,14 @@ test("Pandwind emission keeps authored preset condition keys", () => {
 	);
 
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('_focus: { color: "blue.300" }');
+	expect(result.code).toContain('_focus: { color: "blue" }');
 	expect(result.code).not.toContain('"&:focus"');
 });
 
 test("Pandwind emission preserves undeclared condition residuals", () => {
 	const result = runAdapterMigration(
 		'import { css } from "styled-system/css";\n' +
-			'export const card = css({ _brand: { color: "red.300" } });',
+			'export const card = css({ _brand: { color: "red" } });',
 		{
 			from: CodemodAdapterId.Panda,
 			to: CodemodAdapterId.Pandwind,
@@ -64,7 +64,7 @@ test("Pandwind emission preserves undeclared condition residuals", () => {
 test("Pandwind emission uses target project condition catalogs", () => {
 	const result = runAdapterMigration(
 		'import { css } from "styled-system/css";\n' +
-			'export const card = css({ _brand: { color: "red.300" } });',
+			'export const card = css({ _brand: { color: "red" } });',
 		{
 			from: CodemodAdapterId.Panda,
 			to: CodemodAdapterId.Pandwind,
@@ -77,13 +77,13 @@ test("Pandwind emission uses target project condition catalogs", () => {
 	);
 
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('_brand: { color: "red.300" }');
+	expect(result.code).toContain('_brand: { color: "red" }');
 });
 
 test("Pandwind emission maps common raw pseudo selectors to preset keys", () => {
 	const result = runAdapterMigration(
 		'import { css } from "styled-system/css";\n' +
-			'export const card = css({ "&:hover": { color: "blue.300" }, "&::before": { content: "" } });',
+			'export const card = css({ "&:hover": { color: "blue" }, "&::before": { content: "" } });',
 		{
 			from: CodemodAdapterId.Panda,
 			to: CodemodAdapterId.Pandwind,
@@ -93,7 +93,7 @@ test("Pandwind emission maps common raw pseudo selectors to preset keys", () => 
 	);
 
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('_hover: { color: "blue.300" }');
+	expect(result.code).toContain('_hover: { color: "blue" }');
 	expect(result.code).toContain('_before: { content: "" }');
 	expect(result.code).not.toContain('"&:hover"');
 	expect(result.code).not.toContain('"&::before"');
@@ -103,9 +103,12 @@ test("Pandwind emission reuses preset condition keys for stylesheet sources", ()
 	const media = runAdapterMigration(
 		"@media (prefers-color-scheme: dark) { .card { color: white; } }",
 		{
-			from: CodemodAdapterId.AuthoredCss,
+			from: CodemodAdapterId.CssModules,
 			to: CodemodAdapterId.Pandwind,
-			file: "card.css",
+			file: "Card.module.css",
+			root: "/project",
+			readFile: () => undefined,
+			listFiles: () => [],
 			mode: "safe",
 		},
 	);
@@ -113,6 +116,9 @@ test("Pandwind emission reuses preset condition keys for stylesheet sources", ()
 		from: CodemodAdapterId.CssModules,
 		to: CodemodAdapterId.Pandwind,
 		file: "Card.module.css",
+		root: "/project",
+		readFile: () => undefined,
+		listFiles: () => [],
 		mode: "safe",
 	});
 

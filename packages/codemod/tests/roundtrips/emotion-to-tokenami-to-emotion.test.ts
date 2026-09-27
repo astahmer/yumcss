@@ -333,8 +333,8 @@ test("emotion -> tokenami -> emotion: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
-		css({ padding: "1rem", color: "$colors.brand" });",
+		// pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -426,8 +426,8 @@ test("emotion -> tokenami -> emotion: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
-		css({ padding: "1rem", color: "$colors.brand" });",
+		// pandwind:migrate-skip (route: tokenami -> emotion | lowering-residual: validation)
+		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

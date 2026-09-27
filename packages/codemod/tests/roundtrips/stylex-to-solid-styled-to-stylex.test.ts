@@ -31,7 +31,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.StyleX, CodemodA
 
 test("stylex -> solid-styled -> stylex: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -86,8 +86,8 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "padding": "8px", "color": "red" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "padding": "8px", "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -112,8 +112,13 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "stylex has no host representation for solid",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -126,7 +131,7 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 
 test("stylex -> solid-styled -> stylex: retains the documented secondary API without silent loss", () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "stylex -> solid-styled round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
@@ -173,8 +178,8 @@ test("stylex -> solid-styled -> stylex: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "color": "red" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -199,8 +204,13 @@ test("stylex -> solid-styled -> stylex: retains the documented secondary API wit
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "stylex has no host representation for solid",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -213,9 +223,9 @@ test("stylex -> solid-styled -> stylex: retains the documented secondary API wit
 
 test("stylex -> solid-styled -> stylex: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.SolidStyled);
@@ -275,8 +285,8 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -301,8 +311,13 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
+		          "hint": "components: component subject: styled.div; framework-semantics: solid",
 		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "stylex has no host representation for solid",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -350,8 +365,8 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -376,8 +391,13 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
+		          "hint": "components: component subject: styled.div; framework-semantics: solid",
 		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "stylex has no host representation for solid",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -391,7 +411,7 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 
 test("stylex -> solid-styled -> stylex: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyleX, CodemodAdapterId.SolidStyled);
 	expectRouteScenarioEvidence(first, "stylex -> solid-styled round-trip token forward");
@@ -439,8 +459,8 @@ test("stylex -> solid-styled -> stylex: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -465,8 +485,13 @@ test("stylex -> solid-styled -> stylex: resolves token values across both concre
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "stylex has no host representation for solid",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],

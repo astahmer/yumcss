@@ -48,8 +48,8 @@ test("jss -> tamagui: migrates concrete jss syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		createUseStyles({ card: { color: "red" } });",
+		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -91,8 +91,8 @@ test("jss -> tamagui: carries a documented secondary jss API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		export const sheet = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		jss.createStyleSheet({ card: { color: "red" } });",
+		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,8 +143,8 @@ test("jss -> tamagui: loads concrete theme and project context variants", async 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		createUseStyles({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,8 +177,8 @@ test("jss -> tamagui: loads concrete theme and project context variants", async 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		createUseStyles({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,8 +223,8 @@ test("jss -> tamagui: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		createUseStyles({ card: { color: "#2563eb" } });",
+		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,8 +266,8 @@ test("jss -> tamagui: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
-		createUseStyles({ card: { color: "red" } });
+		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 0,
 		  "generatedFiles": [],

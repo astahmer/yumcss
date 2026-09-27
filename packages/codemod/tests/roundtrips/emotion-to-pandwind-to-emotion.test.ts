@@ -340,8 +340,9 @@ test("emotion -> pandwind -> emotion: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "brand" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -434,8 +435,9 @@ test("emotion -> pandwind -> emotion: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
-		css.class({ padding: "1rem", color: "brand" });",
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> emotion | lowering-residual: validation)
+		export const card = css.class({ padding: "1rem", color: "brand" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

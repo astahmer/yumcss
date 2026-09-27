@@ -61,8 +61,8 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createStitches } from "@stitches/react";
 			const { css } = createStitches({ theme: { colors: { brand: "#123456" } } });
-			export const card = // pandwind:migrate-skip (route: stitches -> pandwind | parse-residual: configuration | available: named-map, residual)
-			css({ color: "$colors$missing" });"
+			// pandwind:migrate-skip (route: stitches -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const card = css({ color: "$colors$missing" });"
 		`);
 	});
 
@@ -154,10 +154,10 @@ describe("remaining adapter-owned custom semantics", () => {
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { defaultPreset } from "pandwind/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			export const contract = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createThemeContract({ colors: { brand: null } });
-			export const theme = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createTheme(contract, { colors: { brand: "#123456" } });
+			// pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const contract = createThemeContract({ colors: { brand: null } });
+			// pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
+			export const theme = createTheme(contract, { colors: { brand: "#123456" } });
 			export const card = runtimeCss.class({ color: contract.colors.brand });"
 		`);
 	});
@@ -186,8 +186,8 @@ describe("remaining adapter-owned custom semantics", () => {
 			import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.vars({ color: theme.colors.brand });
-			export const App = () => // pandwind:migrate-skip (route: emotion -> pandwind | parse-residual: runtime-context | available: named-map, residual)
-			<ThemeProvider theme={theme}><div /></ThemeProvider>;"
+			// pandwind:migrate-skip (route: emotion -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			export const App = () => <ThemeProvider theme={theme}><div /></ThemeProvider>;"
 		`);
 	});
 
@@ -273,8 +273,8 @@ describe("remaining adapter-owned custom semantics", () => {
 			"import { createRuntimeCss } from "pandwind/css/runtime";
 			import { defaultPreset } from "pandwind/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			import { createTheme } from "treat"; export const theme = // pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createTheme({ color: "#123456" }); export const card = runtimeCss.class({ color: theme.color });"
+			// pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
+			import { createTheme } from "treat"; export const theme = createTheme({ color: "#123456" }); export const card = runtimeCss.class({ color: theme.color });"
 		`);
 	});
 
@@ -293,8 +293,8 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			import { createRenderer } from "fela"; const renderer = // pandwind:migrate-skip (route: fela -> pandwind | parse-residual: configuration | available: named-map, residual)
-			createRenderer({ plugins: [myPlugin] }); export const card = css.class({ color: "red" });"
+			// pandwind:migrate-skip (route: fela -> pandwind | parse-residual: configuration | available: named-map, residual)
+			import { createRenderer } from "fela"; const renderer = createRenderer({ plugins: [myPlugin] }); export const card = css.class({ color: "red" });"
 		`);
 	});
 
@@ -313,8 +313,8 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			import { setup } from "goober"; // pandwind:migrate-skip (route: goober -> pandwind | parse-residual: configuration | available: named-map, residual)
-			setup(React.createElement); export const card = css.vars({ color: theme.colors.brand });"
+			// pandwind:migrate-skip (route: goober -> pandwind | parse-residual: configuration | available: named-map, residual)
+			import { setup } from "goober"; setup(React.createElement); export const card = css.vars({ color: theme.colors.brand });"
 		`);
 	});
 

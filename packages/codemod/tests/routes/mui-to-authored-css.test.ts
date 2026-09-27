@@ -48,8 +48,8 @@ test("mui -> authored-css: migrates concrete mui syntax to authored-css", () => 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: validation)
-		<Box sx={{ color: "red", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -73,21 +73,13 @@ test("mui -> authored-css: migrates concrete mui syntax to authored-css", () => 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -101,8 +93,8 @@ test("mui -> authored-css: carries a documented secondary mui API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		export const Card = // pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: framework-semantics | available: residual, portable-artifact)
-		styled("div")({ color: "red", padding: 8 });",
+		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: framework-semantics, capability | available: residual)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -113,7 +105,6 @@ test("mui -> authored-css: carries a documented secondary mui API explicitly", (
 		      ],
 		      "availableRepresentations": [
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -127,13 +118,18 @@ test("mui -> authored-css: carries a documented secondary mui API explicitly", (
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
 		      "hint": "target lacks framework semantics",
 		      "kind": "framework-semantics",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -160,8 +156,8 @@ test("mui -> authored-css: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: validation)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,27 +181,19 @@ test("mui -> authored-css: loads concrete theme and project context variants", a
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: validation)
-		<Box sx={{ color: "primary.main", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,21 +217,13 @@ test("mui -> authored-css: loads concrete theme and project context variants", a
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "2 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "2 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -260,8 +240,8 @@ test("mui -> authored-css: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: validation)
-		<Box sx={{ color: "#2563eb", p: 2 }} />;",
+		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box sx={{ color: "#2563eb", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -285,21 +265,13 @@ test("mui -> authored-css: resolves concrete token values with project context",
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -313,8 +285,8 @@ test("mui -> authored-css: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: validation)
-		<Box sx={{ color: "red", p: 2 }} />;
+		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: capability | available: static, residual)
+		export const App = () => <Box sx={{ color: "red", p: 2 }} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -339,21 +311,13 @@ test("mui -> authored-css: preserves malformed concrete mui input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "2 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "2 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });

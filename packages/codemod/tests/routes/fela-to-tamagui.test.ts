@@ -92,8 +92,8 @@ test("fela -> tamagui: carries a documented secondary fela API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		export const Card = // pandwind:migrate-skip (route: fela -> tamagui | capability-blocked: components: component subject: styled("button") | available: static, residual)
-		createComponent(() => ({ color: "red" }), "button");",
+		// pandwind:migrate-skip (route: fela -> tamagui | capability-blocked: components: component subject: styled("button") | available: static, residual)
+		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -48,8 +48,8 @@ test("stitches -> mantine: migrates concrete stitches syntax to mantine", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", padding: "1rem" });",
+		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,8 +105,8 @@ test("stitches -> mantine: carries a documented secondary stitches API explicitl
 		{
 		  "changed": true,
 		  "code": "import { globalCss } from "@stitches/react";
-		export const reset = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: rule-level, validation)
-		globalCss({ body: { margin: 0 } });",
+		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: rule-level, validation)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -171,8 +171,8 @@ test("stitches -> mantine: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,8 +219,8 @@ test("stitches -> mantine: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -279,8 +279,8 @@ test("stitches -> mantine: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "#2563eb", padding: "1rem" });",
+		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -336,8 +336,8 @@ test("stitches -> mantine: preserves malformed concrete stitches input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		css({ color: "red", padding: "1rem" });
+		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 0,
 		  "generatedFiles": [],
