@@ -211,8 +211,8 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 
 test("A4 keeps Mantine hosts valid across Emotion, Chakra, and MUI routes", () => {
 	const fixture = {
-		input:
-			'import { Box } from "@mantine/core";\n' + 'export const App = () => <Box c="#123456" />;',
+		input: `import { Box } from "@mantine/core";
+export const App = () => <Box c="#123456" />;`,
 		emotionOutput:
 			'import { Box } from "@mantine/core";\n' +
 			'import { css } from "@emotion/css";\n' +
