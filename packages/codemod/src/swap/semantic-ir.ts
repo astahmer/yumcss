@@ -90,6 +90,7 @@ export const enum StyleProgramResidualKindTag {
 	UnknownUtility = "unknown-utility",
 	Composition = "composition",
 	Component = "component",
+	HostFramework = "host-framework",
 	PluginTransform = "plugin-transform",
 	UnmatchedSource = "unmatched-source",
 }

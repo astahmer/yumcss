@@ -411,7 +411,7 @@ export class TokenCatalog {
 		): typeof value => {
 			const group = groupForProperty(property);
 			if (group === undefined) return value;
-			const sourceFallback = () =>
+			const sourceFallback = (): StyleValue =>
 				value.kind === StyleValueKindTag.Token && value.resolved !== undefined
 					? { kind: StyleValueKindTag.Literal, value: value.resolved }
 					: value;

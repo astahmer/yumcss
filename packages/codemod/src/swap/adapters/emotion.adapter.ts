@@ -108,7 +108,9 @@ function detectEmotion(
 function canRewriteEmotionHost(program: StyleProgram): boolean {
 	const openingTag = program.source?.hostOpenTag;
 	if (openingTag === undefined) return true;
-	if ((program.source.hostStyleAttributes ?? []).some((attribute) => /^style\s*=/u.test(attribute)))
+	if (
+		(program.source?.hostStyleAttributes ?? []).some((attribute) => /^style\s*=/u.test(attribute))
+	)
 		return false;
 	const classAttributes = [...openingTag.matchAll(/(?:^|\s)(?:className|class)\s*=/gu)];
 	const classNames = [
@@ -133,6 +135,7 @@ function rewriteEmotionHost({
 	readonly residuals: StyleProgram["residuals"];
 } {
 	const openingTag = program.source?.hostOpenTag;
+	const hostStyleAttributes = program.source?.hostStyleAttributes ?? [];
 	if (openingTag === undefined)
 		return {
 			code,
@@ -145,7 +148,7 @@ function rewriteEmotionHost({
 				},
 			],
 		};
-	if ((program.source.hostStyleAttributes ?? []).some((attribute) => /^style\s*=/u.test(attribute)))
+	if (hostStyleAttributes.some((attribute) => /^style\s*=/u.test(attribute)))
 		return {
 			code,
 			imports: [],
@@ -171,7 +174,7 @@ function rewriteEmotionHost({
 			],
 		};
 	let host = openingTag;
-	for (const attribute of program.source.hostStyleAttributes ?? []) {
+	for (const attribute of hostStyleAttributes) {
 		const index = host.indexOf(attribute);
 		if (index < 0) continue;
 		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
