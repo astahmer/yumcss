@@ -10,6 +10,11 @@ promise complete framework parity: review each adapter’s [safety notes](/inter
 and the diagnostics from a dry run. Keep unsupported behavior in the source
 until the target behavior is verified.
 
+The registry is not a canonicality claim. Check the current
+[route audit](/interop/official-api-matrix/) for the exact primary-fixture
+outcome and separate project-proof maturity; unverified routes remain
+unverified even when their adapter is selectable.
+
 ## Tokenami
 
 The built-in Tokenami adapter loads the project's official config when

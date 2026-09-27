@@ -93,6 +93,21 @@ or a Pandwind class map depending on the source semantics.
 | [Less](https://lesscss.org/)                                     | variables; mixins; functions; guards; imports; nesting; interpolation                | The official Less compiler is a separate port from Sass. Static output can be emitted as authored CSS; Less-specific generation is never interpreted as Sass semantics.                                                                                              |
 | [Authored CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) | classes; selectors; nesting; globals; keyframes; fonts; layers; supports; properties | Rule-level CSS is parsed into `StyleProgram`. Local rules may be lowered; the narrow `preset.web` lane covers preset-owned flat globals, named keyframes, and font faces, while nesting, cascade-sensitive constructs, and unsupported at-rules remain authored CSS. |
 
+## Migration route canonicality
+
+The route registry and this API syntax matrix answer different questions. The
+current 1,024-pair canonicality audit records 32 canonical identity pairs, 177
+safe residual pairs, and 815 unverified pairs. No non-identity route is
+classified as canonical. `Safe residual` means the primary input stays visible
+with typed residual evidence; it is not a completed migration.
+
+Route maturity remains separate: 22 routes are experimental and 1,002 are
+research. Passing a fixture does not promote a route or prove an arbitrary
+project build, SSR, hydration, or browser behavior. Read the
+[full audit](https://github.com/astahmer/pandwind/blob/main/plans/evidence/codemod-canonicality-audit.md)
+and [route ledger](https://github.com/astahmer/pandwind/blob/main/plans/evidence/codemod-canonicality-route-ledger.json)
+before treating a route as supported.
+
 ## What the snapshots guarantee
 
 For each registered adapter, the primary and secondary matrix tests use
@@ -103,8 +118,9 @@ result contains the migration marker. The inline snapshots expose the exact
 route evidence for fast review; ordinary `expect` assertions prevent a
 snapshot update from turning a failed conversion into a green test.
 
-The matrix is intentionally not a promise that arbitrary configuration or
-plugin code can be inferred from syntax. Project-aware runs must load the
-official package/configuration context. If that context cannot be evaluated,
-the adapter reports a configuration residual instead of silently falling back
-to a default theme or utility catalog.
+The snapshots prove only their concrete conversion and residual contracts;
+they do not establish canonical target usage for every route. The audit keeps
+those results separate from installed-project proof. Project-aware runs must
+load the official package/configuration context. If that context cannot be
+evaluated, the adapter reports a configuration residual instead of silently
+falling back to a default theme or utility catalog.

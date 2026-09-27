@@ -46,18 +46,18 @@ export default defineConfig({
 					],
 				},
 				{
-					label: "Choose a styling API",
+					label: "Authoring and integration",
 					items: [
 						{
-							label: "Tailwind objects — tw()",
-							items: ["api/tw"],
-						},
-						{
-							label: "Atomic CSS objects — css()",
+							label: "Primary authoring — css()",
 							items: ["api/css"],
 						},
 						{
-							label: "Design vocabulary — design css()",
+							label: "Tailwind integration — tw()",
+							items: ["api/tw"],
+						},
+						{
+							label: "Design systems — createDesignCss()",
 							items: ["api/design-css"],
 						},
 						{

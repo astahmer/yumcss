@@ -1,12 +1,21 @@
 ---
 title: Tooling workflows
-description: Learn Pandwind in the Playground, inspect a project, and review migration output.
+description: Use supporting tools to explore css(), inspect project output, and preview migrations with route evidence.
 sidebar:
   order: 1
 ---
 
-These tools answer different questions. You do not need to run all of them to
-use Pandwind:
+`css()` with the Vite plugin is the default path for new code. These supporting
+tools answer different questions; you do not need to run all of them to use
+Pandwind:
+
+| Surface | Product role |
+| --- | --- |
+| `css()` and Vite extraction | Primary authoring and build path. |
+| `tw()` and `createDesignCss()` | Supporting workflows for existing Tailwind projects and named design systems. |
+| Playground, Inspector, Analyzer, Studio, DevTools, and MCP | Supporting tools for learning, inspection, and verification. |
+| Codemod and Migration Preview | Supporting migration tools; every route keeps its own proof status. |
+| Long-tail adapters and non-web backends | Research or experimental until target-project proof exists. |
 
 | You want to know…                        | Use…                  |
 | ---------------------------------------- | --------------------- |
@@ -177,6 +186,26 @@ The tools separate evidence that is easy to confuse:
 - **residual** means the source was kept because the target behavior was not
   proven equivalent.
 
+The codemod audit adds route-level canonicality outcomes:
+
+- **canonical** currently means an identity no-op;
+- **valid but noncanonical** means the exact example works but does not follow
+  the target's preferred form;
+- **incorrect or lossy** means the exact audited output changes or invalidates
+  behavior;
+- **safe residual** means the primary input stays visible with typed residual
+  evidence, so the migration is not complete; and
+- **unverified** means the output or its project-level behavior lacks enough
+  evidence to classify.
+
+The current audit records 32 canonical identity pairs, 177 safe residual pairs,
+and 815 unverified pairs. No non-identity route is classified as canonical.
+Route maturity is separate: 22 routes are experimental and 1,002 are research.
+Fixture results have not promoted a route. See the
+[full route audit](https://github.com/astahmer/pandwind/blob/main/plans/evidence/codemod-canonicality-audit.md)
+and [machine-readable ledger](https://github.com/astahmer/pandwind/blob/main/plans/evidence/codemod-canonicality-route-ledger.json)
+for exact inputs and outputs.
+
 That honesty is the point. A green browser sandbox result is useful feedback,
 but it is not the same thing as a successful project build or SSR proof.
 
@@ -185,13 +214,13 @@ but it is not the same thing as a successful project build or SSR proof.
 When learning:
 
 ```text
-Playground → copy the style → typecheck your app → inspect generated CSS
+css() setup → Playground exploration → typecheck your app → inspect generated CSS
 ```
 
 When migrating:
 
 ```text
-analyzer CLI → Migration Preview → codemod diff/report → typecheck/build/browser
+route audit → Migration Preview → codemod diff/report → typecheck/build/browser
 ```
 
 When running CI:

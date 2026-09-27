@@ -15,6 +15,11 @@ rewritten blindly. A migration has two targets:
 1. preserve observable styling with the smallest possible manual change; and
 2. make every unsupported or dynamic semantic explicit in a residual report.
 
+Check the route's canonicality and project-proof maturity in the
+[API matrix](/interop/official-api-matrix/) before scaling beyond a
+representative component. A registered adapter name alone does not establish
+target-native output or project-level support.
+
 ## The common workflow
 
 ### 1. Inventory the source
@@ -25,11 +30,12 @@ a representative fixture before changing the whole repository.
 
 ### 2. Prepare the target contract
 
-Create a Pandwind preset and decide whether the destination is:
+Create a Pandwind preset. `css()` is the default target for new Pandwind code.
+Use another target only when the project calls for that workflow:
 
-- `tw()` and Tailwind classes;
-- `css()` and an extracted atomic stylesheet; or
-- design `css()` with `$frame`, `$layout`, and `$text` vocabulary.
+- `tw()` and Tailwind classes when Tailwind remains the stylesheet engine; or
+- `createDesignCss()` with `$frame`, `$layout`, and `$text` when a component
+  library needs a named design vocabulary.
 
 Map source tokens into the preset before mapping component calls. A token
 conversion can be reused by every source adapter.

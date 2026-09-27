@@ -10,6 +10,19 @@ Status as of 2026-08-25 (plan
 steps 1–4 and 6 landed; canvas deferred). This is the guide to the
 `StyleBackend` layer and the non-web targets.
 
+## Product role and evidence
+
+| Surface | Product role |
+| --- | --- |
+| CSS backend and Vite extraction | Primary path for new Pandwind code. |
+| React Strict DOM backend | Supporting integration for projects already using that host. |
+| React Native and OpenTUI backends | Experimental targets; these examples describe the renderer contract, not broad app-level proof. |
+| Canvas backend | Deferred. |
+
+Use the web CSS path as the default. Non-web backends remain research or
+experimental until target-project behavior has exact proof; a shared style IR
+does not establish support for every platform.
+
 ## Why
 
 pandwind's differentiator is the design layer: a typed, token-constrained

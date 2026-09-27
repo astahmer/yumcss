@@ -11,19 +11,20 @@ needs something special.
 
 ## Start here
 
-| If you…                                  | Start with                                                       | Why                                                                                          |
-| ---------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| want typed CSS objects and atomic output | [`css()`](./docs/src/content/docs/api/css.md)                    | This is the default Pandwind API for new code: CSS objects in, deterministic atomic CSS out. |
-| are building a design system             | [`createDesignCss()`](./docs/src/content/docs/api/design-css.md) | Give components a small vocabulary such as `$frame`, `$layout`, and `$text`.                 |
-| already use Tailwind                     | [`tw()`](./docs/src/content/docs/api/tw.md)                      | Keep Tailwind's ecosystem while replacing fragile class strings with generated types.        |
-| need to combine existing styles          | [`cx()`](./docs/src/content/docs/api/cx.md)                      | Merge Pandwind output, ordinary class strings, and styles from other libraries.              |
-| are moving from another library          | [Migration guide](./docs/src/content/docs/guides/migrations.md)  | Preview a conversion, inspect what cannot be translated, then apply it deliberately.         |
+| If you…                                     | Start with                                                       | Why                                                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| are writing new styled components           | [`css()`](./docs/src/content/docs/api/css.md)                    | The primary Pandwind path: typed CSS objects in, deterministic atomic CSS out.              |
+| already use Tailwind and want typed objects | [`tw()`](./docs/src/content/docs/api/tw.md)                      | Keep Tailwind as the stylesheet engine and generate types from the project you have.        |
+| need a named design vocabulary              | [`createDesignCss()`](./docs/src/content/docs/api/design-css.md) | Give reusable components terms such as `$frame`, `$layout`, and `$text`.                     |
+| need to combine existing classes            | [`cx()`](./docs/src/content/docs/api/cx.md)                      | Compose Pandwind output with ordinary class strings and styles from other libraries.        |
+| are evaluating a move from another library  | [Migration guide](./docs/src/content/docs/guides/migrations.md)  | Preview route-specific output, residuals, and proof before applying a diff.                 |
 
 ## See it in action
 
 The repository includes a live playground, a project Inspector, analyzer
-coverage, and a read-only Migration Preview. These captures come from the running
-apps, not mock marketing screens.
+coverage, and a read-only Migration Preview. These supporting tools help you
+learn or verify the `css()` workflow; they are not extra setup steps. The
+captures come from running apps, not mock marketing screens.
 
 <table>
   <tr>
@@ -462,5 +463,7 @@ pnpm --filter pandwind-docs run dev
 ```
 
 The project is pre-launch and experimental tooling is labeled as such in the
-documentation. Start with the core web lanes; the analyzer, codemod, Migration Preview,
-backends, and integrations are separate tools with their own proof boundaries.
+documentation. Start new code with `css()`. Use `tw()` when Tailwind remains
+your stylesheet engine, and reach for design vocabulary or migration tools when
+the project calls for them. Long-tail adapter and backend fixtures do not by
+themselves establish project-level support.

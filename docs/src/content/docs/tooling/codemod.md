@@ -33,6 +33,13 @@ untouched when the target cannot represent the complete call, unless
 The built-in registry contains independently owned implementations for these
 source families:
 
+The registry shows which adapters can be selected, not which output is
+canonical or proven in an installed project. Check the
+[route audit](/interop/official-api-matrix/) before choosing a route; unverified
+and research routes stay labeled that way. Start with `--dry-run --diff
+--report`, review every residual, and validate the target project before
+applying a migration.
+
 | source family                                                                                                                                 | target examples                                          | adapter-owned behavior                                                                            |
 | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | `emotion`, `styled-components`, `linaria`, `jss`, `fela`, `goober`, `aphrodite`, `treat`, `compiled`, `style9`, `stitches`, `vanilla-extract` | `css.class`, `design`, external targets where registered | static declarations, templates, rule-level constructs, runtime/config capabilities, and residuals |

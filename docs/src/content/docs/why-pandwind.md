@@ -17,6 +17,8 @@ work it can prove.
 
 ## You should try it if…
 
+- you are writing new components and want typed CSS objects with extracted
+  atomic output;
 - your team already uses Tailwind and wants typed objects instead of long
   strings;
 - you want atomic CSS-in-JS but still care about extraction, SSR, and a small
@@ -39,10 +41,12 @@ every rule in an application move into a Pandwind function.
 
 ### Keep the core small
 
-There are three authoring lanes — `tw()`, `css()`, and design `css()` — plus
-`cx()` for composition. A project can use one lane without learning the other
-two. New convenience APIs are not added just to cover an edge case; the
-compiler and tooling should improve behind the stable surface instead.
+`css()` is the default path for new code. Use `tw()` to add typed objects to an
+existing Tailwind project, and use `createDesignCss()` when a component library
+needs its own design vocabulary. `cx()` composes existing classes across those
+workflows. You can adopt each supporting path only when the project needs it.
+New convenience APIs are not added just to cover an edge case; the compiler
+and tooling should improve behind the stable surface instead.
 
 ### Let the build handle known work
 
@@ -73,10 +77,11 @@ emits a plain `@keyframes` rule.
 ### Be honest about migrations
 
 The codemod has many adapters, but an adapter name is not a guarantee that an
-arbitrary production app is losslessly portable. Migration Preview and the CLI preserve
-unsupported source and report residuals for theme callbacks, recipes,
-framework behavior, runtime interpolation, and other semantics that need a
-human decision.
+arbitrary production app is losslessly portable. Migration Preview and the CLI
+show route output, residuals, and proof status. The [API matrix](/interop/official-api-matrix/)
+reports canonicality separately from project proof; unverified routes stay
+unverified. Theme callbacks, recipes, framework behavior, runtime
+interpolation, and other unsupported semantics need a human decision.
 
 ## The trade-off
 

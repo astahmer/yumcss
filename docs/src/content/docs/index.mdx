@@ -19,9 +19,9 @@ their design-system conventions, or an existing Tailwind workflow. For new
 Pandwind code, start with `createCss`; add the other lanes only when they solve
 a real problem.
 
-## Choose your starting point
+## Primary path: css()
 
-### I want typed CSS objects
+### Typed CSS objects for new code
 
 Use [`css()`](/api/css/) as the default Pandwind API. It authors ordinary CSS
 properties as typed objects and extracts static calls into atomic CSS without
@@ -35,7 +35,12 @@ const css = createCss(defaultPreset);
 const card = css.class({ display: "flex", flexDirection: "column", gap: "4", padding: "6" });
 ```
 
-### I am building a design system
+## Other workflows when a project calls for them
+
+If your project needs another styling workflow, add it alongside the primary
+path instead of learning every API up front.
+
+### I need a named design vocabulary
 
 Use [`createDesignCss()`](/api/design-css/) when component styles should read
 like design intent: `$frame`, `$layout`, `$text`, semantic tokens, and explicit
@@ -82,10 +87,18 @@ export const Card = () => (
 If you want Tailwind class output while keeping the `css()` property API, use
 the [`ClassNameStrategy` adapter](/interop/tailwind-adapter/) instead.
 
-### I am moving from another library
+### I need to combine existing classes
+
+Use [`cx()`](/api/cx/) when a component receives Pandwind classes alongside
+ordinary classes or styles from another library. It is a composition helper,
+not a separate authoring path.
+
+### I am evaluating a migration
 
 Start with the [migration guide](/guides/migrations/). Preview a diff, read the
-residuals, and validate the target before changing the source tree.
+residuals, and check the route's canonicality and project-proof tier before
+changing the source tree. The [API matrix](/interop/official-api-matrix/)
+separates audited output from project-level proof.
 
 ## What Pandwind does for you
 
@@ -95,13 +108,14 @@ residuals, and validate the target before changing the source tree.
   strings or extracted atomic CSS.
 - **Runtime values stay honest.** Dynamic colors, globals, fonts, and framework
   behavior use explicit escape hatches instead of pretending to be static.
-- **You can inspect the result.** The Playground explains styles, the Inspector
-  reports on a project, and Migration Preview shows changes and unresolved
-  behavior before files are edited.
+- **Supporting tools explain and check the result.** The Playground helps you
+  explore styles, the Inspector and Analyzer report on a project, and Migration
+  Preview shows route output and residuals before files are edited.
 
 ## Read next
 
 - [Getting started](/getting-started/) — the shortest explanation of the setup.
+- [Primary `css()` API](/api/css/) — start here for new code.
 - [Tailwind component patterns](/guides/basic/) — apply typed utilities to static and runtime choices after codegen is set up.
 - [Build a design system](/guides/design-system/) — tokens, themes, and
   component contracts.
