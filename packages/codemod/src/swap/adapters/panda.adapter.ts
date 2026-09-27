@@ -128,6 +128,36 @@ function pandaSourceValue(
 	};
 }
 
+const PANDA_TOKEN_REFERENCE = /^[A-Za-z_$][\w$-]*(?:\.[A-Za-z0-9_$-]+)+$/u;
+
+function unresolvedPandaTokenResiduals(
+	program: StyleProgram,
+	theme: PandaTheme | undefined,
+): StyleProgram["residuals"] {
+	const catalog = TokenCatalog.fromContract(theme?.tokenCatalog);
+	const residuals = new Map<string, StyleProgram["residuals"][number]>();
+	const inspect = (declaration: StyleProgram["declarations"][number]) => {
+		const value = declaration.value;
+		if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return;
+		if (!PANDA_TOKEN_REFERENCE.test(value.value)) return;
+		const property = theme?.utilityCatalog.resolveProperty(declaration.property) ?? declaration.property;
+		const group = pandaTokenGroup(property);
+		if (group === undefined || catalog?.findByReference([group], value.value) !== undefined) return;
+		residuals.set(`${property}:${value.value}`, {
+			kind: StyleProgramResidualKindTag.Configuration,
+			text: value.value,
+			hint: `Panda token reference '${value.value}' is unresolved without verified theme metadata`,
+		});
+	};
+	const visit = (rule: StyleProgram["rules"][number]) => {
+		rule.declarations.forEach(inspect);
+		rule.children.forEach(visit);
+	};
+	program.declarations.forEach(inspect);
+	program.rules.forEach(visit);
+	return [...residuals.values()];
+}
+
 function pandaSourceConditions(theme: PandaTheme | undefined): {
 	readonly conditionKinds: Readonly<Record<string, SemanticConditionKind>>;
 	readonly conditionValues: Readonly<Record<string, string>>;
@@ -262,7 +292,7 @@ async function officialPandaConfig(
 
 export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 	const moduleLoader = createPandaConfigLoader(options);
-	return defineCodemodAdapter({
+	const adapter = defineCodemodAdapter({
 		id: CodemodAdapterId.Panda,
 		officialApi: {
 			pluginSystems: ["presets", "plugins", "patterns", "recipes", "slot-recipes"],
@@ -422,4 +452,27 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			};
 		},
 	});
+	return {
+		...adapter,
+		parse(source: string, context: import("../adapter-contract.ts").AdapterParseContext) {
+			const parsed = adapter.parse(source, context);
+			if (context.targetId === CodemodAdapterId.Panda) return parsed;
+			const theme = context.config.values.pandaTheme as PandaTheme | undefined;
+			return {
+				...parsed,
+				matches: parsed.matches.map((match) => {
+					const residuals = unresolvedPandaTokenResiduals(match.program, theme);
+					return residuals.length === 0
+						? match
+						: {
+								...match,
+								program: {
+									...match.program,
+									residuals: [...match.program.residuals, ...residuals],
+								},
+							};
+				}),
+			};
+		},
+	};
 }

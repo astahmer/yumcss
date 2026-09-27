@@ -11,7 +11,7 @@ test("A1 preserves unresolved Panda token references with a configuration residu
 			'export const card = css({ color: "red.300", _hover: { color: "blue.300" } });',
 		expectedOutput:
 			'import { css } from "styled-system/css";\n' +
-			"export const card = // pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: static, named-map, residual)\n" +
+			"export const card = // pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
 			'css({ color: "red.300", _hover: { color: "blue.300" } });',
 	};
 	const result = pandaToLinaria.run({ source: fixture.input, file: "styles.ts" });
@@ -19,7 +19,7 @@ test("A1 preserves unresolved Panda token references with a configuration residu
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "expectedOutput": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)
 		css({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "input": "import { css } from "styled-system/css";
 		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
