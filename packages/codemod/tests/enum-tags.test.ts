@@ -17,9 +17,11 @@ describe("const-enum control tags", () => {
 			value: StyleValueKindTag.Dynamic,
 			rule: StyleRuleKindTag.Keyframes,
 			residual: StyleProgramResidualKindTag.DynamicCustomProperty,
+			hostFramework: StyleProgramResidualKindTag.HostFramework,
 		}).toMatchInlineSnapshot(`
 			{
 			  "condition": "media",
+			  "hostFramework": "host-framework",
 			  "residual": "dynamic-custom-property",
 			  "rule": "keyframes",
 			  "value": "dynamic",
