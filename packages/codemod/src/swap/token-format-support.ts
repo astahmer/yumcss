@@ -288,13 +288,27 @@ const scalarGroupsForExport = (
 				feature: "reference",
 				reason: "target format does not preserve token references",
 			});
-		else if (entry.value.kind !== "string")
+		else if (
+			entry.value.kind !== "string" &&
+			entry.value.kind !== "object" &&
+			entry.value.kind !== "number" &&
+			entry.value.kind !== "boolean"
+		)
 			losses.push({
 				path: `${fullPath}/$value`,
 				feature: "typed value",
 				reason: `target format accepts scalar strings; received ${entry.value.kind}`,
 			});
-		const stringValue = valueAsString(entry.value);
+		const stringValue = scalarValueForExport(entry);
+		if (stringValue === undefined) {
+			losses.push({
+				path: `${fullPath}/$value`,
+				feature: "unrepresentable value",
+				reason:
+					"target format has no valid scalar representation for this value; token was omitted",
+			});
+			return;
+		}
 		const values = groups[groupName] ?? (groups[groupName] = {});
 		if (Object.hasOwn(values, key))
 			losses.push({
@@ -312,6 +326,55 @@ const scalarGroupsForExport = (
 		});
 	visit(document.root, []);
 	return { groups, losses };
+};
+
+const scalarValueForExport = (entry: TokenEntry): string | undefined => {
+	const value = entry.value;
+	if (value.kind === "string" || value.kind === "number" || value.kind === "boolean")
+		return valueAsString(value);
+	if (value.kind !== "object") return undefined;
+	const type = entry.effectiveType ?? entry.type;
+	if (type === "dimension") {
+		const amount = value.entries.value;
+		const unit = value.entries.unit;
+		return amount?.kind === "number" && unit?.kind === "string"
+			? `${valueAsString(amount)}${unit.value}`
+			: undefined;
+	}
+	if (type !== "color") return undefined;
+	const colorSpace = value.entries.colorSpace;
+	const components = value.entries.components;
+	const alpha = value.entries.alpha;
+	if (colorSpace?.kind !== "string" || colorSpace.value !== "srgb" || components?.kind !== "array")
+		return undefined;
+	if (
+		components.items.length !== 3 ||
+		!components.items.every((component) => component.kind === "number")
+	)
+		return undefined;
+	if (alpha !== undefined && alpha.kind !== "number") return undefined;
+	const opacity = alpha?.kind === "number" ? alpha.value : 1;
+	const channels = components.items.map((component) =>
+		component.kind === "number" ? component.value : 0,
+	);
+	if (
+		!Number.isFinite(opacity) ||
+		opacity < 0 ||
+		opacity > 1 ||
+		channels.some((channel) => !Number.isFinite(channel) || channel < 0 || channel > 1)
+	)
+		return undefined;
+	const bytes = channels.map((channel) => Math.round(channel * 255));
+	const exactBytes = channels.every(
+		(channel, index) => Math.abs(channel * 255 - (bytes[index] ?? Number.NaN)) < 1e-8,
+	);
+	const alphaByte = Math.round(opacity * 255);
+	const exactAlphaByte = Math.abs(opacity * 255 - alphaByte) < 1e-8;
+	if (exactBytes && (opacity === 1 || exactAlphaByte))
+		return `#${[...bytes, ...(opacity === 1 ? [] : [alphaByte])]
+			.map((byte) => byte.toString(16).padStart(2, "0"))
+			.join("")}`;
+	return `color(srgb ${channels.map(String).join(" ")}${opacity === 1 ? "" : ` / ${opacity}`})`;
 };
 
 const valueAsString = (value: TokenValue): string => {
