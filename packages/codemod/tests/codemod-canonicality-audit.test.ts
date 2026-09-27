@@ -4,6 +4,9 @@ import { createAdapterRouteSpec } from "./route-spec-support.ts";
 
 const pandaToLinaria = createAdapterRouteSpec(CodemodAdapterId.Panda, CodemodAdapterId.Linaria);
 const mantineToLinaria = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Linaria);
+const mantineToEmotion = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Emotion);
+const mantineToChakra = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.ChakraUi);
+const mantineToMui = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Mui);
 
 test("A1 preserves unresolved Panda token references with a configuration residual", () => {
 	const fixture = {
@@ -115,4 +118,72 @@ test("A2 maps Mantine auto spacing and numeric dimensions to CSS semantics", () 
 	expect(result.code).toContain("max-width: calc(25rem * var(--mantine-scale))");
 	expect(result.code).not.toContain("--mantine-spacing-auto");
 	expect(result.code).not.toContain("max-width: 400;");
+});
+
+test("A4 keeps Mantine hosts valid across Emotion, Chakra, and MUI routes", () => {
+	const fixture = {
+		input:
+			'import { Box } from "@mantine/core";\n' +
+			'export const App = () => <Box c="#123456" />;',
+		emotionOutput:
+			'import { Box } from "@mantine/core";\n' +
+			'import { css } from "@emotion/css";\n' +
+			'export const App = () => <Box className={css({ color: "#123456" })}/>;',
+		chakraOutput:
+			'import { Box } from "@mantine/core";\n' +
+			"export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: named-map, residual)\n" +
+			'<Box c="#123456" />;',
+		muiOutput:
+			'import { Box } from "@mantine/core";\n' +
+			"export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: named-map, residual)\n" +
+			'<Box c="#123456" />;',
+	};
+	const options = {
+		source: fixture.input,
+		file: "App.tsx",
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+	};
+	const emotion = mantineToEmotion.run(options);
+	const chakra = mantineToChakra.run(options);
+	const mui = mantineToMui.run(options);
+
+	expect(fixture).toMatchInlineSnapshot(`
+		{
+		  "chakraOutput": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: named-map, residual)
+		<Box c="#123456" />;",
+		  "emotionOutput": "import { Box } from "@mantine/core";
+		import { css } from "@emotion/css";
+		export const App = () => <Box className={css({ color: "#123456" })}/>;",
+		  "input": "import { Box } from "@mantine/core";
+		export const App = () => <Box c="#123456" />;",
+		  "muiOutput": "import { Box } from "@mantine/core";
+		export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: named-map, residual)
+		<Box c="#123456" />;",
+		}
+	`);
+	expect(emotion.converted).toBe(1);
+	expect(emotion.skipped).toBe(0);
+	expect(emotion.residuals).toEqual([]);
+	expect(emotion.code).toBe(fixture.emotionOutput);
+	expect(emotion.code).toContain('import { Box } from "@mantine/core";');
+	expect(emotion.code).toContain('import { css } from "@emotion/css";');
+	expect(emotion.code).toContain("<Box className={css({ color: \"#123456\" })}");
+	expect(emotion.code).not.toContain("export const App = () => css(");
+	expect(emotion.code).not.toContain('c="#123456"');
+
+	for (const { result, expectedOutput, targetImport } of [
+		{ result: chakra, expectedOutput: fixture.chakraOutput, targetImport: "@chakra-ui/react" },
+		{ result: mui, expectedOutput: fixture.muiOutput, targetImport: "@mui/material" },
+	]) {
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+		);
+		expect(result.code).toBe(expectedOutput);
+		expect(result.code).toContain('import { Box } from "@mantine/core";');
+		expect(result.code).toContain('<Box c="#123456" />;');
+		expect(result.code).not.toContain(`from "${targetImport}"`);
+	}
 });
