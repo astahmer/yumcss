@@ -1,4 +1,5 @@
 import {
+	SemanticConditionKindTag,
 	StyleRuleKindTag,
 	StyleProgramResidualKindTag,
 	StyleValueKindTag,
@@ -149,6 +150,22 @@ const valueText = (value: StyleProgram["declarations"][number]["value"]): string
 	return JSON.stringify(value.value);
 };
 
+const objectConditionKey = (
+	condition: StyleProgram["declarations"][number]["conditions"][number],
+): string => {
+	const value = condition.raw ?? condition.value ?? condition.name;
+	const atRule =
+		condition.kind === SemanticConditionKindTag.Media
+			? "@media"
+			: condition.kind === SemanticConditionKindTag.Supports
+				? "@supports"
+				: condition.kind === SemanticConditionKindTag.Container
+					? "@container"
+					: undefined;
+	if (atRule === undefined || value === atRule || value.startsWith(`${atRule} `)) return value;
+	return `${atRule} ${value}`;
+};
+
 type ObjectNode = { values: Array<[string, string]>; children: Map<string, ObjectNode> };
 
 const renderObjectNode = (node: ObjectNode): string => {
@@ -205,7 +222,7 @@ const objectText = (program: StyleProgram): string => {
 				current.node.values.push([declaration.property, valueText(declaration.value)]);
 				continue;
 			}
-			const key = condition.raw ?? condition.value ?? condition.name;
+			const key = objectConditionKey(condition);
 			const child = current.node.children.get(key) ?? { values: [], children: new Map() };
 			current.node.children.set(key, child);
 			work.push({ node: child, index: current.index + 1 });

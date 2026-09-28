@@ -34,6 +34,8 @@ function loader(): ProjectModuleLoader {
 								return '.rtl\\:rotate-180:where([dir="rtl"] *) { rotate: 180deg; }';
 							if (candidate === "prose")
 								return "@layer utilities { @media (min-width: 48rem) { .prose { max-width: 65ch; } } }";
+							if (candidate === "md:[display:flex]")
+								return "@layer utilities { @media (width >= 48rem) { .md\\:\\[display\\:flex\\] { display: flex; } } }";
 							if (candidate === "theme-tab-4")
 								return "@layer utilities { [data-theme=midnight] .theme-tab-4 { tab-size: 4; } }";
 							return null;
@@ -180,6 +182,29 @@ describe("Tailwind official CSS context", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("_rtl");
 		expect(result.code).toContain('rotate: "180deg"');
+	});
+
+	test("converts a responsive candidate when the official Tailwind graph proves its media condition", async () => {
+		const result = await migrate(
+			'export const App = () => <div className="md:[display:flex]" />;',
+			files(),
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations[0]).toMatchObject({
+			valid: true,
+			lossiness: "lossless",
+			differences: [],
+		});
+		expect(result.code).toContain('"@media (width >= 48rem)"');
+		expect(result.code).not.toContain('className="md:[display:flex]"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			export const App = () => <div className={css.class({ "@media (width >= 48rem)": { display: "flex" } })}/>;"
+		`);
 	});
 
 	test("resolves official spacing variables before lowering utilities", async () => {
