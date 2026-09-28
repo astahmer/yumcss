@@ -52,7 +52,7 @@ test("chakra-ui -> tokenami: migrates concrete chakra-ui syntax to tokenami", as
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "#fecaca", padding: "1rem" })}/>;",
+		export const App = () => <Box style={css({ "--background": "#fecaca", "--padding": "1rem" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("chakra-ui -> tokenami: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
+		export const App = () => <Box style={css({ "--background": "var(--color_brand)", "--padding": "1rem" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("chakra-ui -> tokenami: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
+		export const App = () => <Box style={css({ "--background": "var(--color_brand)", "--padding": "1rem" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,7 +230,7 @@ test("chakra-ui -> tokenami: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
+		export const App = () => <Box style={css({ "--background": "var(--color_brand)", "--padding": "1rem" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -274,7 +274,7 @@ test("chakra-ui -> tokenami: preserves malformed concrete chakra-ui input", asyn
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "#fecaca", padding: "1rem" })}/>;
+		export const App = () => <Box style={css({ "--background": "#fecaca", "--padding": "1rem" })} />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -13,12 +13,12 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Mantine);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
-const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });";
+const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ \"--color\": \"red\", \"--padding\": \"1rem\" });";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"var(--color_brand)\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"var(--color_brand)\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
@@ -50,7 +50,7 @@ test("tokenami -> mantine: migrates concrete tokenami syntax to mantine", () => 
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "red", "--gap": "1rem" });",
+		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -106,50 +106,36 @@ test("tokenami -> mantine: carries a documented secondary tokenami API explicitl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css.compose({ color: "red", padding: "1rem" });",
+		// pandwind:migrate-skip (route: tokenami -> mantine | parse-residual: composition | available: named-map, residual)
+		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [],
 		      "availableRepresentations": [
-		        "static",
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "residual",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "Tokenami css.compose returns a reusable class/style helper; flattening it to a style value changes its callable API",
+		      "kind": "composition",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });
@@ -172,7 +158,7 @@ test("tokenami -> mantine: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,7 +206,7 @@ test("tokenami -> mantine: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -280,7 +266,7 @@ test("tokenami -> mantine: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "$colors.brand", "--gap": "1rem" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -337,7 +323,7 @@ test("tokenami -> mantine: preserves malformed concrete tokenami input", () => {
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
-		export const card = css({ color: "red", "--gap": "1rem" });
+		export const card = css({ "--color": "red", "--gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 0,
 		  "generatedFiles": [],

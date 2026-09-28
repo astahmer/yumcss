@@ -50,7 +50,7 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves an actionable co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ "--padding": 8, "--color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,9 +83,10 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves an actionable co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "red" });",
-		    "converted": 1,
+		    "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> vanilla-extract | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ "--padding": 8, "--color": "red" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -93,29 +94,28 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves an actionable co
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -211,7 +211,7 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ "--padding": 8, "--color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,7 +283,7 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "$colors.brand" });",
+		export const card = css({ "--padding": 8, "--color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -369,7 +369,7 @@ test("vanilla-extract -> tokenami -> vanilla-extract: resolves token values acro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "$colors.brand" });",
+		export const card = css({ "--padding": 8, "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

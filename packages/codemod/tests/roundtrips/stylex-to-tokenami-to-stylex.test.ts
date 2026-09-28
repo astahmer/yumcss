@@ -50,7 +50,7 @@ test("stylex -> tokenami -> stylex: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("stylex -> tokenami -> stylex: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "red" }) };",
+		export const styles = { "card": css({ "--color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("stylex -> tokenami -> stylex: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("stylex -> tokenami -> stylex: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "$colors.brand" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--color": "var(--color_brand)" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("stylex -> tokenami -> stylex: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "$colors.brand" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--color": "var(--color_brand)" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

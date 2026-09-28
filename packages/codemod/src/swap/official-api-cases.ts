@@ -225,7 +225,7 @@ export function officialApiCases(): readonly OfficialApiCase[] {
 			name: "Tokenami css object",
 			file: "styles.ts",
 			source:
-				'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", "--gap": "1rem" });',
+				'import { css } from "@tokenami/css";\nexport const card = css({ "--color": "red", "--gap": "1rem" });',
 			documentation: "https://tokenami.dev/",
 		},
 		{
@@ -965,9 +965,9 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		{
 			adapter: CodemodAdapterId.Tokenami,
 			name: "css.compose",
-			expectation: "converted",
+			expectation: "residual",
 			source:
-				'import { css } from "@tokenami/css";\nexport const card = css.compose({ color: "red", padding: "1rem" });',
+				'import { css } from "@tokenami/css";\nexport const card = css.compose({ "--color": "red", "--padding": "1rem" });',
 		},
 		{
 			adapter: CodemodAdapterId.Tokenami,
@@ -975,7 +975,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "converted",
 			file: "styles.ts",
 			source:
-				'import { css } from "@tokenami/css";\nexport const card = css({ "--card-color": "red", "&[data-state=active]": { color: "var(--card-color)" } });',
+				'import { css } from "@tokenami/css";\nexport const card = css({ "---card-color": "red", "--{&[data-state=active]}_color": "var(---, var(--card-color))" });',
 		},
 		{
 			adapter: CodemodAdapterId.Tokenami,
@@ -983,7 +983,7 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			expectation: "context",
 			file: "tokenami.config.ts",
 			source:
-				'export default { aliases: { ink: "color" }, responsive: { md: "@media (min-width: 48rem)" }, tokens: { brand: "red" } };',
+				'import { createConfig } from "@tokenami/css";\nexport default createConfig({ aliases: { ink: ["color"] }, responsive: { md: "@media (min-width: 48rem)" }, theme: { color: { brand: "red" } } });',
 		},
 		{
 			adapter: CodemodAdapterId.UnoCSS,

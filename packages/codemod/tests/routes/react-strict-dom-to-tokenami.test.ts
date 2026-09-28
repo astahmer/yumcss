@@ -50,7 +50,7 @@ test("react-strict-dom -> tokenami: migrates concrete react-strict-dom syntax to
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "red" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +148,7 @@ test("react-strict-dom -> tokenami: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("react-strict-dom -> tokenami: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +232,7 @@ test("react-strict-dom -> tokenami: resolves concrete token values with project 
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +277,7 @@ test("react-strict-dom -> tokenami: preserves malformed concrete react-strict-do
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "red" }) };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

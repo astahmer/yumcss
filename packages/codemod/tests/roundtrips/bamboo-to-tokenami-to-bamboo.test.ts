@@ -50,7 +50,7 @@ test("bamboo -> tokenami -> bamboo: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "red" });",
+		export const card = css({ "--color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -132,7 +132,7 @@ test("bamboo -> tokenami -> bamboo: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ "--gap": "4", "--display": "flex" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("bamboo -> tokenami -> bamboo: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "#2563eb" });",
+		export const card = css({ "--color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -299,7 +299,7 @@ test("bamboo -> tokenami -> bamboo: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "$colors.brand" });",
+		export const card = css({ "--color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -383,7 +383,7 @@ test("bamboo -> tokenami -> bamboo: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "$colors.brand" });",
+		export const card = css({ "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

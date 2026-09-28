@@ -53,7 +53,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "#fecaca", padding: "1rem" })}/>;",
+		export const App = () => <Box style={css({ "--background": "#fecaca", "--padding": "1rem" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,9 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ background: "red.200", padding: "4" }}/>;",
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => <Box style={defaultSystem.css({ background: "red.200", padding: "4" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -213,7 +215,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
+		export const App = () => <Box style={css({ "--background": "var(--color_brand)", "--padding": "1rem" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -247,7 +249,9 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ background: "#f97316", padding: "4" }}/>;",
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => <Box style={defaultSystem.css({ background: "#f97316", padding: "4" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,7 +288,7 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
+		export const App = () => <Box style={css({ "--background": "var(--color_brand)", "--padding": "1rem" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -318,7 +322,9 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => <Box style={defaultSystem.css({ background: "brand.500", padding: "4" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -369,7 +375,7 @@ test("chakra-ui -> tokenami -> chakra-ui: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ background: "$colors.brand", padding: "1rem" })}/>;",
+		export const App = () => <Box style={css({ "--background": "var(--color_brand)", "--padding": "1rem" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -403,7 +409,9 @@ test("chakra-ui -> tokenami -> chakra-ui: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => <Box style={defaultSystem.css({ background: "brand.500", padding: "4" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

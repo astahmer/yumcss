@@ -50,7 +50,7 @@ test("stitches -> tokenami -> stitches: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ "--padding": "1rem", "--color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -211,7 +211,7 @@ test("stitches -> tokenami -> stitches: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ "--padding": "1rem", "--color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,7 +283,7 @@ test("stitches -> tokenami -> stitches: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -369,7 +369,7 @@ test("stitches -> tokenami -> stitches: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -49,7 +49,7 @@ test("stylex -> tokenami: migrates concrete stylex syntax to tokenami", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("stylex -> tokenami: carries a documented secondary stylex API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "red" }) };",
+		export const styles = { "card": css({ "--color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("stylex -> tokenami: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("stylex -> tokenami: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "$colors.brand" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--color": "var(--color_brand)" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("stylex -> tokenami: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "$colors.brand" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--color": "var(--color_brand)" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("stylex -> tokenami: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };
+		export const styles = { "card": css({ "--padding": "8px", "--color": "red" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -48,11 +48,11 @@ test("tamagui -> tokenami: migrates concrete tamagui syntax to tokenami", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { css } from "@tokenami/css";
-		export const Card = css({ padding: "$4", color: "red" });
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <View className={Card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -68,19 +68,19 @@ test("tamagui -> tokenami: migrates concrete tamagui syntax to tokenami", () => 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -94,7 +94,7 @@ test("tamagui -> tokenami: carries a documented secondary tamagui API explicitly
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> tokenami | parse-residual: function-dynamic | lowering-residual: host-framework | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -126,6 +126,11 @@ test("tamagui -> tokenami: carries a documented secondary tamagui API explicitly
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -150,11 +155,11 @@ test("tamagui -> tokenami: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { css } from "@tokenami/css";
-		export const Card = css({ padding: "$4", color: "#2563eb" });
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,27 +175,27 @@ test("tamagui -> tokenami: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { css } from "@tokenami/css";
-		export const Card = css({ padding: "$4", color: "$colors.brand" });
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -206,19 +211,19 @@ test("tamagui -> tokenami: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -234,11 +239,11 @@ test("tamagui -> tokenami: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { css } from "@tokenami/css";
-		export const Card = css({ padding: "$4", color: "$colors.brand" });
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View className={Card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -254,19 +259,19 @@ test("tamagui -> tokenami: resolves concrete token values with project context",
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -279,12 +284,12 @@ test("tamagui -> tokenami: preserves malformed concrete tamagui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { css } from "@tokenami/css";
-		export const Card = css({ padding: "$4", color: "red" });
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -300,19 +305,19 @@ test("tamagui -> tokenami: preserves malformed concrete tamagui input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

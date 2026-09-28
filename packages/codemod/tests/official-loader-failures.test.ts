@@ -50,7 +50,9 @@ describe("official project-context loaders", () => {
 				adapter: createTokenamiAdapter({ moduleLoader: unavailableLoader }),
 				files: ["/project/tokenami.config.ts"],
 				readFile: (file: string) =>
-					file.endsWith("tokenami.config.ts") ? "export default { tokens: {} }" : undefined,
+					file.endsWith("tokenami.config.ts")
+						? 'export default { theme: { color: { brand: "#123456" } } }'
+						: undefined,
 			},
 			{
 				id: CodemodAdapterId.ChakraUi,
@@ -118,7 +120,7 @@ describe("official project-context loaders", () => {
 			    "adapter": "tokenami",
 			    "residuals": [
 			      {
-			        "hint": "the official @tokenami/config package is unavailable for a discovered config",
+			        "hint": "the official @tokenami/css config utility is unavailable for a discovered config",
 			        "kind": "configuration",
 			        "text": "Tokenami project configuration",
 			      },

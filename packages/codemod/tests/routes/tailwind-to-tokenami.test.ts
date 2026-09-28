@@ -49,7 +49,7 @@ test("tailwind -> tokenami: migrates concrete tailwind syntax to tokenami", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		export const App = () => <div style={css({ "--gap": "1rem", "--align-items": "center", "--display": "flex" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("tailwind -> tokenami: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("tailwind -> tokenami: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("tailwind -> tokenami: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("tailwind -> tokenami: preserves malformed concrete tailwind input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;
+		export const App = () => <div style={css({ "--gap": "1rem", "--align-items": "center", "--display": "flex" })} />;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

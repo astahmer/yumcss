@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.SolidStyled);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.SolidStyled, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
-const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });";
+const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ \"--color\": \"red\", \"--padding\": \"1rem\" });";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"var(--color_brand)\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"var(--color_brand)\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
@@ -85,11 +85,10 @@ test("tokenami -> solid-styled -> tokenami: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "@tokenami/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ gap: "1rem", color: "red" }), props.class)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = styled.div({ "gap": "1rem", "color": "red" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -105,19 +104,19 @@ test("tokenami -> solid-styled -> tokenami: preserves an actionable concrete rou
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -135,9 +134,10 @@ test("tokenami -> solid-styled -> tokenami: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
-		    "converted": 1,
+		    "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> solid-styled | parse-residual: composition | available: named-map, residual)
+		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -145,65 +145,41 @@ test("tokenami -> solid-styled -> tokenami: retains the documented secondary API
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami css.compose returns a reusable class/style helper; flattening it to a style value changes its callable API",
+		        "kind": "composition",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "@tokenami/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "red" }), props.class)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> solid-styled | parse-residual: composition | available: named-map, residual)
+		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -272,11 +248,10 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "@tokenami/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ gap: "1rem", color: "$colors.brand" }), props.class)} />;",
-		      "converted": 1,
+		      "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = styled.div({ "gap": "1rem", "color": "#f97316" });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -292,19 +267,19 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -347,11 +322,10 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "@tokenami/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ gap: "1rem", color: "$colors.brand" }), props.class)} />;",
-		      "converted": 1,
+		      "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -367,19 +341,19 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -436,11 +410,10 @@ test("tokenami -> solid-styled -> tokenami: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "@tokenami/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ gap: "1rem", color: "$colors.brand" }), props.class)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -456,19 +429,19 @@ test("tokenami -> solid-styled -> tokenami: resolves token values across both co
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

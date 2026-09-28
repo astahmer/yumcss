@@ -51,7 +51,7 @@ test("mantine -> tokenami -> mantine: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "blue", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,8 +85,10 @@ test("mantine -> tokenami -> mantine: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
-		    "converted": 1,
+		import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "blue", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -102,17 +104,30 @@ test("mantine -> tokenami -> mantine: preserves an actionable concrete round tri
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -209,7 +224,7 @@ test("mantine -> tokenami -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "$colors.brand", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -243,8 +258,10 @@ test("mantine -> tokenami -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
-		      "converted": 1,
+		import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -260,17 +277,30 @@ test("mantine -> tokenami -> mantine: preserves concrete theme and project conte
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -280,7 +310,7 @@ test("mantine -> tokenami -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "$colors.brand", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,8 +344,10 @@ test("mantine -> tokenami -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
-		      "converted": 1,
+		import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -331,17 +363,30 @@ test("mantine -> tokenami -> mantine: preserves concrete theme and project conte
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -365,7 +410,7 @@ test("mantine -> tokenami -> mantine: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "$colors.brand", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -399,8 +444,10 @@ test("mantine -> tokenami -> mantine: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
-		    "converted": 1,
+		import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -416,17 +463,30 @@ test("mantine -> tokenami -> mantine: resolves token values across both concrete
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },

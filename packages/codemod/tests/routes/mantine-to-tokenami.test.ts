@@ -50,7 +50,7 @@ test("mantine -> tokenami: migrates concrete mantine syntax to tokenami", () => 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "blue", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("mantine -> tokenami: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "$colors.brand", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("mantine -> tokenami: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "$colors.brand", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("mantine -> tokenami: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "$colors.brand", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "var(--color_brand)", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("mantine -> tokenami: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;
+		export const App = () => <Box style={css({ "--margin-inline": "auto", "--color": "blue", "--max-width": "calc(25rem * var(--mantine-scale))" })} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

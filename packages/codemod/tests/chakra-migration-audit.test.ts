@@ -111,14 +111,14 @@ describe("Chakra migration audit", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('background: "$colors.brand"');
+		expect(result.code).toContain('"--background": "var(--color_brand)"');
 		expect(result.code).not.toContain("brand.500");
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
 			  "code": "import { Box } from "@chakra-ui/react";
 			import { css } from "@tokenami/css";
-			export const App = () => <Box className={css({ background: "$colors.brand" })}/>;",
+			export const App = () => <Box style={css({ "--background": "var(--color_brand)" })} />;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -531,7 +531,7 @@ describe("Chakra migration audit", () => {
 			project,
 		});
 
-		expect(project.loaderCalls.packages).toContain("@tokenami/config");
+		expect(project.loaderCalls.packages).toContain("@tokenami/css");
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
 		expect(result.residuals).toEqual(

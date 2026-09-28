@@ -49,7 +49,7 @@ test("panda -> tokenami: migrates concrete panda syntax to tokenami", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
+		export const card = css({ "--color": "red", "--hover_color": "blue" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("panda -> tokenami: carries a documented secondary panda API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> tokenami | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: panda -> tokenami | lowering-residual: capability | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -120,6 +120,11 @@ test("panda -> tokenami: carries a documented secondary panda API explicitly", (
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Tokenami css.compose returns a class/style invocation helper that does not preserve the source composition API",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -144,7 +149,7 @@ test("panda -> tokenami: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
+		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +183,7 @@ test("panda -> tokenami: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
+		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +229,7 @@ test("panda -> tokenami: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
+		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +272,7 @@ test("panda -> tokenami: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "red", "&:hover": { color: "blue" } });
+		export const card = css({ "--color": "red", "--hover_color": "blue" });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],

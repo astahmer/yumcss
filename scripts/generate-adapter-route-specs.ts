@@ -187,7 +187,7 @@ function configuredSource(adapter: CodemodAdapterId, source: string): string {
 		case CodemodAdapterId.UnoCSS:
 			return source.replace(/className="[^"]*"/u, 'className="text-brand p-card"');
 		case CodemodAdapterId.Tokenami:
-			return source.replaceAll('"red"', '"$colors.brand"');
+			return source.replaceAll('"red"', '"var(--color_brand)"');
 		default:
 			return source;
 	}

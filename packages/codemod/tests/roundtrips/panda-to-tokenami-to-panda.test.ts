@@ -50,7 +50,7 @@ test("panda -> tokenami -> panda: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
+		export const card = css({ "--color": "red", "--hover_color": "blue" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("panda -> tokenami -> panda: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
+		export const card = css({ color: "red", hover: { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -132,7 +132,7 @@ test("panda -> tokenami -> panda: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> tokenami | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: panda -> tokenami | lowering-residual: capability | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -160,6 +160,11 @@ test("panda -> tokenami -> panda: retains the documented secondary API without s
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Tokenami css.compose returns a class/style invocation helper that does not preserve the source composition API",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -167,7 +172,7 @@ test("panda -> tokenami -> panda: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> tokenami | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: panda -> tokenami | lowering-residual: capability | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -208,7 +213,7 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
+		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -242,7 +247,7 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		export const card = css({ color: "brand.500", hover: { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +283,7 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
+		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +317,7 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		export const card = css({ color: "brand.500", hover: { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -362,7 +367,7 @@ test("panda -> tokenami -> panda: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ color: "$colors.brand", "&:hover": { color: "$colors.brand" } });",
+		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -396,7 +401,7 @@ test("panda -> tokenami -> panda: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		export const card = css({ color: "brand.500", hover: { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

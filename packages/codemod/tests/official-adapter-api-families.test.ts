@@ -78,6 +78,20 @@ describe("official adapter API families", () => {
 
 		expect(covered).toEqual(new Set(BUILTIN_CODEMOD_ADAPTER_IDS));
 		for (const { api, result } of results) {
+			if (api.adapter === CodemodAdapterId.Tokenami && api.name === "css.compose") {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBeGreaterThan(0);
+				expect(result.residuals).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({
+							kind: "composition",
+							text: "css.compose",
+							hint: expect.stringContaining("callable API"),
+						}),
+					]),
+				);
+				expect(normalizeSource(result.code)).toBe(normalizeSource(api.source));
+			}
 			if (api.expectation === "identity") {
 				expect(result.converted, `${api.adapter}/${api.name}`).toBe(0);
 				expect(result.skipped, `${api.adapter}/${api.name}`).toBe(0);
@@ -3540,7 +3554,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ cardColor: "red", "&[data-state=active]": { color: "var(--card-color)" } });",
+			export const card = css.class({ "--card-color": "red", "&[data-state=active]": { color: "var(---, var(--card-color))" } });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3573,7 +3587,8 @@ describe("official adapter API families", () => {
 			  },
 			  "tokenami/config context": {
 			    "changed": false,
-			    "code": "export default { aliases: { ink: "color" }, responsive: { md: "@media (min-width: 48rem)" }, tokens: { brand: "red" } };",
+			    "code": "import { createConfig } from "@tokenami/css";
+			export default createConfig({ aliases: { ink: ["color"] }, responsive: { md: "@media (min-width: 48rem)" }, theme: { color: { brand: "red" } } });",
 			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [],
@@ -3584,40 +3599,37 @@ describe("official adapter API families", () => {
 			  },
 			  "tokenami/css.compose": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
-			const pandwindCx = createCx();
-			const css = createUnsafeCss();
-			export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value?: string) => pandwindCx(className, value), (style?: Record<string, unknown>) => style ?? {}] as const; };",
-			    "converted": 1,
+			    "code": "import { css } from "@tokenami/css";
+			// pandwind:migrate-skip (route: tokenami -> pandwind | parse-residual: composition | available: named-map, residual)
+			export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
+			    "converted": 0,
 			    "generatedFiles": [],
 			    "loweringPlans": [
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
-			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "residual",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
-			        "outcome": "static",
-			        "representation": "static",
+			        "outcome": "residual",
+			        "representation": "residual",
 			      },
 			    ],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [
+			    "residuals": [
 			      {
-			        "differences": [],
-			        "lossiness": "lossless",
-			        "valid": true,
+			        "hint": "Tokenami css.compose returns a reusable class/style helper; flattening it to a style value changes its callable API",
+			        "kind": "composition",
+			        "preserved": undefined,
 			      },
 			    ],
+			    "skipped": 1,
+			    "validations": [],
 			  },
 			  "treat/createTheme context": {
 			    "changed": true,

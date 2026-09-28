@@ -50,7 +50,7 @@ test("next-yak -> tokenami -> next-yak: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ "--padding": "1rem", "--color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -131,11 +131,10 @@ test("next-yak -> tokenami -> next-yak: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "@tokenami/css";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -151,55 +150,32 @@ test("next-yak -> tokenami -> next-yak: retains the documented secondary API wit
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "next-yak";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css\`padding: 1rem; color: red;\`, props.className)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -233,7 +209,7 @@ test("next-yak -> tokenami -> next-yak: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ "--padding": "1rem", "--color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -303,7 +279,7 @@ test("next-yak -> tokenami -> next-yak: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -387,7 +363,7 @@ test("next-yak -> tokenami -> next-yak: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

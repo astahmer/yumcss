@@ -49,7 +49,7 @@ test("style9 -> tokenami: migrates concrete style9 syntax to tokenami", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "red" }) };",
+		export const styles = { "card": css({ "--color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("style9 -> tokenami: carries a documented secondary style9 API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
+		export const styles = { "card": css({ "--color": "red" }), "muted": css({ "--opacity": 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("style9 -> tokenami: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "#2563eb" }) };",
+		export const styles = { "card": css({ "--color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("style9 -> tokenami: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "$colors.brand" }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("style9 -> tokenami: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "$colors.brand" }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("style9 -> tokenami: preserves malformed concrete style9 input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "red" }) };
+		export const styles = { "card": css({ "--color": "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,
 		  "generatedFiles": [],

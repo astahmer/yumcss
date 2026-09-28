@@ -50,7 +50,7 @@ test("tailwind -> tokenami -> tailwind: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		export const App = () => <div style={css({ "--gap": "1rem", "--align-items": "center", "--display": "flex" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,7 +83,7 @@ test("tailwind -> tokenami -> tailwind: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "export const App = () => <div style={"[gap:1rem] [align-items:center] [display:flex]"} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -207,7 +207,7 @@ test("tailwind -> tokenami -> tailwind: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -240,7 +240,7 @@ test("tailwind -> tokenami -> tailwind: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div style={"p-card text-brand"} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,7 +279,7 @@ test("tailwind -> tokenami -> tailwind: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +312,7 @@ test("tailwind -> tokenami -> tailwind: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div style={"p-card text-brand"} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -365,7 +365,7 @@ test("tailwind -> tokenami -> tailwind: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -398,7 +398,7 @@ test("tailwind -> tokenami -> tailwind: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "code": "export const App = () => <div style={"p-card text-brand"} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

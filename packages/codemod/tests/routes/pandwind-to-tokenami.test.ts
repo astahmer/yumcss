@@ -50,7 +50,7 @@ test("pandwind -> tokenami: migrates concrete pandwind syntax to tokenami", () =
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ "--padding": "1rem", "--color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("pandwind -> tokenami: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("pandwind -> tokenami: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("pandwind -> tokenami: resolves concrete token values with project context"
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +273,7 @@ test("pandwind -> tokenami: preserves malformed concrete pandwind input", () => 
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ padding: "1rem", color: "red" });
+		export const card = css({ "--padding": "1rem", "--color": "red" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

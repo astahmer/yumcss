@@ -50,7 +50,7 @@ test("emotion -> tokenami -> emotion: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ "--padding": "1rem", "--color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -132,7 +132,7 @@ test("emotion -> tokenami -> emotion: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ "--padding": "1rem", "--color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("emotion -> tokenami -> emotion: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ "--padding": "1rem", "--color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -299,7 +299,7 @@ test("emotion -> tokenami -> emotion: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -383,7 +383,7 @@ test("emotion -> tokenami -> emotion: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

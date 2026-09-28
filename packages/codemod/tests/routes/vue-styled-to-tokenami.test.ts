@@ -48,10 +48,10 @@ test("vue-styled -> tokenami: migrates concrete vue-styled syntax to tokenami", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -67,19 +67,19 @@ test("vue-styled -> tokenami: migrates concrete vue-styled syntax to tokenami", 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -92,10 +92,10 @@ test("vue-styled -> tokenami: carries a documented secondary vue-styled API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -111,19 +111,19 @@ test("vue-styled -> tokenami: carries a documented secondary vue-styled API expl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -145,10 +145,10 @@ test("vue-styled -> tokenami: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		    "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -164,26 +164,26 @@ test("vue-styled -> tokenami: loads concrete theme and project context variants"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		    "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -199,19 +199,19 @@ test("vue-styled -> tokenami: loads concrete theme and project context variants"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -227,10 +227,10 @@ test("vue-styled -> tokenami: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "$colors.brand" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -246,19 +246,19 @@ test("vue-styled -> tokenami: resolves concrete token values with project contex
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -271,11 +271,11 @@ test("vue-styled -> tokenami: preserves malformed concrete vue-styled input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css({ padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -291,19 +291,19 @@ test("vue-styled -> tokenami: preserves malformed concrete vue-styled input", ()
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

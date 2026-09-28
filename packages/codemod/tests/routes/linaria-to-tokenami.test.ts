@@ -49,7 +49,7 @@ test("linaria -> tokenami: migrates concrete linaria syntax to tokenami", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ "--padding": "1rem", "--color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("linaria -> tokenami: carries a documented secondary linaria API explicitly
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: linaria -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -120,6 +120,11 @@ test("linaria -> tokenami: carries a documented secondary linaria API explicitly
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -145,7 +150,7 @@ test("linaria -> tokenami: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ "--padding": "1rem", "--color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +184,7 @@ test("linaria -> tokenami: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +230,7 @@ test("linaria -> tokenami: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "$colors.brand" });",
+		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -268,7 +273,7 @@ test("linaria -> tokenami: preserves malformed concrete linaria input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: "1rem", color: "red" });
+		export const card = css({ "--padding": "1rem", "--color": "red" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "generatedFiles": [],

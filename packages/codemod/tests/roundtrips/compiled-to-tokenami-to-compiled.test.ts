@@ -50,7 +50,7 @@ test("compiled -> tokenami -> compiled: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ "--padding": 8, "--color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,9 +83,10 @@ test("compiled -> tokenami -> compiled: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "red" });",
-		    "converted": 1,
+		    "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> compiled | parse-residual: configuration | available: named-map, residual)
+		export const card = css({ "--padding": 8, "--color": "red" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -93,29 +94,28 @@ test("compiled -> tokenami -> compiled: preserves an actionable concrete round t
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -134,7 +134,7 @@ test("compiled -> tokenami -> compiled: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const colors = { "red": css({ color: "red" }) };",
+		export const colors = { "red": css({ "--color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("compiled -> tokenami -> compiled: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ "--padding": 8, "--color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("compiled -> tokenami -> compiled: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "$colors.brand" });",
+		export const card = css({ "--padding": 8, "--color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("compiled -> tokenami -> compiled: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "$colors.brand" });",
+		export const card = css({ "--padding": 8, "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -51,7 +51,7 @@ test("mui -> tokenami -> mui: preserves an actionable concrete round trip", () =
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;",
+		export const App = () => <Box style={css({ "--padding": "16px", "--color": "red" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,92 +85,9 @@ test("mui -> tokenami -> mui: preserves an actionable concrete round trip", () =
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		}
-	`)
-});
-
-test("mui -> tokenami -> mui: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
-	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectRouteScenarioEvidence(first, "mui -> tokenami round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
-	expectExplicitResidualEvidence(first);
-	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		export const Card = css({ padding: 8, color: "red" });",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const App = () => <Box style={css.class({ "padding": "16px", "color": "red" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -206,6 +123,88 @@ test("mui -> tokenami -> mui: retains the documented secondary API without silen
 	`)
 });
 
+test("mui -> tokenami -> mui: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "mui -> tokenami round-trip secondary forward");
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { css } from "@tokenami/css";
+		export const Card = css({ "--padding": 8, "--color": "red" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mui | parse-residual: configuration | available: named-map, residual)
+		export const Card = css({ "--padding": 8, "--color": "red" });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`)
+});
+
 test("mui -> tokenami -> mui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
 	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
@@ -234,7 +233,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ padding: "16px", color: "$colors.brand" })}/>;",
+		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -268,10 +267,10 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ padding: "16px", color: "$colors.brand" })}/>;",
-		      "converted": 0,
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <Box style={css.class({ "padding": "16px", "color": "primary.main" })} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -280,6 +279,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		            "static",
 		            "named-map",
 		            "residual",
+		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -287,19 +287,19 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
-		          "kind": "host-framework",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -307,7 +307,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ padding: "16px", color: "$colors.brand" })}/>;",
+		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,10 +341,10 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ padding: "16px", color: "$colors.brand" })}/>;",
-		      "converted": 0,
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <Box style={css.class({ "padding": "16px", "color": "primary.main" })} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -353,6 +353,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		            "static",
 		            "named-map",
 		            "residual",
+		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -360,19 +361,19 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
-		          "kind": "host-framework",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -394,7 +395,7 @@ test("mui -> tokenami -> mui: resolves token values across both concrete legs", 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box className={css({ padding: "16px", color: "$colors.brand" })}/>;",
+		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -428,10 +429,10 @@ test("mui -> tokenami -> mui: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ padding: "16px", color: "$colors.brand" })}/>;",
-		    "converted": 0,
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <Box style={css.class({ "padding": "16px", "color": "primary.main" })} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -440,6 +441,7 @@ test("mui -> tokenami -> mui: resolves token values across both concrete legs", 
 		          "static",
 		          "named-map",
 		          "residual",
+		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -447,19 +449,19 @@ test("mui -> tokenami -> mui: resolves token values across both concrete legs", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

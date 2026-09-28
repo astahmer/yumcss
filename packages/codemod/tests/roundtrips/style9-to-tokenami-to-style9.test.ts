@@ -50,7 +50,7 @@ test("style9 -> tokenami -> style9: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "red" }) };",
+		export const styles = { "card": css({ "--color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("style9 -> tokenami -> style9: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
+		export const styles = { "card": css({ "--color": "red" }), "muted": css({ "--opacity": 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,9 +167,11 @@ test("style9 -> tokenami -> style9: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
-		    "converted": 2,
+		    "code": "import { css as sourceCss } from "@tokenami/css";
+		import style9 from "style9";
+		// pandwind:migrate-skip (route: tokenami -> style9 | parse-residual: configuration | available: named-map, residual)
+		export const styles = { "card": style9.create({ "color": "red" }), "muted": sourceCss({ "--opacity": 0.5 }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -189,11 +191,10 @@ test("style9 -> tokenami -> style9: retains the documented secondary API without
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
@@ -203,18 +204,19 @@ test("style9 -> tokenami -> style9: retains the documented secondary API without
 		        "representation": "static",
 		      },
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [
 		      {
 		        "differences": [],
 		        "lossiness": "lossless",
@@ -254,7 +256,7 @@ test("style9 -> tokenami -> style9: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "#2563eb" }) };",
+		export const styles = { "card": css({ "--color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -326,7 +328,7 @@ test("style9 -> tokenami -> style9: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "$colors.brand" }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -413,7 +415,7 @@ test("style9 -> tokenami -> style9: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ color: "$colors.brand" }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

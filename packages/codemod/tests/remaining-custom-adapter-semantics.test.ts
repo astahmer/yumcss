@@ -66,49 +66,25 @@ describe("remaining adapter-owned custom semantics", () => {
 		`);
 	});
 
-	test("preserves Tokenami references without a verified target token catalog", () => {
+	test("keeps Tokenami theme variables when no destination token evidence is available", () => {
 		const input =
 			'import { css } from "@tokenami/css";\n' +
-			'export const card = css({ color: "$colors.brand", padding: "$spacing.4" });';
+			'export const card = css({ "--color": "var(--color_brand)", "--padding": "var(--spacing_4)" });';
 		const result = migrate(input, CodemodAdapterId.Tokenami);
 
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
-		expect(result.code).toContain(input.slice(input.indexOf("export const card")));
-		expect(result.code).toContain(
-			"// pandwind:migrate-skip (route: tokenami -> pandwind | lowering-residual: emission-empty, token-values",
-		);
-		expect(
-			result.residuals
-				.filter((residual) => residual.kind === "token-values")
-				.map((residual) => residual.text)
-				.toSorted(),
-		).toEqual(["$colors.brand", "$spacing.4"]);
-		expect(result.residuals.some((residual) => residual.kind === "emission-empty")).toBe(true);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('color: "var(--color_brand)"');
+		expect(result.code).toContain('padding: "var(--spacing_4)"');
 		expect({ input, output: result.code, residuals: result.residuals }).toMatchInlineSnapshot(`
 			{
 			  "input": "import { css } from "@tokenami/css";
-			export const card = css({ color: "$colors.brand", padding: "$spacing.4" });",
-			  "output": "import { css } from "@tokenami/css";
-			// pandwind:migrate-skip (route: tokenami -> pandwind | lowering-residual: emission-empty, token-values | available: static, named-map, residual)
-			export const card = css({ color: "$colors.brand", padding: "$spacing.4" });",
-			  "residuals": [
-			    {
-			      "hint": "target adapter produced no representable output",
-			      "kind": "emission-empty",
-			      "text": "css({ color: "$colors.brand", padding: "$spacing.4" })",
-			    },
-			    {
-			      "hint": "source token 4 has no verified target value",
-			      "kind": "token-values",
-			      "text": "$spacing.4",
-			    },
-			    {
-			      "hint": "source token brand has no verified target value",
-			      "kind": "token-values",
-			      "text": "$colors.brand",
-			    },
-			  ],
+			export const card = css({ "--color": "var(--color_brand)", "--padding": "var(--spacing_4)" });",
+			  "output": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			export const card = css.class({ padding: "var(--spacing_4)", color: "var(--color_brand)" });",
+			  "residuals": [],
 			}
 		`);
 	});

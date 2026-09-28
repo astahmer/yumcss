@@ -15,12 +15,12 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.StyleX);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Tokenami);
-	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });";
-const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ color: \"red\", padding: \"1rem\" });";
-const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
+	const happySource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });";
+const edgeSource = "import { css } from \"@tokenami/css\";\nexport const card = css.compose({ \"--color\": \"red\", \"--padding\": \"1rem\" });";
+const malformedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });\nconst unfinished = { /* unfinished tokenami */";
 const sourceSemantic = undefined;
-const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
-const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ color: \"$colors.brand\", \"--gap\": \"1rem\" });";
+const themedSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"var(--color_brand)\", \"--gap\": \"1rem\" });";
+const tokenSource = "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"var(--color_brand)\", \"--gap\": \"1rem\" });";
 const blueSemantic = undefined;
 const amberSemantic = undefined;
 const blueTargetSemantic = undefined;
@@ -86,7 +86,7 @@ test("tokenami -> stylex -> tokenami: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ gap: "1rem", color: "red" }) }.style;",
+		export const card = { "style": css({ "--gap": "1rem", "--color": "red" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -133,9 +133,10 @@ test("tokenami -> stylex -> tokenami: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
-		    "converted": 1,
+		    "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> stylex | parse-residual: composition | available: named-map, residual)
+		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -143,63 +144,41 @@ test("tokenami -> stylex -> tokenami: retains the documented secondary API witho
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tokenami css.compose returns a reusable class/style helper; flattening it to a style value changes its callable API",
+		        "kind": "composition",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ padding: "1rem", color: "red" }) }.style;",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: tokenami -> stylex | parse-residual: composition | available: named-map, residual)
+		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -268,7 +247,7 @@ test("tokenami -> stylex -> tokenami: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ gap: "1rem", color: "$colors.brand" }) }.style;",
+		export const card = { "style": css({ "--gap": "1rem", "--color": "var(--color_brand)" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -340,7 +319,7 @@ test("tokenami -> stylex -> tokenami: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ gap: "1rem", color: "$colors.brand" }) }.style;",
+		export const card = { "style": css({ "--gap": "1rem", "--color": "var(--color_brand)" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -426,7 +405,7 @@ test("tokenami -> stylex -> tokenami: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ gap: "1rem", color: "$colors.brand" }) }.style;",
+		export const card = { "style": css({ "--gap": "1rem", "--color": "var(--color_brand)" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

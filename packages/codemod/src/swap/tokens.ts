@@ -113,10 +113,17 @@ export function resolvedStyleValue(
 	return value.kind === StyleValueKindTag.Token ? value.resolved : undefined;
 }
 
-export type TokenGroupForProperty = (property: string) => string | readonly string[] | undefined;
+export type TokenGroupForProperty = (
+	property: string,
+	context?: AdapterEmitContext,
+) => string | readonly string[] | undefined;
 
-const tokenGroupsFor = (property: string, resolve: TokenGroupForProperty): readonly string[] => {
-	const groups = resolve(property);
+const tokenGroupsFor = (
+	property: string,
+	resolve: TokenGroupForProperty,
+	context?: AdapterEmitContext,
+): readonly string[] => {
+	const groups = resolve(property, context);
 	return groups === undefined ? [] : typeof groups === "string" ? [groups] : groups;
 };
 export type TokenReferenceFormatter = (
@@ -186,7 +193,7 @@ export function createTokenPolicy(
 			const catalog = resolveCatalog(context);
 			return catalog === undefined
 				? materializeSourceTokenValues(program)
-				: catalog.preserveProgram(program, groupForProperty, formatReference);
+				: catalog.preserveProgram(program, groupForProperty, formatReference, context);
 		},
 	};
 }
@@ -454,13 +461,14 @@ export class TokenCatalog {
 		program: StyleProgram,
 		groupForProperty: TokenGroupForProperty,
 		formatReference: TokenReferenceFormatter = (match) => match.authored,
+		context?: AdapterEmitContext,
 	): StyleProgram {
 		const residuals = [...program.residuals];
 		const preserveValue = (
 			value: StyleProgram["declarations"][number]["value"],
 			property: string,
 		): typeof value => {
-			const groups = tokenGroupsFor(property, groupForProperty);
+			const groups = tokenGroupsFor(property, groupForProperty, context);
 			if (groups.length === 0) return materializeSourceTokenValue(value, residuals);
 			let match: TokenCatalogMatch | undefined;
 			if (value.kind === StyleValueKindTag.Token) {

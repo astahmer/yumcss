@@ -51,7 +51,7 @@ test("fela -> tokenami: migrates concrete fela syntax to tokenami", () => {
 		  "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "red" });",
+		export const card = css({ "--color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("fela -> tokenami: carries a documented secondary fela API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> tokenami | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: fela -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -120,6 +120,11 @@ test("fela -> tokenami: carries a documented secondary fela API explicitly", () 
 		    {
 		      "hint": "components: component subject: styled("button")",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -149,7 +154,7 @@ test("fela -> tokenami: loads concrete theme and project context variants", asyn
 		    "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "#2563eb" });",
+		export const card = css({ "--color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +190,7 @@ test("fela -> tokenami: loads concrete theme and project context variants", asyn
 		    "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "$colors.brand" });",
+		export const card = css({ "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +238,7 @@ test("fela -> tokenami: resolves concrete token values with project context", as
 		  "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "$colors.brand" });",
+		export const card = css({ "--color": "var(--color_brand)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +283,7 @@ test("fela -> tokenami: preserves malformed concrete fela input", () => {
 		  "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "red" });
+		export const card = css({ "--color": "red" });
 		const unfinished = { /* unfinished fela */",
 		  "converted": 1,
 		  "generatedFiles": [],

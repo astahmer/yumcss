@@ -122,7 +122,7 @@ function routeProjectFiles(
 			};
 		case CodemodAdapterId.Tokenami:
 			return {
-				[`${routeProjectRoot}/.tokenami/tokenami.config.ts`]: `export default { tokens: { colors: { brand: { value: ${quotedColor} } } } };`,
+				[`${routeProjectRoot}/.tokenami/tokenami.config.ts`]: `import { createConfig } from "@tokenami/css"; export default createConfig({ theme: { color: { brand: ${quotedColor} }, spacing: { card: "1.125rem" } }, properties: { color: ["color"], background: ["color"], "background-color": ["color"], padding: ["spacing"] }, responsive: { md: "@media (min-width: 700px)" } });`,
 			};
 		default:
 			return {};
@@ -184,7 +184,7 @@ function routeProjectLoader(
 				} as T;
 			if (hasAdapter(adapters, CodemodAdapterId.Mantine) && packageName === "@mantine/core")
 				return { createTheme: (config: unknown) => config } as T;
-			if (hasAdapter(adapters, CodemodAdapterId.Tokenami) && packageName === "@tokenami/config")
+			if (hasAdapter(adapters, CodemodAdapterId.Tokenami) && packageName === "@tokenami/css")
 				return { createConfig: (config: unknown) => config } as T;
 			if (hasAdapter(adapters, CodemodAdapterId.Tailwind) && packageName === "@tailwindcss/node")
 				return {
@@ -291,7 +291,16 @@ function routeProjectLoader(
 				} as T;
 			if (hasAdapter(adapters, CodemodAdapterId.Tokenami) && file.includes("tokenami.config."))
 				return {
-					default: { tokens: { colors: { brand: { value: color } } } },
+					default: {
+						theme: { color: { brand: color }, spacing: { card: "1.125rem" } },
+						properties: {
+							color: ["color"],
+							background: ["color"],
+							"background-color": ["color"],
+							padding: ["spacing"],
+						},
+						responsive: { md: "@media (min-width: 700px)" },
+					},
 				} as T;
 			return undefined;
 		},
@@ -436,7 +445,7 @@ function officialConfigPackages(adapter: CodemodAdapterId): readonly string[] {
 		case CodemodAdapterId.Tailwind:
 			return ["@tailwindcss/node"];
 		case CodemodAdapterId.Tokenami:
-			return ["@tokenami/config"];
+			return ["@tokenami/css"];
 		case CodemodAdapterId.UnoCSS:
 			return ["@unocss/config", "@unocss/core"];
 		default:
@@ -476,7 +485,7 @@ function configuredTargetTokenMarkers(target: CodemodAdapterId): readonly string
 		case CodemodAdapterId.UnoCSS:
 			return ["text-brand", "bg-brand", "p-card"];
 		case CodemodAdapterId.Tokenami:
-			return ["$colors.brand", "$spacing.card"];
+			return ["var(--color_brand)", "var(--spacing_card)"];
 		default:
 			return [];
 	}

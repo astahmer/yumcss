@@ -52,7 +52,7 @@ test("fela -> tokenami -> fela: preserves an actionable concrete round trip", ()
 		    "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "red" });",
+		export const card = css({ "--color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("fela -> tokenami -> fela: retains the documented secondary API without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> tokenami | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: fela -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -165,6 +165,11 @@ test("fela -> tokenami -> fela: retains the documented secondary API without sil
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -172,7 +177,7 @@ test("fela -> tokenami -> fela: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> tokenami | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: fela -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -216,7 +221,7 @@ test("fela -> tokenami -> fela: preserves concrete theme and project context var
 		      "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "#2563eb" });",
+		export const card = css({ "--color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -291,7 +296,7 @@ test("fela -> tokenami -> fela: preserves concrete theme and project context var
 		      "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "$colors.brand" });",
+		export const card = css({ "--color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -381,7 +386,7 @@ test("fela -> tokenami -> fela: resolves token values across both concrete legs"
 		    "code": "import { createRenderer } from "fela";
 		import { css } from "@tokenami/css";
 		const renderer = createRenderer();
-		export const card = css({ color: "$colors.brand" });",
+		export const card = css({ "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

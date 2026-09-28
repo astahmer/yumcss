@@ -50,7 +50,7 @@ test("jss -> tokenami -> jss: preserves an actionable concrete round trip", () =
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const useStyles = { "card": css({ color: "red" }) };",
+		export const useStyles = { "card": css({ "--color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("jss -> tokenami -> jss: retains the documented secondary API without silen
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const sheet = { "card": css({ color: "red" }) };",
+		export const sheet = { "card": css({ "--color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("jss -> tokenami -> jss: preserves concrete theme and project context varia
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const useStyles = { "card": css({ color: "#2563eb" }) };",
+		export const useStyles = { "card": css({ "--color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("jss -> tokenami -> jss: preserves concrete theme and project context varia
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const useStyles = { "card": css({ color: "$colors.brand" }) };",
+		export const useStyles = { "card": css({ "--color": "var(--color_brand)" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("jss -> tokenami -> jss: resolves token values across both concrete legs", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const useStyles = { "card": css({ color: "$colors.brand" }) };",
+		export const useStyles = { "card": css({ "--color": "var(--color_brand)" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

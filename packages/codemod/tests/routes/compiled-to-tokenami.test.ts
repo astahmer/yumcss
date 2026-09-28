@@ -49,7 +49,7 @@ test("compiled -> tokenami: migrates concrete compiled syntax to tokenami", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ "--padding": 8, "--color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("compiled -> tokenami: carries a documented secondary compiled API explicit
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const colors = { "red": css({ color: "red" }) };",
+		export const colors = { "red": css({ "--color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("compiled -> tokenami: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ "--padding": 8, "--color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("compiled -> tokenami: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "$colors.brand" });",
+		export const card = css({ "--padding": 8, "--color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("compiled -> tokenami: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "$colors.brand" });",
+		export const card = css({ "--padding": 8, "--color": "var(--color_brand)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("compiled -> tokenami: preserves malformed concrete compiled input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ padding: 8, color: "red" });
+		export const card = css({ "--padding": 8, "--color": "red" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

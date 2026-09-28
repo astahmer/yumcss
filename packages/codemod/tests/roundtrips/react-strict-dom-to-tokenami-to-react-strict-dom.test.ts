@@ -51,7 +51,7 @@ test("react-strict-dom -> tokenami -> react-strict-dom: preserves an actionable 
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "red" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -216,7 +216,7 @@ test("react-strict-dom -> tokenami -> react-strict-dom: preserves concrete theme
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "#2563eb" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -292,7 +292,7 @@ test("react-strict-dom -> tokenami -> react-strict-dom: preserves concrete theme
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -382,7 +382,7 @@ test("react-strict-dom -> tokenami -> react-strict-dom: resolves token values ac
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "@tokenami/css";
-		const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
+		const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

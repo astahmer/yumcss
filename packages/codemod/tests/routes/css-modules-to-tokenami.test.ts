@@ -159,7 +159,7 @@ test("css-modules -> tokenami: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css({ "--padding": "1rem", "--color": "#2563eb" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +194,7 @@ test("css-modules -> tokenami: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
+		export const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +241,7 @@ test("css-modules -> tokenami: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
+		export const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

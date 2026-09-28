@@ -342,17 +342,71 @@ describe("official custom-token loaders", () => {
 				return { createConfig: (value: unknown) => value } as never;
 			},
 			async importFile() {
-				return { default: { tokens: { colors: { brand: { value: "#123456" } } } } } as never;
+				return { default: { theme: { color: { brand: "#123456" } } } } as never;
 			},
 		};
 		const config = await createTokenamiAdapter({ moduleLoader: loader }).loadConfigAsync?.(context);
 
 		expect(config?.tokenCatalog?.groups).toMatchInlineSnapshot(`
 			{
-			  "colors": {
+			  "color": {
 			    "brand": "#123456",
 			  },
 			}
+		`);
+	});
+
+	test("emits only Tokenami tokens proven by configured property mappings", async () => {
+		const configFile = "/project/.tokenami/tokenami.config.ts";
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@tokenami/css"
+					? ({ createConfig: (value: unknown) => value } as never)
+					: undefined;
+			},
+			async importFile(file) {
+				return file === configFile
+					? ({
+							default: {
+								theme: {
+									color: { brand: "#123456" },
+									spacing: { card: "1rem" },
+								},
+								properties: { color: ["color"], padding: ["spacing"] },
+								customProperties: { "gradient-from": ["color"] },
+							},
+						} as never)
+					: undefined;
+			},
+		};
+		const builtin = createBuiltinCodemodCatalog();
+		const registry = createStyleAdapterRegistry([
+			builtin.registry.get(CodemodAdapterId.Emotion)!,
+			createTokenamiAdapter({ moduleLoader: loader }),
+		]);
+		const result = await runAdapterMigrationAsync(
+			'import { css } from "@emotion/css";\n' +
+				'export const card = css({ color: "#123456", padding: "1rem", borderRadius: "#123456", "--gradient-from": "#123456" });',
+			{
+				from: CodemodAdapterId.Emotion,
+				to: CodemodAdapterId.Tokenami,
+				file: "src/Card.tsx",
+				root: "/project",
+				listFiles: () => [configFile],
+				adapterRegistry: registry,
+			},
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"--color": "var(--color_brand)"');
+		expect(result.code).toContain('"--padding": "var(--spacing_card)"');
+		expect(result.code).toContain('"--border-radius": "#123456"');
+		expect(result.code).toContain('"---gradient-from": "var(--color_brand)"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css } from "@tokenami/css";
+			export const card = css({ "---gradient-from": "var(--color_brand)", "--padding": "var(--spacing_card)", "--border-radius": "#123456", "--color": "var(--color_brand)" });"
 		`);
 	});
 

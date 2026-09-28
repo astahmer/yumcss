@@ -50,7 +50,7 @@ test("unocss -> tokenami -> unocss: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		export const App = () => <div style={css({ "--gap": "1rem", "--align-items": "center", "--display": "flex" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,7 +83,7 @@ test("unocss -> tokenami -> unocss: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "export const App = () => <div style={"[gap:1rem] [align-items:center] [display:flex]"} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -207,7 +207,7 @@ test("unocss -> tokenami -> unocss: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -242,7 +242,7 @@ test("unocss -> tokenami -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("unocss -> tokenami -> unocss: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -324,7 +324,7 @@ test("unocss -> tokenami -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -385,7 +385,7 @@ test("unocss -> tokenami -> unocss: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -420,7 +420,7 @@ test("unocss -> tokenami -> unocss: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

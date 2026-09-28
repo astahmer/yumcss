@@ -462,7 +462,15 @@ describe("custom design-system context resolution", () => {
 				return { createConfig: (value: unknown) => value } as never;
 			},
 			async importFile() {
-				return { default: { tokens: { colors: { brand: { value: "#123456" } } } } } as never;
+				return {
+					default: {
+						theme: {
+							color: { brand: "#123456" },
+							spacing: { card: "17px" },
+						},
+						properties: { color: ["color"], padding: ["spacing"] },
+					},
+				} as never;
 			},
 		};
 		const result = await migrateTo(createTokenamiAdapter({ moduleLoader: loader }), {
@@ -472,11 +480,13 @@ describe("custom design-system context resolution", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"$colors.brand"');
+		expect(result.code).toContain('"--color": "var(--color_brand)"');
+		expect(result.code).toContain('"--padding": "var(--spacing_card)"');
 		expect(result.code).not.toContain("#123456");
+		expect(result.code).not.toContain('"17px"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			export const card = css({ padding: "17px", color: "$colors.brand" });"
+			export const card = css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" });"
 		`);
 	});
 });
