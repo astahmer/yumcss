@@ -51,7 +51,7 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -114,7 +114,7 @@ test("react-native -> mui -> react-native: retains the documented secondary API 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -150,7 +150,7 @@ test("react-native -> mui -> react-native: retains the documented secondary API 
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -192,7 +192,7 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -228,7 +228,7 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -243,7 +243,7 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,7 +279,7 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -308,7 +308,7 @@ test("react-native -> mui -> react-native: resolves token values across both con
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -344,7 +344,7 @@ test("react-native -> mui -> react-native: resolves token values across both con
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

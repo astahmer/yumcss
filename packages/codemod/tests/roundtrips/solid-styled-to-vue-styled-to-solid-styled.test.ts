@@ -52,7 +52,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
 		    "converted": 1,
@@ -93,7 +93,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		import styled from "vue-styled-components";
 
 		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
 		    "converted": 0,
@@ -147,7 +147,7 @@ test("solid-styled -> vue-styled -> solid-styled: retains the documented seconda
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
 		    "converted": 1,
@@ -188,7 +188,7 @@ test("solid-styled -> vue-styled -> solid-styled: retains the documented seconda
 		import styled from "vue-styled-components";
 
 		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
 		    "converted": 0,
@@ -257,7 +257,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		      "converted": 1,
@@ -298,7 +298,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		import styled from "vue-styled-components";
 
 		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		      "converted": 0,
@@ -340,7 +340,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		      "converted": 1,
@@ -381,7 +381,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		import styled from "vue-styled-components";
 
 		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		      "converted": 0,
@@ -437,7 +437,7 @@ test("solid-styled -> vue-styled -> solid-styled: resolves token values across b
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		    "converted": 1,
@@ -478,7 +478,7 @@ test("solid-styled -> vue-styled -> solid-styled: resolves token values across b
 		import styled from "vue-styled-components";
 
 		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		    "converted": 0,

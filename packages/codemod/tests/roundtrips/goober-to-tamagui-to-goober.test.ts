@@ -50,7 +50,7 @@ test("goober -> tamagui -> goober: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "red" });",
+		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("goober -> tamagui -> goober: preserves an actionable concrete round trip",
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: "1rem", color: "red" });",
+		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -133,10 +133,10 @@ test("goober -> tamagui -> goober: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> tamagui | capability-blocked: components: component subject: styled.div | available: static, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		    "converted": 0,
+		    "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -151,31 +151,56 @@ test("goober -> tamagui -> goober: retains the documented secondary API without 
 		    ],
 		    "outcomes": [
 		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
 		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> tamagui | capability-blocked: components: component subject: styled.div | available: static, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -210,7 +235,7 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -244,7 +269,7 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,7 +307,7 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -316,7 +341,7 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -368,7 +393,7 @@ test("goober -> tamagui -> goober: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -402,7 +427,7 @@ test("goober -> tamagui -> goober: resolves token values across both concrete le
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

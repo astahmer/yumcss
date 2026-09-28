@@ -49,7 +49,7 @@ test("pandwind -> unocss: migrates concrete pandwind syntax to unocss", () => {
 		{
 		  "changed": true,
 		  "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		export const card = "[color:red] [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("pandwind -> unocss: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("pandwind -> unocss: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("pandwind -> unocss: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "
-		export const card = "[padding:1rem] text-brand";",
+		export const card = "text-brand [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,7 +281,7 @@ test("pandwind -> unocss: preserves malformed concrete pandwind input", () => {
 		{
 		  "changed": true,
 		  "code": "
-		export const card = "[padding:1rem] [color:red]";
+		export const card = "[color:red] [padding:1rem]";
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

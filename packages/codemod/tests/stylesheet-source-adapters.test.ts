@@ -69,18 +69,18 @@ describe("stylesheet source adapters", () => {
 			      "declarations": [
 			        {
 			          "conditions": [],
-			          "property": "padding",
-			          "value": {
-			            "kind": "literal",
-			            "value": "1rem",
-			          },
-			        },
-			        {
-			          "conditions": [],
 			          "property": "color",
 			          "value": {
 			            "kind": "literal",
 			            "value": "red",
+			          },
+			        },
+			        {
+			          "conditions": [],
+			          "property": "padding",
+			          "value": {
+			            "kind": "literal",
+			            "value": "1rem",
 			          },
 			        },
 			      ],

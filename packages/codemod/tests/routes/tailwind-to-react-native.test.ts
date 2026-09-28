@@ -49,7 +49,7 @@ test("tailwind -> react-native: migrates concrete tailwind syntax to react-nativ
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "gap": 16, "alignItems": "center", "display": "flex" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": 16 } }).style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,9 +94,9 @@ test("tailwind -> react-native: carries a documented secondary tailwind API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> react-native | lowering-residual: validation)
-		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
-		  "converted": 0,
+		  "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style}/>;",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,25 +115,17 @@ test("tailwind -> react-native: carries a documented secondary tailwind API expl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -157,7 +149,7 @@ test("tailwind -> react-native: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#f97316" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#f97316", "padding": 18 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -194,7 +186,7 @@ test("tailwind -> react-native: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 18 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -243,7 +235,7 @@ test("tailwind -> react-native: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 18 } }).style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -289,7 +281,7 @@ test("tailwind -> react-native: preserves malformed concrete tailwind input", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "gap": 16, "alignItems": "center", "display": "flex" } }).style}/>;
+		export const App = () => <View   style={StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": 16 } }).style}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

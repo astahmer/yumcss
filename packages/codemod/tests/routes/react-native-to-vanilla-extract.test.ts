@@ -49,7 +49,7 @@ test("react-native -> vanilla-extract: migrates concrete react-native syntax to 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "red" }) };",
+		export const styles = { "card": style({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("react-native -> vanilla-extract: carries a documented secondary react-nati
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": style({ padding: "8px", backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("react-native -> vanilla-extract: loads concrete theme and project context 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("react-native -> vanilla-extract: loads concrete theme and project context 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("react-native -> vanilla-extract: resolves concrete token values with proje
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("react-native -> vanilla-extract: preserves malformed concrete react-native
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "red" }) };
+		export const styles = { "card": style({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

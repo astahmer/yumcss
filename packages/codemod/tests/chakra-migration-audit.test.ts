@@ -354,7 +354,7 @@ describe("Chakra migration audit", () => {
 			  "changed": true,
 			  "code": "import { Box } from "@chakra-ui/react";
 			import { css } from "@emotion/css";
-			export const App = () => <Box className={css({ aspectRatio: "1 / 1", transitionDuration: "150ms", transitionTimingFunction: "cubic-bezier(0.42, 0, 1, 1)", zIndex: "10" })}/>;",
+			export const App = () => <Box className={css({ transitionDuration: "150ms", transitionTimingFunction: "cubic-bezier(0.42, 0, 1, 1)", aspectRatio: "1 / 1", zIndex: "10" })}/>;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -940,7 +940,7 @@ describe("Chakra migration audit", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ gap: "0.5rem", alignItems: "center", display: "flex", flexDirection: "row" })}><span>A</span><span>B</span></div>;",
+			export const App = () => <div className={css.class({ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" })}><span>A</span><span>B</span></div>;",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -992,7 +992,7 @@ describe("Chakra migration audit", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <><div className={css.class({ columns: 2, display: "grid" })} /><div className={css.class({ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))" })} /></>;",
+			export const App = () => <><div className={css.class({ display: "grid", columns: 2 })} /><div className={css.class({ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))" })} /></>;",
 			  "converted": 2,
 			  "generatedFiles": [],
 			  "loweringPlans": [

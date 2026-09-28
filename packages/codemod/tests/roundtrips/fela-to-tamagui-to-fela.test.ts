@@ -137,10 +137,10 @@ test("fela -> tamagui -> fela: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> tamagui | capability-blocked: components: component subject: styled("button") | available: static, residual)
-		export const Card = createComponent(() => ({ color: "red" }), "button");",
-		    "converted": 0,
+		    "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "red" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "button"} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -155,31 +155,56 @@ test("fela -> tamagui -> fela: retains the documented secondary API without sile
 		    ],
 		    "outcomes": [
 		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		const __CardTamagui = styled(View, { color: "red" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "button"} />; };",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
 		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled("button")",
+		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> tamagui | capability-blocked: components: component subject: styled("button") | available: static, residual)
-		export const Card = createComponent(() => ({ color: "red" }), "button");",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

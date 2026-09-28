@@ -50,7 +50,7 @@ test("mantine -> styled-components: migrates concrete mantine syntax to styled-c
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("mantine -> styled-components: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("mantine -> styled-components: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("mantine -> styled-components: resolves concrete token values with project 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("mantine -> styled-components: preserves malformed concrete mantine input",
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => styled.div({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

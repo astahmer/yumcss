@@ -13,11 +13,13 @@ import {
 } from "../identifiers.ts";
 import { preserveUnsupportedRecipeFields, recipeSourceObjectOptions } from "./recipe-source.ts";
 import { literalValueToPlain, parseObjectLiteral } from "../parse.ts";
+import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
+import type { AdapterParseContext } from "../adapter-contract.ts";
 
 const runtimeFallbackVar =
 	"const __pandwindFallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
 
-export default defineCodemodAdapter({
+const vanillaExtractAdapter = defineCodemodAdapter({
 	id: CodemodAdapterId.VanillaExtract,
 	officialApi: {
 		pluginSystems: ["Sprinkles", "Recipes", "themes", "contracts"],
@@ -121,6 +123,16 @@ export default defineCodemodAdapter({
 				outputExtension: ".css.ts",
 				importSpecifierExtension: ".css.ts",
 				unsupportedFileHint: "Vanilla Extract styles must be emitted from a .css.ts module",
+			},
+			preflight: ({ program }) => {
+				if (program.source?.subject === undefined) return [];
+				return [
+					{
+						kind: StyleProgramResidualKindTag.Component,
+						text: program.source.subject,
+						hint: "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+					},
+				];
 			},
 			handlesHostRewrites: true,
 			dynamicClassCarrier: true,
@@ -297,6 +309,20 @@ export default defineCodemodAdapter({
 		};
 	},
 });
+
+export default {
+	...vanillaExtractAdapter,
+	parse: (source: string, context: AdapterParseContext) => {
+		const parsed = vanillaExtractAdapter.parse(source, context);
+		return {
+			...parsed,
+			matches: parsed.matches.map((match) => ({
+				...match,
+				program: normalizeCssObjectNumericUnits(match.program),
+			})),
+		};
+	},
+};
 
 function balancedCall(
 	source: string,

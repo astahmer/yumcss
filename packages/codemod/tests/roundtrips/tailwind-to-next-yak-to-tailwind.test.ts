@@ -50,7 +50,7 @@ test("tailwind -> next-yak -> tailwind: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const App = () => css\`gap: 1rem; align-items: center; display: flex;\`;",
+		export const App = () => css\`display: flex; align-items: center; gap: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,7 +83,7 @@ test("tailwind -> next-yak -> tailwind: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
+		    "code": "export const App = () => "[display:flex] [align-items:center] [gap:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -207,7 +207,7 @@ test("tailwind -> next-yak -> tailwind: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 1.125rem; color: #f97316;\`;",
+		export const App = () => css\`color: #f97316; padding: 1.125rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -240,7 +240,7 @@ test("tailwind -> next-yak -> tailwind: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +278,7 @@ test("tailwind -> next-yak -> tailwind: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 1.125rem; color: #2563eb;\`;",
+		export const App = () => css\`color: #2563eb; padding: 1.125rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("tailwind -> next-yak -> tailwind: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -363,7 +363,7 @@ test("tailwind -> next-yak -> tailwind: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 1.125rem; color: #2563eb;\`;",
+		export const App = () => css\`color: #2563eb; padding: 1.125rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -396,7 +396,7 @@ test("tailwind -> next-yak -> tailwind: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "p-card text-brand";",
+		    "code": "export const App = () => "text-brand p-card";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

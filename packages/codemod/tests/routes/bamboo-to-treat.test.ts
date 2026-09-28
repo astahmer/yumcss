@@ -94,7 +94,7 @@ test("bamboo -> treat: carries a documented secondary bamboo API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "gap": "4", "display": "flex" });",
+		export const card = style({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

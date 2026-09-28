@@ -49,7 +49,7 @@ test("mui -> vue-styled: migrates concrete mui syntax to vue-styled", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "red" });",
+		export const App = () => styled.div\`color: red; padding: 16px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("mui -> vue-styled: carries a documented secondary mui API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": 8, "color": "red" });",
+		export const Card = styled.div\`color: red; padding: 8;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("mui -> vue-styled: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#f97316" });",
+		export const App = () => styled.div\`color: #f97316; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("mui -> vue-styled: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("mui -> vue-styled: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,7 +276,7 @@ test("mui -> vue-styled: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "red" });
+		export const App = () => styled.div\`color: red; padding: 16px;\`;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

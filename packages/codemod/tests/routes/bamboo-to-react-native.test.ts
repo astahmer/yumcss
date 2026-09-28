@@ -95,7 +95,7 @@ test("bamboo -> react-native: carries a documented secondary bamboo API explicit
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "gap": "4", "display": "flex" });",
+		export const card = StyleSheet.create({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

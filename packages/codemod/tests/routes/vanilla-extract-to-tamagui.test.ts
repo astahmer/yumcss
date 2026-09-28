@@ -49,7 +49,7 @@ test("vanilla-extract -> tamagui: migrates concrete vanilla-extract syntax to ta
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "red" });",
+		export const card = styled(View, { color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -142,7 +142,7 @@ test("vanilla-extract -> tamagui: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -175,7 +175,7 @@ test("vanilla-extract -> tamagui: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,7 +220,7 @@ test("vanilla-extract -> tamagui: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -262,7 +262,7 @@ test("vanilla-extract -> tamagui: preserves malformed concrete vanilla-extract i
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "red" });
+		export const card = styled(View, { color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

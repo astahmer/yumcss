@@ -51,7 +51,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves an actionable c
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "@emotion/css";
-		const styles = { "card": css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +87,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves an actionable c
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -247,7 +247,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves concrete theme 
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "@emotion/css";
-		const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves concrete theme 
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -323,7 +323,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves concrete theme 
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "@emotion/css";
-		const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -359,7 +359,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves concrete theme 
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +413,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: resolves token values acr
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "@emotion/css";
-		const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -449,7 +449,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: resolves token values acr
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

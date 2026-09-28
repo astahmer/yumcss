@@ -49,7 +49,7 @@ test("goober -> linaria: migrates concrete goober syntax to linaria", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("goober -> linaria: carries a documented secondary goober API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@linaria/react";
-		export const Card = styled.div\`padding: 1rem; color: red;\`;",
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("goober -> linaria: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("goober -> linaria: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("goober -> linaria: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("goober -> linaria: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: red;\`;
+		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

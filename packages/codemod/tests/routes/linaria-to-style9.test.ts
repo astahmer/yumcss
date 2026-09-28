@@ -49,7 +49,7 @@ test("linaria -> style9: migrates concrete linaria syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "red" });",
+		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("linaria -> style9: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("linaria -> style9: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("linaria -> style9: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("linaria -> style9: preserves malformed concrete linaria input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "red" });
+		export const card = style9.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "generatedFiles": [],

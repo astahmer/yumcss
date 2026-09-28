@@ -49,7 +49,7 @@ test("jss -> vue-styled: migrates concrete jss syntax to vue-styled", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "red" }) };",
+		export const useStyles = styled.div\` color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("jss -> vue-styled: carries a documented secondary jss API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const sheet = { "card": styled.div({ "color": "red" }) };",
+		export const sheet = styled.div\` color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("jss -> vue-styled: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
+		export const useStyles = styled.div\` color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("jss -> vue-styled: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
+		export const useStyles = styled.div\` color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("jss -> vue-styled: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
+		export const useStyles = styled.div\` color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("jss -> vue-styled: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "red" }) };
+		export const useStyles = styled.div\` color: red;\`;
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
 		  "generatedFiles": [],

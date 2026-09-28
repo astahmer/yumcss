@@ -50,7 +50,7 @@ test("styled-components -> mui -> styled-components: preserves an actionable con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("styled-components -> mui -> styled-components: preserves an actionable con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: "1rem", color: "red" });",
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -132,7 +132,7 @@ test("styled-components -> mui -> styled-components: retains the documented seco
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("styled-components -> mui -> styled-components: retains the documented seco
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: "1rem", color: "red" });",
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,7 +263,7 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -299,7 +299,7 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "primary.main" });",
+		export const Card = styled("div")({ color: "primary.main", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,7 +333,7 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -383,7 +383,7 @@ test("styled-components -> mui -> styled-components: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "primary.main" });",
+		export const Card = styled("div")({ color: "primary.main", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -417,7 +417,7 @@ test("styled-components -> mui -> styled-components: resolves token values acros
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

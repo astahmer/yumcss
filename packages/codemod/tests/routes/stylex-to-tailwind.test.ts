@@ -48,7 +48,7 @@ test("stylex -> tailwind: migrates concrete stylex syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:8px] [color:red]" };",
+		  "code": "export const styles = { "card": "[color:red] [padding:8px]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("stylex -> tailwind: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:8px] [color:#2563eb]" };",
+		    "code": "export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("stylex -> tailwind: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:8px] text-brand" };",
+		    "code": "export const styles = { "card": "text-brand [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("stylex -> tailwind: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:8px] text-brand" };",
+		  "code": "export const styles = { "card": "text-brand [padding:8px]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("stylex -> tailwind: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:8px] [color:red]" };
+		  "code": "export const styles = { "card": "[color:red] [padding:8px]" };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

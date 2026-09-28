@@ -49,7 +49,7 @@ test("react-native -> linaria: migrates concrete react-native syntax to linaria"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: red;\` };",
+		export const styles = { "card": css\`color: red; padding: 8px;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("react-native -> linaria: carries a documented secondary react-native API e
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; background-color: red;\` };",
+		export const styles = { "card": css\`padding: 8px; background-color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("react-native -> linaria: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("react-native -> linaria: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("react-native -> linaria: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("react-native -> linaria: preserves malformed concrete react-native input",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: red;\` };
+		export const styles = { "card": css\`color: red; padding: 8px;\` };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

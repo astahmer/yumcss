@@ -49,7 +49,7 @@ test("goober -> bamboo: migrates concrete goober syntax to bamboo", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("goober -> bamboo: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +179,7 @@ test("goober -> bamboo: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +225,7 @@ test("goober -> bamboo: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -268,7 +268,7 @@ test("goober -> bamboo: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: "1rem", color: "red" });
+		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

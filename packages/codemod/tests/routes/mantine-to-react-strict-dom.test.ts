@@ -75,7 +75,7 @@ test("mantine -> react-strict-dom: migrates concrete mantine syntax to react-str
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -174,7 +174,7 @@ test("mantine -> react-strict-dom: loads concrete theme and project context vari
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -211,7 +211,7 @@ test("mantine -> react-strict-dom: loads concrete theme and project context vari
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -260,7 +260,7 @@ test("mantine -> react-strict-dom: resolves concrete token values with project c
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -307,7 +307,7 @@ test("mantine -> react-strict-dom: preserves malformed concrete mantine input", 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

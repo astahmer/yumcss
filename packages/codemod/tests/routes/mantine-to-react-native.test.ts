@@ -49,7 +49,7 @@ test("mantine -> react-native: migrates concrete mantine syntax to react-native"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("mantine -> react-native: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,7 +187,7 @@ test("mantine -> react-native: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("mantine -> react-native: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
+		export const App = () => <View     style={StyleSheet.create({ style: { "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("mantine -> react-native: preserves malformed concrete mantine input", () =
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View     style={StyleSheet.create({ style: { "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;
+		export const App = () => <View     style={StyleSheet.create({ style: { "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,7 +49,7 @@ test("style9 -> vue-styled: migrates concrete style9 syntax to vue-styled", () =
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "color": "red" }) };",
+		export const styles = styled.div\` color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,9 +93,10 @@ test("style9 -> vue-styled: carries a documented secondary style9 API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "color": "red" }), "muted": styled.div({ "opacity": 0.5 }) };",
-		  "converted": 1,
+		  "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | lowering-residual: validation)
+		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -113,17 +114,25 @@ test("style9 -> vue-styled: carries a documented secondary style9 API explicitly
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
+		      "outcome": "residual",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -148,7 +157,7 @@ test("style9 -> vue-styled: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +193,7 @@ test("style9 -> vue-styled: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +241,7 @@ test("style9 -> vue-styled: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +286,7 @@ test("style9 -> vue-styled: preserves malformed concrete style9 input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "color": "red" }) };
+		export const styles = styled.div\` color: red;\`;
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,
 		  "generatedFiles": [],

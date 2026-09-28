@@ -49,7 +49,7 @@ test("tokenami -> styled-components: migrates concrete tokenami syntax to styled
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "red" });",
+		export const card = styled.div({ color: "red", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("tokenami -> styled-components: loads concrete theme and project context va
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "#f97316" });",
+		export const card = styled.div({ color: "#f97316", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("tokenami -> styled-components: loads concrete theme and project context va
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("tokenami -> styled-components: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("tokenami -> styled-components: preserves malformed concrete tokenami input
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "red" });
+		export const card = styled.div({ color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -48,7 +48,7 @@ test("next-yak -> fela: migrates concrete next-yak syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
+		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,10 +92,10 @@ test("next-yak -> fela: carries a documented secondary next-yak API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> fela | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -113,19 +113,19 @@ test("next-yak -> fela: carries a documented secondary next-yak API explicitly",
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -147,7 +147,7 @@ test("next-yak -> fela: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("next-yak -> fela: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("next-yak -> fela: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		  "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +273,7 @@ test("next-yak -> fela: preserves malformed concrete next-yak input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });
+		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

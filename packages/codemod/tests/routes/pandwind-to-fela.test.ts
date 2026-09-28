@@ -49,7 +49,7 @@ test("pandwind -> fela: migrates concrete pandwind syntax to fela", () => {
 		{
 		  "changed": true,
 		  "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -157,7 +157,7 @@ test("pandwind -> fela: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "#f97316" });",
+		export const card = renderer.renderRule({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -194,7 +194,7 @@ test("pandwind -> fela: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -243,7 +243,7 @@ test("pandwind -> fela: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -289,7 +289,7 @@ test("pandwind -> fela: preserves malformed concrete pandwind input", () => {
 		{
 		  "changed": true,
 		  "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

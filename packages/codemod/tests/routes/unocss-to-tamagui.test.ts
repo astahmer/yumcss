@@ -49,7 +49,8 @@ test("unocss -> tamagui: migrates concrete unocss syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { gap: "1rem", alignItems: "center", display: "flex" });",
+		const __componentTamagui = styled(View, { display: "flex", alignItems: "center", gap: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -141,7 +142,8 @@ test("unocss -> tamagui: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#f97316" });",
+		const __componentTamagui = styled(View, { color: "#f97316", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +176,8 @@ test("unocss -> tamagui: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,7 +222,8 @@ test("unocss -> tamagui: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -261,7 +265,8 @@ test("unocss -> tamagui: preserves malformed concrete unocss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { gap: "1rem", alignItems: "center", display: "flex" });
+		const __componentTamagui = styled(View, { display: "flex", alignItems: "center", gap: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -51,7 +51,7 @@ test("solid-styled -> chakra-ui: migrates concrete solid-styled syntax to chakra
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -74,6 +74,11 @@ test("solid-styled -> chakra-ui: migrates concrete solid-styled syntax to chakra
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
@@ -95,7 +100,7 @@ test("solid-styled -> chakra-ui: carries a documented secondary solid-styled API
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -118,6 +123,11 @@ test("solid-styled -> chakra-ui: carries a documented secondary solid-styled API
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
@@ -148,7 +158,7 @@ test("solid-styled -> chakra-ui: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -171,6 +181,11 @@ test("solid-styled -> chakra-ui: loads concrete theme and project context varian
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
@@ -183,7 +198,7 @@ test("solid-styled -> chakra-ui: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -206,6 +221,11 @@ test("solid-styled -> chakra-ui: loads concrete theme and project context varian
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
@@ -230,7 +250,7 @@ test("solid-styled -> chakra-ui: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -254,6 +274,11 @@ test("solid-styled -> chakra-ui: resolves concrete token values with project con
 		  ],
 		  "residuals": [
 		    {
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
 		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",
 		      "preserved": undefined,
@@ -274,7 +299,7 @@ test("solid-styled -> chakra-ui: preserves malformed concrete solid-styled input
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 0,
@@ -298,6 +323,11 @@ test("solid-styled -> chakra-ui: preserves malformed concrete solid-styled input
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		      "kind": "host-framework",

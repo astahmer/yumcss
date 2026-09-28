@@ -50,7 +50,7 @@ test("unocss -> react-native -> unocss: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "gap": 16, "alignItems": "center", "display": "flex" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": 16 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("unocss -> react-native -> unocss: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "react-native";
-		export const App = () => <View   style={{ "style": "[gap:16] [align-items:center] [display:flex]" }.style}/>;",
+		export const App = () => <View   style={{ "style": "[display:flex] [align-items:center] [gap:16px]" }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -136,9 +136,9 @@ test("unocss -> react-native -> unocss: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } } }).style}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -157,38 +157,55 @@ test("unocss -> react-native -> unocss: retains the documented secondary API wit
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> react-native | lowering-residual: validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> unocss | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		export const App = () => <View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } } }).style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
@@ -222,7 +239,7 @@ test("unocss -> react-native -> unocss: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#f97316" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#f97316", "padding": 18 } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -259,7 +276,7 @@ test("unocss -> react-native -> unocss: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "react-native";
-		export const App = () => <View   style={{ "style": "[padding:18] text-brand" }.style}/>;",
+		export const App = () => <View   style={{ "style": "text-brand [padding:18px]" }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -297,7 +314,7 @@ test("unocss -> react-native -> unocss: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 18 } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -334,7 +351,7 @@ test("unocss -> react-native -> unocss: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "react-native";
-		export const App = () => <View   style={{ "style": "[padding:18] text-brand" }.style}/>;",
+		export const App = () => <View   style={{ "style": "text-brand [padding:18px]" }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -386,7 +403,7 @@ test("unocss -> react-native -> unocss: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 18, "color": "#2563eb" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 18 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -423,7 +440,7 @@ test("unocss -> react-native -> unocss: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "react-native";
-		export const App = () => <View   style={{ "style": "[padding:18] text-brand" }.style}/>;",
+		export const App = () => <View   style={{ "style": "text-brand [padding:18px]" }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

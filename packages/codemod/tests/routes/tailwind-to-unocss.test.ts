@@ -48,7 +48,7 @@ test("tailwind -> unocss: migrates concrete tailwind syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		  "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("tailwind -> unocss: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("tailwind -> unocss: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("tailwind -> unocss: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		  "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("tailwind -> unocss: preserves malformed concrete tailwind input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;
+		  "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

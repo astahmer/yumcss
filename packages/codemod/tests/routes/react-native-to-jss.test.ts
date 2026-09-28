@@ -49,7 +49,7 @@ test("react-native -> jss: migrates concrete react-native syntax to jss", () => 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "red" } });",
+		export const styles = createUseStyles({ card: { color: "red", padding: "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("react-native -> jss: carries a documented secondary react-native API expli
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, backgroundColor: "red" } });",
+		export const styles = createUseStyles({ card: { padding: "8px", backgroundColor: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("react-native -> jss: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("react-native -> jss: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("react-native -> jss: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("react-native -> jss: preserves malformed concrete react-native input", () 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "red" } });
+		export const styles = createUseStyles({ card: { color: "red", padding: "8px" } });
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -48,8 +48,8 @@ test("next-yak -> solid-styled: migrates concrete next-yak syntax to solid-style
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("next-yak -> solid-styled: carries a documented secondary next-yak API expl
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +147,8 @@ test("next-yak -> solid-styled: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +183,8 @@ test("next-yak -> solid-styled: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +231,8 @@ test("next-yak -> solid-styled: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +276,8 @@ test("next-yak -> solid-styled: preserves malformed concrete next-yak input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });
+		  "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

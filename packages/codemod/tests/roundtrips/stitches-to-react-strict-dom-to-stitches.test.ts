@@ -50,7 +50,7 @@ test("stitches -> react-strict-dom -> stitches: preserves an actionable concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });",
+		export const card = css.create({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("stitches -> react-strict-dom -> stitches: preserves an actionable concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("stitches -> react-strict-dom -> stitches: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -259,7 +259,7 @@ test("stitches -> react-strict-dom -> stitches: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -297,7 +297,7 @@ test("stitches -> react-strict-dom -> stitches: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,7 +333,7 @@ test("stitches -> react-strict-dom -> stitches: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -385,7 +385,7 @@ test("stitches -> react-strict-dom -> stitches: resolves token values across bot
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -421,7 +421,7 @@ test("stitches -> react-strict-dom -> stitches: resolves token values across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

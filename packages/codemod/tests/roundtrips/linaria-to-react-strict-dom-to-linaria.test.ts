@@ -50,7 +50,7 @@ test("linaria -> react-strict-dom -> linaria: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });",
+		export const card = css.create({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("linaria -> react-strict-dom -> linaria: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,7 +167,7 @@ test("linaria -> react-strict-dom -> linaria: retains the documented secondary A
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "react-strict-dom has no host representation for the detected framework",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -220,7 +220,7 @@ test("linaria -> react-strict-dom -> linaria: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("linaria -> react-strict-dom -> linaria: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -294,7 +294,7 @@ test("linaria -> react-strict-dom -> linaria: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,7 +330,7 @@ test("linaria -> react-strict-dom -> linaria: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +382,7 @@ test("linaria -> react-strict-dom -> linaria: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,7 +418,7 @@ test("linaria -> react-strict-dom -> linaria: resolves token values across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

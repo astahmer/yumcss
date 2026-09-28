@@ -48,7 +48,7 @@ test("next-yak -> tailwind: migrates concrete next-yak syntax to tailwind", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:1rem] [color:red]";",
+		  "code": "export const card = "[color:red] [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("next-yak -> tailwind: carries a documented secondary next-yak API explicit
 		  "changed": true,
 		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("next-yak -> tailwind: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = "[padding:1rem] [color:#2563eb]";",
+		    "code": "export const card = "[color:#2563eb] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("next-yak -> tailwind: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("next-yak -> tailwind: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:1rem] text-brand";",
+		  "code": "export const card = "text-brand [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +273,7 @@ test("next-yak -> tailwind: preserves malformed concrete next-yak input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:1rem] [color:red]";
+		  "code": "export const card = "[color:red] [padding:1rem]";
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

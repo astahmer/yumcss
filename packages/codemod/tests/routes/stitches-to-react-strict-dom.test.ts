@@ -49,7 +49,7 @@ test("stitches -> react-strict-dom: migrates concrete stitches syntax to react-s
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });",
+		export const card = css.create({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -157,7 +157,7 @@ test("stitches -> react-strict-dom: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -193,7 +193,7 @@ test("stitches -> react-strict-dom: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -241,7 +241,7 @@ test("stitches -> react-strict-dom: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -286,7 +286,7 @@ test("stitches -> react-strict-dom: preserves malformed concrete stitches input"
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });
+		export const card = css.create({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

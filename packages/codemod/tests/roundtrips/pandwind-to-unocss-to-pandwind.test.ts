@@ -50,7 +50,7 @@ test("pandwind -> unocss -> pandwind: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] [color:red]";",
+		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("pandwind -> unocss -> pandwind: preserves an actionable concrete round tri
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -216,7 +216,7 @@ test("pandwind -> unocss -> pandwind: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = "[padding:1rem] text-brand";",
+		export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -255,7 +255,7 @@ test("pandwind -> unocss -> pandwind: preserves concrete theme and project conte
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -291,7 +291,7 @@ test("pandwind -> unocss -> pandwind: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = "[padding:1rem] text-brand";",
+		export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,7 +330,7 @@ test("pandwind -> unocss -> pandwind: preserves concrete theme and project conte
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -380,7 +380,7 @@ test("pandwind -> unocss -> pandwind: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] text-brand";",
+		export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -419,7 +419,7 @@ test("pandwind -> unocss -> pandwind: resolves token values across both concrete
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

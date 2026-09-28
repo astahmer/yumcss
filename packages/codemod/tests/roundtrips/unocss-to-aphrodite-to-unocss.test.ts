@@ -50,7 +50,7 @@ test("unocss -> aphrodite -> unocss: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "gap": "1rem", "alignItems": "center", "display": "flex" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("unocss -> aphrodite -> unocss: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		export const App = () => <div className={css({ "style": "[gap:1rem] [align-items:center] [display:flex]" }.style)}/>;",
+		export const App = () => <div className={css({ "style": "[display:flex] [align-items:center] [gap:1rem]" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,7 +220,7 @@ test("unocss -> aphrodite -> unocss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#f97316", "padding": "1.125rem" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("unocss -> aphrodite -> unocss: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		export const App = () => <div className={css({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -294,7 +294,7 @@ test("unocss -> aphrodite -> unocss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,7 +330,7 @@ test("unocss -> aphrodite -> unocss: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		export const App = () => <div className={css({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +382,7 @@ test("unocss -> aphrodite -> unocss: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,7 +418,7 @@ test("unocss -> aphrodite -> unocss: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		export const App = () => <div className={css({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

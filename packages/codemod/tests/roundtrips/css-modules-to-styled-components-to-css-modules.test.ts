@@ -201,7 +201,7 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -236,8 +236,8 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		/* /* pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual) */ */
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		/* /* pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, residual) */ */
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -245,39 +245,29 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "hint": "the React wrapper requires a TSX source module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -290,7 +280,7 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -325,8 +315,8 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		/* /* pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual) */ */
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		/* /* pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, residual) */ */
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -334,39 +324,29 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "hint": "the React wrapper requires a TSX source module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -393,7 +373,7 @@ test("css-modules -> styled-components -> css-modules: resolves token values acr
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -428,8 +408,8 @@ test("css-modules -> styled-components -> css-modules: resolves token values acr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		/* /* pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual) */ */
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		/* /* pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, residual) */ */
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -437,39 +417,29 @@ test("css-modules -> styled-components -> css-modules: resolves token values acr
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the React wrapper requires a TSX source module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

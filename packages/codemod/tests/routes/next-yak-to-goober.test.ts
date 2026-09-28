@@ -49,7 +49,7 @@ test("next-yak -> goober: migrates concrete next-yak syntax to goober", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,11 +93,10 @@ test("next-yak -> goober: carries a documented secondary next-yak API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		import { css } from "goober";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> goober | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +114,19 @@ test("next-yak -> goober: carries a documented secondary next-yak API explicitly
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -150,7 +149,7 @@ test("next-yak -> goober: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +185,7 @@ test("next-yak -> goober: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +233,7 @@ test("next-yak -> goober: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -279,7 +278,7 @@ test("next-yak -> goober: preserves malformed concrete next-yak input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "red" });
+		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,7 +49,7 @@ test("stylex -> emotion: migrates concrete stylex syntax to emotion", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("stylex -> emotion: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("stylex -> emotion: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("stylex -> emotion: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("stylex -> emotion: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

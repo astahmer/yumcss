@@ -49,7 +49,7 @@ test("compiled -> linaria: migrates concrete compiled syntax to linaria", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: red;\`;",
+		export const card = css\`color: red; padding: 8;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("compiled -> linaria: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("compiled -> linaria: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("compiled -> linaria: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("compiled -> linaria: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: red;\`;
+		export const card = css\`color: red; padding: 8;\`;
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

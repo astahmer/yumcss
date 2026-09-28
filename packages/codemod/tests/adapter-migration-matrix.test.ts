@@ -388,14 +388,31 @@ describe("composed cross-ecosystem routes", () => {
 		CodemodAdapterId.SolidStyled,
 		CodemodAdapterId.VueStyled,
 	])("preserves named style maps when targeting %s", (targetId) => {
-		const result = migrateTo(
+		const source =
 			'import { StyleSheet } from "aphrodite";\n' +
-				'const styles = StyleSheet.create({ button: { color: "red" } });',
+			'const styles = StyleSheet.create({ button: { color: "red" } });';
+		const result = migrateTo(
+			source,
 			CodemodAdapterId.Aphrodite,
 			targetId,
 			"styles.ts",
 		);
 
+		if (targetId === CodemodAdapterId.VueStyled) {
+			expect(result.converted).toBe(0);
+			expect(result.skipped).toBe(1);
+			expect(
+				result.residuals.some((residual) => residual.hint?.includes("named-rules: named style rule: button")),
+			).toBe(true);
+			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain('const styles = StyleSheet.create({ button: { color: "red" } });');
+			expect(result.code).toMatchInlineSnapshot(`
+				"import { StyleSheet } from "aphrodite";
+				// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: button | available: static, residual)
+				const styles = StyleSheet.create({ button: { color: "red" } });"
+			`);
+			return;
+		}
 		if (targetId === CodemodAdapterId.Mantine) {
 			expect(result.converted + result.skipped).toBeGreaterThan(0);
 			expect(result.skipped).toBeGreaterThan(0);
@@ -440,7 +457,17 @@ describe("composed cross-ecosystem routes", () => {
 
 		expect(result.residuals, `${CodemodAdapterId.StyledComponents} -> ${targetId}`).toEqual([]);
 		expect(result.skipped).toBe(0);
-		expect(result.code).toContain("<div className={Card} />");
+		expect(result.code).toContain("Card =");
+		if (targetId === CodemodAdapterId.Tailwind) {
+			expect(result.code).toContain('export const App = () => <Card />;');
+			expect(result.code).toContain("const Component = props.as ?? \"div\"");
+		} else if (targetId === CodemodAdapterId.CssModules) {
+			expect(result.code).toContain('export const App = () => <Card />;');
+			expect(result.code).toContain("__pandwindCardForwardRef");
+			expect(result.code).toContain(".module.css");
+		} else {
+			expect(result.code).toContain("<div className={Card} />");
+		}
 	});
 
 	test("rewrites a styled subject into a static class target", () => {
@@ -577,7 +604,7 @@ describe("composed cross-ecosystem routes", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.skipped).toBe(0);
 		expect(result.code).toContain("<chakra.div");
-		expect(result.code).toContain('css={{ padding: "1rem", color: "red" }}');
+		expect(result.code).toContain('css={{ color: "red", padding: "1rem" }}');
 		expect(result.code).not.toMatch(/^\s*css\(\{/u);
 	});
 });

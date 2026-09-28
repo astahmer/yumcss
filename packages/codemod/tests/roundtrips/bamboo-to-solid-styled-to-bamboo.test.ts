@@ -49,8 +49,8 @@ test("bamboo -> solid-styled -> bamboo: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "color": "red" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,40 +84,16 @@ test("bamboo -> solid-styled -> bamboo: preserves an actionable concrete round t
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ color: "red" }), props.class)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -135,8 +111,8 @@ test("bamboo -> solid-styled -> bamboo: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "gap": "4", "display": "flex" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,40 +146,16 @@ test("bamboo -> solid-styled -> bamboo: retains the documented secondary API wit
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ gap: "4", display: "flex" }), props.class)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "display": "flex", "gap": "4" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -236,8 +188,8 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -271,47 +223,23 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ color: "#2563eb" }), props.class)} />;",
-		      "converted": 1,
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb" });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -345,40 +273,16 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ color: "#2563eb" }), props.class)} />;",
-		      "converted": 1,
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb" });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -398,8 +302,8 @@ test("bamboo -> solid-styled -> bamboo: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -433,40 +337,16 @@ test("bamboo -> solid-styled -> bamboo: resolves token values across both concre
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(css({ color: "#2563eb" }), props.class)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

@@ -50,8 +50,8 @@ test("tamagui -> stitches -> tamagui: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "red" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,8 +88,9 @@ test("tamagui -> stitches -> tamagui: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "red" });
+		import { styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "red", padding: "$4" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,8 +216,8 @@ test("tamagui -> stitches -> tamagui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "#2563eb" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -253,8 +254,9 @@ test("tamagui -> stitches -> tamagui: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
+		import { styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -290,8 +292,8 @@ test("tamagui -> stitches -> tamagui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "#2563eb" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -328,8 +330,9 @@ test("tamagui -> stitches -> tamagui: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
+		import { styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -379,8 +382,8 @@ test("tamagui -> stitches -> tamagui: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "#2563eb" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -417,8 +420,9 @@ test("tamagui -> stitches -> tamagui: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
+		import { styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],

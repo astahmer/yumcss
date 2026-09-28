@@ -94,7 +94,7 @@ test("bamboo -> jss: carries a documented secondary bamboo API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ gap: "4", display: "flex" });",
+		export const card = createUseStyles({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

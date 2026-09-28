@@ -49,7 +49,7 @@ test("vanilla-extract -> react-native: migrates concrete vanilla-extract syntax 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 8, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -151,7 +151,7 @@ test("vanilla-extract -> react-native: loads concrete theme and project context 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("vanilla-extract -> react-native: loads concrete theme and project context 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("vanilla-extract -> react-native: resolves concrete token values with proje
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,7 +283,7 @@ test("vanilla-extract -> react-native: preserves malformed concrete vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 8, "color": "red" });
+		export const card = StyleSheet.create({ "color": "red", "padding": 8 });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

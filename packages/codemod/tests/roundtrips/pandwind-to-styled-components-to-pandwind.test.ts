@@ -51,7 +51,7 @@ test("pandwind -> styled-components -> pandwind: preserves an actionable concret
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: "red" });",
+		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -90,7 +90,7 @@ test("pandwind -> styled-components -> pandwind: preserves an actionable concret
 		const css = createUnsafeCss();
 		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -217,7 +217,7 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: "#f97316" });",
+		export const card = styled.div({ color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -298,7 +298,7 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -337,7 +337,7 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -393,7 +393,7 @@ test("pandwind -> styled-components -> pandwind: resolves token values across bo
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -432,7 +432,7 @@ test("pandwind -> styled-components -> pandwind: resolves token values across bo
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {

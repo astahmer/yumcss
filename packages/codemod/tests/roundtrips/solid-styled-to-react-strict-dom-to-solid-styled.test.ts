@@ -76,7 +76,7 @@ test("solid-styled -> react-strict-dom -> solid-styled: preserves an actionable 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for solid",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -140,7 +140,7 @@ test("solid-styled -> react-strict-dom -> solid-styled: retains the documented s
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for solid",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -219,7 +219,7 @@ test("solid-styled -> react-strict-dom -> solid-styled: preserves concrete theme
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for solid",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -271,7 +271,7 @@ test("solid-styled -> react-strict-dom -> solid-styled: preserves concrete theme
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for solid",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -337,7 +337,7 @@ test("solid-styled -> react-strict-dom -> solid-styled: resolves token values ac
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for solid",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

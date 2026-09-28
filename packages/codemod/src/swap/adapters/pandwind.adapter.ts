@@ -55,7 +55,9 @@ import {
 import {
 	componentAttrsExpressionForSubject,
 	componentPropNamesForSubject,
+	componentPropsExpressionForSubject,
 	componentExpressionForSubject,
+	getHostComponentRewriter,
 	hasComponentAttributeUse,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
@@ -82,7 +84,26 @@ import {
 	recipeSourceObjectOptions,
 } from "./recipe-source.ts";
 
+const componentAttrsMayChooseHost = (subject: string): boolean => {
+	const attributes = componentAttrsExpressionForSubject(subject);
+	if (attributes === undefined) return false;
+	return /(?:\bas\s*(?::|[,}])|["']as["']\s*:|\[\s*["']as["']\s*\]\s*:|\.\.\.)/u.test(
+		attributes,
+	);
+};
+
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
+	preflight: ({ program }) => {
+		const subject = program.source?.subject;
+		if (subject === undefined || !componentAttrsMayChooseHost(subject)) return [];
+		return [
+			{
+				kind: "host-framework",
+				text: subject,
+				hint: "Pandwind preserves attrs-selected hosts until the concrete host and its ref type can be verified",
+			},
+		];
+	},
 	handlesHostRewrites: true,
 	handlesFrameworkSemantics: true,
 	// Pandwind owns the final host. Source factories are projected to verified
@@ -90,10 +111,11 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	// ecosystem alive after a supposedly complete migration.
 	demotesFactoryHosts: true,
 	hostRepresentation: StyleHostRepresentationKind.Class,
-	standaloneHostRepresentation: StyleHostRepresentationKind.Class,
+	standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 	preservesResidualKindsForRepresentation: () => [StyleProgramResidualKindTag.UnknownUtility],
-	resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) => {
+	resolveHostRepresentation: ({ program, hasHostContext, framework, sourceFramework, source, binding }) => {
 		const subject = program.source?.subject;
+		const componentFramework = framework ?? sourceFramework ?? program.source?.framework;
 		if (
 			subject !== undefined &&
 			(componentAttrsExpressionForSubject(subject) !== undefined ||
@@ -110,26 +132,25 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 		if (hasHostContext || program.source?.subject === undefined)
 			return StyleHostRepresentationKind.Class;
 		if (
-			framework === BuiltinHostFramework.React ||
-			framework === BuiltinHostFramework.Preact ||
-			framework === BuiltinHostFramework.Solid ||
-			framework === BuiltinHostFramework.Vue
+			componentFramework === BuiltinHostFramework.React ||
+			componentFramework === BuiltinHostFramework.Preact ||
+			componentFramework === BuiltinHostFramework.Solid ||
+			componentFramework === BuiltinHostFramework.Vue
 		)
 			return StyleHostRepresentationKind.Component;
 		return StyleHostRepresentationKind.Class;
 	},
-	rewriteComponent: ({ code, binding, framework, representation }) => {
-		if (representation !== StyleHostRepresentationKind.Component)
-			return {
-				code,
-				residuals: [
-					{
-						kind: "host-framework",
-						text: binding,
-						hint: "Pandwind class projection should use the shared host rewriter",
-					},
-				],
-			};
+	rewriteComponent: ({
+		code,
+		source,
+		file,
+		binding,
+		tag,
+		framework,
+		program,
+		emittedExpression,
+		representation,
+	}) => {
 		if (
 			framework !== BuiltinHostFramework.React &&
 			framework !== BuiltinHostFramework.Preact &&
@@ -146,10 +167,75 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 					},
 				],
 			};
-		// The Pandwind emitter owns the component wrapper for this representation.
-		// The emitter owns the component wrapper; this hook only validates that the
-		// selected representation is the component contract.
-		return { code, residuals: [] };
+		if (representation === StyleHostRepresentationKind.Component)
+			return code !== source ||
+				(program.source?.subject !== undefined &&
+					componentAttrsMayChooseHost(program.source.subject))
+				? { code, residuals: [] }
+				: {
+						code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: binding,
+								hint: "Pandwind emits the standalone styled subject as a component",
+							},
+						],
+					};
+		if (code === source)
+			return { code, residuals: [] };
+		const rewriter = getHostComponentRewriter(framework);
+		if (rewriter === undefined)
+			return {
+				code,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: binding,
+						hint: `Pandwind class projection has no host rewriter for ${framework}`,
+					},
+				],
+			};
+		const rewritten = rewriter.rewrite({
+			source: code,
+			file,
+			binding,
+			tag,
+			framework,
+			classExpression: StyleProgramAnalysis.hasDynamic(program) ? `${binding}.class` : binding,
+			...(StyleProgramAnalysis.hasDynamic(program) ? { styleExpression: `${binding}.style` } : {}),
+		});
+		if (rewritten.residuals.length === 0)
+			return {
+				code: rewritten.code,
+				imports: [
+					...(rewritten.imports ?? []),
+					...(rewritten.needsCx
+						? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+						: []),
+				],
+				residuals: [],
+			};
+		if (rewriter.rewriteDeclaration === undefined)
+			return { code: rewritten.code, residuals: rewritten.residuals };
+		const declaration = rewriter.rewriteDeclaration({
+			source: code,
+			file,
+			binding,
+			tag,
+			framework,
+			classExpression: emittedExpression,
+		});
+		return {
+			code: declaration.code,
+			imports: [
+				...(declaration.imports ?? []),
+				...(declaration.needsCx
+					? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+					: []),
+			],
+			residuals: declaration.residuals,
+		};
 	},
 	requiresHostWrapper: ({ source, binding }) => {
 		const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -1271,8 +1357,8 @@ function runtimeComponent(
 		(subject === undefined ? undefined : componentAttrsExpressionForSubject(subject));
 	const componentPropNames =
 		subject === undefined ? undefined : componentPropNamesForSubject(subject);
+	const componentProps = subject === undefined ? undefined : componentPropsExpressionForSubject(subject);
 	if (
-		host?.binding === undefined ||
 		(componentExpression === undefined && tag === undefined) ||
 		framework === undefined
 	)
@@ -1280,15 +1366,25 @@ function runtimeComponent(
 	const needsThemeContext = hasThemeContextValues(program, context?.document?.document.source);
 	const object = programObject(mapRuntimeProps(program));
 	if (framework === BuiltinHostFramework.Vue) {
-		const runtimeProps = needsThemeContext
-			? "const props: Record<string, any> = { ...attrs, theme: useTheme() };"
-			: "const props: Record<string, any> = attrs;";
-		const forwardedAttrs =
-			componentPropNames === undefined || componentPropNames.length === 0
-				? "attrs"
-				: `Object.fromEntries(Object.entries(attrs).filter(([key]) => !${JSON.stringify(componentPropNames)}.includes(key)))`;
+		const propsOption = componentProps === undefined ? "" : `props: ${componentProps}, `;
+		const themeSetup = needsThemeContext ? "const theme = useTheme(); " : "";
+		const propsTheme = needsThemeContext ? ", theme" : "";
+		const authoredAttrs =
+			componentAttrs === undefined
+				? undefined
+				: /=>|\bfunction\b/.test(componentAttrs)
+					? `(${componentAttrs})(props.value)`
+					: `(${componentAttrs})`;
+		const authoredAttrsSetup =
+			authoredAttrs === undefined
+				? ""
+				: `const styledAttrs = computed(() => ${authoredAttrs}); `;
+		const authoredAttrsValue = authoredAttrs === undefined ? "{}" : "styledAttrs.value";
+		const authoredClass = authoredAttrs === undefined ? "" : ", styledAttrs.value.class";
+		const authoredStyle = authoredAttrs === undefined ? "" : ", styledAttrs.value.style";
+		const vueObject = programObject(mapRuntimeProps(program, "props.value"));
 		return {
-			text: `defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; ${runtimeProps} const style = computed(() => runtimeCss.vars(${object})); return () => h(${JSON.stringify(tag)}, { ...${forwardedAttrs}, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } })`,
+			text: `defineComponent({ ${propsOption}inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { ${themeSetup}const props = computed(() => ({ ..._props, ...rawAttrs${propsTheme} })); ${authoredAttrsSetup}const style = computed(() => runtimeCss.vars(${vueObject})); return () => h(${JSON.stringify(tag)}, { ...rawAttrs, ...${authoredAttrsValue}, class: [style.value.class, props.value.class${authoredClass}], style: [style.value.style, props.value.style${authoredStyle}] }, slots.default?.()); } })`,
 			componentExpression: true,
 			imports: [
 				'import { computed, defineComponent, h } from "vue";',
@@ -1305,15 +1401,40 @@ function runtimeComponent(
 		framework !== BuiltinHostFramework.Preact
 	)
 		return undefined;
-	const propsParameter =
+	const propsType =
 		framework === BuiltinHostFramework.React
-			? `props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }`
+			? `{ readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }`
 			: framework === BuiltinHostFramework.Preact
-				? `props: { readonly as?: JSX.ElementType; readonly className?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }`
-				: `props: { readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }`;
+				? `{ readonly as?: JSX.ElementType; readonly className?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }`
+				: `{ readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }`;
+	const propsParameter = `props: ${propsType}`;
+	const forwardsRef =
+		framework === BuiltinHostFramework.React || framework === BuiltinHostFramework.Preact;
+	const forwardRefBinding = "__pandwindForwardRef";
+	const forwardRefType =
+		framework === BuiltinHostFramework.React
+			? `<${tag === undefined ? "unknown" : `React.ComponentRef<${JSON.stringify(tag)}>`}, ${propsType}>`
+			: `<HTMLElement, ${propsType}>`;
+	const componentStart = forwardsRef
+		? `${forwardRefBinding}${forwardRefType}((${propsParameter}, ref) => {`
+		: `(${propsParameter}) => {`;
+	const componentEnd = forwardsRef ? ")" : "";
+	const forwardedRef = forwardsRef ? "ref={ref} " : "";
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const hostTypeImports =
-		framework === BuiltinHostFramework.Solid ? ['import type { JSX } from "solid-js";'] : [];
+		framework === BuiltinHostFramework.React
+			? ['import type * as React from "react";']
+			: framework === BuiltinHostFramework.Preact
+				? ['import type { JSX } from "preact";']
+				: framework === BuiltinHostFramework.Solid
+					? ['import type { JSX } from "solid-js";']
+					: [];
+	const forwardRefImports =
+		framework === BuiltinHostFramework.React
+			? [`import { forwardRef as ${forwardRefBinding} } from "react";`]
+			: framework === BuiltinHostFramework.Preact
+				? [`import { forwardRef as ${forwardRefBinding} } from "preact/compat";`]
+				: [];
 	const attrsValue =
 		componentAttrs === undefined
 			? "{}"
@@ -1332,10 +1453,11 @@ function runtimeComponent(
 				? "propsWithoutAs"
 				: `Object.fromEntries(Object.entries(propsWithoutAs).filter(([key]) => !${JSON.stringify(componentPropNames)}.includes(key)))`;
 		return {
-			text: `(${propsParameter}) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs = ${attrsValue}; const { as: _as, ...propsWithoutAs } = props; const { as: _attrsAs, ...attrsProps } = attrs; const ResolvedComponent = attrs.as ?? props.as ?? (${componentExpression}); const forwarded = ${propFilter}; return <ResolvedComponent {...forwarded} {...attrsProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />; }`,
+			text: `${componentStart} ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs = ${attrsValue}; const { as: _as, ...propsWithoutAs } = props; const { as: _attrsAs, ...attrsProps } = attrs; const ResolvedComponent = attrs.as ?? props.as ?? (${componentExpression}); const forwarded = ${propFilter}; return <ResolvedComponent {...forwarded} {...attrsProps} ${forwardedRef}${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />; }${componentEnd}`,
 			componentExpression: true,
 			imports: [
 				...hostTypeImports,
+				...forwardRefImports,
 				...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { defaultPreset } from "pandwind/preset/default";',
@@ -1345,17 +1467,18 @@ function runtimeComponent(
 	}
 	const solidIntrinsic = framework === BuiltinHostFramework.Solid;
 	const renderedComponent = solidIntrinsic
-		? `<Dynamic component={ResolvedComponent} {...forwarded} {...attrsProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />`
-		: `<ResolvedComponent {...forwarded} {...attrsProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />`;
+		? `<Dynamic component={ResolvedComponent} {...forwarded} {...attrsProps} ${forwardedRef}${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />`
+		: `<ResolvedComponent {...forwarded} {...attrsProps} ${forwardedRef}${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />`;
 	const forwardedFilter =
 		componentPropNames === undefined || componentPropNames.length === 0
 			? '!key.startsWith("$")'
 			: `!key.startsWith("$") && !${JSON.stringify(componentPropNames)}.includes(key)`;
 	return {
-		text: `(${propsParameter}) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs = ${attrsValue}; const ResolvedComponent = attrs.as ?? props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => ${forwardedFilter})); return ${renderedComponent}; }`,
+		text: `${componentStart} ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs = ${attrsValue}; const ResolvedComponent = attrs.as ?? props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => ${forwardedFilter})); return ${renderedComponent}; }${componentEnd}`,
 		componentExpression: true,
 		imports: [
 			...hostTypeImports,
+			...forwardRefImports,
 			...(solidIntrinsic ? ['import { Dynamic } from "solid-js/web";'] : []),
 			...(inheritedClass === undefined ? [] : ['import { createCx } from "pandwind/cx";']),
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
@@ -1383,18 +1506,42 @@ function generatedBinding(source: string | undefined, base: string): string {
 }
 
 const PANDWIND_SLOT_MODULE_PATH = "__pandwind/slot.tsx";
-const PANDWIND_SLOT_MODULE_CONTENT = `type PandwindSlotProps = Record<string, any> & { as?: any };
-type PandwindSlotOptions = {
-	readonly defaultComponent: any;
+const PANDWIND_SLOT_MODULE_CONTENT = `import { createElement, forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ComponentRef, CSSProperties, ElementType, ReactElement, Ref } from "react";
+
+type PandwindSlotProps<Component extends ElementType> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & {
+	readonly as?: Component;
+	readonly className?: string;
+	readonly ref?: Ref<ComponentRef<Component>>;
+};
+type PandwindSlotComponent<DefaultComponent extends ElementType> = <Component extends ElementType = DefaultComponent>(
+	props: PandwindSlotProps<Component>,
+) => ReactElement | null;
+type PandwindSlotRuntimeProps = Record<string, unknown> & {
+	readonly as?: ElementType;
+	readonly className?: string;
+	readonly style?: CSSProperties;
+};
+type PandwindSlotOptions<DefaultComponent extends ElementType> = {
+	readonly defaultComponent: DefaultComponent;
 	readonly style: string;
 	readonly stableClass: string;
 	readonly inheritedClass?: string;
 	readonly classAttribute: string;
-	readonly attrs: Record<string, any>;
-	readonly joinClass: (...values: any[]) => string;
+	readonly attrs: Readonly<Record<string, unknown>> & {
+		readonly as?: ElementType;
+		readonly className?: string;
+		readonly style?: CSSProperties;
+	};
+	readonly joinClass: (...values: (string | undefined)[]) => string;
 };
+const isPandwindSlotElementType = (value: unknown): value is ElementType =>
+	typeof value === "string" ||
+	typeof value === "function" ||
+	typeof value === "symbol" ||
+	(typeof value === "object" && value !== null);
 
-export const __pandwindSlot = ({
+export const __pandwindSlot = <DefaultComponent extends ElementType>({
 	defaultComponent,
 	style,
 	stableClass,
@@ -1402,15 +1549,102 @@ export const __pandwindSlot = ({
 	classAttribute,
 	attrs,
 	joinClass,
-}: PandwindSlotOptions) => {
-	const component = (props: PandwindSlotProps) => {
-		const Component = attrs.as ?? props.as ?? defaultComponent;
+}: PandwindSlotOptions<DefaultComponent>) => {
+	const component = forwardRef<unknown, PandwindSlotRuntimeProps>((props, ref) => {
+		const Component = isPandwindSlotElementType(props.as) ? props.as : defaultComponent;
 		const { as: _as, ...rest } = props;
-	const { as: _attrsAs, ...attrsProps } = attrs;
-		return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />;
+		const { as: _attrsAs, ...attrsProps } = attrs;
+		const forwarded = Object.fromEntries(
+			[...Object.entries(rest), ...Object.entries(attrsProps)].filter(
+				([key]) => !key.startsWith("$"),
+			),
+		);
+		const attrsClassName = typeof attrs.className === "string" ? attrs.className : undefined;
+		const propsClassName = typeof props.className === "string" ? props.className : undefined;
+		return createElement(Component, {
+			...forwarded,
+			ref,
+			[classAttribute]: joinClass(
+				style,
+				stableClass,
+				inheritedClass,
+				attrsClassName,
+				propsClassName,
+			),
+		});
+	});
+	return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent>, {
+		__pandwindClassName: stableClass,
+	});
+};
+`;
+const PANDWIND_PREACT_SLOT_MODULE_PATH = "__pandwind/preact-slot.tsx";
+const PANDWIND_PREACT_SLOT_MODULE_CONTENT = `import { createElement, forwardRef } from "preact/compat";
+import type { ComponentProps, ComponentType, JSX, Ref } from "preact";
+
+type PandwindSlotTarget = ComponentType<any> | keyof JSX.IntrinsicElements;
+type PandwindRefTarget<Component extends PandwindSlotTarget> = ComponentProps<Component> extends {
+	readonly ref?: Ref<infer Target>;
+}
+	? Target
+	: unknown;
+type PandwindSlotProps<Component extends PandwindSlotTarget> = Omit<
+	ComponentProps<Component>,
+	"as" | "class" | "className"
+> & {
+	readonly as?: Component;
+	readonly className?: string;
+	readonly ref?: Ref<PandwindRefTarget<Component>>;
+};
+type PandwindSlotComponent<DefaultComponent extends PandwindSlotTarget> = <
+	Component extends PandwindSlotTarget = DefaultComponent,
+>(props: PandwindSlotProps<Component>) => JSX.Element | null;
+type PandwindSlotRuntimeProps = Record<string, unknown> & {
+	readonly as?: PandwindSlotTarget;
+	readonly className?: string;
+};
+type PandwindSlotOptions<DefaultComponent extends PandwindSlotTarget> = {
+	readonly defaultComponent: DefaultComponent;
+	readonly style: string;
+	readonly stableClass: string;
+	readonly inheritedClass?: string;
+	readonly classAttribute: string;
+	readonly attrs: Readonly<Record<string, unknown>> & {
+		readonly as?: PandwindSlotTarget;
+		readonly className?: string;
 	};
-	component.__pandwindClassName = stableClass;
-	return component;
+	readonly joinClass: (...values: (string | undefined)[]) => string;
+};
+const isPandwindSlotTarget = (value: unknown): value is PandwindSlotTarget =>
+	typeof value === "string" || typeof value === "function";
+
+export const __pandwindSlot = <DefaultComponent extends PandwindSlotTarget>({
+	defaultComponent,
+	style,
+	stableClass,
+	inheritedClass,
+	classAttribute,
+	attrs,
+	joinClass,
+}: PandwindSlotOptions<DefaultComponent>) => {
+	const component = forwardRef<unknown, PandwindSlotRuntimeProps>((props, ref) => {
+		const Component = isPandwindSlotTarget(props.as) ? props.as : defaultComponent;
+		const { as: _as, ...rest } = props;
+		const { as: _attrsAs, ...attrsProps } = attrs;
+		const forwarded = Object.fromEntries(
+			[...Object.entries(rest), ...Object.entries(attrsProps)].filter(
+				([key]) => !key.startsWith("$"),
+			),
+		);
+		return createElement(Component, {
+			...forwarded,
+			ref,
+			[classAttribute]: joinClass(style, stableClass, inheritedClass, attrs.className, props.className),
+		});
+	});
+	return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent>, {
+		__pandwindClassName: stableClass,
+	});
 };
 `;
 const PANDWIND_SOLID_SLOT_MODULE_PATH = "__pandwind/solid-slot.tsx";
@@ -1522,13 +1756,15 @@ function sharedSlotModule(
 	const file = context?.file;
 	if (root === undefined || file === undefined) return undefined;
 	const projectFile = isAbsoluteDocumentPath(file) ? relativeDocumentPath(root, file) : file;
-	const modulePath =
-		framework === BuiltinHostFramework.Solid
-			? PANDWIND_SOLID_SLOT_MODULE_PATH
+	const modulePath = framework === BuiltinHostFramework.Solid
+		? PANDWIND_SOLID_SLOT_MODULE_PATH
+		: framework === BuiltinHostFramework.Preact
+			? PANDWIND_PREACT_SLOT_MODULE_PATH
 			: PANDWIND_SLOT_MODULE_PATH;
-	const moduleContent =
-		framework === BuiltinHostFramework.Solid
-			? PANDWIND_SOLID_SLOT_MODULE_CONTENT
+	const moduleContent = framework === BuiltinHostFramework.Solid
+		? PANDWIND_SOLID_SLOT_MODULE_CONTENT
+		: framework === BuiltinHostFramework.Preact
+			? PANDWIND_PREACT_SLOT_MODULE_CONTENT
 			: PANDWIND_SLOT_MODULE_CONTENT;
 	let importPath = relativeDocumentPath(
 		dirnameDocumentPath(projectFile),

@@ -51,7 +51,7 @@ test("aphrodite -> chakra-ui: migrates concrete aphrodite syntax to chakra-ui", 
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,7 +146,7 @@ test("aphrodite -> chakra-ui: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2a57c8" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("aphrodite -> chakra-ui: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -226,7 +226,7 @@ test("aphrodite -> chakra-ui: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -269,7 +269,7 @@ test("aphrodite -> chakra-ui: preserves malformed concrete aphrodite input", asy
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "red" }) };
+		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

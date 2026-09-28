@@ -50,7 +50,7 @@ test("mantine -> pandwind: migrates concrete mantine syntax to pandwind", () => 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("mantine -> pandwind: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "brand", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("mantine -> pandwind: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "brand", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("mantine -> pandwind: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "brand", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("mantine -> pandwind: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;
+		export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

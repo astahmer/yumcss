@@ -49,7 +49,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[padding:8] [color:red]";",
+		    "code": "export const card = "[color:red] [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves an actionable conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8", color: "red" });",
+		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -213,7 +213,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[padding:8] [color:#2563eb]";",
+		      "code": "export const card = "[color:#2563eb] [padding:8px]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -249,7 +249,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -286,7 +286,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[padding:8] text-brand";",
+		      "code": "export const card = "text-brand [padding:8px]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,7 +322,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -373,7 +373,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: resolves token values across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[padding:8] text-brand";",
+		    "code": "export const card = "text-brand [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -409,7 +409,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: resolves token values across
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

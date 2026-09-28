@@ -1,4 +1,5 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
 import { StyleProgramResidualKindTag, StyleRuleKindTag } from "../semantic-ir.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
 import {
@@ -246,7 +247,7 @@ function rewriteEmotionHost({
 	};
 }
 
-export default defineCodemodAdapter({
+const emotionAdapter = defineCodemodAdapter({
 	id: CodemodAdapterId.Emotion,
 	officialApi: {
 		pluginSystems: ["@emotion/babel-plugin", "importMap", "macros"],
@@ -449,3 +450,17 @@ export default defineCodemodAdapter({
 		};
 	},
 });
+
+export default {
+	...emotionAdapter,
+	parse: (source: string, context: AdapterParseContext) => {
+		const parsed = emotionAdapter.parse(source, context);
+		return {
+			...parsed,
+			matches: parsed.matches.map((match) => ({
+				...match,
+				program: normalizeCssObjectNumericUnits(match.program),
+			})),
+		};
+	},
+};

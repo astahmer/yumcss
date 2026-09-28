@@ -50,8 +50,8 @@ test("mantine -> solid-styled -> mantine: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,40 +85,16 @@ test("mantine -> solid-styled -> mantine: preserves an actionable concrete round
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
-		export const App = () => styled.div({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "portable-artifact",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -215,8 +191,8 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,40 +227,16 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		            "portable-artifact",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "portable-artifact",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -292,8 +244,8 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -328,40 +280,16 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		            "portable-artifact",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "portable-artifact",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -383,8 +311,8 @@ test("mantine -> solid-styled -> mantine: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -419,40 +347,16 @@ test("mantine -> solid-styled -> mantine: resolves token values across both conc
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "portable-artifact",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

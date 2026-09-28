@@ -49,7 +49,7 @@ test("treat -> tokenami: migrates concrete treat syntax to tokenami", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": 8, "--color": "red" });",
+		export const card = css({ "--color": "red", "--padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("treat -> tokenami: carries a documented secondary treat API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": 8, "--color": "red" });",
+		export const card = css({ "--color": "red", "--padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("treat -> tokenami: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": 8, "--color": "#2563eb" });",
+		export const card = css({ "--color": "#2563eb", "--padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("treat -> tokenami: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": 8, "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("treat -> tokenami: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": 8, "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("treat -> tokenami: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": 8, "--color": "red" });
+		export const card = css({ "--color": "red", "--padding": 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

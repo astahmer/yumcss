@@ -49,7 +49,7 @@ test("unocss -> react-strict-dom: migrates concrete unocss syntax to react-stric
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -155,7 +155,7 @@ test("unocss -> react-strict-dom: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#f97316" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#f97316", padding: "1.125rem" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,7 +191,7 @@ test("unocss -> react-strict-dom: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("unocss -> react-strict-dom: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("unocss -> react-strict-dom: preserves malformed concrete unocss input", ()
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).style} />;
+		export const App = () => <html.div style={css.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style} />;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

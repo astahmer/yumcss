@@ -1189,6 +1189,18 @@ identical `(path, content)` pairs across matches, and reports a typed
 preserves the entire source module so a migration can never leave a partially
 converted project.
 
+CSS Modules owns a narrow reusable-component projection for verified React
+TSX: a named export from a static styled intrinsic becomes a `forwardRef`
+component with the same exported name and a companion `.module.css` file.
+Intrinsic props, refs, children, caller `className` and `style`, and transient
+`$` props have source-specific assertions. Literal `.attrs` values are emitted
+only for supported DOM attributes and override caller defaults in the same
+order as styled-components; polymorphic hosts, runtime styles, unsafe attrs,
+malformed input, and unknown framework semantics stay typed residuals. Direct,
+aliased, and barrel imports remain valid because the public binding does not
+change. The React typecheck and Vite SSR proof live in
+`packages/codemod/tests/styled-components-css-modules-wrapper.test.ts`.
+
 The CLI writes generated files by default and previews them with `--dry-run`.
 It preflights existing files: identical content is safe to reuse, while
 different content is a hard error rather than an overwrite. This makes one
@@ -1198,6 +1210,9 @@ when later occurrences request the same artifact. The regression contract lives 
 show the expert target expression, the generated module, repeated-artifact
 deduplication, and source-preserving conflict behavior, with ordinary
 assertions guarding the snapshots.
+
+Adapters also own required style-module suffixes and import spelling. Treat
+styles belong in `.treat.ts` or `.treat.js` modules ([Treat guide](https://seek-oss.github.io/treat/how-it-works/)); Vanilla Extract styles belong in `.css.ts` modules and are imported using that module path ([Vanilla Extract setup](https://vanilla-extract.style/documentation/setup/)). A host-free style module may be moved only after the source scanner inventories the project and every relative import or re-export to that module can be rewritten. Project aliases require the injected `resolveModule` port. An absent resolver, an unreadable or malformed indexed file, or an unresolved path alias blocks the rename and keeps the original source with a typed residual. The CLI carries consumer edits as expected-content-checked `fileChanges`; it does not guess at alias meaning. Host files stay in place and residualize when the target requires a separate style module. The route and CLI proof is in `packages/codemod/tests/codemod-output-boundaries.test.ts` and `packages/codemod/tests/adapter-cli-e2e.test.ts`.
 
 ### Token-preserving output
 
@@ -1259,6 +1274,8 @@ is transformed to the target adapter's actual output; residuals preserve the
 source body and remain observable; include/exclude and shared-scanner
 eligibility are checked; transformed output is idempotent; generated files are
 deduplicated, resolved, loaded, invalidated, and failed closed on conflicts.
+The CSS Modules wrapper fixture also resolves and loads its generated stylesheet
+through the virtual plugin while the injected project file map remains unchanged.
 
 ## Lint-plugin boundary
 

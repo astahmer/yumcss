@@ -49,7 +49,7 @@ test("emotion -> jss: migrates concrete emotion syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "red" });",
+		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("emotion -> jss: carries a documented secondary emotion API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "red" });",
+		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("emotion -> jss: loads concrete theme and project context variants", async 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("emotion -> jss: loads concrete theme and project context variants", async 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("emotion -> jss: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("emotion -> jss: preserves malformed concrete emotion input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "red" });
+		export const card = createUseStyles({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,
 		  "generatedFiles": [],

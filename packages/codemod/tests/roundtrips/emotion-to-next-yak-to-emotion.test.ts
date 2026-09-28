@@ -50,7 +50,7 @@ test("emotion -> next-yak -> emotion: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("emotion -> next-yak -> emotion: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -132,7 +132,7 @@ test("emotion -> next-yak -> emotion: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("emotion -> next-yak -> emotion: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("emotion -> next-yak -> emotion: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,7 +263,7 @@ test("emotion -> next-yak -> emotion: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -299,7 +299,7 @@ test("emotion -> next-yak -> emotion: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,7 +333,7 @@ test("emotion -> next-yak -> emotion: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -383,7 +383,7 @@ test("emotion -> next-yak -> emotion: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -417,7 +417,7 @@ test("emotion -> next-yak -> emotion: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

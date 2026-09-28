@@ -49,7 +49,7 @@ test("stylex -> react-strict-dom: migrates concrete stylex syntax to react-stric
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("stylex -> react-strict-dom: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("stylex -> react-strict-dom: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("stylex -> react-strict-dom: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("stylex -> react-strict-dom: preserves malformed concrete stylex input", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "red" }) };
+		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

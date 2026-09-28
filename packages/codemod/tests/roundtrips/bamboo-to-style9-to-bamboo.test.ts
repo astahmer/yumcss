@@ -134,7 +134,7 @@ test("bamboo -> style9 -> bamboo: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "gap": "4", "display": "flex" });",
+		export const card = style9.create({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("bamboo -> style9 -> bamboo: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

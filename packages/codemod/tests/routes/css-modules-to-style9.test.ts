@@ -165,7 +165,7 @@ test("css-modules -> style9: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> style9: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> style9: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

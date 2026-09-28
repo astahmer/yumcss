@@ -165,7 +165,7 @@ test("css-modules -> jss: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> jss: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> jss: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

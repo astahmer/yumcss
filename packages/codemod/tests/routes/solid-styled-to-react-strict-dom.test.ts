@@ -75,7 +75,7 @@ test("solid-styled -> react-strict-dom: migrates concrete solid-styled syntax to
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for solid",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -121,7 +121,7 @@ test("solid-styled -> react-strict-dom: carries a documented secondary solid-sty
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for solid",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -176,7 +176,7 @@ test("solid-styled -> react-strict-dom: loads concrete theme and project context
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for solid",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -213,7 +213,7 @@ test("solid-styled -> react-strict-dom: loads concrete theme and project context
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for solid",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -262,7 +262,7 @@ test("solid-styled -> react-strict-dom: resolves concrete token values with proj
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for solid",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -309,7 +309,7 @@ test("solid-styled -> react-strict-dom: preserves malformed concrete solid-style
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for solid",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

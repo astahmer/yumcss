@@ -52,7 +52,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves an actionable concr
 		    "code": "import { html } from "react-strict-dom";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves an actionable concr
 		    "code": "import { html } from "react-strict-dom";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -197,7 +197,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves concrete theme and 
 		      "code": "import { html } from "react-strict-dom";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.class({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -235,7 +235,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves concrete theme and 
 		      "code": "import { html } from "react-strict-dom";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.class({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -252,7 +252,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves concrete theme and 
 		      "code": "import { html } from "react-strict-dom";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "primary.main" }) };
+		const styles = { "card": css.class({ color: "primary.main", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -290,7 +290,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves concrete theme and 
 		      "code": "import { html } from "react-strict-dom";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "primary.main" }) };
+		const styles = { "card": css.class({ color: "primary.main", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("react-strict-dom -> mui -> react-strict-dom: resolves token values across 
 		    "code": "import { html } from "react-strict-dom";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "primary.main" }) };
+		const styles = { "card": css.class({ color: "primary.main", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("react-strict-dom -> mui -> react-strict-dom: resolves token values across 
 		    "code": "import { html } from "react-strict-dom";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "primary.main" }) };
+		const styles = { "card": css.class({ color: "primary.main", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

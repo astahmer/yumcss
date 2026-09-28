@@ -50,7 +50,8 @@ test("tailwind -> tamagui -> tailwind: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { gap: "1rem", alignItems: "center", display: "flex" });",
+		const __componentTamagui = styled(View, { display: "flex", alignItems: "center", gap: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -82,10 +83,12 @@ test("tailwind -> tamagui -> tailwind: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tailwind | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { gap: "1rem", alignItems: "center", display: "flex" });",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		const __componentTamagui = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[display:flex] [align-items:center] [gap:1rem]", props.className)} />; };
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -103,19 +106,19 @@ test("tailwind -> tamagui -> tailwind: preserves an actionable concrete round tr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -207,7 +210,8 @@ test("tailwind -> tamagui -> tailwind: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#f97316" });",
+		const __componentTamagui = styled(View, { color: "#f97316", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -239,10 +243,12 @@ test("tailwind -> tamagui -> tailwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tailwind | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { padding: "1.125rem", color: "#f97316" });",
-		      "converted": 0,
+		      "code": "import { View } from "@tamagui/core";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		const __componentTamagui = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand p-card", props.className)} />; };
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -260,26 +266,27 @@ test("tailwind -> tamagui -> tailwind: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,10 +318,12 @@ test("tailwind -> tamagui -> tailwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tailwind | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
-		      "converted": 0,
+		      "code": "import { View } from "@tamagui/core";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		const __componentTamagui = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand p-card", props.className)} />; };
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -332,19 +341,19 @@ test("tailwind -> tamagui -> tailwind: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -365,7 +374,8 @@ test("tailwind -> tamagui -> tailwind: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -397,10 +407,12 @@ test("tailwind -> tamagui -> tailwind: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tailwind | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		const __componentTamagui = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand p-card", props.className)} />; };
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -418,19 +430,19 @@ test("tailwind -> tamagui -> tailwind: resolves token values across both concret
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

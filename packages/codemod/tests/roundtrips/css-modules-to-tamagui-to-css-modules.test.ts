@@ -198,7 +198,7 @@ test("css-modules -> tamagui -> css-modules: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("css-modules -> tamagui -> css-modules: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,7 +247,7 @@ test("css-modules -> tamagui -> css-modules: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -281,7 +281,7 @@ test("css-modules -> tamagui -> css-modules: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -310,7 +310,7 @@ test("css-modules -> tamagui -> css-modules: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -344,7 +344,7 @@ test("css-modules -> tamagui -> css-modules: resolves token values across both c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

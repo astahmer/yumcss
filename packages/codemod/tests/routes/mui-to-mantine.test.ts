@@ -49,7 +49,7 @@ test("mui -> mantine: migrates concrete mui syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  style={{ padding: "16px", color: "red" }}/>;",
+		export const App = () => <Box  style={{ color: "red", padding: "16px" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -157,7 +157,7 @@ test("mui -> mantine: loads concrete theme and project context variants", async 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  style={{ padding: "16px", color: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  style={{ color: "var(--mantine-color-brand-0)", padding: "16px" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,7 +191,7 @@ test("mui -> mantine: loads concrete theme and project context variants", async 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  style={{ padding: "16px", color: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  style={{ color: "var(--mantine-color-brand-0)", padding: "16px" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("mui -> mantine: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  style={{ padding: "16px", color: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box  style={{ color: "var(--mantine-color-brand-0)", padding: "16px" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -280,7 +280,7 @@ test("mui -> mantine: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  style={{ padding: "16px", color: "red" }}/>;
+		export const App = () => <Box  style={{ color: "red", padding: "16px" }}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -50,7 +50,7 @@ test("stylex -> styled-components -> stylex: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("stylex -> styled-components -> stylex: preserves an actionable concrete ro
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,7 +270,7 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -308,7 +308,7 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -343,7 +343,7 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -395,7 +395,7 @@ test("stylex -> styled-components -> stylex: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +430,7 @@ test("stylex -> styled-components -> stylex: resolves token values across both c
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -50,7 +50,7 @@ test("tokenami -> vue-styled -> tokenami: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "gap": "1rem", "color": "red" });",
+		export const card = styled.div\`color: red; gap: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,8 +86,8 @@ test("tokenami -> vue-styled -> tokenami: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = styled.div({ "gap": "1rem", "color": "red" });",
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div\`color: red; gap: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -110,8 +110,8 @@ test("tokenami -> vue-styled -> tokenami: preserves an actionable concrete round
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -212,7 +212,7 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "gap": "1rem", "color": "#f97316" });",
+		export const card = styled.div\`color: #f97316; gap: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -249,8 +249,8 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = styled.div({ "gap": "1rem", "color": "#f97316" });",
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div\`color: #f97316; gap: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,8 +273,8 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		          "kind": "host-framework",
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -286,7 +286,7 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; gap: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -323,8 +323,8 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div\`color: #2563eb; gap: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,8 +347,8 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		          "kind": "host-framework",
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -374,7 +374,7 @@ test("tokenami -> vue-styled -> tokenami: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; gap: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -411,8 +411,8 @@ test("tokenami -> vue-styled -> tokenami: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = styled.div({ "gap": "1rem", "color": "#2563eb" });",
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div\`color: #2563eb; gap: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,8 +435,8 @@ test("tokenami -> vue-styled -> tokenami: resolves token values across both conc
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],

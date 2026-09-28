@@ -48,11 +48,10 @@ test("vue-styled -> mantine: migrates concrete vue-styled syntax to mantine", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { defineComponent, h } from "vue";
-		const css = createUnsafeCss();
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,19 +68,19 @@ test("vue-styled -> mantine: migrates concrete vue-styled syntax to mantine", ()
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
+		      "outcome": "residual",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: vue",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -94,11 +93,10 @@ test("vue-styled -> mantine: carries a documented secondary vue-styled API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { defineComponent, h } from "vue";
-		const css = createUnsafeCss();
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +113,19 @@ test("vue-styled -> mantine: carries a documented secondary vue-styled API expli
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
+		      "outcome": "residual",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: vue",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -149,11 +147,10 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { defineComponent, h } from "vue";
-		const css = createUnsafeCss();
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		    "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,27 +167,26 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
+		        "outcome": "residual",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { defineComponent, h } from "vue";
-		const css = createUnsafeCss();
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		    "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,19 +203,19 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
+		        "outcome": "residual",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -235,11 +231,10 @@ test("vue-styled -> mantine: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { defineComponent, h } from "vue";
-		const css = createUnsafeCss();
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +251,19 @@ test("vue-styled -> mantine: resolves concrete token values with project context
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
+		      "outcome": "residual",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: vue",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -281,12 +276,11 @@ test("vue-styled -> mantine: preserves malformed concrete vue-styled input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { defineComponent, h } from "vue";
-		const css = createUnsafeCss();
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [css.class({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -303,19 +297,19 @@ test("vue-styled -> mantine: preserves malformed concrete vue-styled input", () 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
+		      "outcome": "residual",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: vue",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

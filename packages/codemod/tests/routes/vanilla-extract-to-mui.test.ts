@@ -50,7 +50,7 @@ test("vanilla-extract -> mui: migrates concrete vanilla-extract syntax to mui", 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("vanilla-extract -> mui: loads concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("vanilla-extract -> mui: loads concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("vanilla-extract -> mui: resolves concrete token values with project contex
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("vanilla-extract -> mui: preserves malformed concrete vanilla-extract input
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "red" });
+		export const card = css.class({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

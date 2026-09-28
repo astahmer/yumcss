@@ -50,7 +50,7 @@ test("stylex -> react-native -> stylex: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,14 +87,13 @@ test("stylex -> react-native -> stylex: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });",
+		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -240,7 +239,7 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -277,14 +276,13 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -316,7 +314,7 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -353,14 +351,13 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -406,7 +403,7 @@ test("stylex -> react-native -> stylex: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -443,14 +440,13 @@ test("stylex -> react-native -> stylex: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",

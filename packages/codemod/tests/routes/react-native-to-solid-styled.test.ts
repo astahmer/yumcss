@@ -48,8 +48,8 @@ test("react-native -> solid-styled: migrates concrete react-native syntax to sol
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
+		  "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +93,8 @@ test("react-native -> solid-styled: carries a documented secondary react-native 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "backgroundColor": "red" }) };",
+		  "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "padding": "8px", "backgroundColor": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +147,8 @@ test("react-native -> solid-styled: loads concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +183,8 @@ test("react-native -> solid-styled: loads concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +231,8 @@ test("react-native -> solid-styled: resolves concrete token values with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		  "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +276,8 @@ test("react-native -> solid-styled: preserves malformed concrete react-native in
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };
+		  "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

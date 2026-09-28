@@ -50,7 +50,7 @@ test("aphrodite -> react-native -> aphrodite: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("aphrodite -> react-native -> aphrodite: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "red" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -246,7 +246,7 @@ test("aphrodite -> react-native -> aphrodite: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,7 +283,7 @@ test("aphrodite -> react-native -> aphrodite: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -321,7 +321,7 @@ test("aphrodite -> react-native -> aphrodite: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -358,7 +358,7 @@ test("aphrodite -> react-native -> aphrodite: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -410,7 +410,7 @@ test("aphrodite -> react-native -> aphrodite: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -447,7 +447,7 @@ test("aphrodite -> react-native -> aphrodite: resolves token values across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": 8, "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -51,7 +51,7 @@ test("pandwind -> stylex -> pandwind: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("pandwind -> stylex -> pandwind: preserves an actionable concrete round tri
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = { "style": css.class({ padding: "1rem", color: "red" }) }.style;",
+		export const card = { "style": css.class({ color: "red", padding: "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -240,7 +240,7 @@ test("pandwind -> stylex -> pandwind: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "#f97316" } }).style;",
+		export const card = stylex.create({ style: { color: "#f97316", padding: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +278,7 @@ test("pandwind -> stylex -> pandwind: preserves concrete theme and project conte
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = { "style": css.class({ padding: "1rem", color: "brand" }) }.style;",
+		export const card = { "style": css.class({ color: "brand", padding: "1rem" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -315,7 +315,7 @@ test("pandwind -> stylex -> pandwind: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -353,7 +353,7 @@ test("pandwind -> stylex -> pandwind: preserves concrete theme and project conte
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = { "style": css.class({ padding: "1rem", color: "brand" }) }.style;",
+		export const card = { "style": css.class({ color: "brand", padding: "1rem" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -404,7 +404,7 @@ test("pandwind -> stylex -> pandwind: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -442,7 +442,7 @@ test("pandwind -> stylex -> pandwind: resolves token values across both concrete
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = { "style": css.class({ padding: "1rem", color: "brand" }) }.style;",
+		export const card = { "style": css.class({ color: "brand", padding: "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

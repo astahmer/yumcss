@@ -50,7 +50,7 @@ test("compiled -> stylex -> compiled: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("compiled -> stylex -> compiled: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = { "style": css({ "padding": "8px", "color": "red" }) }.style;",
+		export const card = { "style": css({ "color": "red", "padding": "8px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("compiled -> stylex -> compiled: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +275,7 @@ test("compiled -> stylex -> compiled: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = { "style": css({ "padding": "8px", "color": "#2563eb" }) }.style;",
+		export const card = { "style": css({ "color": "#2563eb", "padding": "8px" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,7 +313,7 @@ test("compiled -> stylex -> compiled: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +350,7 @@ test("compiled -> stylex -> compiled: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = { "style": css({ "padding": "8px", "color": "#2563eb" }) }.style;",
+		export const card = { "style": css({ "color": "#2563eb", "padding": "8px" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -402,7 +402,7 @@ test("compiled -> stylex -> compiled: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +439,7 @@ test("compiled -> stylex -> compiled: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = { "style": css({ "padding": "8px", "color": "#2563eb" }) }.style;",
+		export const card = { "style": css({ "color": "#2563eb", "padding": "8px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

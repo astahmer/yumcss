@@ -49,7 +49,7 @@ test("linaria -> treat: migrates concrete linaria syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "red" });",
+		export const card = style({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("linaria -> treat: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("linaria -> treat: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("linaria -> treat: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("linaria -> treat: preserves malformed concrete linaria input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "red" });
+		export const card = style({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "generatedFiles": [],

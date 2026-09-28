@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CodemodAdapterId } from "../src/swap/index.ts";
+import { CodemodAdapterId, runAdapterMigration } from "../src/swap/index.ts";
 import { createAdapterRouteProject, createAdapterRouteSpec } from "./route-spec-support.ts";
 
 const emotionSource =
@@ -53,15 +53,21 @@ describe("codemod output file boundaries", () => {
 		expect(unsupported.converted).toBe(0);
 		expect(unsupported.skipped).toBe(1);
 		expect(unsupported.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: expect.stringContaining("project file index"),
+				}),
+			]),
 		);
 		expect(unsupported.code).toContain('css({ color: "red", padding: "1rem" });');
+		expect(unsupported.code).toContain('import { css } from "@emotion/css";');
 		expect(unsupported.code).not.toContain('from "treat"');
 		expect(supported.converted).toBe(1);
 		expect(supported.code).toContain('import { style } from "treat";');
 		expect(supported.code).toMatchInlineSnapshot(`
 			"import { style } from "treat";
-			export const card = style({ "padding": "1rem", "color": "red" });"
+			export const card = style({ "color": "red", "padding": "1rem" });"
 		`);
 	});
 
@@ -72,14 +78,241 @@ describe("codemod output file boundaries", () => {
 		expect(unsupported.converted).toBe(0);
 		expect(unsupported.skipped).toBe(1);
 		expect(unsupported.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: expect.stringContaining("project file index"),
+				}),
+			]),
 		);
 		expect(unsupported.code).toContain('css({ color: "red", padding: "1rem" });');
+		expect(unsupported.code).toContain('import { css } from "@emotion/css";');
 		expect(supported.converted).toBe(1);
 		expect(supported.code).toContain('import { style } from "@vanilla-extract/css";');
 		expect(supported.code).toMatchInlineSnapshot(`
 			"import { style } from "@vanilla-extract/css";
-			export const card = style({ padding: "1rem", color: "red" });"
+			export const card = style({ color: "red", padding: "1rem" });"
+		`);
+	});
+
+	test("renames indexed style modules and rewrites consumers for Treat and Vanilla Extract", () => {
+		const root = "/virtual/pandwind-module-rename";
+		const sourceFile = "src/styles.ts";
+		const barrelFile = "src/index.ts";
+		const consumerFile = "src/ui/App.tsx";
+		const barrel = 'export { card } from "@/styles";';
+		const consumer = 'import { card } from "../index";\nexport const App = () => <div className={card} />;';
+		const targetCases = [
+			{ target: CodemodAdapterId.Treat, extension: ".treat.ts", importSpecifier: "./styles.treat" },
+			{
+				target: CodemodAdapterId.VanillaExtract,
+				extension: ".css.ts",
+				importSpecifier: "./styles.css.ts",
+			},
+		];
+		const snapshots = targetCases.map(({ target, extension, importSpecifier }) => {
+			const projectFiles = new Map([
+				[sourceFile, emotionSource],
+				[barrelFile, barrel],
+				[consumerFile, consumer],
+			]);
+			const result = runAdapterMigration(emotionSource, {
+				from: CodemodAdapterId.Emotion,
+				to: target,
+				file: sourceFile,
+				root,
+				listFiles: () => [...projectFiles.keys()],
+				readFile: (file) => projectFiles.get(file),
+				resolveModule: (_importer, specifier) =>
+					specifier === "@/styles" ? sourceFile : undefined,
+				mode: "safe",
+			});
+
+			expect(result.converted).toBeGreaterThan(0);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.outputExtension).toBe(extension);
+			expect(result.fileChanges).toEqual([
+				expect.objectContaining({
+					path: barrelFile,
+					content: `export { card } from "${importSpecifier}";`,
+					expectedContent: barrel,
+				}),
+			]);
+			expect(result.fileChanges.map((change) => change.path)).not.toContain(consumerFile);
+			expect(result.code).not.toContain('from "@emotion/css"');
+			expect(result.code).toContain("style(");
+			expect(result.validations.every((validation) => validation.valid)).toBe(true);
+			return {
+				target,
+				outputExtension: result.outputExtension,
+				fileChanges: result.fileChanges,
+				code: result.code,
+				unchangedConsumer: projectFiles.get(consumerFile),
+			};
+		});
+
+		expect(snapshots).toMatchInlineSnapshot(`
+			[
+			  {
+			    "code": "import { style } from "treat";
+			export const card = style({ "color": "red", "padding": "1rem" });",
+			    "fileChanges": [
+			      {
+			        "content": "export { card } from "./styles.treat";",
+			        "expectedContent": "export { card } from "@/styles";",
+			        "path": "src/index.ts",
+			      },
+			    ],
+			    "outputExtension": ".treat.ts",
+			    "target": "treat",
+			    "unchangedConsumer": "import { card } from "../index";
+			export const App = () => <div className={card} />;",
+			  },
+			  {
+			    "code": "import { style } from "@vanilla-extract/css";
+			export const card = style({ color: "red", padding: "1rem" });",
+			    "fileChanges": [
+			      {
+			        "content": "export { card } from "./styles.css.ts";",
+			        "expectedContent": "export { card } from "@/styles";",
+			        "path": "src/index.ts",
+			      },
+			    ],
+			    "outputExtension": ".css.ts",
+			    "target": "vanilla-extract",
+			    "unchangedConsumer": "import { card } from "../index";
+			export const App = () => <div className={card} />;",
+			  },
+			]
+		`);
+	});
+
+	test("preserves a module rename when a same-name project alias has no resolver", () => {
+		const sourceFile = "src/styles.ts";
+		const barrelFile = "src/index.ts";
+		const barrel = 'export { card } from "@/styles";';
+		const projectFiles = new Map([
+			[sourceFile, emotionSource],
+			[barrelFile, barrel],
+		]);
+		const result = runAdapterMigration(emotionSource, {
+			from: CodemodAdapterId.Emotion,
+			to: CodemodAdapterId.Treat,
+			file: sourceFile,
+			root: "/virtual/pandwind-module-rename",
+			listFiles: () => [...projectFiles.keys()],
+			readFile: (file) => projectFiles.get(file),
+			mode: "safe",
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.outputExtension).toBeUndefined();
+		expect(result.fileChanges).toEqual([]);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: expect.stringContaining("inject a resolver"),
+				}),
+			]),
+		);
+		expect(projectFiles.get(barrelFile)).toBe(barrel);
+		expect(result.code).toContain('export const card = css({ color: "red", padding: "1rem" });');
+		expect({ code: result.code, residuals: result.residuals }).toMatchInlineSnapshot(`
+			{
+			  "code": "import { css } from "@emotion/css";
+			// pandwind:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
+			export const card = css({ color: "red", padding: "1rem" });",
+			  "residuals": [
+			    {
+			      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module; project alias @/styles is unresolved; inject a resolver before renaming this module",
+			      "kind": "capability",
+			      "text": "css({ color: "red", padding: "1rem" })",
+			    },
+			  ],
+			}
+		`);
+	});
+
+	test("preserves a module rename when a project alias target has a different basename", () => {
+		const sourceFile = "src/styles.ts";
+		const barrelFile = "src/index.ts";
+		const barrel = 'export { card } from "@/theme";';
+		const projectFiles = new Map([
+			[sourceFile, emotionSource],
+			[barrelFile, barrel],
+		]);
+		const result = runAdapterMigration(emotionSource, {
+			from: CodemodAdapterId.Emotion,
+			to: CodemodAdapterId.Treat,
+			file: sourceFile,
+			root: "/virtual/pandwind-module-rename",
+			listFiles: () => [...projectFiles.keys()],
+			readFile: (file) => projectFiles.get(file),
+			mode: "safe",
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.outputExtension).toBeUndefined();
+		expect(result.fileChanges).toEqual([]);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: expect.stringContaining("project alias @/theme is unresolved"),
+				}),
+			]),
+		);
+		expect(projectFiles.get(barrelFile)).toBe(barrel);
+		expect(result.code).toContain('export const card = css({ color: "red", padding: "1rem" });');
+		expect({ code: result.code, residuals: result.residuals }).toMatchInlineSnapshot(`
+			{
+			  "code": "import { css } from "@emotion/css";
+			// pandwind:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
+			export const card = css({ color: "red", padding: "1rem" });",
+			  "residuals": [
+			    {
+			      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module; project alias @/theme is unresolved; inject a resolver before renaming this module",
+			      "kind": "capability",
+			      "text": "css({ color: "red", padding: "1rem" })",
+			    },
+			  ],
+			}
+		`);
+	});
+
+	test("keeps host source in place when a target requires a separate style module", () => {
+		const source =
+			'import { css } from "@emotion/css";\n' +
+			'export const App = () => <div className={css({ color: "red" })} />;';
+		const result = emotionToTreat.run({ source, file: "App.tsx" });
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.outputExtension).toBeUndefined();
+		expect(result.code).toContain('import { css } from "@emotion/css";');
+		expect(result.code).toContain('className={css({ color: "red" })}');
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: "capability", hint: expect.stringContaining(".treat.ts") }),
+			]),
+		);
+		expect({ code: result.code, residuals: result.residuals }).toMatchInlineSnapshot(`
+			{
+			  "code": "import { css } from "@emotion/css";
+			// pandwind:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
+			export const App = () => <div className={css({ color: "red" })} />;",
+			  "residuals": [
+			    {
+			      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
+			      "kind": "capability",
+			      "text": "css({ color: "red" })",
+			    },
+			  ],
+			}
 		`);
 	});
 
@@ -253,7 +486,7 @@ describe("codemod output file boundaries", () => {
 			{
 			  "treat": {
 			    "code": "import { style } from "treat";
-			export const styles = { "card": style({ "padding": "1rem", "color": "red" }) };
+			export const styles = { "card": style({ "color": "red", "padding": "1rem" }) };
 			export default styles;",
 			    "fileChanges": [
 			      {
@@ -268,7 +501,7 @@ describe("codemod output file boundaries", () => {
 			  },
 			  "vanillaExtract": {
 			    "code": "import { style } from "@vanilla-extract/css";
-			export const styles = { "card": style({ padding: "1rem", color: "red" }) };
+			export const styles = { "card": style({ color: "red", padding: "1rem" }) };
 			export default styles;",
 			    "fileChanges": [
 			      {

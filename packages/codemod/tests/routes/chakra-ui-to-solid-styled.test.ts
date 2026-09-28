@@ -50,8 +50,8 @@ test("chakra-ui -> solid-styled: migrates concrete chakra-ui syntax to solid-sty
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#fecaca", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -150,8 +150,8 @@ test("chakra-ui -> solid-styled: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,8 +187,8 @@ test("chakra-ui -> solid-styled: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#2a57c8", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,8 +236,8 @@ test("chakra-ui -> solid-styled: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#2a57c8", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -282,8 +282,8 @@ test("chakra-ui -> solid-styled: preserves malformed concrete chakra-ui input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#fecaca", "padding": "1rem" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,8 +49,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves an actionabl
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "red" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,10 +85,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves an actionabl
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@vanilla-extract/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ padding: 8, color: "red" }), props.class)} />;",
+		    "code": "import { style } from "@vanilla-extract/css";
+		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -216,8 +214,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves concrete the
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -252,10 +250,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@vanilla-extract/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ padding: 8, color: "#2563eb" }), props.class)} />;",
+		      "code": "import { style } from "@vanilla-extract/css";
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -292,8 +288,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves concrete the
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -328,10 +324,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@vanilla-extract/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ padding: 8, color: "#2563eb" }), props.class)} />;",
+		      "code": "import { style } from "@vanilla-extract/css";
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,8 +376,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: resolves token values 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,10 +412,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: resolves token values 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { style } from "@vanilla-extract/css";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ padding: 8, color: "#2563eb" }), props.class)} />;",
+		    "code": "import { style } from "@vanilla-extract/css";
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -184,6 +184,7 @@
 		"test:routes": "vitest run tests/routes",
 		"test:roundtrips": "vitest run tests/roundtrips",
 		"test:route-matrix": "vitest --config vitest.route-matrix.config.ts run",
+		"refresh:canonicality-ledger": "pnpm run build && nub scripts/refresh-canonicality-ledger.ts",
 		"generate:route-tests": "nub ../../scripts/generate-adapter-route-specs.ts",
 		"generate:roundtrip-tests": "nub ../../scripts/generate-adapter-route-specs.ts",
 		"test:coverage": "vitest run --coverage && nub scripts/check-adapter-coverage.ts",

@@ -132,7 +132,7 @@ test("bamboo -> unocss -> bamboo: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[gap:4] [display:flex]";",
+		    "code": "export const card = "[display:flex] [gap:4]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("bamboo -> unocss -> bamboo: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

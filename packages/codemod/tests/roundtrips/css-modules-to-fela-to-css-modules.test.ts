@@ -206,7 +206,7 @@ test("css-modules -> fela -> css-modules: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		      "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -243,7 +243,7 @@ test("css-modules -> fela -> css-modules: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "/* /* pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -280,7 +280,7 @@ test("css-modules -> fela -> css-modules: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		      "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -317,7 +317,7 @@ test("css-modules -> fela -> css-modules: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "/* /* pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -368,7 +368,7 @@ test("css-modules -> fela -> css-modules: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -405,7 +405,7 @@ test("css-modules -> fela -> css-modules: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "/* /* pandwind:migrate-skip (route: fela -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

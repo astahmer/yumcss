@@ -50,7 +50,7 @@ test("mui -> tokenami: migrates concrete mui syntax to tokenami", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "red" })} />;",
+		export const App = () => <Box style={css({ "--color": "red", "--padding": "16px" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,7 +93,7 @@ test("mui -> tokenami: carries a documented secondary mui API explicitly", () =>
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const Card = css({ "--padding": 8, "--color": "red" });",
+		export const Card = css({ "--color": "red", "--padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("mui -> tokenami: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
+		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("mui -> tokenami: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
+		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("mui -> tokenami: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
+		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("mui -> tokenami: preserves malformed concrete mui input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "red" })} />;
+		export const App = () => <Box style={css({ "--color": "red", "--padding": "16px" })} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,7 +49,7 @@ test("tailwind -> react-strict-dom: migrates concrete tailwind syntax to react-s
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -155,7 +155,7 @@ test("tailwind -> react-strict-dom: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#f97316" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#f97316", padding: "1.125rem" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,7 +191,7 @@ test("tailwind -> react-strict-dom: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("tailwind -> react-strict-dom: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("tailwind -> react-strict-dom: preserves malformed concrete tailwind input"
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).style} />;
+		export const App = () => <html.div style={css.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style} />;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

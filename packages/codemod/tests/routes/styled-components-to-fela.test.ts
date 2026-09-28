@@ -48,10 +48,10 @@ test("styled-components -> fela: migrates concrete styled-components syntax to f
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />; };",
-		  "converted": 1,
+		  "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,19 +69,19 @@ test("styled-components -> fela: migrates concrete styled-components syntax to f
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: react",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -94,10 +94,10 @@ test("styled-components -> fela: carries a documented secondary styled-component
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />; };",
-		  "converted": 1,
+		  "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +115,19 @@ test("styled-components -> fela: carries a documented secondary styled-component
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: react",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -149,10 +149,10 @@ test("styled-components -> fela: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
-		    "converted": 1,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,26 +170,26 @@ test("styled-components -> fela: loads concrete theme and project context varian
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
-		    "converted": 1,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,19 +207,19 @@ test("styled-components -> fela: loads concrete theme and project context varian
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -235,10 +235,10 @@ test("styled-components -> fela: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
-		  "converted": 1,
+		  "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +256,19 @@ test("styled-components -> fela: resolves concrete token values with project con
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: react",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -282,11 +282,10 @@ test("styled-components -> fela: preserves malformed concrete styled-components 
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />; };
+		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -304,19 +303,19 @@ test("styled-components -> fela: preserves malformed concrete styled-components 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: react",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

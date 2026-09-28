@@ -48,10 +48,10 @@ test("solid-styled -> unocss: migrates concrete solid-styled syntax to unocss", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,19 +69,19 @@ test("solid-styled -> unocss: migrates concrete solid-styled syntax to unocss", 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -94,10 +94,10 @@ test("solid-styled -> unocss: carries a documented secondary solid-styled API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +115,19 @@ test("solid-styled -> unocss: carries a documented secondary solid-styled API ex
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -149,10 +149,10 @@ test("solid-styled -> unocss: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:#2563eb]", props.class)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,26 +170,26 @@ test("solid-styled -> unocss: loads concrete theme and project context variants"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,19 +207,19 @@ test("solid-styled -> unocss: loads concrete theme and project context variants"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -235,10 +235,10 @@ test("solid-styled -> unocss: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +256,19 @@ test("solid-styled -> unocss: resolves concrete token values with project contex
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -282,11 +282,10 @@ test("solid-styled -> unocss: preserves malformed concrete solid-styled input", 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;
+		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -304,19 +303,19 @@ test("solid-styled -> unocss: preserves malformed concrete solid-styled input", 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

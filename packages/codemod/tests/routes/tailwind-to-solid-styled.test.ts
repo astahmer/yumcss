@@ -48,8 +48,8 @@ test("tailwind -> solid-styled: migrates concrete tailwind syntax to solid-style
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,9 +93,9 @@ test("tailwind -> solid-styled: carries a documented secondary tailwind API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | lowering-residual: validation)
-		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
-		  "converted": 0,
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "rebeccapurple", "md": { "display": "flex" } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -113,25 +113,17 @@ test("tailwind -> solid-styled: carries a documented secondary tailwind API expl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -154,8 +146,8 @@ test("tailwind -> solid-styled: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#f97316" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,8 +182,8 @@ test("tailwind -> solid-styled: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,8 +230,8 @@ test("tailwind -> solid-styled: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,8 +275,8 @@ test("tailwind -> solid-styled: preserves malformed concrete tailwind input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "gap": "1rem", "alignItems": "center", "display": "flex" });
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

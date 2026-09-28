@@ -50,7 +50,7 @@ test("mantine -> tailwind -> mantine: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] [color:blue] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		export const App = () => <Box className={"[color:blue] [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("mantine -> tailwind -> mantine: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
+		export const App = () => <Box style={{ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -211,7 +211,7 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -248,7 +248,7 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,7 +284,7 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -321,7 +321,7 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -371,7 +371,7 @@ test("mantine -> tailwind -> mantine: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -408,7 +408,7 @@ test("mantine -> tailwind -> mantine: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box style={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
+		export const App = () => <Box style={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem_*_var(--mantine-scale))" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

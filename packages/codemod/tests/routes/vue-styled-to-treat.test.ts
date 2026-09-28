@@ -48,10 +48,10 @@ test("vue-styled -> treat: migrates concrete vue-styled syntax to treat", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,19 +69,19 @@ test("vue-styled -> treat: migrates concrete vue-styled syntax to treat", () => 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: vue",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -94,10 +94,10 @@ test("vue-styled -> treat: carries a documented secondary vue-styled API explici
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +115,19 @@ test("vue-styled -> treat: carries a documented secondary vue-styled API explici
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: vue",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -149,10 +149,10 @@ test("vue-styled -> treat: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		    "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,26 +170,26 @@ test("vue-styled -> treat: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		    "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,19 +207,19 @@ test("vue-styled -> treat: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -235,10 +235,10 @@ test("vue-styled -> treat: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
-		  "converted": 1,
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +256,19 @@ test("vue-styled -> treat: resolves concrete token values with project context",
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: vue",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -281,11 +281,11 @@ test("vue-styled -> treat: preserves malformed concrete vue-styled input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "padding": "1rem", "color": "red" }), attrs.class] }, slots.default?.()));
+		  "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -303,19 +303,19 @@ test("vue-styled -> treat: preserves malformed concrete vue-styled input", () =>
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: vue",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

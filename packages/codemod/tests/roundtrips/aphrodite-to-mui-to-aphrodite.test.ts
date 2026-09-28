@@ -51,7 +51,7 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css.class({ color: "red", padding: 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css.class({ color: "red", padding: 8 }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -192,7 +192,7 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -228,7 +228,7 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: 8 }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -243,7 +243,7 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,7 +279,7 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: 8 }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -308,7 +308,7 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -344,7 +344,7 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: 8 }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

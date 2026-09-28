@@ -50,7 +50,7 @@ test("aphrodite -> goober -> aphrodite: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "red" }) };",
+		export const styles = { "card": css({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("aphrodite -> goober -> aphrodite: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -215,7 +215,7 @@ test("aphrodite -> goober -> aphrodite: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,7 +251,7 @@ test("aphrodite -> goober -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("aphrodite -> goober -> aphrodite: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,7 +325,7 @@ test("aphrodite -> goober -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +377,7 @@ test("aphrodite -> goober -> aphrodite: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -413,7 +413,7 @@ test("aphrodite -> goober -> aphrodite: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

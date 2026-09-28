@@ -51,7 +51,7 @@ test("styled-components -> chakra-ui: migrates concrete styled-components syntax
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "4" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("styled-components -> chakra-ui: carries a documented secondary styled-comp
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "4" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,7 +146,7 @@ test("styled-components -> chakra-ui: loads concrete theme and project context v
 		  "amber": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "#2a57c8" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "#2a57c8", padding: "4" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("styled-components -> chakra-ui: loads concrete theme and project context v
 		  "blue": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "brand.500" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "brand.500", padding: "4" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -226,7 +226,7 @@ test("styled-components -> chakra-ui: resolves concrete token values with projec
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "brand.500" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "brand.500", padding: "4" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -270,7 +270,7 @@ test("styled-components -> chakra-ui: preserves malformed concrete styled-compon
 		  "changed": true,
 		  "code": "import styled from "styled-components";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;
+		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "4" }} />;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

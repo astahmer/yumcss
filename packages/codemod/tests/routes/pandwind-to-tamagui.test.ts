@@ -50,7 +50,7 @@ test("pandwind -> tamagui: migrates concrete pandwind syntax to tamagui", () => 
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "red" });",
+		export const card = styled(View, { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("pandwind -> tamagui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "#f97316" });",
+		export const card = styled(View, { color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +179,7 @@ test("pandwind -> tamagui: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +225,7 @@ test("pandwind -> tamagui: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -268,7 +268,7 @@ test("pandwind -> tamagui: preserves malformed concrete pandwind input", () => {
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
 
-		export const card = styled(View, { padding: "1rem", color: "red" });
+		export const card = styled(View, { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,8 +49,8 @@ test("stitches -> solid-styled -> stitches: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,40 +84,15 @@ test("stitches -> solid-styled -> stitches: preserves an actionable concrete rou
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stitches | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -215,8 +190,8 @@ test("stitches -> solid-styled -> stitches: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -250,48 +225,23 @@ test("stitches -> solid-styled -> stitches: preserves concrete theme and project
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stitches | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,40 +275,15 @@ test("stitches -> solid-styled -> stitches: preserves concrete theme and project
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stitches | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -379,8 +304,8 @@ test("stitches -> solid-styled -> stitches: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -414,40 +339,15 @@ test("stitches -> solid-styled -> stitches: resolves token values across both co
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stitches | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

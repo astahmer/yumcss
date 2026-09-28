@@ -49,8 +49,8 @@ test("treat -> solid-styled -> treat: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "red" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,42 +84,16 @@ test("treat -> solid-styled -> treat: preserves an actionable concrete round tri
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { style } from "treat";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "red" }), props.class)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -137,8 +111,8 @@ test("treat -> solid-styled -> treat: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "red" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,42 +146,16 @@ test("treat -> solid-styled -> treat: retains the documented secondary API witho
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { style } from "treat";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "red" }), props.class)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -240,8 +188,8 @@ test("treat -> solid-styled -> treat: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,49 +223,23 @@ test("treat -> solid-styled -> treat: preserves concrete theme and project conte
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { style } from "treat";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "#2563eb" }), props.class)} />;",
-		      "converted": 1,
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,42 +273,16 @@ test("treat -> solid-styled -> treat: preserves concrete theme and project conte
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { style } from "treat";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "#2563eb" }), props.class)} />;",
-		      "converted": 1,
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -406,8 +302,8 @@ test("treat -> solid-styled -> treat: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -441,42 +337,16 @@ test("treat -> solid-styled -> treat: resolves token values across both concrete
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { style } from "treat";
-		const cx = createCx();
-		export const card = (props) => <div {...props} class={cx(style({ "padding": 8, "color": "#2563eb" }), props.class)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

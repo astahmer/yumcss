@@ -51,7 +51,7 @@ test("tamagui -> aphrodite -> tamagui: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "red" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "red", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("tamagui -> aphrodite -> tamagui: preserves an actionable concrete round tr
 		    "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
 		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "red" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "red", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -222,7 +222,7 @@ test("tamagui -> aphrodite -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -261,7 +261,7 @@ test("tamagui -> aphrodite -> tamagui: preserves concrete theme and project cont
 		      "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
 		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,7 +298,7 @@ test("tamagui -> aphrodite -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -337,7 +337,7 @@ test("tamagui -> aphrodite -> tamagui: preserves concrete theme and project cont
 		      "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
 		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -388,7 +388,7 @@ test("tamagui -> aphrodite -> tamagui: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -427,7 +427,7 @@ test("tamagui -> aphrodite -> tamagui: resolves token values across both concret
 		    "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
 		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

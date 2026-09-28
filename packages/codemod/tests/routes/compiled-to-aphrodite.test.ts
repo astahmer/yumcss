@@ -49,7 +49,7 @@ test("compiled -> aphrodite: migrates concrete compiled syntax to aphrodite", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("compiled -> aphrodite: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("compiled -> aphrodite: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("compiled -> aphrodite: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("compiled -> aphrodite: preserves malformed concrete compiled input", () =>
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "red" });
+		export const card = StyleSheet.create({ "color": "red", "padding": 8 });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -51,7 +51,7 @@ test("pandwind -> stitches -> pandwind: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("pandwind -> stitches -> pandwind: preserves an actionable concrete round t
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -218,7 +218,7 @@ test("pandwind -> stitches -> pandwind: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "#f97316" });",
+		export const card = css({ color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("pandwind -> stitches -> pandwind: preserves concrete theme and project con
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -293,7 +293,7 @@ test("pandwind -> stitches -> pandwind: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -331,7 +331,7 @@ test("pandwind -> stitches -> pandwind: preserves concrete theme and project con
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +382,7 @@ test("pandwind -> stitches -> pandwind: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -420,7 +420,7 @@ test("pandwind -> stitches -> pandwind: resolves token values across both concre
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

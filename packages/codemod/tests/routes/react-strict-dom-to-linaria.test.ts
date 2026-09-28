@@ -50,7 +50,7 @@ test("react-strict-dom -> linaria: migrates concrete react-strict-dom syntax to 
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "@linaria/core";
-		const styles = { "card": css\`padding: 1rem; color: red;\` };
+		const styles = { "card": css\`color: red; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +152,7 @@ test("react-strict-dom -> linaria: loads concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "@linaria/core";
-		const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("react-strict-dom -> linaria: loads concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "@linaria/core";
-		const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +240,7 @@ test("react-strict-dom -> linaria: resolves concrete token values with project c
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "@linaria/core";
-		const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +287,7 @@ test("react-strict-dom -> linaria: preserves malformed concrete react-strict-dom
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "@linaria/core";
-		const styles = { "card": css\`padding: 1rem; color: red;\` };
+		const styles = { "card": css\`color: red; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

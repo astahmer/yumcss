@@ -48,7 +48,7 @@ test("tokenami -> fela: migrates concrete tokenami syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "gap": "1rem", "color": "red" });",
+		  "code": "export const card = renderer.renderRule({ "color": "red", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("tokenami -> fela: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "gap": "1rem", "color": "#f97316" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#f97316", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -181,7 +181,7 @@ test("tokenami -> fela: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "gap": "1rem", "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("tokenami -> fela: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "gap": "1rem", "color": "#2563eb" });",
+		  "code": "export const card = renderer.renderRule({ "color": "#2563eb", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -274,7 +274,7 @@ test("tokenami -> fela: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "gap": "1rem", "color": "red" });
+		  "code": "export const card = renderer.renderRule({ "color": "red", "gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

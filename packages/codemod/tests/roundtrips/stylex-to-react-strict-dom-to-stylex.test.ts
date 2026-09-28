@@ -50,7 +50,7 @@ test("stylex -> react-strict-dom -> stylex: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("stylex -> react-strict-dom -> stylex: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "red" } }).style };",
+		export const styles = { "card": stylex.create({ style: { color: "red", padding: "8px" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("stylex -> react-strict-dom -> stylex: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("stylex -> react-strict-dom -> stylex: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("stylex -> react-strict-dom -> stylex: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("stylex -> react-strict-dom -> stylex: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,7 +399,7 @@ test("stylex -> react-strict-dom -> stylex: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("stylex -> react-strict-dom -> stylex: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style };",
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

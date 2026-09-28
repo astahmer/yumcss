@@ -50,7 +50,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves an ac
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -76,6 +76,11 @@ test("styled-components -> vanilla-extract -> styled-components: preserves an ac
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -87,7 +92,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves an ac
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,7 +119,7 @@ test("styled-components -> vanilla-extract -> styled-components: retains the doc
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -140,6 +145,11 @@ test("styled-components -> vanilla-extract -> styled-components: retains the doc
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -151,7 +161,7 @@ test("styled-components -> vanilla-extract -> styled-components: retains the doc
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -193,7 +203,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -219,6 +229,11 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		      ],
 		      "residuals": [
 		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
 		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		          "kind": "capability",
 		          "preserved": undefined,
@@ -230,7 +245,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -245,7 +260,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -271,6 +286,11 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		      ],
 		      "residuals": [
 		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
 		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		          "kind": "capability",
 		          "preserved": undefined,
@@ -282,7 +302,7 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -311,7 +331,7 @@ test("styled-components -> vanilla-extract -> styled-components: resolves token 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -337,6 +357,11 @@ test("styled-components -> vanilla-extract -> styled-components: resolves token 
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -348,7 +373,7 @@ test("styled-components -> vanilla-extract -> styled-components: resolves token 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

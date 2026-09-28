@@ -121,6 +121,7 @@ export interface HostComponentRewriteResult {
 
 export interface StandaloneHostComponentRewriteRequest {
 	readonly source: string;
+	readonly file?: string;
 	readonly tag: string;
 	readonly framework: string;
 	/** Expression that evaluates to the generated Pandwind class string. */
@@ -136,7 +137,7 @@ const mergeClassExpression = (
 ): { readonly expression: string; readonly needsCx: boolean } =>
 	isPandwindCarrier(generated)
 		? { expression: `css.props(${generated}, ${existing}).className`, needsCx: false }
-		: { expression: `cx(${generated}, ${existing})`, needsCx: true };
+		: { expression: `[${generated}, ${existing}].filter(Boolean).join(" ")`, needsCx: false };
 
 export interface HostComponentRewriter {
 	readonly schema: typeof HOST_COMPONENT_REWRITER_SCHEMA;
@@ -156,14 +157,85 @@ export interface HostDynamicCarrierRewriteResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+const styledCallParts = (subject: string): { readonly arguments: readonly string[] } | undefined => {
+	if (!subject.startsWith("styled(")) return undefined;
+	let callDepth = 0;
+	let quote: string | undefined;
+	let callEnd: number | undefined;
+	for (let index = "styled".length; index < subject.length; index++) {
+		const character = subject[index]!;
+		if (quote !== undefined) {
+			if (character === "\\") {
+				index++;
+				continue;
+			}
+			if (character === quote) quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'" || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "/" && subject[index + 1] === "/") {
+			index = subject.indexOf("\n", index);
+			if (index === -1) break;
+			continue;
+		}
+		if (character === "/" && subject[index + 1] === "*") {
+			const commentEnd = subject.indexOf("*/", index + 2);
+			if (commentEnd === -1) return undefined;
+			index = commentEnd + 1;
+			continue;
+		}
+		if (character === "(") callDepth++;
+		if (character === ")") {
+			callDepth--;
+			if (callDepth === 0) {
+				callEnd = index;
+				break;
+			}
+		}
+	}
+	if (callEnd === undefined) return undefined;
+	const modifiers = subject.slice(callEnd + 1).trim();
+	if (modifiers !== "" && !/^(?:<[^>]*>)?(?:\.attrs\([\s\S]*\)|\.props\([\s\S]*\))?$/u.test(modifiers))
+		return undefined;
+	const argumentsList: string[] = [];
+	let start = 0;
+	let depth = 0;
+	quote = undefined;
+	const body = subject.slice("styled(".length, callEnd);
+	for (let index = 0; index < body.length; index++) {
+		const character = body[index]!;
+		if (quote !== undefined) {
+			if (character === quote && body[index - 1] !== "\\") quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'" || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "(" || character === "[" || character === "{") depth++;
+		if (character === ")" || character === "]" || character === "}") depth--;
+		if (character === "," && depth === 0) {
+			argumentsList.push(body.slice(start, index).trim());
+			start = index + 1;
+		}
+	}
+	argumentsList.push(body.slice(start).trim());
+	return { arguments: argumentsList };
+};
+
 export function intrinsicTagForSubject(subject: string): string | undefined {
 	const suffix = "(?:\\.props\\([\\s\\S]*\\)|\\.attrs\\([\\s\\S]*\\))?";
 	const member = new RegExp(`^styled\\.([A-Za-z_$][\\w$]*)${suffix}$`, "u").exec(subject)?.[1];
 	if (member !== undefined && /^[a-z][\w-]*$/.test(member)) return member;
-	const call = new RegExp(`^styled\\(\\s*["']([a-z][\\w-]*)["']\\s*\\)${suffix}$`, "u").exec(
-		subject,
-	)?.[1];
-	return call;
+	const call = styledCallParts(subject);
+	if (call === undefined || call.arguments.length < 1 || call.arguments.length > 2) return undefined;
+	const tag = /^['"]([a-z][\w-]*)['"]$/u.exec(call.arguments[0] ?? "")?.[1];
+	if (tag === undefined) return undefined;
+	if (call.arguments.length === 2 && componentPropsExpressionForSubject(subject) === undefined) return undefined;
+	return tag;
 }
 
 /** Component expression used by `styled(Component)` subjects. */
@@ -254,12 +326,22 @@ export function wrapComponentExpressionWithAttrs(
 	};
 }
 
-/** Return the static `.props({...})` payload when a styled subject exposes one. */
+/** Return a supported source component prop declaration from a styled subject. */
 export function componentPropsExpressionForSubject(subject: string): string | undefined {
 	const match = /\.props\(\s*([\s\S]*)\s*\)$/.exec(subject);
-	if (match === null) return undefined;
-	const expression = match[1]?.trim();
-	return expression === undefined || expression === "" ? undefined : expression;
+	if (match !== null) {
+		const expression = match[1]?.trim();
+		return expression === undefined || expression === "" ? undefined : expression;
+	}
+	const call = styledCallParts(subject);
+	if (call === undefined || call.arguments.length !== 2) return undefined;
+	const expression = call.arguments[1];
+	if (expression === undefined) return undefined;
+	if (expression.startsWith("{")) {
+		const block = SourcePass.matchBlock(expression, 0);
+		if (block !== null && block.end === expression.length) return expression;
+	}
+	return /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*$/u.test(expression) ? expression : undefined;
 }
 
 /**
@@ -832,11 +914,32 @@ function rewriteStandaloneJsx(
 	}
 	const className = "__pandwindStandaloneClass";
 	const componentName = "__pandwindStandaloneComponent";
+	const forwardRefBinding = "__pandwindStandaloneForwardRef";	
+	const componentRefBinding = "__pandwindStandaloneComponentRef";
+	const componentPropsBinding = "__pandwindStandaloneComponentProps";
 	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
 	const mergedClass = mergeClassExpression(className, `props.${classAttribute}`);
+	const typeScript = /\.(?:ts|tsx)$/u.test(request.file ?? "");
+	const isPreact = request.framework === BuiltinHostFramework.Preact;
+	const runtimeModule = isPreact ? "preact/compat" : "react";
+	const forwardRefTypes =
+		!typeScript
+			? ""
+			: isPreact
+				? `<HTMLElement, JSX.HTMLAttributes<HTMLElement>>`
+				: `<${componentRefBinding}<${JSON.stringify(request.tag)}>, ${componentPropsBinding}<${JSON.stringify(request.tag)}>>`;
+	const imports = [
+		`import { forwardRef as ${forwardRefBinding} } from "${runtimeModule}";`,
+		...(typeScript && isPreact ? ['import type { JSX } from "preact";'] : []),
+		...(typeScript && !isPreact
+			? [
+					`import type { ComponentRef as ${componentRefBinding}, ComponentPropsWithoutRef as ${componentPropsBinding} } from "react";`,
+				]
+			: []),
+	];
 	const replacement =
 		`const ${className} = ${request.classExpression};\n` +
-		`const ${componentName} = (props) => <${request.tag} {...props} ` +
+		`const ${componentName} = ${forwardRefBinding}${forwardRefTypes}((props, ref) => <${request.tag} {...props} ref={ref} ` +
 		`${classAttribute}={${isPandwindCarrier(request.classExpression) ? `css.props(${className}, props.${classAttribute}).className` : mergedClass.expression}} />;\n` +
 		`export default ${componentName};`;
 	const end = expressionStart + expression.length;
@@ -844,6 +947,7 @@ function rewriteStandaloneJsx(
 		code: request.source.slice(0, exportMatch.index) + replacement + request.source.slice(end),
 		changed: true,
 		needsCx: isPandwindCarrier(request.classExpression) ? false : mergedClass.needsCx,
+		imports,
 		residuals: [],
 	};
 }

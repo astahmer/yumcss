@@ -49,7 +49,7 @@ test("tailwind -> stitches: migrates concrete tailwind syntax to stitches", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const App = () => css({ gap: "1rem", alignItems: "center", display: "flex" });",
+		export const App = () => css({ display: "flex", alignItems: "center", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("tailwind -> stitches: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const App = () => css({ padding: "1.125rem", color: "#f97316" });",
+		export const App = () => css({ color: "#f97316", padding: "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("tailwind -> stitches: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const App = () => css({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => css({ color: "#2563eb", padding: "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("tailwind -> stitches: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const App = () => css({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => css({ color: "#2563eb", padding: "1.125rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,7 +276,7 @@ test("tailwind -> stitches: preserves malformed concrete tailwind input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const App = () => css({ gap: "1rem", alignItems: "center", display: "flex" });
+		export const App = () => css({ display: "flex", alignItems: "center", gap: "1rem" });
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -48,8 +48,8 @@ test("treat -> solid-styled: migrates concrete treat syntax to solid-styled", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "red" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +93,8 @@ test("treat -> solid-styled: carries a documented secondary treat API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "red" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +147,8 @@ test("treat -> solid-styled: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +183,8 @@ test("treat -> solid-styled: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +231,8 @@ test("treat -> solid-styled: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +276,8 @@ test("treat -> solid-styled: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "red" });
+		  "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

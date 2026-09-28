@@ -48,8 +48,8 @@ test("jss -> solid-styled: migrates concrete jss syntax to solid-styled", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "red" }) };",
+		  "code": "import { css } from "solid-styled-components";
+		export const useStyles = { "card": css({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +93,8 @@ test("jss -> solid-styled: carries a documented secondary jss API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const sheet = { "card": styled.div({ "color": "red" }) };",
+		  "code": "import { css } from "solid-styled-components";
+		export const sheet = { "card": css({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +147,8 @@ test("jss -> solid-styled: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const useStyles = { "card": css({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +183,8 @@ test("jss -> solid-styled: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const useStyles = { "card": css({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +231,8 @@ test("jss -> solid-styled: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "#2563eb" }) };",
+		  "code": "import { css } from "solid-styled-components";
+		export const useStyles = { "card": css({ "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +276,8 @@ test("jss -> solid-styled: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const useStyles = { "card": styled.div({ "color": "red" }) };
+		  "code": "import { css } from "solid-styled-components";
+		export const useStyles = { "card": css({ "color": "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -83,11 +83,10 @@ test("bamboo -> styled-components -> bamboo: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "red" }), props.className)} />; };",
-		    "converted": 1,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ color: "red" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -103,19 +102,19 @@ test("bamboo -> styled-components -> bamboo: preserves an actionable concrete ro
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -134,7 +133,7 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "4", display: "flex" });",
+		export const card = styled.div({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,11 +166,10 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ gap: "4", display: "flex" }), props.className)} />; };",
-		    "converted": 1,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ display: "flex", gap: "4" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -187,19 +185,19 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -266,11 +264,10 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "#2563eb" }), props.className)} />; };",
-		      "converted": 1,
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ color: "#2563eb" });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -286,19 +283,19 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -338,11 +335,10 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "#2563eb" }), props.className)} />; };",
-		      "converted": 1,
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ color: "#2563eb" });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -358,19 +354,19 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -424,11 +420,10 @@ test("bamboo -> styled-components -> bamboo: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "#2563eb" }), props.className)} />; };",
-		    "converted": 1,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ color: "#2563eb" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -444,19 +439,19 @@ test("bamboo -> styled-components -> bamboo: resolves token values across both c
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

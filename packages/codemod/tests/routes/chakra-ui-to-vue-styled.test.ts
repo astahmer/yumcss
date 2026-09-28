@@ -51,7 +51,7 @@ test("chakra-ui -> vue-styled: migrates concrete chakra-ui syntax to vue-styled"
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #fecaca; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -151,7 +151,7 @@ test("chakra-ui -> vue-styled: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #f97316; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("chakra-ui -> vue-styled: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #2a57c8; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("chakra-ui -> vue-styled: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #2a57c8; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,7 +283,7 @@ test("chakra-ui -> vue-styled: preserves malformed concrete chakra-ui input", as
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });
+		export const App = () => styled.div\`background: #fecaca; padding: 1rem;\`;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

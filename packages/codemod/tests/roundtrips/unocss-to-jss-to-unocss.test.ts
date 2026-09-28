@@ -50,7 +50,7 @@ test("unocss -> jss -> unocss: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).attach().classes.style}/>;",
+		export const App = () => <div className={jss.createStyleSheet({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("unocss -> jss -> unocss: preserves an actionable concrete round trip", () 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={{ "style": "[gap:1rem] [align-items:center] [display:flex]" }.attach().classes.style}/>;",
+		    "code": "export const App = () => <div className={{ "style": "[display:flex] [align-items:center] [gap:1rem]" }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,7 +219,7 @@ test("unocss -> jss -> unocss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#f97316" } }).attach().classes.style}/>;",
+		export const App = () => <div className={jss.createStyleSheet({ style: { color: "#f97316", padding: "1.125rem" } }).attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -254,7 +254,7 @@ test("unocss -> jss -> unocss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
+		      "code": "export const App = () => <div className={{ "style": "text-brand p-card" }.attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -292,7 +292,7 @@ test("unocss -> jss -> unocss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <div className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "1.125rem" } }).attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -327,7 +327,7 @@ test("unocss -> jss -> unocss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
+		      "code": "export const App = () => <div className={{ "style": "text-brand p-card" }.attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -379,7 +379,7 @@ test("unocss -> jss -> unocss: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <div className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "1.125rem" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -414,7 +414,7 @@ test("unocss -> jss -> unocss: resolves token values across both concrete legs",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={{ "style": "p-card text-brand" }.attach().classes.style}/>;",
+		    "code": "export const App = () => <div className={{ "style": "text-brand p-card" }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

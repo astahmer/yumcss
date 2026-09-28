@@ -50,7 +50,8 @@ test("mantine -> tamagui: migrates concrete mantine syntax to tamagui", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		const __componentTamagui = styled(View, { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +144,8 @@ test("mantine -> tamagui: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		const __componentTamagui = styled(View, { color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +179,8 @@ test("mantine -> tamagui: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +226,8 @@ test("mantine -> tamagui: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +270,8 @@ test("mantine -> tamagui: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		const __componentTamagui = styled(View, { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

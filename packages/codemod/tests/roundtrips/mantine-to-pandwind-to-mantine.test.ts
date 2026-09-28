@@ -51,7 +51,7 @@ test("mantine -> pandwind -> mantine: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("mantine -> pandwind -> mantine: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		export const App = () => <div className={{ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" }} />;",
+		export const App = () => <div className={{ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -209,7 +209,7 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "brand", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -243,7 +243,7 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		export const App = () => <div className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }} />;",
+		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -280,7 +280,7 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "brand", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,7 +314,7 @@ test("mantine -> pandwind -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		export const App = () => <div className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }} />;",
+		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -365,7 +365,7 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ marginInline: "auto", color: "brand", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -399,7 +399,7 @@ test("mantine -> pandwind -> mantine: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		export const App = () => <div className={{ marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" }} />;",
+		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

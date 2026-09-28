@@ -51,7 +51,7 @@ test("pandwind -> panda -> pandwind: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("pandwind -> panda -> pandwind: preserves an actionable concrete round trip
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("pandwind -> panda -> pandwind: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "brand.500" });",
+		export const card = css({ color: "brand.500", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -271,7 +271,7 @@ test("pandwind -> panda -> pandwind: preserves concrete theme and project contex
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -308,7 +308,7 @@ test("pandwind -> panda -> pandwind: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "brand.500" });",
+		export const card = css({ color: "brand.500", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -344,7 +344,7 @@ test("pandwind -> panda -> pandwind: preserves concrete theme and project contex
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -395,7 +395,7 @@ test("pandwind -> panda -> pandwind: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = css({ padding: "1rem", color: "brand.500" });",
+		export const card = css({ color: "brand.500", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,7 +431,7 @@ test("pandwind -> panda -> pandwind: resolves token values across both concrete 
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

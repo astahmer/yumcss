@@ -49,7 +49,7 @@ test("mui -> styled-components: migrates concrete mui syntax to styled-component
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "red" });",
+		export const App = () => styled.div({ color: "red", padding: "16px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -91,9 +91,10 @@ test("mui -> styled-components: carries a documented secondary mui API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: 8, color: "red" });",
-		  "converted": 1,
+		  "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> styled-components | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -109,17 +110,25 @@ test("mui -> styled-components: carries a documented secondary mui API explicitl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -143,7 +152,7 @@ test("mui -> styled-components: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "#f97316" });",
+		export const App = () => styled.div({ color: "#f97316", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +186,7 @@ test("mui -> styled-components: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +232,7 @@ test("mui -> styled-components: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +275,7 @@ test("mui -> styled-components: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "red" });
+		export const App = () => styled.div({ color: "red", padding: "16px" });
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

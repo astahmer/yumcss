@@ -50,7 +50,7 @@ test("stitches -> mui: migrates concrete stitches syntax to mui", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("stitches -> mui: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("stitches -> mui: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("stitches -> mui: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("stitches -> mui: preserves malformed concrete stitches input", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });
+		export const card = css.class({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

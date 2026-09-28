@@ -47,6 +47,7 @@ import {
 import { DynamicClassHost } from "./adapters/class-target-dynamic.ts";
 import { BuiltinHostFramework, type HostFramework } from "./host-adapters.ts";
 import { createAdapterMigrationSupport } from "./adapter-migration-support.ts";
+import { planProjectModuleRename } from "./project-module-rename.ts";
 import {
 	StyleHostRepresentationKind,
 	StyleMigrationOutcome,
@@ -209,6 +210,8 @@ function runAdapterMigrationInternal(
 					return sourceText === undefined ? undefined : { file, source: sourceText };
 				},
 				resolve: (importer, specifier) => {
+					const resolvedByHost = options.resolveModule?.(importer, specifier);
+					if (resolvedByHost !== undefined) return resolvedByHost;
 					if (!specifier.startsWith(".")) return undefined;
 					const base = joinDocumentPath(dirnameDocumentPath(importer), specifier);
 					const candidates = [
@@ -374,6 +377,10 @@ function runAdapterMigrationInternal(
 	let skipped = 0;
 	let converted = 0;
 	let outputExtension: string | undefined;
+	let moduleFileOutputExtension: string | undefined;
+	let moduleFileRenameChecked = false;
+	let moduleFileRenameBlockedReason: string | undefined;
+	let moduleFileRenameChanges = new Map<string, import("./adapter-contract.ts").AdapterFileChange>();
 	const unpreservedParseResiduals = parsed.residuals.filter(
 		(residual) => residual.preserved !== true,
 	);
@@ -450,17 +457,48 @@ function runAdapterMigrationInternal(
 			support.hasInlineHostUse(bindings, match.start, source) ||
 			support.hasComponentBindingUse(bindings, bindingBeforeMatch);
 		const moduleFile = targetPolicy?.moduleFile;
-		const moduleFileResiduals =
+		let moduleFileResiduals: StyleProgramResidual[] = [];
+		if (
 			moduleFile !== undefined &&
 			!moduleFile.acceptedSuffixes.some((suffix) => options.file.endsWith(suffix))
-				? [
+		) {
+			if (hasHostContext || !/\.(?:ts|js)$/u.test(options.file)) {
+				moduleFileResiduals = [
+					{
+						kind: StyleProgramResidualKindTag.Capability,
+						text: match.sourceText,
+						hint: moduleFile.unsupportedFileHint,
+					},
+				];
+			} else {
+				if (!moduleFileRenameChecked) {
+					moduleFileRenameChecked = true;
+					const renamePlan = planProjectModuleRename({
+						file: options.file,
+						importSpecifierExtension: moduleFile.importSpecifierExtension,
+						root: options.root,
+						listFiles: options.listFiles,
+						readFile,
+						resolveModule: options.resolveModule,
+					});
+					if (renamePlan.status === "ready")
+						moduleFileRenameChanges = new Map(
+							renamePlan.fileChanges.map((change) => [change.path, change]),
+						);
+					else moduleFileRenameBlockedReason = renamePlan.reason;
+				}
+				if (moduleFileRenameBlockedReason === undefined)
+					moduleFileOutputExtension = moduleFile.outputExtension;
+				else
+					moduleFileResiduals = [
 						{
 							kind: StyleProgramResidualKindTag.Capability,
 							text: match.sourceText,
-							hint: moduleFile.unsupportedFileHint,
+							hint: `${moduleFile.unsupportedFileHint}; ${moduleFileRenameBlockedReason}`,
 						},
-					]
-				: [];
+					];
+			}
+		}
 		const targetPreflightResiduals = [
 			...moduleFileResiduals,
 			...(targetPolicy?.preflight?.({
@@ -1405,6 +1443,7 @@ function runAdapterMigrationInternal(
 		if (rewriter?.rewriteStandalone === undefined) continue;
 		const rewritten = rewriter.rewriteStandalone({
 			source: runtimeEdited,
+			file: options.file,
 			tag: request.tag,
 			framework: request.framework,
 			classExpression: request.emittedExpression,
@@ -1415,6 +1454,7 @@ function runAdapterMigrationInternal(
 		}
 		runtimeEdited = rewritten.code;
 		needsCx ||= rewritten.needsCx;
+		for (const statement of rewritten.imports ?? []) imports.add(statement);
 	}
 	if (needsCx) {
 		runtimeEdited = support.ensureGeneratedStatement(
@@ -1640,6 +1680,11 @@ function runAdapterMigrationInternal(
 		}).code;
 	if (converted > 0 && skipped === 0 && residuals.length === 0)
 		for (const edit of appliedSkipMarkerEdits) code = code.replace(edit.text, "");
+	if (moduleFileOutputExtension !== undefined) {
+		if (converted > 0 && skipped === 0 && residuals.length === 0)
+			outputExtension = moduleFileOutputExtension;
+		else moduleFileRenameChanges.clear();
+	}
 	return {
 		code,
 		...(outputExtension === undefined ? {} : { outputExtension }),
@@ -1651,7 +1696,7 @@ function runAdapterMigrationInternal(
 		dependencies,
 		residuals,
 		generatedFiles: [...generatedFiles.values()],
-		fileChanges: [],
+		fileChanges: [...moduleFileRenameChanges.values()],
 		loweringPlans,
 		outcomes,
 	};

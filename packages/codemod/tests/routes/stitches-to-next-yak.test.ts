@@ -49,7 +49,7 @@ test("stitches -> next-yak: migrates concrete stitches syntax to next-yak", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -153,7 +153,7 @@ test("stitches -> next-yak: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,7 +187,7 @@ test("stitches -> next-yak: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("stitches -> next-yak: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,7 +276,7 @@ test("stitches -> next-yak: preserves malformed concrete stitches input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: red;\`;
+		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -95,7 +95,7 @@ test("mui -> chakra-ui: carries a documented secondary mui API explicitly", asyn
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const Card = defaultSystem.css({ padding: "8px", color: "red" });",
+		export const Card = defaultSystem.css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

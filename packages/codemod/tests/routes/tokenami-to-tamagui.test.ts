@@ -49,7 +49,7 @@ test("tokenami -> tamagui: migrates concrete tokenami syntax to tamagui", () => 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "red" });",
+		export const card = styled(View, { color: "red", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -141,7 +141,7 @@ test("tokenami -> tamagui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "#f97316" });",
+		export const card = styled(View, { color: "#f97316", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +174,7 @@ test("tokenami -> tamagui: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,7 +219,7 @@ test("tokenami -> tamagui: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -261,7 +261,7 @@ test("tokenami -> tamagui: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "red" });
+		export const card = styled(View, { color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -50,7 +50,7 @@ test("stitches -> aphrodite -> stitches: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("stitches -> aphrodite -> stitches: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -215,7 +215,7 @@ test("stitches -> aphrodite -> stitches: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,7 +251,7 @@ test("stitches -> aphrodite -> stitches: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("stitches -> aphrodite -> stitches: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,7 +325,7 @@ test("stitches -> aphrodite -> stitches: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +377,7 @@ test("stitches -> aphrodite -> stitches: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -413,7 +413,7 @@ test("stitches -> aphrodite -> stitches: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

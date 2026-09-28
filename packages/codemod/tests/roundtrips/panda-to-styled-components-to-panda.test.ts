@@ -83,11 +83,10 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "red", "&:hover": { color: "blue" } }), props.className)} />; };",
-		    "converted": 1,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ color: "red", "&:hover": { color: "blue" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -103,19 +102,19 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -243,11 +242,10 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />; };",
-		      "converted": 1,
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ color: "#f97316", "&:hover": { color: "#f97316" } });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -263,19 +261,19 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -315,11 +313,10 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />; };",
-		      "converted": 1,
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -335,19 +332,19 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -401,11 +398,10 @@ test("panda -> styled-components -> panda: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
-		const cx = createCx();
-		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />; };",
-		    "converted": 1,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -421,19 +417,19 @@ test("panda -> styled-components -> panda: resolves token values across both con
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

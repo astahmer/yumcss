@@ -49,8 +49,8 @@ test("tamagui -> stitches: migrates concrete tamagui syntax to stitches", () => 
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "red" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,8 +150,8 @@ test("tamagui -> stitches: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "#2563eb" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,8 +188,8 @@ test("tamagui -> stitches: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "#2563eb" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,8 +238,8 @@ test("tamagui -> stitches: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "#2563eb" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -285,8 +285,8 @@ test("tamagui -> stitches: preserves malformed concrete tamagui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = css({ padding: "$4", color: "red" });
+		import { styled } from "@stitches/react";
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

@@ -50,7 +50,7 @@ test("mantine -> emotion: migrates concrete mantine syntax to emotion", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@emotion/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box className={css({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("mantine -> emotion: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@emotion/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box className={css({ color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("mantine -> emotion: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@emotion/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box className={css({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("mantine -> emotion: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@emotion/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
+		export const App = () => <Box className={css({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("mantine -> emotion: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@emotion/css";
-		export const App = () => <Box className={css({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;
+		export const App = () => <Box className={css({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

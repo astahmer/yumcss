@@ -50,7 +50,7 @@ test("react-strict-dom -> panda: migrates concrete react-strict-dom syntax to pa
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "styled-system/css";
-		const styles = { "card": css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +148,7 @@ test("react-strict-dom -> panda: loads concrete theme and project context varian
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "styled-system/css";
-		const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("react-strict-dom -> panda: loads concrete theme and project context varian
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "styled-system/css";
-		const styles = { "card": css({ padding: "1rem", color: "brand.500" }) };
+		const styles = { "card": css({ color: "brand.500", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +232,7 @@ test("react-strict-dom -> panda: resolves concrete token values with project con
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "styled-system/css";
-		const styles = { "card": css({ padding: "1rem", color: "brand.500" }) };
+		const styles = { "card": css({ color: "brand.500", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +277,7 @@ test("react-strict-dom -> panda: preserves malformed concrete react-strict-dom i
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "styled-system/css";
-		const styles = { "card": css({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

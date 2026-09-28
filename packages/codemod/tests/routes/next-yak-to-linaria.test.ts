@@ -49,7 +49,7 @@ test("next-yak -> linaria: migrates concrete next-yak syntax to linaria", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("next-yak -> linaria: carries a documented secondary next-yak API explicitl
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@linaria/react";
-		export const Card = styled.div\`padding: 1rem; color: red;\`;",
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("next-yak -> linaria: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("next-yak -> linaria: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("next-yak -> linaria: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("next-yak -> linaria: preserves malformed concrete next-yak input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: red;\`;
+		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

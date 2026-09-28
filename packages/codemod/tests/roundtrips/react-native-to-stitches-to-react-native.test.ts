@@ -50,7 +50,7 @@ test("react-native -> stitches -> react-native: preserves an actionable concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("react-native -> stitches -> react-native: preserves an actionable concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("react-native -> stitches -> react-native: retains the documented secondary
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": css({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +275,7 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,7 +314,7 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +350,7 @@ test("react-native -> stitches -> react-native: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -403,7 +403,7 @@ test("react-native -> stitches -> react-native: resolves token values across bot
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +439,7 @@ test("react-native -> stitches -> react-native: resolves token values across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -50,7 +50,7 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves an actionable con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: red;\`;",
+		export const card = css\`color: red; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves an actionable con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8", color: "red" });",
+		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -259,7 +259,7 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -297,7 +297,7 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,7 +333,7 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -385,7 +385,7 @@ test("vanilla-extract -> linaria -> vanilla-extract: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -421,7 +421,7 @@ test("vanilla-extract -> linaria -> vanilla-extract: resolves token values acros
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -49,7 +49,7 @@ test("panda -> vue-styled: migrates concrete panda syntax to vue-styled", () => 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "color": "red", "_hover": { "color": "blue" } });",
+		export const card = styled.div\`color: red;&:hover { color: blue; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -153,7 +153,7 @@ test("panda -> vue-styled: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
+		export const card = styled.div\`color: #f97316;&:hover { color: #f97316; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +190,7 @@ test("panda -> vue-styled: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		export const card = styled.div\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("panda -> vue-styled: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		export const card = styled.div\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -285,7 +285,7 @@ test("panda -> vue-styled: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "color": "red", "_hover": { "color": "blue" } });
+		export const card = styled.div\`color: red;&:hover { color: blue; }\`;
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],

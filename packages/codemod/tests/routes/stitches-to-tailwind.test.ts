@@ -48,7 +48,7 @@ test("stitches -> tailwind: migrates concrete stitches syntax to tailwind", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:1rem] [color:red]";",
+		  "code": "export const card = "[color:red] [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("stitches -> tailwind: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = "[padding:1rem] [color:#2563eb]";",
+		    "code": "export const card = "[color:#2563eb] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("stitches -> tailwind: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("stitches -> tailwind: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:1rem] text-brand";",
+		  "code": "export const card = "text-brand [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +273,7 @@ test("stitches -> tailwind: preserves malformed concrete stitches input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:1rem] [color:red]";
+		  "code": "export const card = "[color:red] [padding:1rem]";
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

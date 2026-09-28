@@ -94,7 +94,7 @@ test("bamboo -> style9: carries a documented secondary bamboo API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "gap": "4", "display": "flex" });",
+		export const card = style9.create({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

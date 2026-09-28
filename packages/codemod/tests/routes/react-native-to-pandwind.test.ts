@@ -50,7 +50,7 @@ test("react-native -> pandwind: migrates concrete react-native syntax to pandwin
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("react-native -> pandwind: carries a documented secondary react-native API 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("react-native -> pandwind: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("react-native -> pandwind: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
+		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("react-native -> pandwind: resolves concrete token values with project cont
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "brand" }) };",
+		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +273,7 @@ test("react-native -> pandwind: preserves malformed concrete react-native input"
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: 8, color: "red" }) };
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

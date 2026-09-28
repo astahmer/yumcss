@@ -50,7 +50,7 @@ test("next-yak -> react-strict-dom -> next-yak: preserves an actionable concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });",
+		export const card = css.create({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("next-yak -> react-strict-dom -> next-yak: preserves an actionable concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -160,7 +160,7 @@ test("next-yak -> react-strict-dom -> next-yak: retains the documented secondary
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -213,7 +213,7 @@ test("next-yak -> react-strict-dom -> next-yak: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -249,7 +249,7 @@ test("next-yak -> react-strict-dom -> next-yak: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -285,7 +285,7 @@ test("next-yak -> react-strict-dom -> next-yak: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -321,7 +321,7 @@ test("next-yak -> react-strict-dom -> next-yak: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -371,7 +371,7 @@ test("next-yak -> react-strict-dom -> next-yak: resolves token values across bot
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -407,7 +407,7 @@ test("next-yak -> react-strict-dom -> next-yak: resolves token values across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

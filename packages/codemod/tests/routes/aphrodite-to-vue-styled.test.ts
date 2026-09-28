@@ -49,7 +49,7 @@ test("aphrodite -> vue-styled: migrates concrete aphrodite syntax to vue-styled"
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
+		export const styles = styled.div\` color: red; padding: 8;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("aphrodite -> vue-styled: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("aphrodite -> vue-styled: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("aphrodite -> vue-styled: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("aphrodite -> vue-styled: preserves malformed concrete aphrodite input", ()
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };
+		export const styles = styled.div\` color: red; padding: 8;\`;
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

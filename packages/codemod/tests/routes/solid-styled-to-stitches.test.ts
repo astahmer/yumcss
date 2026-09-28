@@ -48,8 +48,8 @@ test("solid-styled -> stitches: migrates concrete solid-styled syntax to stitche
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "red" });",
+		  "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +93,8 @@ test("solid-styled -> stitches: carries a documented secondary solid-styled API 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "red" });",
+		  "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +147,8 @@ test("solid-styled -> stitches: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "#2563eb" });",
+		    "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +183,8 @@ test("solid-styled -> stitches: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "#2563eb" });",
+		    "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +231,8 @@ test("solid-styled -> stitches: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "#2563eb" });",
+		  "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +276,8 @@ test("solid-styled -> stitches: preserves malformed concrete solid-styled input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "red" });
+		  "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

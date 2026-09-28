@@ -49,7 +49,7 @@ test("emotion -> fela -> emotion: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
+		    "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("emotion -> fela -> emotion: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -132,7 +132,7 @@ test("emotion -> fela -> emotion: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
+		    "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("emotion -> fela -> emotion: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,7 +230,7 @@ test("emotion -> fela -> emotion: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		      "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -266,7 +266,7 @@ test("emotion -> fela -> emotion: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -301,7 +301,7 @@ test("emotion -> fela -> emotion: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		      "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -337,7 +337,7 @@ test("emotion -> fela -> emotion: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -386,7 +386,7 @@ test("emotion -> fela -> emotion: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -422,7 +422,7 @@ test("emotion -> fela -> emotion: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

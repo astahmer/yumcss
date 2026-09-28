@@ -49,7 +49,7 @@ test("tokenami -> emotion: migrates concrete tokenami syntax to emotion", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = css({ gap: "1rem", color: "red" });",
+		export const card = css({ color: "red", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("tokenami -> emotion: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ gap: "1rem", color: "#f97316" });",
+		export const card = css({ color: "#f97316", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("tokenami -> emotion: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ gap: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("tokenami -> emotion: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = css({ gap: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("tokenami -> emotion: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = css({ gap: "1rem", color: "red" });
+		export const card = css({ color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

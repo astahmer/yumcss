@@ -50,7 +50,7 @@ test("tamagui -> css-modules -> tamagui: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -76,12 +76,7 @@ test("tamagui -> css-modules -> tamagui: preserves an actionable concrete round 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -92,7 +87,7 @@ test("tamagui -> css-modules -> tamagui: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -154,7 +149,7 @@ test("tamagui -> css-modules -> tamagui: retains the documented secondary API wi
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -207,7 +202,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -233,12 +228,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "hint": "the source host is not verified as React",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -249,7 +239,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -265,7 +255,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -291,12 +281,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "hint": "the source host is not verified as React",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -307,7 +292,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -337,7 +322,7 @@ test("tamagui -> css-modules -> tamagui: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -363,12 +348,7 @@ test("tamagui -> css-modules -> tamagui: resolves token values across both concr
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -379,7 +359,7 @@ test("tamagui -> css-modules -> tamagui: resolves token values across both concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,

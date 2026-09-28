@@ -49,7 +49,7 @@ test("unocss -> panda: migrates concrete unocss syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		export const App = () => <div className={css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("unocss -> panda: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "brand.500" })}/>;",
+		export const App = () => <div className={css({ color: "brand.500", padding: "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("unocss -> panda: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "brand.500" })}/>;",
+		export const App = () => <div className={css({ color: "brand.500", padding: "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("unocss -> panda: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "brand.500" })}/>;",
+		export const App = () => <div className={css({ color: "brand.500", padding: "1.125rem" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("unocss -> panda: preserves malformed concrete unocss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;
+		export const App = () => <div className={css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

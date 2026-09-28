@@ -50,7 +50,7 @@ test("react-strict-dom -> aphrodite: migrates concrete react-strict-dom syntax t
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "red" } });
+		const styles = StyleSheet.create({ "card": { "color": "red", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +152,7 @@ test("react-strict-dom -> aphrodite: loads concrete theme and project context va
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("react-strict-dom -> aphrodite: loads concrete theme and project context va
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +240,7 @@ test("react-strict-dom -> aphrodite: resolves concrete token values with project
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +287,7 @@ test("react-strict-dom -> aphrodite: preserves malformed concrete react-strict-d
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "red" } });
+		const styles = StyleSheet.create({ "card": { "color": "red", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

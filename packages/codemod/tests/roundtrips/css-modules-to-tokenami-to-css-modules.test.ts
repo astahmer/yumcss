@@ -201,7 +201,7 @@ test("css-modules -> tokenami -> css-modules: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": "1rem", "--color": "#2563eb" }) };
+		export const styles = { "card": css({ "--color": "#2563eb", "--padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -237,7 +237,7 @@ test("css-modules -> tokenami -> css-modules: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		/* /* pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css({ "--padding": "1rem", "--color": "#2563eb" }) };
+		export const styles = { "card": css({ "--color": "#2563eb", "--padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -275,7 +275,7 @@ test("css-modules -> tokenami -> css-modules: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -311,7 +311,7 @@ test("css-modules -> tokenami -> css-modules: preserves concrete theme and proje
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 		/* /* pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -363,7 +363,7 @@ test("css-modules -> tokenami -> css-modules: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -399,7 +399,7 @@ test("css-modules -> tokenami -> css-modules: resolves token values across both 
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		/* /* pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css({ "--padding": "1rem", "--color": "var(--color_brand)" }) };
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

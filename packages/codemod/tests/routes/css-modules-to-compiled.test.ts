@@ -165,7 +165,7 @@ test("css-modules -> compiled: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> compiled: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> compiled: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

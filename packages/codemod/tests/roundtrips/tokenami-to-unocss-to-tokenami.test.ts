@@ -49,7 +49,7 @@ test("tokenami -> unocss -> tokenami: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[gap:1rem] [color:red]";",
+		    "code": "export const card = "[color:red] [gap:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("tokenami -> unocss -> tokenami: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "red" });",
+		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -209,7 +209,7 @@ test("tokenami -> unocss -> tokenami: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[gap:1rem] text-brand";",
+		      "code": "export const card = "text-brand [gap:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -246,7 +246,7 @@ test("tokenami -> unocss -> tokenami: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -281,7 +281,7 @@ test("tokenami -> unocss -> tokenami: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[gap:1rem] text-brand";",
+		      "code": "export const card = "text-brand [gap:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -318,7 +318,7 @@ test("tokenami -> unocss -> tokenami: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -367,7 +367,7 @@ test("tokenami -> unocss -> tokenami: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[gap:1rem] text-brand";",
+		    "code": "export const card = "text-brand [gap:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -404,7 +404,7 @@ test("tokenami -> unocss -> tokenami: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

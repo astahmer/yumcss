@@ -48,7 +48,7 @@ test("react-native -> unocss: migrates concrete react-native syntax to unocss", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:8] [color:red]" };",
+		  "code": "export const styles = { "card": "[color:red] [padding:8px]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("react-native -> unocss: carries a documented secondary react-native API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:8] [background-color:red]" };",
+		  "code": "export const styles = { "card": "[padding:8px] [background-color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("react-native -> unocss: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
+		    "code": "export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("react-native -> unocss: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		    "code": "export const styles = { "card": "text-brand [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("react-native -> unocss: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		  "code": "export const styles = { "card": "text-brand [padding:8px]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("react-native -> unocss: preserves malformed concrete react-native input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:8] [color:red]" };
+		  "code": "export const styles = { "card": "[color:red] [padding:8px]" };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

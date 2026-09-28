@@ -49,7 +49,7 @@ test("stitches -> styled-components: migrates concrete stitches syntax to styled
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "red" });",
+		export const card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("stitches -> styled-components: loads concrete theme and project context va
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("stitches -> styled-components: loads concrete theme and project context va
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("stitches -> styled-components: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("stitches -> styled-components: preserves malformed concrete stitches input
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "red" });
+		export const card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -50,7 +50,7 @@ test("treat -> mui: migrates concrete treat syntax to mui", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -95,7 +95,7 @@ test("treat -> mui: carries a documented secondary treat API explicitly", () => 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("treat -> mui: resolves concrete token values with project context", async 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("treat -> mui: preserves malformed concrete treat input", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "red" });
+		export const card = css.class({ "color": "red", "padding": 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

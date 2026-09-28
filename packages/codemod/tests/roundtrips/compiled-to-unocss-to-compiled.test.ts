@@ -49,7 +49,7 @@ test("compiled -> unocss -> compiled: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[padding:8] [color:red]";",
+		    "code": "export const card = "[color:red] [padding:8]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("compiled -> unocss -> compiled: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": "8", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[padding:8] [color:#2563eb]";",
+		      "code": "export const card = "[color:#2563eb] [padding:8]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,7 +270,7 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": "8", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -307,7 +307,7 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[padding:8] text-brand";",
+		      "code": "export const card = "text-brand [padding:8]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -343,7 +343,7 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": "8", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -394,7 +394,7 @@ test("compiled -> unocss -> compiled: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[padding:8] text-brand";",
+		    "code": "export const card = "text-brand [padding:8]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +430,7 @@ test("compiled -> unocss -> compiled: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": "8", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

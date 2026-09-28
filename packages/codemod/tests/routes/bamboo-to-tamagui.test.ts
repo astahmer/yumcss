@@ -91,7 +91,7 @@ test("bamboo -> tamagui: carries a documented secondary bamboo API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "4", display: "flex" });",
+		export const card = styled(View, { display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

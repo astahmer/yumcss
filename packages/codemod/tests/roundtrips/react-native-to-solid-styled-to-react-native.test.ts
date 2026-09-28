@@ -49,8 +49,8 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,10 +85,9 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
-		    "converted": 0,
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -107,24 +106,19 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "react-native has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -142,8 +136,8 @@ test("react-native -> solid-styled -> react-native: retains the documented secon
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "backgroundColor": "red" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "padding": "8px", "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,10 +172,9 @@ test("react-native -> solid-styled -> react-native: retains the documented secon
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "backgroundColor": "red" }) };",
-		    "converted": 0,
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -200,24 +193,19 @@ test("react-native -> solid-styled -> react-native: retains the documented secon
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "react-native has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -250,8 +238,8 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		      "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -286,10 +274,9 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
-		      "converted": 0,
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -308,31 +295,26 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "react-native has no host representation for solid",
-		          "kind": "host-framework",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		      "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -367,10 +349,9 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
-		      "converted": 0,
+		      "code": "import { StyleSheet } from "react-native";
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -389,24 +370,19 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "react-native has no host representation for solid",
-		          "kind": "host-framework",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -426,8 +402,8 @@ test("react-native -> solid-styled -> react-native: resolves token values across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -462,10 +438,9 @@ test("react-native -> solid-styled -> react-native: resolves token values across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
-		    "converted": 0,
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -484,24 +459,19 @@ test("react-native -> solid-styled -> react-native: resolves token values across
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "react-native has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

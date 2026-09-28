@@ -50,7 +50,7 @@ test("linaria -> style9 -> linaria: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "red" });",
+		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("linaria -> style9 -> linaria: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -215,7 +215,7 @@ test("linaria -> style9 -> linaria: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,7 +251,7 @@ test("linaria -> style9 -> linaria: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("linaria -> style9 -> linaria: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,7 +325,7 @@ test("linaria -> style9 -> linaria: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +377,7 @@ test("linaria -> style9 -> linaria: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -413,7 +413,7 @@ test("linaria -> style9 -> linaria: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

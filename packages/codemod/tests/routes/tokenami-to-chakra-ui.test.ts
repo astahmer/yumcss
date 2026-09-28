@@ -52,7 +52,7 @@ test("tokenami -> chakra-ui: migrates concrete tokenami syntax to chakra-ui", as
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("tokenami -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "#f97316" });",
+		export const card = defaultSystem.css({ color: "#f97316", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("tokenami -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("tokenami -> chakra-ui: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +273,7 @@ test("tokenami -> chakra-ui: preserves malformed concrete tokenami input", async
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "red" });
+		export const card = defaultSystem.css({ color: "red", gap: "4" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

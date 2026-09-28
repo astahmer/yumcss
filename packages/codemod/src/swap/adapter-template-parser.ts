@@ -36,9 +36,26 @@ function functionValueExpression(rawValue: string): string | undefined {
 	const annotated =
 		// The annotation must be arrow-free (`[^=>]*`); a function-typed return
 		// annotation needs a real type parser, so those stay residuals.
-		/^\(([\s\S]*?)\)\s*:\s*[^=>]*?\s*=>\s*([\s\S]*)$/.exec(expression);
-	if (annotated === null) return undefined;
-	return `(${annotated[1]}) => ${annotated[2]!.trim()}`;
+		/^(\([\s\S]*?\))\s*:\s*[^=>]*?\s*=>\s*([\s\S]*)$/u.exec(expression);
+	if (annotated !== null) {
+		const parameters = annotated[1];
+		const body = annotated[2];
+		if (parameters === undefined || body === undefined) return undefined;
+		return `${parameters} => ${body.trim()}`;
+	}
+	const parenthesized = /^(\([\s\S]*?\))\s*=>\s*([\s\S]*)$/u.exec(expression);
+	if (parenthesized !== null) {
+		const parameters = parenthesized[1];
+		const body = parenthesized[2];
+		if (parameters === undefined || body === undefined) return undefined;
+		return `${parameters} => ${body.trim()}`;
+	}
+	const singleParameter = /^([A-Za-z_$][\w$]*)\s*=>\s*([\s\S]*)$/u.exec(expression);
+	if (singleParameter === null) return undefined;
+	const parameter = singleParameter[1];
+	const body = singleParameter[2];
+	if (parameter === undefined || body === undefined) return undefined;
+	return `${parameter} => ${body.trim()}`;
 }
 
 /** Find a template's closing backtick without mistaking nested expression templates for it. */

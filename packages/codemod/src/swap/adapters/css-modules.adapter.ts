@@ -12,6 +12,7 @@ import {
 	hasComponentAttributeUse,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
+import { parseObjectLiteral } from "../parse.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -35,7 +36,52 @@ const baseAdapter = createStylesheetAdapter({
 });
 
 const unsupportedComponentHint =
-	"css-modules can emit only static React styled intrinsics without attrs or polymorphic as props";
+	"css-modules can emit only static React styled intrinsics with literal DOM attrs and without polymorphic as props";
+
+const globalDomAttributes = new Set([
+	"accessKey",
+	"autoCapitalize",
+	"classID",
+	"contentEditable",
+	"dir",
+	"draggable",
+	"enterKeyHint",
+	"hidden",
+	"id",
+	"lang",
+	"nonce",
+	"role",
+	"slot",
+	"spellCheck",
+	"tabIndex",
+	"title",
+	"translate",
+]);
+
+const staticDomAttrsExpression = (expression: string | undefined, tag: string): string | undefined => {
+	if (expression === undefined) return undefined;
+	const normalized = expression.trim();
+	if (!normalized.startsWith("{") || !normalized.endsWith("}")) return undefined;
+	const body = normalized.slice(1, -1);
+	if (body.trim() === "") return "({})";
+	const attributes = parseObjectLiteral(body);
+	if (attributes === null) return undefined;
+	if (
+		attributes.keys.some(({ key }) => {
+			if (key === "type") return tag !== "button" && tag !== "input";
+			if (key === "as" || key === "forwardedAs" || key === "className" || key === "style")
+				return true;
+			return (
+				key.startsWith("$") ||
+				(!globalDomAttributes.has(key) &&
+					!/^aria-[a-z0-9-]+$/u.test(key) &&
+					!/^data-[a-z0-9-]+$/u.test(key))
+			);
+		})
+	)
+		return undefined;
+	return `(${normalized})`;
+};
 
 const isPlainStyleProgram = (program: StyleProgram): boolean =>
 	program.rules.length === 1 &&
@@ -102,8 +148,12 @@ const componentUnsupportedReason = (
 		return "the source host is not verified as React";
 	if (subject === undefined || intrinsicTagForSubject(subject) === undefined)
 		return "the styled subject is not a verified intrinsic element";
-	if (componentAttrsExpressionForSubject(subject) !== undefined)
-		return "styled-components attrs semantics need a target-specific precedence projection";
+	const attrsExpression = componentAttrsExpressionForSubject(subject);
+	if (
+		attrsExpression !== undefined &&
+		staticDomAttrsExpression(attrsExpression, intrinsicTagForSubject(subject) ?? "") === undefined
+	)
+		return "attrs must be a literal object of supported DOM attributes without class, style, or polymorphic props";
 	if (program.residuals.length > 0) return "the style program already contains source residuals";
 	if ((program.themes?.length ?? 0) > 0)
 		return "theme-bound styles need a project theme projection";
@@ -174,7 +224,8 @@ const targetComponentRewrite = (
 		context.framework !== BuiltinHostFramework.React ||
 		context.file.endsWith(".tsx") === false ||
 		sourceHasParseErrors(context.file, context.source) ||
-		context.attrsExpression !== undefined ||
+		(context.attrsExpression !== undefined &&
+			staticDomAttrsExpression(context.attrsExpression, context.tag) === undefined) ||
 		!isPlainStyleProgram(context.program) ||
 		hasComponentAttributeUse({ source: context.source, file: context.file, binding: context.binding, attribute: "as" }) ||
 		hasComponentAttributeUse({ source: context.source, file: context.file, binding: context.binding, attribute: "forwardedAs" })
@@ -186,6 +237,7 @@ const targetComponentRewrite = (
 	if (classExpression === null)
 		return { code: context.code, residuals: [componentResidual(context.binding)] };
 	const styleBinding = classExpression[1];
+	const attrsExpression = staticDomAttrsExpression(context.attrsExpression, tag);
 	const escapedBinding = context.binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const escapedExpression = context.emittedExpression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const assignment = new RegExp(
@@ -199,10 +251,14 @@ const targetComponentRewrite = (
 	const componentRefBinding = `__pandwind${context.binding}ComponentRef`;
 	const componentPropsBinding = `__pandwind${context.binding}ComponentProps`;
 	const tagType = JSON.stringify(tag);
+	const forwardedProps =
+		attrsExpression === undefined
+			? `Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))`
+			: `Object.fromEntries([...Object.entries(props), ...Object.entries(${attrsExpression})].filter(([key]) => !key.startsWith("$")))`;
 	const replacement =
 		`${forwardRefBinding}<${componentRefBinding}<${tagType}>, ${componentPropsBinding}<${tagType}>>(` +
 		`({ className, ...props }, ref) => (` +
-		`<${tag} {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[${styleBinding}.root, className].filter(Boolean).join(" ")} />` +
+		`<${tag} {...${forwardedProps}} ref={ref} className={[${styleBinding}.root, className].filter(Boolean).join(" ")} />` +
 		`))`;
 	return {
 		code: `${context.code.slice(0, match.index)}${match[1]}${replacement}${context.code.slice(match.index + match[0].length)}`,

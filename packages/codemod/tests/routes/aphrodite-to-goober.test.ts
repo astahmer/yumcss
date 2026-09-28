@@ -49,7 +49,7 @@ test("aphrodite -> goober: migrates concrete aphrodite syntax to goober", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "red" }) };",
+		export const styles = { "card": css({ "color": "red", "padding": 8 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("aphrodite -> goober: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("aphrodite -> goober: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("aphrodite -> goober: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("aphrodite -> goober: preserves malformed concrete aphrodite input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const styles = { "card": css({ "padding": 8, "color": "red" }) };
+		export const styles = { "card": css({ "color": "red", "padding": 8 }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

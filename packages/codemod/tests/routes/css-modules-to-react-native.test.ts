@@ -165,7 +165,7 @@ test("css-modules -> react-native: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> react-native: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> react-native: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

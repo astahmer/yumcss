@@ -50,7 +50,7 @@ test("pandwind -> react-strict-dom: migrates concrete pandwind syntax to react-s
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "red" });",
+		export const card = css.create({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -159,7 +159,7 @@ test("pandwind -> react-strict-dom: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "#f97316" });",
+		export const card = css.create({ color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -196,7 +196,7 @@ test("pandwind -> react-strict-dom: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -245,7 +245,7 @@ test("pandwind -> react-strict-dom: resolves concrete token values with project 
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -291,7 +291,7 @@ test("pandwind -> react-strict-dom: preserves malformed concrete pandwind input"
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "red" });
+		export const card = css.create({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -31,6 +31,7 @@ function projectStaticSubjectToClass(
 		policy === undefined ||
 		policy.handlesHostRewrites !== true ||
 		policy.hostRepresentation !== StyleHostRepresentationKind.Class ||
+		policy.standaloneHostRepresentation === StyleHostRepresentationKind.Component ||
 		policy.rewriteComponent !== undefined
 	)
 		return policy;
@@ -91,7 +92,10 @@ function projectStaticSubjectToClass(
 				};
 			}
 
-			return rewriter.rewrite({
+			if (context.code === context.source)
+				return { code: context.code, imports: [], residuals: [] };
+
+			const rewritten = rewriter.rewrite({
 				// Component rewrites run after the style expression replacement;
 				// use the current code so nested edits cannot target stale offsets.
 				source: context.code,
@@ -103,6 +107,27 @@ function projectStaticSubjectToClass(
 				// host site instead of duplicating the emitted style expression.
 				classExpression: context.binding,
 			});
+			if (rewritten.residuals.length === 0 || rewriter.rewriteDeclaration === undefined)
+				return rewritten;
+
+			const declaration = rewriter.rewriteDeclaration({
+				source: context.code,
+				file: context.file,
+				binding: context.binding,
+				tag: context.tag,
+				framework: context.framework,
+				classExpression: context.emittedExpression,
+			});
+			return {
+				code: declaration.code,
+				imports: [
+					...(declaration.imports ?? []),
+					...(declaration.needsCx
+						? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+						: []),
+				],
+				residuals: declaration.residuals,
+			};
 		},
 	};
 }

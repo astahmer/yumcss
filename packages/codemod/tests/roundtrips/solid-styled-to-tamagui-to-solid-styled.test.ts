@@ -49,10 +49,9 @@ test("solid-styled -> tamagui -> solid-styled: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "red" }), props.class)} />;",
+		    "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,12 +83,11 @@ test("solid-styled -> tamagui -> solid-styled: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View } from "@tamagui/core";
-		import { styled } from "solid-styled-components";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "red" }), props.class)} />;",
-		    "converted": 1,
+		    "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -107,19 +105,24 @@ test("solid-styled -> tamagui -> solid-styled: preserves an actionable concrete 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -137,10 +140,9 @@ test("solid-styled -> tamagui -> solid-styled: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "red" }), props.class)} />;",
+		    "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,12 +174,11 @@ test("solid-styled -> tamagui -> solid-styled: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View } from "@tamagui/core";
-		import { styled } from "solid-styled-components";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "red" }), props.class)} />;",
-		    "converted": 1,
+		    "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -195,19 +196,24 @@ test("solid-styled -> tamagui -> solid-styled: retains the documented secondary 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -240,10 +246,9 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.class)} />;",
+		      "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,12 +280,11 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { View } from "@tamagui/core";
-		import { styled } from "solid-styled-components";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
-		      "converted": 1,
+		      "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -298,28 +302,32 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "target adapter produced no representable output",
+		          "kind": "emission-empty",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.class)} />;",
+		      "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,12 +359,11 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		import { View } from "@tamagui/core";
-		import { styled } from "solid-styled-components";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
-		      "converted": 1,
+		      "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -374,19 +381,24 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "target adapter produced no representable output",
+		          "kind": "emission-empty",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -406,10 +418,9 @@ test("solid-styled -> tamagui -> solid-styled: resolves token values across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.class)} />;",
+		    "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -441,12 +452,11 @@ test("solid-styled -> tamagui -> solid-styled: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View } from "@tamagui/core";
-		import { styled } from "solid-styled-components";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(styled.div({ "padding": "1rem", "color": "#2563eb" }), props.class)} />;",
-		    "converted": 1,
+		    "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -464,19 +474,24 @@ test("solid-styled -> tamagui -> solid-styled: resolves token values across both
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

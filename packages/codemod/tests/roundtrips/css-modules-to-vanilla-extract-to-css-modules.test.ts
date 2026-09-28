@@ -207,7 +207,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves concrete theme an
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		/* /* pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves concrete theme an
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		/* /* pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("css-modules -> vanilla-extract -> css-modules: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -411,7 +411,7 @@ test("css-modules -> vanilla-extract -> css-modules: resolves token values acros
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		/* /* pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

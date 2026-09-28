@@ -50,7 +50,7 @@ test("react-native -> tokenami -> react-native: preserves an actionable concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "red" }) };",
+		export const styles = { "card": css({ "--color": "red", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,10 +83,9 @@ test("react-native -> tokenami -> react-native: preserves an actionable concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> react-native | parse-residual: configuration | available: named-map, residual)
-		export const styles = { "card": css({ "--padding": 8, "--color": "red" }) };",
-		    "converted": 0,
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -95,28 +94,29 @@ test("react-native -> tokenami -> react-native: preserves an actionable concrete
 		          "react-native-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
-		        "kind": "configuration",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -135,7 +135,7 @@ test("react-native -> tokenami -> react-native: retains the documented secondary
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--background-color": "red" }) };",
+		export const styles = { "card": css({ "--padding": "8px", "--background-color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,10 +168,9 @@ test("react-native -> tokenami -> react-native: retains the documented secondary
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> react-native | parse-residual: configuration | available: named-map, residual)
-		export const styles = { "card": css({ "--padding": 8, "--background-color": "red" }) };",
-		    "converted": 0,
+		    "code": "import { StyleSheet } from "react-native";
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -180,28 +179,29 @@ test("react-native -> tokenami -> react-native: retains the documented secondary
 		          "react-native-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
-		        "kind": "configuration",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -235,7 +235,7 @@ test("react-native -> tokenami -> react-native: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "#2563eb" }) };",
+		export const styles = { "card": css({ "--color": "#2563eb", "--padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("react-native -> tokenami -> react-native: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -308,7 +308,7 @@ test("react-native -> tokenami -> react-native: preserves concrete theme and pro
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "var(--color_brand)" }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -342,7 +342,7 @@ test("react-native -> tokenami -> react-native: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -396,7 +396,7 @@ test("react-native -> tokenami -> react-native: resolves token values across bot
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "var(--color_brand)" }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +430,7 @@ test("react-native -> tokenami -> react-native: resolves token values across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

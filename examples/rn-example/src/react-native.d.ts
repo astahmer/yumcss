@@ -16,16 +16,21 @@ declare module "react-dom/client" {
 }
 
 declare module "react-native" {
-	import type { ReactNode } from "react";
+	import type { ForwardRefExoticComponent, ReactNode, RefAttributes } from "react";
 
 	export type StyleProp = unknown | Array<unknown>;
 
 	export interface ViewProps {
 		style?: StyleProp;
 		testID?: string;
+		accessibilityLabel?: string;
 		children?: ReactNode;
 		onClick?: () => void;
 	}
+
+	export const StyleSheet: {
+		create<Styles extends Record<string, unknown>>(styles: Styles): Styles;
+	};
 
 	export interface TextProps {
 		style?: StyleProp;
@@ -40,7 +45,7 @@ declare module "react-native" {
 		children?: ReactNode;
 	}
 
-	export function View(props: ViewProps): JSX.Element;
+	export const View: ForwardRefExoticComponent<ViewProps & RefAttributes<HTMLElement>>;
 	export function Text(props: TextProps): JSX.Element;
 	export function Pressable(props: PressableProps): JSX.Element;
 }

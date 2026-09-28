@@ -49,7 +49,7 @@ test("stitches -> aphrodite: migrates concrete stitches syntax to aphrodite", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("stitches -> aphrodite: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("stitches -> aphrodite: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("stitches -> aphrodite: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("stitches -> aphrodite: preserves malformed concrete stitches input", () =>
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });
+		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

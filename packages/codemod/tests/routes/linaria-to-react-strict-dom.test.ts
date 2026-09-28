@@ -49,7 +49,7 @@ test("linaria -> react-strict-dom: migrates concrete linaria syntax to react-str
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });",
+		export const card = css.create({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -125,7 +125,7 @@ test("linaria -> react-strict-dom: carries a documented secondary linaria API ex
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "react-strict-dom has no host representation for the detected framework",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -154,7 +154,7 @@ test("linaria -> react-strict-dom: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +190,7 @@ test("linaria -> react-strict-dom: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("linaria -> react-strict-dom: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,7 +283,7 @@ test("linaria -> react-strict-dom: preserves malformed concrete linaria input", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });
+		export const card = css.create({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "generatedFiles": [],

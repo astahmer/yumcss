@@ -51,7 +51,7 @@ test("mantine -> goober -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
-		export const App = () => css({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("mantine -> goober -> mantine: preserves an actionable concrete round trip"
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
 		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => css({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +228,7 @@ test("mantine -> goober -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
-		export const App = () => css({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +267,7 @@ test("mantine -> goober -> mantine: preserves concrete theme and project context
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
 		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => css({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -317,7 +317,7 @@ test("mantine -> goober -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
-		export const App = () => css({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -356,7 +356,7 @@ test("mantine -> goober -> mantine: preserves concrete theme and project context
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
 		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => css({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -420,7 +420,7 @@ test("mantine -> goober -> mantine: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
-		export const App = () => css({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -459,7 +459,7 @@ test("mantine -> goober -> mantine: resolves token values across both concrete l
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
 		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => css({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

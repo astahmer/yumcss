@@ -51,7 +51,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves an actionable concrete
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves an actionable concrete
 		    "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -127,7 +127,7 @@ test("solid-styled -> tailwind -> solid-styled: retains the documented secondary
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -165,7 +165,7 @@ test("solid-styled -> tailwind -> solid-styled: retains the documented secondary
 		    "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -218,7 +218,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:#2563eb]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:#2563eb] [padding:1rem]", props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		      "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:#2563eb]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:#2563eb] [padding:1rem]", props.class)} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -282,7 +282,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -320,7 +320,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		      "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -360,7 +360,7 @@ test("solid-styled -> tailwind -> solid-styled: resolves token values across bot
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -398,7 +398,7 @@ test("solid-styled -> tailwind -> solid-styled: resolves token values across bot
 		    "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

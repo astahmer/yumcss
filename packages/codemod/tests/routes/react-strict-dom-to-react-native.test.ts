@@ -50,7 +50,7 @@ test("react-strict-dom -> react-native: migrates concrete react-strict-dom synta
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
+		const styles = StyleSheet.create({ "card": { "color": "red", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -154,7 +154,7 @@ test("react-strict-dom -> react-native: loads concrete theme and project context
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -193,7 +193,7 @@ test("react-strict-dom -> react-native: loads concrete theme and project context
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +244,7 @@ test("react-strict-dom -> react-native: resolves concrete token values with proj
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -292,7 +292,7 @@ test("react-strict-dom -> react-native: preserves malformed concrete react-stric
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
+		const styles = StyleSheet.create({ "card": { "color": "red", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

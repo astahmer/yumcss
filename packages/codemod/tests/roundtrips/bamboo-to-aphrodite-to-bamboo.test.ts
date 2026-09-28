@@ -134,7 +134,7 @@ test("bamboo -> aphrodite -> bamboo: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "gap": "4", "display": "flex" });",
+		export const card = StyleSheet.create({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("bamboo -> aphrodite -> bamboo: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

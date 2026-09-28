@@ -50,7 +50,7 @@ test("tokenami -> styled-components -> tokenami: preserves an actionable concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "red" });",
+		export const card = styled.div({ color: "red", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("tokenami -> styled-components -> tokenami: preserves an actionable concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--gap": "1rem", "--color": "red" }), propsStyle)} />; };",
+		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--gap": "1rem" }), propsStyle)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -207,7 +207,7 @@ test("tokenami -> styled-components -> tokenami: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "#f97316" });",
+		export const card = styled.div({ color: "#f97316", gap: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -241,7 +241,7 @@ test("tokenami -> styled-components -> tokenami: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--gap": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "var(--color_brand)", "--gap": "1rem" }), propsStyle)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -277,7 +277,7 @@ test("tokenami -> styled-components -> tokenami: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", gap: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("tokenami -> styled-components -> tokenami: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--gap": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "var(--color_brand)", "--gap": "1rem" }), propsStyle)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -361,7 +361,7 @@ test("tokenami -> styled-components -> tokenami: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -395,7 +395,7 @@ test("tokenami -> styled-components -> tokenami: resolves token values across bo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--gap": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "var(--color_brand)", "--gap": "1rem" }), propsStyle)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

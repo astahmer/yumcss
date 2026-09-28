@@ -124,7 +124,7 @@ test("next-yak -> mantine -> next-yak: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
+		    "code": "export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -158,7 +158,7 @@ test("next-yak -> mantine -> next-yak: retains the documented secondary API with
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: dynamic | available: named-map, residual)
-		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
+		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

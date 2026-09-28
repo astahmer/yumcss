@@ -50,7 +50,7 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "red" });",
+		export const card = styled(View, { color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -82,12 +82,10 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
-		import { createCx } from "pandwind/cx";
-		import { css } from "@compiled/react";
-		const cx = createCx();
-		export const card = (props) => <View {...props} className={cx(css({ "padding": 8, "color": "red" }), props.className)} />;",
-		    "converted": 1,
+		    "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> compiled | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const card = styled(View, { color: "red", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -105,19 +103,19 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled(View)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -212,7 +210,7 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -244,12 +242,10 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "@tamagui/core";
-		import { createCx } from "pandwind/cx";
-		import { css } from "@compiled/react";
-		const cx = createCx();
-		export const card = (props) => <View {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
-		      "converted": 1,
+		      "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> compiled | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -267,26 +263,26 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "components: component subject: styled(View)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -318,12 +314,10 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "@tamagui/core";
-		import { createCx } from "pandwind/cx";
-		import { css } from "@compiled/react";
-		const cx = createCx();
-		export const card = (props) => <View {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
-		      "converted": 1,
+		      "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> compiled | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -341,19 +335,19 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "components: component subject: styled(View)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -374,7 +368,7 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -406,12 +400,10 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
-		import { createCx } from "pandwind/cx";
-		import { css } from "@compiled/react";
-		const cx = createCx();
-		export const card = (props) => <View {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
-		    "converted": 1,
+		    "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> compiled | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -429,19 +421,19 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled(View)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

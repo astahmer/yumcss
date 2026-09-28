@@ -133,42 +133,6 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(declarations).toMatchInlineSnapshot(`
 			[
 			  {
-			    "conditions": [
-			      {
-			        "kind": "container",
-			        "name": "md",
-			        "raw": "md",
-			        "value": "@container (min-width: 400px)",
-			      },
-			    ],
-			    "property": "padding",
-			    "value": {
-			      "kind": "literal",
-			      "value": "calc(2 * 5px)",
-			    },
-			  },
-			  {
-			    "conditions": [
-			      {
-			        "kind": "media",
-			        "name": "parent-hover",
-			        "raw": "parent-hover",
-			        "value": "@media (hover: hover) and (pointer: fine)",
-			      },
-			      {
-			        "kind": "selector",
-			        "name": "parent-hover",
-			        "raw": "parent-hover",
-			        "value": ".parent:hover > &",
-			      },
-			    ],
-			    "property": "color",
-			    "value": {
-			      "kind": "literal",
-			      "value": "blue",
-			    },
-			  },
-			  {
 			    "conditions": [],
 			    "property": "width",
 			    "value": {
@@ -197,6 +161,42 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			    "value": {
 			      "kind": "literal",
 			      "value": "red",
+			    },
+			  },
+			  {
+			    "conditions": [
+			      {
+			        "kind": "media",
+			        "name": "parent-hover",
+			        "raw": "parent-hover",
+			        "value": "@media (hover: hover) and (pointer: fine)",
+			      },
+			      {
+			        "kind": "selector",
+			        "name": "parent-hover",
+			        "raw": "parent-hover",
+			        "value": ".parent:hover > &",
+			      },
+			    ],
+			    "property": "color",
+			    "value": {
+			      "kind": "literal",
+			      "value": "blue",
+			    },
+			  },
+			  {
+			    "conditions": [
+			      {
+			        "kind": "container",
+			        "name": "md",
+			        "raw": "md",
+			        "value": "@container (min-width: 400px)",
+			      },
+			    ],
+			    "property": "padding",
+			    "value": {
+			      "kind": "literal",
+			      "value": "calc(2 * 5px)",
 			    },
 			  },
 			]
@@ -465,6 +465,14 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			  ],
 			  "declarations": [
 			    {
+			      "conditions": [],
+			      "property": "color",
+			      "value": {
+			        "kind": "literal",
+			        "value": "red",
+			      },
+			    },
+			    {
 			      "conditions": [
 			        {
 			          "kind": "named",
@@ -481,20 +489,20 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			        "value": "2",
 			      },
 			    },
-			    {
-			      "conditions": [],
-			      "property": "color",
-			      "value": {
-			        "kind": "literal",
-			        "value": "red",
-			      },
-			    },
 			  ],
 			  "rules": [
 			    {
 			      "children": [],
 			      "conditions": [],
 			      "declarations": [
+			        {
+			          "conditions": [],
+			          "property": "color",
+			          "value": {
+			            "kind": "literal",
+			            "value": "red",
+			          },
+			        },
 			        {
 			          "conditions": [
 			            {
@@ -510,14 +518,6 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			          "value": {
 			            "kind": "literal",
 			            "value": "2",
-			          },
-			        },
-			        {
-			          "conditions": [],
-			          "property": "color",
-			          "value": {
-			            "kind": "literal",
-			            "value": "red",
 			          },
 			        },
 			      ],

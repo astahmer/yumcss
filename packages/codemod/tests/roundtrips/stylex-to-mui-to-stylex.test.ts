@@ -51,7 +51,7 @@ test("stylex -> mui -> stylex: preserves an actionable concrete round trip", () 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("stylex -> mui -> stylex: preserves an actionable concrete round trip", () 
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -192,7 +192,7 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -228,7 +228,7 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -243,7 +243,7 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,7 +279,7 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -308,7 +308,7 @@ test("stylex -> mui -> stylex: resolves token values across both concrete legs",
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -344,7 +344,7 @@ test("stylex -> mui -> stylex: resolves token values across both concrete legs",
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", color: "primary.main" }) };",
+		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

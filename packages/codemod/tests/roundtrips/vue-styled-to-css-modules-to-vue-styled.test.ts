@@ -50,7 +50,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves an actionable concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -58,39 +58,29 @@ test("vue-styled -> css-modules -> vue-styled: preserves an actionable concrete 
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the React wrapper requires a TSX source module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -101,7 +91,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -128,7 +118,7 @@ test("vue-styled -> css-modules -> vue-styled: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -136,39 +126,29 @@ test("vue-styled -> css-modules -> vue-styled: retains the documented secondary 
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the React wrapper requires a TSX source module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -179,7 +159,7 @@ test("vue-styled -> css-modules -> vue-styled: retains the documented secondary 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -221,7 +201,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -229,39 +209,29 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
+		          "hint": "components: component subject: styled.div; framework-semantics: vue",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "hint": "the React wrapper requires a TSX source module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -272,7 +242,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +257,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -295,39 +265,29 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
+		          "hint": "components: component subject: styled.div; framework-semantics: vue",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		          "hint": "the React wrapper requires a TSX source module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -338,7 +298,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -367,7 +327,7 @@ test("vue-styled -> css-modules -> vue-styled: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -375,39 +335,29 @@ test("vue-styled -> css-modules -> vue-styled: resolves token values across both
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the React wrapper requires a TSX source module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -418,7 +368,7 @@ test("vue-styled -> css-modules -> vue-styled: resolves token values across both
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

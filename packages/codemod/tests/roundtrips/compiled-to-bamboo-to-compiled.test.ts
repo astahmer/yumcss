@@ -50,7 +50,7 @@ test("compiled -> bamboo -> compiled: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("compiled -> bamboo -> compiled: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "red" });",
+		export const card = css({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("compiled -> bamboo -> compiled: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +267,7 @@ test("compiled -> bamboo -> compiled: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("compiled -> bamboo -> compiled: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("compiled -> bamboo -> compiled: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("compiled -> bamboo -> compiled: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -425,7 +425,7 @@ test("compiled -> bamboo -> compiled: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -49,7 +49,7 @@ test("stylex -> styled-components: migrates concrete stylex syntax to styled-com
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("stylex -> styled-components: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("stylex -> styled-components: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("stylex -> styled-components: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("stylex -> styled-components: preserves malformed concrete stylex input", (
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "8px", color: "red" }) };
+		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

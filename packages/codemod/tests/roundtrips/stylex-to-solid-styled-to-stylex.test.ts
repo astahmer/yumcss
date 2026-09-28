@@ -49,8 +49,8 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "red" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,45 +84,15 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "red" }) };",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylex has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -141,8 +111,8 @@ test("stylex -> solid-styled -> stylex: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "color": "red" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,45 +146,15 @@ test("stylex -> solid-styled -> stylex: retains the documented secondary API wit
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "color": "red" }) };",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylex has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -248,8 +188,8 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		      "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,53 +223,23 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylex has no host representation for solid",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		      "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -363,45 +273,15 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "stylex has no host representation for solid",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -422,8 +302,8 @@ test("stylex -> solid-styled -> stylex: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -457,45 +337,15 @@ test("stylex -> solid-styled -> stylex: resolves token values across both concre
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "stylex has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

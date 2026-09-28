@@ -92,7 +92,7 @@ test("bamboo -> panda: carries a documented secondary bamboo API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ gap: "4", display: "flex" });",
+		export const card = sourceCss({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

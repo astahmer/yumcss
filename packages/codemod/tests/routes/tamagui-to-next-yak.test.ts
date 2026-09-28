@@ -50,7 +50,7 @@ test("tamagui -> next-yak: migrates concrete tamagui syntax to next-yak", () => 
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`padding: $4; color: red;\`;
+		export const Card = css\`color: red; padding: $4;\`;
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +147,7 @@ test("tamagui -> next-yak: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`padding: $4; color: #2563eb;\`;
+		export const Card = css\`color: #2563eb; padding: $4;\`;
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("tamagui -> next-yak: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`padding: $4; color: #2563eb;\`;
+		export const Card = css\`color: #2563eb; padding: $4;\`;
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +231,7 @@ test("tamagui -> next-yak: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`padding: $4; color: #2563eb;\`;
+		export const Card = css\`color: #2563eb; padding: $4;\`;
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +276,7 @@ test("tamagui -> next-yak: preserves malformed concrete tamagui input", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`padding: $4; color: red;\`;
+		export const Card = css\`color: red; padding: $4;\`;
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

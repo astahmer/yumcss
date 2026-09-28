@@ -51,7 +51,7 @@ test("react-strict-dom -> style9 -> react-strict-dom: preserves an actionable co
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "red" }) };
+		const styles = { "card": style9.create({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +89,7 @@ test("react-strict-dom -> style9 -> react-strict-dom: preserves an actionable co
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -220,7 +220,7 @@ test("react-strict-dom -> style9 -> react-strict-dom: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -258,7 +258,7 @@ test("react-strict-dom -> style9 -> react-strict-dom: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +298,7 @@ test("react-strict-dom -> style9 -> react-strict-dom: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -336,7 +336,7 @@ test("react-strict-dom -> style9 -> react-strict-dom: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -390,7 +390,7 @@ test("react-strict-dom -> style9 -> react-strict-dom: resolves token values acro
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -428,7 +428,7 @@ test("react-strict-dom -> style9 -> react-strict-dom: resolves token values acro
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

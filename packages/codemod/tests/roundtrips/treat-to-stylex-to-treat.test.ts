@@ -51,7 +51,7 @@ test("treat -> stylex -> treat: preserves an actionable concrete round trip", ()
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("treat -> stylex -> treat: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = { "style": style({ "padding": "8px", "color": "red" }) }.style;",
+		export const card = { "style": style({ "color": "red", "padding": "8px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -139,7 +139,7 @@ test("treat -> stylex -> treat: retains the documented secondary API without sil
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,7 +176,7 @@ test("treat -> stylex -> treat: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = { "style": style({ "padding": "8px", "color": "red" }) }.style;",
+		export const card = { "style": style({ "color": "red", "padding": "8px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,7 +242,7 @@ test("treat -> stylex -> treat: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,7 +279,7 @@ test("treat -> stylex -> treat: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = { "style": style({ "padding": "8px", "color": "#2563eb" }) }.style;",
+		export const card = { "style": style({ "color": "#2563eb", "padding": "8px" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -318,7 +318,7 @@ test("treat -> stylex -> treat: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -355,7 +355,7 @@ test("treat -> stylex -> treat: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = { "style": style({ "padding": "8px", "color": "#2563eb" }) }.style;",
+		export const card = { "style": style({ "color": "#2563eb", "padding": "8px" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -408,7 +408,7 @@ test("treat -> stylex -> treat: resolves token values across both concrete legs"
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -445,7 +445,7 @@ test("treat -> stylex -> treat: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = { "style": style({ "padding": "8px", "color": "#2563eb" }) }.style;",
+		export const card = { "style": style({ "color": "#2563eb", "padding": "8px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

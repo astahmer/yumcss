@@ -51,7 +51,7 @@ test("tamagui -> goober -> tamagui: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { css } from "goober";
-		export const Card = css({ "padding": "$4", "color": "red" });
+		export const Card = css({ "color": "red", "padding": "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +89,8 @@ test("tamagui -> goober -> tamagui: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "red" });
+		const __CardTamagui = styled(View, { color: "red", padding: "$4" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -221,7 +222,7 @@ test("tamagui -> goober -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { css } from "goober";
-		export const Card = css({ "padding": "$4", "color": "#2563eb" });
+		export const Card = css({ "color": "#2563eb", "padding": "$4" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -259,7 +260,8 @@ test("tamagui -> goober -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -296,7 +298,7 @@ test("tamagui -> goober -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { css } from "goober";
-		export const Card = css({ "padding": "$4", "color": "#2563eb" });
+		export const Card = css({ "color": "#2563eb", "padding": "$4" });
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -334,7 +336,8 @@ test("tamagui -> goober -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -385,7 +388,7 @@ test("tamagui -> goober -> tamagui: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { css } from "goober";
-		export const Card = css({ "padding": "$4", "color": "#2563eb" });
+		export const Card = css({ "color": "#2563eb", "padding": "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,7 +426,8 @@ test("tamagui -> goober -> tamagui: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

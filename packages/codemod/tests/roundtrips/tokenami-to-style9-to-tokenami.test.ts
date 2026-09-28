@@ -50,7 +50,7 @@ test("tokenami -> style9 -> tokenami: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "gap": "1rem", "color": "red" });",
+		export const card = style9.create({ "color": "red", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("tokenami -> style9 -> tokenami: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "red" });",
+		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -211,7 +211,7 @@ test("tokenami -> style9 -> tokenami: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "gap": "1rem", "color": "#f97316" });",
+		export const card = style9.create({ "color": "#f97316", "gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -248,7 +248,7 @@ test("tokenami -> style9 -> tokenami: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,7 +284,7 @@ test("tokenami -> style9 -> tokenami: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "gap": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -321,7 +321,7 @@ test("tokenami -> style9 -> tokenami: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -371,7 +371,7 @@ test("tokenami -> style9 -> tokenami: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "gap": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -408,7 +408,7 @@ test("tokenami -> style9 -> tokenami: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -50,7 +50,7 @@ test("mui -> styled-components -> mui: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "red" });",
+		export const App = () => styled.div({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("mui -> styled-components -> mui: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const App = () => styled("div")({ padding: "16px", color: "red" });",
+		export const App = () => styled("div")({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -131,9 +131,10 @@ test("mui -> styled-components -> mui: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: 8, color: "red" });",
-		    "converted": 1,
+		    "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> styled-components | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -149,24 +150,33 @@ test("mui -> styled-components -> mui: retains the documented secondary API with
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: 8, color: "red" });",
+		// pandwind:migrate-skip (route: mui -> styled-components | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +238,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "#f97316" });",
+		export const App = () => styled.div({ color: "#f97316", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -262,7 +272,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
+		export const App = () => styled("div")({ color: "primary.main", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -298,7 +308,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -332,7 +342,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
+		export const App = () => styled("div")({ color: "primary.main", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +392,7 @@ test("mui -> styled-components -> mui: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "16px", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -416,7 +426,7 @@ test("mui -> styled-components -> mui: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
+		export const App = () => styled("div")({ color: "primary.main", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

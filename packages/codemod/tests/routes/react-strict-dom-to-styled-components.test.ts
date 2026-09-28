@@ -50,7 +50,7 @@ test("react-strict-dom -> styled-components: migrates concrete react-strict-dom 
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "red" }) };
+		const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +147,7 @@ test("react-strict-dom -> styled-components: loads concrete theme and project co
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("react-strict-dom -> styled-components: loads concrete theme and project co
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +231,7 @@ test("react-strict-dom -> styled-components: resolves concrete token values with
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +276,7 @@ test("react-strict-dom -> styled-components: preserves malformed concrete react-
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "red" }) };
+		const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

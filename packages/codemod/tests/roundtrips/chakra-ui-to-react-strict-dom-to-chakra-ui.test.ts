@@ -78,7 +78,7 @@ test("chakra-ui -> react-strict-dom -> chakra-ui: preserves an actionable concre
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -221,7 +221,7 @@ test("chakra-ui -> react-strict-dom -> chakra-ui: preserves concrete theme and p
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -273,7 +273,7 @@ test("chakra-ui -> react-strict-dom -> chakra-ui: preserves concrete theme and p
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -339,7 +339,7 @@ test("chakra-ui -> react-strict-dom -> chakra-ui: resolves token values across b
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

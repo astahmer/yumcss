@@ -49,14 +49,13 @@ test("react-native -> stylex: migrates concrete react-native syntax to stylex", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });",
+		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -102,7 +101,6 @@ test("react-native -> stylex: carries a documented secondary react-native API ex
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -150,14 +148,13 @@ test("react-native -> stylex: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -187,14 +184,13 @@ test("react-native -> stylex: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -236,14 +232,13 @@ test("react-native -> stylex: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -282,7 +277,7 @@ test("react-native -> stylex: preserves malformed concrete react-native input", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });
+		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -290,7 +285,6 @@ test("react-native -> stylex: preserves malformed concrete react-native input", 
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",

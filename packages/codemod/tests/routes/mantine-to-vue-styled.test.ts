@@ -50,7 +50,7 @@ test("mantine -> vue-styled: migrates concrete mantine syntax to vue-styled", ()
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div\`color: blue; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("mantine -> vue-styled: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div\`color: #f97316; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,7 +187,7 @@ test("mantine -> vue-styled: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div\`color: #2563eb; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("mantine -> vue-styled: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div\`color: #2563eb; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("mantine -> vue-styled: preserves malformed concrete mantine input", () => 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import styled from "vue-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });
+		export const App = () => styled.div\`color: blue; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

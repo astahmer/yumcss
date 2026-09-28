@@ -50,7 +50,7 @@ test("stylex -> jss -> stylex: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: "8px", color: "red" } });",
+		export const styles = createUseStyles({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("stylex -> jss -> stylex: preserves an actionable concrete round trip", () 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "red" } });",
+		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("stylex -> jss -> stylex: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("stylex -> jss -> stylex: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("stylex -> jss -> stylex: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("stylex -> jss -> stylex: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,7 +399,7 @@ test("stylex -> jss -> stylex: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("stylex -> jss -> stylex: resolves token values across both concrete legs",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = stylex.create({ card: { padding: "8px", color: "#2563eb" } });",
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

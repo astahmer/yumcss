@@ -49,7 +49,7 @@ test("emotion -> react-native: migrates concrete emotion syntax to react-native"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -95,7 +95,7 @@ test("emotion -> react-native: carries a documented secondary emotion API explic
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -150,7 +150,7 @@ test("emotion -> react-native: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,7 +187,7 @@ test("emotion -> react-native: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("emotion -> react-native: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -282,7 +282,7 @@ test("emotion -> react-native: preserves malformed concrete emotion input", () =
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "red" });
+		export const card = StyleSheet.create({ "color": "red", "padding": 16 });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,
 		  "generatedFiles": [],

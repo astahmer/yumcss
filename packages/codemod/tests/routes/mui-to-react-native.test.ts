@@ -49,7 +49,7 @@ test("mui -> react-native: migrates concrete mui syntax to react-native", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -95,7 +95,7 @@ test("mui -> react-native: carries a documented secondary mui API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const Card = StyleSheet.create({ "padding": 8, "color": "red" });",
+		export const Card = StyleSheet.create({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("mui -> react-native: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "#f97316" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#f97316", "padding": 16 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("mui -> react-native: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("mui -> react-native: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,7 +281,7 @@ test("mui -> react-native: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style}/>;
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

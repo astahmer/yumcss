@@ -114,7 +114,7 @@ test("bamboo -> mui -> bamboo: retains the documented secondary API without sile
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "gap": "4", "display": "flex" });",
+		export const card = css.class({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -150,7 +150,7 @@ test("bamboo -> mui -> bamboo: retains the documented secondary API without sile
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "gap": "4", "display": "flex" });",
+		export const card = css.class({ "display": "flex", "gap": "4" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

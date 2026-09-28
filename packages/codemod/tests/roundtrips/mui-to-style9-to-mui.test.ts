@@ -51,7 +51,7 @@ test("mui -> style9 -> mui: preserves an actionable concrete round trip", () => 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("mui -> style9 -> mui: preserves an actionable concrete round trip", () => 
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
 		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("mui -> style9 -> mui: retains the documented secondary API without silent 
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const Card = style9.create({ "padding": 8, "color": "red" });",
+		export const Card = style9.create({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +174,7 @@ test("mui -> style9 -> mui: retains the documented secondary API without silent 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("mui -> style9 -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#f97316", "padding": "16px" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,7 +276,7 @@ test("mui -> style9 -> mui: preserves concrete theme and project context variant
 		      "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
 		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#f97316", "padding": "16px" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,7 +313,7 @@ test("mui -> style9 -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +351,7 @@ test("mui -> style9 -> mui: preserves concrete theme and project context variant
 		      "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
 		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -402,7 +402,7 @@ test("mui -> style9 -> mui: resolves token values across both concrete legs", as
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -440,7 +440,7 @@ test("mui -> style9 -> mui: resolves token values across both concrete legs", as
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
 		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

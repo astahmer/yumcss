@@ -124,7 +124,7 @@ test("linaria -> css-modules: carries a documented secondary linaria API explici
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "hint": "the React wrapper requires a TSX source module",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

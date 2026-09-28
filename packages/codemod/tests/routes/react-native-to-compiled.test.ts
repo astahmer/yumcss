@@ -49,7 +49,7 @@ test("react-native -> compiled: migrates concrete react-native syntax to compile
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": 8, "color": "red" }) };",
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("react-native -> compiled: carries a documented secondary react-native API 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": 8, "backgroundColor": "red" }) };",
+		export const styles = { "card": css({ "padding": "8px", "backgroundColor": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("react-native -> compiled: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("react-native -> compiled: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("react-native -> compiled: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("react-native -> compiled: preserves malformed concrete react-native input"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": 8, "color": "red" }) };
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

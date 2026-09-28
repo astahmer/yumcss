@@ -51,7 +51,7 @@ test("fela -> vue-styled: migrates concrete fela syntax to vue-styled", () => {
 		  "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "red" });",
+		export const card = styled.div\`color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,7 +96,7 @@ test("fela -> vue-styled: carries a documented secondary fela API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "color": "red" });",
+		export const Card = styled.button\`color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -152,7 +152,7 @@ test("fela -> vue-styled: loads concrete theme and project context variants", as
 		    "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +190,7 @@ test("fela -> vue-styled: loads concrete theme and project context variants", as
 		    "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -240,7 +240,7 @@ test("fela -> vue-styled: resolves concrete token values with project context", 
 		  "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -287,7 +287,7 @@ test("fela -> vue-styled: preserves malformed concrete fela input", () => {
 		  "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "red" });
+		export const card = styled.div\`color: red;\`;
 		const unfinished = { /* unfinished fela */",
 		  "converted": 1,
 		  "generatedFiles": [],

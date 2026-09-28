@@ -51,8 +51,8 @@ test("tamagui -> pandwind: migrates concrete tamagui syntax to pandwind", () => 
 		  "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "red" });
-		export const App = () => <View className={Card} />;",
+		export const Card = css.class({ color: "red", padding: "$4" });
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,8 +149,8 @@ test("tamagui -> pandwind: loads concrete theme and project context variants", a
 		    "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
+		export const Card = css.class({ color: "#2563eb", padding: "$4" });
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,8 +186,8 @@ test("tamagui -> pandwind: loads concrete theme and project context variants", a
 		    "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "brand" });
-		export const App = () => <View className={Card} />;",
+		export const Card = css.class({ color: "brand", padding: "$4" });
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,8 +235,8 @@ test("tamagui -> pandwind: resolves concrete token values with project context",
 		  "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "brand" });
-		export const App = () => <View className={Card} />;",
+		export const Card = css.class({ color: "brand", padding: "$4" });
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,8 +281,8 @@ test("tamagui -> pandwind: preserves malformed concrete tamagui input", () => {
 		  "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "red" });
-		export const App = () => <View className={Card} />;
+		export const Card = css.class({ color: "red", padding: "$4" });
+		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,
 		  "generatedFiles": [],

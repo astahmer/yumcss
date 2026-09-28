@@ -51,7 +51,7 @@ test("linaria -> mui -> linaria: preserves an actionable concrete round trip", (
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("linaria -> mui -> linaria: preserves an actionable concrete round trip", (
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -113,7 +113,7 @@ test("linaria -> mui -> linaria: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -147,7 +147,7 @@ test("linaria -> mui -> linaria: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const Card = css\`padding: 1rem; color: red;\`;",
+		export const Card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -213,7 +213,7 @@ test("linaria -> mui -> linaria: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -249,7 +249,7 @@ test("linaria -> mui -> linaria: preserves concrete theme and project context va
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -264,7 +264,7 @@ test("linaria -> mui -> linaria: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -300,7 +300,7 @@ test("linaria -> mui -> linaria: preserves concrete theme and project context va
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -329,7 +329,7 @@ test("linaria -> mui -> linaria: resolves token values across both concrete legs
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -365,7 +365,7 @@ test("linaria -> mui -> linaria: resolves token values across both concrete legs
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

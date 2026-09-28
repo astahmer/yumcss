@@ -50,7 +50,7 @@ test("compiled -> style9 -> compiled: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": 8, "color": "red" });",
+		export const card = style9.create({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("compiled -> style9 -> compiled: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "red" });",
+		export const card = css({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("compiled -> style9 -> compiled: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("compiled -> style9 -> compiled: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("compiled -> style9 -> compiled: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("compiled -> style9 -> compiled: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,7 +399,7 @@ test("compiled -> style9 -> compiled: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("compiled -> style9 -> compiled: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": 8, "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

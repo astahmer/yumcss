@@ -252,12 +252,12 @@ test("styled-components -> solid-styled emits its documented tag factory", () =>
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toContain('import { styled } from "solid-styled-components";');
 	expect(result.code).toContain(
-		'styled("div")(() => ({ "padding": "1rem", "backgroundColor": "red" }))',
+		'styled("div")(() => ({ "backgroundColor": "red", "padding": "1rem" }))',
 	);
 	expect(result.code).not.toContain("styled.div({");
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { styled } from "solid-styled-components";
-		export const Card = styled("div")(() => ({ "padding": "1rem", "backgroundColor": "red" }));"
+		export const Card = styled("div")(() => ({ "backgroundColor": "red", "padding": "1rem" }));"
 	`);
 });
 
@@ -280,11 +280,11 @@ test("styled-components -> vue-styled emits a documented tagged template", () =>
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toContain('import styled from "vue-styled-components";');
-	expect(result.code).toContain("styled.div`padding: 1rem; color: red;`");
+	expect(result.code).toContain("styled.div`color: red; padding: 1rem;`");
 	expect(result.code).not.toContain("styled.div({");
 	expect(result.code).toMatchInlineSnapshot(`
 		"import styled from "vue-styled-components";
-		export const Card = styled.div\`padding: 1rem; color: red;\`;"
+		export const Card = styled.div\`color: red; padding: 1rem;\`;"
 	`);
 });
 
@@ -794,27 +794,11 @@ test("styled-components attrs are preserved by every target or remain a typed so
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 0,
-		    "residualDetails": [
-		      {
-		        "detail": "components: component subject: styled.button.attrs({ type: "button", "aria-label": "Save" })",
-		        "kind": "capability",
-		      },
-		      {
-		        "detail": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		      },
-		      {
-		        "detail": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		      },
-		    ],
-		    "residualKinds": [
-		      "capability",
-		      "framework-semantics",
-		    ],
-		    "skipped": 1,
-		    "sourcePreserved": true,
+		    "converted": 1,
+		    "residualDetails": [],
+		    "residualKinds": [],
+		    "skipped": 0,
+		    "sourcePreserved": false,
 		    "target": "css-modules",
 		  },
 		  {

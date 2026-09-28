@@ -51,7 +51,7 @@ test("vanilla-extract -> mui -> vanilla-extract: preserves an actionable concret
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("vanilla-extract -> mui -> vanilla-extract: preserves an actionable concret
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -192,7 +192,7 @@ test("vanilla-extract -> mui -> vanilla-extract: preserves concrete theme and pr
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -228,7 +228,7 @@ test("vanilla-extract -> mui -> vanilla-extract: preserves concrete theme and pr
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -243,7 +243,7 @@ test("vanilla-extract -> mui -> vanilla-extract: preserves concrete theme and pr
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,7 +279,7 @@ test("vanilla-extract -> mui -> vanilla-extract: preserves concrete theme and pr
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -308,7 +308,7 @@ test("vanilla-extract -> mui -> vanilla-extract: resolves token values across bo
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -344,7 +344,7 @@ test("vanilla-extract -> mui -> vanilla-extract: resolves token values across bo
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": 8, "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

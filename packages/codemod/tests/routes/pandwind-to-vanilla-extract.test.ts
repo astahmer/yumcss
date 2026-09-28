@@ -50,7 +50,7 @@ test("pandwind -> vanilla-extract: migrates concrete pandwind syntax to vanilla-
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: "1rem", color: "red" });",
+		export const card = style({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -151,7 +151,7 @@ test("pandwind -> vanilla-extract: loads concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: "1rem", color: "#f97316" });",
+		export const card = style({ color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("pandwind -> vanilla-extract: loads concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("pandwind -> vanilla-extract: resolves concrete token values with project c
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,7 +283,7 @@ test("pandwind -> vanilla-extract: preserves malformed concrete pandwind input",
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: "1rem", color: "red" });
+		export const card = style({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

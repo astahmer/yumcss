@@ -49,7 +49,7 @@ test("stylex -> aphrodite: migrates concrete stylex syntax to aphrodite", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "red" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("stylex -> aphrodite: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("stylex -> aphrodite: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("stylex -> aphrodite: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("stylex -> aphrodite: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "padding": "8px", "color": "red" } });
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": "8px" } });
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

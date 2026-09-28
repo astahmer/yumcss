@@ -181,6 +181,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		source: fixture.source,
 		root: fixture.root,
 		config: sourceConfig,
+		targetId: targetAdapter.id,
 		semantic: fixture.semantic,
 	});
 	const sourceProgram =

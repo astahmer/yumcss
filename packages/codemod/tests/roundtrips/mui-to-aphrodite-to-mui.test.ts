@@ -51,7 +51,7 @@ test("mui -> aphrodite -> mui: preserves an actionable concrete round trip", () 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("mui -> aphrodite -> mui: preserves an actionable concrete round trip", () 
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
 		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("mui -> aphrodite -> mui: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const Card = StyleSheet.create({ "padding": 8, "color": "red" });",
+		export const Card = StyleSheet.create({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +174,7 @@ test("mui -> aphrodite -> mui: retains the documented secondary API without sile
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#f97316", "padding": "16px" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,7 +276,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
 		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#f97316", "padding": "16px" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,7 +313,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +351,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
 		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -402,7 +402,7 @@ test("mui -> aphrodite -> mui: resolves token values across both concrete legs",
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -440,7 +440,7 @@ test("mui -> aphrodite -> mui: resolves token values across both concrete legs",
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
 		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -51,7 +51,7 @@ test("emotion -> pandwind -> emotion: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("emotion -> pandwind -> emotion: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
 
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -135,7 +135,7 @@ test("emotion -> pandwind -> emotion: retains the documented secondary API witho
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("emotion -> pandwind -> emotion: retains the documented secondary API witho
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
 
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("emotion -> pandwind -> emotion: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.class({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("emotion -> pandwind -> emotion: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -306,7 +306,7 @@ test("emotion -> pandwind -> emotion: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("emotion -> pandwind -> emotion: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -392,7 +392,7 @@ test("emotion -> pandwind -> emotion: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("emotion -> pandwind -> emotion: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

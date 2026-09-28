@@ -50,7 +50,7 @@ test("pandwind -> goober: migrates concrete pandwind syntax to goober", () => {
 		  "changed": true,
 		  "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -159,7 +159,7 @@ test("pandwind -> goober: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "#f97316" });",
+		export const card = css({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -197,7 +197,7 @@ test("pandwind -> goober: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -247,7 +247,7 @@ test("pandwind -> goober: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -294,7 +294,7 @@ test("pandwind -> goober: preserves malformed concrete pandwind input", () => {
 		  "changed": true,
 		  "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "red" });
+		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

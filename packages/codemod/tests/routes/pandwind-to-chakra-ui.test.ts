@@ -52,7 +52,7 @@ test("pandwind -> chakra-ui: migrates concrete pandwind syntax to chakra-ui", as
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("pandwind -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "#f97316" });",
+		export const card = defaultSystem.css({ color: "#f97316", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("pandwind -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("pandwind -> chakra-ui: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -275,7 +275,7 @@ test("pandwind -> chakra-ui: preserves malformed concrete pandwind input", async
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "red" });
+		export const card = defaultSystem.css({ color: "red", padding: "4" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

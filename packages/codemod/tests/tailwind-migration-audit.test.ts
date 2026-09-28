@@ -147,7 +147,7 @@ test("Tailwind to MUI maps exact target tokens and retains raw spacing values", 
 	expect(result.code).not.toContain('padding: "card"');
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ padding: "1.125rem", backgroundColor: "primary.main", color: "primary.main" }} />;"
+		export const App = () => <Box component="div" sx={{ color: "primary.main", backgroundColor: "primary.main", padding: "1.125rem" }} />;"
 	`);
 });
 

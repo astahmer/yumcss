@@ -50,7 +50,7 @@ test("styled-components -> stitches -> styled-components: preserves an actionabl
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "red" });",
+		export const Card = styled("div", { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("styled-components -> stitches -> styled-components: preserves an actionabl
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("styled-components -> stitches -> styled-components: retains the documented
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "red" });",
+		export const Card = styled("div", { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("styled-components -> stitches -> styled-components: retains the documented
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("styled-components -> stitches -> styled-components: preserves concrete the
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("styled-components -> stitches -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("styled-components -> stitches -> styled-components: preserves concrete the
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("styled-components -> stitches -> styled-components: preserves concrete the
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("styled-components -> stitches -> styled-components: resolves token values 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("styled-components -> stitches -> styled-components: resolves token values 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

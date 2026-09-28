@@ -50,7 +50,7 @@ test("mantine -> fela -> mantine: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("mantine -> fela -> mantine: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +225,7 @@ test("mantine -> fela -> mantine: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,7 +263,7 @@ test("mantine -> fela -> mantine: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +312,7 @@ test("mantine -> fela -> mantine: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +350,7 @@ test("mantine -> fela -> mantine: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -413,7 +413,7 @@ test("mantine -> fela -> mantine: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -451,7 +451,7 @@ test("mantine -> fela -> mantine: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

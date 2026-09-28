@@ -49,7 +49,7 @@ test("tailwind -> style9: migrates concrete tailwind syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "gap": "1rem", "alignItems": "center", "display": "flex" } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -155,7 +155,7 @@ test("tailwind -> style9: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "padding": "1.125rem", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "color": "#f97316", "padding": "1.125rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,7 +191,7 @@ test("tailwind -> style9: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("tailwind -> style9: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("tailwind -> style9: preserves malformed concrete tailwind input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "gap": "1rem", "alignItems": "center", "display": "flex" } }).style)}/>;
+		export const App = () => <div className={style9(style9.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

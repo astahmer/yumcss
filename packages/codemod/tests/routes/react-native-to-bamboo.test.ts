@@ -49,7 +49,7 @@ test("react-native -> bamboo: migrates concrete react-native syntax to bamboo", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("react-native -> bamboo: carries a documented secondary react-native API ex
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": css({ padding: "8px", backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("react-native -> bamboo: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("react-native -> bamboo: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("react-native -> bamboo: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("react-native -> bamboo: preserves malformed concrete react-native input", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "red" }) };
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

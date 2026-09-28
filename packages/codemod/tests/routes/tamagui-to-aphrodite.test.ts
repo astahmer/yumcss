@@ -50,7 +50,7 @@ test("tamagui -> aphrodite: migrates concrete tamagui syntax to aphrodite", () =
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "red" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "red", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,7 +156,7 @@ test("tamagui -> aphrodite: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +194,7 @@ test("tamagui -> aphrodite: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +244,7 @@ test("tamagui -> aphrodite: resolves concrete token values with project context"
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -291,7 +291,7 @@ test("tamagui -> aphrodite: preserves malformed concrete tamagui input", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		export const Card = css(StyleSheet.create({ style: { "padding": "$4", "color": "red" } }).style);
+		export const Card = css(StyleSheet.create({ style: { "color": "red", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

@@ -49,7 +49,7 @@ test("tokenami -> react-native: migrates concrete tokenami syntax to react-nativ
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "gap": 16, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "gap": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("tokenami -> react-native: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "gap": 16, "color": "#f97316" });",
+		export const card = StyleSheet.create({ "color": "#f97316", "gap": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,7 +187,7 @@ test("tokenami -> react-native: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "gap": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "gap": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("tokenami -> react-native: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "gap": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "gap": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("tokenami -> react-native: preserves malformed concrete tokenami input", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "gap": 16, "color": "red" });
+		export const card = StyleSheet.create({ "color": "red", "gap": 16 });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

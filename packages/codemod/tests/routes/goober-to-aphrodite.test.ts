@@ -49,7 +49,7 @@ test("goober -> aphrodite: migrates concrete goober syntax to aphrodite", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("goober -> aphrodite: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("goober -> aphrodite: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("goober -> aphrodite: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("goober -> aphrodite: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });
+		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

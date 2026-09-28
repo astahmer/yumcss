@@ -49,7 +49,7 @@ test("aphrodite -> vanilla-extract: migrates concrete aphrodite syntax to vanill
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "red" }) };",
+		export const styles = { "card": style({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -157,7 +157,7 @@ test("aphrodite -> vanilla-extract: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -193,7 +193,7 @@ test("aphrodite -> vanilla-extract: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -241,7 +241,7 @@ test("aphrodite -> vanilla-extract: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -286,7 +286,7 @@ test("aphrodite -> vanilla-extract: preserves malformed concrete aphrodite input
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: 8, color: "red" }) };
+		export const styles = { "card": style({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

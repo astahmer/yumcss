@@ -50,7 +50,7 @@ test("treat -> emotion -> treat: preserves an actionable concrete round trip", (
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("treat -> emotion -> treat: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "red" });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("treat -> emotion -> treat: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("treat -> emotion -> treat: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "red" });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +267,7 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("treat -> emotion -> treat: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("treat -> emotion -> treat: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -425,7 +425,7 @@ test("treat -> emotion -> treat: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

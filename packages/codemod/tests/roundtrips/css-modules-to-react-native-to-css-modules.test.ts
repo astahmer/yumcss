@@ -207,7 +207,7 @@ test("css-modules -> react-native -> css-modules: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> react-native -> css-modules: preserves concrete theme and p
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
 		/* /* pandwind:migrate-skip (route: react-native -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("css-modules -> react-native -> css-modules: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> react-native -> css-modules: preserves concrete theme and p
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
 		/* /* pandwind:migrate-skip (route: react-native -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("css-modules -> react-native -> css-modules: resolves token values across b
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -411,7 +411,7 @@ test("css-modules -> react-native -> css-modules: resolves token values across b
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
 		/* /* pandwind:migrate-skip (route: react-native -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

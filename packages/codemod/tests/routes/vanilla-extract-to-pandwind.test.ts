@@ -50,7 +50,7 @@ test("vanilla-extract -> pandwind: migrates concrete vanilla-extract syntax to p
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "red" });",
+		export const card = css.class({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("vanilla-extract -> pandwind: loads concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "#2563eb" });",
+		export const card = css.class({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("vanilla-extract -> pandwind: loads concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,7 +230,7 @@ test("vanilla-extract -> pandwind: resolves concrete token values with project c
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -274,7 +274,7 @@ test("vanilla-extract -> pandwind: preserves malformed concrete vanilla-extract 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "red" });
+		export const card = css.class({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

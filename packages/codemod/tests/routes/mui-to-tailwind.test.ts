@@ -49,7 +49,7 @@ test("mui -> tailwind: migrates concrete mui syntax to tailwind", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] [color:red]"}/>;",
+		export const App = () => <Box className={"[color:red] [padding:16px]"}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,7 +93,7 @@ test("mui -> tailwind: carries a documented secondary mui API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const Card = "[padding:8] [color:red]";",
+		  "code": "export const Card = "[color:red] [padding:8]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,7 +146,7 @@ test("mui -> tailwind: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
+		export const App = () => <Box className={"text-brand [padding:16px]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("mui -> tailwind: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
+		export const App = () => <Box className={"text-brand [padding:16px]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,7 +230,7 @@ test("mui -> tailwind: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
+		export const App = () => <Box className={"text-brand [padding:16px]"}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -275,7 +275,7 @@ test("mui -> tailwind: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] [color:red]"}/>;
+		export const App = () => <Box className={"[color:red] [padding:16px]"}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

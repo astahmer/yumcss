@@ -92,7 +92,7 @@ test("bamboo -> styled-components: carries a documented secondary bamboo API exp
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ gap: "4", display: "flex" });",
+		export const card = styled.div({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

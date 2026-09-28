@@ -50,7 +50,8 @@ test("unocss -> tamagui -> unocss: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { gap: "1rem", alignItems: "center", display: "flex" });",
+		const __componentTamagui = styled(View, { display: "flex", alignItems: "center", gap: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -82,10 +83,10 @@ test("unocss -> tamagui -> unocss: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { gap: "1rem", alignItems: "center", display: "flex" });",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		const __componentTamagui = "[display:flex] [align-items:center] [gap:1rem]";
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} className={__componentTamagui} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -103,19 +104,19 @@ test("unocss -> tamagui -> unocss: preserves an actionable concrete round trip",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -207,7 +208,8 @@ test("unocss -> tamagui -> unocss: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#f97316" });",
+		const __componentTamagui = styled(View, { color: "#f97316", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -239,10 +241,10 @@ test("unocss -> tamagui -> unocss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { padding: "1.125rem", color: "#f97316" });",
-		      "converted": 0,
+		      "code": "import { View } from "@tamagui/core";
+		const __componentTamagui = "text-brand p-card";
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} className={__componentTamagui} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -260,26 +262,27 @@ test("unocss -> tamagui -> unocss: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,10 +314,10 @@ test("unocss -> tamagui -> unocss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
-		      "converted": 0,
+		      "code": "import { View } from "@tamagui/core";
+		const __componentTamagui = "text-brand p-card";
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} className={__componentTamagui} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -332,19 +335,19 @@ test("unocss -> tamagui -> unocss: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -365,7 +368,8 @@ test("unocss -> tamagui -> unocss: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "1.125rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -397,10 +401,10 @@ test("unocss -> tamagui -> unocss: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> unocss | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { padding: "1.125rem", color: "#2563eb" });",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		const __componentTamagui = "text-brand p-card";
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} className={__componentTamagui} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -418,19 +422,19 @@ test("unocss -> tamagui -> unocss: resolves token values across both concrete le
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

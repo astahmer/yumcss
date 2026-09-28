@@ -65,7 +65,7 @@ describe("virtual Vite migrations", () => {
 			  "code": "import { createCx } from "pandwind/cx";
 			const cx = createCx();
 
-			const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };
+			const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };
 
 			export function App() {
 				return <Card>content</Card>;
@@ -76,7 +76,7 @@ describe("virtual Vite migrations", () => {
 		`);
 		expect(result).not.toBeNull();
 		expect(result?.code).toContain("const Card = (props) =>");
-		expect(result?.code).toContain('className={cx("[padding:1rem] [color:red]", props.className)}');
+		expect(result?.code).toContain('className={cx("[color:red] [padding:1rem]", props.className)}');
 		expect(result?.code).toContain("return <Card>content</Card>");
 		expect(result?.code).not.toContain("styled-components");
 		expect(styledCard).toContain("styled-components");
@@ -179,17 +179,20 @@ export function App() {
 		expect(plugin.enforce).toBe("pre");
 		expect(received).toMatchInlineSnapshot(`
 			[
-			  "
-			const Card = "[padding:1rem] [color:red]";
+			  "import { createCx } from "pandwind/cx";
+			const cx = createCx();
+
+			const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };
 
 			export function App() {
-				return <div className={Card}>content</div>;
+				return <Card>content</Card>;
 			}
 			",
 			]
 		`);
 		expect(received).toHaveLength(1);
-		expect(received[0]).toContain("className={Card}");
+		expect(received[0]).toContain('className={cx("[color:red] [padding:1rem]", props.className)}');
+		expect(received[0]).toContain("<Card>content</Card>");
 		expect(received[0]).not.toContain("styled-components");
 	});
 

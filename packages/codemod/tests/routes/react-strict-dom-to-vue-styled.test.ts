@@ -50,7 +50,7 @@ test("react-strict-dom -> vue-styled: migrates concrete react-strict-dom syntax 
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
+		const styles = styled.div\` color: red; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +152,7 @@ test("react-strict-dom -> vue-styled: loads concrete theme and project context v
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("react-strict-dom -> vue-styled: loads concrete theme and project context v
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +240,7 @@ test("react-strict-dom -> vue-styled: resolves concrete token values with projec
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +287,7 @@ test("react-strict-dom -> vue-styled: preserves malformed concrete react-strict-
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
+		const styles = styled.div\` color: red; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

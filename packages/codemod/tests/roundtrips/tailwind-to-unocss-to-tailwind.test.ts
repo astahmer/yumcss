@@ -49,7 +49,7 @@ test("tailwind -> unocss -> tailwind: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("tailwind -> unocss -> tailwind: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("tailwind -> unocss -> tailwind: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -268,7 +268,7 @@ test("tailwind -> unocss -> tailwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("tailwind -> unocss -> tailwind: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -340,7 +340,7 @@ test("tailwind -> unocss -> tailwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("tailwind -> unocss -> tailwind: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -426,7 +426,7 @@ test("tailwind -> unocss -> tailwind: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

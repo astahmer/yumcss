@@ -49,7 +49,7 @@ test("tokenami -> jss: migrates concrete tokenami syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ gap: "1rem", color: "red" });",
+		export const card = createUseStyles({ color: "red", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("tokenami -> jss: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ gap: "1rem", color: "#f97316" });",
+		export const card = createUseStyles({ color: "#f97316", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("tokenami -> jss: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ gap: "1rem", color: "#2563eb" });",
+		export const card = createUseStyles({ color: "#2563eb", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("tokenami -> jss: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ gap: "1rem", color: "#2563eb" });",
+		export const card = createUseStyles({ color: "#2563eb", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,7 +276,7 @@ test("tokenami -> jss: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ gap: "1rem", color: "red" });
+		export const card = createUseStyles({ color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

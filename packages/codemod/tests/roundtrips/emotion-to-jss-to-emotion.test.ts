@@ -50,7 +50,7 @@ test("emotion -> jss -> emotion: preserves an actionable concrete round trip", (
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "red" });",
+		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("emotion -> jss -> emotion: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("emotion -> jss -> emotion: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "red" });",
+		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("emotion -> jss -> emotion: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("emotion -> jss -> emotion: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ padding: "1rem", color: "#2563eb" });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("emotion -> jss -> emotion: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

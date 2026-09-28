@@ -48,7 +48,7 @@ test("treat -> tailwind: migrates concrete treat syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:8] [color:red]";",
+		  "code": "export const card = "[color:red] [padding:8]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("treat -> tailwind: carries a documented secondary treat API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:8] [color:red]";",
+		  "code": "export const card = "[color:red] [padding:8]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("treat -> tailwind: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = "[padding:8] [color:#2563eb]";",
+		    "code": "export const card = "[color:#2563eb] [padding:8]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("treat -> tailwind: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = "[padding:8] text-brand";",
+		    "code": "export const card = "text-brand [padding:8]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("treat -> tailwind: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:8] text-brand";",
+		  "code": "export const card = "text-brand [padding:8]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("treat -> tailwind: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[padding:8] [color:red]";
+		  "code": "export const card = "[color:red] [padding:8]";
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

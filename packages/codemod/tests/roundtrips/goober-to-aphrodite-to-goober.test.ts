@@ -50,7 +50,7 @@ test("goober -> aphrodite -> goober: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("goober -> aphrodite -> goober: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -215,7 +215,7 @@ test("goober -> aphrodite -> goober: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,7 +251,7 @@ test("goober -> aphrodite -> goober: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("goober -> aphrodite -> goober: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,7 +325,7 @@ test("goober -> aphrodite -> goober: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +377,7 @@ test("goober -> aphrodite -> goober: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -413,7 +413,7 @@ test("goober -> aphrodite -> goober: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

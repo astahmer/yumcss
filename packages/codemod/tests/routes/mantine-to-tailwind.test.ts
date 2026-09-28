@@ -49,7 +49,7 @@ test("mantine -> tailwind: migrates concrete mantine syntax to tailwind", () => 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] [color:blue] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		export const App = () => <Box className={"[color:blue] [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("mantine -> tailwind: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("mantine -> tailwind: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("mantine -> tailwind: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] text-brand [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
+		export const App = () => <Box className={"text-brand [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -279,7 +279,7 @@ test("mantine -> tailwind: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={"[margin-inline:auto] [color:blue] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;
+		export const App = () => <Box className={"[color:blue] [margin-inline:auto] [max-width:calc(25rem_*_var(--mantine-scale))]"}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

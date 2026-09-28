@@ -50,7 +50,7 @@ test("pandwind -> react-native: migrates concrete pandwind syntax to react-nativ
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -161,7 +161,7 @@ test("pandwind -> react-native: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "#f97316" });",
+		export const card = StyleSheet.create({ "color": "#f97316", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -200,7 +200,7 @@ test("pandwind -> react-native: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -251,7 +251,7 @@ test("pandwind -> react-native: resolves concrete token values with project cont
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -299,7 +299,7 @@ test("pandwind -> react-native: preserves malformed concrete pandwind input", ()
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "red" });
+		export const card = StyleSheet.create({ "color": "red", "padding": 16 });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

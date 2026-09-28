@@ -54,8 +54,8 @@ test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Dynamic component={Component} {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -91,10 +91,10 @@ test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete
 		    "code": "import { Dynamic } from "solid-js/web";
 
 		import { createCx } from "pandwind/cx";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const cx = createCx();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Dynamic component={Component} {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css({ "color": "red", "padding": "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -148,8 +148,8 @@ test("solid-styled -> pandwind -> solid-styled: retains the documented secondary
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Dynamic component={Component} {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,10 +185,10 @@ test("solid-styled -> pandwind -> solid-styled: retains the documented secondary
 		    "code": "import { Dynamic } from "solid-js/web";
 
 		import { createCx } from "pandwind/cx";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const cx = createCx();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Dynamic component={Component} {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css({ "color": "red", "padding": "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -257,7 +257,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		import { __pandwindSlot } from "../__pandwind/solid-slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "#2563eb", padding: "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -298,9 +298,9 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "code": "
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/solid-slot";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const cx = createCx();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css({ "color": "#2563eb", "padding": "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -342,7 +342,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		import { __pandwindSlot } from "../__pandwind/solid-slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -383,9 +383,9 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "code": "
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/solid-slot";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const cx = createCx();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css({ "color": "#2563eb", "padding": "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -442,7 +442,7 @@ test("solid-styled -> pandwind -> solid-styled: resolves token values across bot
 		import { __pandwindSlot } from "../__pandwind/solid-slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
@@ -483,9 +483,9 @@ test("solid-styled -> pandwind -> solid-styled: resolves token values across bot
 		    "code": "
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/solid-slot";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const cx = createCx();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ "padding": "1rem", "color": "#2563eb" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css({ "color": "#2563eb", "padding": "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

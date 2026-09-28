@@ -209,7 +209,7 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
 		expect(result.code).toMatchInlineSnapshot(`
 			"import * as stylex from "@stylexjs/stylex";
-			const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
+			const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 			export const App = () => <div {...stylex.props(card)} />;"
 		`);
 	});
@@ -350,7 +350,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const card = css.vars({ "padding": "0.5em 1em", "color": theme.foreground });"
+			const card = css.vars({ "color": theme.foreground, "padding": "0.5em 1em" });"
 		`);
 	});
 
@@ -477,7 +477,7 @@ describe("target adapter emission contract", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toMatchInlineSnapshot(`
-			"const card = { padding: "1rem", color: "red" };
+			"const card = { color: "red", padding: "1rem" };
 			export const App = () => <div style={card} />;"
 		`);
 	});
@@ -575,7 +575,7 @@ describe("target adapter emission contract", () => {
 	test("projects a static styled intrinsic subject to a React Native View", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
-				'const Card = styled.div({ color: "red", padding: "1rem" });\n' +
+				'const Card = styled.div({ backgroundColor: "red", padding: "1rem" });\n' +
 				'export const App = () => <Card data-testid="card" />;',
 			{
 				from: CodemodAdapterId.StyledComponents,
@@ -590,21 +590,55 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('<View data-testid="card" style={Card} />');
+		expect(result.code).toContain("__pandwindForwardRef<ComponentRef<typeof View>, ViewProps>");
+		expect(result.code).toContain('<Card data-testid="card" />');
+		expect(result.code).toContain("StyleSheet.create");
 		expect(result.code).toContain("View");
 		expect(result.code).toContain('from "react-native"');
 		expect(result.code).not.toContain("styled-components");
 	});
 
+	test("preserves Text-only color when a styled div would become a React Native View", () => {
+		const source =
+			'import styled from "styled-components";\n' +
+			'export const Card = styled.div({ color: "red", padding: "1rem" });';
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.StyledComponents,
+			to: CodemodAdapterId.ReactNative,
+			file: "Card.tsx",
+			mode: "safe",
+			readFile: () => undefined,
+			adapterRegistry: catalog.registry,
+			semantic: { source: { framework: BuiltinHostFramework.React } },
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual([
+			expect.objectContaining({
+				kind: "host-framework",
+				text: "styled.div",
+				hint: expect.stringContaining("Text color semantics"),
+			}),
+		]);
+		expect(result.code).toContain('export const Card = styled.div({ color: "red", padding: "1rem" });');
+		expect(result.code).not.toContain('from "react-native"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import styled from "styled-components";
+			// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+			export const Card = styled.div({ color: "red", padding: "1rem" });"
+		`);
+	});
+
 	test.each([CodemodAdapterId.NextYak, CodemodAdapterId.SolidStyled] as const)(
 		"projects a standalone static %s subject to a React Native component",
 		(sourceAdapter) => {
-			const source =
+		const source =
 				sourceAdapter === CodemodAdapterId.NextYak
 					? 'import { styled } from "next-yak";\n' +
-						"const Card = styled.div`color: red; padding: 1rem;`;"
+						"const Card = styled.div`background-color: red; padding: 1rem;`;"
 					: 'import { styled } from "solid-styled-components";\n' +
-						'const Card = styled.div({ color: "red", padding: "1rem" });';
+						'const Card = styled.div({ backgroundColor: "red", padding: "1rem" });';
 			const result = runAdapterMigration(source, {
 				from: sourceAdapter,
 				to: CodemodAdapterId.ReactNative,
@@ -620,7 +654,8 @@ describe("target adapter emission contract", () => {
 				`${sourceAdapter} -> ${CodemodAdapterId.ReactNative}: ${JSON.stringify({ residuals: result.residuals, outcomes: result.outcomes, code: result.code })}`,
 			).toBe(0);
 			expect(result.residuals).toEqual([]);
-			expect(result.code).toContain("(props) => <View");
+			expect(result.code).toContain("__pandwindForwardRef<ComponentRef<typeof View>, ViewProps>");
+			expect(result.code).toContain("<View {...props} ref={ref}");
 			expect(result.code).toContain("StyleSheet.create");
 			expect(result.code).not.toContain(sourceAdapter);
 		},

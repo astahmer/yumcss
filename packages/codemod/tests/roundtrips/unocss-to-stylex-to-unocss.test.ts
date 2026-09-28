@@ -50,7 +50,7 @@ test("unocss -> stylex -> unocss: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).style;",
+		export const App = () => stylex.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("unocss -> stylex -> unocss: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => { "style": "[gap:1rem] [align-items:center] [display:flex]" }.style;",
+		    "code": "export const App = () => { "style": "[display:flex] [align-items:center] [gap:1rem]" }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +225,7 @@ test("unocss -> stylex -> unocss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "1.125rem", color: "#f97316" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#f97316", padding: "1.125rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -260,7 +260,7 @@ test("unocss -> stylex -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => { "style": "p-card text-brand" }.style;",
+		      "code": "export const App = () => { "style": "text-brand p-card" }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -298,7 +298,7 @@ test("unocss -> stylex -> unocss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,7 +333,7 @@ test("unocss -> stylex -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => { "style": "p-card text-brand" }.style;",
+		      "code": "export const App = () => { "style": "text-brand p-card" }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -385,7 +385,7 @@ test("unocss -> stylex -> unocss: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -420,7 +420,7 @@ test("unocss -> stylex -> unocss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => { "style": "p-card text-brand" }.style;",
+		    "code": "export const App = () => { "style": "text-brand p-card" }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

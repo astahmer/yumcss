@@ -49,8 +49,8 @@ test("next-yak -> solid-styled -> next-yak: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,38 +84,16 @@ test("next-yak -> solid-styled -> next-yak: preserves an actionable concrete rou
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const card = styled.div\`padding: 1rem; color: red;\`;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "red", "padding": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -134,7 +112,7 @@ test("next-yak -> solid-styled -> next-yak: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +148,7 @@ test("next-yak -> solid-styled -> next-yak: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`padding: 1rem; color: red;\`;",
+		export const Card = styled("div")\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,8 +210,8 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,45 +245,23 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "next-yak";
-		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
-		      "converted": 1,
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,38 +295,16 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "next-yak";
-		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
-		      "converted": 1,
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -390,8 +324,8 @@ test("next-yak -> solid-styled -> next-yak: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -425,38 +359,16 @@ test("next-yak -> solid-styled -> next-yak: resolves token values across both co
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

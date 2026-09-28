@@ -52,7 +52,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
+		export const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,8 +87,8 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		export const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -96,32 +96,22 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -202,8 +192,8 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
 		export const styles = { "card": defaultSystem.css({ color: "red" }), "primary": defaultSystem.css({ color: "red", fontWeight: "semibold" }) };
 		export default styles;",
 		    "converted": 0,
@@ -212,60 +202,40 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
 		        "preserved": undefined,
 		      },
 		      {
@@ -309,7 +279,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
+		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -344,8 +314,8 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -353,32 +323,22 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
@@ -393,7 +353,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -428,8 +388,8 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -437,32 +397,22 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
@@ -491,7 +441,7 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -526,8 +476,8 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: framework-semantics, capability | available: residual) */ */
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -535,32 +485,22 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",

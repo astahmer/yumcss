@@ -50,7 +50,7 @@ test("tamagui -> styled-components: migrates concrete tamagui syntax to styled-c
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import styled from "styled-components";
-		export const Card = styled(View)({ padding: "$4", color: "red" });
+		export const Card = styled(View)({ color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +147,7 @@ test("tamagui -> styled-components: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import styled from "styled-components";
-		export const Card = styled(View)({ padding: "$4", color: "#2563eb" });
+		export const Card = styled(View)({ color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("tamagui -> styled-components: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import styled from "styled-components";
-		export const Card = styled(View)({ padding: "$4", color: "#2563eb" });
+		export const Card = styled(View)({ color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +231,7 @@ test("tamagui -> styled-components: resolves concrete token values with project 
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import styled from "styled-components";
-		export const Card = styled(View)({ padding: "$4", color: "#2563eb" });
+		export const Card = styled(View)({ color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +276,7 @@ test("tamagui -> styled-components: preserves malformed concrete tamagui input",
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import styled from "styled-components";
-		export const Card = styled(View)({ padding: "$4", color: "red" });
+		export const Card = styled(View)({ color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

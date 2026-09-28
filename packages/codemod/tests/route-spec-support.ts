@@ -611,7 +611,10 @@ export function expectExplicitResidualEvidence(result: AdapterMigrationResult): 
 	if (result.skipped > 0) expect(result.code).toContain("pandwind:migrate-skip");
 	if (result.skipped > 0) expect(result.residuals.length).toBeGreaterThan(0);
 	for (const residual of result.residuals) {
-		expect(residual.text.length).toBeGreaterThan(0);
+		expect(
+			residual.text.length,
+			JSON.stringify({ residual, validations: result.validations }),
+		).toBeGreaterThan(0);
 		expect(residual.hint ?? "").toBeTruthy();
 	}
 }

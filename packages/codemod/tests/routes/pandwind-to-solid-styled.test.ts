@@ -48,9 +48,9 @@ test("pandwind -> solid-styled: migrates concrete pandwind syntax to solid-style
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
+		  "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,11 +94,10 @@ test("pandwind -> solid-styled: carries a documented secondary pandwind API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> solid-styled | lowering-residual: validation)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		  "converted": 0,
+		  "code": "import { css } from "solid-styled-components";
+
+		export const styles = css({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -116,25 +115,17 @@ test("pandwind -> solid-styled: carries a documented secondary pandwind API expl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -157,9 +148,9 @@ test("pandwind -> solid-styled: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#f97316" });",
+		export const card = css({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -195,9 +186,9 @@ test("pandwind -> solid-styled: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -245,9 +236,9 @@ test("pandwind -> solid-styled: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
+		  "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -292,9 +283,9 @@ test("pandwind -> solid-styled: preserves malformed concrete pandwind input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
+		  "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "red" });
+		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

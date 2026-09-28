@@ -50,7 +50,7 @@ test("react-strict-dom -> fela -> react-strict-dom: preserves an actionable conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "red" }) };
+		const styles = { "card": renderer.renderRule({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("react-strict-dom -> fela -> react-strict-dom: preserves an actionable conc
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +218,7 @@ test("react-strict-dom -> fela -> react-strict-dom: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -256,7 +256,7 @@ test("react-strict-dom -> fela -> react-strict-dom: preserves concrete theme and
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,7 +295,7 @@ test("react-strict-dom -> fela -> react-strict-dom: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +333,7 @@ test("react-strict-dom -> fela -> react-strict-dom: preserves concrete theme and
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +386,7 @@ test("react-strict-dom -> fela -> react-strict-dom: resolves token values across
 		  "forward": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -424,7 +424,7 @@ test("react-strict-dom -> fela -> react-strict-dom: resolves token values across
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

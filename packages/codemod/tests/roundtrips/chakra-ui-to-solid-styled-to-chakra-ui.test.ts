@@ -51,8 +51,8 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#fecaca", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,43 +87,15 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves an actionable concrete r
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#fecaca", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -221,8 +193,8 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -257,51 +229,23 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#f97316", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#2a57c8", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -336,43 +280,15 @@ test("chakra-ui -> solid-styled -> chakra-ui: preserves concrete theme and proje
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#2a57c8", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -393,8 +309,8 @@ test("chakra-ui -> solid-styled -> chakra-ui: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#2a57c8", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -429,43 +345,15 @@ test("chakra-ui -> solid-styled -> chakra-ui: resolves token values across both 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "background": "#2a57c8", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

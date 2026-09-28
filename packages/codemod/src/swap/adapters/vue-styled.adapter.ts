@@ -13,7 +13,6 @@ import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
-	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
@@ -97,6 +96,19 @@ function vueStyledEmission(
 	_programObject: (program: StyleProgram) => string,
 	renderTemplateCss: (program: StyleProgram) => string,
 ): AdapterEmitResult {
+	const namedRules = program.rules.filter((rule) => rule.name !== undefined);
+	if (namedRules.length > 0)
+		return {
+			text: "",
+			imports: [],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.Capability,
+					text: namedRules.map((rule) => rule.name).join(", "),
+					hint: "vue-styled-components emits component constructors, so preserving this named style map requires project-wide component-use rewrites",
+				},
+			],
+		};
 	const subject = program.source?.subject;
 	const tag =
 		subject === undefined ? (program.source?.hostTag ?? "div") : intrinsicTagForSubject(subject);
@@ -193,9 +205,9 @@ const vueStyled = makeExtraAdapter({
 	],
 	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*`(?:\\.|[^`])*`/g,
 	form: CodemodCallPatternFormTag.Template,
+	functionValues: true,
 	prefix: "styled.div`",
 	targetImports: ['import styled from "vue-styled-components";'],
-	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	capabilityOverrides: {
 		components: "exact",
 		"framework-semantics": "exact",

@@ -49,7 +49,7 @@ test("unocss -> goober: migrates concrete unocss syntax to goober", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const App = () => css({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
+		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -155,7 +155,7 @@ test("unocss -> goober: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "1.125rem", "color": "#f97316" });",
+		export const App = () => css({ "color": "#f97316", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,7 +191,7 @@ test("unocss -> goober: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "1.125rem", "color": "#2563eb" });",
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("unocss -> goober: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "1.125rem", "color": "#2563eb" });",
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("unocss -> goober: preserves malformed concrete unocss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const App = () => css({ "gap": "1rem", "alignItems": "center", "display": "flex" });
+		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

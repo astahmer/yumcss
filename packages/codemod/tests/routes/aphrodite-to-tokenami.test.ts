@@ -49,7 +49,7 @@ test("aphrodite -> tokenami: migrates concrete aphrodite syntax to tokenami", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "red" }) };",
+		export const styles = { "card": css({ "--color": "red", "--padding": 8 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("aphrodite -> tokenami: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "#2563eb" }) };",
+		export const styles = { "card": css({ "--color": "#2563eb", "--padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("aphrodite -> tokenami: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "var(--color_brand)" }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("aphrodite -> tokenami: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "var(--color_brand)" }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": 8 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("aphrodite -> tokenami: preserves malformed concrete aphrodite input", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--padding": 8, "--color": "red" }) };
+		export const styles = { "card": css({ "--color": "red", "--padding": 8 }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

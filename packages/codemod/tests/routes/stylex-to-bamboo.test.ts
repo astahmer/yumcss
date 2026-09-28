@@ -49,7 +49,7 @@ test("stylex -> bamboo: migrates concrete stylex syntax to bamboo", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("stylex -> bamboo: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("stylex -> bamboo: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("stylex -> bamboo: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("stylex -> bamboo: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

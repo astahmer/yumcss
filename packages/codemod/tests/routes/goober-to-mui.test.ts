@@ -50,7 +50,7 @@ test("goober -> mui: migrates concrete goober syntax to mui", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("goober -> mui: carries a documented secondary goober API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("goober -> mui: loads concrete theme and project context variants", async (
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("goober -> mui: loads concrete theme and project context variants", async (
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("goober -> mui: resolves concrete token values with project context", async
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,7 +276,7 @@ test("goober -> mui: preserves malformed concrete goober input", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });
+		export const card = css.class({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

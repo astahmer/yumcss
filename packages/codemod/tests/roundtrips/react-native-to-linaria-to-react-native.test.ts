@@ -50,7 +50,7 @@ test("react-native -> linaria -> react-native: preserves an actionable concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: red;\` };",
+		export const styles = { "card": css\`color: red; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("react-native -> linaria -> react-native: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "red" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("react-native -> linaria -> react-native: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; background-color: red;\` };",
+		export const styles = { "card": css\`padding: 8px; background-color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +173,7 @@ test("react-native -> linaria -> react-native: retains the documented secondary 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "8", "backgroundColor": "red" }) };",
+		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("react-native -> linaria -> react-native: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +275,7 @@ test("react-native -> linaria -> react-native: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,7 +314,7 @@ test("react-native -> linaria -> react-native: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +350,7 @@ test("react-native -> linaria -> react-native: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -403,7 +403,7 @@ test("react-native -> linaria -> react-native: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +439,7 @@ test("react-native -> linaria -> react-native: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": "8", "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

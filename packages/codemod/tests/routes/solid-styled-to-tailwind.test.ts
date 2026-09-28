@@ -50,7 +50,7 @@ test("solid-styled -> tailwind: migrates concrete solid-styled syntax to tailwin
 		  "changed": true,
 		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,7 +96,7 @@ test("solid-styled -> tailwind: carries a documented secondary solid-styled API 
 		  "changed": true,
 		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -151,7 +151,7 @@ test("solid-styled -> tailwind: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:#2563eb]", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("[color:#2563eb] [padding:1rem]", props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("solid-styled -> tailwind: loads concrete theme and project context variant
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("solid-styled -> tailwind: resolves concrete token values with project cont
 		  "changed": true,
 		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] text-brand", props.class)} />;",
+		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("solid-styled -> tailwind: preserves malformed concrete solid-styled input"
 		  "code": "import { styled } from "solid-styled-components";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[padding:1rem] [color:red]", props.class)} />;
+		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

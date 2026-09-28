@@ -132,7 +132,7 @@ test("bamboo -> panda -> bamboo: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ gap: "4", display: "flex" });",
+		export const card = sourceCss({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("bamboo -> panda -> bamboo: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ gap: "4", display: "flex" });",
+		export const card = sourceCss({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

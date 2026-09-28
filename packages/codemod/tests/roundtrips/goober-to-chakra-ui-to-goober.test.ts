@@ -53,7 +53,7 @@ test("goober -> chakra-ui -> goober: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("goober -> chakra-ui -> goober: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -217,7 +217,7 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "#2a57c8" });",
+		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -252,7 +252,7 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "#2a57c8" });",
+		export const card = css({ "color": "#2a57c8", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -292,7 +292,7 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -327,7 +327,7 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "#2a57c8" });",
+		export const card = css({ "color": "#2a57c8", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -381,7 +381,7 @@ test("goober -> chakra-ui -> goober: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -416,7 +416,7 @@ test("goober -> chakra-ui -> goober: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": "#2a57c8" });",
+		export const card = css({ "color": "#2a57c8", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

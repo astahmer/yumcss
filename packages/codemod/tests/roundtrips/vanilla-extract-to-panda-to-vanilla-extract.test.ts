@@ -50,7 +50,7 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves an actionable concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves an actionable concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "red" });",
+		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -211,7 +211,7 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -245,7 +245,7 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,7 +283,7 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "brand.500" });",
+		export const card = css({ color: "brand.500", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -317,7 +317,7 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -369,7 +369,7 @@ test("vanilla-extract -> panda -> vanilla-extract: resolves token values across 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "brand.500" });",
+		export const card = css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -403,7 +403,7 @@ test("vanilla-extract -> panda -> vanilla-extract: resolves token values across 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

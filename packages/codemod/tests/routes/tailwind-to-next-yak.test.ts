@@ -49,7 +49,7 @@ test("tailwind -> next-yak: migrates concrete tailwind syntax to next-yak", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const App = () => css\`gap: 1rem; align-items: center; display: flex;\`;",
+		export const App = () => css\`display: flex; align-items: center; gap: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("tailwind -> next-yak: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 1.125rem; color: #f97316;\`;",
+		export const App = () => css\`color: #f97316; padding: 1.125rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("tailwind -> next-yak: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 1.125rem; color: #2563eb;\`;",
+		export const App = () => css\`color: #2563eb; padding: 1.125rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("tailwind -> next-yak: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 1.125rem; color: #2563eb;\`;",
+		export const App = () => css\`color: #2563eb; padding: 1.125rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("tailwind -> next-yak: preserves malformed concrete tailwind input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const App = () => css\`gap: 1rem; align-items: center; display: flex;\`;
+		export const App = () => css\`display: flex; align-items: center; gap: 1rem;\`;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

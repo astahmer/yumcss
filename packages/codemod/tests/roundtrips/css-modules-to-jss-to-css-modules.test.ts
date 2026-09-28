@@ -207,7 +207,7 @@ test("css-modules -> jss -> css-modules: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> jss -> css-modules: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
 		/* /* pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("css-modules -> jss -> css-modules: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> jss -> css-modules: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
 		/* /* pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("css-modules -> jss -> css-modules: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -411,7 +411,7 @@ test("css-modules -> jss -> css-modules: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
 		/* /* pandwind:migrate-skip (route: jss -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": createUseStyles({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": createUseStyles({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -52,7 +52,7 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "4" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = (props) => styled.div({ padding: "1rem", color: "red" });",
+		export const Card = (props) => styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("styled-components -> chakra-ui -> styled-components: retains the documente
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "4" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("styled-components -> chakra-ui -> styled-components: retains the documente
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = (props) => styled.div({ padding: "1rem", color: "red" });",
+		export const Card = (props) => styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		    "forward": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "#2a57c8" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "#2a57c8", padding: "4" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -265,7 +265,7 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = (props) => styled.div({ padding: "1rem", color: "#2a57c8" });",
+		export const Card = (props) => styled.div({ color: "#2a57c8", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -301,7 +301,7 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		    "forward": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "brand.500" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "brand.500", padding: "4" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -335,7 +335,7 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = (props) => styled.div({ padding: "1rem", color: "#2a57c8" });",
+		export const Card = (props) => styled.div({ color: "#2a57c8", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -385,7 +385,7 @@ test("styled-components -> chakra-ui -> styled-components: resolves token values
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "brand.500" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "brand.500", padding: "4" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -419,7 +419,7 @@ test("styled-components -> chakra-ui -> styled-components: resolves token values
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = (props) => styled.div({ padding: "1rem", color: "#2a57c8" });",
+		export const Card = (props) => styled.div({ color: "#2a57c8", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

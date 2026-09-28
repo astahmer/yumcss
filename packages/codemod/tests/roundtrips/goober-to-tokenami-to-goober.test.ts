@@ -50,7 +50,7 @@ test("goober -> tokenami -> goober: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "red" });",
+		export const card = css({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("goober -> tokenami -> goober: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("goober -> tokenami -> goober: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: goober -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -162,11 +162,6 @@ test("goober -> tokenami -> goober: retains the documented secondary API without
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
-		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -174,7 +169,7 @@ test("goober -> tokenami -> goober: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: goober -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -216,7 +211,7 @@ test("goober -> tokenami -> goober: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "#2563eb" });",
+		export const card = css({ "--color": "#2563eb", "--padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -250,7 +245,7 @@ test("goober -> tokenami -> goober: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -288,7 +283,7 @@ test("goober -> tokenami -> goober: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,7 +317,7 @@ test("goober -> tokenami -> goober: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -375,7 +370,7 @@ test("goober -> tokenami -> goober: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -409,7 +404,7 @@ test("goober -> tokenami -> goober: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const card = css({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

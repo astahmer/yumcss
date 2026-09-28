@@ -49,7 +49,7 @@ test("react-native -> next-yak: migrates concrete react-native syntax to next-ya
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const styles = { "card": css\`padding: 8; color: red;\` };",
+		export const styles = { "card": css\`color: red; padding: 8px;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("react-native -> next-yak: carries a documented secondary react-native API 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const styles = { "card": css\`padding: 8; background-color: red;\` };",
+		export const styles = { "card": css\`padding: 8px; background-color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("react-native -> next-yak: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("react-native -> next-yak: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("react-native -> next-yak: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("react-native -> next-yak: preserves malformed concrete react-native input"
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const styles = { "card": css\`padding: 8; color: red;\` };
+		export const styles = { "card": css\`color: red; padding: 8px;\` };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

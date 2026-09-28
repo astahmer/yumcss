@@ -49,7 +49,7 @@ test("aphrodite -> panda: migrates concrete aphrodite syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css({ color: "red", padding: 8 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("aphrodite -> panda: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +179,7 @@ test("aphrodite -> panda: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "brand.500" }) };",
+		export const styles = { "card": css({ color: "brand.500", padding: 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +225,7 @@ test("aphrodite -> panda: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "brand.500" }) };",
+		export const styles = { "card": css({ color: "brand.500", padding: 8 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -268,7 +268,7 @@ test("aphrodite -> panda: preserves malformed concrete aphrodite input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: 8, color: "red" }) };
+		export const styles = { "card": css({ color: "red", padding: 8 }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

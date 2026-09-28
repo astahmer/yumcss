@@ -50,7 +50,7 @@ test("next-yak -> tamagui -> next-yak: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "red" });",
+		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("next-yak -> tamagui -> next-yak: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "next-yak";
-		export const card = styled(View)\`padding: 1rem; color: red;\`;",
+		export const card = styled(View)\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -131,10 +131,9 @@ test("next-yak -> tamagui -> next-yak: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;",
+		    "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,11 +165,10 @@ test("next-yak -> tamagui -> next-yak: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View } from "@tamagui/core";
-		import { styled } from "next-yak";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled(View)\`padding: 1rem; color: red;\`, props.className)} />;",
+		    "code": "import { View } from "@tamagui/core";
+		import { css } from "next-yak";
+		const __CardTamagui = css\`color: red; padding: 1rem;\`;
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} className={__CardTamagui} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +231,7 @@ test("next-yak -> tamagui -> next-yak: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +265,7 @@ test("next-yak -> tamagui -> next-yak: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { styled } from "next-yak";
-		export const card = styled(View)\`padding: 1rem; color: #2563eb;\`;",
+		export const card = styled(View)\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -303,7 +301,7 @@ test("next-yak -> tamagui -> next-yak: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -337,7 +335,7 @@ test("next-yak -> tamagui -> next-yak: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { styled } from "next-yak";
-		export const card = styled(View)\`padding: 1rem; color: #2563eb;\`;",
+		export const card = styled(View)\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -387,7 +385,7 @@ test("next-yak -> tamagui -> next-yak: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -421,7 +419,7 @@ test("next-yak -> tamagui -> next-yak: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "next-yak";
-		export const card = styled(View)\`padding: 1rem; color: #2563eb;\`;",
+		export const card = styled(View)\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

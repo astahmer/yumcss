@@ -36,7 +36,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "0.5rem", color: "#123456" });"
+			export const card = css.class({ color: "#123456", padding: "0.5rem" });"
 		`);
 	});
 
@@ -83,7 +83,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			export const card = css({ "--color": "var(--color_brand)", "--padding": "var(--spacing_4)" });",
 			  "output": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "var(--spacing_4)", color: "var(--color_brand)" });",
+			export const card = css.class({ color: "var(--color_brand)", padding: "var(--spacing_4)" });",
 			  "residuals": [],
 			}
 		`);
@@ -133,7 +133,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
 			export const accent = "--pw-accent";
-			export const card = css.class({ "--pw-accent": "#123456", color: "var(--pw-accent)" });"
+			export const card = css.class({ color: "var(--pw-accent)", "--pw-accent": "#123456" });"
 		`);
 	});
 

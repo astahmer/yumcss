@@ -52,7 +52,7 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "4", borderRadius: "lg", color: "blue.500" });"
+			export const card = css.class({ color: "blue.500", padding: "4", borderRadius: "lg" });"
 		`);
 	});
 

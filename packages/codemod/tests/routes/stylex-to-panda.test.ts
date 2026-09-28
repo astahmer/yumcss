@@ -49,7 +49,7 @@ test("stylex -> panda: migrates concrete stylex syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("stylex -> panda: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("stylex -> panda: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "brand.500" }) };",
+		export const styles = { "card": css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("stylex -> panda: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "brand.500" }) };",
+		export const styles = { "card": css({ color: "brand.500", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("stylex -> panda: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "8px", color: "red" }) };
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

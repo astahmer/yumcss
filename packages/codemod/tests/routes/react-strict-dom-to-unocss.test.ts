@@ -49,7 +49,7 @@ test("react-strict-dom -> unocss: migrates concrete react-strict-dom syntax to u
 		{
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] [color:red]" };
+		const styles = { "card": "[color:red] [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("react-strict-dom -> unocss: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] [color:#2563eb]" };
+		const styles = { "card": "[color:#2563eb] [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("react-strict-dom -> unocss: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] text-brand" };
+		const styles = { "card": "text-brand [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("react-strict-dom -> unocss: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] text-brand" };
+		const styles = { "card": "text-brand [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("react-strict-dom -> unocss: preserves malformed concrete react-strict-dom 
 		{
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] [color:red]" };
+		const styles = { "card": "[color:red] [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

@@ -138,8 +138,8 @@ test("fela -> stitches -> fela: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const Card = css({ color: "red" });",
+		    "code": "import { styled } from "@stitches/react";
+		export const Card = styled("button", { color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,8 +174,10 @@ test("fela -> stitches -> fela: retains the documented secondary API without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const Card = renderer.renderRule({ "color": "red" });",
-		    "converted": 1,
+		    "code": "import { styled } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> fela | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		export const Card = styled("button", { color: "red" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -193,19 +195,19 @@ test("fela -> stitches -> fela: retains the documented secondary API without sil
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled("button")",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

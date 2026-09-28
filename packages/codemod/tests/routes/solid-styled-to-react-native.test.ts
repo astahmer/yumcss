@@ -49,7 +49,7 @@ test("solid-styled -> react-native: migrates concrete solid-styled syntax to rea
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -95,7 +95,7 @@ test("solid-styled -> react-native: carries a documented secondary solid-styled 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -150,7 +150,7 @@ test("solid-styled -> react-native: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,7 +187,7 @@ test("solid-styled -> react-native: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("solid-styled -> react-native: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,7 +283,7 @@ test("solid-styled -> react-native: preserves malformed concrete solid-styled in
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
 		import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

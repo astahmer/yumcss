@@ -49,7 +49,7 @@ test("react-native -> unocss -> react-native: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:8] [color:red]" };",
+		    "code": "export const styles = { "card": "[color:red] [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("react-native -> unocss -> react-native: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "red" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -135,7 +135,7 @@ test("react-native -> unocss -> react-native: retains the documented secondary A
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:8] [background-color:red]" };",
+		    "code": "export const styles = { "card": "[padding:8px] [background-color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -171,7 +171,7 @@ test("react-native -> unocss -> react-native: retains the documented secondary A
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": "8", "backgroundColor": "red" } });",
+		export const styles = StyleSheet.create({ "card": { "padding": 8, "backgroundColor": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[padding:8] [color:#2563eb]" };",
+		      "code": "export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -272,7 +272,7 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,7 +310,7 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		      "code": "export const styles = { "card": "text-brand [padding:8px]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +346,7 @@ test("react-native -> unocss -> react-native: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -398,7 +398,7 @@ test("react-native -> unocss -> react-native: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:8] text-brand" };",
+		    "code": "export const styles = { "card": "text-brand [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -434,7 +434,7 @@ test("react-native -> unocss -> react-native: resolves token values across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = StyleSheet.create({ "card": { "padding": "8", "color": "#2563eb" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

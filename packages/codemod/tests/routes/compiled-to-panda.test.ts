@@ -49,7 +49,7 @@ test("compiled -> panda: migrates concrete compiled syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("compiled -> panda: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("compiled -> panda: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "brand.500" });",
+		export const card = css({ color: "brand.500", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("compiled -> panda: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "brand.500" });",
+		export const card = css({ color: "brand.500", padding: 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("compiled -> panda: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "red" });
+		export const card = css({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

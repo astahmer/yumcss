@@ -51,7 +51,7 @@ test("mantine -> styled-components -> mantine: preserves an actionable concrete 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("mantine -> styled-components -> mantine: preserves an actionable concrete 
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const App = () => styled.div({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -211,7 +211,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -247,7 +247,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const App = () => styled.div({ marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,7 +284,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -320,7 +320,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const App = () => styled.div({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -371,7 +371,7 @@ test("mantine -> styled-components -> mantine: resolves token values across both
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => styled.div({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -407,7 +407,7 @@ test("mantine -> styled-components -> mantine: resolves token values across both
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const App = () => styled.div({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => styled.div({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

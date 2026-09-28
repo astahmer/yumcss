@@ -50,7 +50,7 @@ test("mantine -> stylex: migrates concrete mantine syntax to stylex", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("mantine -> stylex: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("mantine -> stylex: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("mantine -> stylex: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,7 +281,7 @@ test("mantine -> stylex: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;
+		export const App = () => stylex.create({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,7 +49,7 @@ test("stitches -> tamagui: migrates concrete stitches syntax to tamagui", () => 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "red" });",
+		export const card = styled(View, { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -142,7 +142,7 @@ test("stitches -> tamagui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -175,7 +175,7 @@ test("stitches -> tamagui: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,7 +220,7 @@ test("stitches -> tamagui: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -262,7 +262,7 @@ test("stitches -> tamagui: preserves malformed concrete stitches input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "red" });
+		export const card = styled(View, { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -94,7 +94,7 @@ test("bamboo -> stitches: carries a documented secondary bamboo API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -51,7 +51,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves an ac
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "red" }) };
+		const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves an ac
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		const styles = { "card": styled.div({ padding: "1rem", color: "red" }) };
+		const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -253,7 +253,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -290,7 +290,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -335,7 +335,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -372,7 +372,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -431,7 +431,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: resolves token 
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -468,7 +468,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: resolves token 
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

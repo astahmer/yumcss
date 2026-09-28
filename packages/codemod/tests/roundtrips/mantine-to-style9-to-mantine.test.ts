@@ -51,7 +51,7 @@ test("mantine -> style9 -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("mantine -> style9 -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
+		export const App = () => <Box className={style9({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -214,7 +214,7 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -252,7 +252,7 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9({ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
+		export const App = () => <Box className={style9({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -327,7 +327,7 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9({ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
+		export const App = () => <Box className={style9({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -378,7 +378,7 @@ test("mantine -> style9 -> mantine: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -416,7 +416,7 @@ test("mantine -> style9 -> mantine: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9({ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
+		export const App = () => <Box className={style9({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

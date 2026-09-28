@@ -50,7 +50,7 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves an actionable c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves an actionable c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "red" });",
+		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -215,7 +215,7 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,7 +251,7 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,7 +325,7 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +377,7 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: resolves token values acr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "padding": 8, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -413,7 +413,7 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: resolves token values acr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -49,7 +49,7 @@ test("next-yak -> tokenami: migrates concrete next-yak syntax to tokenami", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "red" });",
+		export const card = css({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -91,10 +91,9 @@ test("next-yak -> tokenami: carries a documented secondary next-yak API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { css } from "@tokenami/css";
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--padding": "1rem" }), propsStyle)} />; };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -110,19 +109,19 @@ test("next-yak -> tokenami: carries a documented secondary next-yak API explicit
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		      "kind": "host-framework",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -145,7 +144,7 @@ test("next-yak -> tokenami: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "#2563eb" });",
+		export const card = css({ "--color": "#2563eb", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +178,7 @@ test("next-yak -> tokenami: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +224,7 @@ test("next-yak -> tokenami: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -268,7 +267,7 @@ test("next-yak -> tokenami: preserves malformed concrete next-yak input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--padding": "1rem", "--color": "red" });
+		export const card = css({ "--color": "red", "--padding": "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

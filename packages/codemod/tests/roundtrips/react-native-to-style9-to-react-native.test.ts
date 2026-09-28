@@ -50,7 +50,7 @@ test("react-native -> style9 -> react-native: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": 8, "color": "red" }) };",
+		export const styles = { "card": style9.create({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("react-native -> style9 -> react-native: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("react-native -> style9 -> react-native: retains the documented secondary A
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": 8, "backgroundColor": "red" }) };",
+		export const styles = { "card": style9.create({ "padding": "8px", "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("react-native -> style9 -> react-native: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +275,7 @@ test("react-native -> style9 -> react-native: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,7 +314,7 @@ test("react-native -> style9 -> react-native: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +350,7 @@ test("react-native -> style9 -> react-native: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -403,7 +403,7 @@ test("react-native -> style9 -> react-native: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +439,7 @@ test("react-native -> style9 -> react-native: resolves token values across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

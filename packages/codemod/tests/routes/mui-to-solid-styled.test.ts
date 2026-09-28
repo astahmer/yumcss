@@ -48,8 +48,8 @@ test("mui -> solid-styled: migrates concrete mui syntax to solid-styled", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "red" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "red", "padding": "16px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +93,8 @@ test("mui -> solid-styled: carries a documented secondary mui API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": 8, "color": "red" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const Card = css({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,8 +146,8 @@ test("mui -> solid-styled: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#f97316" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,8 +182,8 @@ test("mui -> solid-styled: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,8 +230,8 @@ test("mui -> solid-styled: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -275,8 +275,8 @@ test("mui -> solid-styled: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "red" });
+		  "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "red", "padding": "16px" });
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

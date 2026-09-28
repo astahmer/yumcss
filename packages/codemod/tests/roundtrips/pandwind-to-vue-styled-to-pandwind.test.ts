@@ -51,7 +51,7 @@ test("pandwind -> vue-styled -> pandwind: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -92,7 +92,7 @@ test("pandwind -> vue-styled -> pandwind: preserves an actionable concrete round
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#f97316" });",
+		export const card = styled.div\`color: #f97316; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -271,7 +271,7 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -308,7 +308,7 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +350,7 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -401,7 +401,7 @@ test("pandwind -> vue-styled -> pandwind: resolves token values across both conc
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -443,7 +443,7 @@ test("pandwind -> vue-styled -> pandwind: resolves token values across both conc
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

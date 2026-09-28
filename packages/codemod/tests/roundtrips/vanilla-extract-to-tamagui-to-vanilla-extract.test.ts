@@ -50,7 +50,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves an actionable con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "red" });",
+		export const card = styled(View, { color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves an actionable con
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "red" });",
+		export const card = styled(View, { color: "red", padding: "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -240,7 +240,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,7 +274,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +312,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +346,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -398,7 +398,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -432,7 +432,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: resolves token values acros
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

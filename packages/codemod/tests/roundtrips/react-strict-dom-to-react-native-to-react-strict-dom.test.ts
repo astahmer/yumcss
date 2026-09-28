@@ -51,7 +51,7 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves an actiona
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
+		const styles = StyleSheet.create({ "card": { "color": "red", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,11 +89,10 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves an actiona
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ color: "red", padding: "16px" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -111,25 +110,17 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves an actiona
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -231,7 +222,7 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves concrete t
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -269,11 +260,10 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves concrete t
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ color: "#2563eb", padding: "16px" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -291,25 +281,17 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves concrete t
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -319,7 +301,7 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves concrete t
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -357,11 +339,10 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves concrete t
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ color: "#2563eb", padding: "16px" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -379,25 +360,17 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves concrete t
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -421,7 +394,7 @@ test("react-strict-dom -> react-native -> react-strict-dom: resolves token value
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -459,11 +432,10 @@ test("react-strict-dom -> react-native -> react-strict-dom: resolves token value
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> react-strict-dom | lowering-residual: validation)
-		const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ color: "#2563eb", padding: "16px" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -481,25 +453,17 @@ test("react-strict-dom -> react-native -> react-strict-dom: resolves token value
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

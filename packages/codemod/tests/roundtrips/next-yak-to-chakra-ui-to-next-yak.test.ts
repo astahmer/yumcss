@@ -53,7 +53,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
 
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -136,7 +136,7 @@ test("next-yak -> chakra-ui -> next-yak: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "4" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("next-yak -> chakra-ui -> next-yak: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const Card = (props) => css\`padding: 1rem; color: red;\`;",
+		export const Card = (props) => css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "#2a57c8" });",
+		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
 
-		export const card = css\`padding: 1rem; color: #2a57c8;\`;",
+		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -306,7 +306,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
 
-		export const card = css\`padding: 1rem; color: #2a57c8;\`;",
+		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -392,7 +392,7 @@ test("next-yak -> chakra-ui -> next-yak: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("next-yak -> chakra-ui -> next-yak: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
 
-		export const card = css\`padding: 1rem; color: #2a57c8;\`;",
+		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -50,7 +50,7 @@ test("tokenami -> stylex -> tokenami: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", gap: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("tokenami -> stylex -> tokenami: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ "--gap": "1rem", "--color": "red" }) }.style;",
+		export const card = { "style": css({ "--color": "red", "--gap": "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -211,7 +211,7 @@ test("tokenami -> stylex -> tokenami: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "#f97316" } }).style;",
+		export const card = stylex.create({ style: { color: "#f97316", gap: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -247,7 +247,7 @@ test("tokenami -> stylex -> tokenami: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ "--gap": "1rem", "--color": "var(--color_brand)" }) }.style;",
+		export const card = { "style": css({ "--color": "var(--color_brand)", "--gap": "1rem" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,7 +283,7 @@ test("tokenami -> stylex -> tokenami: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", gap: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -319,7 +319,7 @@ test("tokenami -> stylex -> tokenami: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ "--gap": "1rem", "--color": "var(--color_brand)" }) }.style;",
+		export const card = { "style": css({ "--color": "var(--color_brand)", "--gap": "1rem" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -369,7 +369,7 @@ test("tokenami -> stylex -> tokenami: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", gap: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -405,7 +405,7 @@ test("tokenami -> stylex -> tokenami: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = { "style": css({ "--gap": "1rem", "--color": "var(--color_brand)" }) }.style;",
+		export const card = { "style": css({ "--color": "var(--color_brand)", "--gap": "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

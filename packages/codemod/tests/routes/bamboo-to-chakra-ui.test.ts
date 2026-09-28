@@ -96,7 +96,7 @@ test("bamboo -> chakra-ui: carries a documented secondary bamboo API explicitly"
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", display: "flex" });",
+		export const card = defaultSystem.css({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -49,7 +49,7 @@ test("unocss -> stylex: migrates concrete unocss syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).style;",
+		export const App = () => stylex.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -161,7 +161,7 @@ test("unocss -> stylex: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "1.125rem", color: "#f97316" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#f97316", padding: "1.125rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -197,7 +197,7 @@ test("unocss -> stylex: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -245,7 +245,7 @@ test("unocss -> stylex: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -290,7 +290,7 @@ test("unocss -> stylex: preserves malformed concrete unocss input", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).style;
+		export const App = () => stylex.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

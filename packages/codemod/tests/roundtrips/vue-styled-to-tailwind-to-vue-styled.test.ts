@@ -49,8 +49,7 @@ test("vue-styled -> tailwind -> vue-styled: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] [color:red]", attrs.class] }, slots.default?.()));",
+		    "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,8 +84,7 @@ test("vue-styled -> tailwind -> vue-styled: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] [color:red]", attrs.class] }, slots.default?.()));",
+		    "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -111,8 +109,7 @@ test("vue-styled -> tailwind -> vue-styled: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] [color:red]", attrs.class] }, slots.default?.()));",
+		    "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -147,8 +144,7 @@ test("vue-styled -> tailwind -> vue-styled: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] [color:red]", attrs.class] }, slots.default?.()));",
+		    "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -188,8 +184,7 @@ test("vue-styled -> tailwind -> vue-styled: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] [color:#2563eb]", attrs.class] }, slots.default?.()));",
+		      "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:#2563eb] [padding:1rem]"] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -224,8 +219,7 @@ test("vue-styled -> tailwind -> vue-styled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] [color:#2563eb]", attrs.class] }, slots.default?.()));",
+		      "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:#2563eb] [padding:1rem]"] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -238,8 +232,7 @@ test("vue-styled -> tailwind -> vue-styled: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] text-brand", attrs.class] }, slots.default?.()));",
+		      "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,8 +267,7 @@ test("vue-styled -> tailwind -> vue-styled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] text-brand", attrs.class] }, slots.default?.()));",
+		      "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -302,8 +294,7 @@ test("vue-styled -> tailwind -> vue-styled: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] text-brand", attrs.class] }, slots.default?.()));",
+		    "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -338,8 +329,7 @@ test("vue-styled -> tailwind -> vue-styled: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: ["[padding:1rem] text-brand", attrs.class] }, slots.default?.()));",
+		    "code": "export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

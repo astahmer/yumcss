@@ -48,10 +48,10 @@ test("solid-styled -> mantine: migrates concrete solid-styled syntax to mantine"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -68,19 +68,19 @@ test("solid-styled -> mantine: migrates concrete solid-styled syntax to mantine"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
+		      "outcome": "residual",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -93,10 +93,10 @@ test("solid-styled -> mantine: carries a documented secondary solid-styled API e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -113,19 +113,19 @@ test("solid-styled -> mantine: carries a documented secondary solid-styled API e
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
+		      "outcome": "residual",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -147,10 +147,10 @@ test("solid-styled -> mantine: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "#2563eb" }), props.class).className} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -167,26 +167,26 @@ test("solid-styled -> mantine: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
+		        "outcome": "residual",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -203,19 +203,19 @@ test("solid-styled -> mantine: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
+		        "outcome": "residual",
 		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -231,10 +231,10 @@ test("solid-styled -> mantine: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "var(--mantine-color-brand-0)" }), props.class).className} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -251,19 +251,19 @@ test("solid-styled -> mantine: resolves concrete token values with project conte
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
+		      "outcome": "residual",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -277,11 +277,10 @@ test("solid-styled -> mantine: preserves malformed concrete solid-styled input",
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = (props) => <div {...props} class={css.props(css.class({ "padding": "1rem", "color": "red" }), props.class).className} />;
+		// pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -298,19 +297,19 @@ test("solid-styled -> mantine: preserves malformed concrete solid-styled input",
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
+		      "outcome": "residual",
 		      "representation": "portable-artifact",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

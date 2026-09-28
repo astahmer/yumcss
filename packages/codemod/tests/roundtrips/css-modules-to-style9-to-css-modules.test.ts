@@ -207,7 +207,7 @@ test("css-modules -> style9 -> css-modules: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> style9 -> css-modules: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import style9 from "style9";
 		/* /* pandwind:migrate-skip (route: style9 -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("css-modules -> style9 -> css-modules: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> style9 -> css-modules: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import style9 from "style9";
 		/* /* pandwind:migrate-skip (route: style9 -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("css-modules -> style9 -> css-modules: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -411,7 +411,7 @@ test("css-modules -> style9 -> css-modules: resolves token values across both co
 		    "changed": true,
 		    "code": "import style9 from "style9";
 		/* /* pandwind:migrate-skip (route: style9 -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -53,7 +53,7 @@ test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "red" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "red", padding: "$4" }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +89,8 @@ test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = (props) => styled(View, { padding: "1rem", color: "red" });
+		const __componentTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -219,7 +220,7 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "#2a57c8" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "#2a57c8", padding: "$4" }} />;
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,7 +256,8 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = (props) => styled(View, { padding: "1rem", color: "#2a57c8" });
+		const __componentTamagui = styled(View, { color: "#2a57c8", padding: "1rem" });
+		export const Card = (props) => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -292,7 +294,7 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "brand.500" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "brand.500", padding: "$4" }} />;
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -328,7 +330,8 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = (props) => styled(View, { padding: "1rem", color: "#2a57c8" });
+		const __componentTamagui = styled(View, { color: "#2a57c8", padding: "1rem" });
+		export const Card = (props) => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -379,7 +382,7 @@ test("tamagui -> chakra-ui -> tamagui: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "brand.500" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "brand.500", padding: "$4" }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -415,7 +418,8 @@ test("tamagui -> chakra-ui -> tamagui: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
-		export const Card = (props) => styled(View, { padding: "1rem", color: "#2a57c8" });
+		const __componentTamagui = styled(View, { color: "#2a57c8", padding: "1rem" });
+		export const Card = (props) => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],

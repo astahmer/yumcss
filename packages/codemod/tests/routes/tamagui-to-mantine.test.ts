@@ -49,7 +49,7 @@ test("tamagui -> mantine: migrates concrete tamagui syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "red" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "red", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("tamagui -> mantine: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "#2563eb" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "#2563eb", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,7 +185,7 @@ test("tamagui -> mantine: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +232,7 @@ test("tamagui -> mantine: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +276,7 @@ test("tamagui -> mantine: preserves malformed concrete tamagui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "red" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "red", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

@@ -12,6 +12,7 @@ import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { SourceBindingKind, type SourceBinding } from "pandwind/source";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
+import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodCallPatternKindTag,
@@ -293,7 +294,14 @@ export default {
 				match.program.residuals.some(({ kind }) => kind === StyleProgramResidualKindTag.Component),
 			),
 		];
-		if (protectedMatches.length === 0) return parsed;
+		if (protectedMatches.length === 0)
+			return {
+				...parsed,
+				matches: parsed.matches.map((match) => ({
+					...match,
+					program: normalizeCssObjectNumericUnits(match.program),
+				})),
+			};
 		const ranges = protectedMatches.map((match) => ({ start: match.start, end: match.end }));
 		const overlaps = (match: { readonly start: number; readonly end: number }): boolean =>
 			ranges.some((range) => match.start < range.end && match.end > range.start);
@@ -306,7 +314,12 @@ export default {
 						({ kind }) => kind === StyleProgramResidualKindTag.Component,
 					),
 				),
-			].toSorted((left, right) => left.start - right.start),
+			]
+				.toSorted((left, right) => left.start - right.start)
+				.map((match) => ({
+					...match,
+					program: normalizeCssObjectNumericUnits(match.program),
+				})),
 			residuals: parsed.residuals,
 		};
 	},

@@ -49,7 +49,8 @@ test("mui -> tamagui: migrates concrete mui syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "red" });",
+		const __componentTamagui = styled(View, { color: "red", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -91,7 +92,7 @@ test("mui -> tamagui: carries a documented secondary mui API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: 8, color: "red" });",
+		export const Card = styled(View, { color: "red", padding: 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -141,7 +142,8 @@ test("mui -> tamagui: loads concrete theme and project context variants", async 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "#f97316" });",
+		const __componentTamagui = styled(View, { color: "#f97316", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +176,8 @@ test("mui -> tamagui: loads concrete theme and project context variants", async 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,7 +222,8 @@ test("mui -> tamagui: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -261,7 +265,8 @@ test("mui -> tamagui: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "red" });
+		const __componentTamagui = styled(View, { color: "red", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

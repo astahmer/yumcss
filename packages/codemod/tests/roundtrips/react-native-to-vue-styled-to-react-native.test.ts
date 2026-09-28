@@ -50,7 +50,7 @@ test("react-native -> vue-styled -> react-native: preserves an actionable concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
+		export const styles = styled.div\` color: red; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,8 +86,8 @@ test("react-native -> vue-styled -> react-native: preserves an actionable concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: red; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -112,11 +112,6 @@ test("react-native -> vue-styled -> react-native: preserves an actionable concre
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "react-native has no host representation for vue",
 		        "kind": "host-framework",
@@ -143,7 +138,7 @@ test("react-native -> vue-styled -> react-native: retains the documented seconda
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "backgroundColor": "red" }) };",
+		export const styles = styled.div\` padding: 8px; background-color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,8 +174,8 @@ test("react-native -> vue-styled -> react-native: retains the documented seconda
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "backgroundColor": "red" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` padding: 8px; background-color: red;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -205,11 +200,6 @@ test("react-native -> vue-styled -> react-native: retains the documented seconda
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "react-native has no host representation for vue",
 		        "kind": "host-framework",
@@ -251,7 +241,7 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -287,8 +277,8 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,11 +303,6 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "react-native has no host representation for vue",
 		          "kind": "host-framework",
@@ -332,7 +317,7 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -368,8 +353,8 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -394,11 +379,6 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "react-native has no host representation for vue",
 		          "kind": "host-framework",
@@ -427,7 +407,7 @@ test("react-native -> vue-styled -> react-native: resolves token values across b
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -463,8 +443,8 @@ test("react-native -> vue-styled -> react-native: resolves token values across b
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -489,11 +469,6 @@ test("react-native -> vue-styled -> react-native: resolves token values across b
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "react-native has no host representation for vue",
 		        "kind": "host-framework",

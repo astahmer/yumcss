@@ -50,8 +50,9 @@ test("tamagui -> stylex: migrates concrete tamagui syntax to stylex", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "red" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "red", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -156,8 +157,9 @@ test("tamagui -> stylex: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -194,8 +196,9 @@ test("tamagui -> stylex: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -244,8 +247,9 @@ test("tamagui -> stylex: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -291,8 +295,9 @@ test("tamagui -> stylex: preserves malformed concrete tamagui input", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "red" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;
+		const __CardStyle = stylex.create({ style: { color: "red", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,
 		  "generatedFiles": [],

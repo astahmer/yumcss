@@ -49,7 +49,7 @@ test("goober -> styled-components: migrates concrete goober syntax to styled-com
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "red" });",
+		export const card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("goober -> styled-components: carries a documented secondary goober API exp
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: "1rem", color: "red" });",
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("goober -> styled-components: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("goober -> styled-components: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("goober -> styled-components: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("goober -> styled-components: preserves malformed concrete goober input", (
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "red" });
+		export const card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

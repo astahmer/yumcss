@@ -52,8 +52,8 @@ test("tamagui -> pandwind -> tamagui: preserves an actionable concrete round tri
 		    "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "red" });
-		export const App = () => <View className={Card} />;",
+		export const Card = css.class({ color: "red", padding: "$4" });
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,9 +88,10 @@ test("tamagui -> pandwind -> tamagui: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "red", padding: "$4" });
 
-		export const Card = styled(View, { padding: "$4", color: "red" });
-		export const App = () => <View className={Card} />;",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -215,8 +216,8 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		      "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
+		export const Card = css.class({ color: "#2563eb", padding: "$4" });
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,9 +252,10 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -290,8 +292,8 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		      "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "brand" });
-		export const App = () => <View className={Card} />;",
+		export const Card = css.class({ color: "brand", padding: "$4" });
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -326,9 +328,10 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -379,8 +382,8 @@ test("tamagui -> pandwind -> tamagui: resolves token values across both concrete
 		    "code": "import { View } from "tamagui";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: "$4", color: "brand" });
-		export const App = () => <View className={Card} />;",
+		export const Card = css.class({ color: "brand", padding: "$4" });
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -415,9 +418,10 @@ test("tamagui -> pandwind -> tamagui: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

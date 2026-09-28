@@ -49,7 +49,7 @@ test("stylex -> compiled: migrates concrete stylex syntax to compiled", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": "8px", "color": "red" }) };",
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("stylex -> compiled: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("stylex -> compiled: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("stylex -> compiled: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("stylex -> compiled: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const styles = { "card": css({ "padding": "8px", "color": "red" }) };
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

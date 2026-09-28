@@ -201,7 +201,7 @@ test("css-modules -> bamboo -> css-modules: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -237,7 +237,7 @@ test("css-modules -> bamboo -> css-modules: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 		/* /* pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -275,7 +275,7 @@ test("css-modules -> bamboo -> css-modules: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -311,7 +311,7 @@ test("css-modules -> bamboo -> css-modules: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 		/* /* pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -363,7 +363,7 @@ test("css-modules -> bamboo -> css-modules: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -399,7 +399,7 @@ test("css-modules -> bamboo -> css-modules: resolves token values across both co
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 		/* /* pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -49,7 +49,7 @@ test("mantine -> fela: migrates concrete mantine syntax to fela", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("mantine -> fela: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("mantine -> fela: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("mantine -> fela: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => renderer.renderRule({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -279,7 +279,7 @@ test("mantine -> fela: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => renderer.renderRule({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });
+		export const App = () => renderer.renderRule({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

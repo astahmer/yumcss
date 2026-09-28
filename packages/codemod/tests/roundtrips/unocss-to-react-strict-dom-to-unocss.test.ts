@@ -50,7 +50,7 @@ test("unocss -> react-strict-dom -> unocss: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("unocss -> react-strict-dom -> unocss: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		export const App = () => <html.div style={{ "style": "[gap:1rem] [align-items:center] [display:flex]" }.style} />;",
+		export const App = () => <html.div style={{ "style": "[display:flex] [align-items:center] [gap:1rem]" }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,7 +220,7 @@ test("unocss -> react-strict-dom -> unocss: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#f97316" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#f97316", padding: "1.125rem" } }).style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("unocss -> react-strict-dom -> unocss: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		export const App = () => <html.div style={{ "style": "p-card text-brand" }.style} />;",
+		export const App = () => <html.div style={{ "style": "text-brand p-card" }.style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -294,7 +294,7 @@ test("unocss -> react-strict-dom -> unocss: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,7 +330,7 @@ test("unocss -> react-strict-dom -> unocss: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		export const App = () => <html.div style={{ "style": "p-card text-brand" }.style} />;",
+		export const App = () => <html.div style={{ "style": "text-brand p-card" }.style} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +382,7 @@ test("unocss -> react-strict-dom -> unocss: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		export const App = () => <html.div style={css.create({ style: { padding: "1.125rem", color: "#2563eb" } }).style} />;",
+		export const App = () => <html.div style={css.create({ style: { color: "#2563eb", padding: "1.125rem" } }).style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,7 +418,7 @@ test("unocss -> react-strict-dom -> unocss: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		export const App = () => <html.div style={{ "style": "p-card text-brand" }.style} />;",
+		export const App = () => <html.div style={{ "style": "text-brand p-card" }.style} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

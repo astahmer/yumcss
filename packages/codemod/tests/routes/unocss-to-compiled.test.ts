@@ -49,7 +49,7 @@ test("unocss -> compiled: migrates concrete unocss syntax to compiled", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const App = () => <div className={css({ "gap": "1rem", "alignItems": "center", "display": "flex" })}/>;",
+		export const App = () => <div className={css({ "display": "flex", "alignItems": "center", "gap": "1rem" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("unocss -> compiled: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const App = () => <div className={css({ "padding": "1.125rem", "color": "#f97316" })}/>;",
+		export const App = () => <div className={css({ "color": "#f97316", "padding": "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("unocss -> compiled: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const App = () => <div className={css({ "padding": "1.125rem", "color": "#2563eb" })}/>;",
+		export const App = () => <div className={css({ "color": "#2563eb", "padding": "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("unocss -> compiled: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const App = () => <div className={css({ "padding": "1.125rem", "color": "#2563eb" })}/>;",
+		export const App = () => <div className={css({ "color": "#2563eb", "padding": "1.125rem" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,7 +276,7 @@ test("unocss -> compiled: preserves malformed concrete unocss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		export const App = () => <div className={css({ "gap": "1rem", "alignItems": "center", "display": "flex" })}/>;
+		export const App = () => <div className={css({ "display": "flex", "alignItems": "center", "gap": "1rem" })}/>;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

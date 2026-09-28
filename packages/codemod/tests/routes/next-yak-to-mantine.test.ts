@@ -105,7 +105,7 @@ test("next-yak -> mantine: carries a documented secondary next-yak API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;",
+		  "code": "export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

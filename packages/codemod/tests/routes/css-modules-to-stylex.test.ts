@@ -165,7 +165,7 @@ test("css-modules -> stylex: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> stylex: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> stylex: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

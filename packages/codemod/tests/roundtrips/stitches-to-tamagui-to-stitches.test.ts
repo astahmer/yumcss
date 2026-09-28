@@ -50,7 +50,7 @@ test("stitches -> tamagui -> stitches: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "red" });",
+		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,8 +83,8 @@ test("stitches -> tamagui -> stitches: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
-		import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "red" });",
+		import { styled } from "@stitches/react";
+		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,8 +167,8 @@ test("stitches -> tamagui -> stitches: retains the documented secondary API with
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
-		import { css } from "@stitches/react";
-		export const reset = css({ body: { margin: 0 } });",
+		import { styled } from "@stitches/react";
+		export const reset = styled(View, { body: { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("stitches -> tamagui -> stitches: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -266,8 +266,8 @@ test("stitches -> tamagui -> stitches: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
-		import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		import { styled } from "@stitches/react";
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("stitches -> tamagui -> stitches: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -338,8 +338,8 @@ test("stitches -> tamagui -> stitches: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
-		import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		import { styled } from "@stitches/react";
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("stitches -> tamagui -> stitches: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -424,8 +424,8 @@ test("stitches -> tamagui -> stitches: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
-		import { css } from "@stitches/react";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		import { styled } from "@stitches/react";
+		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

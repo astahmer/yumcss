@@ -50,7 +50,7 @@ test("linaria -> react-native -> linaria: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("linaria -> react-native -> linaria: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 16; color: red;\`;",
+		export const card = css\`color: red; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -217,7 +217,7 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -254,7 +254,7 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 16; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -292,7 +292,7 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,7 +329,7 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 16; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -381,7 +381,7 @@ test("linaria -> react-native -> linaria: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,7 +418,7 @@ test("linaria -> react-native -> linaria: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 16; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

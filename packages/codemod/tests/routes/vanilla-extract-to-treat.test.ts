@@ -49,7 +49,7 @@ test("vanilla-extract -> treat: migrates concrete vanilla-extract syntax to trea
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "red" });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("vanilla-extract -> treat: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("vanilla-extract -> treat: preserves malformed concrete vanilla-extract inp
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": 8, "color": "red" });
+		export const card = style({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

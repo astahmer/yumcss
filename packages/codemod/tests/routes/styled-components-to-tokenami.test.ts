@@ -49,7 +49,7 @@ test("styled-components -> tokenami: migrates concrete styled-components syntax 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "red" }), propsStyle)} />; };",
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--padding": "1rem" }), propsStyle)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("styled-components -> tokenami: carries a documented secondary styled-compo
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "red" }), propsStyle)} />; };",
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--padding": "1rem" }), propsStyle)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("styled-components -> tokenami: loads concrete theme and project context va
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "#2563eb" }), propsStyle)} />; };",
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "#2563eb", "--padding": "1rem" }), propsStyle)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("styled-components -> tokenami: loads concrete theme and project context va
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "var(--color_brand)", "--padding": "1rem" }), propsStyle)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("styled-components -> tokenami: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "var(--color_brand)", "--padding": "1rem" }), propsStyle)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -268,7 +268,7 @@ test("styled-components -> tokenami: preserves malformed concrete styled-compone
 		  "changed": true,
 		  "code": "import styled from "styled-components";
 		import { css } from "@tokenami/css";
-		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "red" }), propsStyle)} />; };
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--padding": "1rem" }), propsStyle)} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

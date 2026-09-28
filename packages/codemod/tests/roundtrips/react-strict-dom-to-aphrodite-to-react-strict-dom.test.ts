@@ -51,7 +51,7 @@ test("react-strict-dom -> aphrodite -> react-strict-dom: preserves an actionable
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "red" } });
+		const styles = StyleSheet.create({ "card": { "color": "red", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +89,7 @@ test("react-strict-dom -> aphrodite -> react-strict-dom: preserves an actionable
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -220,7 +220,7 @@ test("react-strict-dom -> aphrodite -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -258,7 +258,7 @@ test("react-strict-dom -> aphrodite -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +298,7 @@ test("react-strict-dom -> aphrodite -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -336,7 +336,7 @@ test("react-strict-dom -> aphrodite -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -390,7 +390,7 @@ test("react-strict-dom -> aphrodite -> react-strict-dom: resolves token values a
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
-		const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "#2563eb" } });
+		const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -428,7 +428,7 @@ test("react-strict-dom -> aphrodite -> react-strict-dom: resolves token values a
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

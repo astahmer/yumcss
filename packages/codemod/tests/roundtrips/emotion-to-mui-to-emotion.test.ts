@@ -51,7 +51,7 @@ test("emotion -> mui -> emotion: preserves an actionable concrete round trip", (
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("emotion -> mui -> emotion: preserves an actionable concrete round trip", (
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -114,7 +114,7 @@ test("emotion -> mui -> emotion: retains the documented secondary API without si
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -150,7 +150,7 @@ test("emotion -> mui -> emotion: retains the documented secondary API without si
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -192,7 +192,7 @@ test("emotion -> mui -> emotion: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -228,7 +228,7 @@ test("emotion -> mui -> emotion: preserves concrete theme and project context va
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css.class({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -243,7 +243,7 @@ test("emotion -> mui -> emotion: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,7 +279,7 @@ test("emotion -> mui -> emotion: preserves concrete theme and project context va
 		      "changed": false,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -308,7 +308,7 @@ test("emotion -> mui -> emotion: resolves token values across both concrete legs
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -344,7 +344,7 @@ test("emotion -> mui -> emotion: resolves token values across both concrete legs
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "padding": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

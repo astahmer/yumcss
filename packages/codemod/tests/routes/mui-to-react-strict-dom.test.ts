@@ -75,7 +75,7 @@ test("mui -> react-strict-dom: migrates concrete mui syntax to react-strict-dom"
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -183,7 +183,7 @@ test("mui -> react-strict-dom: loads concrete theme and project context variants
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -220,7 +220,7 @@ test("mui -> react-strict-dom: loads concrete theme and project context variants
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -269,7 +269,7 @@ test("mui -> react-strict-dom: resolves concrete token values with project conte
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -316,7 +316,7 @@ test("mui -> react-strict-dom: preserves malformed concrete mui input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

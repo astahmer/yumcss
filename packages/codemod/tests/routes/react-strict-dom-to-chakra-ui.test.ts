@@ -52,7 +52,7 @@ test("react-strict-dom -> chakra-ui: migrates concrete react-strict-dom syntax t
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
+		const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -155,7 +155,7 @@ test("react-strict-dom -> chakra-ui: loads concrete theme and project context va
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
+		const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +191,7 @@ test("react-strict-dom -> chakra-ui: loads concrete theme and project context va
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +239,7 @@ test("react-strict-dom -> chakra-ui: resolves concrete token values with project
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -284,7 +284,7 @@ test("react-strict-dom -> chakra-ui: preserves malformed concrete react-strict-d
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
+		const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

@@ -49,7 +49,7 @@ test("treat -> emotion: migrates concrete treat syntax to emotion", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("treat -> emotion: carries a documented secondary treat API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("treat -> emotion: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("treat -> emotion: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("treat -> emotion: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("treat -> emotion: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: 8, color: "red" });
+		export const card = css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

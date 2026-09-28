@@ -140,7 +140,7 @@ describe("adapter evidence contracts", () => {
 			    "id": "solid-styled",
 			  },
 			  {
-			    "apiCount": 3,
+			    "apiCount": 2,
 			    "configCount": 0,
 			    "id": "vue-styled",
 			  },

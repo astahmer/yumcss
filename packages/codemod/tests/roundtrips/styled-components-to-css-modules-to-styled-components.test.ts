@@ -49,60 +49,52 @@ test("styled-components -> css-modules -> styled-components: preserves an action
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div({ color: "red", padding: "1rem" });",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "Card.module.css",
+		        "purpose": "CSS Modules styles for a migrated React component",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div({ color: "red", padding: "1rem" });",
+		    "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -127,60 +119,52 @@ test("styled-components -> css-modules -> styled-components: retains the documen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "Card.module.css",
+		        "purpose": "CSS Modules styles for a migrated React component",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -220,60 +204,52 @@ test("styled-components -> css-modules -> styled-components: preserves concrete 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		      "converted": 0,
-		      "generatedFiles": [],
+		      "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		      "converted": 1,
+		      "generatedFiles": [
+		        {
+		          "path": "Card.module.css",
+		          "purpose": "CSS Modules styles for a migrated React component",
+		        },
+		      ],
 		      "loweringPlans": [
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		      "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -286,60 +262,52 @@ test("styled-components -> css-modules -> styled-components: preserves concrete 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		      "converted": 0,
-		      "generatedFiles": [],
+		      "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		      "converted": 1,
+		      "generatedFiles": [
+		        {
+		          "path": "Card.module.css",
+		          "purpose": "CSS Modules styles for a migrated React component",
+		        },
+		      ],
 		      "loweringPlans": [
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "residual",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		      "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -366,60 +334,52 @@ test("styled-components -> css-modules -> styled-components: resolves token valu
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "Card.module.css",
+		        "purpose": "CSS Modules styles for a migrated React component",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		    "code": "import __pandwindCardStyles from "../Card.module.css";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

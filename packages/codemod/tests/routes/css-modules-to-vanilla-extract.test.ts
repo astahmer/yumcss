@@ -165,7 +165,7 @@ test("css-modules -> vanilla-extract: loads concrete theme and project context v
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> vanilla-extract: loads concrete theme and project context v
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> vanilla-extract: resolves concrete token values with projec
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

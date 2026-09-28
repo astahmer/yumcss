@@ -652,7 +652,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "1rem", color: "#fecaca" });",
+			export const card = css.class({ color: "#fecaca", padding: "1rem" });",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -698,7 +698,7 @@ describe("Chakra UI official API forms", () => {
 			  "changed": true,
 			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "1rem", color: "#fecaca" });",
+			export const card = css.class({ color: "#fecaca", padding: "1rem" });",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
@@ -804,7 +804,7 @@ describe("Chakra UI official API forms", () => {
 			  "code": "import { defaultSystem } from "@chakra-ui/react";
 			import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.vars({ backgroundColor: defaultSystem.token.var("colors.blue.200"), color: defaultSystem.token("colors.red.200") });",
+			export const card = css.vars({ color: defaultSystem.token("colors.red.200"), backgroundColor: defaultSystem.token.var("colors.blue.200") });",
 			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [

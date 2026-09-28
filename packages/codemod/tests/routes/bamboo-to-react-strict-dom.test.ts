@@ -94,7 +94,7 @@ test("bamboo -> react-strict-dom: carries a documented secondary bamboo API expl
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ gap: "4", display: "flex" });",
+		export const card = css.create({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

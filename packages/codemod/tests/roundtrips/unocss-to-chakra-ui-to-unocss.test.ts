@@ -52,7 +52,7 @@ test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ gap: "4", alignItems: "center", display: "flex" }}/>;",
+		export const App = () => <chakra.div  css={{ display: "flex", alignItems: "center", gap: "4" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -249,7 +249,7 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "#f97316" }}/>;",
+		export const App = () => <chakra.div  css={{ color: "#f97316", padding: "1.125rem" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,7 +282,7 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -320,7 +320,7 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ color: "brand.500", padding: "1.125rem" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -353,7 +353,7 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -406,7 +406,7 @@ test("unocss -> chakra-ui -> unocss: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ color: "brand.500", padding: "1.125rem" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +439,7 @@ test("unocss -> chakra-ui -> unocss: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

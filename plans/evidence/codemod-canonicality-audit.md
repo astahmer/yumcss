@@ -1,13 +1,14 @@
 # Codemod canonicality audit
 
-Date: 2026-09-27  
+Date: 2026-09-28 UTC  
 Scope: all source/target pairs exposed by the current built-in migration registry.
 
 ## Result
 
-- 32 built-in adapters expose 1,024 registry pairs (32 × 32).
-- 992 cross-adapter generated route fixtures cover five scenarios each (4,960 directional cases). The complete route and round-trip matrix passed after the fixes: 1,984 files and 8,928 tests. Those tests validate Pandwind conversion/residual contracts, not every target compiler.
-- The other 32 pairs are identity no-ops.
+- 32 built-in adapters expose 1,024 registry pairs (32 × 32); all 992 cross-adapter pairs have generated route fixtures, and the other 32 are identity no-ops.
+- The refreshed primary capture has 32 Canonical, 261 Safe residual, and 731 Unverified pairs. It has no Valid but noncanonical or Incorrect or lossy verdicts.
+- The primary capture reports 471 typed residuals across 357 pairs. All 471 have a unique authored-source span: 351 exact text matches and 120 spans recovered from unique migration outcomes. No residual is unlocated or ambiguous.
+- Residual dispositions are 93 configuration-dependent, 88 target/framework-incompatible, and 290 unverified. These are classifications, not maturity promotions.
 - Current route maturity is 22 experimental and 1,002 research. This audit promotes no route.
 
 | Canonicality verdict   | Pairs |
@@ -15,18 +16,19 @@ Scope: all source/target pairs exposed by the current built-in migration registr
 | Canonical              |    32 |
 | Valid but noncanonical |     0 |
 | Incorrect or lossy     |     0 |
-| Safe residual          |   177 |
-| Unverified             |   815 |
+| Safe residual          |   261 |
+| Unverified             |   731 |
 
 The full per-route record is in [codemod-canonicality-route-ledger.json](./codemod-canonicality-route-ledger.json). Each entry has `routeKey`, exact primary input and output, artifacts, residuals, validation result, exact target package/version, authoritative API link, generated fixture path, route-proof maturity, verdict, and reason.
 
 ## Method and evidence limits
 
 - Enumerated the live adapter registry and `migrationRouteProofCatalog`; it returns every built-in pair, including self-pairs.
-- Captured every primary route with the same `runAdapterMigration` harness, source fixture, file extension, safe mode, and source semantic used by generated route tests. Linked test paths in the ledger contain each route’s secondary API, configured theme/token, and malformed-input snapshots.
+- Refreshed every primary route with `runAdapterMigration` in safe mode and its route fixture’s file and source semantic. The capture intentionally has no project configuration and an empty read-only project index; configured and missing-config variants stay linked to route and catalog tests.
 - Resolved exact installed versions from workspace/benchmark package trees. Missing targets are explicitly marked not installed.
 - Compared output with registered official API guidance. Most official pages are rolling docs, not version-pinned pages; where docs do not identify a version, the installed package lock is the version evidence and exact-version target compilation remains unproven.
 - Kept source/IR validation separate from target CSS syntax, target API shape, build, installed-project, SSR, and browser proof. A snapshot’s `valid: true` does not prove target output correctness.
+- Kept all route maturity values copied from the route-proof catalog; the refresh updates outputs, artifacts, validations, residual causes and dispositions, source locations, and canonicality evidence only.
 
 Chromium CSS grammar checks confirmed `CSS.supports("color", "red.300") === false`. Mantine’s 9.6 style-prop docs say `mx="auto"` maps to CSS `auto`, numeric dimensions convert from px into `rem` scaled by `--mantine-scale`, and palette colors are exposed through `--mantine-color-<name>-<shade>` variables.
 

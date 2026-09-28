@@ -134,7 +134,7 @@ test("bamboo -> react-strict-dom -> bamboo: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ gap: "4", display: "flex" });",
+		export const card = css.create({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("bamboo -> react-strict-dom -> bamboo: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

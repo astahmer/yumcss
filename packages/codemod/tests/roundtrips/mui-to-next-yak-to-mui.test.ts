@@ -50,7 +50,7 @@ test("mui -> next-yak -> mui: preserves an actionable concrete round trip", () =
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 16px; color: red;\`;",
+		export const App = () => css\`color: red; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("mui -> next-yak -> mui: preserves an actionable concrete round trip", () =
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "red" });",
+		export const App = () => css.class({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("mui -> next-yak -> mui: retains the documented secondary API without silen
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const Card = css\`padding: 8; color: red;\`;",
+		export const Card = css\`color: red; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,7 +169,7 @@ test("mui -> next-yak -> mui: retains the documented secondary API without silen
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": "8", "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": "8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("mui -> next-yak -> mui: preserves concrete theme and project context varia
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 16px; color: #f97316;\`;",
+		export const App = () => css\`color: #f97316; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +267,7 @@ test("mui -> next-yak -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -304,7 +304,7 @@ test("mui -> next-yak -> mui: preserves concrete theme and project context varia
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 16px; color: #2563eb;\`;",
+		export const App = () => css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("mui -> next-yak -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -390,7 +390,7 @@ test("mui -> next-yak -> mui: resolves token values across both concrete legs", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const App = () => css\`padding: 16px; color: #2563eb;\`;",
+		export const App = () => css\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -425,7 +425,7 @@ test("mui -> next-yak -> mui: resolves token values across both concrete legs", 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

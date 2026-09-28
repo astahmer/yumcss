@@ -51,7 +51,7 @@ test("unocss -> pandwind -> unocss: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		export const App = () => <div className={css.class({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("unocss -> pandwind -> unocss: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
+		export const App = () => <div className={css.class({ color: "brand", padding: "card" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -257,7 +257,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		export const App = () => <div className={"p-card text-brand"}/>;",
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -297,7 +297,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
+		export const App = () => <div className={css.class({ color: "brand", padding: "card" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -331,7 +331,7 @@ test("unocss -> pandwind -> unocss: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		export const App = () => <div className={"p-card text-brand"}/>;",
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -385,7 +385,7 @@ test("unocss -> pandwind -> unocss: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ padding: "card", color: "brand" })}/>;",
+		export const App = () => <div className={css.class({ color: "brand", padding: "card" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -419,7 +419,7 @@ test("unocss -> pandwind -> unocss: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		export const App = () => <div className={"p-card text-brand"}/>;",
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

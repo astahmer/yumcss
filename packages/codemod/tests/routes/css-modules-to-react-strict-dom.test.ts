@@ -165,7 +165,7 @@ test("css-modules -> react-strict-dom: loads concrete theme and project context 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> react-strict-dom: loads concrete theme and project context 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> react-strict-dom: resolves concrete token values with proje
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -50,7 +50,7 @@ test("react-strict-dom -> next-yak: migrates concrete react-strict-dom syntax to
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "next-yak";
-		const styles = { "card": css\`padding: 1rem; color: red;\` };
+		const styles = { "card": css\`color: red; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +148,7 @@ test("react-strict-dom -> next-yak: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "next-yak";
-		const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("react-strict-dom -> next-yak: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "next-yak";
-		const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +232,7 @@ test("react-strict-dom -> next-yak: resolves concrete token values with project 
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "next-yak";
-		const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +277,7 @@ test("react-strict-dom -> next-yak: preserves malformed concrete react-strict-do
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { css } from "next-yak";
-		const styles = { "card": css\`padding: 1rem; color: red;\` };
+		const styles = { "card": css\`color: red; padding: 1rem;\` };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

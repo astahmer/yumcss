@@ -50,7 +50,7 @@ test("tokenami -> compiled -> tokenami: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "gap": "1rem", "color": "red" });",
+		export const card = css({ "color": "red", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("tokenami -> compiled -> tokenami: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "red" });",
+		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -211,7 +211,7 @@ test("tokenami -> compiled -> tokenami: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "gap": "1rem", "color": "#f97316" });",
+		export const card = css({ "color": "#f97316", "gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -247,7 +247,7 @@ test("tokenami -> compiled -> tokenami: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,7 +283,7 @@ test("tokenami -> compiled -> tokenami: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "gap": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -319,7 +319,7 @@ test("tokenami -> compiled -> tokenami: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -369,7 +369,7 @@ test("tokenami -> compiled -> tokenami: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "gap": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -405,7 +405,7 @@ test("tokenami -> compiled -> tokenami: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

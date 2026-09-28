@@ -50,7 +50,7 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "red" });",
+		export const card = styled(View, { color: "red", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,8 +83,8 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { gap: "1rem", color: "red" });",
+		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const card = styled(View, { color: "red", gap: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -109,11 +109,6 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		      {
 		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -211,7 +206,7 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "#f97316" });",
+		export const card = styled(View, { color: "#f97316", gap: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -244,8 +239,8 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { gap: "1rem", color: "#f97316" });",
+		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const card = styled(View, { color: "#f97316", gap: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,11 +265,6 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		        {
 		          "hint": "components: component subject: styled(View)",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -286,7 +276,7 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", gap: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -319,8 +309,8 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
+		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const card = styled(View, { color: "#2563eb", gap: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -345,11 +335,6 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		        {
 		          "hint": "components: component subject: styled(View)",
 		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -375,7 +360,7 @@ test("tokenami -> tamagui -> tokenami: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -408,8 +393,8 @@ test("tokenami -> tamagui -> tokenami: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { gap: "1rem", color: "#2563eb" });",
+		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		export const card = styled(View, { color: "#2563eb", gap: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -434,11 +419,6 @@ test("tokenami -> tamagui -> tokenami: resolves token values across both concret
 		      {
 		        "hint": "components: component subject: styled(View)",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],

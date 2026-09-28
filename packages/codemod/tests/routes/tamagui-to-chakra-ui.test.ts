@@ -52,7 +52,7 @@ test("tamagui -> chakra-ui: migrates concrete tamagui syntax to chakra-ui", asyn
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "red" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "red", padding: "$4" }} />;
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -154,7 +154,7 @@ test("tamagui -> chakra-ui: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "#2a57c8" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "#2a57c8", padding: "$4" }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("tamagui -> chakra-ui: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "brand.500" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "brand.500", padding: "$4" }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,7 +238,7 @@ test("tamagui -> chakra-ui: resolves concrete token values with project context"
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "brand.500" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "brand.500", padding: "$4" }} />;
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -283,7 +283,7 @@ test("tamagui -> chakra-ui: preserves malformed concrete tamagui input", async (
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ padding: "$4", color: "red" }} />;
+		export const Card = (props) => <chakra.View {...props} css={{ color: "red", padding: "$4" }} />;
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

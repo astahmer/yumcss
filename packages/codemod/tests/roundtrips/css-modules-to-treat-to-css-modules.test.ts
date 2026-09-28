@@ -207,7 +207,7 @@ test("css-modules -> treat -> css-modules: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const styles = { "card": style({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> treat -> css-modules: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { style } from "treat";
 		/* /* pandwind:migrate-skip (route: treat -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("css-modules -> treat -> css-modules: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const styles = { "card": style({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> treat -> css-modules: preserves concrete theme and project 
 		      "changed": true,
 		      "code": "import { style } from "treat";
 		/* /* pandwind:migrate-skip (route: treat -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("css-modules -> treat -> css-modules: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const styles = { "card": style({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -411,7 +411,7 @@ test("css-modules -> treat -> css-modules: resolves token values across both con
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		/* /* pandwind:migrate-skip (route: treat -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": style({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -77,7 +77,7 @@ test("tamagui -> react-strict-dom -> tamagui: preserves an actionable concrete r
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -151,7 +151,7 @@ test("tamagui -> react-strict-dom -> tamagui: retains the documented secondary A
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -231,7 +231,7 @@ test("tamagui -> react-strict-dom -> tamagui: preserves concrete theme and proje
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -285,7 +285,7 @@ test("tamagui -> react-strict-dom -> tamagui: preserves concrete theme and proje
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -353,7 +353,7 @@ test("tamagui -> react-strict-dom -> tamagui: resolves token values across both 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

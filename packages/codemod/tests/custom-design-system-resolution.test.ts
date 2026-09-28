@@ -198,7 +198,7 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).not.toContain("#123456");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "styled-system/css";
-			export const card = css({ padding: "17px", color: "brand.500" });"
+			export const card = css({ color: "brand.500", padding: "17px" });"
 		`);
 	});
 
@@ -493,7 +493,7 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).not.toContain('"17px"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			export const card = css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" });"
+			export const card = css({ "--color": "var(--color_brand)", "--padding": "var(--spacing_card)" });"
 		`);
 	});
 });

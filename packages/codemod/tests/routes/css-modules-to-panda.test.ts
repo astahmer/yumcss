@@ -159,7 +159,7 @@ test("css-modules -> panda: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +194,7 @@ test("css-modules -> panda: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "brand.500" }) };
+		export const styles = { "card": css({ color: "brand.500", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +241,7 @@ test("css-modules -> panda: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ padding: "1rem", color: "brand.500" }) };
+		export const styles = { "card": css({ color: "brand.500", padding: "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

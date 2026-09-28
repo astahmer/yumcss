@@ -49,7 +49,7 @@ test("goober -> style9: migrates concrete goober syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "red" });",
+		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("goober -> style9: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("goober -> style9: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("goober -> style9: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("goober -> style9: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "red" });
+		export const card = style9.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

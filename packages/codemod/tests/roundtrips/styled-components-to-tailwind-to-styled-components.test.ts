@@ -51,7 +51,7 @@ test("styled-components -> tailwind -> styled-components: preserves an actionabl
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("styled-components -> tailwind -> styled-components: preserves an actionabl
 		    "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -127,7 +127,7 @@ test("styled-components -> tailwind -> styled-components: retains the documented
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -165,7 +165,7 @@ test("styled-components -> tailwind -> styled-components: retains the documented
 		    "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -218,7 +218,7 @@ test("styled-components -> tailwind -> styled-components: preserves concrete the
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:#2563eb] [padding:1rem]", props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("styled-components -> tailwind -> styled-components: preserves concrete the
 		      "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:#2563eb] [padding:1rem]", props.className)} />; };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -282,7 +282,7 @@ test("styled-components -> tailwind -> styled-components: preserves concrete the
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] text-brand", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:1rem]", props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -320,7 +320,7 @@ test("styled-components -> tailwind -> styled-components: preserves concrete the
 		      "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] text-brand", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:1rem]", props.className)} />; };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -360,7 +360,7 @@ test("styled-components -> tailwind -> styled-components: resolves token values 
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] text-brand", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:1rem]", props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -398,7 +398,7 @@ test("styled-components -> tailwind -> styled-components: resolves token values 
 		    "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] text-brand", props.className)} />; };",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:1rem]", props.className)} />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

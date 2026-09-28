@@ -160,7 +160,7 @@ test("css-modules -> pandwind: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.class({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -196,7 +196,7 @@ test("css-modules -> pandwind: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
+		export const styles = { "card": css.class({ color: "brand", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +244,7 @@ test("css-modules -> pandwind: resolves concrete token values with project conte
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
+		export const styles = { "card": css.class({ color: "brand", padding: "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

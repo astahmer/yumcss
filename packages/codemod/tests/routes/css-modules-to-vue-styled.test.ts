@@ -165,7 +165,7 @@ test("css-modules -> vue-styled: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": styled.div\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> vue-styled: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": styled.div\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> vue-styled: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": styled.div\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

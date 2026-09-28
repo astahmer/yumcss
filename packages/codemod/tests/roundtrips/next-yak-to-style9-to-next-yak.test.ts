@@ -50,7 +50,7 @@ test("next-yak -> style9 -> next-yak: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "red" });",
+		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("next-yak -> style9 -> next-yak: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -133,11 +133,10 @@ test("next-yak -> style9 -> next-yak: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import style9 from "style9";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> style9 | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -155,56 +154,32 @@ test("next-yak -> style9 -> next-yak: retains the documented secondary API witho
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import style9 from "style9";
-		import { css } from "next-yak";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9({ "style": css\`padding: 1rem; color: red;\` }.style), props.className)} />;",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> style9 | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -238,7 +213,7 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,7 +249,7 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,7 +285,7 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +321,7 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -396,7 +371,7 @@ test("next-yak -> style9 -> next-yak: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -432,7 +407,7 @@ test("next-yak -> style9 -> next-yak: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

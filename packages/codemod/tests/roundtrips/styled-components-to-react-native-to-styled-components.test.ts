@@ -50,7 +50,7 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
 		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -140,7 +140,7 @@ test("styled-components -> react-native -> styled-components: retains the docume
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("styled-components -> react-native -> styled-components: retains the docume
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
 		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -245,7 +245,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -283,7 +283,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
 		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -323,7 +323,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -361,7 +361,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
 		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -415,7 +415,7 @@ test("styled-components -> react-native -> styled-components: resolves token val
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -453,7 +453,7 @@ test("styled-components -> react-native -> styled-components: resolves token val
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
 		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

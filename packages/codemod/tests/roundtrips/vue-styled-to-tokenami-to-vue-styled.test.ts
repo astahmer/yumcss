@@ -50,7 +50,7 @@ test("vue-styled -> tokenami -> vue-styled: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -74,8 +74,8 @@ test("vue-styled -> tokenami -> vue-styled: preserves an actionable concrete rou
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -85,7 +85,7 @@ test("vue-styled -> tokenami -> vue-styled: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -112,7 +112,7 @@ test("vue-styled -> tokenami -> vue-styled: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -136,8 +136,8 @@ test("vue-styled -> tokenami -> vue-styled: retains the documented secondary API
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -147,7 +147,7 @@ test("vue-styled -> tokenami -> vue-styled: retains the documented secondary API
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -189,7 +189,7 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -213,8 +213,8 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		          "kind": "host-framework",
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -224,7 +224,7 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -239,7 +239,7 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -263,8 +263,8 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		          "kind": "host-framework",
+		          "hint": "components: component subject: styled.div",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -274,7 +274,7 @@ test("vue-styled -> tokenami -> vue-styled: preserves concrete theme and project
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -303,7 +303,7 @@ test("vue-styled -> tokenami -> vue-styled: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -327,8 +327,8 @@ test("vue-styled -> tokenami -> vue-styled: resolves token values across both co
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
+		        "hint": "components: component subject: styled.div",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -338,7 +338,7 @@ test("vue-styled -> tokenami -> vue-styled: resolves token values across both co
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

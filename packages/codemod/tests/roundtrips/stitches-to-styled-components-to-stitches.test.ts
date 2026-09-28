@@ -50,7 +50,7 @@ test("stitches -> styled-components -> stitches: preserves an actionable concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "red" });",
+		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("stitches -> styled-components -> stitches: preserves an actionable concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@stitches/react";
-		export const card = styled("div", { padding: "1rem", color: "red" });",
+		export const card = styled("div", { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("stitches -> styled-components -> stitches: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +267,7 @@ test("stitches -> styled-components -> stitches: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@stitches/react";
-		export const card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("stitches -> styled-components -> stitches: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("stitches -> styled-components -> stitches: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@stitches/react";
-		export const card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("stitches -> styled-components -> stitches: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -425,7 +425,7 @@ test("stitches -> styled-components -> stitches: resolves token values across bo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@stitches/react";
-		export const card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

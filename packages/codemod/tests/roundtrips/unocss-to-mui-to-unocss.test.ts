@@ -50,7 +50,7 @@ test("unocss -> mui -> unocss: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ gap: "1rem", alignItems: "center", display: "flex" }} />;",
+		export const App = () => <Box component="div" sx={{ display: "flex", alignItems: "center", gap: "1rem" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("unocss -> mui -> unocss: preserves an actionable concrete round trip", () 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		export const App = () => <Box component="div" className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -208,7 +208,7 @@ test("unocss -> mui -> unocss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		export const App = () => <Box component="div" sx={{ color: "primary.main", padding: "1.125rem" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -242,7 +242,7 @@ test("unocss -> mui -> unocss: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" className={"p-card text-brand"}/>;",
+		export const App = () => <Box component="div" className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -280,7 +280,7 @@ test("unocss -> mui -> unocss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		export const App = () => <Box component="div" sx={{ color: "primary.main", padding: "1.125rem" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,7 +314,7 @@ test("unocss -> mui -> unocss: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" className={"p-card text-brand"}/>;",
+		export const App = () => <Box component="div" className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -366,7 +366,7 @@ test("unocss -> mui -> unocss: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		export const App = () => <Box component="div" sx={{ color: "primary.main", padding: "1.125rem" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -400,7 +400,7 @@ test("unocss -> mui -> unocss: resolves token values across both concrete legs",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" className={"p-card text-brand"}/>;",
+		export const App = () => <Box component="div" className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

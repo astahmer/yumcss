@@ -21,6 +21,7 @@ import {
 	createAdapterRouteSpec,
 	routeEvidence,
 } from "./route-spec-support.ts";
+import { intrinsicTagForSubject } from "../src/swap/host-component-rewriter.ts";
 
 const migrateConfiguredChakra = (source: string, file: string) =>
 	createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind).runAsync({
@@ -306,7 +307,294 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(toTailwind.converted).toBe(1);
 		expect(toTailwind.skipped).toBe(0);
 		expect(toTailwind.residuals).toEqual([]);
-		expect(toTailwind.code).toContain("[padding:1rem] [display:flex]");
+		expect(toTailwind.code).toContain("[display:flex] [padding:1rem]");
+	});
+
+	test("normalizes Emotion numeric declarations to their authored CSS units", () => {
+		const source =
+			'import { css } from "@emotion/css";\n' +
+			"const card = css({ padding: 2, opacity: 0.5, lineHeight: 1.2, '--offset': 2, margin: 0 });";
+		const adapter = getCodemodAdapter(CodemodAdapterId.Emotion)!;
+		const parsed = adapter.parse(source, {
+			file: "Card.tsx",
+			source,
+			config: { adapter: CodemodAdapterId.Emotion, files: [], values: {} },
+		});
+		const declarations = parsed.matches[0]?.program.declarations ?? [];
+		const values = declarations.map(({ property, value }) => ({
+			property,
+			value: value.kind === StyleValueKindTag.Literal ? value.value : value.kind,
+		}));
+
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.residuals).toEqual([]);
+		expect(values).toMatchInlineSnapshot(`
+			[
+			  {
+			    "property": "padding",
+			    "value": "2px",
+			  },
+			  {
+			    "property": "opacity",
+			    "value": 0.5,
+			  },
+			  {
+			    "property": "lineHeight",
+			    "value": 1.2,
+			  },
+			  {
+			    "property": "--offset",
+			    "value": 2,
+			  },
+			  {
+			    "property": "margin",
+			    "value": 0,
+			  },
+			]
+		`);
+
+		const migration = runAdapterMigration(source, {
+			from: CodemodAdapterId.Emotion,
+			to: CodemodAdapterId.Pandwind,
+			file: "Card.tsx",
+			mode: "safe",
+		});
+		expect(migration.converted).toBe(1);
+		expect(migration.skipped).toBe(0);
+		expect(migration.residuals).toEqual([]);
+		expect(migration.validations.every((validation) => validation.valid)).toBe(true);
+		expect(migration.code).toContain('padding: "2px"');
+	});
+
+	test("preserves Vanilla Extract numeric CSS lengths through Emotion", () => {
+		const source =
+			'import { style } from "@vanilla-extract/css";\n' +
+			"export const card = style({ padding: 2, opacity: 0.5 });";
+		const adapter = getCodemodAdapter(CodemodAdapterId.VanillaExtract)!;
+		const parsed = adapter.parse(source, {
+			file: "styles.css.ts",
+			source,
+			config: { adapter: CodemodAdapterId.VanillaExtract, files: [], values: {} },
+			targetId: CodemodAdapterId.Emotion,
+		});
+		const values = parsed.matches[0]?.program.rules.flatMap((rule) =>
+			rule.declarations.map(({ property, value }) => ({
+				property,
+				value: value.kind === StyleValueKindTag.Literal ? value.value : value.kind,
+			})),
+		);
+
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.residuals).toEqual([]);
+		expect(values).toMatchInlineSnapshot(`
+			[
+			  {
+			    "property": "padding",
+			    "value": "2px",
+			  },
+			  {
+			    "property": "opacity",
+			    "value": 0.5,
+			  },
+			]
+		`);
+
+		const migration = runAdapterMigration(source, {
+			from: CodemodAdapterId.VanillaExtract,
+			to: CodemodAdapterId.Emotion,
+			file: "styles.css.ts",
+			mode: "safe",
+		});
+		expect(migration.converted).toBe(1);
+		expect(migration.skipped).toBe(0);
+		expect(migration.residuals).toEqual([]);
+		expect(migration.validations.every((validation) => validation.valid)).toBe(true);
+		expect(migration.code).toContain('padding: "2px"');
+	});
+
+	test("normalizes CSS object numeric lengths from Aphrodite, Compiled, and Treat", () => {
+		const cases = [
+			{
+				adapter: CodemodAdapterId.Aphrodite,
+				file: "styles.ts",
+				source:
+					'import { StyleSheet } from "aphrodite";\n' +
+					"export const styles = StyleSheet.create({ card: { padding: 2, lineHeight: 1.2, opacity: 0.5 } });",
+			},
+			{
+				adapter: CodemodAdapterId.Compiled,
+				file: "Card.tsx",
+				source:
+					'import { css } from "@compiled/react";\n' +
+					"export const card = css({ padding: 2, lineHeight: 1.2, opacity: 0.5 });",
+			},
+			{
+				adapter: CodemodAdapterId.Treat,
+				file: "styles.treat.ts",
+				source:
+					'import { style } from "treat";\n' +
+					"export const card = style({ padding: 2, lineHeight: 1.2, opacity: 0.5 });",
+			},
+		] as const;
+		const projections = cases.map(({ adapter: adapterId, file, source }) => {
+			const adapter = getCodemodAdapter(adapterId)!;
+			const parsed = adapter.parse(source, {
+				file,
+				source,
+				config: { adapter: adapterId, files: [], values: {} },
+				targetId: CodemodAdapterId.Emotion,
+			});
+			const declarations = parsed.matches.flatMap(({ program }) =>
+				program.rules.length > 0
+					? program.rules.flatMap((rule) => rule.declarations)
+					: program.declarations,
+			);
+			const values = declarations.map(({ property, value }) => ({
+				property,
+				value: value.kind === StyleValueKindTag.Literal ? value.value : value.kind,
+			}));
+
+			expect(parsed.matches).toHaveLength(1);
+			expect(parsed.residuals).toEqual([]);
+			expect(values).toEqual([
+				{ property: "padding", value: "2px" },
+				{ property: "lineHeight", value: 1.2 },
+				{ property: "opacity", value: 0.5 },
+			]);
+
+			const migration = runAdapterMigration(source, {
+				from: adapterId,
+				to: CodemodAdapterId.Emotion,
+				file,
+				mode: "safe",
+			});
+			expect(migration.converted).toBe(1);
+			expect(migration.skipped).toBe(0);
+			expect(migration.residuals).toEqual([]);
+			expect(migration.validations).toHaveLength(1);
+			expect(migration.validations.every((validation) => validation.valid)).toBe(true);
+			return { adapter: adapterId, values };
+		});
+
+		expect(projections).toMatchInlineSnapshot(`
+			[
+			  {
+			    "adapter": "aphrodite",
+			    "values": [
+			      {
+			        "property": "padding",
+			        "value": "2px",
+			      },
+			      {
+			        "property": "lineHeight",
+			        "value": 1.2,
+			      },
+			      {
+			        "property": "opacity",
+			        "value": 0.5,
+			      },
+			    ],
+			  },
+			  {
+			    "adapter": "compiled",
+			    "values": [
+			      {
+			        "property": "padding",
+			        "value": "2px",
+			      },
+			      {
+			        "property": "lineHeight",
+			        "value": 1.2,
+			      },
+			      {
+			        "property": "opacity",
+			        "value": 0.5,
+			      },
+			    ],
+			  },
+			  {
+			    "adapter": "treat",
+			    "values": [
+			      {
+			        "property": "padding",
+			        "value": "2px",
+			      },
+			      {
+			        "property": "lineHeight",
+			        "value": 1.2,
+			      },
+			      {
+			        "property": "opacity",
+			        "value": 0.5,
+			      },
+			    ],
+			  },
+			]
+		`);
+	});
+
+	test("lowers React Native density-independent lengths to web CSS pixels", () => {
+		const source =
+			'import { StyleSheet } from "react-native";\n' +
+			"export const styles = StyleSheet.create({ card: { padding: 2, lineHeight: 20, opacity: 0.5 } });";
+		const adapter = getCodemodAdapter(CodemodAdapterId.ReactNative)!;
+		const parsed = adapter.parse(source, {
+			file: "Card.tsx",
+			source,
+			config: { adapter: CodemodAdapterId.ReactNative, files: [], values: {} },
+			targetId: CodemodAdapterId.Emotion,
+		});
+		const values = parsed.matches[0]?.program.rules.flatMap((rule) =>
+			rule.declarations.map(({ property, value }) => ({
+				property,
+				value: value.kind === StyleValueKindTag.Literal ? value.value : value.kind,
+			})),
+		);
+
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.residuals).toEqual([]);
+		expect(values).toMatchInlineSnapshot(`
+			[
+			  {
+			    "property": "padding",
+			    "value": "2px",
+			  },
+			  {
+			    "property": "lineHeight",
+			    "value": "20px",
+			  },
+			  {
+			    "property": "opacity",
+			    "value": 0.5,
+			  },
+			]
+		`);
+
+		const migration = runAdapterMigration(source, {
+			from: CodemodAdapterId.ReactNative,
+			to: CodemodAdapterId.Emotion,
+			file: "Card.tsx",
+			mode: "safe",
+		});
+		expect(migration.converted).toBe(1);
+		expect(migration.skipped).toBe(0);
+		expect(migration.residuals).toEqual([]);
+		expect(migration.validations.every((validation) => validation.valid)).toBe(true);
+		expect(migration.code).toContain('padding: "2px"');
+		expect(migration.code).toContain('lineHeight: "20px"');
+
+		const reverse = runAdapterMigration(migration.code, {
+			from: CodemodAdapterId.Emotion,
+			to: CodemodAdapterId.ReactNative,
+			file: "Card.tsx",
+			mode: "safe",
+		});
+		expect(reverse.converted).toBe(1);
+		expect(reverse.skipped).toBe(0);
+		expect(reverse.residuals).toEqual([]);
+		expect(reverse.validations.every((validation) => validation.valid)).toBe(true);
+		expect(reverse.code).toContain('"padding": 2');
+		expect(reverse.code).toContain('"lineHeight": 20');
 	});
 
 	test("keeps an unknown Tailwind utility source-preserving", () => {
@@ -514,7 +802,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "linaria", to: "emotion", file: "Card.tsx", mode: "safe" },
 		);
 		expect(css.converted).toBe(1);
-		expect(css.code).toContain('css({ backgroundColor: "blue", color: "red" })');
+		expect(css.code).toContain('css({ color: "red", backgroundColor: "blue" })');
 		expect(css.code).not.toContain("@linaria/core");
 
 		const component = runAdapterMigration(
@@ -607,7 +895,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{
 				from: "styled-components",
 				to: "pandwind",
-				file: "View.js",
+			file: "View.tsx",
 				mode: "safe",
 				semantic: { source: { file: "View.js", framework: "react" } },
 			},
@@ -615,11 +903,17 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("__pandwindStandaloneComponent");
-		expect(result.code).toContain("<div {...props}");
-		expect(result.code).toContain(
-			"className={css.props(__pandwindStandaloneClass, props.className).className}",
-		);
+		expect(result.code).toContain('__pandwindForwardRef<React.ComponentRef<"div">');
+		expect(result.code).toContain("ref={ref}");
+		expect(result.code).toContain("runtimeCss.props(style, attrs.className, props.className).className");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { forwardRef as __pandwindForwardRef } from "react";
+			import { createRuntimeCss } from "pandwind/css/runtime";
+			import { defaultPreset } from "pandwind/preset/default";
+			import type * as React from "react";
+			const runtimeCss = createRuntimeCss(defaultPreset);
+			export default __pandwindForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: "red" }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} {...attrsProps} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });"
+		`);
 		expect(result.code).not.toContain('from "pandwind/cx"');
 		expect(result.code).not.toContain('from "styled-components"');
 	});
@@ -772,11 +1066,14 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.code).not.toContain("solid-styled-components");
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).toContain('import { Dynamic } from "solid-js/web";');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createRuntimeCss } from "pandwind/css/runtime";
+			"import { Dynamic } from "solid-js/web";
+			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { defaultPreset } from "pandwind/preset/default";
+			import type { JSX } from "solid-js";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			const Div = runtimeCss.group({ border: ({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`, color: "steelblue", fontWeight: ({ bold = false }) => (bold ? "bold" : 100) });
+			const Div = (props: { readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }) => { const style = runtimeCss.vars({ color: "steelblue", border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => !key.startsWith("$"))); return <Dynamic component={ResolvedComponent} {...forwarded} {...attrsProps} class={runtimeCss.props(style, attrs.class, props.class).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; };
 			export const App = () => <Div bold={true} border={1} color="whitesmoke" />;"
 		`);
 	});
@@ -821,7 +1118,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const dyn = parsed.matches
 			.flatMap((match) => match.program.residuals)
 			.find((residual) => residual.kind === StyleProgramResidualKindTag.Dynamic);
-		expect(dyn?.text).toBe("({ theme }): string => theme.fg");
+		expect(dyn?.text).toBe("${({ theme }): string => theme.fg}");
 	});
 
 	test("emits a self-contained pandwind runtime binding and consolidates imports", () => {
@@ -898,7 +1195,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { styled } from "solid-styled-components";');
-		expect(result.code).toContain('styled.div({ "padding": "1rem", "color": "red" })');
+		expect(result.code).toContain('styled("div")(() => ({ "color": "red", "padding": "1rem" }))');
 		expect(result.code).toContain("<Card />");
 		expect(result.code).not.toContain('from "styled-components"');
 	});
@@ -938,7 +1235,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import styled from "vue-styled-components";');
-		expect(result.code).toContain('styled.div({ "padding": "1rem", "color": "red" })');
+		expect(result.code).toContain('styled.div`color: red; padding: 1rem;`');
 		expect(result.code).toContain("<Card />");
 		expect(result.code).not.toContain('from "styled-components"');
 	});
@@ -986,8 +1283,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain(targetImport);
-		expect(result.code).toContain("styled.div((props) => ({");
-		expect(result.code).toContain('"color": props.color');
+		if (target === CodemodAdapterId.SolidStyled)
+			expect(result.code).toContain('styled("div")((props) => ({ "color": props.color }))');
+		else
+			expect(result.code).toContain('styled("div", { "color": null })`color: ${(props) => props.color};`');
 		expect(result.code).toContain('<Card color="red" />');
 		expect(result.code).not.toContain('from "styled-components"');
 	});
@@ -1137,8 +1436,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('const Card = stylex.create({ style: { color: "red" } }).style');
-		expect(result.code).toContain("<div {...stylex.props(Card)} />");
+		expect(result.code).toContain('const __CardStyle = stylex.create({ style: { color: "red" } }).style');
+		expect(result.code).toContain("const Card = (props) =>");
+		expect(result.code).toContain("stylex.props(__CardStyle)");
+		expect(result.code).toContain("props.className");
+		expect(result.code).toContain("<Card />");
 		expect(result.code).not.toContain("styled-components");
 	});
 
@@ -1283,7 +1585,6 @@ describe("CSS-in-JS adapter contract v2", () => {
 		["aphrodite", "StyleSheet.create", 'import { StyleSheet, css } from "aphrodite";'],
 		["chakra-ui", 'css={{ color: "red" }}', 'import { chakra } from "@chakra-ui/react";'],
 		["goober", "css", 'import { css } from "goober";'],
-		["vanilla-extract", "style", 'import { style } from "@vanilla-extract/css";'],
 	] as const)(
 		"wraps an unused styled subject when the target only exposes a class carrier (%s)",
 		(target, carrier, targetImport) => {
@@ -1301,16 +1602,45 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain(carrier);
 			expect(result.code).toContain(targetImport);
-			expect(result.code).toContain(
-				target === "chakra-ui"
-					? "const Card = (props) => <chakra.div"
-					: "const Card = (props) => <div",
-			);
+			if (target === "chakra-ui")
+				expect(result.code).toContain("const Card = (props) => <chakra.div");
+			else {
+				expect(result.code).toContain('const Component = props.as ?? "div"');
+				expect(result.code).toContain("props.className");
+			}
 			if (target === "chakra-ui") expect(result.code).toContain('css={{ color: "red" }}');
-			else expect(result.code).toContain("props.className");
 			expect(result.code).not.toContain("styled-components");
 		},
 	);
+
+	test("preserves component semantics when Vanilla Extract would require a style sidecar", () => {
+		const source =
+			'import styled from "styled-components";\n' +
+			'const Card = styled.div({ color: "red" });';
+		const result = runAdapterMigration(source, {
+			from: "styled-components",
+			to: "vanilla-extract",
+			file: "Card.css.ts",
+			mode: "safe",
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual([
+			expect.objectContaining({
+				kind: "component",
+				text: "styled.div",
+				hint: expect.stringContaining("separate .css.ts style artifact"),
+			}),
+		]);
+		expect(result.code).toContain('const Card = styled.div({ color: "red" });');
+		expect(result.code).not.toContain('from "@vanilla-extract/css"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import styled from "styled-components";
+			// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+			const Card = styled.div({ color: "red" });"
+		`);
+	});
 
 	test("projects a styled subject to Mantine's valid React style prop", () => {
 		const result = runAdapterMigration(
@@ -1432,7 +1762,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("imports a React Native style map into Pandwind without losing the style lookup", () => {
 		const result = runAdapterMigration(
 			'import { StyleSheet } from "react-native";\n' +
-				'const styles = StyleSheet.create({ card: { color: "red", padding: 2 } });\n' +
+				'const styles = StyleSheet.create({ card: { backgroundColor: "red", padding: 2 } });\n' +
 				"export const App = () => <View style={styles.card} />;",
 			{ from: "react-native", to: "pandwind", file: "App.tsx", mode: "safe" },
 		);
@@ -1441,7 +1771,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
 		expect(result.code).toContain(
-			'const styles = { "card": css.class({ padding: 2, color: "red" }) };',
+			'const styles = { "card": css.class({ backgroundColor: "red", padding: "2px" }) };',
 		);
 		expect(result.code).toContain("styles.card");
 		expect(result.code).not.toContain("StyleSheet.create");
@@ -1468,7 +1798,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("projects a static styled intrinsic into a React Native style carrier", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
-				'const Card = styled.div({ color: "red" });\n' +
+			'const Card = styled.div({ backgroundColor: "red" });\n' +
 				"export const App = () => <Card />;",
 			{ from: "styled-components", to: "react-native", file: "Card.tsx", mode: "safe" },
 		);
@@ -1477,7 +1807,14 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("StyleSheet.create");
 		expect(result.code).toContain("<View");
-		expect(result.code).toContain("style={Card}");
+		expect(result.code).toContain("style={[style, props.style]}");
+		expect(result.code).toMatch(/\)\(StyleSheet\.create\(\{ style: \{ "backgroundColor": "red" \} \}\)\.style\)/u);
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { forwardRef as __pandwindForwardRef, type ComponentRef } from "react";
+			import { StyleSheet, View, type ViewProps } from "react-native";
+			const Card = ((style: NonNullable<ViewProps["style"]>) => __pandwindForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => <View {...props} ref={ref} style={[style, props.style]} />))(StyleSheet.create({ style: { "backgroundColor": "red" } }).style);
+			export const App = () => <Card />;"
+		`);
 		expect(result.code).not.toContain('from "styled-components"');
 		expect(result.code).not.toContain("className={Card}");
 	});
@@ -1557,7 +1894,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("keeps the static styled lane free of a runtime style carrier", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
-				'const Card = styled.div({ color: "red", padding: "1rem" });\n' +
+			'const Card = styled.div({ color: "red", padding: "1rem" });\n' +
 				"export const App = () => <Card />;",
 			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
 		);
@@ -1565,7 +1902,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('css.class({ padding: "1rem", color: "red" })');
+		expect(result.code).toContain('css.class({ color: "red", padding: "1rem" })');
 		expect(result.code).not.toContain("css.vars(");
 		expect(result.code).not.toContain("createRuntimeCss");
 	});
@@ -1640,7 +1977,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "emotion", to: "pandwind", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
-		expect(result.code).toContain('css.class({ backgroundColor: "blue", color: "red" })');
+		expect(result.code).toContain('css.class({ color: "red", backgroundColor: "blue" })');
 	});
 
 	test("uses the default project reader and reports unsupported rule kinds", () => {
@@ -1933,7 +2270,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"button": "[padding:1rem] [color:red]"');
+		expect(result.code).toContain('"button": "[color:red] [padding:1rem]"');
 		expect(result.code).not.toContain("react-jss");
 	});
 
@@ -2014,6 +2351,30 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('globalStyle("button"');
 	});
 
+	test("parses Solid Styled css object calls without treating generic template types as styles", () => {
+		const adapter = getCodemodAdapter("solid-styled")!;
+		const source =
+			'import { css } from "solid-styled-components";\n' +
+			'export const card = css({ color: "red", padding: "1rem" });';
+		const parsed = adapter.parse(source, {
+			file: "Card.tsx",
+			source,
+			config: { adapter: "solid-styled", files: [], values: {} },
+		});
+
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.matches[0]?.program.declarations.map(({ property }) => property)).toEqual([
+			"color",
+			"padding",
+		]);
+		expect(parsed.residuals).toEqual([]);
+		expect(parsed.matches.map(({ sourceText }) => sourceText)).toMatchInlineSnapshot(`
+			[
+			  "css({ color: "red", padding: "1rem" })",
+			]
+		`);
+	})
+
 	test("matches complete tagged templates with nested expressions and preserves nested rules", () => {
 		const adapter = getCodemodAdapter("solid-styled")!;
 		const source =
@@ -2072,9 +2433,29 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("wraps function-valued Solid and Vue styles with host runtime context", () => {
-		const solid = runAdapterMigration(
+		const solidSource =
 			'import { styled } from "solid-styled-components";\n' +
-				"const Card = styled.div`color: ${(props) => props.color};`;",
+			"const Card = styled.div`color: ${(props) => props.color};`;";
+		const solidAdapter = getCodemodAdapter(CodemodAdapterId.SolidStyled)!;
+		const parsedSolid = solidAdapter.parse(solidSource, {
+			file: "Card.tsx",
+			source: solidSource,
+			config: { adapter: CodemodAdapterId.SolidStyled, files: [], values: {} },
+			semantic: { source: { file: "Card.tsx", framework: BuiltinHostFramework.Solid } },
+		});
+		expect(parsedSolid.matches).toHaveLength(1);
+		expect(parsedSolid.matches[0]?.program.source).toMatchObject({
+			subject: "styled.div",
+			framework: BuiltinHostFramework.Solid,
+		});
+		expect(parsedSolid.matches[0]?.program.residuals).toEqual([]);
+		expect(parsedSolid.matches[0]?.program.declarations[0]?.value).toMatchObject({
+			kind: StyleValueKindTag.Dynamic,
+			expression: "(props) => props.color",
+			expressionKind: StyleDynamicExpressionKind.Function,
+		});
+		const solid = runAdapterMigration(
+			solidSource,
 			{
 				from: "solid-styled",
 				to: "pandwind",
@@ -2090,12 +2471,38 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(solid.code).toContain("props.class).className");
 		expect(solid.code).not.toContain('from "pandwind/cx"');
 		expect(solid.code).toContain("props.class");
+		expect(solid.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} class={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.class, props.class).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
+		`);
 
-		const vue = runAdapterMigration(
+		const vueSource =
 			"<script setup>\n" +
-				'import styled from "vue-styled-components";\n' +
-				"const Card = styled.div.props({ color: 'red' })`color: ${(props) => props.color};`;\n" +
-				"</script>",
+			'import styled from "vue-styled-components";\n' +
+			'const Card = styled("div", { color: String })`color: ${(props) => props.color};`;\n' +
+			"</script>";
+		const vueAdapter = getCodemodAdapter(CodemodAdapterId.VueStyled)!;
+		const parsedVue = vueAdapter.parse(vueSource, {
+			file: "Card.vue",
+			source: vueSource,
+			config: { adapter: CodemodAdapterId.VueStyled, files: [], values: {} },
+			semantic: { source: { file: "Card.vue", framework: BuiltinHostFramework.Vue } },
+		});
+		expect(parsedVue.matches).toHaveLength(1);
+		expect(parsedVue.matches[0]?.program.source).toMatchObject({
+			subject: 'styled("div", { color: String })',
+			framework: BuiltinHostFramework.Vue,
+		});
+		expect(intrinsicTagForSubject('styled("div", { color: String })')).toBe("div");
+		expect(parsedVue.matches[0]?.program.residuals).toEqual([]);
+		expect(parsedVue.matches[0]?.program.declarations[0]?.value).toMatchObject({
+			kind: StyleValueKindTag.Dynamic,
+			expression: "(props) => props.color",
+			expressionKind: StyleDynamicExpressionKind.Function,
+		});
+		const vue = runAdapterMigration(
+			vueSource,
 			{
 				from: "vue-styled",
 				to: "pandwind",
@@ -2107,10 +2514,27 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(vue.converted).toBe(1);
 		expect(vue.residuals).toEqual([]);
 		expect(vue.code).toContain(
-			"computed(() => runtimeCss.vars({ color: ((props) => props.color)(props) }))",
+			"const props = computed(() => ({ ..._props, ...rawAttrs }));",
 		);
-		expect(vue.code).toContain('["color"].includes(key)');
+		expect(vue.code).toContain("((props) => props.color)(props.value)");
 		expect(vue.code).toContain('import { computed, defineComponent, h } from "vue";');
+		expect(vue.code).toContain("props: { color: String }");
+		expect(vue.code).toContain('h("div", { ...rawAttrs');
+		expect(vue.code).toContain(
+			"style: [style.value.style, props.value.style]",
+		);
+		expect(vue.code).not.toContain("styledAttrs");
+		expect(vue.code).not.toContain("runtimeCss.group");
+		expect(vue.code).toMatchInlineSnapshot(`
+			"<script setup>
+			import { computed, defineComponent, h } from "vue";
+			import { createRuntimeCss } from "pandwind/css/runtime";
+			import { defaultPreset } from "pandwind/preset/default";
+			const runtimeCss = createRuntimeCss(defaultPreset);
+
+			const Card = defineComponent({ props: { color: String }, inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const props = computed(() => ({ ..._props, ...rawAttrs })); const style = computed(() => runtimeCss.vars({ color: ((props) => props.color)(props.value) })); return () => h("div", { ...rawAttrs, ...{}, class: [style.value.class, props.value.class], style: [style.value.style, props.value.style] }, slots.default?.()); } });
+			</script>"
+		`);
 	});
 
 	test("uses Pandwind's native function carrier for static StyleX groups", () => {

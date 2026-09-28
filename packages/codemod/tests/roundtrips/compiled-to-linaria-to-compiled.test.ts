@@ -50,7 +50,7 @@ test("compiled -> linaria -> compiled: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: red;\`;",
+		export const card = css\`color: red; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("compiled -> linaria -> compiled: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": "8", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("compiled -> linaria -> compiled: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("compiled -> linaria -> compiled: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": "8", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("compiled -> linaria -> compiled: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("compiled -> linaria -> compiled: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": "8", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,7 +399,7 @@ test("compiled -> linaria -> compiled: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`padding: 8; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("compiled -> linaria -> compiled: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "padding": "8", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

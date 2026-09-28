@@ -50,7 +50,7 @@ test("mantine -> next-yak: migrates concrete mantine syntax to next-yak", () => 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`margin-inline: auto; color: blue; max-width: calc(25rem * var(--mantine-scale));\`;",
+		export const App = () => css\`color: blue; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("mantine -> next-yak: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`margin-inline: auto; color: #f97316; max-width: calc(25rem * var(--mantine-scale));\`;",
+		export const App = () => css\`color: #f97316; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("mantine -> next-yak: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`;",
+		export const App = () => css\`color: #2563eb; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("mantine -> next-yak: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`;",
+		export const App = () => css\`color: #2563eb; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("mantine -> next-yak: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		export const App = () => css\`margin-inline: auto; color: blue; max-width: calc(25rem * var(--mantine-scale));\`;
+		export const App = () => css\`color: blue; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

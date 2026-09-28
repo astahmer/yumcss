@@ -50,7 +50,7 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: 8, color: "red" }) };",
+		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: 8, color: "red" }) };",
+		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -136,7 +136,7 @@ test("react-native -> styled-components -> react-native: retains the documented 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": styled.div({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -171,7 +171,7 @@ test("react-native -> styled-components -> react-native: retains the documented 
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": styled.div({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -272,7 +272,7 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +346,7 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,7 +399,7 @@ test("react-native -> styled-components -> react-native: resolves token values a
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -434,7 +434,7 @@ test("react-native -> styled-components -> react-native: resolves token values a
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

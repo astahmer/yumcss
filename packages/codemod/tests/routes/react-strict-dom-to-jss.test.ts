@@ -50,7 +50,7 @@ test("react-strict-dom -> jss: migrates concrete react-strict-dom syntax to jss"
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { createUseStyles } from "react-jss";
-		const styles = createUseStyles({ card: { padding: "1rem", color: "red" } });
+		const styles = createUseStyles({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +152,7 @@ test("react-strict-dom -> jss: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { createUseStyles } from "react-jss";
-		const styles = createUseStyles({ card: { padding: "1rem", color: "#2563eb" } });
+		const styles = createUseStyles({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("react-strict-dom -> jss: loads concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { createUseStyles } from "react-jss";
-		const styles = createUseStyles({ card: { padding: "1rem", color: "#2563eb" } });
+		const styles = createUseStyles({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +240,7 @@ test("react-strict-dom -> jss: resolves concrete token values with project conte
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { createUseStyles } from "react-jss";
-		const styles = createUseStyles({ card: { padding: "1rem", color: "#2563eb" } });
+		const styles = createUseStyles({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +287,7 @@ test("react-strict-dom -> jss: preserves malformed concrete react-strict-dom inp
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import { createUseStyles } from "react-jss";
-		const styles = createUseStyles({ card: { padding: "1rem", color: "red" } });
+		const styles = createUseStyles({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

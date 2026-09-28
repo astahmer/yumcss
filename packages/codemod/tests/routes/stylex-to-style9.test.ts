@@ -49,7 +49,7 @@ test("stylex -> style9: migrates concrete stylex syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "8px", "color": "red" }) };",
+		export const styles = { "card": style9.create({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("stylex -> style9: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("stylex -> style9: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("stylex -> style9: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("stylex -> style9: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "padding": "8px", "color": "red" }) };
+		export const styles = { "card": style9.create({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

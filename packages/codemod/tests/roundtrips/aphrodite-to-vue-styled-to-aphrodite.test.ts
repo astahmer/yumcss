@@ -50,7 +50,7 @@ test("aphrodite -> vue-styled -> aphrodite: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
+		export const styles = styled.div\` color: red; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("aphrodite -> vue-styled -> aphrodite: preserves an actionable concrete rou
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "red" }) };",
+		export const styles = styled.div\` color: red; padding: 8;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -216,7 +216,7 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -253,7 +253,7 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -291,7 +291,7 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -328,7 +328,7 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -380,7 +380,7 @@ test("aphrodite -> vue-styled -> aphrodite: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -417,7 +417,7 @@ test("aphrodite -> vue-styled -> aphrodite: resolves token values across both co
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

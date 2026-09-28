@@ -51,7 +51,7 @@ test("mui -> jss -> mui: preserves an actionable concrete round trip", () => {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "red", padding: "16px" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("mui -> jss -> mui: preserves an actionable concrete round trip", () => {
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
 		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "red", padding: "16px" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("mui -> jss -> mui: retains the documented secondary API without silent los
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const Card = createUseStyles({ padding: 8, color: "red" });",
+		export const Card = createUseStyles({ color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +174,7 @@ test("mui -> jss -> mui: retains the documented secondary API without silent los
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "#f97316" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#f97316", padding: "16px" } }).attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,7 +276,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "code": "import { Box } from "@mui/material";
 		import jss from "jss";
 		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "#f97316" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#f97316", padding: "16px" } }).attach().classes.style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,7 +313,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "16px" } }).attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +351,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "code": "import { Box } from "@mui/material";
 		import jss from "jss";
 		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "16px" } }).attach().classes.style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -402,7 +402,7 @@ test("mui -> jss -> mui: resolves token values across both concrete legs", async
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "16px" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -440,7 +440,7 @@ test("mui -> jss -> mui: resolves token values across both concrete legs", async
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
 		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "16px" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

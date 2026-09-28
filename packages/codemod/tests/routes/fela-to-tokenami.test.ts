@@ -94,7 +94,7 @@ test("fela -> tokenami: carries a documented secondary fela API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> tokenami | lowering-residual: host-framework | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: fela -> tokenami | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -120,11 +120,6 @@ test("fela -> tokenami: carries a documented secondary fela API explicitly", () 
 		    {
 		      "hint": "components: component subject: styled("button")",
 		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

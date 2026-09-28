@@ -52,7 +52,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "8px", "color": "red" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,7 +242,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "#2a57c8" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,7 +276,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "8px", "color": "#2a57c8" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2a57c8", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,7 +314,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -348,7 +348,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "8px", "color": "#2a57c8" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2a57c8", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -401,7 +401,7 @@ test("aphrodite -> chakra-ui -> aphrodite: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "8px", color: "brand.500" }) };",
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("aphrodite -> chakra-ui -> aphrodite: resolves token values across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "8px", "color": "#2a57c8" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2a57c8", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

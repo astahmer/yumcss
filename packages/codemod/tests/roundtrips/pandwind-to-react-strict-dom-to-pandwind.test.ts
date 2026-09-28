@@ -51,7 +51,7 @@ test("pandwind -> react-strict-dom -> pandwind: preserves an actionable concrete
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "red" });",
+		export const card = css.create({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("pandwind -> react-strict-dom -> pandwind: preserves an actionable concrete
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -226,7 +226,7 @@ test("pandwind -> react-strict-dom -> pandwind: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "#f97316" });",
+		export const card = css.create({ color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -264,7 +264,7 @@ test("pandwind -> react-strict-dom -> pandwind: preserves concrete theme and pro
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -301,7 +301,7 @@ test("pandwind -> react-strict-dom -> pandwind: preserves concrete theme and pro
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("pandwind -> react-strict-dom -> pandwind: preserves concrete theme and pro
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -390,7 +390,7 @@ test("pandwind -> react-strict-dom -> pandwind: resolves token values across bot
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
 
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -428,7 +428,7 @@ test("pandwind -> react-strict-dom -> pandwind: resolves token values across bot
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

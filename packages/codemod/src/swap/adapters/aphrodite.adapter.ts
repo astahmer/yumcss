@@ -3,6 +3,8 @@ import { SourcePass } from "../../source-pass-utils.ts";
 import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
+import type { AdapterParseContext } from "../adapter-contract.ts";
+import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
@@ -77,4 +79,16 @@ const aphrodite = makeExtraAdapter({
 	},
 });
 
-export default aphrodite;
+export default {
+	...aphrodite,
+	parse(source: string, context: AdapterParseContext) {
+		const parsed = aphrodite.parse(source, context);
+		return {
+			...parsed,
+			matches: parsed.matches.map((match) => ({
+				...match,
+				program: normalizeCssObjectNumericUnits(match.program),
+			})),
+		};
+	},
+};

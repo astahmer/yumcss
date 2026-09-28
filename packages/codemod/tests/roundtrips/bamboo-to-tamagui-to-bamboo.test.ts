@@ -132,7 +132,7 @@ test("bamboo -> tamagui -> bamboo: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { gap: "4", display: "flex" });",
+		export const card = styled(View, { display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("bamboo -> tamagui -> bamboo: retains the documented secondary API without 
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { gap: "4", display: "flex" });",
+		export const card = styled(View, { display: "flex", gap: "4" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

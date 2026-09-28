@@ -50,7 +50,7 @@ test("treat -> stylex: migrates concrete treat syntax to stylex", () => {
 		  "changed": true,
 		  "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "8px" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -97,7 +97,7 @@ test("treat -> stylex: carries a documented secondary treat API explicitly", () 
 		  "changed": true,
 		  "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "8px" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -153,7 +153,7 @@ test("treat -> stylex: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,7 +191,7 @@ test("treat -> stylex: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -241,7 +241,7 @@ test("treat -> stylex: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -288,7 +288,7 @@ test("treat -> stylex: preserves malformed concrete treat input", () => {
 		  "changed": true,
 		  "code": "import { style } from "treat";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "red" } }).style;
+		export const card = stylex.create({ style: { color: "red", padding: "8px" } }).style;
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

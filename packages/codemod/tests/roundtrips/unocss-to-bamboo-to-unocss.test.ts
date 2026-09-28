@@ -50,7 +50,7 @@ test("unocss -> bamboo -> unocss: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		export const App = () => <div className={css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,7 +83,7 @@ test("unocss -> bamboo -> unocss: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -207,7 +207,7 @@ test("unocss -> bamboo -> unocss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#f97316" })}/>;",
+		export const App = () => <div className={css({ color: "#f97316", padding: "1.125rem" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -240,7 +240,7 @@ test("unocss -> bamboo -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +278,7 @@ test("unocss -> bamboo -> unocss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
+		export const App = () => <div className={css({ color: "#2563eb", padding: "1.125rem" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("unocss -> bamboo -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -363,7 +363,7 @@ test("unocss -> bamboo -> unocss: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
+		export const App = () => <div className={css({ color: "#2563eb", padding: "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -396,7 +396,7 @@ test("unocss -> bamboo -> unocss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

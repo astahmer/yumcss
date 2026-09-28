@@ -114,7 +114,7 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const card = css.class({ padding: "1rem", color: "red" });",
+			const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
 			    "id": "emotion-object-css",
 			    "residuals": [],
@@ -122,8 +122,8 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const Card = css.class({ padding: "1rem", color: "red" });
-			export const App = () => <div className={Card} />;",
+			const Card = css.class({ color: "red", padding: "1rem" });
+			export const App = () => <Card />;",
 			    "converted": 1,
 			    "id": "styled-components-subject",
 			    "residuals": [],
@@ -131,7 +131,7 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const card = css.class({ padding: "1rem", color: "red" });",
+			const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
 			    "id": "panda-aliased-css",
 			    "residuals": [],
@@ -139,7 +139,7 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const styles = { "card": css.class({ padding: "2px", color: "red" }) };",
+			const styles = { "card": css.class({ color: "red", padding: "2px" }) };",
 			    "converted": 1,
 			    "id": "stylex-create",
 			    "residuals": [],
@@ -147,7 +147,7 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const useStyles = { "card": css.class({ padding: 2, color: "red" }) };",
+			const useStyles = { "card": css.class({ color: "red", padding: 2 }) };",
 			    "converted": 1,
 			    "id": "jss-hook",
 			    "residuals": [],
@@ -155,7 +155,7 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			<div className={css.class({ padding: "1rem", color: "red" })}/>",
+			<div className={css.class({ color: "red", padding: "1rem" })}/>",
 			    "converted": 1,
 			    "id": "tailwind-arbitrary-properties",
 			    "residuals": [],
@@ -163,7 +163,7 @@ describe("concrete adapter capability proofs", () => {
 			  {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			<div className={css.class({ padding: "1rem", color: "red" })}/>",
+			<div className={css.class({ color: "red", padding: "1rem" })}/>",
 			    "converted": 1,
 			    "id": "unocss-arbitrary-properties",
 			    "residuals": [],
@@ -188,7 +188,7 @@ describe("concrete adapter capability proofs", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={css.props(staticClass, dynamic, "pw-1fn70s4", props.className).className} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
+			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
 		`);
 	});
 
@@ -259,10 +259,10 @@ describe("explicit adapter round trips", () => {
 			{
 			  "forward": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const card = css.class({ padding: "1rem", color: "red" });",
+			const card = css.class({ color: "red", padding: "1rem" });",
 			  "reverse": "import { css } from "@emotion/css";
 
-			const card = css({ padding: "1rem", color: "red" });",
+			const card = css({ color: "red", padding: "1rem" });",
 			}
 		`);
 	});
@@ -284,7 +284,7 @@ describe("explicit adapter round trips", () => {
 		expect(reverse.code).toMatchInlineSnapshot(`
 			"import { css } from "styled-system/css";
 
-			const card = css({ padding: "1rem", color: "red" });"
+			const card = css({ color: "red", padding: "1rem" });"
 		`);
 	});
 
@@ -302,7 +302,7 @@ describe("explicit adapter round trips", () => {
 		expect(reverse.code).toMatchInlineSnapshot(
 			`
 			"
-			<div className={"[padding:1rem] [color:red]"}/>"
+			<div className={"[color:red] [padding:1rem]"}/>"
 		`,
 		);
 	});

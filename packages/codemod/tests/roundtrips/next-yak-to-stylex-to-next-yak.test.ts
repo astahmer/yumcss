@@ -50,7 +50,7 @@ test("next-yak -> stylex -> next-yak: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("next-yak -> stylex -> next-yak: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = { "style": css\`padding: 1rem; color: red;\` }.style;",
+		export const card = { "style": css\`color: red; padding: 1rem;\` }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,8 @@ test("next-yak -> stylex -> next-yak: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		const __CardStyle = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,8 +170,10 @@ test("next-yak -> stylex -> next-yak: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-		export const Card = { "style": css\`padding: 1rem; color: red;\` }.style;",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "next-yak";
+		const __CardStyle = { "style": css\`color: red; padding: 1rem;\` }.style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +236,7 @@ test("next-yak -> stylex -> next-yak: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +272,7 @@ test("next-yak -> stylex -> next-yak: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = { "style": css\`padding: 1rem; color: #2563eb;\` }.style;",
+		export const card = { "style": css\`color: #2563eb; padding: 1rem;\` }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +308,7 @@ test("next-yak -> stylex -> next-yak: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +344,7 @@ test("next-yak -> stylex -> next-yak: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = { "style": css\`padding: 1rem; color: #2563eb;\` }.style;",
+		export const card = { "style": css\`color: #2563eb; padding: 1rem;\` }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +394,7 @@ test("next-yak -> stylex -> next-yak: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +430,7 @@ test("next-yak -> stylex -> next-yak: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = { "style": css\`padding: 1rem; color: #2563eb;\` }.style;",
+		export const card = { "style": css\`color: #2563eb; padding: 1rem;\` }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

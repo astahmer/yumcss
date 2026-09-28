@@ -53,7 +53,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
+		const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +89,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +223,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
+		const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -259,7 +259,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2a57c8" }) };
+		const styles = { "card": css.create({ color: "#2a57c8", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -299,7 +299,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +335,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2a57c8" }) };
+		const styles = { "card": css.create({ color: "#2a57c8", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -389,7 +389,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: resolves token values a
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
-		const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -425,7 +425,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: resolves token values a
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2a57c8" }) };
+		const styles = { "card": css.create({ color: "#2a57c8", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

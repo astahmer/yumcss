@@ -49,8 +49,8 @@ test("react-strict-dom -> solid-styled: migrates concrete react-strict-dom synta
 		{
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,8 +151,8 @@ test("react-strict-dom -> solid-styled: loads concrete theme and project context
 		  "amber": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,8 +189,8 @@ test("react-strict-dom -> solid-styled: loads concrete theme and project context
 		  "blue": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,8 +239,8 @@ test("react-strict-dom -> solid-styled: resolves concrete token values with proj
 		{
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,8 +286,8 @@ test("react-strict-dom -> solid-styled: preserves malformed concrete react-stric
 		{
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

@@ -137,7 +137,7 @@ test("bamboo -> chakra-ui -> bamboo: retains the documented secondary API withou
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", display: "flex" });",
+		export const card = defaultSystem.css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,7 +172,7 @@ test("bamboo -> chakra-ui -> bamboo: retains the documented secondary API withou
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = css({ gap: "1rem", display: "flex" });",
+		export const card = css({ display: "flex", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

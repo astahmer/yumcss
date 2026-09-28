@@ -150,7 +150,7 @@ describe("StyleX source adapter", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const styles = { "card": css.class({ padding: "8px", color: "red" }) };
+			const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 			export const App = () => <div {...css.props(styles.card)} />;"
 		`);
 	});
@@ -171,7 +171,7 @@ describe("StyleX source adapter", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const styles = { "card": css.class({ padding: "8px", color: "red" }) };
+			const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 			export const App = () => <div {...css.props(styles.card)} />;"
 		`);
 	});

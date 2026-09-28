@@ -49,9 +49,9 @@ test("fela -> solid-styled: migrates concrete fela syntax to solid-styled", () =
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "red" });",
+		export const card = css({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,7 +96,7 @@ test("fela -> solid-styled: carries a documented secondary fela API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "color": "red" });",
+		export const Card = styled("button")(() => ({ "color": "red" }));",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -150,9 +150,9 @@ test("fela -> solid-styled: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,9 +188,9 @@ test("fela -> solid-styled: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,9 +238,9 @@ test("fela -> solid-styled: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -285,9 +285,9 @@ test("fela -> solid-styled: preserves malformed concrete fela input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "red" });
+		export const card = css({ "color": "red" });
 		const unfinished = { /* unfinished fela */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -52,7 +52,7 @@ test("next-yak -> chakra-ui: migrates concrete next-yak syntax to chakra-ui", as
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -95,7 +95,7 @@ test("next-yak -> chakra-ui: carries a documented secondary next-yak API explici
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.div {...props} css={{ padding: "4", color: "red" }} />;",
+		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "4" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("next-yak -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "#2a57c8" });",
+		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("next-yak -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,7 +230,7 @@ test("next-yak -> chakra-ui: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -274,7 +274,7 @@ test("next-yak -> chakra-ui: preserves malformed concrete next-yak input", async
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "red" });
+		export const card = defaultSystem.css({ color: "red", padding: "4" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

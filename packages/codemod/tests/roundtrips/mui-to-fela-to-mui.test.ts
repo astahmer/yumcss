@@ -49,7 +49,7 @@ test("mui -> fela -> mui: preserves an actionable concrete round trip", () => {
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "red" });",
+		    "code": "export const App = () => renderer.renderRule({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("mui -> fela -> mui: preserves an actionable concrete round trip", () => {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "red" });",
+		export const App = () => css.class({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("mui -> fela -> mui: retains the documented secondary API without silent lo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const Card = renderer.renderRule({ "padding": 8, "color": "red" });",
+		    "code": "export const Card = renderer.renderRule({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -171,7 +171,7 @@ test("mui -> fela -> mui: retains the documented secondary API without silent lo
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("mui -> fela -> mui: preserves concrete theme and project context variants"
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "#f97316" });",
+		      "code": "export const App = () => renderer.renderRule({ "color": "#f97316", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,7 +270,7 @@ test("mui -> fela -> mui: preserves concrete theme and project context variants"
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -306,7 +306,7 @@ test("mui -> fela -> mui: preserves concrete theme and project context variants"
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "#2563eb" });",
+		      "code": "export const App = () => renderer.renderRule({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -343,7 +343,7 @@ test("mui -> fela -> mui: preserves concrete theme and project context variants"
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -393,7 +393,7 @@ test("mui -> fela -> mui: resolves token values across both concrete legs", asyn
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "padding": "16px", "color": "#2563eb" });",
+		    "code": "export const App = () => renderer.renderRule({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +430,7 @@ test("mui -> fela -> mui: resolves token values across both concrete legs", asyn
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

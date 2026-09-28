@@ -77,7 +77,7 @@ test("chakra-ui -> react-strict-dom: migrates concrete chakra-ui syntax to react
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -177,7 +177,7 @@ test("chakra-ui -> react-strict-dom: loads concrete theme and project context va
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -214,7 +214,7 @@ test("chakra-ui -> react-strict-dom: loads concrete theme and project context va
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -263,7 +263,7 @@ test("chakra-ui -> react-strict-dom: resolves concrete token values with project
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -310,7 +310,7 @@ test("chakra-ui -> react-strict-dom: preserves malformed concrete chakra-ui inpu
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

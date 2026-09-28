@@ -50,7 +50,7 @@ test("mui -> goober -> mui: preserves an actionable concrete round trip", () => 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "16px", "color": "red" });",
+		export const App = () => css({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("mui -> goober -> mui: preserves an actionable concrete round trip", () => 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "red" });",
+		export const App = () => css.class({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -136,7 +136,7 @@ test("mui -> goober -> mui: retains the documented secondary API without silent 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const Card = css({ "padding": 8, "color": "red" });",
+		export const Card = css({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -173,7 +173,7 @@ test("mui -> goober -> mui: retains the documented secondary API without silent 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "16px", "color": "#f97316" });",
+		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,7 +310,7 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "16px", "color": "#2563eb" });",
+		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -398,7 +398,7 @@ test("mui -> goober -> mui: resolves token values across both concrete legs", as
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "16px", "color": "#2563eb" });",
+		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("mui -> goober -> mui: resolves token values across both concrete legs", as
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => css.class({ "padding": "16px", "color": "primary.main" });",
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

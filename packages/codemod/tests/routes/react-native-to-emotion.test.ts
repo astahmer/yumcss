@@ -49,7 +49,7 @@ test("react-native -> emotion: migrates concrete react-native syntax to emotion"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: 8, color: "red" }) };",
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("react-native -> emotion: carries a documented secondary react-native API e
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: 8, backgroundColor: "red" }) };",
+		export const styles = { "card": css({ padding: "8px", backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("react-native -> emotion: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("react-native -> emotion: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("react-native -> emotion: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: 8, color: "#2563eb" }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("react-native -> emotion: preserves malformed concrete react-native input",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const styles = { "card": css({ padding: 8, color: "red" }) };
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

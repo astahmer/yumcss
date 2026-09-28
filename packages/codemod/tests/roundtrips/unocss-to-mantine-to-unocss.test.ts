@@ -49,7 +49,7 @@ test("unocss -> mantine -> unocss: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => <div  style={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;",
+		    "code": "export const App = () => <div  style={{ display: "flex", alignItems: "center", gap: "1rem" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -82,7 +82,7 @@ test("unocss -> mantine -> unocss: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -205,7 +205,7 @@ test("unocss -> mantine -> unocss: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		      "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -238,7 +238,7 @@ test("unocss -> mantine -> unocss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[padding:var(--mantine-spacing-card)] [color:var(--mantine-color-brand-0)]"}/>;",
+		      "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +275,7 @@ test("unocss -> mantine -> unocss: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		      "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -308,7 +308,7 @@ test("unocss -> mantine -> unocss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[padding:var(--mantine-spacing-card)] [color:var(--mantine-color-brand-0)]"}/>;",
+		      "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -359,7 +359,7 @@ test("unocss -> mantine -> unocss: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		    "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -392,7 +392,7 @@ test("unocss -> mantine -> unocss: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[padding:var(--mantine-spacing-card)] [color:var(--mantine-color-brand-0)]"}/>;",
+		    "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

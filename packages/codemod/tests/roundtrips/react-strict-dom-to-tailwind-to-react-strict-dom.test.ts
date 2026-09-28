@@ -50,7 +50,7 @@ test("react-strict-dom -> tailwind -> react-strict-dom: preserves an actionable 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] [color:red]" };
+		const styles = { "card": "[color:red] [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("react-strict-dom -> tailwind -> react-strict-dom: preserves an actionable 
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +218,7 @@ test("react-strict-dom -> tailwind -> react-strict-dom: preserves concrete theme
 		    "forward": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] [color:#2563eb]" };
+		const styles = { "card": "[color:#2563eb] [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -256,7 +256,7 @@ test("react-strict-dom -> tailwind -> react-strict-dom: preserves concrete theme
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,7 +295,7 @@ test("react-strict-dom -> tailwind -> react-strict-dom: preserves concrete theme
 		    "forward": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] text-brand" };
+		const styles = { "card": "text-brand [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +333,7 @@ test("react-strict-dom -> tailwind -> react-strict-dom: preserves concrete theme
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +386,7 @@ test("react-strict-dom -> tailwind -> react-strict-dom: resolves token values ac
 		  "forward": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		const styles = { "card": "[padding:1rem] text-brand" };
+		const styles = { "card": "text-brand [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -424,7 +424,7 @@ test("react-strict-dom -> tailwind -> react-strict-dom: resolves token values ac
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

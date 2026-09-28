@@ -49,7 +49,7 @@ test("next-yak -> react-strict-dom: migrates concrete next-yak syntax to react-s
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });",
+		export const card = css.create({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -120,7 +120,7 @@ test("next-yak -> react-strict-dom: carries a documented secondary next-yak API 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -149,7 +149,7 @@ test("next-yak -> react-strict-dom: loads concrete theme and project context var
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("next-yak -> react-strict-dom: loads concrete theme and project context var
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("next-yak -> react-strict-dom: resolves concrete token values with project 
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("next-yak -> react-strict-dom: preserves malformed concrete next-yak input"
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		export const card = css.create({ padding: "1rem", color: "red" });
+		export const card = css.create({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

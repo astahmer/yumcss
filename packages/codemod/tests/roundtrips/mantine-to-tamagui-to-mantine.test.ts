@@ -51,7 +51,8 @@ test("mantine -> tamagui -> mantine: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		const __componentTamagui = styled(View, { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,10 +85,10 @@ test("mantine -> tamagui -> mantine: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> mantine | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
-		    "converted": 0,
+		import { View } from "@tamagui/core";
+		const __componentTamagui = (props) => <View {...props} style={{ ...{ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }, ...props.style }} />;
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -103,19 +104,19 @@ test("mantine -> tamagui -> mantine: preserves an actionable concrete round trip
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -209,7 +210,8 @@ test("mantine -> tamagui -> mantine: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		const __componentTamagui = styled(View, { color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -242,10 +244,10 @@ test("mantine -> tamagui -> mantine: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> mantine | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
-		      "converted": 0,
+		import { View } from "@tamagui/core";
+		const __componentTamagui = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }, ...props.style }} />;
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -261,19 +263,19 @@ test("mantine -> tamagui -> mantine: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -281,7 +283,8 @@ test("mantine -> tamagui -> mantine: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,10 +317,10 @@ test("mantine -> tamagui -> mantine: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> mantine | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
-		      "converted": 0,
+		import { View } from "@tamagui/core";
+		const __componentTamagui = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }, ...props.style }} />;
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -333,19 +336,19 @@ test("mantine -> tamagui -> mantine: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -367,7 +370,8 @@ test("mantine -> tamagui -> mantine: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -400,10 +404,10 @@ test("mantine -> tamagui -> mantine: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> mantine | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
-		    "converted": 0,
+		import { View } from "@tamagui/core";
+		const __componentTamagui = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }, ...props.style }} />;
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -419,19 +423,19 @@ test("mantine -> tamagui -> mantine: resolves token values across both concrete 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

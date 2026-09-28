@@ -92,10 +92,10 @@ test("fela -> tamagui: carries a documented secondary fela API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> tamagui | capability-blocked: components: component subject: styled("button") | available: static, residual)
-		export const Card = createComponent(() => ({ color: "red" }), "button");",
-		  "converted": 0,
+		  "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { color: "red" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "button"} />; };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -110,19 +110,19 @@ test("fela -> tamagui: carries a documented secondary fela API explicitly", () =
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled("button")",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

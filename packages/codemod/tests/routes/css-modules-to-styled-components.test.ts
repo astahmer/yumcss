@@ -159,7 +159,7 @@ test("css-modules -> styled-components: loads concrete theme and project context
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +194,7 @@ test("css-modules -> styled-components: loads concrete theme and project context
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +241,7 @@ test("css-modules -> styled-components: resolves concrete token values with proj
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const styles = { "card": styled.div({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

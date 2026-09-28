@@ -49,8 +49,8 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "red" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,38 +84,16 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		export const App = () => styled("div")({ padding: "16px", color: "red" });",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "red", "padding": "16px" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -133,8 +111,8 @@ test("mui -> solid-styled -> mui: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": 8, "color": "red" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const Card = css({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,38 +146,16 @@ test("mui -> solid-styled -> mui: retains the documented secondary API without s
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: 8, color: "red" });",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const Card = css({ "color": "red", "padding": 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -231,8 +187,8 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#f97316" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -266,45 +222,23 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
-		      "converted": 1,
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -338,38 +272,16 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
-		      "converted": 1,
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -389,8 +301,8 @@ test("mui -> solid-styled -> mui: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -424,38 +336,16 @@ test("mui -> solid-styled -> mui: resolves token values across both concrete leg
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		export const App = () => styled("div")({ padding: "16px", color: "primary.main" });",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

@@ -49,7 +49,7 @@ test("goober -> treat: migrates concrete goober syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "red" });",
+		export const card = style({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("goober -> treat: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("goober -> treat: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("goober -> treat: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("goober -> treat: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "red" });
+		export const card = style({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

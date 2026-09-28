@@ -125,7 +125,7 @@ test("fela -> css-modules: carries a documented secondary fela API explicitly", 
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "hint": "the React wrapper requires a TSX source module",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

@@ -52,7 +52,7 @@ test("treat -> chakra-ui -> treat: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("treat -> chakra-ui -> treat: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "8px", "color": "red" });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -136,7 +136,7 @@ test("treat -> chakra-ui -> treat: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("treat -> chakra-ui -> treat: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "8px", "color": "red" });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("treat -> chakra-ui -> treat: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "#2a57c8" });",
+		export const card = defaultSystem.css({ color: "#2a57c8", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("treat -> chakra-ui -> treat: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "padding": "8px", "color": "#2a57c8" });",
+		export const card = style({ "color": "#2a57c8", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -307,7 +307,7 @@ test("treat -> chakra-ui -> treat: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("treat -> chakra-ui -> treat: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "padding": "8px", "color": "#2a57c8" });",
+		export const card = style({ "color": "#2a57c8", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -394,7 +394,7 @@ test("treat -> chakra-ui -> treat: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -428,7 +428,7 @@ test("treat -> chakra-ui -> treat: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "8px", "color": "#2a57c8" });",
+		export const card = style({ "color": "#2a57c8", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

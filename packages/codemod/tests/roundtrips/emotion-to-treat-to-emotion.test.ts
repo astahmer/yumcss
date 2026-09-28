@@ -50,7 +50,7 @@ test("emotion -> treat -> emotion: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "red" });",
+		export const card = style({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("emotion -> treat -> emotion: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("emotion -> treat -> emotion: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "red" });",
+		export const card = style({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("emotion -> treat -> emotion: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("emotion -> treat -> emotion: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("emotion -> treat -> emotion: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("emotion -> treat -> emotion: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("emotion -> treat -> emotion: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("emotion -> treat -> emotion: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("emotion -> treat -> emotion: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

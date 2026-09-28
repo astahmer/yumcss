@@ -49,7 +49,7 @@ test("stylex -> vanilla-extract: migrates concrete stylex syntax to vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "8px", color: "red" }) };",
+		export const styles = { "card": style({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("stylex -> vanilla-extract: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("stylex -> vanilla-extract: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("stylex -> vanilla-extract: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "8px", color: "#2563eb" }) };",
+		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("stylex -> vanilla-extract: preserves malformed concrete stylex input", () 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const styles = { "card": style({ padding: "8px", color: "red" }) };
+		export const styles = { "card": style({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

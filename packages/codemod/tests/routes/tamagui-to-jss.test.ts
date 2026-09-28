@@ -50,7 +50,7 @@ test("tamagui -> jss: migrates concrete tamagui syntax to jss", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "red" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "red", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,7 +156,7 @@ test("tamagui -> jss: loads concrete theme and project context variants", async 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +194,7 @@ test("tamagui -> jss: loads concrete theme and project context variants", async 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +244,7 @@ test("tamagui -> jss: resolves concrete token values with project context", asyn
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -291,7 +291,7 @@ test("tamagui -> jss: preserves malformed concrete tamagui input", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "red" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "red", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

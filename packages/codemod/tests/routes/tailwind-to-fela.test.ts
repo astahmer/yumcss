@@ -48,7 +48,7 @@ test("tailwind -> fela: migrates concrete tailwind syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => renderer.renderRule({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
+		  "code": "export const App = () => renderer.renderRule({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -153,7 +153,7 @@ test("tailwind -> fela: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#f97316" });",
+		    "code": "export const App = () => renderer.renderRule({ "color": "#f97316", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("tailwind -> fela: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#2563eb" });",
+		    "code": "export const App = () => renderer.renderRule({ "color": "#2563eb", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("tailwind -> fela: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#2563eb" });",
+		  "code": "export const App = () => renderer.renderRule({ "color": "#2563eb", "padding": "1.125rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -279,7 +279,7 @@ test("tailwind -> fela: preserves malformed concrete tailwind input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => renderer.renderRule({ "gap": "1rem", "alignItems": "center", "display": "flex" });
+		  "code": "export const App = () => renderer.renderRule({ "display": "flex", "alignItems": "center", "gap": "1rem" });
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

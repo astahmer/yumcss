@@ -51,7 +51,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves an actionable co
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "red" });",
+		export const card = css.class({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves an actionable co
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: 8, color: "red" });",
+		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "#2563eb" });",
+		export const card = css.class({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +312,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -400,7 +400,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: resolves token values acro
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ padding: 8, color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("vanilla-extract -> pandwind -> vanilla-extract: resolves token values acro
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 
-		export const card = style({ padding: 8, color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

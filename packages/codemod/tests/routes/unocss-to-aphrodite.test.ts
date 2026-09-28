@@ -49,7 +49,7 @@ test("unocss -> aphrodite: migrates concrete unocss syntax to aphrodite", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "gap": "1rem", "alignItems": "center", "display": "flex" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -155,7 +155,7 @@ test("unocss -> aphrodite: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#f97316", "padding": "1.125rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,7 +191,7 @@ test("unocss -> aphrodite: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("unocss -> aphrodite: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("unocss -> aphrodite: preserves malformed concrete unocss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "gap": "1rem", "alignItems": "center", "display": "flex" } }).style)}/>;
+		export const App = () => <div className={css(StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

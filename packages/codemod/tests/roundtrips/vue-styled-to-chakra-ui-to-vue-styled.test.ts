@@ -52,7 +52,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -76,6 +76,11 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
@@ -87,7 +92,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,7 +119,7 @@ test("vue-styled -> chakra-ui -> vue-styled: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -138,6 +143,11 @@ test("vue-styled -> chakra-ui -> vue-styled: retains the documented secondary AP
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
@@ -149,7 +159,7 @@ test("vue-styled -> chakra-ui -> vue-styled: retains the documented secondary AP
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -191,7 +201,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -215,6 +225,11 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      ],
 		      "residuals": [
 		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
 		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
@@ -226,7 +241,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -241,7 +256,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -265,6 +280,11 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      ],
 		      "residuals": [
 		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
 		          "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		          "kind": "host-framework",
 		          "preserved": undefined,
@@ -276,7 +296,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -305,7 +325,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -329,6 +349,11 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token values across both c
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 		        "kind": "host-framework",
 		        "preserved": undefined,
@@ -340,7 +365,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token values across both c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

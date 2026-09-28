@@ -50,7 +50,7 @@ test("tokenami -> mui: migrates concrete tokenami syntax to mui", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "gap": "1rem", "color": "red" });",
+		export const card = css.class({ "color": "red", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,7 +146,7 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "gap": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "gap": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,7 +230,7 @@ test("tokenami -> mui: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "gap": "1rem", "color": "primary.main" });",
+		export const card = css.class({ "color": "primary.main", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -275,7 +275,7 @@ test("tokenami -> mui: preserves malformed concrete tokenami input", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "gap": "1rem", "color": "red" });
+		export const card = css.class({ "color": "red", "gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

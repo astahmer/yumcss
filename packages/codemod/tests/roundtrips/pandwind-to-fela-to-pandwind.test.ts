@@ -50,7 +50,7 @@ test("pandwind -> fela -> pandwind: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("pandwind -> fela -> pandwind: preserves an actionable concrete round trip"
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("pandwind -> fela -> pandwind: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "#f97316" });",
+		export const card = renderer.renderRule({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,7 +263,7 @@ test("pandwind -> fela -> pandwind: preserves concrete theme and project context
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -299,7 +299,7 @@ test("pandwind -> fela -> pandwind: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -338,7 +338,7 @@ test("pandwind -> fela -> pandwind: preserves concrete theme and project context
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -388,7 +388,7 @@ test("pandwind -> fela -> pandwind: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("pandwind -> fela -> pandwind: resolves token values across both concrete l
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

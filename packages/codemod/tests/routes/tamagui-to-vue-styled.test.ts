@@ -48,11 +48,11 @@ test("tamagui -> vue-styled: migrates concrete tamagui syntax to vue-styled", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "red" });
-		export const App = () => <Card />;",
-		  "converted": 1,
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
+		export const App = () => <View :class="Card" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -70,19 +70,19 @@ test("tamagui -> vue-styled: migrates concrete tamagui syntax to vue-styled", ()
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "vue-styled has no host representation for vue",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -96,7 +96,7 @@ test("tamagui -> vue-styled: carries a documented secondary tamagui API explicit
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | parse-residual: function-dynamic | available: named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | parse-residual: function-dynamic | lowering-residual: host-framework | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -125,6 +125,11 @@ test("tamagui -> vue-styled: carries a documented secondary tamagui API explicit
 		      "kind": "function-dynamic",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "vue-styled has no host representation for vue",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -149,11 +154,11 @@ test("tamagui -> vue-styled: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "#2563eb" });
-		export const App = () => <Card />;",
-		    "converted": 1,
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
+		export const App = () => <View :class="Card" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -171,27 +176,27 @@ test("tamagui -> vue-styled: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "vue-styled has no host representation for vue",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "#2563eb" });
-		export const App = () => <Card />;",
-		    "converted": 1,
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
+		export const App = () => <View :class="Card" />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -209,19 +214,19 @@ test("tamagui -> vue-styled: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "vue-styled has no host representation for vue",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -237,11 +242,11 @@ test("tamagui -> vue-styled: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "#2563eb" });
-		export const App = () => <Card />;",
-		  "converted": 1,
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
+		export const App = () => <View :class="Card" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -259,19 +264,19 @@ test("tamagui -> vue-styled: resolves concrete token values with project context
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "vue-styled has no host representation for vue",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -284,12 +289,12 @@ test("tamagui -> vue-styled: preserves malformed concrete tamagui input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "red" });
-		export const App = () => <Card />;
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
+		export const App = () => <View :class="Card" />;
 		const unfinished = { /* unfinished tamagui */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -307,19 +312,19 @@ test("tamagui -> vue-styled: preserves malformed concrete tamagui input", () => 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "vue-styled has no host representation for vue",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

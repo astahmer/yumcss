@@ -51,7 +51,7 @@ test("pandwind -> react-native -> pandwind: preserves an actionable concrete rou
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -90,7 +90,7 @@ test("pandwind -> react-native -> pandwind: preserves an actionable concrete rou
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: 16, color: "red" });",
+		export const card = css.class({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +228,7 @@ test("pandwind -> react-native -> pandwind: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "#f97316" });",
+		export const card = StyleSheet.create({ "color": "#f97316", "padding": 16 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -268,7 +268,7 @@ test("pandwind -> react-native -> pandwind: preserves concrete theme and project
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: 16, color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("pandwind -> react-native -> pandwind: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -345,7 +345,7 @@ test("pandwind -> react-native -> pandwind: preserves concrete theme and project
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: 16, color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -396,7 +396,7 @@ test("pandwind -> react-native -> pandwind: resolves token values across both co
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
 
-		export const card = StyleSheet.create({ "padding": 16, "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -436,7 +436,7 @@ test("pandwind -> react-native -> pandwind: resolves token values across both co
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: 16, color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

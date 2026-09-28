@@ -48,7 +48,7 @@ test("treat -> fela: migrates concrete treat syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "padding": 8, "color": "red" });",
+		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("treat -> fela: carries a documented secondary treat API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "padding": 8, "color": "red" });",
+		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("treat -> fela: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("treat -> fela: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("treat -> fela: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "padding": 8, "color": "#2563eb" });",
+		  "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("treat -> fela: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "padding": 8, "color": "red" });
+		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,7 +49,7 @@ test("vanilla-extract -> bamboo: migrates concrete vanilla-extract syntax to bam
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("vanilla-extract -> bamboo: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +179,7 @@ test("vanilla-extract -> bamboo: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +225,7 @@ test("vanilla-extract -> bamboo: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -268,7 +268,7 @@ test("vanilla-extract -> bamboo: preserves malformed concrete vanilla-extract in
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ padding: 8, color: "red" });
+		export const card = css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

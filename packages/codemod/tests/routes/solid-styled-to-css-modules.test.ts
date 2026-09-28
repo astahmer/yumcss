@@ -49,7 +49,7 @@ test("solid-styled -> css-modules: migrates concrete solid-styled syntax to css-
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -57,39 +57,29 @@ test("solid-styled -> css-modules: migrates concrete solid-styled syntax to css-
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "hint": "the source host is not verified as React",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -109,7 +99,7 @@ test("solid-styled -> css-modules: carries a documented secondary solid-styled A
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -117,39 +107,29 @@ test("solid-styled -> css-modules: carries a documented secondary solid-styled A
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "hint": "the source host is not verified as React",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -178,7 +158,7 @@ test("solid-styled -> css-modules: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -186,39 +166,29 @@ test("solid-styled -> css-modules: loads concrete theme and project context vari
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -229,7 +199,7 @@ test("solid-styled -> css-modules: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -237,39 +207,29 @@ test("solid-styled -> css-modules: loads concrete theme and project context vari
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -292,7 +252,7 @@ test("solid-styled -> css-modules: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -300,39 +260,29 @@ test("solid-styled -> css-modules: resolves concrete token values with project c
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "hint": "the source host is not verified as React",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
@@ -352,7 +302,7 @@ test("solid-styled -> css-modules: preserves malformed concrete solid-styled inp
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 0,
@@ -361,39 +311,29 @@ test("solid-styled -> css-modules: preserves malformed concrete solid-styled inp
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "hint": "the source file contains parse errors",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

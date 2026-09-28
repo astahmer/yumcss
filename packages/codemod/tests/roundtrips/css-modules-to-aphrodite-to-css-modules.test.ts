@@ -207,7 +207,7 @@ test("css-modules -> aphrodite -> css-modules: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> aphrodite -> css-modules: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
 		/* /* pandwind:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("css-modules -> aphrodite -> css-modules: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> aphrodite -> css-modules: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
 		/* /* pandwind:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("css-modules -> aphrodite -> css-modules: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -411,7 +411,7 @@ test("css-modules -> aphrodite -> css-modules: resolves token values across both
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
 		/* /* pandwind:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

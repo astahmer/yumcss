@@ -50,7 +50,7 @@ test("stitches -> vue-styled -> stitches: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("stitches -> vue-styled -> stitches: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -216,7 +216,7 @@ test("stitches -> vue-styled -> stitches: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -253,7 +253,7 @@ test("stitches -> vue-styled -> stitches: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -291,7 +291,7 @@ test("stitches -> vue-styled -> stitches: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -328,7 +328,7 @@ test("stitches -> vue-styled -> stitches: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -380,7 +380,7 @@ test("stitches -> vue-styled -> stitches: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -417,7 +417,7 @@ test("stitches -> vue-styled -> stitches: resolves token values across both conc
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

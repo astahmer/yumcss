@@ -51,7 +51,7 @@ test("mantine -> stylex -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("mantine -> stylex -> mantine: preserves an actionable concrete round trip"
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
 		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +228,7 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -266,7 +266,7 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
 		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -316,7 +316,7 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -354,7 +354,7 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
 		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -418,7 +418,7 @@ test("mantine -> stylex -> mantine: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -456,7 +456,7 @@ test("mantine -> stylex -> mantine: resolves token values across both concrete l
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
 		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => stylex.create({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

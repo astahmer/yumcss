@@ -50,7 +50,7 @@ test("react-strict-dom -> pandwind: migrates concrete react-strict-dom syntax to
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +149,7 @@ test("react-strict-dom -> pandwind: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.class({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,7 +185,7 @@ test("react-strict-dom -> pandwind: loads concrete theme and project context var
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
+		const styles = { "card": css.class({ color: "brand", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +233,7 @@ test("react-strict-dom -> pandwind: resolves concrete token values with project 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
+		const styles = { "card": css.class({ color: "brand", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -278,7 +278,7 @@ test("react-strict-dom -> pandwind: preserves malformed concrete react-strict-do
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

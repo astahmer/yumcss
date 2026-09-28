@@ -51,7 +51,7 @@ test("mantine -> aphrodite -> mantine: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("mantine -> aphrodite -> mantine: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 
-		export const App = () => <Box className={css({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
+		export const App = () => <Box className={css({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -214,7 +214,7 @@ test("mantine -> aphrodite -> mantine: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -252,7 +252,7 @@ test("mantine -> aphrodite -> mantine: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 
-		export const App = () => <Box className={css({ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
+		export const App = () => <Box className={css({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("mantine -> aphrodite -> mantine: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -327,7 +327,7 @@ test("mantine -> aphrodite -> mantine: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 
-		export const App = () => <Box className={css({ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
+		export const App = () => <Box className={css({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -378,7 +378,7 @@ test("mantine -> aphrodite -> mantine: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -416,7 +416,7 @@ test("mantine -> aphrodite -> mantine: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 
-		export const App = () => <Box className={css({ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
+		export const App = () => <Box className={css({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

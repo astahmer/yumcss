@@ -50,7 +50,7 @@ test("next-yak -> styled-components -> next-yak: preserves an actionable concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "red" });",
+		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("next-yak -> styled-components -> next-yak: preserves an actionable concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		export const card = styled.div\`padding: 1rem; color: red;\`;",
+		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -132,7 +132,7 @@ test("next-yak -> styled-components -> next-yak: retains the documented secondar
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled.div({ padding: "1rem", color: "red" });",
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("next-yak -> styled-components -> next-yak: retains the documented secondar
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`padding: 1rem; color: red;\`;",
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("next-yak -> styled-components -> next-yak: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,7 +263,7 @@ test("next-yak -> styled-components -> next-yak: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "next-yak";
-		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -299,7 +299,7 @@ test("next-yak -> styled-components -> next-yak: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -333,7 +333,7 @@ test("next-yak -> styled-components -> next-yak: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "next-yak";
-		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -383,7 +383,7 @@ test("next-yak -> styled-components -> next-yak: resolves token values across bo
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -417,7 +417,7 @@ test("next-yak -> styled-components -> next-yak: resolves token values across bo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		export const card = styled.div\`padding: 1rem; color: #2563eb;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

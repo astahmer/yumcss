@@ -51,8 +51,9 @@ test("tamagui -> stylex -> tamagui: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "red" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "red", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -90,8 +91,9 @@ test("tamagui -> stylex -> tamagui: preserves an actionable concrete round trip"
 		    "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
 		// pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = stylex.create({ style: { padding: "$4", color: "red" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "red", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -222,8 +224,9 @@ test("tamagui -> stylex -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -261,8 +264,9 @@ test("tamagui -> stylex -> tamagui: preserves concrete theme and project context
 		      "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
 		// pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -298,8 +302,9 @@ test("tamagui -> stylex -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -337,8 +342,9 @@ test("tamagui -> stylex -> tamagui: preserves concrete theme and project context
 		      "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
 		// pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -388,8 +394,9 @@ test("tamagui -> stylex -> tamagui: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,8 +434,9 @@ test("tamagui -> stylex -> tamagui: resolves token values across both concrete l
 		    "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
 		// pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = stylex.create({ style: { padding: "$4", color: "#2563eb" } }).style;
-		export const App = () => <View {...stylex.props(Card)} />;",
+		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? View; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };
+		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

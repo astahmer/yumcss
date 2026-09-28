@@ -90,7 +90,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
+			export const styles = { "card": css.class({ color: "red", padding: 8 }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -229,7 +229,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: 8, color: "red" });",
+			export const card = css.class({ color: "red", padding: 8 });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -264,7 +264,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+			export const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 			export default styles;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -300,7 +300,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "1rem", color: "red" });",
+			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -372,7 +372,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "1rem", color: "red" });",
+			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -476,7 +476,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "1rem", color: "red" });",
+			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -511,7 +511,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+			export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -546,7 +546,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ padding: "16px", color: "red" })} />;",
+			export const App = () => <div className={css.class({ color: "red", padding: "16px" })} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -581,7 +581,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "1rem", color: "red" });",
+			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -677,7 +677,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
+			export const styles = { "card": css.class({ color: "red", padding: 8 }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -712,7 +712,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+			const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 			export const Card = () => <div className={styles.card} />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -784,8 +784,8 @@ describe("official primary API forms", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -820,7 +820,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: "1rem", color: "red" });",
+			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -894,8 +894,8 @@ describe("official primary API forms", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -930,7 +930,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
+			export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -965,7 +965,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+			export const App = () => <div className={css.class({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1001,8 +1001,8 @@ describe("official primary API forms", () => {
 			    "code": "import { View } from "tamagui";
 			import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const Card = css.class({ padding: "$4", color: "red" });
-			export const App = () => <View className={Card} />;",
+			export const Card = css.class({ color: "red", padding: "$4" });
+			export const App = () => <Card />;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1037,7 +1037,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ gap: "1rem", color: "red" });",
+			export const card = css.class({ color: "red", gap: "1rem" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1072,7 +1072,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: 8, color: "red" });",
+			export const card = css.class({ color: "red", padding: 8 });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1107,7 +1107,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+			export const App = () => <div className={css.class({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1142,7 +1142,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ padding: 8, color: "red" });",
+			export const card = css.class({ color: "red", padding: 8 });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1177,7 +1177,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const Card = css.class({ padding: "1rem", color: "red" });",
+			export const Card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

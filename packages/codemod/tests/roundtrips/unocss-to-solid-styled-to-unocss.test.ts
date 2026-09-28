@@ -49,8 +49,8 @@ test("unocss -> solid-styled -> unocss: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,40 +84,15 @@ test("unocss -> solid-styled -> unocss: preserves an actionable concrete round t
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const App = () => styled.div({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -136,9 +111,9 @@ test("unocss -> solid-styled -> unocss: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> solid-styled | lowering-residual: validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -156,32 +131,24 @@ test("unocss -> solid-styled -> unocss: retains the documented secondary API wit
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> solid-styled | lowering-residual: validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -220,8 +187,8 @@ test("unocss -> solid-styled -> unocss: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#f97316" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "padding": "1.125rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -255,48 +222,23 @@ test("unocss -> solid-styled -> unocss: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#f97316" });",
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "padding": "1.125rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,40 +272,15 @@ test("unocss -> solid-styled -> unocss: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -384,8 +301,8 @@ test("unocss -> solid-styled -> unocss: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -419,40 +336,15 @@ test("unocss -> solid-styled -> unocss: resolves token values across both concre
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const App = () => styled.div({ "padding": "1.125rem", "color": "#2563eb" });",
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

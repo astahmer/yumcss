@@ -134,7 +134,7 @@ test("bamboo -> treat -> bamboo: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "gap": "4", "display": "flex" });",
+		export const card = style({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("bamboo -> treat -> bamboo: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -49,9 +49,9 @@ test("pandwind -> solid-styled -> pandwind: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,44 +85,17 @@ test("pandwind -> solid-styled -> pandwind: preserves an actionable concrete rou
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { Dynamic } from "solid-js/web";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "red" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
-		    "converted": 1,
+		export const card = css({ "color": "red", "padding": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -140,11 +113,10 @@ test("pandwind -> solid-styled -> pandwind: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> solid-styled | lowering-residual: validation)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		    "converted": 0,
+		    "code": "import { css } from "solid-styled-components";
+
+		export const styles = css({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -162,34 +134,25 @@ test("pandwind -> solid-styled -> pandwind: retains the documented secondary API
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> solid-styled | lowering-residual: validation)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		    "code": "import { css } from "solid-styled-components";
+
+		export const styles = css({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -228,9 +191,9 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
+		      "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#f97316" });",
+		export const card = css({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -265,56 +228,25 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/solid-slot";
-		const cx = createCx();
-		const css = createUnsafeCss();
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
-		      "converted": 1,
-		      "generatedFiles": [
-		        {
-		          "path": "__pandwind/solid-slot.tsx",
-		          "purpose": "shared static component slot helper",
-		        },
-		      ],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		export const card = css({ "color": "#f97316", "padding": "1rem" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
+		      "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -349,48 +281,17 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/solid-slot";
-		const cx = createCx();
-		const css = createUnsafeCss();
+		      "changed": false,
+		      "code": "import { css } from "solid-styled-components";
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
-		      "converted": 1,
-		      "generatedFiles": [
-		        {
-		          "path": "__pandwind/solid-slot.tsx",
-		          "purpose": "shared static component slot helper",
-		        },
-		      ],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -410,9 +311,9 @@ test("pandwind -> solid-styled -> pandwind: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import { css } from "solid-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -447,48 +348,17 @@ test("pandwind -> solid-styled -> pandwind: resolves token values across both co
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/solid-slot";
-		const cx = createCx();
-		const css = createUnsafeCss();
+		    "changed": false,
+		    "code": "import { css } from "solid-styled-components";
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: "1rem", color: "brand" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "class", attrs: {}, joinClass: cx });",
-		    "converted": 1,
-		    "generatedFiles": [
-		      {
-		        "path": "__pandwind/solid-slot.tsx",
-		        "purpose": "shared static component slot helper",
-		      },
-		    ],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

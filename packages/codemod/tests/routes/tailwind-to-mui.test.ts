@@ -49,7 +49,7 @@ test("tailwind -> mui: migrates concrete tailwind syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ gap: "1rem", alignItems: "center", display: "flex" }} />;",
+		export const App = () => <Box component="div" sx={{ display: "flex", alignItems: "center", gap: "1rem" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("tailwind -> mui: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		export const App = () => <Box component="div" sx={{ color: "primary.main", padding: "1.125rem" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("tailwind -> mui: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		export const App = () => <Box component="div" sx={{ color: "primary.main", padding: "1.125rem" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("tailwind -> mui: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		export const App = () => <Box component="div" sx={{ color: "primary.main", padding: "1.125rem" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("tailwind -> mui: preserves malformed concrete tailwind input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => <Box component="div" sx={{ gap: "1rem", alignItems: "center", display: "flex" }} />;
+		export const App = () => <Box component="div" sx={{ display: "flex", alignItems: "center", gap: "1rem" }} />;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

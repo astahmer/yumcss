@@ -50,7 +50,7 @@ test("unocss -> style9 -> unocss: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "gap": "1rem", "alignItems": "center", "display": "flex" } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("unocss -> style9 -> unocss: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const App = () => <div className={style9({ "style": "[gap:1rem] [align-items:center] [display:flex]" }.style)}/>;",
+		export const App = () => <div className={style9({ "style": "[display:flex] [align-items:center] [gap:1rem]" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,7 +220,7 @@ test("unocss -> style9 -> unocss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "padding": "1.125rem", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "color": "#f97316", "padding": "1.125rem" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("unocss -> style9 -> unocss: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const App = () => <div className={style9({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={style9({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -294,7 +294,7 @@ test("unocss -> style9 -> unocss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,7 +330,7 @@ test("unocss -> style9 -> unocss: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const App = () => <div className={style9({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={style9({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +382,7 @@ test("unocss -> style9 -> unocss: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,7 +418,7 @@ test("unocss -> style9 -> unocss: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const App = () => <div className={style9({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={style9({ "style": "text-brand p-card" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

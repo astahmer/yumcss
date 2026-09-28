@@ -49,7 +49,7 @@ test("react-native -> fela -> react-native: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "red" }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("react-native -> fela -> react-native: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "red" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -135,7 +135,7 @@ test("react-native -> fela -> react-native: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "backgroundColor": "red" }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "padding": "8px", "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("react-native -> fela -> react-native: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
+		      "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -272,7 +272,7 @@ test("react-native -> fela -> react-native: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,7 +310,7 @@ test("react-native -> fela -> react-native: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
+		      "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +346,7 @@ test("react-native -> fela -> react-native: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -398,7 +398,7 @@ test("react-native -> fela -> react-native: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "padding": 8, "color": "#2563eb" }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -434,7 +434,7 @@ test("react-native -> fela -> react-native: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const styles = { "card": StyleSheet.create({ "padding": 8, "color": "#2563eb" }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

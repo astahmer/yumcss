@@ -170,7 +170,7 @@ test("fela -> react-strict-dom -> fela: retains the documented secondary API wit
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "react-strict-dom has no host representation for the detected framework",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

@@ -50,7 +50,7 @@ test("mui -> aphrodite: migrates concrete mui syntax to aphrodite", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -95,7 +95,7 @@ test("mui -> aphrodite: carries a documented secondary mui API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const Card = StyleSheet.create({ "padding": 8, "color": "red" });",
+		export const Card = StyleSheet.create({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("mui -> aphrodite: loads concrete theme and project context variants", asyn
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#f97316", "padding": "16px" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("mui -> aphrodite: loads concrete theme and project context variants", asyn
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("mui -> aphrodite: resolves concrete token values with project context", as
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,7 +281,7 @@ test("mui -> aphrodite: preserves malformed concrete mui input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

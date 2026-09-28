@@ -49,7 +49,7 @@ test("emotion -> vue-styled: migrates concrete emotion syntax to vue-styled", ()
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("emotion -> vue-styled: carries a documented secondary emotion API explicit
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("emotion -> vue-styled: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("emotion -> vue-styled: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("emotion -> vue-styled: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("emotion -> vue-styled: preserves malformed concrete emotion input", () => 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": "1rem", "color": "red" });
+		export const card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,
 		  "generatedFiles": [],

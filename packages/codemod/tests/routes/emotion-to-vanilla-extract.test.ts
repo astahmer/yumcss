@@ -49,7 +49,7 @@ test("emotion -> vanilla-extract: migrates concrete emotion syntax to vanilla-ex
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "red" });",
+		export const card = style({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("emotion -> vanilla-extract: carries a documented secondary emotion API exp
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "red" });",
+		export const card = style({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("emotion -> vanilla-extract: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("emotion -> vanilla-extract: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("emotion -> vanilla-extract: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("emotion -> vanilla-extract: preserves malformed concrete emotion input", (
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "red" });
+		export const card = style({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,
 		  "generatedFiles": [],

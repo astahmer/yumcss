@@ -48,7 +48,7 @@ test("tailwind -> mantine: migrates concrete tailwind syntax to mantine", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => <div  style={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;",
+		  "code": "export const App = () => <div  style={{ display: "flex", alignItems: "center", gap: "1rem" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -141,7 +141,7 @@ test("tailwind -> mantine: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		    "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +174,7 @@ test("tailwind -> mantine: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		    "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,7 +219,7 @@ test("tailwind -> mantine: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		  "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -261,7 +261,7 @@ test("tailwind -> mantine: preserves malformed concrete tailwind input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => <div  style={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;
+		  "code": "export const App = () => <div  style={{ display: "flex", alignItems: "center", gap: "1rem" }}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

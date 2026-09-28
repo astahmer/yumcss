@@ -50,9 +50,9 @@ test("fela -> solid-styled -> fela: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "red" });",
+		export const card = css({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,43 +86,18 @@ test("fela -> solid-styled -> fela: preserves an actionable concrete round trip"
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} class={cx(renderer.renderRule({ "color": "red" }), props.class)} />;",
-		    "converted": 1,
+		export const card = css({ "color": "red" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)
@@ -141,7 +116,7 @@ test("fela -> solid-styled -> fela: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "color": "red" });",
+		export const Card = styled("button")(() => ({ "color": "red" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,10 +151,10 @@ test("fela -> solid-styled -> fela: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(renderer.renderRule({ "color": "red" }), props.class)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> fela | capability-blocked: components: component subject: styled("button"); framework-semantics: solid | available: static, named-map, residual)
+		export const Card = styled("button")(() => ({ "color": "red" }));",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -197,19 +172,19 @@ test("fela -> solid-styled -> fela: retains the documented secondary API without
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled("button"); framework-semantics: solid",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -243,9 +218,9 @@ test("fela -> solid-styled -> fela: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,52 +254,27 @@ test("fela -> solid-styled -> fela: preserves concrete theme and project context
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} class={cx(renderer.renderRule({ "color": "#2563eb" }), props.class)} />;",
-		      "converted": 1,
+		export const card = css({ "color": "#2563eb" });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -358,43 +308,18 @@ test("fela -> solid-styled -> fela: preserves concrete theme and project context
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} class={cx(renderer.renderRule({ "color": "#2563eb" }), props.class)} />;",
-		      "converted": 1,
+		export const card = css({ "color": "#2563eb" });",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -415,9 +340,9 @@ test("fela -> solid-styled -> fela: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { styled } from "solid-styled-components";
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -451,43 +376,18 @@ test("fela -> solid-styled -> fela: resolves token values across both concrete l
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
+		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} class={cx(renderer.renderRule({ "color": "#2563eb" }), props.class)} />;",
-		    "converted": 1,
+		export const card = css({ "color": "#2563eb" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

@@ -49,7 +49,7 @@ test("vanilla-extract -> stitches: migrates concrete vanilla-extract syntax to s
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: 8, color: "red" });",
+		export const card = css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("vanilla-extract -> stitches: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("vanilla-extract -> stitches: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("vanilla-extract -> stitches: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: 8, color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("vanilla-extract -> stitches: preserves malformed concrete vanilla-extract 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = css({ padding: 8, color: "red" });
+		export const card = css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

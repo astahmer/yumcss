@@ -156,7 +156,7 @@ test("css-modules -> tamagui: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("css-modules -> tamagui: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("css-modules -> tamagui: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const styles = { "card": styled(View, { padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

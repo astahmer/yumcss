@@ -53,7 +53,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ "--gap": "1rem", "--color": "red" });",
+		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -212,7 +212,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "#f97316" });",
+		export const card = defaultSystem.css({ color: "#f97316", gap: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -247,7 +247,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,7 +284,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", gap: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -319,7 +319,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -370,7 +370,7 @@ test("tokenami -> chakra-ui -> tokenami: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ gap: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -405,7 +405,7 @@ test("tokenami -> chakra-ui -> tokenami: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 
-		export const card = css({ "--gap": "1rem", "--color": "var(--color_brand)" });",
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

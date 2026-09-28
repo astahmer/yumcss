@@ -50,7 +50,7 @@ test("emotion -> stylex -> emotion: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("emotion -> stylex -> emotion: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = { "style": css({ padding: "1rem", color: "red" }) }.style;",
+		export const card = { "style": css({ color: "red", padding: "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("emotion -> stylex -> emotion: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("emotion -> stylex -> emotion: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = { "style": css({ padding: "1rem", color: "red" }) }.style;",
+		export const card = { "style": css({ color: "red", padding: "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("emotion -> stylex -> emotion: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("emotion -> stylex -> emotion: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = { "style": css({ padding: "1rem", color: "#2563eb" }) }.style;",
+		export const card = { "style": css({ color: "#2563eb", padding: "1rem" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("emotion -> stylex -> emotion: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("emotion -> stylex -> emotion: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		export const card = { "style": css({ padding: "1rem", color: "#2563eb" }) }.style;",
+		export const card = { "style": css({ color: "#2563eb", padding: "1rem" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("emotion -> stylex -> emotion: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("emotion -> stylex -> emotion: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const card = { "style": css({ padding: "1rem", color: "#2563eb" }) }.style;",
+		export const card = { "style": css({ color: "#2563eb", padding: "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

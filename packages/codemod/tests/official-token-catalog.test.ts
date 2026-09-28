@@ -412,7 +412,7 @@ describe("official custom-token loaders", () => {
 		expect(result.code).toContain('"---gradient-from": "var(--color_brand)"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			export const card = css({ "---gradient-from": "var(--color_brand)", "--padding": "var(--spacing_card)", "--border-radius": "#123456", "--color": "var(--color_brand)" });"
+			export const card = css({ "--color": "var(--color_brand)", "--padding": "var(--spacing_card)", "--border-radius": "#123456", "---gradient-from": "var(--color_brand)" });"
 		`);
 	});
 
@@ -1097,22 +1097,6 @@ describe("official custom-token loaders", () => {
 			  },
 			  {
 			    "conditions": [],
-			    "property": "borderRadius",
-			    "value": {
-			      "kind": "literal",
-			      "value": "12px",
-			    },
-			  },
-			  {
-			    "conditions": [],
-			    "property": "boxShadow",
-			    "value": {
-			      "kind": "literal",
-			      "value": "0 1px 2px #0003",
-			    },
-			  },
-			  {
-			    "conditions": [],
 			    "property": "color",
 			    "value": {
 			      "kind": "literal",
@@ -1121,10 +1105,26 @@ describe("official custom-token loaders", () => {
 			  },
 			  {
 			    "conditions": [],
+			    "property": "borderRadius",
+			    "value": {
+			      "kind": "literal",
+			      "value": "12px",
+			    },
+			  },
+			  {
+			    "conditions": [],
 			    "property": "fontSize",
 			    "value": {
 			      "kind": "literal",
 			      "value": "3rem",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "boxShadow",
+			    "value": {
+			      "kind": "literal",
+			      "value": "0 1px 2px #0003",
 			    },
 			  },
 			  {
@@ -1198,12 +1198,32 @@ describe("official custom-token loaders", () => {
 			[
 			  {
 			    "conditions": [],
+			    "property": "color",
+			    "value": {
+			      "authored": "#123456",
+			      "kind": "token",
+			      "ref": "brand.0",
+			      "resolved": "#123456",
+			    },
+			  },
+			  {
+			    "conditions": [],
 			    "property": "padding",
 			    "value": {
 			      "authored": "13px",
 			      "kind": "token",
 			      "ref": "card",
 			      "resolved": "13px",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "fontSize",
+			    "value": {
+			      "authored": "2rem",
+			      "kind": "token",
+			      "ref": "hero",
+			      "resolved": "2rem",
 			    },
 			  },
 			  {
@@ -1224,26 +1244,6 @@ describe("official custom-token loaders", () => {
 			      "kind": "token",
 			      "ref": "card",
 			      "resolved": "0 1px 2px #0003",
-			    },
-			  },
-			  {
-			    "conditions": [],
-			    "property": "color",
-			    "value": {
-			      "authored": "#123456",
-			      "kind": "token",
-			      "ref": "brand.0",
-			      "resolved": "#123456",
-			    },
-			  },
-			  {
-			    "conditions": [],
-			    "property": "fontSize",
-			    "value": {
-			      "authored": "2rem",
-			      "kind": "token",
-			      "ref": "hero",
-			      "resolved": "2rem",
 			    },
 			  },
 			]

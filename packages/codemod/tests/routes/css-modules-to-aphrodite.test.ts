@@ -165,7 +165,7 @@ test("css-modules -> aphrodite: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> aphrodite: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("css-modules -> aphrodite: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -36,6 +36,8 @@ export interface AdapterMigrationOptions {
 	readonly skipMarker?: string;
 	/** Read-only route resolution; mutation belongs to the adapter registry. */
 	readonly registry?: StyleDialectResolver;
+	/** Resolve project-local aliases while following or rewriting source imports. */
+	readonly resolveModule?: (importer: string, specifier: string) => string | undefined;
 	readonly moduleLoader?: ProjectModuleLoader;
 	readonly adapterRegistry?: StyleAdapterRegistry;
 	readonly loweringRegistry?: StyleLoweringRegistry;

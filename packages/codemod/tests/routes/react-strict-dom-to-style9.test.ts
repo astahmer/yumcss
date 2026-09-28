@@ -50,7 +50,7 @@ test("react-strict-dom -> style9: migrates concrete react-strict-dom syntax to s
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "red" }) };
+		const styles = { "card": style9.create({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +152,7 @@ test("react-strict-dom -> style9: loads concrete theme and project context varia
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("react-strict-dom -> style9: loads concrete theme and project context varia
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +240,7 @@ test("react-strict-dom -> style9: resolves concrete token values with project co
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = { "card": style9.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -287,7 +287,7 @@ test("react-strict-dom -> style9: preserves malformed concrete react-strict-dom 
 		  "changed": true,
 		  "code": "import { html } from "react-strict-dom";
 		import style9 from "style9";
-		const styles = { "card": style9.create({ "padding": "1rem", "color": "red" }) };
+		const styles = { "card": style9.create({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
 		  "converted": 1,

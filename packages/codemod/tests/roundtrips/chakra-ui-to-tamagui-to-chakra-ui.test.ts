@@ -52,7 +52,8 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#fecaca", padding: "1rem" });",
+		const __componentTamagui = styled(View, { background: "#fecaca", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,10 +85,11 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { background: "#fecaca", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		import { chakra } from "@chakra-ui/react";
+		const __componentTamagui = (props) => <chakra.View {...props} css={{ background: "red.200", padding: "4" }} />;
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -103,19 +105,19 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves an actionable concrete round 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -210,7 +212,8 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#f97316", padding: "1rem" });",
+		const __componentTamagui = styled(View, { background: "#f97316", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -242,10 +245,11 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { background: "#f97316", padding: "1rem" });",
-		      "converted": 0,
+		      "code": "import { View } from "@tamagui/core";
+		import { chakra } from "@chakra-ui/react";
+		const __componentTamagui = (props) => <chakra.View {...props} css={{ background: "#f97316", padding: "4" }} />;
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -261,26 +265,27 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
+		const __componentTamagui = styled(View, { background: "#2a57c8", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,10 +317,11 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
-		      "converted": 0,
+		      "code": "import { View } from "@tamagui/core";
+		import { chakra } from "@chakra-ui/react";
+		const __componentTamagui = (props) => <chakra.View {...props} css={{ background: "brand.500", padding: "4" }} />;
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -331,19 +337,19 @@ test("chakra-ui -> tamagui -> chakra-ui: preserves concrete theme and project co
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -364,7 +370,8 @@ test("chakra-ui -> tamagui -> chakra-ui: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
+		const __componentTamagui = styled(View, { background: "#2a57c8", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -396,10 +403,11 @@ test("chakra-ui -> tamagui -> chakra-ui: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		import { chakra } from "@chakra-ui/react";
+		const __componentTamagui = (props) => <chakra.View {...props} css={{ background: "brand.500", padding: "4" }} />;
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -415,19 +423,19 @@ test("chakra-ui -> tamagui -> chakra-ui: resolves token values across both concr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

@@ -49,7 +49,7 @@ test("tailwind -> fela -> tailwind: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
+		    "code": "export const App = () => renderer.renderRule({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("tailwind -> fela -> tailwind: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
+		    "code": "export const App = () => "[display:flex] [align-items:center] [gap:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -217,7 +217,7 @@ test("tailwind -> fela -> tailwind: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#f97316" });",
+		      "code": "export const App = () => renderer.renderRule({ "color": "#f97316", "padding": "1.125rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -252,7 +252,7 @@ test("tailwind -> fela -> tailwind: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("tailwind -> fela -> tailwind: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#2563eb" });",
+		      "code": "export const App = () => renderer.renderRule({ "color": "#2563eb", "padding": "1.125rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -324,7 +324,7 @@ test("tailwind -> fela -> tailwind: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -375,7 +375,7 @@ test("tailwind -> fela -> tailwind: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#2563eb" });",
+		    "code": "export const App = () => renderer.renderRule({ "color": "#2563eb", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -410,7 +410,7 @@ test("tailwind -> fela -> tailwind: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "p-card text-brand";",
+		    "code": "export const App = () => "text-brand p-card";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

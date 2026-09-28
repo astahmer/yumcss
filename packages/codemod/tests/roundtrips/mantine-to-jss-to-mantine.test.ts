@@ -51,7 +51,7 @@ test("mantine -> jss -> mantine: preserves an actionable concrete round trip", (
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("mantine -> jss -> mantine: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }.attach().classes.style}/>;",
+		export const App = () => <Box className={{ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -213,7 +213,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -249,7 +249,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.attach().classes.style}/>;",
+		export const App = () => <Box className={{ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -286,7 +286,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,7 +322,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.attach().classes.style}/>;",
+		export const App = () => <Box className={{ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.attach().classes.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -373,7 +373,7 @@ test("mantine -> jss -> mantine: resolves token values across both concrete legs
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -409,7 +409,7 @@ test("mantine -> jss -> mantine: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box className={{ style: { marginInline: "auto", color: "var(--mantine-color-brand-0)", maxWidth: "calc(25rem * var(--mantine-scale))" } }.attach().classes.style}/>;",
+		export const App = () => <Box className={{ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

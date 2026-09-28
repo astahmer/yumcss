@@ -50,8 +50,10 @@ test("tamagui -> tailwind -> tamagui: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:red]";
-		export const App = () => <View className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,38 +88,30 @@ test("tamagui -> tailwind -> tamagui: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = "[padding:$4] [color:red]";
-		export const App = () => styled(View, { padding: "$4", color: "red" });",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: dynamic)
+		import { View } from "tamagui";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
+		    "loweringPlans": [],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
+		        "kind": "dynamic",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -219,8 +213,10 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:#2563eb]";
-		export const App = () => <View className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:#2563eb] [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -255,46 +251,40 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = "[padding:$4] [color:#2563eb]";
-		export const App = () => styled(View, { padding: "$4", color: "#2563eb" });",
-		      "converted": 1,
+		      "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: dynamic)
+		import { View } from "tamagui";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:#2563eb] [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
+		      "loweringPlans": [],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
+		          "kind": "dynamic",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] text-brand";
-		export const App = () => <View className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,38 +319,30 @@ test("tamagui -> tailwind -> tamagui: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = "[padding:$4] text-brand";
-		export const App = () => styled(View, { padding: "$4", color: "#2563eb" });",
-		      "converted": 1,
+		      "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: dynamic)
+		import { View } from "tamagui";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
+		      "loweringPlans": [],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
+		          "kind": "dynamic",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -381,8 +363,10 @@ test("tamagui -> tailwind -> tamagui: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] text-brand";
-		export const App = () => <View className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -417,38 +401,30 @@ test("tamagui -> tailwind -> tamagui: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = "[padding:$4] text-brand";
-		export const App = () => styled(View, { padding: "$4", color: "#2563eb" });",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | parse-residual: dynamic)
+		import { View } from "tamagui";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
+		    "loweringPlans": [],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "Tailwind dynamic class expressions require runtime-aware target lowering",
+		        "kind": "dynamic",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

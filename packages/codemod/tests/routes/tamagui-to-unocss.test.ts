@@ -49,7 +49,7 @@ test("tamagui -> unocss: migrates concrete tamagui syntax to unocss", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:red]";
+		export const Card = "[color:red] [padding:$4]";
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -154,7 +154,7 @@ test("tamagui -> unocss: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:#2563eb]";
+		export const Card = "[color:#2563eb] [padding:$4]";
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +191,7 @@ test("tamagui -> unocss: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] text-brand";
+		export const Card = "text-brand [padding:$4]";
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +240,7 @@ test("tamagui -> unocss: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] text-brand";
+		export const Card = "text-brand [padding:$4]";
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +286,7 @@ test("tamagui -> unocss: preserves malformed concrete tamagui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:red]";
+		export const Card = "[color:red] [padding:$4]";
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

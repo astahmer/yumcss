@@ -50,7 +50,7 @@ test("pandwind -> stylex: migrates concrete pandwind syntax to stylex", () => {
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -151,7 +151,7 @@ test("pandwind -> stylex: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "#f97316" } }).style;",
+		export const card = stylex.create({ style: { color: "#f97316", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("pandwind -> stylex: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("pandwind -> stylex: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,7 +283,7 @@ test("pandwind -> stylex: preserves malformed concrete pandwind input", () => {
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
 
-		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
+		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -135,7 +135,7 @@ test("bamboo -> pandwind -> bamboo: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ gap: "4", display: "flex" });",
+		export const card = css.class({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("bamboo -> pandwind -> bamboo: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

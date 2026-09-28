@@ -50,7 +50,7 @@ test("unocss -> styled-components -> unocss: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => styled.div({ gap: "1rem", alignItems: "center", display: "flex" });",
+		export const App = () => styled.div({ display: "flex", alignItems: "center", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("unocss -> styled-components -> unocss: preserves an actionable concrete ro
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const App = () => styled.div({ gap: "1rem", alignItems: "center", display: "flex" });",
+		export const App = () => styled.div({ display: "flex", alignItems: "center", gap: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -209,7 +209,7 @@ test("unocss -> styled-components -> unocss: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "1.125rem", color: "#f97316" });",
+		export const App = () => styled.div({ color: "#f97316", padding: "1.125rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -244,7 +244,7 @@ test("unocss -> styled-components -> unocss: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const App = () => styled.div({ padding: "1.125rem", color: "#f97316" });",
+		export const App = () => styled.div({ color: "#f97316", padding: "1.125rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,7 +282,7 @@ test("unocss -> styled-components -> unocss: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -317,7 +317,7 @@ test("unocss -> styled-components -> unocss: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const App = () => styled.div({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -369,7 +369,7 @@ test("unocss -> styled-components -> unocss: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -404,7 +404,7 @@ test("unocss -> styled-components -> unocss: resolves token values across both c
 		    "changed": true,
 		    "code": "import styled from "styled-components";
 		// pandwind:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const App = () => styled.div({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

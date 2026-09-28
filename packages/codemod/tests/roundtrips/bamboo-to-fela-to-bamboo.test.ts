@@ -132,7 +132,7 @@ test("bamboo -> fela -> bamboo: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "gap": "4", "display": "flex" });",
+		    "code": "export const card = renderer.renderRule({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("bamboo -> fela -> bamboo: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "4", display: "flex" });",
+		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

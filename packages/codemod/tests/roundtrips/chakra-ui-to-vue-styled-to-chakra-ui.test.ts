@@ -52,7 +52,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #fecaca; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -90,7 +90,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const App = () => styled.div({ "background": "#fecaca", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #fecaca; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -222,7 +222,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #f97316; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -260,7 +260,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const App = () => styled.div({ "background": "#f97316", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #f97316; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -301,7 +301,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #2a57c8; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -394,7 +394,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #2a57c8; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -432,7 +432,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token values across both co
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const App = () => styled.div({ "background": "#2a57c8", "padding": "1rem" });",
+		export const App = () => styled.div\`background: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

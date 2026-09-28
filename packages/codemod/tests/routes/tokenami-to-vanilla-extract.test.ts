@@ -49,7 +49,7 @@ test("tokenami -> vanilla-extract: migrates concrete tokenami syntax to vanilla-
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ gap: "1rem", color: "red" });",
+		export const card = style({ color: "red", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("tokenami -> vanilla-extract: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ gap: "1rem", color: "#f97316" });",
+		export const card = style({ color: "#f97316", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("tokenami -> vanilla-extract: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ gap: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("tokenami -> vanilla-extract: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ gap: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,7 +276,7 @@ test("tokenami -> vanilla-extract: preserves malformed concrete tokenami input",
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ gap: "1rem", color: "red" });
+		export const card = style({ color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

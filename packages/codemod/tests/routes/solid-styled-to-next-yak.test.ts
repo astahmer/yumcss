@@ -49,7 +49,7 @@ test("solid-styled -> next-yak: migrates concrete solid-styled syntax to next-ya
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`padding: 1rem; color: red;\`;",
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("solid-styled -> next-yak: carries a documented secondary solid-styled API 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`padding: 1rem; color: red;\`;",
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("solid-styled -> next-yak: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("solid-styled -> next-yak: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("solid-styled -> next-yak: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("solid-styled -> next-yak: preserves malformed concrete solid-styled input"
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`padding: 1rem; color: red;\`;
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

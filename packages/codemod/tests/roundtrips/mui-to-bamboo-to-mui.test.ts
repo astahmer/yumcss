@@ -51,7 +51,7 @@ test("mui -> bamboo -> mui: preserves an actionable concrete round trip", () => 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;",
+		export const App = () => <Box className={css({ color: "red", padding: "16px" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("mui -> bamboo -> mui: preserves an actionable concrete round trip", () => 
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
 		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;",
+		export const App = () => <Box className={css({ color: "red", padding: "16px" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -135,7 +135,7 @@ test("mui -> bamboo -> mui: retains the documented secondary API without silent 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const Card = css({ padding: 8, color: "red" });",
+		export const Card = css({ color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("mui -> bamboo -> mui: retains the documented secondary API without silent 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ padding: "16px", color: "#f97316" })}/>;",
+		export const App = () => <Box className={css({ color: "#f97316", padding: "16px" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,7 +270,7 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
 		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ padding: "16px", color: "#f97316" })}/>;",
+		export const App = () => <Box className={css({ color: "#f97316", padding: "16px" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -307,7 +307,7 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
+		export const App = () => <Box className={css({ color: "#2563eb", padding: "16px" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -343,7 +343,7 @@ test("mui -> bamboo -> mui: preserves concrete theme and project context variant
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
 		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
+		export const App = () => <Box className={css({ color: "#2563eb", padding: "16px" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -394,7 +394,7 @@ test("mui -> bamboo -> mui: resolves token values across both concrete legs", as
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
-		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
+		export const App = () => <Box className={css({ color: "#2563eb", padding: "16px" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +430,7 @@ test("mui -> bamboo -> mui: resolves token values across both concrete legs", as
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "styled-system/css";
 		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ padding: "16px", color: "#2563eb" })}/>;",
+		export const App = () => <Box className={css({ color: "#2563eb", padding: "16px" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

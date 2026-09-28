@@ -49,7 +49,7 @@ test("next-yak -> tailwind -> next-yak: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[padding:1rem] [color:red]";",
+		    "code": "export const card = "[color:red] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("next-yak -> tailwind -> next-yak: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: red;\`;",
+		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("next-yak -> tailwind -> next-yak: retains the documented secondary API wit
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,7 +172,7 @@ test("next-yak -> tailwind -> next-yak: retains the documented secondary API wit
 		    "code": "// pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -223,7 +223,7 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[padding:1rem] [color:#2563eb]";",
+		      "code": "export const card = "[color:#2563eb] [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -259,7 +259,7 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -294,7 +294,7 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[padding:1rem] text-brand";",
+		      "code": "export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,7 +330,7 @@ test("next-yak -> tailwind -> next-yak: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -379,7 +379,7 @@ test("next-yak -> tailwind -> next-yak: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[padding:1rem] text-brand";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -415,7 +415,7 @@ test("next-yak -> tailwind -> next-yak: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`padding: 1rem; color: #2563eb;\`;",
+		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -76,7 +76,7 @@ test("mantine -> react-strict-dom -> mantine: preserves an actionable concrete r
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -217,7 +217,7 @@ test("mantine -> react-strict-dom -> mantine: preserves concrete theme and proje
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -269,7 +269,7 @@ test("mantine -> react-strict-dom -> mantine: preserves concrete theme and proje
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -335,7 +335,7 @@ test("mantine -> react-strict-dom -> mantine: resolves token values across both 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

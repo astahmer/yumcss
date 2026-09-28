@@ -164,7 +164,7 @@ test("css-modules -> fela: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -200,7 +200,7 @@ test("css-modules -> fela: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +248,7 @@ test("css-modules -> fela: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
+		  "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

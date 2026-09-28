@@ -49,7 +49,7 @@ test("tailwind -> mantine -> tailwind: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => <div  style={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;",
+		    "code": "export const App = () => <div  style={{ display: "flex", alignItems: "center", gap: "1rem" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -82,7 +82,7 @@ test("tailwind -> mantine -> tailwind: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -205,7 +205,7 @@ test("tailwind -> mantine -> tailwind: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		      "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -238,7 +238,7 @@ test("tailwind -> mantine -> tailwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[padding:var(--mantine-spacing-card)] [color:var(--mantine-color-brand-0)]"}/>;",
+		      "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,7 +275,7 @@ test("tailwind -> mantine -> tailwind: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		      "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -308,7 +308,7 @@ test("tailwind -> mantine -> tailwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[padding:var(--mantine-spacing-card)] [color:var(--mantine-color-brand-0)]"}/>;",
+		      "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -359,7 +359,7 @@ test("tailwind -> mantine -> tailwind: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => <div  style={{ padding: "var(--mantine-spacing-card)", color: "var(--mantine-color-brand-0)" }}/>;",
+		    "code": "export const App = () => <div  style={{ color: "var(--mantine-color-brand-0)", padding: "var(--mantine-spacing-card)" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -392,7 +392,7 @@ test("tailwind -> mantine -> tailwind: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[padding:var(--mantine-spacing-card)] [color:var(--mantine-color-brand-0)]"}/>;",
+		    "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

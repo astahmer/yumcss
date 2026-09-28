@@ -50,7 +50,7 @@ test("mui -> style9: migrates concrete mui syntax to style9", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -95,7 +95,7 @@ test("mui -> style9: carries a documented secondary mui API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const Card = style9.create({ "padding": 8, "color": "red" });",
+		export const Card = style9.create({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("mui -> style9: loads concrete theme and project context variants", async (
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#f97316", "padding": "16px" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("mui -> style9: loads concrete theme and project context variants", async (
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("mui -> style9: resolves concrete token values with project context", async
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,7 +281,7 @@ test("mui -> style9: preserves malformed concrete mui input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;
+		export const App = () => <Box className={style9(style9.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "generatedFiles": [],

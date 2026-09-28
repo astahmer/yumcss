@@ -50,7 +50,8 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", () =>
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "red" });",
+		const __componentTamagui = styled(View, { color: "red", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +85,8 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", () =>
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
-		export const App = () => styled(View)({ padding: "16px", color: "red" });",
+		const __componentTamagui = styled(View)({ color: "red", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -132,7 +134,7 @@ test("mui -> tamagui -> mui: retains the documented secondary API without silent
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: 8, color: "red" });",
+		export const Card = styled(View, { color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +168,7 @@ test("mui -> tamagui -> mui: retains the documented secondary API without silent
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
-		export const Card = styled(View)({ padding: 8, color: "red" });",
+		export const Card = styled(View)({ color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +230,8 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "#f97316" });",
+		const __componentTamagui = styled(View, { color: "#f97316", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -262,7 +265,8 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
-		export const App = () => styled(View)({ padding: "16px", color: "primary.main" });",
+		const __componentTamagui = styled(View)({ color: "primary.main", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -298,7 +302,8 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -332,7 +337,8 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
-		export const App = () => styled(View)({ padding: "16px", color: "primary.main" });",
+		const __componentTamagui = styled(View)({ color: "primary.main", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +388,8 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { padding: "16px", color: "#2563eb" });",
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -416,7 +423,8 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
-		export const App = () => styled(View)({ padding: "16px", color: "primary.main" });",
+		const __componentTamagui = styled(View)({ color: "primary.main", padding: "16px" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

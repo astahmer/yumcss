@@ -206,8 +206,8 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		      "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -243,9 +243,9 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		/* /* pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual) */ */
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		      "code": "import { css } from "solid-styled-components";
+		/* /* pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -253,37 +253,22 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
@@ -297,8 +282,8 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		      "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -334,9 +319,9 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-		/* /* pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual) */ */
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		      "code": "import { css } from "solid-styled-components";
+		/* /* pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -344,37 +329,22 @@ test("css-modules -> solid-styled -> css-modules: preserves concrete theme and p
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "runtime-and-plugin",
 		          ],
 		          "availableRepresentations": [
+		            "static",
 		            "residual",
 		          ],
-		          "representation": "residual",
-		          "residuals": [
-		            {
-		              "hint": "target lacks framework semantics",
-		              "kind": "framework-semantics",
-		            },
-		          ],
+		          "representation": "static",
+		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
@@ -402,8 +372,8 @@ test("css-modules -> solid-styled -> css-modules: resolves token values across b
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -439,9 +409,9 @@ test("css-modules -> solid-styled -> css-modules: resolves token values across b
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		/* /* pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual) */ */
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		    "code": "import { css } from "solid-styled-components";
+		/* /* pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -449,37 +419,22 @@ test("css-modules -> solid-styled -> css-modules: resolves token values across b
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",

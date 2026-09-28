@@ -76,7 +76,7 @@ test("mui -> react-strict-dom -> mui: preserves an actionable concrete round tri
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -226,7 +226,7 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -278,7 +278,7 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -344,7 +344,7 @@ test("mui -> react-strict-dom -> mui: resolves token values across both concrete
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

@@ -151,7 +151,7 @@ test("chakra-ui -> unocss: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box className={"[padding:1rem] bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [padding:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("chakra-ui -> unocss: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box className={"[padding:1rem] bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [padding:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("chakra-ui -> unocss: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box className={"[padding:1rem] bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [padding:1rem]"}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

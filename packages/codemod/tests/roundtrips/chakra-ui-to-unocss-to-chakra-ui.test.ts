@@ -216,7 +216,7 @@ test("chakra-ui -> unocss -> chakra-ui: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box className={"[padding:1rem] bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [padding:1rem]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -253,7 +253,7 @@ test("chakra-ui -> unocss -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ padding: "4", backgroundColor: "#f97316" }}/>;",
+		export const App = () => <Box css={{ backgroundColor: "#f97316", padding: "4" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("chakra-ui -> unocss -> chakra-ui: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box className={"[padding:1rem] bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [padding:1rem]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -326,7 +326,7 @@ test("chakra-ui -> unocss -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ padding: "4", backgroundColor: "brand.500" }}/>;",
+		export const App = () => <Box css={{ backgroundColor: "brand.500", padding: "4" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -376,7 +376,7 @@ test("chakra-ui -> unocss -> chakra-ui: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box className={"[padding:1rem] bg-brand"}/>;",
+		export const App = () => <Box className={"bg-brand [padding:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -413,7 +413,7 @@ test("chakra-ui -> unocss -> chakra-ui: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box css={{ padding: "4", backgroundColor: "brand.500" }}/>;",
+		export const App = () => <Box css={{ backgroundColor: "brand.500", padding: "4" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

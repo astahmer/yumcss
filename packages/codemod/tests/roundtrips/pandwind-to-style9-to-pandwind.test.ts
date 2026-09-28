@@ -51,7 +51,7 @@ test("pandwind -> style9 -> pandwind: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import style9 from "style9";
 
-		export const card = style9.create({ "padding": "1rem", "color": "red" });",
+		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -91,7 +91,7 @@ test("pandwind -> style9 -> pandwind: preserves an actionable concrete round tri
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +228,7 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import style9 from "style9";
 
-		export const card = style9.create({ "padding": "1rem", "color": "#f97316" });",
+		export const card = style9.create({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -306,7 +306,7 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import style9 from "style9";
 
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -398,7 +398,7 @@ test("pandwind -> style9 -> pandwind: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import style9 from "style9";
 
-		export const card = style9.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +439,7 @@ test("pandwind -> style9 -> pandwind: resolves token values across both concrete
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

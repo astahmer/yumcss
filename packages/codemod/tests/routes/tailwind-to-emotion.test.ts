@@ -49,7 +49,7 @@ test("tailwind -> emotion: migrates concrete tailwind syntax to emotion", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		export const App = () => <div className={css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("tailwind -> emotion: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#f97316" })}/>;",
+		export const App = () => <div className={css({ color: "#f97316", padding: "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("tailwind -> emotion: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
+		export const App = () => <div className={css({ color: "#2563eb", padding: "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("tailwind -> emotion: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
+		export const App = () => <div className={css({ color: "#2563eb", padding: "1.125rem" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("tailwind -> emotion: preserves malformed concrete tailwind input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;
+		export const App = () => <div className={css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

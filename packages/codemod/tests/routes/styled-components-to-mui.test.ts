@@ -49,7 +49,7 @@ test("styled-components -> mui: migrates concrete styled-components syntax to mu
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("styled-components -> mui: carries a documented secondary styled-components
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("styled-components -> mui: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("styled-components -> mui: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "primary.main" });",
+		export const Card = styled("div")({ color: "primary.main", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("styled-components -> mui: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "primary.main" });",
+		export const Card = styled("div")({ color: "primary.main", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("styled-components -> mui: preserves malformed concrete styled-components i
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });
+		export const Card = styled("div")({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

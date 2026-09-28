@@ -49,8 +49,10 @@ test("tamagui -> tailwind: migrates concrete tamagui syntax to tailwind", () => 
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:red]";
-		export const App = () => <View className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -154,8 +156,10 @@ test("tamagui -> tailwind: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:#2563eb]";
-		export const App = () => <View className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:#2563eb] [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,8 +195,10 @@ test("tamagui -> tailwind: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] text-brand";
-		export const App = () => <View className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -240,8 +246,10 @@ test("tamagui -> tailwind: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] text-brand";
-		export const App = () => <View className={Card} />;",
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("text-brand [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -286,8 +294,10 @@ test("tamagui -> tailwind: preserves malformed concrete tamagui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = "[padding:$4] [color:red]";
-		export const App = () => <View className={Card} />;
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		export const Card = (props) => { const Component = props.as ?? "View"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:$4]", props.className)} />; };
+		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,
 		  "generatedFiles": [],

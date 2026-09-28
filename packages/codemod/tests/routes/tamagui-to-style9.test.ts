@@ -50,7 +50,7 @@ test("tamagui -> style9: migrates concrete tamagui syntax to style9", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "red" } }).style);
+		export const Card = style9(style9.create({ style: { "color": "red", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,7 +156,7 @@ test("tamagui -> style9: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = style9(style9.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -194,7 +194,7 @@ test("tamagui -> style9: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = style9(style9.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +244,7 @@ test("tamagui -> style9: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "#2563eb" } }).style);
+		export const Card = style9(style9.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -291,7 +291,7 @@ test("tamagui -> style9: preserves malformed concrete tamagui input", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		export const Card = style9(style9.create({ style: { "padding": "$4", "color": "red" } }).style);
+		export const Card = style9(style9.create({ style: { "color": "red", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

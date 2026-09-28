@@ -317,11 +317,17 @@ function parseObjectCalls(
 		const start = match.index ?? 0;
 		if (mask(start)) continue;
 		const open = source.indexOf("{", start);
+		const firstTemplate = source.indexOf("`", start);
 		// The template-form variant of the shared call regex also lands here;
 		// an object call owns an opening brace before the call head ends (;
 		// backtick). Reaching across one would wrap a template literal into a
 		// bogus empty object program.
-		if (open === -1 || callHeadEnd(source, start, open, "`") !== undefined) continue;
+		if (
+			open === -1 ||
+			(firstTemplate !== -1 && firstTemplate < open) ||
+			callHeadEnd(source, start, open, "`") !== undefined
+		)
+			continue;
 		const block = balanced(source, open);
 		if (block === undefined) {
 			residuals.push({
@@ -384,11 +390,12 @@ function callHeadEnd(
 			parens--;
 			if (parens < 0) return index;
 		}
-		if (opposite === "{" && character === "<") angles++;
-		if (opposite === "{" && character === ">" && angles > 0) angles--;
+		if (character === "<") angles++;
+		if (character === ">" && angles > 0) angles--;
 		if (character === ";" && angles === 0) return index;
 		if (character === opposite && parens === 0 && angles === 0) return index;
 	}
+	if (angles > 0) return limit;
 	return undefined;
 }
 

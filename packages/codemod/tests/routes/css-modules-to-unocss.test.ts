@@ -164,7 +164,7 @@ test("css-modules -> unocss: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
+		    "code": "export const styles = { "card": "[color:#2563eb] [padding:1rem]" };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -200,7 +200,7 @@ test("css-modules -> unocss: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:1rem] text-brand" };
+		    "code": "export const styles = { "card": "text-brand [padding:1rem]" };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +248,7 @@ test("css-modules -> unocss: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:1rem] text-brand" };
+		  "code": "export const styles = { "card": "text-brand [padding:1rem]" };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

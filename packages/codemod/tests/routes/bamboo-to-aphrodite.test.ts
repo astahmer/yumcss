@@ -94,7 +94,7 @@ test("bamboo -> aphrodite: carries a documented secondary bamboo API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "gap": "4", "display": "flex" });",
+		export const card = StyleSheet.create({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

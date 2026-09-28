@@ -52,7 +52,7 @@ test("fela -> vue-styled -> fela: preserves an actionable concrete round trip", 
 		    "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "red" });",
+		export const card = styled.div\`color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,10 +88,11 @@ test("fela -> vue-styled -> fela: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "red" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: vue-styled -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const card = styled.div\`color: red;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -109,19 +110,19 @@ test("fela -> vue-styled -> fela: preserves an actionable concrete round trip", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -140,7 +141,7 @@ test("fela -> vue-styled -> fela: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "color": "red" });",
+		export const Card = styled.button\`color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -175,9 +176,10 @@ test("fela -> vue-styled -> fela: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "red" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		    "code": "import styled from "vue-styled-components";
+		// pandwind:migrate-skip (route: vue-styled -> fela | capability-blocked: components: component subject: styled.button; framework-semantics: vue | available: static, named-map, residual)
+		export const Card = styled.button\`color: red;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -195,19 +197,19 @@ test("fela -> vue-styled -> fela: retains the documented secondary API without s
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.button; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -243,7 +245,7 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		      "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,10 +281,11 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: vue-styled -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const card = styled.div\`color: #2563eb;\`;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -300,19 +303,19 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -321,7 +324,7 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		      "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -357,10 +360,11 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: vue-styled -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const card = styled.div\`color: #2563eb;\`;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -378,19 +382,19 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -413,7 +417,7 @@ test("fela -> vue-styled -> fela: resolves token values across both concrete leg
 		    "code": "import { createRenderer } from "fela";
 		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = styled.div({ "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -449,10 +453,11 @@ test("fela -> vue-styled -> fela: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
 		const renderer = createRenderer();
-		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [renderer.renderRule({ "color": "#2563eb" }), attrs.class] }, slots.default?.()));",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: vue-styled -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const card = styled.div\`color: #2563eb;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -470,19 +475,19 @@ test("fela -> vue-styled -> fela: resolves token values across both concrete leg
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

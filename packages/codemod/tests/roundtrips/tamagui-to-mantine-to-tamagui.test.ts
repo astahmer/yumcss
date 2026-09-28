@@ -50,7 +50,7 @@ test("tamagui -> mantine -> tamagui: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "red" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "red", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +86,7 @@ test("tamagui -> mantine -> tamagui: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "red" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "red", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -219,7 +219,7 @@ test("tamagui -> mantine -> tamagui: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "#2563eb" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "#2563eb", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -255,7 +255,7 @@ test("tamagui -> mantine -> tamagui: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "#2563eb" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "#2563eb", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -295,7 +295,7 @@ test("tamagui -> mantine -> tamagui: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -331,7 +331,7 @@ test("tamagui -> mantine -> tamagui: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -385,7 +385,7 @@ test("tamagui -> mantine -> tamagui: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -421,7 +421,7 @@ test("tamagui -> mantine -> tamagui: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
-		export const Card = (props) => <View {...props} style={{ ...{ padding: "$4", color: "var(--mantine-color-brand-0)" }, ...props.style }} />;
+		export const Card = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "generatedFiles": [],

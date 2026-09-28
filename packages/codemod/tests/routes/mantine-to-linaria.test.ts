@@ -50,7 +50,7 @@ test("mantine -> linaria: migrates concrete mantine syntax to linaria", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box className={css\`margin-inline: auto; color: blue; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
+		export const App = () => <Box className={css\`color: blue; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("mantine -> linaria: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box className={css\`margin-inline: auto; color: #f97316; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
+		export const App = () => <Box className={css\`color: #f97316; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("mantine -> linaria: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box className={css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
+		export const App = () => <Box className={css\`color: #2563eb; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("mantine -> linaria: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box className={css\`margin-inline: auto; color: #2563eb; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
+		export const App = () => <Box className={css\`color: #2563eb; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,7 +281,7 @@ test("mantine -> linaria: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box className={css\`margin-inline: auto; color: blue; max-width: calc(25rem * var(--mantine-scale));\`}/>;
+		export const App = () => <Box className={css\`color: blue; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

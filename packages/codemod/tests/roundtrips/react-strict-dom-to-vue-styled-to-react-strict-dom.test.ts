@@ -51,7 +51,7 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves an actionabl
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
+		const styles = styled.div\` color: red; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,8 +89,8 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves an actionabl
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = styled.div\` color: red; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,12 +116,7 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves an actionabl
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "react-strict-dom has no host representation for vue",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -226,7 +221,7 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves concrete the
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -264,8 +259,8 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves concrete the
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,12 +286,7 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves concrete the
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "react-strict-dom has no host representation for vue",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -310,7 +300,7 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves concrete the
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -348,8 +338,8 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves concrete the
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -375,12 +365,7 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: preserves concrete the
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "react-strict-dom has no host representation for vue",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -408,7 +393,7 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: resolves token values 
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -446,8 +431,8 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: resolves token values 
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		// pandwind:migrate-skip (route: vue-styled -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -473,12 +458,7 @@ test("react-strict-dom -> vue-styled -> react-strict-dom: resolves token values 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "react-strict-dom has no host representation for vue",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

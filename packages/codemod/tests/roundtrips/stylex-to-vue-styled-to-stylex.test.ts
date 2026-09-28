@@ -50,7 +50,7 @@ test("stylex -> vue-styled -> stylex: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "red" }) };",
+		export const styles = styled.div\` color: red; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,8 +86,8 @@ test("stylex -> vue-styled -> stylex: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "red" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: red; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -111,11 +111,6 @@ test("stylex -> vue-styled -> stylex: preserves an actionable concrete round tri
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylex has no host representation for vue",
 		        "kind": "host-framework",
@@ -142,7 +137,7 @@ test("stylex -> vue-styled -> stylex: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "color": "red" }) };",
+		export const styles = styled.div\` color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,8 +173,8 @@ test("stylex -> vue-styled -> stylex: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "color": "red" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: red;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -203,11 +198,6 @@ test("stylex -> vue-styled -> stylex: retains the documented secondary API witho
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylex has no host representation for vue",
 		        "kind": "host-framework",
@@ -249,7 +239,7 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -285,8 +275,8 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,11 +300,6 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylex has no host representation for vue",
 		          "kind": "host-framework",
@@ -329,7 +314,7 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -365,8 +350,8 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -390,11 +375,6 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "stylex has no host representation for vue",
 		          "kind": "host-framework",
@@ -423,7 +403,7 @@ test("stylex -> vue-styled -> stylex: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -459,8 +439,8 @@ test("stylex -> vue-styled -> stylex: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = { "card": styled.div({ "padding": "8px", "color": "#2563eb" }) };",
+		// pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -484,11 +464,6 @@ test("stylex -> vue-styled -> stylex: resolves token values across both concrete
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "stylex has no host representation for vue",
 		        "kind": "host-framework",

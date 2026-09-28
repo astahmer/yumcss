@@ -50,7 +50,7 @@ test("mui -> react-native -> mui: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("mui -> react-native -> mui: preserves an actionable concrete round trip", 
 		    "code": "import { View } from "react-native";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "red" }) }.style}/>;",
+		export const App = () => <View   style={{ "style": css.class({ color: "red", padding: "16px" }) }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -138,7 +138,7 @@ test("mui -> react-native -> mui: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		export const Card = StyleSheet.create({ "padding": 8, "color": "red" });",
+		export const Card = StyleSheet.create({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,7 +176,7 @@ test("mui -> react-native -> mui: retains the documented secondary API without s
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("mui -> react-native -> mui: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "#f97316" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#f97316", "padding": 16 } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +278,7 @@ test("mui -> react-native -> mui: preserves concrete theme and project context v
 		      "code": "import { View } from "react-native";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "primary.main" }) }.style}/>;",
+		export const App = () => <View   style={{ "style": css.class({ color: "primary.main", padding: "16px" }) }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -315,7 +315,7 @@ test("mui -> react-native -> mui: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -354,7 +354,7 @@ test("mui -> react-native -> mui: preserves concrete theme and project context v
 		      "code": "import { View } from "react-native";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "primary.main" }) }.style}/>;",
+		export const App = () => <View   style={{ "style": css.class({ color: "primary.main", padding: "16px" }) }.style}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -405,7 +405,7 @@ test("mui -> react-native -> mui: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -444,7 +444,7 @@ test("mui -> react-native -> mui: resolves token values across both concrete leg
 		    "code": "import { View } from "react-native";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "primary.main" }) }.style}/>;",
+		export const App = () => <View   style={{ "style": css.class({ color: "primary.main", padding: "16px" }) }.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

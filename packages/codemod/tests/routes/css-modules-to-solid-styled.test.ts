@@ -157,6 +157,14 @@ test("css-modules -> solid-styled: loads concrete theme and project context vari
 	expectRouteScenarioEvidence(blue, "css-modules -> solid-styled blue config");
 	expectRouteScenarioEvidence(amber, "css-modules -> solid-styled amber config");
 	expectConfiguredTargetTokenAbsence(amber, CodemodAdapterId.SolidStyled, "css-modules -> solid-styled amber literal config");
+	for (const result of [blue, amber]) {
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).toContain('import { css } from "solid-styled-components"');
+		expect(result.code).toContain('"card": css({');
+	}
 
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
@@ -164,8 +172,8 @@ test("css-modules -> solid-styled: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -201,8 +209,8 @@ test("css-modules -> solid-styled: loads concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		    "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,12 +254,18 @@ test("css-modules -> solid-styled: resolves concrete token values with project c
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.SolidStyled);
 	expectConfiguredTargetTokenEvidence(result, CodemodAdapterId.SolidStyled, "css-modules -> solid-styled token config");
 	expectRouteScenarioEvidence(result, "css-modules -> solid-styled token config");
+	expect(result.converted).toBeGreaterThan(0);
+	expect(result.skipped).toBe(0);
+	expect(result.residuals).toEqual([]);
+	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).toContain('import { css } from "solid-styled-components"');
+	expect(result.code).toContain('"card": css({');
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		  "code": "import { css } from "solid-styled-components";
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -338,4 +352,3 @@ test("css-modules -> solid-styled: preserves malformed concrete css-modules inpu
 		}
 	`)
 });
-

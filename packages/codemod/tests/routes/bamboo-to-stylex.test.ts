@@ -94,7 +94,7 @@ test("bamboo -> stylex: carries a documented secondary bamboo API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "4", display: "flex" } }).style;",
+		export const card = stylex.create({ style: { display: "flex", gap: "4" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

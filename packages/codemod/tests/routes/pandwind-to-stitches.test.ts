@@ -50,7 +50,7 @@ test("pandwind -> stitches: migrates concrete pandwind syntax to stitches", () =
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "red" });",
+		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -151,7 +151,7 @@ test("pandwind -> stitches: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "#f97316" });",
+		export const card = css({ color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("pandwind -> stitches: loads concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("pandwind -> stitches: resolves concrete token values with project context"
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "#2563eb" });",
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,7 +283,7 @@ test("pandwind -> stitches: preserves malformed concrete pandwind input", () => 
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: "red" });
+		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

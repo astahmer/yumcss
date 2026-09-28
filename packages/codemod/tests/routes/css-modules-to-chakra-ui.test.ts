@@ -51,7 +51,7 @@ test("css-modules -> chakra-ui: migrates concrete css-modules syntax to chakra-u
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "red" }) };
+		export const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -167,7 +167,7 @@ test("css-modules -> chakra-ui: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "#2a57c8" }) };
+		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("css-modules -> chakra-ui: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -249,7 +249,7 @@ test("css-modules -> chakra-ui: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "card": defaultSystem.css({ padding: "4", color: "brand.500" }) };
+		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		  "converted": 1,
 		  "generatedFiles": [],

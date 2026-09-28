@@ -51,7 +51,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves an actionable 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +87,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves an actionable 
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
 
-		const styles = { "card": css.create({ padding: "1rem", color: "red" }) };
+		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.class({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
 
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,7 +327,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
+		const styles = { "card": css.class({ color: "brand", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -363,7 +363,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: preserves concrete theme
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
 
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -417,7 +417,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: resolves token values ac
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		const styles = { "card": css.class({ padding: "1rem", color: "brand" }) };
+		const styles = { "card": css.class({ color: "brand", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -453,7 +453,7 @@ test("react-strict-dom -> pandwind -> react-strict-dom: resolves token values ac
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
 
-		const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

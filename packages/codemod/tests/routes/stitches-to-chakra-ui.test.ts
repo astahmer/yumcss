@@ -52,7 +52,7 @@ test("stitches -> chakra-ui: migrates concrete stitches syntax to chakra-ui", as
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -154,7 +154,7 @@ test("stitches -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "#2a57c8" });",
+		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -189,7 +189,7 @@ test("stitches -> chakra-ui: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("stitches -> chakra-ui: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -280,7 +280,7 @@ test("stitches -> chakra-ui: preserves malformed concrete stitches input", async
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "4", color: "red" });
+		export const card = defaultSystem.css({ color: "red", padding: "4" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

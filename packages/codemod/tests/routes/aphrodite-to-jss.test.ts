@@ -49,7 +49,7 @@ test("aphrodite -> jss: migrates concrete aphrodite syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "red" } });",
+		export const styles = createUseStyles({ card: { color: "red", padding: 8 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("aphrodite -> jss: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("aphrodite -> jss: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("aphrodite -> jss: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "#2563eb" } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("aphrodite -> jss: preserves malformed concrete aphrodite input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { padding: 8, color: "red" } });
+		export const styles = createUseStyles({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

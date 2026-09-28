@@ -207,7 +207,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
 		/* /* pandwind:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves concrete theme a
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
 		/* /* pandwind:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("css-modules -> react-strict-dom -> css-modules: resolves token values acro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -411,7 +411,7 @@ test("css-modules -> react-strict-dom -> css-modules: resolves token values acro
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
 		/* /* pandwind:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css.create({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

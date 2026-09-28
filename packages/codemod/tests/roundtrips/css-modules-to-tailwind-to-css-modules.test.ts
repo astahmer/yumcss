@@ -206,7 +206,7 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
+		      "code": "export const styles = { "card": "[color:#2563eb] [padding:1rem]" };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -243,7 +243,7 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "/* /* pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
-		export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
+		export const styles = { "card": "[color:#2563eb] [padding:1rem]" };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -285,7 +285,7 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[padding:1rem] text-brand" };
+		      "code": "export const styles = { "card": "text-brand [padding:1rem]" };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("css-modules -> tailwind -> css-modules: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "/* /* pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
-		export const styles = { "card": "[padding:1rem] text-brand" };
+		export const styles = { "card": "text-brand [padding:1rem]" };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -378,7 +378,7 @@ test("css-modules -> tailwind -> css-modules: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:1rem] text-brand" };
+		    "code": "export const styles = { "card": "text-brand [padding:1rem]" };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -415,7 +415,7 @@ test("css-modules -> tailwind -> css-modules: resolves token values across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "/* /* pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
-		export const styles = { "card": "[padding:1rem] text-brand" };
+		export const styles = { "card": "text-brand [padding:1rem]" };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -50,7 +50,7 @@ test("styled-components -> solid-styled -> styled-components: preserves an actio
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "red" }));",
+		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("styled-components -> solid-styled -> styled-components: preserves an actio
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("styled-components -> solid-styled -> styled-components: retains the docume
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "red" }));",
+		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("styled-components -> solid-styled -> styled-components: retains the docume
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "red" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("styled-components -> solid-styled -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "#2563eb" }));",
+		export const Card = styled("div")(() => ({ "color": "#2563eb", "padding": "1rem" }));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("styled-components -> solid-styled -> styled-components: preserves concrete
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("styled-components -> solid-styled -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "#2563eb" }));",
+		export const Card = styled("div")(() => ({ "color": "#2563eb", "padding": "1rem" }));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("styled-components -> solid-styled -> styled-components: preserves concrete
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("styled-components -> solid-styled -> styled-components: resolves token val
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "#2563eb" }));",
+		export const Card = styled("div")(() => ({ "color": "#2563eb", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("styled-components -> solid-styled -> styled-components: resolves token val
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled("div")({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

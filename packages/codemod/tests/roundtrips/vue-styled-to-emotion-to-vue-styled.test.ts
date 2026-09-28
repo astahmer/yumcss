@@ -50,7 +50,7 @@ test("vue-styled -> emotion -> vue-styled: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-		export const Card = styled.div({ padding: "1rem", color: "red" });",
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("vue-styled -> emotion -> vue-styled: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("vue-styled -> emotion -> vue-styled: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-		export const Card = styled.div({ padding: "1rem", color: "red" });",
+		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("vue-styled -> emotion -> vue-styled: retains the documented secondary API 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("vue-styled -> emotion -> vue-styled: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "@emotion/styled";
-		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +267,7 @@ test("vue-styled -> emotion -> vue-styled: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("vue-styled -> emotion -> vue-styled: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "@emotion/styled";
-		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("vue-styled -> emotion -> vue-styled: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("vue-styled -> emotion -> vue-styled: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "@emotion/styled";
-		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });",
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -425,7 +425,7 @@ test("vue-styled -> emotion -> vue-styled: resolves token values across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

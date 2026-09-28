@@ -50,7 +50,7 @@ test("pandwind -> vue-styled: migrates concrete pandwind syntax to vue-styled", 
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -159,7 +159,7 @@ test("pandwind -> vue-styled: loads concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#f97316" });",
+		export const card = styled.div\`color: #f97316; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -197,7 +197,7 @@ test("pandwind -> vue-styled: loads concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -247,7 +247,7 @@ test("pandwind -> vue-styled: resolves concrete token values with project contex
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -294,7 +294,7 @@ test("pandwind -> vue-styled: preserves malformed concrete pandwind input", () =
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
 
-		export const card = styled.div({ "padding": "1rem", "color": "red" });
+		export const card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

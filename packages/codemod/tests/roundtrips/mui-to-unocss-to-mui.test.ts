@@ -50,7 +50,7 @@ test("mui -> unocss -> mui: preserves an actionable concrete round trip", () => 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] [color:red]"}/>;",
+		export const App = () => <Box className={"[color:red] [padding:16px]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("mui -> unocss -> mui: preserves an actionable concrete round trip", () => 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ padding: "16px", color: "red" }} />;",
+		export const App = () => <Box sx={{ color: "red", padding: "16px" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -133,7 +133,7 @@ test("mui -> unocss -> mui: retains the documented secondary API without silent 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const Card = "[padding:8] [color:red]";",
+		    "code": "export const Card = "[color:red] [padding:8]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("mui -> unocss -> mui: retains the documented secondary API without silent 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": "8", "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": "8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
+		export const App = () => <Box className={"text-brand [padding:16px]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }} />;",
+		export const App = () => <Box sx={{ color: "primary.main", padding: "16px" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
+		export const App = () => <Box className={"text-brand [padding:16px]"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }} />;",
+		export const App = () => <Box sx={{ color: "primary.main", padding: "16px" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("mui -> unocss -> mui: resolves token values across both concrete legs", as
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box className={"[padding:16px] text-brand"}/>;",
+		export const App = () => <Box className={"text-brand [padding:16px]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +427,7 @@ test("mui -> unocss -> mui: resolves token values across both concrete legs", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }} />;",
+		export const App = () => <Box sx={{ color: "primary.main", padding: "16px" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

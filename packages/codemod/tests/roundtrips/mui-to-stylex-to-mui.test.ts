@@ -50,7 +50,7 @@ test("mui -> stylex -> mui: preserves an actionable concrete round trip", () => 
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "16px", color: "red" } }).style;",
+		export const App = () => stylex.create({ style: { color: "red", padding: "16px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("mui -> stylex -> mui: preserves an actionable concrete round trip", () => 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => { "style": css.class({ padding: "16px", color: "red" }) }.style;",
+		export const App = () => { "style": css.class({ color: "red", padding: "16px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -136,7 +136,7 @@ test("mui -> stylex -> mui: retains the documented secondary API without silent 
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "8px", color: "red" } }).style;",
+		export const Card = stylex.create({ style: { color: "red", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +174,7 @@ test("mui -> stylex -> mui: retains the documented secondary API without silent 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = { "style": css.class({ padding: "8px", color: "red" }) }.style;",
+		export const Card = { "style": css.class({ color: "red", padding: "8px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "16px", color: "#f97316" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#f97316", padding: "16px" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -274,7 +274,7 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
+		export const App = () => { "style": css.class({ color: "primary.main", padding: "16px" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "16px", color: "#2563eb" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "16px" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -348,7 +348,7 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
+		export const App = () => { "style": css.class({ color: "primary.main", padding: "16px" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,7 +399,7 @@ test("mui -> stylex -> mui: resolves token values across both concrete legs", as
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { padding: "16px", color: "#2563eb" } }).style;",
+		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "16px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -436,7 +436,7 @@ test("mui -> stylex -> mui: resolves token values across both concrete legs", as
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => { "style": css.class({ padding: "16px", color: "primary.main" }) }.style;",
+		export const App = () => { "style": css.class({ color: "primary.main", padding: "16px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

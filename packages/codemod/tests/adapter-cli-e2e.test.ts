@@ -112,6 +112,82 @@ describe("adapter migration e2e matrix", () => {
 		}
 	}, 120_000);
 
+	test("moves a standalone style module and updates its barrel import", () => {
+		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-module-rename-"));
+		mkdirSync(join(directory, "src", "ui"), { recursive: true });
+		const sourceFile = join(directory, "src/styles.ts");
+		const barrelFile = join(directory, "src/index.ts");
+		const consumerFile = join(directory, "src/ui/App.tsx");
+		const source =
+			'import { css } from "@emotion/css";\n' +
+			'export const card = css({ color: "red", padding: "1rem" });\n';
+		const barrel = 'export { card } from "./styles";\n';
+		const consumer =
+			'import { card } from "../index";\n' +
+			"export const App = () => <div className={card} />;\n";
+		writeFileSync(sourceFile, source);
+		writeFileSync(barrelFile, barrel);
+		writeFileSync(consumerFile, consumer);
+		try {
+			const output = execFileSync(
+				"nub",
+				[
+					"src/cli.ts",
+					"migrate",
+					"--root",
+					directory,
+					`--from=${CodemodAdapterId.Emotion}`,
+					`--to=${CodemodAdapterId.Treat}`,
+					"--safe",
+					"--no-install",
+					"--report=json",
+					sourceFile,
+				],
+				{ cwd: codemodRoot, encoding: "utf8" },
+			);
+			const report = JSON.parse(output) as {
+				readonly files: readonly [
+					{
+						readonly file: string;
+						readonly outputFile?: string;
+						readonly converted: number;
+						readonly skipped: number;
+						readonly residuals: number;
+					},
+				];
+			};
+			const fileReport = report.files[0]!;
+			const outputFile = join(directory, fileReport.outputFile ?? "");
+
+			expect(fileReport.outputFile).toBe("src/styles.treat.ts");
+			expect(fileReport.converted).toBe(1);
+			expect(fileReport.skipped).toBe(0);
+			expect(fileReport.residuals).toBe(0);
+			expect(existsSync(sourceFile)).toBe(false);
+			expect(readFileSync(outputFile, "utf8")).toContain('import { style } from "treat";');
+			expect(readFileSync(barrelFile, "utf8")).toBe('export { card } from "./styles.treat";\n');
+			expect(readFileSync(consumerFile, "utf8")).toBe(consumer);
+			expect({
+				outputFile: fileReport.outputFile,
+				converted: fileReport.converted,
+				skipped: fileReport.skipped,
+				residuals: fileReport.residuals,
+				barrel: readFileSync(barrelFile, "utf8"),
+			}).toMatchInlineSnapshot(`
+				{
+				  "barrel": "export { card } from "./styles.treat";
+				",
+				  "converted": 1,
+				  "outputFile": "src/styles.treat.ts",
+				  "residuals": 0,
+				  "skipped": 0,
+				}
+			`);
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
+	}, 120_000);
+
 	test("--force regenerates conflicting project support files", () => {
 		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-force-"));
 		const sourceFile = join(directory, "App.tsx");

@@ -49,7 +49,7 @@ test("tailwind -> styled-components: migrates concrete tailwind syntax to styled
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const App = () => styled.div({ gap: "1rem", alignItems: "center", display: "flex" });",
+		export const App = () => styled.div({ display: "flex", alignItems: "center", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("tailwind -> styled-components: loads concrete theme and project context va
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "1.125rem", color: "#f97316" });",
+		export const App = () => styled.div({ color: "#f97316", padding: "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("tailwind -> styled-components: loads concrete theme and project context va
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("tailwind -> styled-components: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const App = () => styled.div({ padding: "1.125rem", color: "#2563eb" });",
+		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("tailwind -> styled-components: preserves malformed concrete tailwind input
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const App = () => styled.div({ gap: "1rem", alignItems: "center", display: "flex" });
+		export const App = () => styled.div({ display: "flex", alignItems: "center", gap: "1rem" });
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

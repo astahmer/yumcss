@@ -50,7 +50,7 @@ test("treat -> tamagui -> treat: preserves an actionable concrete round trip", (
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "red" });",
+		export const card = styled(View, { color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,7 +84,7 @@ test("treat -> tamagui -> treat: preserves an actionable concrete round trip", (
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> treat | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "red" });",
+		export const card = styled(View, { color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("treat -> tamagui -> treat: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "red" });",
+		export const card = styled(View, { color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("treat -> tamagui -> treat: retains the documented secondary API without si
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> treat | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "red" });",
+		export const card = styled(View, { color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("treat -> tamagui -> treat: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +267,7 @@ test("treat -> tamagui -> treat: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> treat | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("treat -> tamagui -> treat: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("treat -> tamagui -> treat: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> treat | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("treat -> tamagui -> treat: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -425,7 +425,7 @@ test("treat -> tamagui -> treat: resolves token values across both concrete legs
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
 		// pandwind:migrate-skip (route: tamagui -> treat | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { padding: 8, color: "#2563eb" });",
+		export const card = styled(View, { color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

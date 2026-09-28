@@ -50,7 +50,7 @@ test("mantine -> jss: migrates concrete mantine syntax to jss", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("mantine -> jss: loads concrete theme and project context variants", async 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("mantine -> jss: loads concrete theme and project context variants", async 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -235,7 +235,7 @@ test("mantine -> jss: resolves concrete token values with project context", asyn
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -281,7 +281,7 @@ test("mantine -> jss: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box className={jss.createStyleSheet({ style: { marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;
+		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).attach().classes.style}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -49,7 +49,7 @@ test("styled-components -> stitches: migrates concrete styled-components syntax 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "red" });",
+		export const Card = styled("div", { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("styled-components -> stitches: carries a documented secondary styled-compo
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "red" });",
+		export const Card = styled("div", { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("styled-components -> stitches: loads concrete theme and project context va
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("styled-components -> stitches: loads concrete theme and project context va
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("styled-components -> stitches: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
+		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("styled-components -> stitches: preserves malformed concrete styled-compone
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@stitches/react";
-		export const Card = styled("div", { padding: "1rem", color: "red" });
+		export const Card = styled("div", { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

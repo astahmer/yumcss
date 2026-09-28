@@ -49,7 +49,7 @@ test("unocss -> emotion: migrates concrete unocss syntax to emotion", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+		export const App = () => <div className={css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("unocss -> emotion: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#f97316" })}/>;",
+		export const App = () => <div className={css({ color: "#f97316", padding: "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("unocss -> emotion: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
+		export const App = () => <div className={css({ color: "#2563eb", padding: "1.125rem" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("unocss -> emotion: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
+		export const App = () => <div className={css({ color: "#2563eb", padding: "1.125rem" })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("unocss -> emotion: preserves malformed concrete unocss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@emotion/css";
-		export const App = () => <div className={css({ gap: "1rem", alignItems: "center", display: "flex" })}/>;
+		export const App = () => <div className={css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

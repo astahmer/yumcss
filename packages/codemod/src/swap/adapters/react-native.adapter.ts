@@ -1,5 +1,6 @@
 import { StyleValueKindTag } from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
 import {
 	BuiltinHostFramework,
 	canConvertStaticVueSfc,
@@ -7,6 +8,7 @@ import {
 } from "../host-adapters.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import type { AdapterHostFrameworkConversion } from "../adapter-contract.ts";
+import type { AdapterParseContext } from "../adapter-contract.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
@@ -109,6 +111,19 @@ function hasOnlyStaticDeclarations(program: StyleProgram): boolean {
 				(declaration) => declaration.value.kind !== StyleValueKindTag.Dynamic,
 			) &&
 			rule.children.every((child) => hasOnlyStaticDeclarations({ ...program, rules: [child] })),
+	);
+}
+
+function hasViewTextColor(program: StyleProgram): boolean {
+	const rulesHaveColor = (rules: StyleProgram["rules"]): boolean =>
+		rules.some(
+			(rule) =>
+				rule.declarations.some((declaration) => declaration.property === "color") ||
+				rulesHaveColor(rule.children),
+		);
+	return (
+		program.declarations.some((declaration) => declaration.property === "color") ||
+		rulesHaveColor(program.rules)
 	);
 }
 
@@ -357,7 +372,7 @@ function rewriteReactHost(
 	};
 }
 
-const reactNative = makeExtraAdapter({
+const reactNativeAdapter = makeExtraAdapter({
 	id: CodemodAdapterId.ReactNative,
 	officialApi: {
 		apis: [
@@ -400,6 +415,24 @@ const reactNative = makeExtraAdapter({
 		handlesSourceHostAttributes: true,
 		hostRepresentation: StyleHostRepresentationKind.StyleProp,
 		standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+		preflight: ({ program }) => {
+			const sourceTag =
+				program.source?.subject === undefined
+					? program.source?.hostTag
+					: intrinsicTagForSubject(program.source.subject);
+			if (
+				sourceTag === undefined ||
+				reactNativeHostTag(sourceTag) !== "View" ||
+				!hasViewTextColor(program)
+			)
+				return [];
+			return [
+				hostResidual(
+					program.source?.subject ?? program.source?.hostOpenTag ?? "color",
+					"React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+				),
+			];
+		},
 		resolveHostRepresentation: ({
 			framework,
 			sourceFramework,
@@ -539,6 +572,17 @@ const reactNative = makeExtraAdapter({
 			const style = `StyleSheet.create({ style: ${programObject(reactNativeProgram(program))} }).style`;
 			const attrsExpression = componentAttrsExpressionForSubject(subject);
 			const attrsValue = componentAttrsValueExpression(attrsExpression);
+			if (attrsExpression !== undefined && /\bas\b/u.test(attrsExpression))
+				return {
+					text: "",
+					imports: [],
+					residuals: [
+						hostResidual(
+							attrsExpression,
+							"React Native View wrappers cannot preserve polymorphic attrs",
+						),
+					],
+				};
 			if (attrsExpression !== undefined && attrsValue === undefined)
 				return {
 					text: "",
@@ -552,12 +596,15 @@ const reactNative = makeExtraAdapter({
 				};
 			const component =
 				attrsExpression === undefined
-					? `(props) => <View {...props} style={{ ...${style}, ...props.style }} />`
-					: `(props) => { const attrs = ${attrsValue}; const { as: _attrsAs, ...attrsProps } = attrs; const { as: _as, ...rest } = props; return <View {...rest} {...attrsProps} style={{ ...${style}, ...props.style, ...attrs.style }} />; }`;
+					? `((style: NonNullable<ViewProps["style"]>) => __pandwindForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => <View {...props} ref={ref} style={[style, props.style]} />))(${style})`
+					: `((style: NonNullable<ViewProps["style"]>) => __pandwindForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => { const attrs: Partial<ViewProps> = ${attrsValue}; return <View {...props} {...attrs} ref={ref} style={[style, props.style, attrs.style]} />; }))(${style})`;
 			return {
 				text: component,
 				semantic: reactNativeProgram(program),
-				imports: ['import { StyleSheet, View } from "react-native";'],
+				imports: [
+					'import { forwardRef as __pandwindForwardRef, type ComponentRef } from "react";',
+					'import { StyleSheet, View, type ViewProps } from "react-native";',
+				],
 				residuals: [],
 			};
 		}
@@ -572,4 +619,18 @@ const reactNative = makeExtraAdapter({
 	},
 });
 
-export default reactNative;
+export default {
+	...reactNativeAdapter,
+	parse: (source: string, context: AdapterParseContext) => {
+		const parsed = reactNativeAdapter.parse(source, context);
+		if (context.targetId === undefined || context.targetId === CodemodAdapterId.ReactNative)
+			return parsed;
+		return {
+			...parsed,
+			matches: parsed.matches.map((match) => ({
+				...match,
+				program: normalizeCssObjectNumericUnits(match.program, new Set(["lineHeight"])),
+			})),
+		};
+	},
+};

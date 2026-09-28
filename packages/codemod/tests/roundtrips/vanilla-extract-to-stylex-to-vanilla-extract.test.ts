@@ -51,14 +51,13 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves an actionable conc
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -88,7 +87,7 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves an actionable conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = { "style": style({ padding: "8px", color: "red" }) }.style;",
+		export const card = { "style": style({ color: "red", padding: "8px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,14 +226,13 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves concrete theme and
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -264,7 +262,7 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = { "style": style({ padding: "8px", color: "#2563eb" }) }.style;",
+		export const card = { "style": style({ color: "#2563eb", padding: "8px" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -303,14 +301,13 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves concrete theme and
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -340,7 +337,7 @@ test("vanilla-extract -> stylex -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = { "style": style({ padding: "8px", color: "#2563eb" }) }.style;",
+		export const card = { "style": style({ color: "#2563eb", padding: "8px" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -393,14 +390,13 @@ test("vanilla-extract -> stylex -> vanilla-extract: resolves token values across
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
 		import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { padding: "8px", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -430,7 +426,7 @@ test("vanilla-extract -> stylex -> vanilla-extract: resolves token values across
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = { "style": style({ padding: "8px", color: "#2563eb" }) }.style;",
+		export const card = { "style": style({ color: "#2563eb", padding: "8px" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

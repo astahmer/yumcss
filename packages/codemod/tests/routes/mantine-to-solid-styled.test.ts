@@ -49,8 +49,8 @@ test("mantine -> solid-styled: migrates concrete mantine syntax to solid-styled"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,8 +148,8 @@ test("mantine -> solid-styled: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#f97316", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,8 +186,8 @@ test("mantine -> solid-styled: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,8 +236,8 @@ test("mantine -> solid-styled: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "#2563eb", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -283,8 +283,8 @@ test("mantine -> solid-styled: preserves malformed concrete mantine input", () =
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "marginInline": "auto", "color": "blue", "maxWidth": "calc(25rem * var(--mantine-scale))" });
+		import { css } from "solid-styled-components";
+		export const App = () => css({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

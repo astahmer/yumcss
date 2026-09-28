@@ -49,7 +49,7 @@ test("vanilla-extract -> vue-styled: migrates concrete vanilla-extract syntax to
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "red" });",
+		export const card = styled.div\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("vanilla-extract -> vue-styled: loads concrete theme and project context va
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("vanilla-extract -> vue-styled: loads concrete theme and project context va
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("vanilla-extract -> vue-styled: resolves concrete token values with project
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "#2563eb" });",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("vanilla-extract -> vue-styled: preserves malformed concrete vanilla-extrac
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div({ "padding": 8, "color": "red" });
+		export const card = styled.div\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

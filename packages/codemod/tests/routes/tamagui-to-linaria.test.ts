@@ -50,7 +50,7 @@ test("tamagui -> linaria: migrates concrete tamagui syntax to linaria", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "@linaria/core";
-		export const Card = css\`padding: $4; color: red;\`;
+		export const Card = css\`color: red; padding: $4;\`;
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +151,7 @@ test("tamagui -> linaria: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { css } from "@linaria/core";
-		export const Card = css\`padding: $4; color: #2563eb;\`;
+		export const Card = css\`color: #2563eb; padding: $4;\`;
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +189,7 @@ test("tamagui -> linaria: loads concrete theme and project context variants", as
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { css } from "@linaria/core";
-		export const Card = css\`padding: $4; color: #2563eb;\`;
+		export const Card = css\`color: #2563eb; padding: $4;\`;
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +239,7 @@ test("tamagui -> linaria: resolves concrete token values with project context", 
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "@linaria/core";
-		export const Card = css\`padding: $4; color: #2563eb;\`;
+		export const Card = css\`color: #2563eb; padding: $4;\`;
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +286,7 @@ test("tamagui -> linaria: preserves malformed concrete tamagui input", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "@linaria/core";
-		export const Card = css\`padding: $4; color: red;\`;
+		export const Card = css\`color: red; padding: $4;\`;
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

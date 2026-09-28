@@ -48,11 +48,11 @@ test("tamagui -> solid-styled: migrates concrete tamagui syntax to solid-styled"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "red" });
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -70,19 +70,24 @@ test("tamagui -> solid-styled: migrates concrete tamagui syntax to solid-styled"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -149,11 +154,11 @@ test("tamagui -> solid-styled: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "#2563eb" });
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -171,27 +176,32 @@ test("tamagui -> solid-styled: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "#2563eb" });
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -209,19 +219,24 @@ test("tamagui -> solid-styled: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -237,11 +252,11 @@ test("tamagui -> solid-styled: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "#2563eb" });
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -259,19 +274,24 @@ test("tamagui -> solid-styled: resolves concrete token values with project conte
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -284,12 +304,12 @@ test("tamagui -> solid-styled: preserves malformed concrete tamagui input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "$4", "color": "red" });
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -307,19 +327,24 @@ test("tamagui -> solid-styled: preserves malformed concrete tamagui input", () =
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "solid-styled-components requires a documented intrinsic tag subject",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

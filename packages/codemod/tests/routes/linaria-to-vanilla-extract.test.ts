@@ -49,7 +49,7 @@ test("linaria -> vanilla-extract: migrates concrete linaria syntax to vanilla-ex
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "red" });",
+		export const card = style({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("linaria -> vanilla-extract: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("linaria -> vanilla-extract: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("linaria -> vanilla-extract: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "#2563eb" });",
+		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("linaria -> vanilla-extract: preserves malformed concrete linaria input", (
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "1rem", color: "red" });
+		export const card = style({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "generatedFiles": [],

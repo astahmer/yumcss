@@ -49,7 +49,7 @@ test("aphrodite -> linaria: migrates concrete aphrodite syntax to linaria", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: red;\` };",
+		export const styles = { "card": css\`color: red; padding: 8;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -157,7 +157,7 @@ test("aphrodite -> linaria: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -193,7 +193,7 @@ test("aphrodite -> linaria: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -241,7 +241,7 @@ test("aphrodite -> linaria: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: #2563eb;\` };",
+		export const styles = { "card": css\`color: #2563eb; padding: 8;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -286,7 +286,7 @@ test("aphrodite -> linaria: preserves malformed concrete aphrodite input", () =>
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 8; color: red;\` };
+		export const styles = { "card": css\`color: red; padding: 8;\` };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

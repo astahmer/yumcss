@@ -94,7 +94,7 @@ test("bamboo -> vanilla-extract: carries a documented secondary bamboo API expli
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ gap: "4", display: "flex" });",
+		export const card = style({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

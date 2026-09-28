@@ -51,7 +51,7 @@ test("unocss -> chakra-ui: migrates concrete unocss syntax to chakra-ui", async 
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ gap: "4", alignItems: "center", display: "flex" }}/>;",
+		export const App = () => <chakra.div  css={{ display: "flex", alignItems: "center", gap: "4" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("unocss -> chakra-ui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "#f97316" }}/>;",
+		export const App = () => <chakra.div  css={{ color: "#f97316", padding: "1.125rem" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("unocss -> chakra-ui: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ color: "brand.500", padding: "1.125rem" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("unocss -> chakra-ui: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
+		export const App = () => <chakra.div  css={{ color: "brand.500", padding: "1.125rem" }}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -272,7 +272,7 @@ test("unocss -> chakra-ui: preserves malformed concrete unocss input", async () 
 		{
 		  "changed": true,
 		  "code": "import { chakra } from "@chakra-ui/react";
-		export const App = () => <chakra.div  css={{ gap: "4", alignItems: "center", display: "flex" }}/>;
+		export const App = () => <chakra.div  css={{ display: "flex", alignItems: "center", gap: "4" }}/>;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [],

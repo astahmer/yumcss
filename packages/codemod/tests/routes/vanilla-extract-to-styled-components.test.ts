@@ -49,7 +49,7 @@ test("vanilla-extract -> styled-components: migrates concrete vanilla-extract sy
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: 8, color: "red" });",
+		export const card = styled.div({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("vanilla-extract -> styled-components: loads concrete theme and project con
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: 8, color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("vanilla-extract -> styled-components: loads concrete theme and project con
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: 8, color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("vanilla-extract -> styled-components: resolves concrete token values with 
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: 8, color: "#2563eb" });",
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("vanilla-extract -> styled-components: preserves malformed concrete vanilla
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		export const card = styled.div({ padding: 8, color: "red" });
+		export const card = styled.div({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

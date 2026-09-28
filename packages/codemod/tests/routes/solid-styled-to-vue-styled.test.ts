@@ -51,7 +51,7 @@ test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-s
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
 		  "converted": 1,
@@ -100,7 +100,7 @@ test("solid-styled -> vue-styled: carries a documented secondary solid-styled AP
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
 		  "converted": 1,
@@ -158,7 +158,7 @@ test("solid-styled -> vue-styled: loads concrete theme and project context varia
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		    "converted": 1,
@@ -198,7 +198,7 @@ test("solid-styled -> vue-styled: loads concrete theme and project context varia
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		    "converted": 1,
@@ -250,7 +250,7 @@ test("solid-styled -> vue-styled: resolves concrete token values with project co
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
 		  "converted": 1,
@@ -299,7 +299,7 @@ test("solid-styled -> vue-styled: preserves malformed concrete solid-styled inpu
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */
 		</script>
 		",

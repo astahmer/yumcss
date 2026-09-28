@@ -51,7 +51,7 @@ test("pandwind -> aphrodite -> pandwind: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
 
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "red" });",
+		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("pandwind -> aphrodite -> pandwind: preserves an actionable concrete round 
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "red" });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -226,7 +226,7 @@ test("pandwind -> aphrodite -> pandwind: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
 
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#f97316" });",
+		export const card = StyleSheet.create({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -265,7 +265,7 @@ test("pandwind -> aphrodite -> pandwind: preserves concrete theme and project co
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -302,7 +302,7 @@ test("pandwind -> aphrodite -> pandwind: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
 
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("pandwind -> aphrodite -> pandwind: preserves concrete theme and project co
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -392,7 +392,7 @@ test("pandwind -> aphrodite -> pandwind: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
 
-		export const card = StyleSheet.create({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,7 +431,7 @@ test("pandwind -> aphrodite -> pandwind: resolves token values across both concr
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const card = css.class({ padding: "1rem", color: "brand" });",
+		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

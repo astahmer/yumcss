@@ -1,7 +1,9 @@
 import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
+import type { AdapterParseContext } from "../adapter-contract.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
@@ -60,4 +62,16 @@ const treat = makeExtraAdapter({
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 });
 
-export default treat;
+export default {
+	...treat,
+	parse(source: string, context: AdapterParseContext) {
+		const parsed = treat.parse(source, context);
+		return {
+			...parsed,
+			matches: parsed.matches.map((match) => ({
+				...match,
+				program: normalizeCssObjectNumericUnits(match.program),
+			})),
+		};
+	},
+};

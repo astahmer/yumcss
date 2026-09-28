@@ -50,7 +50,7 @@ test("styled-components -> tamagui -> styled-components: preserves an actionable
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		const __CardTamagui = styled(View, { padding: "1rem", color: "red" });
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +85,7 @@ test("styled-components -> tamagui -> styled-components: preserves an actionable
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import styled from "styled-components";
-		const __CardTamagui = styled(View)({ padding: "1rem", color: "red" });
+		const __CardTamagui = styled(View)({ color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -134,7 +134,7 @@ test("styled-components -> tamagui -> styled-components: retains the documented 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		const __CardTamagui = styled(View, { padding: "1rem", color: "red" });
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -169,7 +169,7 @@ test("styled-components -> tamagui -> styled-components: retains the documented 
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import styled from "styled-components";
-		const __CardTamagui = styled(View)({ padding: "1rem", color: "red" });
+		const __CardTamagui = styled(View)({ color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +233,7 @@ test("styled-components -> tamagui -> styled-components: preserves concrete them
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		const __CardTamagui = styled(View, { padding: "1rem", color: "#2563eb" });
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -268,7 +268,7 @@ test("styled-components -> tamagui -> styled-components: preserves concrete them
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import styled from "styled-components";
-		const __CardTamagui = styled(View)({ padding: "1rem", color: "#2563eb" });
+		const __CardTamagui = styled(View)({ color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +305,7 @@ test("styled-components -> tamagui -> styled-components: preserves concrete them
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		const __CardTamagui = styled(View, { padding: "1rem", color: "#2563eb" });
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,7 +340,7 @@ test("styled-components -> tamagui -> styled-components: preserves concrete them
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import styled from "styled-components";
-		const __CardTamagui = styled(View)({ padding: "1rem", color: "#2563eb" });
+		const __CardTamagui = styled(View)({ color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -391,7 +391,7 @@ test("styled-components -> tamagui -> styled-components: resolves token values a
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		const __CardTamagui = styled(View, { padding: "1rem", color: "#2563eb" });
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -426,7 +426,7 @@ test("styled-components -> tamagui -> styled-components: resolves token values a
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import styled from "styled-components";
-		const __CardTamagui = styled(View)({ padding: "1rem", color: "#2563eb" });
+		const __CardTamagui = styled(View)({ color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],

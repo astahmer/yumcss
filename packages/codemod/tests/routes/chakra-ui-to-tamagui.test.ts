@@ -51,7 +51,8 @@ test("chakra-ui -> tamagui: migrates concrete chakra-ui syntax to tamagui", asyn
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#fecaca", padding: "1rem" });",
+		const __componentTamagui = styled(View, { background: "#fecaca", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +145,8 @@ test("chakra-ui -> tamagui: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#f97316", padding: "1rem" });",
+		const __componentTamagui = styled(View, { background: "#f97316", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +179,8 @@ test("chakra-ui -> tamagui: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
+		const __componentTamagui = styled(View, { background: "#2a57c8", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -222,7 +225,8 @@ test("chakra-ui -> tamagui: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#2a57c8", padding: "1rem" });",
+		const __componentTamagui = styled(View, { background: "#2a57c8", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -264,7 +268,8 @@ test("chakra-ui -> tamagui: preserves malformed concrete chakra-ui input", async
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const App = () => styled(View, { background: "#fecaca", padding: "1rem" });
+		const __componentTamagui = styled(View, { background: "#fecaca", padding: "1rem" });
+		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -32,7 +32,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			sourceAdapter: "stitches",
 			targetAdapter: "emotion",
 			file: "Card.tsx",
-			source: `import { css } from "@stitches/react";\nconst card = css({ color: "red", padding: 2 });`,
+			source: `import { css } from "@stitches/react";\nconst card = css({ color: "red", padding: "2px" });`,
 			expected: "pass",
 		},
 		{
@@ -48,7 +48,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			sourceAdapter: "jss",
 			targetAdapter: "emotion",
 			file: "Card.tsx",
-			source: `import { createUseStyles } from "react-jss";\nconst useStyles = createUseStyles({ card: { color: "red", padding: 2 } });`,
+			source: `import { createUseStyles } from "react-jss";\nconst useStyles = createUseStyles({ card: { color: "red", padding: "2px" } });`,
 			expected: "pass",
 		},
 		{
@@ -56,7 +56,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			sourceAdapter: "fela",
 			targetAdapter: "emotion",
 			file: "Card.tsx",
-			source: `import { createRenderer } from "fela";\nconst card = renderer.renderRule({ color: "red", padding: 2 });`,
+			source: `import { createRenderer } from "fela";\nconst card = renderer.renderRule({ color: "red", padding: "2px" });`,
 			expected: "pass",
 		},
 		{
@@ -64,7 +64,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			sourceAdapter: "goober",
 			targetAdapter: "emotion",
 			file: "Card.tsx",
-			source: `import { css } from "goober";\nconst card = css({ color: "red", padding: 2 });`,
+			source: `import { css } from "goober";\nconst card = css({ color: "red", padding: "2px" });`,
 			expected: "pass",
 		},
 		{
@@ -72,7 +72,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			sourceAdapter: "compiled",
 			targetAdapter: "emotion",
 			file: "Card.tsx",
-			source: `import { css } from "@compiled/react";\nconst card = css({ color: "red", padding: 2 });`,
+			source: `import { css } from "@compiled/react";\nconst card = css({ color: "red", padding: "2px" });`,
 			expected: "pass",
 		},
 		{
@@ -80,7 +80,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			sourceAdapter: "style9",
 			targetAdapter: "emotion",
 			file: "Card.tsx",
-			source: `import style9 from "style9";\nconst styles = style9.create({ card: { color: "red", padding: 2 } });`,
+			source: `import style9 from "style9";\nconst styles = style9.create({ card: { color: "red", padding: "2px" } });`,
 			expected: "pass",
 		},
 		{
@@ -88,7 +88,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			sourceAdapter: "treat",
 			targetAdapter: "emotion",
 			file: "styles.ts",
-			source: `import { style } from "treat";\nconst card = style({ color: "red", padding: 2 });`,
+			source: `import { style } from "treat";\nconst card = style({ color: "red", padding: "2px" });`,
 			expected: "pass",
 		},
 		{

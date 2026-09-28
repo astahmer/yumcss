@@ -49,7 +49,7 @@ test("tamagui -> fela: migrates concrete tamagui syntax to fela", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = renderer.renderRule({ "padding": "$4", "color": "red" });
+		export const Card = renderer.renderRule({ "color": "red", "padding": "$4" });
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -154,7 +154,7 @@ test("tamagui -> fela: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = renderer.renderRule({ "padding": "$4", "color": "#2563eb" });
+		export const Card = renderer.renderRule({ "color": "#2563eb", "padding": "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +191,7 @@ test("tamagui -> fela: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		export const Card = renderer.renderRule({ "padding": "$4", "color": "#2563eb" });
+		export const Card = renderer.renderRule({ "color": "#2563eb", "padding": "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +240,7 @@ test("tamagui -> fela: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = renderer.renderRule({ "padding": "$4", "color": "#2563eb" });
+		export const Card = renderer.renderRule({ "color": "#2563eb", "padding": "$4" });
 		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +286,7 @@ test("tamagui -> fela: preserves malformed concrete tamagui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
-		export const Card = renderer.renderRule({ "padding": "$4", "color": "red" });
+		export const Card = renderer.renderRule({ "color": "red", "padding": "$4" });
 		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,

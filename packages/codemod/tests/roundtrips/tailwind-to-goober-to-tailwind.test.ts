@@ -50,7 +50,7 @@ test("tailwind -> goober -> tailwind: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const App = () => css({ "gap": "1rem", "alignItems": "center", "display": "flex" });",
+		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("tailwind -> goober -> tailwind: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "[gap:1rem] [align-items:center] [display:flex]";",
+		    "code": "export const App = () => "[display:flex] [align-items:center] [gap:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -219,7 +219,7 @@ test("tailwind -> goober -> tailwind: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "1.125rem", "color": "#f97316" });",
+		export const App = () => css({ "color": "#f97316", "padding": "1.125rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -254,7 +254,7 @@ test("tailwind -> goober -> tailwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -292,7 +292,7 @@ test("tailwind -> goober -> tailwind: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "1.125rem", "color": "#2563eb" });",
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -327,7 +327,7 @@ test("tailwind -> goober -> tailwind: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "p-card text-brand";",
+		      "code": "export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -379,7 +379,7 @@ test("tailwind -> goober -> tailwind: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const App = () => css({ "padding": "1.125rem", "color": "#2563eb" });",
+		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -414,7 +414,7 @@ test("tailwind -> goober -> tailwind: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "p-card text-brand";",
+		    "code": "export const App = () => "text-brand p-card";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

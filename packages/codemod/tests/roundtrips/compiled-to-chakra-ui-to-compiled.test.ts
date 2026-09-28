@@ -53,7 +53,7 @@ test("compiled -> chakra-ui -> compiled: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "8px", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,7 +88,7 @@ test("compiled -> chakra-ui -> compiled: preserves an actionable concrete round 
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "padding": "8px", "color": "red" });",
+		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("compiled -> chakra-ui -> compiled: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "8px", color: "#2a57c8" });",
+		export const card = defaultSystem.css({ color: "#2a57c8", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("compiled -> chakra-ui -> compiled: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "padding": "8px", "color": "#2a57c8" });",
+		export const card = css({ "color": "#2a57c8", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +312,7 @@ test("compiled -> chakra-ui -> compiled: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("compiled -> chakra-ui -> compiled: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "padding": "8px", "color": "#2a57c8" });",
+		export const card = css({ "color": "#2a57c8", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -400,7 +400,7 @@ test("compiled -> chakra-ui -> compiled: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("compiled -> chakra-ui -> compiled: resolves token values across both concr
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "padding": "8px", "color": "#2a57c8" });",
+		export const card = css({ "color": "#2a57c8", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

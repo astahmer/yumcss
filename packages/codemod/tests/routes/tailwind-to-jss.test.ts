@@ -49,7 +49,7 @@ test("tailwind -> jss: migrates concrete tailwind syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).attach().classes.style}/>;",
+		export const App = () => <div className={jss.createStyleSheet({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -155,7 +155,7 @@ test("tailwind -> jss: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#f97316" } }).attach().classes.style}/>;",
+		export const App = () => <div className={jss.createStyleSheet({ style: { color: "#f97316", padding: "1.125rem" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -191,7 +191,7 @@ test("tailwind -> jss: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <div className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "1.125rem" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("tailwind -> jss: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { padding: "1.125rem", color: "#2563eb" } }).attach().classes.style}/>;",
+		export const App = () => <div className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "1.125rem" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("tailwind -> jss: preserves malformed concrete tailwind input", () => {
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		export const App = () => <div className={jss.createStyleSheet({ style: { gap: "1rem", alignItems: "center", display: "flex" } }).attach().classes.style}/>;
+		export const App = () => <div className={jss.createStyleSheet({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).attach().classes.style}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

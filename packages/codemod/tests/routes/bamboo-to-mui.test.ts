@@ -95,7 +95,7 @@ test("bamboo -> mui: carries a documented secondary bamboo API explicitly", () =
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "gap": "4", "display": "flex" });",
+		export const card = css.class({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

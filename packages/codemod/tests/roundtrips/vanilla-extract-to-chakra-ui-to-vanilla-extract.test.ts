@@ -52,7 +52,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "red" });",
+		export const card = defaultSystem.css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8px", color: "red" });",
+		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -218,7 +218,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "#2a57c8" });",
+		export const card = defaultSystem.css({ color: "#2a57c8", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -252,7 +252,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8px", color: "#2a57c8" });",
+		export const card = style({ color: "#2a57c8", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -290,7 +290,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -324,7 +324,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8px", color: "#2a57c8" });",
+		export const card = style({ color: "#2a57c8", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -376,7 +376,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: resolves token values acr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const card = defaultSystem.css({ padding: "8px", color: "brand.500" });",
+		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -410,7 +410,7 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: resolves token values acr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ padding: "8px", color: "#2a57c8" });",
+		export const card = style({ color: "#2a57c8", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -50,7 +50,7 @@ test("pandwind -> treat: migrates concrete pandwind syntax to treat", () => {
 		  "changed": true,
 		  "code": "import { style } from "treat";
 
-		export const card = style({ "padding": "1rem", "color": "red" });",
+		export const card = style({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -159,7 +159,7 @@ test("pandwind -> treat: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { style } from "treat";
 
-		export const card = style({ "padding": "1rem", "color": "#f97316" });",
+		export const card = style({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -197,7 +197,7 @@ test("pandwind -> treat: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { style } from "treat";
 
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -247,7 +247,7 @@ test("pandwind -> treat: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { style } from "treat";
 
-		export const card = style({ "padding": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -294,7 +294,7 @@ test("pandwind -> treat: preserves malformed concrete pandwind input", () => {
 		  "changed": true,
 		  "code": "import { style } from "treat";
 
-		export const card = style({ "padding": "1rem", "color": "red" });
+		export const card = style({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

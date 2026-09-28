@@ -207,7 +207,7 @@ test("css-modules -> linaria -> css-modules: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> linaria -> css-modules: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
 		/* /* pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("css-modules -> linaria -> css-modules: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> linaria -> css-modules: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
 		/* /* pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("css-modules -> linaria -> css-modules: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -411,7 +411,7 @@ test("css-modules -> linaria -> css-modules: resolves token values across both c
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
 		/* /* pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
+		export const styles = { "card": css\`color: #2563eb; padding: 1rem;\` };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

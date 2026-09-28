@@ -51,7 +51,7 @@ test("mantine -> stitches -> mantine: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
-		export const App = () => css({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("mantine -> stitches -> mantine: preserves an actionable concrete round tri
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
 		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => css({ marginInline: "auto", color: "blue", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +228,7 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
-		export const App = () => css({ marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -266,7 +266,7 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
 		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => css({ marginInline: "auto", color: "#f97316", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -316,7 +316,7 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
-		export const App = () => css({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -354,7 +354,7 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
 		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => css({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -418,7 +418,7 @@ test("mantine -> stitches -> mantine: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
-		export const App = () => css({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -456,7 +456,7 @@ test("mantine -> stitches -> mantine: resolves token values across both concrete
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
 		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
-		export const App = () => css({ marginInline: "auto", color: "#2563eb", maxWidth: "calc(25rem * var(--mantine-scale))" });",
+		export const App = () => css({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

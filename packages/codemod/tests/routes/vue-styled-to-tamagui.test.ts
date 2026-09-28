@@ -49,8 +49,8 @@ test("vue-styled -> tamagui: migrates concrete vue-styled syntax to tamagui", ()
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,8 +92,8 @@ test("vue-styled -> tamagui: carries a documented secondary vue-styled API expli
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));",
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,8 +144,8 @@ test("vue-styled -> tamagui: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,8 +178,8 @@ test("vue-styled -> tamagui: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,8 +224,8 @@ test("vue-styled -> tamagui: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "#2563eb" }), attrs.class] }, slots.default?.()));",
+		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,8 +267,8 @@ test("vue-styled -> tamagui: preserves malformed concrete vue-styled input", () 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		import { defineComponent, h } from "vue";
-		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [styled(View, { padding: "1rem", color: "red" }), attrs.class] }, slots.default?.()));
+		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

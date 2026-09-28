@@ -50,7 +50,7 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", ()
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "red" });",
+		export const App = () => styled.div\`color: red; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", ()
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const App = () => styled.div({ "padding": "16px", "color": "red" });",
+		export const App = () => styled.div\`color: red; padding: 16px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -135,7 +135,7 @@ test("mui -> vue-styled -> mui: retains the documented secondary API without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": 8, "color": "red" });",
+		export const Card = styled.div\`color: red; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,7 +172,7 @@ test("mui -> vue-styled -> mui: retains the documented secondary API without sil
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div({ "padding": 8, "color": "red" });",
+		export const Card = styled.div\`color: red; padding: 8;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#f97316" });",
+		export const App = () => styled.div\`color: #f97316; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -271,7 +271,7 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const App = () => styled.div({ "padding": "16px", "color": "#f97316" });",
+		export const App = () => styled.div\`color: #f97316; padding: 16px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -307,7 +307,7 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -344,7 +344,7 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -394,7 +394,7 @@ test("mui -> vue-styled -> mui: resolves token values across both concrete legs"
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,7 +431,7 @@ test("mui -> vue-styled -> mui: resolves token values across both concrete legs"
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const App = () => styled.div({ "padding": "16px", "color": "#2563eb" });",
+		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

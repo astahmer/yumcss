@@ -49,7 +49,7 @@ test("tokenami -> stylex: migrates concrete tokenami syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "red" } }).style;",
+		export const card = stylex.create({ style: { color: "red", gap: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("tokenami -> stylex: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "#f97316" } }).style;",
+		export const card = stylex.create({ style: { color: "#f97316", gap: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("tokenami -> stylex: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", gap: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,7 +231,7 @@ test("tokenami -> stylex: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "#2563eb" } }).style;",
+		export const card = stylex.create({ style: { color: "#2563eb", gap: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,7 +276,7 @@ test("tokenami -> stylex: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { gap: "1rem", color: "red" } }).style;
+		export const card = stylex.create({ style: { color: "red", gap: "1rem" } }).style;
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

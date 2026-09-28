@@ -50,8 +50,8 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves an actiona
 		  "forward": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,47 +86,17 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves an actiona
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "react-strict-dom has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -225,8 +195,8 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves concrete t
 		    "forward": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -261,47 +231,17 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves concrete t
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "react-strict-dom has no host representation for solid",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -309,8 +249,8 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves concrete t
 		    "forward": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -345,47 +285,17 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves concrete t
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "react-strict-dom has no host representation for solid",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -407,8 +317,8 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: resolves token value
 		  "forward": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -443,47 +353,17 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: resolves token value
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { html } from "react-strict-dom";
-		import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
-		const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
+		import { css } from "solid-styled-components";
+		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "react-strict-dom has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

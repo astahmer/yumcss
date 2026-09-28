@@ -113,7 +113,7 @@ test("mantine -> css-modules -> mantine: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> css-modules | parse-residual: host-framework | lowering-residual: framework-semantics, capability | available: residual)
+		// pandwind:migrate-skip (route: mantine -> css-modules | parse-residual: host-framework | lowering-residual: capability | available: residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -121,18 +121,12 @@ test("mantine -> css-modules -> mantine: retains the documented secondary API wi
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
 		          "residual",
 		        ],
 		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
@@ -148,11 +142,6 @@ test("mantine -> css-modules -> mantine: retains the documented secondary API wi
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -164,7 +153,7 @@ test("mantine -> css-modules -> mantine: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> css-modules | parse-residual: host-framework | lowering-residual: framework-semantics, capability | available: residual)
+		// pandwind:migrate-skip (route: mantine -> css-modules | parse-residual: host-framework | lowering-residual: capability | available: residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

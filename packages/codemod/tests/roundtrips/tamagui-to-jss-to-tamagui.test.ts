@@ -51,7 +51,7 @@ test("tamagui -> jss -> tamagui: preserves an actionable concrete round trip", (
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "red" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "red", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("tamagui -> jss -> tamagui: preserves an actionable concrete round trip", (
 		    "code": "import { View } from "tamagui";
 		import jss from "jss";
 		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "red" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "red", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -222,7 +222,7 @@ test("tamagui -> jss -> tamagui: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -261,7 +261,7 @@ test("tamagui -> jss -> tamagui: preserves concrete theme and project context va
 		      "code": "import { View } from "tamagui";
 		import jss from "jss";
 		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,7 +298,7 @@ test("tamagui -> jss -> tamagui: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -337,7 +337,7 @@ test("tamagui -> jss -> tamagui: preserves concrete theme and project context va
 		      "code": "import { View } from "tamagui";
 		import jss from "jss";
 		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -388,7 +388,7 @@ test("tamagui -> jss -> tamagui: resolves token values across both concrete legs
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -427,7 +427,7 @@ test("tamagui -> jss -> tamagui: resolves token values across both concrete legs
 		    "code": "import { View } from "tamagui";
 		import jss from "jss";
 		// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
-		export const Card = jss.createStyleSheet({ style: { padding: "$4", color: "#2563eb" } }).attach().classes.style;
+		export const Card = jss.createStyleSheet({ style: { color: "#2563eb", padding: "$4" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

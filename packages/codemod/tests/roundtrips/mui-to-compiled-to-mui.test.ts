@@ -51,7 +51,7 @@ test("mui -> compiled -> mui: preserves an actionable concrete round trip", () =
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@compiled/react";
-		export const App = () => <Box className={css({ "padding": "16px", "color": "red" })}/>;",
+		export const App = () => <Box className={css({ "color": "red", "padding": "16px" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("mui -> compiled -> mui: preserves an actionable concrete round trip", () =
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@compiled/react";
 		// pandwind:migrate-skip (route: compiled -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ "padding": "16px", "color": "red" })}/>;",
+		export const App = () => <Box className={css({ "color": "red", "padding": "16px" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("mui -> compiled -> mui: retains the documented secondary API without silen
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const Card = css({ "padding": 8, "color": "red" });",
+		export const Card = css({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +174,7 @@ test("mui -> compiled -> mui: retains the documented secondary API without silen
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "padding": 8, "color": "red" });",
+		export const Card = css.class({ "color": "red", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("mui -> compiled -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@compiled/react";
-		export const App = () => <Box className={css({ "padding": "16px", "color": "#f97316" })}/>;",
+		export const App = () => <Box className={css({ "color": "#f97316", "padding": "16px" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,7 +276,7 @@ test("mui -> compiled -> mui: preserves concrete theme and project context varia
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@compiled/react";
 		// pandwind:migrate-skip (route: compiled -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ "padding": "16px", "color": "#f97316" })}/>;",
+		export const App = () => <Box className={css({ "color": "#f97316", "padding": "16px" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,7 +313,7 @@ test("mui -> compiled -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@compiled/react";
-		export const App = () => <Box className={css({ "padding": "16px", "color": "#2563eb" })}/>;",
+		export const App = () => <Box className={css({ "color": "#2563eb", "padding": "16px" })}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +351,7 @@ test("mui -> compiled -> mui: preserves concrete theme and project context varia
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@compiled/react";
 		// pandwind:migrate-skip (route: compiled -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ "padding": "16px", "color": "#2563eb" })}/>;",
+		export const App = () => <Box className={css({ "color": "#2563eb", "padding": "16px" })}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -402,7 +402,7 @@ test("mui -> compiled -> mui: resolves token values across both concrete legs", 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@compiled/react";
-		export const App = () => <Box className={css({ "padding": "16px", "color": "#2563eb" })}/>;",
+		export const App = () => <Box className={css({ "color": "#2563eb", "padding": "16px" })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -440,7 +440,7 @@ test("mui -> compiled -> mui: resolves token values across both concrete legs", 
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@compiled/react";
 		// pandwind:migrate-skip (route: compiled -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const App = () => <Box className={css({ "padding": "16px", "color": "#2563eb" })}/>;",
+		export const App = () => <Box className={css({ "color": "#2563eb", "padding": "16px" })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

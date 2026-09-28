@@ -76,7 +76,7 @@ test("tamagui -> react-strict-dom: migrates concrete tamagui syntax to react-str
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -131,7 +131,7 @@ test("tamagui -> react-strict-dom: carries a documented secondary tamagui API ex
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -187,7 +187,7 @@ test("tamagui -> react-strict-dom: loads concrete theme and project context vari
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -225,7 +225,7 @@ test("tamagui -> react-strict-dom: loads concrete theme and project context vari
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -275,7 +275,7 @@ test("tamagui -> react-strict-dom: resolves concrete token values with project c
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -323,7 +323,7 @@ test("tamagui -> react-strict-dom: preserves malformed concrete tamagui input", 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

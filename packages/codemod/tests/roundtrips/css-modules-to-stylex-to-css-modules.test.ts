@@ -207,7 +207,7 @@ test("css-modules -> stylex -> css-modules: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("css-modules -> stylex -> css-modules: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
 		/* /* pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: style | available: static, residual) */ */
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -288,7 +288,7 @@ test("css-modules -> stylex -> css-modules: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -326,7 +326,7 @@ test("css-modules -> stylex -> css-modules: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
 		/* /* pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: style | available: static, residual) */ */
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -383,7 +383,7 @@ test("css-modules -> stylex -> css-modules: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -421,7 +421,7 @@ test("css-modules -> stylex -> css-modules: resolves token values across both co
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
 		/* /* pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: style | available: static, residual) */ */
-		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style };
 		export default styles;",
 		    "converted": 0,
 		    "generatedFiles": [],

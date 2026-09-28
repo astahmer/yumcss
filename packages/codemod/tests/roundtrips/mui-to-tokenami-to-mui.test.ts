@@ -51,7 +51,7 @@ test("mui -> tokenami -> mui: preserves an actionable concrete round trip", () =
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "red" })} />;",
+		export const App = () => <Box style={css({ "--color": "red", "--padding": "16px" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,7 +87,7 @@ test("mui -> tokenami -> mui: preserves an actionable concrete round trip", () =
 		    "code": "import { Box } from "@mui/material";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <Box style={css.class({ "padding": "16px", "color": "red" })} />;",
+		export const App = () => <Box style={css.class({ "color": "red", "padding": "16px" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -136,7 +136,7 @@ test("mui -> tokenami -> mui: retains the documented secondary API without silen
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const Card = css({ "--padding": 8, "--color": "red" });",
+		export const Card = css({ "--color": "red", "--padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -171,7 +171,7 @@ test("mui -> tokenami -> mui: retains the documented secondary API without silen
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
 		// pandwind:migrate-skip (route: tokenami -> mui | parse-residual: configuration | available: named-map, residual)
-		export const Card = css({ "--padding": 8, "--color": "red" });",
+		export const Card = css({ "--color": "red", "--padding": 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
+		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -269,7 +269,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      "code": "import { Box } from "@mui/material";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <Box style={css.class({ "padding": "16px", "color": "primary.main" })} />;",
+		export const App = () => <Box style={css.class({ "color": "primary.main", "padding": "16px" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -307,7 +307,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
+		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -343,7 +343,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      "code": "import { Box } from "@mui/material";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <Box style={css.class({ "padding": "16px", "color": "primary.main" })} />;",
+		export const App = () => <Box style={css.class({ "color": "primary.main", "padding": "16px" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -395,7 +395,7 @@ test("mui -> tokenami -> mui: resolves token values across both concrete legs", 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box style={css({ "--padding": "16px", "--color": "var(--color_brand)" })} />;",
+		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -431,7 +431,7 @@ test("mui -> tokenami -> mui: resolves token values across both concrete legs", 
 		    "code": "import { Box } from "@mui/material";
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <Box style={css.class({ "padding": "16px", "color": "primary.main" })} />;",
+		export const App = () => <Box style={css.class({ "color": "primary.main", "padding": "16px" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

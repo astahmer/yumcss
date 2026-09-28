@@ -50,7 +50,7 @@ test("tailwind -> aphrodite -> tailwind: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "gap": "1rem", "alignItems": "center", "display": "flex" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("tailwind -> aphrodite -> tailwind: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		export const App = () => <div className={css({ "style": "[gap:1rem] [align-items:center] [display:flex]" }.style)}/>;",
+		export const App = () => <div className={css({ "style": "[display:flex] [align-items:center] [gap:1rem]" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,7 +220,7 @@ test("tailwind -> aphrodite -> tailwind: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#f97316" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#f97316", "padding": "1.125rem" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("tailwind -> aphrodite -> tailwind: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		export const App = () => <div className={css({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -294,7 +294,7 @@ test("tailwind -> aphrodite -> tailwind: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -330,7 +330,7 @@ test("tailwind -> aphrodite -> tailwind: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "
-		export const App = () => <div className={css({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -382,7 +382,7 @@ test("tailwind -> aphrodite -> tailwind: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "padding": "1.125rem", "color": "#2563eb" } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1.125rem" } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -418,7 +418,7 @@ test("tailwind -> aphrodite -> tailwind: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "
-		export const App = () => <div className={css({ "style": "p-card text-brand" }.style)}/>;",
+		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

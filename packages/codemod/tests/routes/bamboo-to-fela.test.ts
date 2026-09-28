@@ -92,7 +92,7 @@ test("bamboo -> fela: carries a documented secondary bamboo API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "gap": "4", "display": "flex" });",
+		  "code": "export const card = renderer.renderRule({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

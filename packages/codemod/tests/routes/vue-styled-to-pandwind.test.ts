@@ -53,7 +53,7 @@ test("vue-styled -> pandwind: migrates concrete vue-styled syntax to pandwind", 
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -100,7 +100,7 @@ test("vue-styled -> pandwind: carries a documented secondary vue-styled API expl
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -156,7 +156,7 @@ test("vue-styled -> pandwind: loads concrete theme and project context variants"
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "#2563eb" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "#2563eb", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -194,7 +194,7 @@ test("vue-styled -> pandwind: loads concrete theme and project context variants"
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -244,7 +244,7 @@ test("vue-styled -> pandwind: resolves concrete token values with project contex
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "brand" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -291,7 +291,7 @@ test("vue-styled -> pandwind: preserves malformed concrete vue-styled input", ()
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ padding: "1rem", color: "red" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

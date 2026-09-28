@@ -48,11 +48,10 @@ test("solid-styled -> jss: migrates concrete solid-styled syntax to jss", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		import jss from "jss";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.class)} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -70,19 +69,19 @@ test("solid-styled -> jss: migrates concrete solid-styled syntax to jss", () => 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -95,11 +94,10 @@ test("solid-styled -> jss: carries a documented secondary solid-styled API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		import jss from "jss";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.class)} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -117,19 +115,19 @@ test("solid-styled -> jss: carries a documented secondary solid-styled API expli
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -151,11 +149,10 @@ test("solid-styled -> jss: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import jss from "jss";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -173,27 +170,26 @@ test("solid-styled -> jss: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import jss from "jss";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -211,19 +207,19 @@ test("solid-styled -> jss: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -239,11 +235,10 @@ test("solid-styled -> jss: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		import jss from "jss";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.class)} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -261,19 +256,19 @@ test("solid-styled -> jss: resolves concrete token values with project context",
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -287,12 +282,10 @@ test("solid-styled -> jss: preserves malformed concrete solid-styled input", () 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		import { createCx } from "pandwind/cx";
-		import jss from "jss";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.class)} />;
+		// pandwind:migrate-skip (route: solid-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -310,19 +303,19 @@ test("solid-styled -> jss: preserves malformed concrete solid-styled input", () 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "components: component subject: styled.div; framework-semantics: solid",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

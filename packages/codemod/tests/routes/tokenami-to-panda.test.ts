@@ -49,7 +49,7 @@ test("tokenami -> panda: migrates concrete tokenami syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "1rem", color: "red" });",
+		export const card = css({ color: "red", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,7 +143,7 @@ test("tokenami -> panda: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "1rem", color: "brand.500" });",
+		export const card = css({ color: "brand.500", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,7 +177,7 @@ test("tokenami -> panda: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "1rem", color: "brand.500" });",
+		export const card = css({ color: "brand.500", gap: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,7 +223,7 @@ test("tokenami -> panda: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "1rem", color: "brand.500" });",
+		export const card = css({ color: "brand.500", gap: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,7 +266,7 @@ test("tokenami -> panda: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const card = css({ gap: "1rem", color: "red" });
+		export const card = css({ color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

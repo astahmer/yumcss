@@ -49,7 +49,7 @@ test("tokenami -> treat: migrates concrete tokenami syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "gap": "1rem", "color": "red" });",
+		export const card = style({ "color": "red", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("tokenami -> treat: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "gap": "1rem", "color": "#f97316" });",
+		export const card = style({ "color": "#f97316", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("tokenami -> treat: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "gap": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("tokenami -> treat: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "gap": "1rem", "color": "#2563eb" });",
+		export const card = style({ "color": "#2563eb", "gap": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -279,7 +279,7 @@ test("tokenami -> treat: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "gap": "1rem", "color": "red" });
+		export const card = style({ "color": "red", "gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],
