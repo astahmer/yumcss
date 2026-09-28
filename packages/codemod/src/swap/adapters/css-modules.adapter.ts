@@ -1,4 +1,4 @@
-import { SourceBindings } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, SourceBindings } from "pandwind/source";
 import { dirnameDocumentPath, isAbsoluteDocumentPath, joinDocumentPath, relativeDocumentPath } from "../../path-utils.ts";
 import type {
 	AdapterComponentRewriteContext,
@@ -51,6 +51,16 @@ const isPlainStyleProgram = (program: StyleProgram): boolean =>
 			typeof declaration.value.value === "string",
 	);
 
+const sourceHasParseErrors = (file: string, source: string): boolean => {
+	try {
+		return SOURCE_SCANNER_SERVICE.scan({ file, source }).diagnostics.some(
+			(diagnostic) => diagnostic.kind === "parse",
+		);
+	} catch {
+		return true;
+	}
+};
+
 const sourceBindingForProgram = (
 	file: string,
 	source: string,
@@ -86,6 +96,7 @@ const componentUnsupportedReason = (
 	program: StyleProgram,
 ): string | undefined => {
 	const subject = program.source?.subject;
+	if (sourceHasParseErrors(file, source)) return "the source file contains parse errors";
 	if (!file.endsWith(".tsx")) return "the React wrapper requires a TSX source module";
 	if (program.source?.framework !== BuiltinHostFramework.React)
 		return "the source host is not verified as React";
@@ -162,6 +173,7 @@ const targetComponentRewrite = (
 	if (
 		context.framework !== BuiltinHostFramework.React ||
 		context.file.endsWith(".tsx") === false ||
+		sourceHasParseErrors(context.file, context.source) ||
 		context.attrsExpression !== undefined ||
 		!isPlainStyleProgram(context.program) ||
 		hasComponentAttributeUse({ source: context.source, file: context.file, binding: context.binding, attribute: "as" }) ||
@@ -190,7 +202,7 @@ const targetComponentRewrite = (
 	const replacement =
 		`${forwardRefBinding}<${componentRefBinding}<${tagType}>, ${componentPropsBinding}<${tagType}>>(` +
 		`({ className, ...props }, ref) => (` +
-		`<${tag} {...props} ref={ref} className={[${styleBinding}.root, className].filter(Boolean).join(" ")} />` +
+		`<${tag} {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[${styleBinding}.root, className].filter(Boolean).join(" ")} />` +
 		`))`;
 	return {
 		code: `${context.code.slice(0, match.index)}${match[1]}${replacement}${context.code.slice(match.index + match[0].length)}`,

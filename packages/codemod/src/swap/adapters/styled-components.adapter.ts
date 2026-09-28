@@ -1,3 +1,4 @@
+import unitlessProperties from "@emotion/unitless";
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
@@ -5,6 +6,7 @@ import {
 	StyleRuleKindTag,
 	StyleValueKindTag,
 	type StyleProgram,
+	type StyleValue,
 } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
@@ -17,6 +19,43 @@ import {
 import { styledSubjectFromFunctionMatch } from "../host-component-rewriter.ts";
 
 const styledSubjectPattern = String.raw`\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\s*\.attrs\s*\([\s\S]*?\))?`;
+
+const STYLED_COMPONENTS_PX_OVERRIDES = new Set([
+	"boxFlex",
+	"boxFlexGroup",
+	"boxOrdinalGroup",
+	"flexNegative",
+	"flexOrder",
+	"flexPositive",
+	"msGridColumn",
+	"msGridColumnSpan",
+	"msGridRow",
+	"msGridRowSpan",
+]);
+
+const STYLED_COMPONENTS_VENDOR_PROPERTY_ALIASES = {
+	msGridColumn: "-ms-grid-column",
+	msGridColumnSpan: "-ms-grid-column-span",
+	msGridRow: "-ms-grid-row",
+	msGridRowSpan: "-ms-grid-row-span",
+};
+
+const styleObjectProperty = (property: string): string =>
+	property.replace(/^-/, "").replace(/-([a-z])/gu, (_, letter: string) => letter.toUpperCase());
+
+const styledComponentsNumericValue = (value: StyleValue, property?: string): StyleValue => {
+	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "number") return value;
+
+	const cssProperty = property ?? "";
+	const styleProperty = styleObjectProperty(cssProperty);
+	const numeric = value.value;
+	const unitless =
+		cssProperty.startsWith("--") ||
+		numeric === 0 ||
+		(unitlessProperties[styleProperty] === 1 && !STYLED_COMPONENTS_PX_OVERRIDES.has(styleProperty));
+
+	return { ...value, value: unitless ? String(numeric) : `${numeric}px` };
+};
 
 interface StyledFunctionValue {
 	readonly expression: string;
@@ -217,6 +256,10 @@ export default defineCodemodAdapter({
 		},
 	],
 	packages: CodemodAdapterKit.dependency("styled-components", "peer"),
+	sourceObjectOptions: {
+		propertyAliases: STYLED_COMPONENTS_VENDOR_PROPERTY_ALIASES,
+		valueTransforms: { "*": styledComponentsNumericValue },
+	},
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyledComponents, "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",

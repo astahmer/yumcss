@@ -190,6 +190,7 @@
 		"test:e2e": "vitest run tests/adapter-cli-e2e.test.ts tests/adapter-cli-full-matrix.test.ts"
 	},
 	"dependencies": {
+		"@emotion/unitless": "0.10.0",
 		"@tailwindcss/node": "4.3.3",
 		"cac": "7.0.0",
 		"esbuild": "0.28.2",
