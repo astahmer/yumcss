@@ -291,6 +291,18 @@ function routeSource(source: CodemodAdapterId, target: CodemodAdapterId): string
 	const edgeFile = targetModuleFile(target, example.edgeFile);
 	const usesInstalledChakraProject =
 		source === CodemodAdapterId.ChakraUi || target === CodemodAdapterId.ChakraUi;
+	const chakraProjectFactory =
+		source === CodemodAdapterId.UnoCSS || target === CodemodAdapterId.UnoCSS
+			? "createInstalledChakraUnoRouteProject"
+			: "createInstalledChakraRouteProject";
+	const edgeAssertions =
+		source === CodemodAdapterId.UnoCSS && target === CodemodAdapterId.ChakraUi
+			? `expect(result.converted).toBe(1);
+	expect(result.skipped).toBe(0);
+	expect(result.residuals).toHaveLength(0);
+	expect(result.code).toContain('"&:hover": { backgroundColor: "black" }');
+	expect(result.code).toContain('"@media (min-width: 48rem)": { display: "flex" }');`
+			: "expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);";
 	const directRun = (input: string): string =>
 		usesInstalledChakraProject
 			? `await route.runAsync({ ${input}, project: installedChakraProject })`
@@ -305,7 +317,7 @@ import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
-	${usesInstalledChakraProject ? "createInstalledChakraRouteProject,\n\t" : ""}expectConfiguredProjectEvidence,
+	${usesInstalledChakraProject ? `${chakraProjectFactory},\n\t` : ""}expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
 	expectExplicitResidualEvidence,
@@ -315,7 +327,7 @@ import {
 
 const route = createAdapterRouteSpec(${identifier(source)}, ${identifier(target)});
 	${sourceConstants(example, source, target)}
-${usesInstalledChakraProject ? "const installedChakraProject = createInstalledChakraRouteProject();\n" : ""}
+${usesInstalledChakraProject ? `const installedChakraProject = ${chakraProjectFactory}();\n` : ""}
 
 test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", ${usesInstalledChakraProject ? "async " : ""}() => {
 	const result = ${directRun(`source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic`)};
@@ -340,7 +352,7 @@ test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", 
 
 test("${source} -> ${target}: carries a documented secondary ${source} API explicitly", ${usesInstalledChakraProject ? "async " : ""}() => {
 	const result = ${directRun(`source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic`)};
-	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	${edgeAssertions}
 	expectRouteScenarioEvidence(result, "${source} -> ${target} secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
@@ -390,6 +402,27 @@ function roundTripSource(source: CodemodAdapterId, target: CodemodAdapterId): st
 	const targetFile = example.file;
 	const usesInstalledChakraProject =
 		source === CodemodAdapterId.ChakraUi || target === CodemodAdapterId.ChakraUi;
+	const chakraProjectFactory =
+		source === CodemodAdapterId.UnoCSS || target === CodemodAdapterId.UnoCSS
+			? "createInstalledChakraUnoRouteProject"
+			: "createInstalledChakraRouteProject";
+	const edgeRoundTripAssertions =
+		source === CodemodAdapterId.UnoCSS && target === CodemodAdapterId.ChakraUi
+			? `expect(first.converted).toBe(1);
+	expect(first.skipped).toBe(0);
+	expect(first.residuals).toHaveLength(0);
+	expect(first.code).toContain('"&:hover": { backgroundColor: "black" }');
+	expect(first.code).toContain('"@media (min-width: 48rem)": { display: "flex" }');
+	expect(second.converted).toBe(0);
+	expect(second.skipped).toBe(1);
+	expect(
+		second.residuals.some(
+			(residual) => residual.kind === "capability" && /selector-conditions|media-conditions/u.test(residual.hint ?? ""),
+		),
+	).toBe(true);
+	expect(second.code).toContain('"&:hover": { backgroundColor: "black" }');
+	expect(second.code).toContain('"@media (min-width: 48rem)": { display: "flex" }');`
+			: "expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);";
 	const directRun = (routeName: string, input: string): string =>
 		usesInstalledChakraProject
 			? `await ${routeName}.runAsync({ ${input}, project: installedChakraProject })`
@@ -404,7 +437,7 @@ import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
-	${usesInstalledChakraProject ? "createInstalledChakraRouteProject,\n\t" : ""}expectConfiguredProjectEvidence,
+	${usesInstalledChakraProject ? `${chakraProjectFactory},\n\t` : ""}expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
 	${isClassProjectionTarget(target) ? "expectTargetClassProjection" : "expectActionableRoundTrip"},
@@ -416,7 +449,7 @@ import {
 const forward = createAdapterRouteSpec(${identifier(source)}, ${identifier(target)});
 const reverse = createAdapterRouteSpec(${identifier(target)}, ${identifier(source)});
 	${sourceConstants(example, source, target)}
-${usesInstalledChakraProject ? "const installedChakraProject = createInstalledChakraRouteProject();\n" : ""}	const targetSemantic = ${targetExample.semantic};
+${usesInstalledChakraProject ? `const installedChakraProject = ${chakraProjectFactory}();\n` : ""}	const targetSemantic = ${targetExample.semantic};
 
 test("${source} -> ${target} -> ${source}: preserves an actionable concrete round trip", ${usesInstalledChakraProject ? "async " : ""}() => {
 	const first = ${directRun("forward", `source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic`)};
@@ -440,7 +473,7 @@ test("${source} -> ${target} -> ${source}: preserves an actionable concrete roun
 test("${source} -> ${target} -> ${source}: retains the documented secondary API without silent loss", ${usesInstalledChakraProject ? "async " : ""}() => {
 	const first = ${directRun("forward", `source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic`)};
 	const second = ${directRun("reverse", `source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic`)};
-	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	${edgeRoundTripAssertions}
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip secondary forward");
 	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip secondary`)}
 	expectExplicitResidualEvidence(first);

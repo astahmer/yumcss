@@ -133,7 +133,7 @@ test("unocss -> tailwind -> unocss: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tailwind | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> tailwind | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -159,7 +159,7 @@ test("unocss -> tailwind -> unocss: retains the documented secondary API without
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: hover",
+		        "hint": "named-conditions: named: md",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -169,7 +169,7 @@ test("unocss -> tailwind -> unocss: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tailwind | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> tailwind | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

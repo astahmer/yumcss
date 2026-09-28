@@ -2,6 +2,7 @@ import {
 	SemanticConditionKindTag,
 	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
+	inferSemanticConditionKind,
 	styleProgramFromRules,
 	styleProgramToCanonicalCss,
 	type StyleCondition,
@@ -16,6 +17,7 @@ import {
 	type AdapterParseContext,
 	type AdapterParseResult,
 	type AdapterProjectConfig,
+	type AdapterTokenCatalog,
 	type StyleAdapter,
 } from "../adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../capabilities.ts";
@@ -144,17 +146,6 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 		}
 		const children = node.nodes ?? [];
 		if (node.type === GeneratedCssNodeKind.AtRule) {
-			if (node.name === "theme") {
-				for (const child of children) {
-					if (child.type !== GeneratedCssNodeKind.Declaration) continue;
-					const value = child.value.trim();
-					const match = /^--color-(.+)$/u.exec(child.prop);
-					if (match?.[1] === undefined || value === "") continue;
-					entries.set(`bg-${match[1]}`, [literal("backgroundColor", value)]);
-					entries.set(`text-${match[1]}`, [literal("color", value)]);
-				}
-				continue;
-			}
 			const atRuleCondition = generatedAtRuleCondition(node);
 			const conditions =
 				atRuleCondition === undefined
@@ -185,24 +176,6 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 			});
 	}
 	return { resolve: (token) => entries.get(token) };
-}
-
-function projectThemeCss(context: AdapterConfigContext): string {
-	if (context.root === undefined || context.readFile === undefined) return "";
-	const readFile = context.readFile;
-	const files = context.listFiles?.(context.root) ?? [];
-	return (
-		files
-			// Theme layers live in CSS files. package.json or uno.config.ts text
-			// that merely mentions @unocss/@theme must not enter the CSS parser.
-			.filter((file) => file.endsWith(".css"))
-			.map((file) =>
-				readFile(file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file)),
-			)
-			.filter((source): source is string => source !== undefined)
-			.filter((source) => /@(?:theme|unocss|apply|shortcut)\b/u.test(source))
-			.join("\n")
-	);
 }
 
 const literal = (property: string, value: string | number): StyleDeclaration => ({
@@ -267,9 +240,70 @@ function defaultResolve(token: string): readonly StyleDeclaration[] | undefined 
 				arbitraryUtilityMatch[1]!.replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase()),
 				arbitraryUtilityMatch[2],
 			),
-			conditions: parts.map(authoredVariantCondition),
+			conditions: parts.map((name) =>
+				inferSemanticConditionKind(name) === SemanticConditionKindTag.Pseudo
+					? generatedPseudoCondition(name)
+					: authoredVariantCondition(name),
+			),
 		},
 	];
+}
+
+const UNO_TOKEN_NAME_POLICIES: readonly {
+	readonly property: string;
+	readonly group: string;
+	readonly prefix: string;
+}[] = [
+	{ property: "color", group: "colors", prefix: "text" },
+	{ property: "backgroundColor", group: "colors", prefix: "bg" },
+	{ property: "borderColor", group: "colors", prefix: "border" },
+	{ property: "borderRadius", group: "radii", prefix: "rounded" },
+	{ property: "fontSize", group: "fontSizes", prefix: "text" },
+	{ property: "fontWeight", group: "fontWeights", prefix: "font" },
+	{ property: "lineHeight", group: "lineHeights", prefix: "leading" },
+	{ property: "letterSpacing", group: "letterSpacings", prefix: "tracking" },
+	{ property: "fontFamily", group: "fonts", prefix: "font" },
+	{ property: "boxShadow", group: "shadows", prefix: "shadow" },
+	{ property: "padding", group: "spacing", prefix: "p" },
+	{ property: "paddingInline", group: "spacing", prefix: "px" },
+	{ property: "paddingBlock", group: "spacing", prefix: "py" },
+	{ property: "paddingInlineStart", group: "spacing", prefix: "ps" },
+	{ property: "paddingInlineEnd", group: "spacing", prefix: "pe" },
+	{ property: "margin", group: "spacing", prefix: "m" },
+	{ property: "marginInline", group: "spacing", prefix: "mx" },
+	{ property: "marginBlock", group: "spacing", prefix: "my" },
+	{ property: "marginInlineStart", group: "spacing", prefix: "ms" },
+	{ property: "marginInlineEnd", group: "spacing", prefix: "me" },
+	{ property: "gap", group: "spacing", prefix: "gap" },
+	{ property: "width", group: "width", prefix: "w" },
+	{ property: "height", group: "height", prefix: "h" },
+	{ property: "minWidth", group: "width", prefix: "min-w" },
+	{ property: "maxWidth", group: "width", prefix: "max-w" },
+	{ property: "minHeight", group: "height", prefix: "min-h" },
+	{ property: "maxHeight", group: "height", prefix: "max-h" },
+];
+
+function unoTokenCandidates(catalog: AdapterTokenCatalog | undefined): readonly string[] {
+	if (catalog === undefined) return [];
+	const candidates = new Set<string>();
+	for (const policy of UNO_TOKEN_NAME_POLICIES) {
+		for (const key of Object.keys(catalog.groups[policy.group] ?? {}))
+			candidates.add(`${policy.prefix}-${key.replaceAll(".", "-")}`);
+	}
+	return [...candidates];
+}
+
+function hasUnoUtilitySources(config: unknown, generatedCss: unknown): boolean {
+	if (typeof generatedCss === "string" && generatedCss.trim() !== "") return true;
+	if (typeof config !== "object" || config === null) return false;
+	const values = config as Record<string, unknown>;
+	const hasPresets = Array.isArray(values.presets) && values.presets.length > 0;
+	const hasRules = Array.isArray(values.rules) && values.rules.length > 0;
+	const shortcuts = values.shortcuts;
+	const hasShortcuts =
+		(Array.isArray(shortcuts) && shortcuts.length > 0) ||
+		(typeof shortcuts === "object" && shortcuts !== null && Object.keys(shortcuts).length > 0);
+	return hasPresets || hasRules || hasShortcuts;
 }
 
 function unoProperty(property: string): string {
@@ -306,73 +340,20 @@ function unoNamedToken(
 ): string | undefined {
 	const value = resolvedStyleValue(declaration.value);
 	if (catalog === undefined || value === undefined) return undefined;
-	const groups: Readonly<Record<string, string>> = {
-		color: "colors",
-		backgroundColor: "colors",
-		borderColor: "colors",
-		borderRadius: "radii",
-		fontSize: "fontSizes",
-		fontWeight: "fontWeights",
-		lineHeight: "lineHeights",
-		letterSpacing: "letterSpacings",
-		fontFamily: "fonts",
-		boxShadow: "shadows",
-		padding: "spacing",
-		paddingInline: "spacing",
-		paddingBlock: "spacing",
-		paddingInlineStart: "spacing",
-		paddingInlineEnd: "spacing",
-		margin: "spacing",
-		marginInline: "spacing",
-		marginBlock: "spacing",
-		marginInlineStart: "spacing",
-		marginInlineEnd: "spacing",
-		gap: "spacing",
-		width: "width",
-		height: "height",
-		minWidth: "width",
-		maxWidth: "width",
-		minHeight: "height",
-		maxHeight: "height",
-	};
-	const group = groups[declaration.property];
-	const match = group === undefined ? undefined : catalog.findUnique([group], String(value));
-	if (match === undefined) return undefined;
-	const prefixes: Readonly<Record<string, string>> = {
-		color: "text",
-		backgroundColor: "bg",
-		borderColor: "border",
-		borderRadius: "rounded",
-		fontSize: "text",
-		fontWeight: "font",
-		lineHeight: "leading",
-		letterSpacing: "tracking",
-		fontFamily: "font",
-		boxShadow: "shadow",
-		padding: "p",
-		paddingInline: "px",
-		paddingBlock: "py",
-		paddingInlineStart: "ps",
-		paddingInlineEnd: "pe",
-		margin: "m",
-		marginInline: "mx",
-		marginBlock: "my",
-		marginInlineStart: "ms",
-		marginInlineEnd: "me",
-		gap: "gap",
-		width: "w",
-		height: "h",
-		minWidth: "min-w",
-		maxWidth: "max-w",
-		minHeight: "min-h",
-		maxHeight: "max-h",
-	};
-	return `${prefixes[declaration.property]}-${match.ref.replaceAll(".", "-")}`;
+	const policy = UNO_TOKEN_NAME_POLICIES.find(
+		(candidate) => candidate.property === declaration.property,
+	);
+	const match =
+		policy === undefined ? undefined : catalog.findUnique([policy.group], String(value));
+	if (policy === undefined || match === undefined) return undefined;
+	return `${policy.prefix}-${match.ref.replaceAll(".", "-")}`;
 }
 
 function emitUnoClassTokens(
 	program: StyleProgram,
 	catalog?: TokenCatalog,
+	resolver?: UnoCssTokenResolver,
+	parseContext?: AdapterParseContext,
 ): {
 	readonly text: string;
 	readonly residuals: readonly StyleProgramResidual[];
@@ -392,7 +373,21 @@ function emitUnoClassTokens(
 			continue;
 		}
 		const named = unoNamedToken(declaration, catalog);
-		if (named !== undefined) {
+		const verifiedNamed =
+			named !== undefined &&
+			declaration.conditions.length === 0 &&
+			resolver !== undefined &&
+			parseContext !== undefined
+				? resolver
+						.resolve(named, parseContext)
+						?.some(
+							(candidate) =>
+								candidate.property === declaration.property &&
+								resolvedStyleValue(candidate.value) === resolvedStyleValue(declaration.value) &&
+								JSON.stringify(candidate.conditions) === JSON.stringify(declaration.conditions),
+						) === true
+				: false;
+		if (named !== undefined && verifiedNamed) {
 			tokens.push(`${declaration.conditions.map(unoCondition).join("")}${named}`);
 			continue;
 		}
@@ -413,6 +408,8 @@ function emitUnoClassTokens(
 function emitUnoNamedMap(
 	program: StyleProgram,
 	catalog?: TokenCatalog,
+	resolver?: UnoCssTokenResolver,
+	parseContext?: AdapterParseContext,
 ): {
 	readonly text: string;
 	readonly residuals: readonly StyleProgramResidual[];
@@ -430,6 +427,8 @@ function emitUnoNamedMap(
 				declarations: rule.declarations,
 			},
 			catalog,
+			resolver,
+			parseContext,
 		);
 		entries.push(`${JSON.stringify(rule.name)}: ${emitted.text}`);
 		residuals.push(...emitted.residuals);
@@ -586,11 +585,20 @@ async function officialConfig(
 	const configFiles =
 		context
 			.listFiles?.(context.root)
-			.filter((candidate) => /(?:^|[\\/])uno\.config\.(?:ts|js|mjs|cjs)$/u.test(candidate)) ?? [];
-	// Do not ask the official loader to invent a project configuration when the
-	// project has no UnoCSS config. Its missing-config diagnostic is noisy, and
-	// the neutral fallback is the only safe evidence in that case.
-	if (configFiles.length === 0) return fallback;
+			.filter((candidate) =>
+				/(?:^|[\\/])(?:uno|unocss)\.config\.(?:[cm]?js|[cm]?ts)$/u.test(candidate),
+			) ?? [];
+	if (configFiles.length === 0)
+		return {
+			...fallback,
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.Configuration,
+					text: "UnoCSS project configuration",
+					hint: "no uno.config or unocss.config file was found, so the project's utility rules cannot be verified",
+				},
+			],
+		};
 	const [configPackage, corePackage] = await Promise.all([
 		loader.importPackage<UnoConfigPackage>("@unocss/config", context.root),
 		loader.importPackage<UnoCorePackage>("@unocss/core", context.root),
@@ -606,12 +614,18 @@ async function officialConfig(
 	try {
 		const loaded = await configPackage.loadConfig(context.root, context.root);
 		const generator = await corePackage.createGenerator(loaded.config);
-		const generated = await generator.generate(staticUnoTokens(context.source), {
+		const theme = (loaded.config as Record<string, unknown> | undefined)?.theme as
+			| Record<string, unknown>
+			| undefined;
+		const tokenCatalog = TokenCatalog.fromNested(theme)?.contract;
+		const candidates = [
+			...new Set([...staticUnoTokens(context.source), ...unoTokenCandidates(tokenCatalog)]),
+		];
+		const generated = await generator.generate(candidates, {
 			preflights: false,
 			minify: true,
 		});
-		const themeCss = projectThemeCss(context);
-		const officialResolver = createUnoCssResolverFromCss(`${themeCss}\n${generated.css}`);
+		const officialResolver = createUnoCssResolverFromCss(generated.css);
 		return {
 			...fallback,
 			files: [
@@ -623,22 +637,13 @@ async function officialConfig(
 			values: {
 				...fallback.values,
 				unoConfig: loaded.config,
-				// The official generator owns project presets, shortcuts, and variants.
-				// Keep the adapter's fixed arbitrary-property syntax as a narrow
-				// fallback because target emission can introduce a literal utility
-				// after the source project has been compiled.
-				unoResolver: {
-					resolve: (token: string, parseContext: AdapterParseContext) =>
-						officialResolver.resolve(token, parseContext) ?? defaultResolve(token),
-				},
+				// Only generator output proves that a source utility exists in the
+				// project's effective presets, rules, shortcuts, and variants.
+				unoResolver: officialResolver,
 				unoGeneratedCss: generated.css,
 				officialConfigPackages: ["@unocss/config", "@unocss/core"],
 			},
-			tokenCatalog: TokenCatalog.fromNested(
-				(loaded.config as Record<string, unknown> | undefined)?.theme as
-					| Record<string, unknown>
-					| undefined,
-			)?.contract,
+			tokenCatalog,
 		};
 	} catch (error) {
 		return {
@@ -1025,20 +1030,54 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 					loadConfigAsync: async (context: AdapterConfigContext) =>
 						AdapterEvidence.normalizeConfig(await officialConfig(context, moduleLoader)),
 				}),
-		parse: (source, context) =>
-			parseUnoCss(
-				source,
-				context,
-				(context.config.values.unoResolver as UnoCssTokenResolver | undefined) ?? fallbackResolver,
-			),
+		parse: (source, context) => {
+			const configuredResolver = context.config.values.unoResolver as
+				| UnoCssTokenResolver
+				| undefined;
+			const resolver =
+				configuredResolver === undefined
+					? fallbackResolver
+					: {
+							resolve: (token: string, parseContext: AdapterParseContext) =>
+								configuredResolver.resolve(token, parseContext) ??
+								(parseContext.targetId === CodemodAdapterId.UnoCSS
+									? defaultResolve(token)
+									: undefined),
+						};
+			return parseUnoCss(source, context, resolver);
+		},
 		emit: (program, context) => {
 			const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
+			const resolver =
+				(context.config.values.unoResolver as UnoCssTokenResolver | undefined) ?? fallbackResolver;
+			const parseContext: AdapterParseContext = {
+				file: context.file,
+				source: "",
+				config: context.config,
+			};
 			const namedRules = program.rules.some(
 				(rule) => rule.kind === StyleRuleKindTag.Style && rule.name !== undefined,
 			);
-			return namedRules
-				? emitUnoNamedMap(program, tokenCatalog)
-				: emitUnoClassTokens(program, tokenCatalog);
+			const output = namedRules
+				? emitUnoNamedMap(program, tokenCatalog, resolver, parseContext)
+				: emitUnoClassTokens(program, tokenCatalog, resolver, parseContext);
+			const unoConfig = context.config.values.unoConfig;
+			if (
+				unoConfig !== undefined &&
+				!hasUnoUtilitySources(unoConfig, context.config.values.unoGeneratedCss)
+			)
+				return {
+					...output,
+					residuals: [
+						...output.residuals,
+						{
+							kind: StyleProgramResidualKindTag.Configuration,
+							text: context.file,
+							hint: "UnoCSS configuration has no presets, rules, or shortcuts to compile emitted classes",
+						},
+					],
+				};
+			return output;
 		},
 		migration: {
 			targetPolicy: {

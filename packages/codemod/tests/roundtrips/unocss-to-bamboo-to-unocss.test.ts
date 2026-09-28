@@ -132,7 +132,7 @@ test("unocss -> bamboo -> unocss: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> bamboo | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> bamboo | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("unocss -> bamboo -> unocss: retains the documented secondary API without s
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: hover",
+		        "hint": "named-conditions: named: md",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -166,7 +166,7 @@ test("unocss -> bamboo -> unocss: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> bamboo | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> bamboo | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -240,10 +240,8 @@ test("unocss -> bamboo -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#f97316" })}/>;",
-		      "converted": 0,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -261,25 +259,17 @@ test("unocss -> bamboo -> unocss: preserves concrete theme and project context v
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -321,10 +311,8 @@ test("unocss -> bamboo -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
-		      "converted": 0,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -342,25 +330,17 @@ test("unocss -> bamboo -> unocss: preserves concrete theme and project context v
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -416,10 +396,8 @@ test("unocss -> bamboo -> unocss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "#2563eb" })}/>;",
-		    "converted": 0,
+		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -437,25 +415,17 @@ test("unocss -> bamboo -> unocss: resolves token values across both concrete leg
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

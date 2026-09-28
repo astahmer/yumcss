@@ -165,12 +165,7 @@ test("unocss -> stylex -> unocss: retains the documented secondary API without s
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "condition is not expressible as a StyleX property-value condition",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "canonical CSS differs; 2 residual conversion(s)",
+		        "hint": "canonical CSS differs; 1 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -180,7 +175,7 @@ test("unocss -> stylex -> unocss: retains the documented secondary API without s
 		      {
 		        "differences": [
 		          "canonical CSS differs",
-		          "2 residual conversion(s)",
+		          "1 residual conversion(s)",
 		        ],
 		        "lossiness": "unsupported",
 		        "valid": false,

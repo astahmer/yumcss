@@ -132,7 +132,7 @@ test("unocss -> tokenami -> unocss: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tokenami | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> tokenami | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("unocss -> tokenami -> unocss: retains the documented secondary API without
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: hover",
+		        "hint": "named-conditions: named: md",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -166,7 +166,7 @@ test("unocss -> tokenami -> unocss: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tokenami | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> tokenami | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -240,10 +240,8 @@ test("unocss -> tokenami -> unocss: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> unocss | lowering-residual: validation)
-		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
-		      "converted": 0,
+		      "code": "export const App = () => <div style={"p-card text-brand"} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -262,25 +260,17 @@ test("unocss -> tokenami -> unocss: preserves concrete theme and project context
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -322,10 +312,8 @@ test("unocss -> tokenami -> unocss: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> unocss | lowering-residual: validation)
-		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
-		      "converted": 0,
+		      "code": "export const App = () => <div style={"p-card text-brand"} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -344,25 +332,17 @@ test("unocss -> tokenami -> unocss: preserves concrete theme and project context
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -418,10 +398,8 @@ test("unocss -> tokenami -> unocss: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> unocss | lowering-residual: validation)
-		export const App = () => <div style={css({ "--padding": "var(--spacing_card)", "--color": "var(--color_brand)" })} />;",
-		    "converted": 0,
+		    "code": "export const App = () => <div style={"p-card text-brand"} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -440,25 +418,17 @@ test("unocss -> tokenami -> unocss: resolves token values across both concrete l
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

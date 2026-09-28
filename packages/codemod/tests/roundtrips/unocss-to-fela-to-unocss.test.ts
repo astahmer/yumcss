@@ -252,9 +252,8 @@ test("unocss -> fela -> unocss: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: fela -> unocss | lowering-residual: validation)
-		export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#f97316" });",
-		      "converted": 0,
+		      "code": "export const App = () => "p-card text-brand";",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -272,25 +271,17 @@ test("unocss -> fela -> unocss: preserves concrete theme and project context var
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -333,9 +324,8 @@ test("unocss -> fela -> unocss: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: fela -> unocss | lowering-residual: validation)
-		export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#2563eb" });",
-		      "converted": 0,
+		      "code": "export const App = () => "p-card text-brand";",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -353,25 +343,17 @@ test("unocss -> fela -> unocss: preserves concrete theme and project context var
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -428,9 +410,8 @@ test("unocss -> fela -> unocss: resolves token values across both concrete legs"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: fela -> unocss | lowering-residual: validation)
-		export const App = () => renderer.renderRule({ "padding": "1.125rem", "color": "#2563eb" });",
-		    "converted": 0,
+		    "code": "export const App = () => "p-card text-brand";",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -448,25 +429,17 @@ test("unocss -> fela -> unocss: resolves token values across both concrete legs"
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

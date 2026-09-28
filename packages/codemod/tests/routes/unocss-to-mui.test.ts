@@ -91,7 +91,7 @@ test("unocss -> mui: carries a documented secondary unocss API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		  "code": "// pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -115,7 +115,7 @@ test("unocss -> mui: carries a documented secondary unocss API explicitly", () =
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-conditions: named: hover",
+		      "hint": "named-conditions: named: md",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

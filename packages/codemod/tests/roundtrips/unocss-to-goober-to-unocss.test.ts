@@ -254,10 +254,8 @@ test("unocss -> goober -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> unocss | lowering-residual: validation)
-		export const App = () => css({ "padding": "1.125rem", "color": "#f97316" });",
-		      "converted": 0,
+		      "code": "export const App = () => "p-card text-brand";",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -275,25 +273,17 @@ test("unocss -> goober -> unocss: preserves concrete theme and project context v
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -337,10 +327,8 @@ test("unocss -> goober -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> unocss | lowering-residual: validation)
-		export const App = () => css({ "padding": "1.125rem", "color": "#2563eb" });",
-		      "converted": 0,
+		      "code": "export const App = () => "p-card text-brand";",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -358,25 +346,17 @@ test("unocss -> goober -> unocss: preserves concrete theme and project context v
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -434,10 +414,8 @@ test("unocss -> goober -> unocss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> unocss | lowering-residual: validation)
-		export const App = () => css({ "padding": "1.125rem", "color": "#2563eb" });",
-		    "converted": 0,
+		    "code": "export const App = () => "p-card text-brand";",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -455,25 +433,17 @@ test("unocss -> goober -> unocss: resolves token values across both concrete leg
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

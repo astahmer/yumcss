@@ -4,7 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
-	createInstalledChakraRouteProject,
+	createInstalledChakraUnoRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -26,7 +26,7 @@ const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } }
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#f97316");
-const installedChakraProject = createInstalledChakraRouteProject();
+const installedChakraProject = createInstalledChakraUnoRouteProject();
 
 
 test("unocss -> chakra-ui: migrates concrete unocss syntax to chakra-ui", async () => {
@@ -87,15 +87,19 @@ test("unocss -> chakra-ui: migrates concrete unocss syntax to chakra-ui", async 
 
 test("unocss -> chakra-ui: carries a documented secondary unocss API explicitly", async () => {
 	const result = await route.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
-	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expect(result.converted).toBe(1);
+	expect(result.skipped).toBe(0);
+	expect(result.residuals).toHaveLength(0);
+	expect(result.code).toContain('"&:hover": { backgroundColor: "black" }');
+	expect(result.code).toContain('"@media (min-width: 48rem)": { display: "flex" }');
 	expectRouteScenarioEvidence(result, "unocss -> chakra-ui secondary");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> chakra-ui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		  "converted": 0,
+		  "code": "import { chakra } from "@chakra-ui/react";
+		export const App = () => <chakra.div  css={{ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } }}/>;",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -111,19 +115,19 @@ test("unocss -> chakra-ui: carries a documented secondary unocss API explicitly"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "named-conditions: named: hover",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

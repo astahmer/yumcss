@@ -848,7 +848,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		]);
 	});
 
-	test("decodes escaped official utility selectors and CSS theme aliases", () => {
+	test("decodes generated utility selectors without treating theme variables as utilities", () => {
 		const resolver = createUnoCssResolverFromCss(
 			".hover\\:bg-\\[\\#383838\\]:hover{background-color:#383838}" +
 				"@theme inline { --color-foreground: var(--foreground); --color-background: var(--background); }",
@@ -859,12 +859,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 				conditions: [{ kind: "pseudo", name: "hover" }],
 			}),
 		]);
-		expect(resolver.resolve("bg-foreground", {} as never)).toEqual([
-			expect.objectContaining({
-				property: "backgroundColor",
-				value: { kind: "literal", value: "var(--foreground)" },
-			}),
-		]);
+		expect(resolver.resolve("bg-foreground", {} as never)).toBeUndefined();
 	});
 
 	test("preserves generated parent variants and responsive at-rules", () => {

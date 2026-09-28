@@ -4,7 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
-	createInstalledChakraRouteProject,
+	createInstalledChakraUnoRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -28,7 +28,7 @@ const blueTargetSemantic = undefined;
 const amberTargetSemantic = undefined;
 const blueProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.UnoCSS, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.UnoCSS, "#f97316");
-const installedChakraProject = createInstalledChakraRouteProject();
+const installedChakraProject = createInstalledChakraUnoRouteProject();
 	const targetSemantic = undefined;
 
 test("chakra-ui -> unocss -> chakra-ui: preserves an actionable concrete round trip", async () => {

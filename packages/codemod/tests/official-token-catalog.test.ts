@@ -17,6 +17,7 @@ import { createTokenPolicy, TokenCatalog } from "../src/swap/tokens.ts";
 import type { AdapterEmitContext } from "../src/swap/adapter-contract.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 import type { StyleAdapter } from "../src/swap/adapter-contract.ts";
+import { createUnoCssResolverFromCss } from "../src/swap/adapters/unocss.adapter.ts";
 import { styleProgramFromRules } from "../src/swap/semantic-ir.ts";
 import type { StyleDeclaration } from "../src/swap/semantic-ir.ts";
 
@@ -303,6 +304,7 @@ describe("official custom-token loaders", () => {
 	});
 
 	test("loads UnoCSS theme values through the official config and generator packages", async () => {
+		const candidates: string[][] = [];
 		const loader: ProjectModuleLoader = {
 			async importPackage(packageName) {
 				if (packageName === "@unocss/config")
@@ -314,7 +316,10 @@ describe("official custom-token loaders", () => {
 					} as never;
 				return {
 					createGenerator: async () => ({
-						generate: async () => ({ css: ".text-brand{color:#123456}" }),
+						generate: async (input: readonly string[]) => {
+							candidates.push([...input]);
+							return { css: ".text-brand{color:#123456}" };
+						},
 					}),
 				} as never;
 			},
@@ -324,6 +329,7 @@ describe("official custom-token loaders", () => {
 		};
 		const config = await createUnoCssAdapter({ moduleLoader: loader }).loadConfigAsync?.(context);
 
+		expect(candidates.flat()).toContain("text-brand");
 		expect(config?.tokenCatalog?.groups).toMatchInlineSnapshot(`
 			{
 			  "colors": {
@@ -659,7 +665,7 @@ describe("official custom-token loaders", () => {
 		`);
 	});
 
-	test("lets class targets preserve verified custom utility names", () => {
+	test("uses only generator-verified UnoCSS token utilities", () => {
 		const tokenCatalog = TokenCatalog.fromGroups({
 			colors: { "brand.500": "#123456" },
 		})?.contract;
@@ -672,11 +678,19 @@ describe("official custom-token loaders", () => {
 			}).text;
 
 		const tailwind = emit(createTailwindAdapter({ moduleLoader: null }));
-		const uno = emit(createUnoCssAdapter({ moduleLoader: null }));
+		const unoLiteral = emit(createUnoCssAdapter({ moduleLoader: null }));
+		const unoVerified = emit(
+			createUnoCssAdapter({
+				moduleLoader: null,
+				resolver: createUnoCssResolverFromCss(".text-brand-500{color:#123456}"),
+			}),
+		);
 		expect(tailwind).toBe('"text-brand-500"');
-		expect(uno).toBe('"text-brand-500"');
+		expect(unoLiteral).toBe('"[color:#123456]"');
+		expect(unoVerified).toBe('"text-brand-500"');
 		expect(JSON.parse(tailwind)).toMatchInlineSnapshot(`"text-brand-500"`);
-		expect(JSON.parse(uno)).toMatchInlineSnapshot(`"text-brand-500"`);
+		expect(JSON.parse(unoLiteral)).toMatchInlineSnapshot(`"[color:#123456]"`);
+		expect(JSON.parse(unoVerified)).toMatchInlineSnapshot(`"text-brand-500"`);
 	});
 
 	test("remaps source token IR values through class target catalogs", () => {
@@ -712,7 +726,14 @@ describe("official custom-token loaders", () => {
 			});
 
 		expect(emit(createTailwindAdapter({ moduleLoader: null })).text).toBe('"text-brand-500"');
-		expect(emit(createUnoCssAdapter({ moduleLoader: null })).text).toBe('"text-brand-500"');
+		expect(
+			emit(
+				createUnoCssAdapter({
+					moduleLoader: null,
+					resolver: createUnoCssResolverFromCss(".text-brand-500{color:#123456}"),
+				}),
+			).text,
+		).toBe('"text-brand-500"');
 	});
 
 	test("does not remap a source token when the target reuses its path for another value", () => {

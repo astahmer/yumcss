@@ -164,7 +164,7 @@ describe("official project-context loaders", () => {
 		}
 	});
 
-	test("does not create a false configuration failure for an adapter with no discovered config", async () => {
+	test("preserves a configuration residual when no UnoCSS config is discovered", async () => {
 		const config = await createUnoCssAdapter({ moduleLoader: unavailableLoader }).loadConfigAsync?.(
 			{
 				file: "src/App.tsx",
@@ -174,7 +174,12 @@ describe("official project-context loaders", () => {
 			},
 		);
 
-		expect(config?.residuals ?? []).toEqual([]);
+		expect(config?.residuals).toEqual([
+			expect.objectContaining({
+				kind: "configuration",
+				hint: expect.stringContaining("no uno.config or unocss.config file was found"),
+			}),
+		]);
 		expect(config?.values.officialConfigPackages).toBeUndefined();
 	});
 

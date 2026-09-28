@@ -98,6 +98,7 @@ function targetProgram(
 		file: context.file,
 		source: emitted.text,
 		config: context.config,
+		targetId: target.id,
 	});
 	return {
 		program:

@@ -40,11 +40,10 @@ interface AdapterRouteProject {
 const routeProjectRoot = "/virtual/pandwind-route-project";
 
 const installedChakraProjectRoot = resolve(import.meta.dirname, "..");
-
 const installedChakraModuleLoader: ProjectModuleLoader = {
-	importPackage: (packageName, root) =>
+	importPackage: (packageName, _root) =>
 		packageName === "@chakra-ui/react"
-			? NODE_PROJECT_MODULE_LOADER.importPackage(packageName, root)
+			? NODE_PROJECT_MODULE_LOADER.importPackage(packageName, installedChakraProjectRoot)
 			: Promise.resolve(undefined),
 	importFile: async () => undefined,
 };
@@ -62,6 +61,10 @@ export function createInstalledChakraRouteProject(): AdapterRouteProject {
 		moduleLoader: installedChakraModuleLoader,
 		loaderCalls: { packages: [], files: [] },
 	};
+}
+
+export function createInstalledChakraUnoRouteProject(): AdapterRouteProject {
+	return createAdapterRouteProject(CodemodAdapterId.ChakraUi, CodemodAdapterId.UnoCSS, "#2a57c8");
 }
 
 export function createInstalledTailwindChakraRouteProject(): AdapterRouteProject {
@@ -117,7 +120,7 @@ function routeProjectFiles(
 			};
 		case CodemodAdapterId.UnoCSS:
 			return {
-				[`${routeProjectRoot}/uno.config.ts`]: `export default defineConfig({ theme: { colors: { brand: ${quotedColor} }, spacing: { card: "1.125rem" } } });`,
+				[`${routeProjectRoot}/uno.config.ts`]: `import { defineConfig, presetWind3 } from "unocss"; export default defineConfig({ presets: [presetWind3()], theme: { colors: { brand: ${quotedColor} }, spacing: { card: "1.125rem" } } });`,
 				[`${routeProjectRoot}/src/styles.css`]: `@theme { --color-brand: ${color}; }`,
 			};
 		case CodemodAdapterId.Tokenami:
@@ -226,7 +229,10 @@ function routeProjectLoader(
 				if (packageName === "@unocss/config")
 					return {
 						loadConfig: async () => ({
-							config: { theme: { colors: { brand: color }, spacing: { card: "1.125rem" } } },
+							config: {
+								presets: [{ name: "preset-wind3" }],
+								theme: { colors: { brand: color }, spacing: { card: "1.125rem" } },
+							},
 							sources: [],
 						}),
 					} as T;
@@ -239,6 +245,16 @@ function routeProjectLoader(
 										if (token === "text-brand") return `.text-brand{color:${color}}`;
 										if (token === "bg-brand") return `.bg-brand{background-color:${color}}`;
 										if (token === "p-card") return ".p-card{padding:1.125rem}";
+										if (token === "md:[display:flex]")
+											return "@media (min-width: 48rem){.md\\:\\[display\\:flex\\]{display:flex}}";
+										const hoverArbitrary = /^hover:\[([^:]+):(.+)\]$/u.exec(token);
+										if (hoverArbitrary?.[1] !== undefined && hoverArbitrary[2] !== undefined) {
+											const escaped = token.replace(
+												/[^A-Za-z0-9_-]/gu,
+												(character) => `\\${character}`,
+											);
+											return `.${escaped}:hover{${hoverArbitrary[1]}:${hoverArbitrary[2]}}`;
+										}
 										const arbitrary = /^\[([^:]+):(.+)\]$/u.exec(token);
 										if (arbitrary?.[1] !== undefined && arbitrary[2] !== undefined) {
 											const escaped = token.replace(

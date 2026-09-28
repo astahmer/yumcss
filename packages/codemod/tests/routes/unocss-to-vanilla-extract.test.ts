@@ -93,7 +93,7 @@ test("unocss -> vanilla-extract: carries a documented secondary unocss API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		  "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -119,7 +119,7 @@ test("unocss -> vanilla-extract: carries a documented secondary unocss API expli
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-conditions: named: hover",
+		      "hint": "named-conditions: named: md",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

@@ -134,7 +134,7 @@ test("unocss -> styled-components -> unocss: retains the documented secondary AP
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -158,7 +158,7 @@ test("unocss -> styled-components -> unocss: retains the documented secondary AP
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: hover",
+		        "hint": "named-conditions: named: md",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -168,7 +168,7 @@ test("unocss -> styled-components -> unocss: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

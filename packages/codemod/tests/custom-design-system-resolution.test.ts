@@ -243,7 +243,10 @@ describe("custom design-system context resolution", () => {
 				if (packageName === "@unocss/config")
 					return {
 						loadConfig: async () => ({
-							config: { theme: { colors: { brand: "#123456" }, spacing: { card: "17px" } } },
+							config: {
+								presets: [{ name: "preset-wind3" }],
+								theme: { colors: { brand: "#123456" }, spacing: { card: "17px" } },
+							},
 							sources: [],
 						}),
 					} as never;
@@ -393,6 +396,8 @@ describe("custom design-system context resolution", () => {
 					return {
 						loadConfig: async () => ({
 							config: {
+								presets: [{ name: "preset-wind3" }],
+								rules: [[/^btn-brand$/u, { "background-color": "#123456" }]],
 								theme: { colors: { brand: "#123456" }, spacing: { card: "17px" } },
 							},
 							sources: [],
@@ -405,7 +410,9 @@ describe("custom design-system context resolution", () => {
 								.map((token) =>
 									token === "btn-brand"
 										? ".btn-brand{background-color:#123456}"
-										: ".text-brand{color:#123456}",
+										: token === "p-card"
+											? ".p-card{padding:17px}"
+											: ".text-brand{color:#123456}",
 								)
 								.join(""),
 						}),

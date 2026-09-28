@@ -110,7 +110,7 @@ test("unocss -> sass -> unocss: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> sass | lowering-residual: capability | capability-blocked: named-conditions: named: hover | available: static, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> sass | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -135,7 +135,7 @@ test("unocss -> sass -> unocss: retains the documented secondary API without sil
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: hover",
+		        "hint": "named-conditions: named: md",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -150,7 +150,7 @@ test("unocss -> sass -> unocss: retains the documented secondary API without sil
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> sass | lowering-residual: capability | capability-blocked: named-conditions: named: hover | available: static, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> sass | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

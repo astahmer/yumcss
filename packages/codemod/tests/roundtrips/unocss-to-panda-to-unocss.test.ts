@@ -133,7 +133,7 @@ test("unocss -> panda -> unocss: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,8 +167,8 @@ test("unocss -> panda -> unocss: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		export const App = () => <div className={css({ hover: { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: dynamic-custom-property | capability-blocked: selector-conditions: selector: &:hover | available: named-map, custom-property, residual)
+		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -197,6 +197,11 @@ test("unocss -> panda -> unocss: retains the documented secondary API without si
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "selector-conditions: selector: &:hover",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target unocss",
 		        "kind": "dynamic-custom-property",
@@ -270,10 +275,8 @@ test("unocss -> panda -> unocss: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "brand.500" })}/>;",
-		      "converted": 0,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -292,25 +295,17 @@ test("unocss -> panda -> unocss: preserves concrete theme and project context va
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -352,10 +347,8 @@ test("unocss -> panda -> unocss: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "brand.500" })}/>;",
-		      "converted": 0,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -374,25 +367,17 @@ test("unocss -> panda -> unocss: preserves concrete theme and project context va
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -448,10 +433,8 @@ test("unocss -> panda -> unocss: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: validation)
-		export const App = () => <div className={css({ padding: "1.125rem", color: "brand.500" })}/>;",
-		    "converted": 0,
+		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -470,25 +453,17 @@ test("unocss -> panda -> unocss: resolves token values across both concrete legs
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

@@ -4,7 +4,7 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
-	createInstalledChakraRouteProject,
+	createInstalledChakraUnoRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -28,7 +28,7 @@ const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React } }
 const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React } };
 const blueProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#2a57c8");
 const amberProject = createAdapterRouteProject(CodemodAdapterId.UnoCSS, CodemodAdapterId.ChakraUi, "#f97316");
-const installedChakraProject = createInstalledChakraRouteProject();
+const installedChakraProject = createInstalledChakraUnoRouteProject();
 	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip", async () => {
@@ -126,7 +126,20 @@ test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip
 test("unocss -> chakra-ui -> unocss: retains the documented secondary API without silent loss", async () => {
 	const first = await forward.runAsync({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic, project: installedChakraProject });
 	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: targetSemantic, project: installedChakraProject });
-	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expect(first.converted).toBe(1);
+	expect(first.skipped).toBe(0);
+	expect(first.residuals).toHaveLength(0);
+	expect(first.code).toContain('"&:hover": { backgroundColor: "black" }');
+	expect(first.code).toContain('"@media (min-width: 48rem)": { display: "flex" }');
+	expect(second.converted).toBe(0);
+	expect(second.skipped).toBe(1);
+	expect(
+		second.residuals.some(
+			(residual) => residual.kind === "capability" && /selector-conditions|media-conditions/u.test(residual.hint ?? ""),
+		),
+	).toBe(true);
+	expect(second.code).toContain('"&:hover": { backgroundColor: "black" }');
+	expect(second.code).toContain('"@media (min-width: 48rem)": { display: "flex" }');
 	expectRouteScenarioEvidence(first, "unocss -> chakra-ui round-trip secondary forward");
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
@@ -135,13 +148,51 @@ test("unocss -> chakra-ui -> unocss: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> chakra-ui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
+		    "code": "import { chakra } from "@chakra-ui/react";
+		export const App = () => <chakra.div  css={{ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } }}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { chakra } from "@chakra-ui/react";
+		// pandwind:migrate-skip (route: chakra-ui -> unocss | capability-blocked: selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
+		export const App = () => <chakra.div  css={{ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } }}/>;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "token-fallback",
+		          "dynamic-and-theme",
+		        ],
 		        "availableRepresentations": [
 		          "static",
 		          "named-map",
@@ -159,24 +210,12 @@ test("unocss -> chakra-ui -> unocss: retains the documented secondary API withou
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: hover",
+		        "hint": "selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> chakra-ui | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -243,10 +282,8 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { chakra } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> unocss | lowering-residual: validation)
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "#f97316" }}/>;",
-		      "converted": 0,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -264,25 +301,17 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -324,10 +353,8 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { chakra } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> unocss | lowering-residual: validation)
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
-		      "converted": 0,
+		      "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -346,25 +373,17 @@ test("unocss -> chakra-ui -> unocss: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs or has residuals",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs or has residuals",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -420,10 +439,8 @@ test("unocss -> chakra-ui -> unocss: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> unocss | lowering-residual: validation)
-		export const App = () => <chakra.div  css={{ padding: "1.125rem", color: "brand.500" }}/>;",
-		    "converted": 0,
+		    "code": "export const App = () => <div className={"p-card text-brand"}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -442,25 +459,17 @@ test("unocss -> chakra-ui -> unocss: resolves token values across both concrete 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

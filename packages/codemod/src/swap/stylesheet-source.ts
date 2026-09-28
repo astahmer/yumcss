@@ -1289,6 +1289,7 @@ export function createStylesheetFileMigration(
 					source: validationSource,
 					root: context.sourceConfig.root,
 					config: context.targetConfig,
+					targetId: context.target.id,
 					...(context.readFile === undefined ? {} : { readFile: context.readFile }),
 				});
 				const parseResiduals =
@@ -1418,6 +1419,7 @@ function stylesheetFamilyArtifact(
 			source: matchCode,
 			root: context.sourceConfig.root,
 			config: context.targetConfig,
+			targetId: context.target.id,
 			...(context.readFile === undefined ? {} : { readFile: context.readFile }),
 		});
 		const targetProgram =
@@ -1561,6 +1563,7 @@ export function createPreprocessorFileMigration(
 						source: match.sourceText,
 						root: context.root,
 						config: context.targetConfig,
+						targetId: context.target.id,
 						...(context.readFile === undefined ? {} : { readFile: context.readFile }),
 					});
 					const targetProgram = styleProgramFromRules(
