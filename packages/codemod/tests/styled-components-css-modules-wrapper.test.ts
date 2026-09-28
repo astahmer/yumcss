@@ -162,3 +162,23 @@ test("styled-components -> CSS Modules preserves polymorphic and attrs component
 		}
 	`);
 });
+
+test("styled-components -> CSS Modules preserves source numeric unit semantics", () => {
+	const source =
+		'import styled from "styled-components";\n' +
+		'export const Card = styled.div({ padding: 8, margin: 0, opacity: 0.5, lineHeight: 1.25, fontWeight: 700, zIndex: 2, "--custom": 3, boxFlex: 1 });';
+	const result = migrate(source);
+	const css = result.generatedFiles[0]?.content;
+
+	expect(result.converted).toBe(1);
+	expect(result.residuals).toEqual([]);
+	expect(css).toContain("padding: 8px;");
+	expect(css).toContain("margin: 0;");
+	expect(css).toContain("opacity: 0.5;");
+	expect(css).toContain("line-height: 1.25;");
+	expect(css).toContain("font-weight: 700;");
+	expect(css).toContain("z-index: 2;");
+	expect(css).toContain("--custom: 3;");
+	expect(css).toContain("box-flex: 1px;");
+	expect({ css, residuals: result.residuals }).toMatchInlineSnapshot();
+});
