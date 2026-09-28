@@ -16,16 +16,14 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { loadMetaFromSources } from "../src/meta.ts";
+import { loadMetaFromSourcesAsync } from "../src/meta.ts";
 import { runSwap, SWAP_TARGETS, TokenReferenceFormat } from "../src/swap/index.ts";
-import { examplePreset } from "@pandwind/example-preset";
 
 const appDir = resolve(import.meta.dirname, "../../../examples/example/src");
-const meta = loadMetaFromSources({
+const meta = await loadMetaFromSourcesAsync({
 	typesDtsPath: resolve(appDir, "types.d.ts"),
 	twTsPath: resolve(appDir, "tw.ts"),
 	bridgePath: resolve(appDir, "bridge.ts"),
-	tokens: examplePreset.tokens,
 });
 
 const WITH_CSS = `import { css } from "./design.ts";\n`;
@@ -329,8 +327,9 @@ import { runSwap as runSwapRaw } from "../src/swap/index.ts";
 const swapTo = (
 	source: string,
 	to: "css.class" | "design" | "tw" | "tailwind" | "panda" | "stylex",
+	sourceMeta = meta,
 ) =>
-	runSwapRaw(source, meta, {
+	runSwapRaw(source, sourceMeta, {
 		from: "auto",
 		to,
 		file: "test.tsx",
@@ -376,15 +375,169 @@ describe("outbound: panda", () => {
 });
 
 describe("outbound: stylex", () => {
-	test("call site becomes stylex.props over an injected create block", () => {
-		const source = `import { css } from "./design.ts";\nexport const A = () => <div className={css.class({ backgroundColor: "#3182ce", _hover: { backgroundColor: "#2b6cb0" } })} />;`;
-		const result = swapTo(source, "stylex");
+	test("emits pseudo-classes as property-value conditions", () => {
+		const source = `import { css } from "./design.ts";\nexport const A = () => <div className={css.class({ backgroundColor: "#3182ce", padding: 8, opacity: 0.5, _hover: { backgroundColor: "#2b6cb0" }, _focusVisible: { opacity: 0.8 } })} />;`;
+		const result = swapTo(source, "stylex", {
+			...meta,
+			conditions: {
+				...meta.conditions,
+				_focusVisible: "&:is(:focus-visible, [data-focus-visible])",
+			},
+		});
+		expect(result.unmappedTokens).toEqual([]);
 		expect(result.converted).toBe(1);
+		expect(result.skippedByMarker).toBe(0);
 		expect(result.code).toContain('import * as stylex from "@stylexjs/stylex";');
 		expect(result.code).toContain("stylex.create({");
 		expect(result.code).toContain("s1: {");
 		expect(result.code).toContain("stylex.props(swapStyles.s1)");
-		expect(result.code).toContain('":hover": {');
+		expect(result.code).toContain('default: "#3182ce"');
+		expect(result.code).toContain('":hover": "#2b6cb0"');
+		expect(result.code).toContain('":is(:focus-visible, [data-focus-visible])": 0.8');
+		expect(result.code).toContain("padding: 8");
+		expect(result.code).toContain("opacity: {");
+		expect(result.code).not.toContain('":hover": {');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css } from "./design.ts";
+			import * as stylex from "@stylexjs/stylex";
+			const swapStyles = stylex.create({
+				s1: {
+					backgroundColor: {
+						default: "#3182ce",
+						":hover": "#2b6cb0",
+					},
+					padding: 8,
+					opacity: {
+						default: 0.5,
+						":is(:focus-visible, [data-focus-visible])": 0.8,
+					},
+				},
+			});
+			export const A = () => <div className={stylex.props(swapStyles.s1)} />;"
+		`);
+	});
+
+	test("nests supported media and pseudo conditions", () => {
+		const source = `const card = css.class({ _osDark: { _hover: { color: "blue" } } });`;
+		const result = swapTo(source, "stylex", {
+			...meta,
+			conditions: {
+				...meta.conditions,
+				_osDark: "@media (prefers-color-scheme: dark)",
+			},
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skippedByMarker).toBe(0);
+		expect(result.code).toContain('"@media (prefers-color-scheme: dark)": {');
+		expect(result.code).toContain('":hover": "blue"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import * as stylex from "@stylexjs/stylex";
+			const swapStyles = stylex.create({
+				s1: {
+					color: {
+						default: null,
+						"@media (prefers-color-scheme: dark)": {
+							default: null,
+							":hover": "blue",
+						},
+					},
+				},
+			});
+			const card = stylex.props(swapStyles.s1);"
+		`);
+	});
+
+	test("does not treat class-based dark mode as an OS media query", () => {
+		const source = `const card = css.class({ color: "red", _dark: { color: "white" } });`;
+		const result = swapTo(source, "stylex");
+
+		expect(result.converted).toBe(0);
+		expect(result.skippedByMarker).toBe(1);
+		expect(result.code).toContain(source);
+		expect(result.code).not.toContain("stylex.create");
+		expect(result.unmappedTokens[0]?.reason).toContain('condition "dark"');
+		expect({
+			code: result.code,
+			converted: result.converted,
+			skippedByMarker: result.skippedByMarker,
+			unmappedTokens: result.unmappedTokens,
+		}).toMatchInlineSnapshot(`
+			{
+			  "code": "// pandwind:migrate-skip (lowering-residual: condition "dark" is not expressible in stylex)
+			const card = css.class({ color: "red", _dark: { color: "white" } });",
+			  "converted": 0,
+			  "skippedByMarker": 1,
+			  "unmappedTokens": [
+			    {
+			      "file": "test.tsx",
+			      "reason": "condition "dark" is not expressible in stylex",
+			      "token": "dark",
+			    },
+			  ],
+			}
+		`);
+	});
+	test("keeps unsupported condition chains visible as residuals", () => {
+		const source = `const card = css.class({ color: "red", _hover: { color: "blue" }, _groupHover: { color: "green" } });`;
+		const result = swapTo(source, "stylex");
+
+		expect(result.converted).toBe(0);
+		expect(result.skippedByMarker).toBe(1);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain(source);
+		expect(result.code).not.toContain("stylex.create");
+		expect(result.unmappedTokens).toHaveLength(1);
+		expect(result.unmappedTokens[0]?.reason).toContain("condition");
+		expect({
+			code: result.code,
+			converted: result.converted,
+			skippedByMarker: result.skippedByMarker,
+			unmappedTokens: result.unmappedTokens,
+		}).toMatchInlineSnapshot(`
+			{
+			  "code": "// pandwind:migrate-skip (lowering-residual: condition "groupHover" is not expressible in stylex)
+			const card = css.class({ color: "red", _hover: { color: "blue" }, _groupHover: { color: "green" } });",
+			  "converted": 0,
+			  "skippedByMarker": 1,
+			  "unmappedTokens": [
+			    {
+			      "file": "test.tsx",
+			      "reason": "condition "groupHover" is not expressible in stylex",
+			      "token": "groupHover",
+			    },
+			  ],
+			}
+		`);
+	});
+	test("keeps conditions whose project metadata is unavailable", () => {
+		const source = `const card = css.class({ _focusVisible: { color: "blue" } });`;
+		const result = swapTo(source, "stylex");
+
+		expect(result.converted).toBe(0);
+		expect(result.skippedByMarker).toBe(1);
+		expect(result.code).toContain(source);
+		expect(result.unmappedTokens[0]?.reason).toContain('condition "focusVisible"');
+		expect({
+			code: result.code,
+			converted: result.converted,
+			skippedByMarker: result.skippedByMarker,
+			unmappedTokens: result.unmappedTokens,
+		}).toMatchInlineSnapshot(`
+			{
+			  "code": "// pandwind:migrate-skip (lowering-residual: condition "focusVisible" is not expressible in stylex)
+			const card = css.class({ _focusVisible: { color: "blue" } });",
+			  "converted": 0,
+			  "skippedByMarker": 1,
+			  "unmappedTokens": [
+			    {
+			      "file": "test.tsx",
+			      "reason": "condition "focusVisible" is not expressible in stylex",
+			      "token": "focusVisible",
+			    },
+			  ],
+			}
+		`);
 	});
 });
 

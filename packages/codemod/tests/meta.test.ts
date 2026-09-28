@@ -18,13 +18,40 @@ describe("project-aware migration metadata", () => {
 		expect(
 			colors !== undefined && typeof colors !== "function" ? colors["$blue-500"] : undefined,
 		).toBe("#3182ce");
+		expect(meta.conditions._hover).toBe("&:hover");
+		expect(meta.conditions._dark).toBe(".dark &");
 	});
 
 	test("sync loading stays explicit when no project token context is supplied", () => {
 		const meta = loadMetaFromSources(sourceOptions);
 
 		expect(meta.tokens).toBeUndefined();
+		expect(meta.conditions).toEqual({});
 		expect(meta.bridgeInverse.get("flex")).toEqual({ property: "display", value: "flex" });
+	});
+
+	test("loads custom conditions from the resolved source preset", async () => {
+		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-meta-conditions-"));
+		const bridgePath = join(dir, "bridge.ts");
+		try {
+			writeFileSync(
+				join(dir, "preset.mjs"),
+				'export const customPreset = { conditions: { _hover: "&:focus-visible", _customFocus: "&:focus", _customDark: "@media (prefers-color-scheme: dark)" } };\n',
+			);
+			writeFileSync(
+				bridgePath,
+				'import { customPreset as appPreset } from "./preset.mjs";\nexport const generated = { preset: appPreset };\n',
+			);
+			const meta = await loadMetaFromSourcesAsync({ ...sourceOptions, bridgePath });
+
+			expect(meta.conditions).toEqual({
+				_hover: "&:focus-visible",
+				_customFocus: "&:focus",
+				_customDark: "@media (prefers-color-scheme: dark)",
+			});
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
 	});
 
 	test("loads the versioned interop artifact without generated source files", () => {

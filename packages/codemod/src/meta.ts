@@ -19,6 +19,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { z } from "zod";
 // Single source of truth for key -> emitted-utility mapping (textColor -> "text").
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 import { parsePandwindInteropArtifact, type PandwindInteropArtifact } from "./tw/index.ts";
@@ -51,6 +52,8 @@ export interface PandwindMeta {
 	bridgeInverse: Map<string, { property: string; value: string }>;
 	/** Project-owned token graph used by design and token-reference adapters. */
 	tokens: AnyTokens | undefined;
+	/** Exact conditions from the source project's resolved preset, when available. */
+	conditions: Readonly<Record<string, string | readonly string[]>>;
 	/** Versioned generated artifact used when available; useful for diagnostics. */
 	interop: PandwindInteropArtifact | undefined;
 }
@@ -65,6 +68,7 @@ export function createEmptyPandwindMeta(): PandwindMeta {
 		conflicts: new Map(),
 		bridgeInverse: new Map(),
 		tokens: undefined,
+		conditions: {},
 		interop: undefined,
 	};
 }
@@ -177,6 +181,8 @@ export interface LoadMetaOptions {
 	interopPath?: string;
 	/** Explicit project tokens for programmatic callers and tests. */
 	tokens?: AnyTokens;
+	/** Explicit source condition metadata for programmatic callers and tests. */
+	conditions?: Readonly<Record<string, string | readonly string[]>>;
 }
 
 function readInterop(path: string | undefined): PandwindInteropArtifact | undefined {
@@ -263,6 +269,7 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 					? new Map()
 					: bridgeInverseFromArtifact(interop.bridge),
 		tokens: options.tokens,
+		conditions: options.conditions ?? {},
 		interop,
 	};
 }
@@ -280,13 +287,23 @@ function valueLiteralsFromInterop(interop: PandwindInteropArtifact): Map<string,
 
 type ModuleExports = Record<string, unknown>;
 
-/** Load project tokens from the preset import emitted into bridge.ts. */
+const ProjectConditionsSchema = z.record(z.string(), z.union([z.string(), z.array(z.string())]));
+const ProjectPresetSchema = z
+	.object({ tokens: z.unknown().optional(), conditions: z.unknown().optional() })
+	.passthrough();
+
+interface ProjectPresetMetadata {
+	readonly tokens: AnyTokens | undefined;
+	readonly conditions: Readonly<Record<string, string | readonly string[]>>;
+}
+
+/** Load resolved source metadata from the preset import emitted into bridge.ts. */
 // Project module candidates are intentionally tried in order because only one
 // can resolve under the project's module loader.
-async function loadTokensFromBridge(bridgePath: string): Promise<AnyTokens | undefined> {
+async function loadPresetMetadataFromBridge(bridgePath: string): Promise<ProjectPresetMetadata> {
 	const source = readFileSync(bridgePath, "utf8");
 	const binding = /\bpreset\s*:\s*([A-Za-z_$][\w$]*)/.exec(source)?.[1];
-	if (binding === undefined) return undefined;
+	if (binding === undefined) return { tokens: undefined, conditions: {} };
 	for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)) {
 		const imported = match[1]!
 			.split(",")
@@ -294,12 +311,19 @@ async function loadTokensFromBridge(bridgePath: string): Promise<AnyTokens | und
 			.find((parts) => (parts[1] ?? parts[0]) === binding);
 		if (imported === undefined) continue;
 		const module = await importProjectModule(bridgePath, match[2]!);
-		const preset = module[imported[0]!] as { tokens?: unknown } | undefined;
-		if (preset?.tokens !== null && typeof preset?.tokens === "object") {
-			return preset.tokens as AnyTokens;
-		}
+		const parsedPreset = ProjectPresetSchema.safeParse(module[imported[0]!]);
+		if (!parsedPreset.success) continue;
+		const tokens = parsedPreset.data.tokens;
+		const parsedConditions = ProjectConditionsSchema.safeParse(parsedPreset.data.conditions);
+		return {
+			tokens:
+				tokens !== null && typeof tokens === "object" && !Array.isArray(tokens)
+					? (tokens as AnyTokens)
+					: undefined,
+			conditions: parsedConditions.success ? parsedConditions.data : {},
+		};
 	}
-	return undefined;
+	return { tokens: undefined, conditions: {} };
 }
 
 async function importProjectModule(fromFile: string, specifier: string): Promise<ModuleExports> {
@@ -318,8 +342,13 @@ async function importProjectModule(fromFile: string, specifier: string): Promise
 
 /** Async project-aware loader used by the CLI. */
 export async function loadMetaFromSourcesAsync(options: LoadMetaOptions): Promise<PandwindMeta> {
-	const tokens =
-		options.tokens ??
-		(options.bridgePath === undefined ? undefined : await loadTokensFromBridge(options.bridgePath));
-	return loadMetaFromSources({ ...options, tokens });
+	const preset =
+		options.bridgePath === undefined
+			? { tokens: undefined, conditions: {} }
+			: await loadPresetMetadataFromBridge(options.bridgePath);
+	return loadMetaFromSources({
+		...options,
+		tokens: options.tokens ?? preset.tokens,
+		conditions: options.conditions ?? preset.conditions,
+	});
 }

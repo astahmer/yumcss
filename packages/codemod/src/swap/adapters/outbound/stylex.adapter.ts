@@ -1,47 +1,94 @@
-import type { SwapEntry } from "../../ir.ts";
+import { SwapResidualKindTag, type SwapEntry, type SwapIR } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
+import { canonicalPandwindConditionName } from "../../pandwind-conditions.ts";
+import type { PandwindMeta } from "../../../meta.ts";
 
 const stylexImport = 'import * as stylex from "@stylexjs/stylex";';
-const conditionMap: Record<string, string> = {
-	hover: ":hover",
-	focus: ":focus",
-	active: ":active",
-	visited: ":visited",
-	dark: "@media (prefers-color-scheme: dark)",
-	light: "@media (prefers-color-scheme: light)",
-};
-function condition(name: string): string | undefined {
-	if (conditionMap[name] !== undefined) return conditionMap[name];
-	return /^data[-a-z]*$/.test(name) ? `[\\${name}]` : undefined;
+function condition(name: string, meta: PandwindMeta): string | undefined {
+	const canonicalName = canonicalPandwindConditionName(name);
+	const value = meta.conditions[canonicalName] ?? meta.conditions[`_${name}`];
+	if (typeof value !== "string") return undefined;
+	const normalized = value.trim();
+	if (/^@(media|supports|container)(?:\s|$)/u.test(normalized)) return normalized;
+	if (!normalized.startsWith("&[") && !normalized.startsWith("&:")) return undefined;
+	const selector = normalized.replaceAll("&", "");
+	if (selector.startsWith("::")) return undefined;
+	return selector;
 }
-const emitStylex: Emitter = (ir, _meta, context) => {
-	const groups = new Map<string, SwapEntry[]>();
+const emitStylex: Emitter = (ir, meta, context) => {
+	type ConditionNode = {
+		value?: SwapEntry["value"];
+		readonly children: Map<string, ConditionNode>;
+	};
+	const properties = new Map<
+		string,
+		{ base?: SwapEntry["value"]; conditions: Map<string, ConditionNode> }
+	>();
+	const residuals: SwapIR["residuals"] = [];
+	const residualConditions = new Set<string>();
 	for (const entry of ir.entries) {
 		const key = entry.conditions.join("__");
-		const list = groups.get(key);
-		if (list === undefined) groups.set(key, [entry]);
-		else list.push(entry);
-	}
-	const bodyLines: string[] = [];
-	for (const [key, entries] of groups) {
-		const mapped = (key === "" ? [] : key.split("__")).map(condition);
-		if (mapped.some((item) => item === undefined)) {
-			bodyLines.push(
-				`\t\t// pandwind:migrate-skip (condition "${key}" is not expressible in stylex)`,
-			);
+		let style = properties.get(entry.prop);
+		if (style === undefined) {
+			style = { conditions: new Map() };
+			properties.set(entry.prop, style);
+		}
+		if (entry.conditions.length === 0) {
+			style.base = entry.value;
 			continue;
 		}
-		let body = entries.map((entry) => `\t\t${entry.prop}: ${JSON.stringify(String(entry.value))},`);
-		for (let index = mapped.length - 1; index >= 0; index--)
-			body = [`\t\t\t${JSON.stringify(mapped[index])}: {`, ...body, "\t\t\t},"];
-		bodyLines.push(...body);
+		const mappedConditions = entry.conditions.map((name) => condition(name, meta));
+		if (mappedConditions.some((mapped) => mapped === undefined)) {
+			if (!residualConditions.has(key)) {
+				const hint = `condition "${key}" is not expressible in stylex`;
+				residualConditions.add(key);
+				residuals.push({ kind: SwapResidualKindTag.Unrepresentable, text: key, hint });
+			}
+			continue;
+		}
+		let currentConditions = style.conditions;
+		let current: ConditionNode | undefined;
+		for (const mapped of mappedConditions) {
+			if (mapped === undefined) continue;
+			current = currentConditions.get(mapped);
+			if (current === undefined) {
+				current = { children: new Map() };
+				currentConditions.set(mapped, current);
+			}
+			currentConditions = current.children;
+		}
+		if (current !== undefined) current.value = entry.value;
 	}
+	const literal = (value: SwapEntry["value"] | null): string => JSON.stringify(value) ?? "null";
+	const renderConditionValue = (
+		value: SwapEntry["value"] | undefined,
+		conditions: ReadonlyMap<string, ConditionNode>,
+		depth: number,
+	): string => {
+		if (conditions.size === 0) return literal(value ?? null);
+		const indent = "\t".repeat(depth);
+		const innerIndent = "\t".repeat(depth + 1);
+		return `{
+${innerIndent}default: ${value === undefined ? "null" : literal(value)},
+${[...conditions]
+	.map(
+		([name, node]) =>
+			`${innerIndent}${JSON.stringify(name)}: ${renderConditionValue(node.value, node.children, depth + 1)},`,
+	)
+	.join("\n")}
+${indent}}`;
+	};
+	const bodyLines = [...properties].flatMap(([property, style]) => {
+		const propertyKey = /^[A-Za-z_$][\w$]*$/.test(property) ? property : JSON.stringify(property);
+		if (style.conditions.size === 0) return [`\t\t${propertyKey}: ${literal(style.base ?? "")},`];
+		return [`\t\t${propertyKey}: ${renderConditionValue(style.base, style.conditions, 2)},`];
+	});
 	const name = `s${context.index}`;
 	return {
 		text: `stylex.props(swapStyles.${name})`,
-		residuals: [],
+		residuals,
 		headers: [
 			`const swapStyles = stylex.create({\n\t${name}: {\n${bodyLines.join("\n")}\n\t},\n});`,
 		],
