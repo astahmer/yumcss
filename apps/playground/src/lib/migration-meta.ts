@@ -41,6 +41,7 @@ export const PLAYGROUND_MIGRATION_META: PandwindMeta = (() => {
 		conflicts: new Map(Object.entries(interop.tw.conflicts ?? {})),
 		bridgeInverse,
 		tokens: examplePreset.tokens,
+		conditions: examplePreset.conditions,
 		interop,
 	};
 })();

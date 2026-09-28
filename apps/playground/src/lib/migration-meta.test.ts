@@ -1,7 +1,13 @@
 import { describe, expect, test } from "vitest";
+import { examplePreset } from "@pandwind/example-preset";
 import { PLAYGROUND_MIGRATION_META } from "./migration-meta.ts";
 
 describe("playground migration interop metadata", () => {
+	test("provides the preset conditions needed by target adapters", () => {
+		expect(PLAYGROUND_MIGRATION_META.conditions).toEqual(examplePreset.conditions);
+		expect(PLAYGROUND_MIGRATION_META.conditions._hover).toBe("&:hover");
+	});
+
 	test("resolves shared utility value types from the deduplicated catalog", () => {
 		const interop = PLAYGROUND_MIGRATION_META.interop;
 		if (interop === undefined) throw new Error("playground interop artifact is missing");
