@@ -870,6 +870,13 @@ function runAdapterMigrationInternal(
 					},
 				};
 			} else if (
+				targetComponentPreview?.residuals.length !== undefined &&
+				targetComponentPreview.residuals.length > 0
+			) {
+				// A target-owned component contract may reject a source behavior that
+				// the generic intrinsic rewrite cannot preserve. Keep both the styled
+				// declaration and its JSX uses intact when that preview rejects it.
+			} else if (
 				standaloneExport ||
 				hostRepresentation === StyleHostRepresentationKind.Component ||
 				binding === undefined ||
@@ -1104,10 +1111,11 @@ function runAdapterMigrationInternal(
 		// A portable artifact emission already carries its semantic program from
 		// the registry. Reparsing the TS carrier through the target parser would
 		// only fabricate parse residuals for valid emitted source.
-		const portableSemanticEmission =
-			emitted.semantic !== undefined &&
-			targetRepresentationKind === StyleRepresentationKind.PortableArtifact;
-		const reparsed = portableSemanticEmission
+		const semanticArtifactEmission =
+		emitted.semantic !== undefined &&
+		(targetRepresentationKind === StyleRepresentationKind.PortableArtifact ||
+			(emitted.generatedFiles?.length ?? 0) > 0);
+		const reparsed = semanticArtifactEmission
 			? undefined
 			: targetAdapter.parse(emittedForValidation, {
 					file: options.file,
@@ -1123,7 +1131,7 @@ function runAdapterMigrationInternal(
 					document,
 					semantic: options.semantic,
 				});
-		const targetProgram = portableSemanticEmission
+		const targetProgram = semanticArtifactEmission
 			? emitted.semantic
 			: (emitted.semantic ??
 				(reparsed!.matches.length === 0
