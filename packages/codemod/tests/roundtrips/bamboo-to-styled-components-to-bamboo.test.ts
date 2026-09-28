@@ -86,7 +86,7 @@ test("bamboo -> styled-components -> bamboo: preserves an actionable concrete ro
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ color: "red" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ gap: "4", display: "flex" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ gap: "4", display: "flex" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -269,7 +269,7 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -427,7 +427,7 @@ test("bamboo -> styled-components -> bamboo: resolves token values across both c
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ color: "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

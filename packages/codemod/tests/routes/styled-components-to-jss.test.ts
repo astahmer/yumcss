@@ -51,7 +51,7 @@ test("styled-components -> jss: migrates concrete styled-components syntax to js
 		  "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -98,7 +98,7 @@ test("styled-components -> jss: carries a documented secondary styled-components
 		  "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -154,7 +154,7 @@ test("styled-components -> jss: loads concrete theme and project context variant
 		    "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -192,7 +192,7 @@ test("styled-components -> jss: loads concrete theme and project context variant
 		    "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,7 +242,7 @@ test("styled-components -> jss: resolves concrete token values with project cont
 		  "code": "import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style, props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -290,7 +290,7 @@ test("styled-components -> jss: preserves malformed concrete styled-components i
 		import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.className)} />;
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style, props.className)} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

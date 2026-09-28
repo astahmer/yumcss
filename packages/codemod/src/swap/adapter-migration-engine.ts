@@ -36,6 +36,7 @@ import type {
 import {
 	getHostComponentRewriter,
 	canonicalSourceHostClosingEdit,
+	componentAttrsExpressionForSubject,
 	componentTagForSubject,
 	isDiscardedExpressionStatement,
 	rewriteDynamicCarrier,
@@ -366,6 +367,7 @@ function runAdapterMigrationInternal(
 		readonly tag: string;
 		readonly framework: string;
 		readonly sourceFramework?: HostFramework;
+		readonly attrsExpression?: string;
 		readonly emittedExpression: string;
 		readonly representation: StyleHostRepresentationKind;
 	}> = [];
@@ -417,6 +419,8 @@ function runAdapterMigrationInternal(
 		const hasFunctionDynamic =
 			sourceHasFunctionDynamic || StyleProgramAnalysis.hasFunctionDynamic(program);
 		const sourceSubject = program.source?.subject;
+		const sourceSubjectAttrs =
+			sourceSubject === undefined ? undefined : componentAttrsExpressionForSubject(sourceSubject);
 		let sourceSubjectDiscarded = false;
 		const targetPolicy = targetAdapter.migration?.targetPolicy;
 		let hostRepresentation = targetPolicy?.hostRepresentation;
@@ -497,6 +501,11 @@ function runAdapterMigrationInternal(
 						...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 						source,
 					});
+		if (
+			hostRepresentation === StyleHostRepresentationKind.Component &&
+			program.source?.subject !== undefined
+		)
+			emittedHostRepresentation = hostRepresentation;
 		const resolvedRepresentation = targetPolicy?.resolveRepresentation?.({
 			program,
 			representation: lowering.representation,
@@ -703,10 +712,14 @@ function runAdapterMigrationInternal(
 							tag,
 							framework,
 							sourceFramework: sourceHostFramework,
+							...(sourceSubjectAttrs === undefined ? {} : { attrsExpression: sourceSubjectAttrs }),
 							emittedExpression: binding,
 							representation: hostRepresentation ?? StyleHostRepresentationKind.Component,
 						})
 					: undefined;
+			if (sourceSubjectAttrs !== undefined && targetComponentPreview?.residuals.length) {
+				loweringResiduals = [...loweringResiduals, ...targetComponentPreview.residuals];
+			}
 			const rewriter =
 				binding !== undefined && tag !== undefined && framework !== undefined
 					? getHostComponentRewriter(framework)
@@ -791,6 +804,7 @@ function runAdapterMigrationInternal(
 						binding,
 						tag,
 						framework,
+						...(sourceSubjectAttrs === undefined ? {} : { attrsExpression: sourceSubjectAttrs }),
 						...(DynamicClassHost.styleExpression(carrierResiduals, "props") === undefined
 							? {}
 							: {
@@ -834,6 +848,7 @@ function runAdapterMigrationInternal(
 					binding,
 					tag,
 					framework,
+					...(sourceSubjectAttrs === undefined ? {} : { attrsExpression: sourceSubjectAttrs }),
 					styleExpression: DynamicClassHost.styleExpression(carrierResiduals),
 				});
 			}
@@ -935,6 +950,7 @@ function runAdapterMigrationInternal(
 						binding,
 						tag,
 						framework,
+						...(sourceSubjectAttrs === undefined ? {} : { attrsExpression: sourceSubjectAttrs }),
 						...(DynamicClassHost.styleExpression(loweringResiduals, "props") === undefined
 							? {}
 							: {
@@ -1179,6 +1195,7 @@ function runAdapterMigrationInternal(
 					binding: bindingBeforeMatch,
 					framework,
 					sourceFramework: sourceHostFramework,
+					...(sourceSubjectAttrs === undefined ? {} : { attrsExpression: sourceSubjectAttrs }),
 					tag,
 					emittedExpression: emitted.text,
 					representation: hostRepresentation,

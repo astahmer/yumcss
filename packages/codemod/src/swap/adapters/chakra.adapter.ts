@@ -34,7 +34,10 @@ import { relativeModuleImport } from "../../shared.ts";
 import { isProjectLocalModule } from "../module-specifier.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import type { JsxStyleHostMatch, JsxStylePropSelector } from "../jsx-style-host.ts";
-import { canonicalizeSourceHost } from "../host-component-rewriter.ts";
+import {
+	canonicalizeSourceHost,
+	componentAttrsValueExpression,
+} from "../host-component-rewriter.ts";
 import { materializeSourceTokenValues, recoverSourceToken, TokenCatalog } from "../tokens.ts";
 import { CSS_RAW_PROPERTIES } from "../css-properties.ts";
 
@@ -1649,12 +1652,14 @@ function rewriteChakraStyledSubject({
 	tag,
 	framework,
 	emittedExpression,
+	attrsExpression,
 }: {
 	readonly code: string;
 	readonly binding: string;
 	readonly tag: string;
 	readonly framework: string;
 	readonly emittedExpression: string;
+	readonly attrsExpression?: string;
 }): {
 	readonly code: string;
 	readonly imports: readonly string[];
@@ -1688,9 +1693,23 @@ function rewriteChakraStyledSubject({
 				},
 			],
 		};
+	const attrsValue = componentAttrsValueExpression(attrsExpression);
+	if (attrsExpression !== undefined && attrsValue === undefined)
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: "host-framework",
+					text: attrsExpression,
+					hint: "Chakra component projection requires static attrs or a props callback",
+				},
+			],
+		};
 	const declaration =
-		`${assignment[1]} ${binding} = (props) => <chakra.${tag} {...props} ` +
-		`css={${emittedExpression}} />;`;
+		attrsExpression === undefined
+			? `${assignment[1]} ${binding} = (props) => <chakra.${tag} {...props} css={${emittedExpression}} />;`
+			: `${assignment[1]} ${binding} = (props) => { const attrs = ${attrsValue}; const { as: attrsAs, ...attrsProps } = attrs; const { as: propsAs, ...rest } = props; return <chakra.${tag} as={attrsAs ?? propsAs} {...rest} {...attrsProps} className={[props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...props.style, ...attrs.style }} css={${emittedExpression}} />; };`;
 	return {
 		code: `${code.slice(0, assignment.index)}${declaration}${code.slice(assignment.index + assignment[0].length)}`,
 		imports: ['import { chakra } from "@chakra-ui/react";'],
@@ -1852,13 +1871,14 @@ export function createChakraAdapter(
 								emittedExpression,
 							});
 				},
-				rewriteComponent: ({ code, binding, tag, framework, emittedExpression }) =>
+				rewriteComponent: ({ code, binding, tag, framework, emittedExpression, attrsExpression }) =>
 					rewriteChakraStyledSubject({
 						code,
 						binding,
 						tag,
 						framework,
 						emittedExpression,
+						attrsExpression,
 					}),
 				resolveHostRepresentation: ({ framework, hasHostContext, program, source }) => {
 					if (!hasHostContext && program.source?.subject === undefined) return undefined;

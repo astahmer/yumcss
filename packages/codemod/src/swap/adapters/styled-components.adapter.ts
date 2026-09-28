@@ -1,13 +1,153 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import { StyleProgramResidualKindTag, StyleRuleKindTag } from "../semantic-ir.ts";
+import {
+	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+	type StyleProgram,
+} from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
 	CodemodCallPatternKindTag,
+	StyleDynamicExpressionKind,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
+import { styledSubjectFromFunctionMatch } from "../host-component-rewriter.ts";
+
+const styledSubjectPattern = String.raw`\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\s*\.attrs\s*\([\s\S]*?\))?`;
+
+interface StyledFunctionValue {
+	readonly expression: string;
+	readonly parameter: string;
+	readonly body: string;
+}
+
+function styledFunctionValue(expression: string): StyledFunctionValue | undefined {
+	const arrow = expression.indexOf("=>");
+	if (arrow === -1) return undefined;
+	const head = expression.slice(0, arrow).trim();
+	const parameter =
+		head.startsWith("(") && head.endsWith(")")
+			? head.slice(1, -1).trim()
+			: /^[A-Za-z_$][\w$]*$/u.test(head)
+				? head
+				: undefined;
+	if (parameter === undefined) return undefined;
+	return {
+		expression,
+		parameter,
+		body: expression.slice(arrow + 2).trim(),
+	};
+}
+
+function mapStyledDeclarations(
+	program: StyleProgram,
+	map: (declaration: StyleProgram["declarations"][number]) => StyleProgram["declarations"][number],
+): StyleProgram {
+	const mapRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...rule,
+		declarations: rule.declarations.map(map),
+		children: rule.children.map(mapRule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map(map),
+		rules: program.rules.map(mapRule),
+	};
+}
+
+function styledDynamicEmission(
+	program: StyleProgram,
+	programObject: (program: StyleProgram) => string,
+) {
+	const findDynamic = (rules: StyleProgram["rules"]): StyleProgram["declarations"] =>
+		rules.flatMap((rule) => [
+			...rule.declarations.filter(
+				(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+			),
+			...findDynamic(rule.children),
+		]);
+	const ruleDynamic = findDynamic(program.rules);
+	const dynamic =
+		ruleDynamic.length > 0
+			? ruleDynamic
+			: program.declarations.filter(
+					(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+				);
+	if (dynamic.length === 0) return { text: programObject(program), residuals: [] };
+	const callbacks = dynamic.map((declaration) =>
+		declaration.value.kind === StyleValueKindTag.Dynamic &&
+		declaration.value.expressionKind === StyleDynamicExpressionKind.Function
+			? styledFunctionValue(declaration.value.expression)
+			: undefined,
+	);
+	if (callbacks.every((callback) => callback === undefined)) {
+		const unsafeValues = dynamic.filter(
+			(declaration) =>
+				declaration.value.kind === StyleValueKindTag.Dynamic &&
+				declaration.value.expressionKind !== StyleDynamicExpressionKind.Identifier &&
+				declaration.value.expressionKind !== StyleDynamicExpressionKind.Member,
+		);
+		if (unsafeValues.length === 0) return { text: programObject(program), residuals: [] };
+		return {
+			text: "",
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.DynamicValues,
+					text: unsafeValues
+						.map((declaration) =>
+							declaration.value.kind === StyleValueKindTag.Dynamic
+								? declaration.value.expression
+								: "",
+						)
+						.join(", "),
+					hint: "styled-components style-object callbacks require function-valued declarations",
+				},
+			],
+		};
+	}
+	if (callbacks.some((callback) => callback === undefined))
+		return {
+			text: "",
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.DynamicValues,
+					text: dynamic
+						.map((declaration) =>
+							declaration.value.kind === StyleValueKindTag.Dynamic
+								? declaration.value.expression
+								: "",
+						)
+						.join(", "),
+					hint: "styled-components style-object callbacks require function-valued declarations",
+				},
+			],
+		};
+	const sharedParameter = callbacks.every(
+		(callback) => callback!.parameter === callbacks[0]!.parameter,
+	)
+		? callbacks[0]!.parameter
+		: "props";
+	const transformed = mapStyledDeclarations(program, (declaration) => {
+		if (declaration.value.kind !== StyleValueKindTag.Dynamic) return declaration;
+		const callback = styledFunctionValue(declaration.value.expression);
+		if (callback === undefined) return declaration;
+		const expression =
+			callback.parameter === sharedParameter && !callback.body.startsWith("{")
+				? callback.body
+				: `(${callback.expression})(${sharedParameter})`;
+		return {
+			...declaration,
+			value: { ...declaration.value, expression },
+		};
+	});
+	return {
+		text: `(${sharedParameter}) => (${programObject(transformed)})`,
+		residuals: [],
+	};
+}
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.StyledComponents,
@@ -20,27 +160,27 @@ export default defineCodemodAdapter({
 		{
 			name: "styled",
 			kind: CodemodCallPatternKindTag.Styled,
-			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g,
+			regex: new RegExp(`${styledSubjectPattern}\\s*\\(\\s*\\{`, "g"),
 		},
 		{
 			name: "styled-function",
 			kind: CodemodCallPatternKindTag.Styled,
-			regex:
-				/\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
+			regex: new RegExp(
+				`${styledSubjectPattern}\\s*\\(\\s*(?:\\([^)]*\\)|[A-Za-z_$][\\w$]*)\\s*=>`,
+				"g",
+			),
 			functionCall: {
-				functionCall:
-					/\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
-				subjectFromMatch: (match) =>
-					match
-						.match(/^styled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
-						?.replace(/\s+/g, " ")
-						.replace(/\.\s+/g, "."),
+				functionCall: new RegExp(
+					`${styledSubjectPattern}\\s*\\(\\s*(?:\\([^)]*\\)|[A-Za-z_$][\\w$]*)\\s*=>`,
+					"g",
+				),
+				subjectFromMatch: (match) => styledSubjectFromFunctionMatch(match),
 			},
 		},
 		{
 			name: "styled-template",
 			kind: CodemodCallPatternKindTag.Styled,
-			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
+			regex: new RegExp(`${styledSubjectPattern}\\s*\\x60(?:\\\\.|[^\\x60])*\\x60`, "g"),
 			form: CodemodCallPatternFormTag.Template,
 		},
 		{
@@ -114,9 +254,11 @@ export default defineCodemodAdapter({
 				text: `createGlobalStyle\`${templateCss(program)}\``,
 				imports: ['import { createGlobalStyle } from "styled-components";'],
 			};
+		const dynamic = styledDynamicEmission(program, programObject);
 		return {
-			text: `${program.source?.subject ?? "styled.div"}(${programObject(program)})`,
+			text: `${program.source?.subject ?? "styled.div"}(${dynamic.text})`,
 			imports: ['import styled from "styled-components";'],
+			residuals: dynamic.residuals,
 		};
 	},
 });

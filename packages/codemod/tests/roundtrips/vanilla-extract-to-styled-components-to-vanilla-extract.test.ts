@@ -86,7 +86,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ padding: 8, color: "red" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ padding: 8, color: "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -271,7 +271,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -345,7 +345,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -433,7 +433,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: resolves token va
 		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "@vanilla-extract/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ padding: 8, color: "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

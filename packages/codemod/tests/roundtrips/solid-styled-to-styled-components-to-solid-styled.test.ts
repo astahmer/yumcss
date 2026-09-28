@@ -84,7 +84,7 @@ test("solid-styled -> styled-components -> solid-styled: preserves an actionable
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "red" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("solid-styled -> styled-components -> solid-styled: retains the documented 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "red" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -267,7 +267,7 @@ test("solid-styled -> styled-components -> solid-styled: preserves concrete them
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "#2563eb" }));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("solid-styled -> styled-components -> solid-styled: preserves concrete them
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "#2563eb" }));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -425,7 +425,7 @@ test("solid-styled -> styled-components -> solid-styled: resolves token values a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled("div")(() => ({ "padding": "1rem", "color": "#2563eb" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

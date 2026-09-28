@@ -50,7 +50,8 @@ test("styled-components -> stylex -> styled-components: preserves an actionable 
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		const __CardStyle = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,8 +86,10 @@ test("styled-components -> stylex -> styled-components: preserves an actionable 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = { "style": styled.div({ padding: "1rem", color: "red" }) }.style;",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
+		const __CardStyle = { "style": styled.div({ padding: "1rem", color: "red" }) }.style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +137,8 @@ test("styled-components -> stylex -> styled-components: retains the documented s
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
+		const __CardStyle = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,8 +173,10 @@ test("styled-components -> stylex -> styled-components: retains the documented s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = { "style": styled.div({ padding: "1rem", color: "red" }) }.style;",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
+		const __CardStyle = { "style": styled.div({ padding: "1rem", color: "red" }) }.style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +239,8 @@ test("styled-components -> stylex -> styled-components: preserves concrete theme
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		const __CardStyle = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -268,8 +275,10 @@ test("styled-components -> stylex -> styled-components: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		export const Card = { "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style;",
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
+		const __CardStyle = { "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +314,8 @@ test("styled-components -> stylex -> styled-components: preserves concrete theme
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		const __CardStyle = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -340,8 +350,10 @@ test("styled-components -> stylex -> styled-components: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		export const Card = { "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style;",
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
+		const __CardStyle = { "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +403,8 @@ test("styled-components -> stylex -> styled-components: resolves token values ac
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
+		const __CardStyle = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -426,8 +439,10 @@ test("styled-components -> stylex -> styled-components: resolves token values ac
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = { "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style;",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
+		const __CardStyle = { "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

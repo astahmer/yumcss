@@ -119,7 +119,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves an ac
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -321,7 +321,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -403,7 +403,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "react-strict-dom has no host representation for react",
+		          "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -499,7 +499,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: resolves token 
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

@@ -385,9 +385,12 @@ describe("target adapter emission contract", () => {
 			return;
 		}
 
-		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
+		expect(
+			result.skipped,
+			`${CodemodAdapterId.StyledComponents} -> ${target}: ${JSON.stringify(result.residuals)}\n${result.code}`,
+		).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("const Card = (props) => <div");
+		expect(result.code).toContain('const Card = (props) => { const Component = props.as ?? "div";');
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
 		expect(result.code).not.toContain("styled-components");
@@ -532,7 +535,7 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("const Card = (props) =>");
+		expect(result.code).toContain('const Card = (props) => { const Component = props.as ?? "div";');
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
 	});
@@ -612,7 +615,10 @@ describe("target adapter emission contract", () => {
 				semantic: { source: { framework: BuiltinHostFramework.React } },
 			});
 
-			expect(result.skipped, `${sourceAdapter} -> ${CodemodAdapterId.ReactNative}`).toBe(0);
+			expect(
+				result.skipped,
+				`${sourceAdapter} -> ${CodemodAdapterId.ReactNative}: ${JSON.stringify({ residuals: result.residuals, outcomes: result.outcomes, code: result.code })}`,
+			).toBe(0);
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain("(props) => <View");
 			expect(result.code).toContain("StyleSheet.create");
@@ -671,8 +677,8 @@ describe("target adapter emission contract", () => {
 	test.each([
 		[
 			CodemodAdapterId.Stitches,
-			'import { css } from "@stitches/react";',
-			'const Card = css({ color: "red" });',
+			'import { styled } from "@stitches/react";',
+			'const Card = styled("div", { color: "red" });',
 		],
 		[
 			CodemodAdapterId.Mui,
@@ -682,7 +688,7 @@ describe("target adapter emission contract", () => {
 		[
 			CodemodAdapterId.StyleX,
 			'import * as stylex from "@stylexjs/stylex";',
-			'const Card = stylex.create({ style: { color: "red" } }).style;',
+			'const __CardStyle = stylex.create({ style: { color: "red" } }).style;',
 		],
 	] as const)(
 		"projects a static Solid host into %s's React-compatible target",
@@ -711,7 +717,7 @@ describe("target adapter emission contract", () => {
 	);
 
 	test.each([
-		[CodemodAdapterId.Stitches, 'import { css } from "@stitches/react";'],
+		[CodemodAdapterId.Stitches, 'import { styled } from "@stitches/react";'],
 		[CodemodAdapterId.Mui, 'import { styled } from "@mui/system";'],
 		[CodemodAdapterId.StyleX, 'import * as stylex from "@stylexjs/stylex";'],
 	] as const)("projects a static Vue SFC into %s's React host dialect", (target, targetImport) => {
@@ -1059,7 +1065,7 @@ describe("target adapter emission contract", () => {
 		[CodemodAdapterId.Aphrodite, 'import { StyleSheet } from "aphrodite";'],
 		[CodemodAdapterId.Style9, 'import style9 from "style9";'],
 		[CodemodAdapterId.Compiled, 'import { css } from "@compiled/react";'],
-		[CodemodAdapterId.SolidStyled, 'import { styled } from "solid-styled-components";'],
+		[CodemodAdapterId.SolidStyled, 'import { css } from "solid-styled-components";'],
 		[CodemodAdapterId.VueStyled, 'import styled from "vue-styled-components";'],
 		[CodemodAdapterId.ReactNative, 'import { StyleSheet } from "react-native";'],
 	] as const)("adds the target-owned import for %s", (target, expectedImport) => {

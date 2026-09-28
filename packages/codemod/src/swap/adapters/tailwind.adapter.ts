@@ -40,6 +40,7 @@ import {
 } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { getHostComponentRewriter } from "../host-component-rewriter.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import { TokenCatalog, resolvedStyleValue } from "../tokens.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
@@ -1676,6 +1677,55 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
 				standaloneHostRepresentation: StyleHostRepresentationKind.Class,
+				resolveHostRepresentation: () => StyleHostRepresentationKind.Class,
+				rewriteComponent: ({
+					code,
+					source,
+					file,
+					binding,
+					tag,
+					framework,
+					emittedExpression,
+					representation,
+					attrsExpression,
+				}) => {
+					if (
+						representation !== StyleHostRepresentationKind.Component &&
+						representation !== StyleHostRepresentationKind.Class
+					)
+						return { code, residuals: [] };
+					if (code === source) return { code, residuals: [] };
+					const rewriteDeclaration = getHostComponentRewriter(framework)?.rewriteDeclaration;
+					if (rewriteDeclaration === undefined)
+						return {
+							code,
+							residuals: [
+								{
+									kind: StyleProgramResidualKindTag.HostFramework,
+									text: binding,
+									hint: "Tailwind polymorphic component projection requires a JSX host rewriter",
+								},
+							],
+						};
+					const rewritten = rewriteDeclaration({
+						source: code,
+						file: file ?? "component.tsx",
+						binding,
+						tag,
+						framework,
+						classExpression: emittedExpression,
+						...(attrsExpression === undefined ? {} : { attrsExpression }),
+					});
+					return {
+						code: rewritten.code,
+						...(rewritten.needsCx
+							? {
+									imports: ['import { createCx } from "pandwind/cx";', "const cx = createCx();"],
+								}
+							: {}),
+						residuals: rewritten.residuals,
+					};
+				},
 				resolveRepresentation: ({ program, hasHostContext, binding, framework, source }) => {
 					const sourceHostAttributes =
 						program.source?.hostOpenTag !== undefined &&

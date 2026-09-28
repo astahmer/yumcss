@@ -5,7 +5,7 @@ import { CodemodAdapterKit, defineCodemodAdapter, type CallPattern } from "../ex
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { StyleLowering } from "../lowering.ts";
 import { STYLE_LOWERING_SCHEMA } from "../lowering.ts";
-import type { AdapterParseContext } from "../adapter-contract.ts";
+import type { AdapterEmitContext, AdapterParseContext } from "../adapter-contract.ts";
 import {
 	SOURCE_SCANNER_SERVICE,
 	SourceBindingKind,
@@ -30,6 +30,11 @@ import {
 	canConvertStaticVueSfc,
 	rewriteVueSfcToJsx,
 } from "../host-adapters.ts";
+import {
+	componentAttrsExpressionForSubject,
+	componentExpressionForSubject,
+	intrinsicTagForSubject,
+} from "../host-component-rewriter.ts";
 
 const STYLEX_MODULE = "@stylexjs/stylex";
 
@@ -112,6 +117,54 @@ function generatedCssBinding(source: string): string {
 			return candidate;
 	}
 	return "targetCss";
+}
+
+function generatedStylexComponentBinding(context: AdapterEmitContext | undefined): string {
+	const binding = context?.host?.binding?.replace(/[^A-Za-z0-9_$]/gu, "") || "component";
+	const source = context?.document?.document.source ?? "";
+	let candidate = `__${binding}Style`;
+	let suffix = 2;
+	while (new RegExp(`\\b${escapeRegExp(candidate)}\\b`, "u").test(source)) {
+		candidate = `__${binding}Style${suffix}`;
+		suffix++;
+	}
+	return candidate;
+}
+
+function stylexComponentEmission(
+	styleExpression: string,
+	context: AdapterEmitContext | undefined,
+):
+	| {
+			readonly text: string;
+			readonly generatedStatements: readonly string[];
+			readonly componentExpression: true;
+	  }
+	| undefined {
+	const subject = context?.host?.subject;
+	if (
+		context?.host?.representation !== StyleHostRepresentationKind.Component ||
+		subject === undefined ||
+		(context.host.framework !== undefined && context.host.framework !== BuiltinHostFramework.React)
+	)
+		return undefined;
+	const tag = intrinsicTagForSubject(subject);
+	const component = componentExpressionForSubject(subject);
+	const defaultComponent = component ?? (tag === undefined ? undefined : JSON.stringify(tag));
+	if (defaultComponent === undefined) return undefined;
+	const styleBinding = generatedStylexComponentBinding(context);
+	const attrs = componentAttrsExpressionForSubject(subject);
+	const attrsExpression =
+		attrs === undefined
+			? "{}"
+			: /=>|\bfunction\b/u.test(attrs)
+				? `(${attrs})(props)`
+				: `(${attrs})`;
+	return {
+		text: `(props) => { const attrs = ${attrsExpression}; const Component = attrs.as ?? props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(${styleBinding}); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; }`,
+		generatedStatements: [`const ${styleBinding} = ${styleExpression};`],
+		componentExpression: true,
+	};
 }
 
 function staticImports(binding: string): readonly string[] {
@@ -1153,13 +1206,11 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 					},
 				],
 				hostRepresentation: StyleHostRepresentationKind.Component,
-				resolveHostRepresentation: ({ program, hasHostContext, framework }) => {
+				resolveHostRepresentation: ({ program, framework }) => {
 					if (framework !== undefined && framework !== BuiltinHostFramework.React) return undefined;
 					return program.source?.subject === undefined
 						? StyleHostRepresentationKind.StyleProp
-						: hasHostContext
-							? StyleHostRepresentationKind.StyleProp
-							: StyleHostRepresentationKind.Component;
+						: StyleHostRepresentationKind.Component;
 				},
 				rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {
 					if (representation !== StyleHostRepresentationKind.StyleProp)
@@ -1331,7 +1382,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 			},
 		},
 		lowerings: [stylexNumericLowering],
-		emit(program, { programObject }) {
+		emit(program, { programObject }, context) {
 			if (
 				program.source?.pattern === CodemodPatternId.StyleXKeyframes ||
 				program.rules[0]?.kind === StyleRuleKindTag.Keyframes
@@ -1349,15 +1400,40 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 			}
 			const named = program.rules.some((rule) => rule.name !== undefined);
 			const conditionalEmission = stylexConditionalProgramObject(program);
+			const styleExpression =
+				conditionalEmission.text ??
+				(named
+					? `stylex.create(${programObject(program)})`
+					: `stylex.create({ style: ${programObject(program)} }).style`);
+			const component = stylexComponentEmission(styleExpression, context);
+			if (component !== undefined)
+				return {
+					...component,
+					imports: ['import * as stylex from "@stylexjs/stylex";'],
+					...(conditionalEmission.residuals.length === 0
+						? {}
+						: { residuals: conditionalEmission.residuals }),
+				};
+			if (
+				context?.host?.representation === StyleHostRepresentationKind.Component &&
+				context.host.subject !== undefined
+			)
+				return {
+					text: "",
+					imports: ['import * as stylex from "@stylexjs/stylex";'],
+					residuals: [
+						{
+							kind: StyleProgramResidualKindTag.HostFramework,
+							text: context.host.subject,
+							hint: "StyleX could not emit the styled component as a React component",
+						},
+					],
+				};
 			return {
 				// StyleX's target value is a compiled style object, not a class
 				// string. Named programs keep their map; an unnamed program gets a
 				// stable local `style` key so it can be consumed by stylex.props.
-				text:
-					conditionalEmission.text ??
-					(named
-						? `stylex.create(${programObject(program)})`
-						: `stylex.create({ style: ${programObject(program)} }).style`),
+				text: styleExpression,
 				imports: ['import * as stylex from "@stylexjs/stylex";'],
 				...(conditionalEmission.residuals.length === 0
 					? {}

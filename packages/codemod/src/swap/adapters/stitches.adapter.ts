@@ -17,6 +17,12 @@ import {
 	StyleNamedRuleStrategy,
 	StyleProgramCompositionKind,
 } from "../identifiers.ts";
+import {
+	componentAttrsExpressionForSubject,
+	componentExpressionForSubject,
+	intrinsicTagForSubject,
+	wrapComponentExpressionWithAttrs,
+} from "../host-component-rewriter.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import { literalValueToPlain, parseObjectLiteral } from "../parse.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
@@ -261,7 +267,7 @@ export default defineCodemodAdapter({
 				: {}),
 		};
 	},
-	emit(program, { firstKind, programObject }) {
+	emit(program, { firstKind, programObject }, context) {
 		const kind = firstKind(program);
 		if (kind === StyleRuleKindTag.Keyframes)
 			return {
@@ -273,6 +279,43 @@ export default defineCodemodAdapter({
 				text: `globalCss(${programObject(program)})`,
 				imports: ['import { globalCss } from "@stitches/react";'],
 			};
+		const subject = program.source?.subject;
+		if (
+			context?.host?.representation === StyleHostRepresentationKind.Component &&
+			subject !== undefined
+		) {
+			const base = componentExpressionForSubject(subject);
+			const tag = intrinsicTagForSubject(subject);
+			if (base === undefined && tag === undefined)
+				return {
+					text: "",
+					imports: ['import { styled } from "@stitches/react";'],
+					residuals: [
+						{
+							kind: StyleProgramResidualKindTag.HostFramework,
+							text: subject,
+							hint: "Stitches component projection requires a static intrinsic or component subject",
+						},
+					],
+				};
+			const attrsExpression = componentAttrsExpressionForSubject(subject);
+			const wrapped = wrapComponentExpressionWithAttrs(
+				`styled(${base ?? JSON.stringify(tag)}, ${programObject(program)})`,
+				attrsExpression,
+				context.host.framework,
+			);
+			if (wrapped.residuals.length > 0)
+				return {
+					text: "",
+					imports: ['import { styled } from "@stitches/react";', ...wrapped.imports],
+					residuals: wrapped.residuals,
+				};
+			return {
+				text: wrapped.text,
+				componentExpression: true,
+				imports: ['import { styled } from "@stitches/react";', ...wrapped.imports],
+			};
+		}
 		return {
 			text: `css(${programObject(program)})`,
 			imports: ['import { css } from "@stitches/react";'],

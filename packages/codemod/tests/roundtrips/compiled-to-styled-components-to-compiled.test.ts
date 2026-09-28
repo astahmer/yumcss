@@ -86,7 +86,7 @@ test("compiled -> styled-components -> compiled: preserves an actionable concret
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ "padding": 8, "color": "red" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": 8, "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -272,7 +272,7 @@ test("compiled -> styled-components -> compiled: preserves concrete theme and pr
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +346,7 @@ test("compiled -> styled-components -> compiled: preserves concrete theme and pr
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -434,7 +434,7 @@ test("compiled -> styled-components -> compiled: resolves token values across bo
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": 8, "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

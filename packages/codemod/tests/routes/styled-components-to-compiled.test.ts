@@ -51,7 +51,7 @@ test("styled-components -> compiled: migrates concrete styled-components syntax 
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -98,7 +98,7 @@ test("styled-components -> compiled: carries a documented secondary styled-compo
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -154,7 +154,7 @@ test("styled-components -> compiled: loads concrete theme and project context va
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -192,7 +192,7 @@ test("styled-components -> compiled: loads concrete theme and project context va
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,7 +242,7 @@ test("styled-components -> compiled: resolves concrete token values with project
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -290,7 +290,7 @@ test("styled-components -> compiled: preserves malformed concrete styled-compone
 		import { createCx } from "pandwind/cx";
 		import { css } from "@compiled/react";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

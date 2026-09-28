@@ -51,7 +51,7 @@ test("styled-components -> fela -> styled-components: preserves an actionable co
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("styled-components -> fela -> styled-components: preserves an actionable co
 		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -138,7 +138,7 @@ test("styled-components -> fela -> styled-components: retains the documented sec
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -176,7 +176,7 @@ test("styled-components -> fela -> styled-components: retains the documented sec
 		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -240,7 +240,7 @@ test("styled-components -> fela -> styled-components: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -278,7 +278,7 @@ test("styled-components -> fela -> styled-components: preserves concrete theme a
 		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -315,7 +315,7 @@ test("styled-components -> fela -> styled-components: preserves concrete theme a
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -353,7 +353,7 @@ test("styled-components -> fela -> styled-components: preserves concrete theme a
 		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -404,7 +404,7 @@ test("styled-components -> fela -> styled-components: resolves token values acro
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -442,7 +442,7 @@ test("styled-components -> fela -> styled-components: resolves token values acro
 		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

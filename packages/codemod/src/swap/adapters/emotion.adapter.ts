@@ -16,6 +16,10 @@ import type {
 } from "../adapter-contract.ts";
 import { SourceBindingKind, type SourceBinding } from "pandwind/source";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
+import {
+	componentAttrsExpressionForSubject,
+	wrapComponentExpressionWithAttrs,
+} from "../host-component-rewriter.ts";
 
 function importedModulePath(context: AdapterParseContext, specifier: string): string {
 	const directory = dirnameDocumentPath(context.file);
@@ -421,11 +425,24 @@ export default defineCodemodAdapter({
 		if (
 			program.source?.subject !== undefined &&
 			context?.host?.representation !== StyleHostRepresentationKind.Class
-		)
+		) {
+			const subject = program.source.subject;
+			const attrsExpression = componentAttrsExpressionForSubject(subject);
+			const attrsIndex = subject.indexOf(".attrs");
+			const targetSubject = attrsIndex < 0 ? subject : subject.slice(0, attrsIndex).trimEnd();
+			const targetExpression = `${targetSubject}(${programObject(program)})`;
+			const wrapped = wrapComponentExpressionWithAttrs(
+				targetExpression,
+				attrsExpression,
+				context?.host?.framework,
+			);
+			if (wrapped.residuals.length > 0) return { text: "", residuals: wrapped.residuals };
 			return {
-				text: `${program.source.subject}(${programObject(program)})`,
-				imports: ['import styled from "@emotion/styled";'],
+				text: wrapped.text,
+				...(attrsExpression === undefined ? {} : { componentExpression: true }),
+				imports: ['import styled from "@emotion/styled";', ...wrapped.imports],
 			};
+		}
 		return {
 			text: `css(${programObject(program)})`,
 			imports: ['import { css } from "@emotion/css";'],

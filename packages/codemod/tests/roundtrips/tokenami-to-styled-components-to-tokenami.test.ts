@@ -83,10 +83,9 @@ test("tokenami -> styled-components -> tokenami: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = styled.div({ gap: "1rem", color: "red" });",
-		    "converted": 0,
+		    "code": "import { css } from "@tokenami/css";
+		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--gap": "1rem", "--color": "red" }), propsStyle)} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -102,19 +101,19 @@ test("tokenami -> styled-components -> tokenami: preserves an actionable concret
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -241,10 +240,9 @@ test("tokenami -> styled-components -> tokenami: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = styled.div({ gap: "1rem", color: "#f97316" });",
-		      "converted": 0,
+		      "code": "import { css } from "@tokenami/css";
+		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--gap": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -260,19 +258,19 @@ test("tokenami -> styled-components -> tokenami: preserves concrete theme and pr
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		          "kind": "host-framework",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -312,10 +310,9 @@ test("tokenami -> styled-components -> tokenami: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = styled.div({ gap: "1rem", color: "#2563eb" });",
-		      "converted": 0,
+		      "code": "import { css } from "@tokenami/css";
+		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--gap": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -331,19 +328,19 @@ test("tokenami -> styled-components -> tokenami: preserves concrete theme and pr
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		          "kind": "host-framework",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -397,10 +394,9 @@ test("tokenami -> styled-components -> tokenami: resolves token values across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = styled.div({ gap: "1rem", color: "#2563eb" });",
-		    "converted": 0,
+		    "code": "import { css } from "@tokenami/css";
+		export const card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--gap": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -416,19 +412,19 @@ test("tokenami -> styled-components -> tokenami: resolves token values across bo
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

@@ -1,5 +1,9 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
-import { StyleValueKindTag } from "../semantic-ir.ts";
+import {
+	StyleValueKindTag,
+	StyleProgramResidualKindTag,
+	type StyleProgram,
+} from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { canConvertStaticSolidJsx, rewriteSolidJsxToVue } from "../host-adapters.ts";
@@ -11,101 +15,185 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
-import type { StyleProgram } from "../semantic-ir.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
-
-function isStaticProgram(program: StyleProgram): boolean {
-	return StyleProgramAnalysis.declarations(program).every(
-		(declaration) => declaration.value.kind !== StyleValueKindTag.Dynamic,
-	);
-}
+import {
+	componentAttrsExpressionForSubject,
+	componentAttrsValueExpression,
+	intrinsicTagForSubject,
+} from "../host-component-rewriter.ts";
 
 function functionExpression(expression: string): { parameter: string; body: string } | undefined {
-	const match = /^\(([^\n]*)\)\s*=>\s*([\s\S]*)$/.exec(expression.trim());
-	return match === null ? undefined : { parameter: match[1]!.trim(), body: match[2]!.trim() };
+	const match = /^\s*(?:\(\s*([^)]*?)\s*\)|([A-Za-z_$][\w$]*))\s*=>\s*([\s\S]*)$/u.exec(
+		expression.trim(),
+	);
+	if (match === null) return undefined;
+	return { parameter: (match[1] ?? match[2] ?? "").trim(), body: match[3]!.trim() };
 }
 
-function functionStyleEmission(
+function dynamicStyleProps(program: StyleProgram): readonly string[] | undefined {
+	const names = new Set<string>();
+	for (const declaration of StyleProgramAnalysis.declarations(program)) {
+		if (declaration.value.kind !== StyleValueKindTag.Dynamic) continue;
+		const callback = functionExpression(declaration.value.expression);
+		if (callback === undefined || callback.parameter === "") return undefined;
+		const parameter = callback.parameter;
+		if (/^\{[^{}]*\}$/u.test(parameter)) {
+			for (const property of parameter.slice(1, -1).split(",")) {
+				const name = property.trim();
+				if (!/^[A-Za-z_$][\w$]*$/u.test(name)) return undefined;
+				names.add(name);
+			}
+			continue;
+		}
+		if (!/^[A-Za-z_$][\w$]*$/u.test(parameter)) return undefined;
+		if (new RegExp(`\\b${parameter}\\.theme(?:\\.|\\b)`, "u").test(callback.body)) return undefined;
+		if (new RegExp(`\\b${parameter}\\s*\\[`, "u").test(callback.body)) return undefined;
+		const member = new RegExp(`\\b${parameter}\\.([A-Za-z_$][\\w$]*)`, "gu");
+		for (const match of callback.body.matchAll(member)) {
+			if (match[0]!.split(".").length !== 2) return undefined;
+			names.add(match[1]!);
+		}
+	}
+	return [...names].toSorted();
+}
+
+function templateCss(
+	program: StyleProgram,
+	renderTemplateCss: (program: StyleProgram) => string,
+): string {
+	const dynamicValues: Array<{ marker: string; expression: string }> = [];
+	const mapDeclaration = (declaration: StyleProgram["declarations"][number]) => {
+		if (declaration.value.kind !== StyleValueKindTag.Dynamic) return declaration;
+		const marker = `__pandwind_dynamic_value_${dynamicValues.length}__`;
+		dynamicValues.push({ marker, expression: declaration.value.expression });
+		return {
+			...declaration,
+			value: { kind: StyleValueKindTag.Literal as const, value: marker },
+		};
+	};
+	const mapRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...rule,
+		declarations: rule.declarations.map(mapDeclaration),
+		children: rule.children.map(mapRule),
+	});
+	const serialized = renderTemplateCss({
+		...program,
+		declarations: program.declarations.map(mapDeclaration),
+		rules: program.rules.map(mapRule),
+	});
+	const escaped = serialized
+		.replaceAll("\\", "\\\\")
+		.replaceAll("`", "\\`")
+		.replaceAll("${", "\\${");
+	return dynamicValues.reduce(
+		(css, { marker, expression }) => css.replaceAll(marker, `\${${expression}}`),
+		escaped,
+	);
+}
+
+function vueStyledEmission(
 	program: StyleProgram,
 	_context: AdapterEmitContext | undefined,
-	programObject: (program: StyleProgram) => string,
-): AdapterEmitResult | undefined {
-	const declarations = StyleProgramAnalysis.declarations(program);
-	const dynamic = declarations.flatMap((declaration) =>
-		declaration.value.kind === StyleValueKindTag.Dynamic ? [declaration] : [],
+	_programObject: (program: StyleProgram) => string,
+	renderTemplateCss: (program: StyleProgram) => string,
+): AdapterEmitResult {
+	const subject = program.source?.subject;
+	const tag =
+		subject === undefined ? (program.source?.hostTag ?? "div") : intrinsicTagForSubject(subject);
+	if (tag === undefined)
+		return {
+			text: "",
+			imports: ['import styled from "vue-styled-components";'],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: subject ?? "styled component",
+					hint: "vue-styled-components can preserve only intrinsic tag subjects from styled-components",
+				},
+			],
+		};
+	const props = dynamicStyleProps(program);
+	if (props === undefined)
+		return {
+			text: "",
+			imports: ['import styled from "vue-styled-components";'],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.FunctionDynamic,
+					text: program.source?.subject ?? "dynamic styled props",
+					hint: "vue-styled-components dynamic styles require statically identifiable, non-theme props",
+				},
+			],
+		};
+	const tagExpression =
+		props.length === 0
+			? /^[a-z][\w-]*$/u.test(tag)
+				? `styled.${tag}`
+				: `styled(${JSON.stringify(tag)})`
+			: `styled(${JSON.stringify(tag)}, { ${props.map((name) => `${JSON.stringify(name)}: null`).join(", ")} })`;
+	const component = `${tagExpression}\`${templateCss(program, renderTemplateCss)}\``;
+	const attrsExpression =
+		subject === undefined ? undefined : componentAttrsExpressionForSubject(subject);
+	if (attrsExpression === undefined)
+		return {
+			text: component,
+			imports: ['import styled from "vue-styled-components";'],
+			residuals: [...program.residuals],
+		};
+	const attrsValue = componentAttrsValueExpression(
+		attrsExpression,
+		"({ ...this.$attrs, ...this.$props })",
 	);
-	if (dynamic.length === 0 || program.source?.subject === undefined) return undefined;
-	const functions = dynamic.map((declaration) =>
-		declaration.value.kind === StyleValueKindTag.Dynamic
-			? functionExpression(declaration.value.expression)
-			: undefined,
-	);
-	if (functions.some((value) => value === undefined)) return undefined;
-	const parameter = functions[0]!.parameter;
-	if (functions.some((value) => value!.parameter !== parameter)) return undefined;
-	const stripFunction = (declaration: StyleProgram["declarations"][number]) => {
-		if (declaration.value.kind !== StyleValueKindTag.Dynamic) return declaration;
-		const value = functionExpression(declaration.value.expression);
-		return value === undefined
-			? declaration
-			: { ...declaration, value: { ...declaration.value, expression: value.body } };
-	};
-	const stripRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
-		...rule,
-		declarations: rule.declarations.map(stripFunction),
-		children: rule.children.map(stripRule),
-	});
-	const body = {
-		...program,
-		declarations: program.declarations.map(stripFunction),
-		rules: program.rules.map(stripRule),
-	};
+	if (attrsValue === undefined)
+		return {
+			text: "",
+			imports: ['import styled from "vue-styled-components";'],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: attrsExpression,
+					hint: "styled component attrs must be a static object or a props callback to preserve them",
+				},
+			],
+		};
+	const styleProps = `{ ${props.map((name) => `${JSON.stringify(name)}: forwarded[${JSON.stringify(name)}]`).join(", ")} }`;
+	const removeStyleProps = props
+		.map((name) => `delete forwarded[${JSON.stringify(name)}];`)
+		.join(" ");
 	return {
-		text: `${program.source.subject}((${parameter}) => (${programObject(body)}))`,
-		imports: ['import styled from "vue-styled-components";'],
+		text: `((Component) => Vue.extend({ inheritAttrs: false, render(h) { const authoredAttrs = ${attrsValue}; const forwarded = { ...this.$attrs, ...this.$props, ...authoredAttrs }; const { class: authoredClass, className: authoredClassName, style: authoredStyle, ...attrs } = forwarded; const props = ${styleProps}; ${removeStyleProps} return h(Component, { attrs, props, on: this.$listeners, class: [this.$vnode.data?.class, authoredClass, authoredClassName].filter(Boolean), style: { ...this.$vnode.data?.style, ...authoredStyle } }, this.$slots.default); } }))(${component})`,
+		imports: ['import styled from "vue-styled-components";', 'import Vue from "vue";'],
 		residuals: [...program.residuals],
 	};
-}
-
-function supportsStaticOrFunctionProgram(program: StyleProgram): boolean {
-	if (isStaticProgram(program)) return true;
-	const declarations = StyleProgramAnalysis.declarations(program);
-	const dynamic = declarations.flatMap((declaration) =>
-		declaration.value.kind === StyleValueKindTag.Dynamic ? [declaration] : [],
-	);
-	if (dynamic.length === 0) return false;
-	const functions = dynamic.map((declaration) =>
-		declaration.value.kind === StyleValueKindTag.Dynamic
-			? functionExpression(declaration.value.expression)
-			: undefined,
-	);
-	return (
-		functions.every((value) => value !== undefined) &&
-		new Set(functions.map((value) => value!.parameter)).size === 1
-	);
 }
 
 const vueStyled = makeExtraAdapter({
 	id: CodemodAdapterId.VueStyled,
 	officialApi: {
 		apis: [
-			{ name: "styled", status: AdapterOfficialApiStatusTag.Supported },
-			{ name: "styled.div", status: AdapterOfficialApiStatusTag.Supported },
+			{
+				name: "styled(tagName)",
+				status: AdapterOfficialApiStatusTag.Supported,
+				forms: ["template"],
+			},
 			{ name: "ThemeProvider", status: AdapterOfficialApiStatusTag.Supported },
 		],
 	},
 	modules: ["vue-styled-components"],
 	packages: {
-		packages: [{ name: "vue-styled-components", kind: AdapterDependencyKindTag.Runtime }],
+		packages: [
+			{ name: "vue-styled-components", kind: AdapterDependencyKindTag.Runtime },
+			{ name: "vue", kind: AdapterDependencyKindTag.Runtime },
+		],
 	},
 	detect: [
 		/from\s+["'](?:vue-styled-components|@vue-styled-components\/core)["']/g,
 		/\bstyled\.[A-Za-z_$][\w$]*(?:<[^`]*>)?\s*`/g,
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))\s*\(\s*\{/g,
 	],
-	call: /\bstyled\.[A-Za-z_$][\w$]*(?:<[^`]*>)?(?:\.props\s*\(\s*\{[\s\S]*?\}\s*\))?\s*`(?:\\.|[^`])*`/g,
+	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*`(?:\\.|[^`])*`/g,
 	form: CodemodCallPatternFormTag.Template,
-	prefix: "styled.div(",
+	prefix: "styled.div`",
 	targetImports: ['import styled from "vue-styled-components";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	capabilityOverrides: {
@@ -130,16 +218,22 @@ const vueStyled = makeExtraAdapter({
 		hostRepresentation: StyleHostRepresentationKind.Component,
 		standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 		resolveHostRepresentation: ({ framework, program }) =>
-			supportsStaticOrFunctionProgram(program) &&
 			(framework === undefined ||
 				framework === BuiltinHostFramework.Vue ||
-				framework === BuiltinHostFramework.React)
+				framework === BuiltinHostFramework.React) &&
+			dynamicStyleProps(program) !== undefined &&
+			subjectSupported(program)
 				? StyleHostRepresentationKind.Component
 				: undefined,
 	},
-	targetEmit: functionStyleEmission,
+	targetEmit: vueStyledEmission,
 	functionCall:
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*\(/g,
 });
+
+function subjectSupported(program: StyleProgram): boolean {
+	const subject = program.source?.subject;
+	return subject === undefined || intrinsicTagForSubject(subject) !== undefined;
+}
 
 export default vueStyled;

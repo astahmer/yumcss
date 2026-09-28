@@ -86,7 +86,7 @@ test("goober -> styled-components -> goober: preserves an actionable concrete ro
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,7 +172,7 @@ test("goober -> styled-components -> goober: retains the documented secondary AP
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -273,7 +273,7 @@ test("goober -> styled-components -> goober: preserves concrete theme and projec
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("goober -> styled-components -> goober: preserves concrete theme and projec
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -435,7 +435,7 @@ test("goober -> styled-components -> goober: resolves token values across both c
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

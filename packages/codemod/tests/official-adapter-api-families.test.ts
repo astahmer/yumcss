@@ -133,6 +133,17 @@ describe("official adapter API families", () => {
 					expect(result.code).toContain("element!.classList.add(sheet.card)");
 					expect(result.code).not.toContain("sheet.attach()");
 				}
+				if (api.adapter === CodemodAdapterId.StyledComponents && api.name === "polymorphic as") {
+					expect(result.code).toContain('defaultComponent: "div"');
+					expect(result.code).toContain("props.as ?? defaultComponent");
+					expect(result.code).toContain('<Card as="a" href="/docs" />');
+					expect(result.code).not.toContain('<div as="a"');
+				}
+				if (api.adapter === CodemodAdapterId.StyledComponents && api.name === "styled attrs") {
+					expect(result.code).toContain('type: "button"');
+					expect(result.code).toContain('"aria-label": "Save"');
+					expect(result.code).toContain('color: "red"');
+				}
 				if (api.name === "Global component") {
 					expect(result.code).toContain('kind: "global", selector: "body"');
 					expect(result.code).not.toContain("=> () =>");
@@ -3022,9 +3033,50 @@ describe("official adapter API families", () => {
 			  "styled-components/polymorphic as": {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createCx } from "pandwind/cx";
+			const cx = createCx();
 			const css = createUnsafeCss();
-			const Card = css.class({ color: "red" });
-			export const App = () => <div as="a" href="/docs" className={Card} />;",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });
+			export const App = () => <Card as="a" href="/docs" />;",
+			    "converted": 1,
+			    "generatedFiles": [],
+			    "loweringPlans": [
+			      {
+			        "applied": [],
+			        "availableRepresentations": [
+			          "static",
+			          "named-map",
+			          "residual",
+			        ],
+			        "representation": "static",
+			        "residuals": [],
+			      },
+			    ],
+			    "outcomes": [
+			      {
+			        "outcome": "static",
+			        "representation": "static",
+			      },
+			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "styled-components/styled attrs": {
+			    "changed": true,
+			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createCx } from "pandwind/cx";
+			const cx = createCx();
+			const css = createUnsafeCss();
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Button = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1f4hbee", inheritedClass: undefined, classAttribute: "className", attrs: ({ type: "button", "aria-label": "Save" }), joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

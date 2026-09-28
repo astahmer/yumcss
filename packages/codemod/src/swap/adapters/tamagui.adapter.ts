@@ -3,6 +3,7 @@ import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type {
 	AdapterConfigContext,
+	AdapterEmitContext,
 	AdapterParseContext,
 	AdapterParseResult,
 	AdapterProjectConfig,
@@ -13,6 +14,7 @@ import {
 	styleProgramFromRules,
 	styleProgramFromSourceObject,
 	StyleProgramResidualKindTag,
+	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
@@ -20,6 +22,68 @@ import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
+import {
+	componentAttrsExpressionForSubject,
+	componentExpressionForSubject,
+	intrinsicTagForSubject,
+} from "../host-component-rewriter.ts";
+
+function generatedTamaguiComponentBinding(context: AdapterEmitContext): string {
+	const binding = context.host?.binding?.replace(/[^A-Za-z0-9_$]/gu, "") || "component";
+	const source = context.document?.document.source ?? "";
+	let candidate = `__${binding}Tamagui`;
+	let suffix = 2;
+	while (source.includes(candidate)) {
+		candidate = `__${binding}Tamagui${suffix}`;
+		suffix++;
+	}
+	return candidate;
+}
+
+function tamaguiComponentEmission(
+	program: StyleProgram,
+	programObject: (program: StyleProgram) => string,
+	context: AdapterEmitContext | undefined,
+):
+	| {
+			readonly text: string;
+			readonly generatedStatements: readonly string[];
+			readonly imports: readonly string[];
+			readonly componentExpression: true;
+	  }
+	| undefined {
+	if (context?.host?.representation !== StyleHostRepresentationKind.Component) return undefined;
+	const subject = context.host.subject ?? program.source?.subject;
+	const base = subject === undefined ? undefined : componentExpressionForSubject(subject);
+	const tag = subject === undefined ? undefined : intrinsicTagForSubject(subject);
+	if (subject !== undefined && base === undefined && tag === undefined) return undefined;
+	const defaultRender = tag ?? (base === undefined ? "div" : undefined);
+	const attrs = subject === undefined ? undefined : componentAttrsExpressionForSubject(subject);
+	const attrsExpression =
+		attrs === undefined
+			? "{}"
+			: /^(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>|^function\b/u.test(attrs)
+				? `(${attrs})(props)`
+				: `(${attrs})`;
+	const renderArguments = [
+		"attrs.as",
+		"props.as",
+		...(defaultRender === undefined ? [] : [JSON.stringify(defaultRender)]),
+	];
+	const binding = generatedTamaguiComponentBinding(context);
+	return {
+		text: `(props) => { const attrs = ${attrsExpression}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <${binding} {...rest} {...forwardedAttrs} render={${renderArguments.join(" ?? ")}} />; }`,
+		generatedStatements: [
+			`const ${binding} = styled(${base ?? "View"}, ${programObject(program)});`,
+		],
+		imports: [
+			base === undefined
+				? 'import { styled, View } from "@tamagui/core";'
+				: 'import { styled } from "@tamagui/core";',
+		],
+		componentExpression: true,
+	};
+}
 
 function balancedCall(source: string, open: number): { end: number; body: string } | undefined {
 	let depth = 0;
@@ -253,7 +317,7 @@ export function createTamaguiAdapter(
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Tamagui, "unsupported", {
 			"theme-context": "partial",
 			composition: "partial",
-			components: "partial",
+			components: "exact",
 			"framework-semantics": "partial",
 		}),
 		detectPatterns: [/@tamagui\/(?:core|static)/u, /from\s+["']tamagui["']/u],
@@ -317,11 +381,18 @@ export function createTamaguiAdapter(
 			targetPolicy: {
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
-				hostRepresentation: StyleHostRepresentationKind.Class,
+				hostRepresentation: StyleHostRepresentationKind.Component,
 			},
 		},
-		emit(program, { programObject }) {
+		emit(program, { programObject }, context) {
 			const subject = program.source?.subject;
+			const component = tamaguiComponentEmission(program, programObject, context);
+			if (component !== undefined)
+				return {
+					...component,
+					semantic: program,
+					residuals: [],
+				};
 			return {
 				text: `styled(${subject ?? "View"}, ${programObject(program)})`,
 				// The emitted subject wrapper requires the styled factory to be in
@@ -336,6 +407,7 @@ export function createTamaguiAdapter(
 						? 'import { styled, View } from "@tamagui/core";'
 						: 'import { styled } from "@tamagui/core";',
 				],
+				componentExpression: true,
 				semantic: program,
 				residuals: [],
 			};

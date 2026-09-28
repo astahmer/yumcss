@@ -52,7 +52,7 @@ test("styled-components -> goober -> styled-components: preserves an actionable 
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -90,7 +90,7 @@ test("styled-components -> goober -> styled-components: preserves an actionable 
 		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -140,7 +140,7 @@ test("styled-components -> goober -> styled-components: retains the documented s
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("styled-components -> goober -> styled-components: retains the documented s
 		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -243,7 +243,7 @@ test("styled-components -> goober -> styled-components: preserves concrete theme
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -281,7 +281,7 @@ test("styled-components -> goober -> styled-components: preserves concrete theme
 		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -319,7 +319,7 @@ test("styled-components -> goober -> styled-components: preserves concrete theme
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -357,7 +357,7 @@ test("styled-components -> goober -> styled-components: preserves concrete theme
 		      "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -409,7 +409,7 @@ test("styled-components -> goober -> styled-components: resolves token values ac
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -447,7 +447,7 @@ test("styled-components -> goober -> styled-components: resolves token values ac
 		    "code": "import { createCx } from "pandwind/cx";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(styled.div({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

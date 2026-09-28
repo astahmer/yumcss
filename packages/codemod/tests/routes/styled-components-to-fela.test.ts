@@ -50,7 +50,7 @@ test("styled-components -> fela: migrates concrete styled-components syntax to f
 		  "changed": true,
 		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,7 +96,7 @@ test("styled-components -> fela: carries a documented secondary styled-component
 		  "changed": true,
 		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -151,7 +151,7 @@ test("styled-components -> fela: loads concrete theme and project context varian
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("styled-components -> fela: loads concrete theme and project context varian
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("styled-components -> fela: resolves concrete token values with project con
 		  "changed": true,
 		  "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -284,7 +284,7 @@ test("styled-components -> fela: preserves malformed concrete styled-components 
 		  "code": "import styled from "styled-components";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

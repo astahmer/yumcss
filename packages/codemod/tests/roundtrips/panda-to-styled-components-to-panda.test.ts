@@ -86,7 +86,7 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ color: "red", "&:hover": { color: "blue" } }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "red", "&:hover": { color: "blue" } }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -246,7 +246,7 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -318,7 +318,7 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		      "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -404,7 +404,7 @@ test("panda -> styled-components -> panda: resolves token values across both con
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ color: "brand.500", "&:hover": { color: "brand.500" } }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

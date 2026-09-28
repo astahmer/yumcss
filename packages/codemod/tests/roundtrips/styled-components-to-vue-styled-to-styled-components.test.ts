@@ -50,7 +50,7 @@ test("styled-components -> vue-styled -> styled-components: preserves an actiona
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("styled-components -> vue-styled -> styled-components: retains the document
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "red" });",
+		export const Card = styled.div\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("styled-components -> vue-styled -> styled-components: preserves concrete t
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("styled-components -> vue-styled -> styled-components: preserves concrete t
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("styled-components -> vue-styled -> styled-components: resolves token value
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });",
+		export const Card = styled.div\`padding: 1rem; color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

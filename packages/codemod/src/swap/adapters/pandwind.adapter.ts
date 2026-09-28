@@ -56,6 +56,7 @@ import {
 	componentAttrsExpressionForSubject,
 	componentPropNamesForSubject,
 	componentExpressionForSubject,
+	hasComponentAttributeUse,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
 import {
@@ -91,7 +92,21 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	hostRepresentation: StyleHostRepresentationKind.Class,
 	standaloneHostRepresentation: StyleHostRepresentationKind.Class,
 	preservesResidualKindsForRepresentation: () => [StyleProgramResidualKindTag.UnknownUtility],
-	resolveHostRepresentation: ({ program, hasHostContext, framework }) => {
+	resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) => {
+		const subject = program.source?.subject;
+		if (
+			subject !== undefined &&
+			(componentAttrsExpressionForSubject(subject) !== undefined ||
+				(source !== undefined &&
+					binding !== undefined &&
+					hasComponentAttributeUse({
+						source,
+						binding,
+						attribute: "as",
+						file: program.source?.file,
+					})))
+		)
+			return StyleHostRepresentationKind.Component;
 		if (hasHostContext || program.source?.subject === undefined)
 			return StyleHostRepresentationKind.Class;
 		if (
@@ -1299,27 +1314,25 @@ function runtimeComponent(
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const hostTypeImports =
 		framework === BuiltinHostFramework.Solid ? ['import type { JSX } from "solid-js";'] : [];
+	const attrsValue =
+		componentAttrs === undefined
+			? "{}"
+			: /=>|\bfunction\b/.test(componentAttrs)
+				? `(${componentAttrs})(props)`
+				: `(${componentAttrs})`;
 	const mergedClass =
 		inheritedClass === undefined
-			? `runtimeCss.props(style, props.${classAttribute}).className`
-			: `composedCx.vars(style, ${JSON.stringify(inheritedClass)}, props.${classAttribute}).class`;
+			? `runtimeCss.props(style, attrs.${classAttribute}, props.${classAttribute}).className`
+			: `composedCx.vars(style, ${JSON.stringify(inheritedClass)}, attrs.${classAttribute}, props.${classAttribute}).class`;
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css: runtimeCss }); ";
 	if (tag === undefined) {
 		const propFilter =
 			componentPropNames === undefined || componentPropNames.length === 0
-				? ""
-				: `Object.fromEntries(Object.entries(props).filter(([key]) => !${JSON.stringify(componentPropNames)}.includes(key)))`;
-		const forwardedProps =
-			componentAttrs === undefined
-				? propFilter === ""
-					? "{...props}"
-					: `{...${propFilter}}`
-				: /=>|\bfunction\b/.test(componentAttrs)
-					? `{...(${componentAttrs})(props), ...props}`
-					: `{...(${componentAttrs}), ${propFilter === "" ? "...props" : `...${propFilter}`}}`;
+				? "propsWithoutAs"
+				: `Object.fromEntries(Object.entries(propsWithoutAs).filter(([key]) => !${JSON.stringify(componentPropNames)}.includes(key)))`;
 		return {
-			text: `(${propsParameter}) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const ResolvedComponent = props.as ?? (${componentExpression}); return <ResolvedComponent ${forwardedProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
+			text: `(${propsParameter}) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs = ${attrsValue}; const { as: _as, ...propsWithoutAs } = props; const { as: _attrsAs, ...attrsProps } = attrs; const ResolvedComponent = attrs.as ?? props.as ?? (${componentExpression}); const forwarded = ${propFilter}; return <ResolvedComponent {...forwarded} {...attrsProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />; }`,
 			componentExpression: true,
 			imports: [
 				...hostTypeImports,
@@ -1332,14 +1345,14 @@ function runtimeComponent(
 	}
 	const solidIntrinsic = framework === BuiltinHostFramework.Solid;
 	const renderedComponent = solidIntrinsic
-		? `<Dynamic component={ResolvedComponent} {...attrs} {...forwarded} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />`
-		: `<ResolvedComponent {...attrs} {...forwarded} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />`;
+		? `<Dynamic component={ResolvedComponent} {...forwarded} {...attrsProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />`
+		: `<ResolvedComponent {...forwarded} {...attrsProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />`;
 	const forwardedFilter =
 		componentPropNames === undefined || componentPropNames.length === 0
 			? '!key.startsWith("$")'
 			: `!key.startsWith("$") && !${JSON.stringify(componentPropNames)}.includes(key)`;
 	return {
-		text: `(${propsParameter}) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const ResolvedComponent = props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => ${forwardedFilter})); const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return ${renderedComponent}; }`,
+		text: `(${propsParameter}) => { ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs = ${attrsValue}; const ResolvedComponent = attrs.as ?? props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => ${forwardedFilter})); return ${renderedComponent}; }`,
 		componentExpression: true,
 		imports: [
 			...hostTypeImports,
@@ -1391,9 +1404,10 @@ export const __pandwindSlot = ({
 	joinClass,
 }: PandwindSlotOptions) => {
 	const component = (props: PandwindSlotProps) => {
-		const Component = props.as ?? defaultComponent;
+		const Component = attrs.as ?? props.as ?? defaultComponent;
 		const { as: _as, ...rest } = props;
-		return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />;
+	const { as: _attrsAs, ...attrsProps } = attrs;
+		return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />;
 	};
 	component.__pandwindClassName = stableClass;
 	return component;
@@ -1423,9 +1437,10 @@ export const __pandwindSlot = ({
 	joinClass,
 }: PandwindSlotOptions) => {
 	const component = (props: PandwindSlotProps) => {
-		const Component = props.as ?? defaultComponent;
+		const Component = attrs.as ?? props.as ?? defaultComponent;
 		const { as: _as, ...rest } = props;
-		return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />;
+	const { as: _attrsAs, ...attrsProps } = attrs;
+		return <Dynamic component={Component} {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />;
 	};
 	component.__pandwindClassName = stableClass;
 	return component;
@@ -1646,8 +1661,8 @@ function staticComponent(
 	const slotHelper =
 		sharedModule === undefined
 			? framework === BuiltinHostFramework.Solid
-				? `const ${slotBinding} = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Dynamic component={Component} {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`
-				: `const ${slotBinding} = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`
+				? `const ${slotBinding} = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Dynamic component={Component} {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`
+				: `const ${slotBinding} = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`
 			: undefined;
 	const slotImport =
 		sharedModule === undefined
@@ -1799,12 +1814,12 @@ function hybridComponent(
 				: `css(${programObject(staticProgram)})`;
 	const mergedClass =
 		inheritedClass === undefined
-			? `css.props(staticClass, dynamic, ${JSON.stringify(stableClass)}, props.${classAttribute}).className`
-			: `composedCx.vars(staticClass, dynamic, ${JSON.stringify(inheritedClass)}, ${JSON.stringify(stableClass)}, props.${classAttribute}).class`;
+			? `css.props(staticClass, dynamic, ${JSON.stringify(stableClass)}, attrs.${classAttribute}, props.${classAttribute}).className`
+			: `composedCx.vars(staticClass, dynamic, ${JSON.stringify(inheritedClass)}, ${JSON.stringify(stableClass)}, attrs.${classAttribute}, props.${classAttribute}).class`;
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
 	return {
-		text: `(() => { ${composedCxBinding}const staticClass = ${staticClass}; const component = (props) => { ${themeContextAssignment} const dynamic = css.vars(${dynamicObject}); const Component = props.as ?? ${tag === undefined ? `(${base})` : JSON.stringify(tag)}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; return <Component {...attrs} {...rest} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = ${JSON.stringify(stableClass)}; return component; })()`,
+		text: `(() => { ${composedCxBinding}const staticClass = ${staticClass}; const component = (props) => { ${themeContextAssignment} const dynamic = css.vars(${dynamicObject}); const attrs = ${attrsExpression}; const Component = attrs.as ?? props.as ?? ${tag === undefined ? `(${base})` : JSON.stringify(tag)}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = ${JSON.stringify(stableClass)}; return component; })()`,
 		imports: [
 			'import { createUnsafeCss } from "pandwind/unsafe/css";',
 			"const css = createUnsafeCss();",
@@ -2126,18 +2141,18 @@ function runtimeRawComponent(
 		subject === undefined ? undefined : composedBaseClassName(subject, context);
 	const classExpression = dynamic
 		? inheritedClass === undefined
-			? `runtimeCss.props(className, ${JSON.stringify(stableClass)}, props.${classAttribute}).className`
-			: `composedCx(className, ${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, props.${classAttribute})`
+			? `runtimeCss.props(className, ${JSON.stringify(stableClass)}, attrs.${classAttribute}, props.${classAttribute}).className`
+			: `composedCx(className, ${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, attrs.${classAttribute}, props.${classAttribute})`
 		: inheritedClass === undefined
-			? `runtimeCss.props(${JSON.stringify(stableClass)}, props.${classAttribute}).className`
-			: `composedCx(${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, props.${classAttribute})`;
+			? `runtimeCss.props(${JSON.stringify(stableClass)}, attrs.${classAttribute}, props.${classAttribute}).className`
+			: `composedCx(${JSON.stringify(stableClass)}, ${JSON.stringify(inheritedClass)}, attrs.${classAttribute}, props.${classAttribute})`;
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css: runtimeCss }); ";
 	const solidIntrinsic = framework === BuiltinHostFramework.Solid && tag !== undefined;
 	const renderedElement = solidIntrinsic
-		? `<Dynamic component={Component} {...attrs} {...rest} ${classAttribute}={${classExpression}} />`
-		: `<Component {...attrs} {...rest} ${classAttribute}={${classExpression}} />`;
-	const render = `const Component = props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; const element = ${renderedElement}; return element;`;
+		? `<Dynamic component={Component} {...rest} {...attrsProps} ${classAttribute}={${classExpression}} style={{ ...props.style, ...attrs.style }} />`
+		: `<Component {...rest} {...attrsProps} ${classAttribute}={${classExpression}} style={{ ...props.style, ...attrs.style }} />`;
+	const render = `const attrs = ${attrsExpression}; const Component = attrs.as ?? props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const element = ${renderedElement}; return element;`;
 	const themeContextAssignment = needsThemeContext
 		? "props = { ...props, theme: props.theme ?? usePandwindTheme() };"
 		: "";

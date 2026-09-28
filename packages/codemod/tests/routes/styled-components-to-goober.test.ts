@@ -51,7 +51,7 @@ test("styled-components -> goober: migrates concrete styled-components syntax to
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -98,7 +98,7 @@ test("styled-components -> goober: carries a documented secondary styled-compone
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -154,7 +154,7 @@ test("styled-components -> goober: loads concrete theme and project context vari
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -192,7 +192,7 @@ test("styled-components -> goober: loads concrete theme and project context vari
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,7 +242,7 @@ test("styled-components -> goober: resolves concrete token values with project c
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "#2563eb" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -290,7 +290,7 @@ test("styled-components -> goober: preserves malformed concrete styled-component
 		import { createCx } from "pandwind/cx";
 		import { css } from "goober";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />;
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "padding": "1rem", "color": "red" }), props.className)} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

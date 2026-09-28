@@ -48,10 +48,9 @@ test("styled-components -> tamagui: migrates concrete styled-components syntax t
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;",
+		  "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "1rem", color: "red" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,10 +91,9 @@ test("styled-components -> tamagui: carries a documented secondary styled-compon
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;",
+		  "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "1rem", color: "red" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,10 +143,9 @@ test("styled-components -> tamagui: loads concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		    "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "1rem", color: "#2563eb" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,10 +177,9 @@ test("styled-components -> tamagui: loads concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		    "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "1rem", color: "#2563eb" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,10 +223,9 @@ test("styled-components -> tamagui: resolves concrete token values with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		  "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "1rem", color: "#2563eb" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,10 +266,9 @@ test("styled-components -> tamagui: preserves malformed concrete styled-componen
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCx } from "pandwind/cx";
-		import { View, styled } from "@tamagui/core";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(styled(View, { padding: "1rem", color: "red" }), props.className)} />;
+		  "code": "import { View, styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "1rem", color: "red" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

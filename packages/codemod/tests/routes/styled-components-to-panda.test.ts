@@ -51,7 +51,7 @@ test("styled-components -> panda: migrates concrete styled-components syntax to 
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,7 +96,7 @@ test("styled-components -> panda: carries a documented secondary styled-componen
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -150,7 +150,7 @@ test("styled-components -> panda: loads concrete theme and project context varia
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("styled-components -> panda: loads concrete theme and project context varia
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "brand.500" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "brand.500" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("styled-components -> panda: resolves concrete token values with project co
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "brand.500" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "brand.500" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -280,7 +280,7 @@ test("styled-components -> panda: preserves malformed concrete styled-components
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

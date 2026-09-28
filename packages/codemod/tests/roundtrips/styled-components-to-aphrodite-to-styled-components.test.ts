@@ -52,7 +52,7 @@ test("styled-components -> aphrodite -> styled-components: preserves an actionab
 		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -91,7 +91,7 @@ test("styled-components -> aphrodite -> styled-components: preserves an actionab
 		import styled from "styled-components";
 
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "style": styled.div({ padding: "1rem", color: "red" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "style": styled.div({ padding: "1rem", color: "red" }) }.style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -141,7 +141,7 @@ test("styled-components -> aphrodite -> styled-components: retains the documente
 		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("styled-components -> aphrodite -> styled-components: retains the documente
 		import styled from "styled-components";
 
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "style": styled.div({ padding: "1rem", color: "red" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "style": styled.div({ padding: "1rem", color: "red" }) }.style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -245,7 +245,7 @@ test("styled-components -> aphrodite -> styled-components: preserves concrete th
 		      "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,7 +284,7 @@ test("styled-components -> aphrodite -> styled-components: preserves concrete th
 		import styled from "styled-components";
 
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,7 +322,7 @@ test("styled-components -> aphrodite -> styled-components: preserves concrete th
 		      "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -361,7 +361,7 @@ test("styled-components -> aphrodite -> styled-components: preserves concrete th
 		import styled from "styled-components";
 
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -413,7 +413,7 @@ test("styled-components -> aphrodite -> styled-components: resolves token values
 		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -452,7 +452,7 @@ test("styled-components -> aphrodite -> styled-components: resolves token values
 		import styled from "styled-components";
 
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -15,7 +15,11 @@ import {
 } from "../identifiers.ts";
 import { STYLE_LOWERING_SCHEMA, type StyleLowering } from "../lowering.ts";
 import type { StyleProgram, StyleProgramResidual } from "../semantic-ir.ts";
-import { intrinsicTagForSubject } from "../host-component-rewriter.ts";
+import {
+	componentAttrsExpressionForSubject,
+	componentAttrsValueExpression,
+	intrinsicTagForSubject,
+} from "../host-component-rewriter.ts";
 
 const reactLayoutHosts = new Set([
 	"article",
@@ -187,24 +191,6 @@ function canRewriteReactHost(
 	return (program.source?.hostStyleAttributes ?? []).every((attribute) =>
 		attributes.includes(attribute),
 	);
-}
-
-function canRewriteReactStyledSubject(
-	program: StyleProgram,
-	source: string | undefined,
-	binding: string | undefined,
-): boolean {
-	if (source === undefined || binding === undefined || !hasOnlyStaticDeclarations(program))
-		return false;
-	if (
-		program.source?.subject === undefined ||
-		intrinsicTagForSubject(program.source.subject) === undefined
-	)
-		return false;
-	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	const use = source.match(new RegExp(`<${escaped}\\b([^>]*)>`, "u"));
-	if (use === null) return false;
-	return !/\b(?:style|className|class|as)\s*=/.test(use[1] ?? "");
 }
 
 function rewriteReactStyledSubject(
@@ -434,11 +420,10 @@ const reactNative = makeExtraAdapter({
 					sourceHostFramework === BuiltinHostFramework.Vue) &&
 				framework === BuiltinHostFramework.ReactNative &&
 				program.source?.subject !== undefined &&
-				hasHostContext &&
-				binding !== undefined &&
-				canRewriteReactStyledSubject(program, source, binding)
+				intrinsicTagForSubject(program.source.subject) !== undefined &&
+				hasOnlyStaticDeclarations(program)
 			)
-				return StyleHostRepresentationKind.StyleProp;
+				return StyleHostRepresentationKind.Component;
 			if (
 				sourceHostFramework === BuiltinHostFramework.React &&
 				framework === BuiltinHostFramework.ReactNative &&
@@ -536,12 +521,42 @@ const reactNative = makeExtraAdapter({
 		const subject = program.source?.subject ?? context?.host?.subject;
 		if (
 			context?.host?.representation === StyleHostRepresentationKind.Component &&
-			subject?.startsWith("styled.") === true &&
+			subject !== undefined &&
 			hasOnlyStaticDeclarations(program)
 		) {
+			const sourceTag = intrinsicTagForSubject(subject);
+			if (sourceTag === undefined || reactNativeHostTag(sourceTag) === undefined)
+				return {
+					text: "",
+					imports: [],
+					residuals: [
+						hostResidual(
+							subject,
+							`React Native cannot preserve the ${sourceTag ?? "unknown"} host semantics as a View`,
+						),
+					],
+				};
 			const style = `StyleSheet.create({ style: ${programObject(reactNativeProgram(program))} }).style`;
+			const attrsExpression = componentAttrsExpressionForSubject(subject);
+			const attrsValue = componentAttrsValueExpression(attrsExpression);
+			if (attrsExpression !== undefined && attrsValue === undefined)
+				return {
+					text: "",
+					imports: [],
+					residuals: [
+						hostResidual(
+							attrsExpression,
+							"React Native component projection requires static attrs or a props callback",
+						),
+					],
+				};
+			const component =
+				attrsExpression === undefined
+					? `(props) => <View {...props} style={{ ...${style}, ...props.style }} />`
+					: `(props) => { const attrs = ${attrsValue}; const { as: _attrsAs, ...attrsProps } = attrs; const { as: _as, ...rest } = props; return <View {...rest} {...attrsProps} style={{ ...${style}, ...props.style, ...attrs.style }} />; }`;
 			return {
-				text: `(props) => <View {...props} style={${style}} />`,
+				text: component,
+				semantic: reactNativeProgram(program),
 				imports: ['import { StyleSheet, View } from "react-native";'],
 				residuals: [],
 			};
@@ -550,6 +565,7 @@ const reactNative = makeExtraAdapter({
 		if (program.rules.some((rule) => rule.name !== undefined)) return undefined;
 		return {
 			text: `StyleSheet.create({ style: ${programObject(program)} }).style`,
+			semantic: reactNativeProgram(program),
 			imports: ['import { StyleSheet } from "react-native";'],
 			residuals: [],
 		};

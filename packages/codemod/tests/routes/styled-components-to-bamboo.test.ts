@@ -51,7 +51,7 @@ test("styled-components -> bamboo: migrates concrete styled-components syntax to
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,7 +96,7 @@ test("styled-components -> bamboo: carries a documented secondary styled-compone
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -150,7 +150,7 @@ test("styled-components -> bamboo: loads concrete theme and project context vari
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -186,7 +186,7 @@ test("styled-components -> bamboo: loads concrete theme and project context vari
 		    "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("styled-components -> bamboo: resolves concrete token values with project c
 		  "code": "import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "#2563eb" }), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -280,7 +280,7 @@ test("styled-components -> bamboo: preserves malformed concrete styled-component
 		import { createCx } from "pandwind/cx";
 		import { css } from "styled-system/css";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />;
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css({ padding: "1rem", color: "red" }), props.className)} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -46,6 +46,7 @@ import {
 } from "../adapter-projections.ts";
 import { PortableStyleArtifact } from "../portable-artifact.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
+import { AdapterRenderersImplementation } from "../adapter-renderers.ts";
 import { styledSubjectFromFunctionMatch } from "../host-component-rewriter.ts";
 
 export interface ExtraAdapterOptions {
@@ -96,6 +97,7 @@ export interface ExtraAdapterOptions {
 		program: StyleProgram,
 		context: AdapterEmitContext | undefined,
 		programObject: (program: StyleProgram) => string,
+		templateCss: (program: StyleProgram) => string,
 	) => AdapterEmitResult | undefined;
 	/** How a target preserves named style maps when it has no native map API. */
 	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
@@ -683,7 +685,12 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 					},
 				};
 			}
-			const targetEmission = options.targetEmit?.(program, context, objectText);
+			const targetEmission = options.targetEmit?.(
+				program,
+				context,
+				objectText,
+				AdapterRenderersImplementation.templateCss,
+			);
 			if (targetEmission !== undefined) return targetEmission;
 			const namedRules = program.rules.filter(
 				(rule) => rule.name !== undefined && rule.kind === StyleRuleKindTag.Style,

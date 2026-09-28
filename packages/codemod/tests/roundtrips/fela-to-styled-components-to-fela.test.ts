@@ -89,7 +89,7 @@ test("fela -> styled-components -> fela: preserves an actionable concrete round 
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "color": "red" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,7 +174,7 @@ test("fela -> styled-components -> fela: retains the documented secondary API wi
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <button {...props} className={cx(renderer.renderRule({ "color": "red" }), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "button"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -278,7 +278,7 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -355,7 +355,7 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -446,7 +446,7 @@ test("fela -> styled-components -> fela: resolves token values across both concr
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const renderer = createRenderer();
-		export const card = (props) => <div {...props} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(renderer.renderRule({ "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

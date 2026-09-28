@@ -62,19 +62,22 @@ describe("virtual Vite migrations", () => {
 		expect(plugin.name).toBe("pandwind:virtual-migration:styled-components->tailwind");
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "code": "
-			const Card = "[padding:1rem] [color:red]";
+			  "code": "import { createCx } from "pandwind/cx";
+			const cx = createCx();
+
+			const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };
 
 			export function App() {
-				return <div className={Card}>content</div>;
+				return <Card>content</Card>;
 			}
 			",
 			  "map": null,
 			}
 		`);
 		expect(result).not.toBeNull();
-		expect(result?.code).toContain('const Card = "[padding:1rem] [color:red]";');
-		expect(result?.code).toContain("<div className={Card}>content</div>");
+		expect(result?.code).toContain("const Card = (props) =>");
+		expect(result?.code).toContain('className={cx("[padding:1rem] [color:red]", props.className)}');
+		expect(result?.code).toContain("return <Card>content</Card>");
 		expect(result?.code).not.toContain("styled-components");
 		expect(styledCard).toContain("styled-components");
 	});

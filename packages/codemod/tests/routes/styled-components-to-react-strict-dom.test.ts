@@ -41,6 +41,14 @@ test("styled-components -> react-strict-dom: migrates concrete styled-components
 		expect(result.code).not.toContain("pandwind:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "host-framework",
+					hint: expect.stringContaining("polymorphic as contract"),
+				}),
+			]),
+		);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "styled-components -> react-strict-dom happy");
@@ -75,7 +83,7 @@ test("styled-components -> react-strict-dom: migrates concrete styled-components
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -121,7 +129,7 @@ test("styled-components -> react-strict-dom: carries a documented secondary styl
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -176,7 +184,7 @@ test("styled-components -> react-strict-dom: loads concrete theme and project co
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -213,7 +221,7 @@ test("styled-components -> react-strict-dom: loads concrete theme and project co
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "react-strict-dom has no host representation for react",
+		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -262,7 +270,7 @@ test("styled-components -> react-strict-dom: resolves concrete token values with
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -309,7 +317,7 @@ test("styled-components -> react-strict-dom: preserves malformed concrete styled
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "react-strict-dom has no host representation for react",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -319,4 +327,3 @@ test("styled-components -> react-strict-dom: preserves malformed concrete styled
 		}
 	`)
 });
-

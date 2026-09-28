@@ -9,7 +9,10 @@ import type { AdapterCapability } from "./capabilities.ts";
 import type { AdapterCapabilities } from "./capabilities.ts";
 import { BuiltinHostFramework } from "./host-adapters.ts";
 import { DynamicClassHost } from "./adapters/class-target-dynamic.ts";
-import { getHostComponentRewriter } from "./host-component-rewriter.ts";
+import {
+	componentAttrsValueExpression,
+	getHostComponentRewriter,
+} from "./host-component-rewriter.ts";
 import { StyleHostRepresentationKind, StyleRepresentationKind } from "./identifiers.ts";
 import { PortableStyleArtifact } from "./portable-artifact.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
@@ -48,6 +51,45 @@ function projectStaticSubjectToClass(
 						},
 					],
 				};
+
+			if (context.attrsExpression !== undefined) {
+				if (
+					(context.framework !== BuiltinHostFramework.React &&
+						context.framework !== BuiltinHostFramework.Preact) ||
+					componentAttrsValueExpression(context.attrsExpression) === undefined ||
+					rewriter.rewriteDeclaration === undefined
+				)
+					return {
+						code: context.code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: context.attrsExpression,
+								hint: `${context.targetId} cannot preserve styled component attrs in a class wrapper`,
+							},
+						],
+					};
+				if (context.code === context.source) return { code: context.code, residuals: [] };
+				const rewritten = rewriter.rewriteDeclaration({
+					source: context.code,
+					file: context.file,
+					binding: context.binding,
+					tag: context.tag,
+					framework: context.framework,
+					classExpression: context.emittedExpression,
+					attrsExpression: context.attrsExpression,
+				});
+				return {
+					code: rewritten.code,
+					imports: [
+						...(rewritten.imports ?? []),
+						...(rewritten.needsCx
+							? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+							: []),
+					],
+					residuals: rewritten.residuals,
+				};
+			}
 
 			return rewriter.rewrite({
 				// Component rewrites run after the style expression replacement;

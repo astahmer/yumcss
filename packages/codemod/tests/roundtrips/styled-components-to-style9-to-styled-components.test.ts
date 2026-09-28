@@ -52,7 +52,7 @@ test("styled-components -> style9 -> styled-components: preserves an actionable 
 		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -91,7 +91,7 @@ test("styled-components -> style9 -> styled-components: preserves an actionable 
 		import style9 from "style9";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "red" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "red" }) }.style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -141,7 +141,7 @@ test("styled-components -> style9 -> styled-components: retains the documented s
 		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("styled-components -> style9 -> styled-components: retains the documented s
 		import style9 from "style9";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "red" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "red" }) }.style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -245,7 +245,7 @@ test("styled-components -> style9 -> styled-components: preserves concrete theme
 		      "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,7 +284,7 @@ test("styled-components -> style9 -> styled-components: preserves concrete theme
 		import style9 from "style9";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,7 +322,7 @@ test("styled-components -> style9 -> styled-components: preserves concrete theme
 		      "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -361,7 +361,7 @@ test("styled-components -> style9 -> styled-components: preserves concrete theme
 		import style9 from "style9";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -413,7 +413,7 @@ test("styled-components -> style9 -> styled-components: resolves token values ac
 		    "code": "import { createCx } from "pandwind/cx";
 		import style9 from "style9";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -452,7 +452,7 @@ test("styled-components -> style9 -> styled-components: resolves token values ac
 		import style9 from "style9";
 		import styled from "styled-components";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

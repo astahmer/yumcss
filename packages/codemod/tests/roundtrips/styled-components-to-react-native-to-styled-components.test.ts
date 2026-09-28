@@ -50,7 +50,7 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,38 +86,42 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import styled from "styled-components";
-		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "red" }) }.style} />;",
-		    "converted": 1,
+		    "code": "import { StyleSheet, View } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style, ...props.style }} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -136,7 +140,7 @@ test("styled-components -> react-native -> styled-components: retains the docume
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,38 +176,42 @@ test("styled-components -> react-native -> styled-components: retains the docume
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import styled from "styled-components";
-		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "red" }) }.style} />;",
-		    "converted": 1,
+		    "code": "import { StyleSheet, View } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style, ...props.style }} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -237,7 +245,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,45 +281,49 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "react-native";
-		import styled from "styled-components";
-		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
-		      "converted": 1,
+		      "code": "import { StyleSheet, View } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
-		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "named-map",
+		          "representation": "residual",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "object spread requires a source adapter",
+		          "kind": "dynamic",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "object spread requires a source adapter",
+		          "kind": "dynamic",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,38 +359,42 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "react-native";
-		import styled from "styled-components";
-		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
-		      "converted": 1,
+		      "code": "import { StyleSheet, View } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [],
 		          "availableRepresentations": [
-		            "static",
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "named-map",
+		          "representation": "residual",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "object spread requires a source adapter",
+		          "kind": "dynamic",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "object spread requires a source adapter",
+		          "kind": "dynamic",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -399,7 +415,7 @@ test("styled-components -> react-native -> styled-components: resolves token val
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style} />;",
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,38 +451,42 @@ test("styled-components -> react-native -> styled-components: resolves token val
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "react-native";
-		import styled from "styled-components";
-		export const Card = (props) => <View {...props} style={{ "style": styled.div({ padding: 16, color: "#2563eb" }) }.style} />;",
-		    "converted": 1,
+		    "code": "import { StyleSheet, View } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "padding": 16, "color": "#2563eb" } }).style, ...props.style }} />;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
-		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "residual",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)

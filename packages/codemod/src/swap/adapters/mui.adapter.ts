@@ -20,8 +20,10 @@ import {
 	StyleRepresentationKind,
 } from "../identifiers.ts";
 import {
+	componentAttrsExpressionForSubject,
 	componentExpressionForSubject,
 	intrinsicTagForSubject,
+	wrapComponentExpressionWithAttrs,
 } from "../host-component-rewriter.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
@@ -695,9 +697,17 @@ export function createMuiAdapter(
 				const tag = intrinsicTagForSubject(subject);
 				const base = componentExpressionForSubject(subject);
 				const targetSubject = tag === undefined ? (base ?? subject) : JSON.stringify(tag);
+				const attrsExpression = componentAttrsExpressionForSubject(subject);
+				const wrapped = wrapComponentExpressionWithAttrs(
+					`styled(${targetSubject})(${programObject(program)})`,
+					attrsExpression,
+					context?.host?.framework,
+				);
+				if (wrapped.residuals.length > 0) return { text: "", residuals: wrapped.residuals };
 				return {
-					text: `styled(${targetSubject})(${programObject(program)})`,
-					imports: ['import { styled } from "@mui/system";'],
+					text: wrapped.text,
+					...(attrsExpression === undefined ? {} : { componentExpression: true }),
+					imports: ['import { styled } from "@mui/system";', ...wrapped.imports],
 				};
 			}
 			if (context?.host?.representation === StyleHostRepresentationKind.StyleProp) {

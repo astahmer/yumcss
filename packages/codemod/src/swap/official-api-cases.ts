@@ -533,6 +533,14 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 		},
 		{
 			adapter: CodemodAdapterId.StyledComponents,
+			name: "styled attrs",
+			expectation: "converted",
+			file: "Card.tsx",
+			source:
+				'import styled from "styled-components";\nexport const Button = styled.button.attrs({ type: "button", "aria-label": "Save" })({ color: "red" });',
+		},
+		{
+			adapter: CodemodAdapterId.StyledComponents,
 			name: "ThemeProvider context",
 			expectation: "context",
 			file: "App.tsx",

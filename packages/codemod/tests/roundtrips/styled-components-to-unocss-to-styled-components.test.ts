@@ -51,7 +51,7 @@ test("styled-components -> unocss -> styled-components: preserves an actionable 
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +89,7 @@ test("styled-components -> unocss -> styled-components: preserves an actionable 
 		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -127,7 +127,7 @@ test("styled-components -> unocss -> styled-components: retains the documented s
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -165,7 +165,7 @@ test("styled-components -> unocss -> styled-components: retains the documented s
 		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:red]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:red]", props.className)} />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -218,7 +218,7 @@ test("styled-components -> unocss -> styled-components: preserves concrete theme
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -256,7 +256,7 @@ test("styled-components -> unocss -> styled-components: preserves concrete theme
 		      "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] [color:#2563eb]", props.className)} />; };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -282,7 +282,7 @@ test("styled-components -> unocss -> styled-components: preserves concrete theme
 		      "changed": true,
 		      "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] text-brand", props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -320,7 +320,7 @@ test("styled-components -> unocss -> styled-components: preserves concrete theme
 		      "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] text-brand", props.className)} />; };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -360,7 +360,7 @@ test("styled-components -> unocss -> styled-components: resolves token values ac
 		    "changed": true,
 		    "code": "import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] text-brand", props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -398,7 +398,7 @@ test("styled-components -> unocss -> styled-components: resolves token values ac
 		    "code": "// pandwind:migrate-skip (route: unocss -> styled-components | parse-residual: dynamic)
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx("[padding:1rem] text-brand", props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[padding:1rem] text-brand", props.className)} />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

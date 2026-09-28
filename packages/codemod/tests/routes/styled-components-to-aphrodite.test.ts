@@ -51,7 +51,7 @@ test("styled-components -> aphrodite: migrates concrete styled-components syntax
 		  "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -98,7 +98,7 @@ test("styled-components -> aphrodite: carries a documented secondary styled-comp
 		  "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -154,7 +154,7 @@ test("styled-components -> aphrodite: loads concrete theme and project context v
 		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -192,7 +192,7 @@ test("styled-components -> aphrodite: loads concrete theme and project context v
 		    "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,7 +242,7 @@ test("styled-components -> aphrodite: resolves concrete token values with projec
 		  "code": "import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />;",
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style), props.className)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -290,7 +290,7 @@ test("styled-components -> aphrodite: preserves malformed concrete styled-compon
 		import { createCx } from "pandwind/cx";
 		import { StyleSheet, css } from "aphrodite";
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />;
+		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style), props.className)} />; };
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

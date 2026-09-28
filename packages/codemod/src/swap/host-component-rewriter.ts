@@ -104,6 +104,8 @@ export interface HostComponentRewriteRequest {
 	readonly classExpression: string;
 	/** Optional inline style carrier for runtime-valued component declarations. */
 	readonly styleExpression?: string;
+	/** Source component attributes projected by the owning target adapter. */
+	readonly attrsExpression?: string;
 	/** The class expression is actually a complete component value from the target emitter. */
 	readonly componentExpression?: boolean;
 }
@@ -155,22 +157,26 @@ export interface HostDynamicCarrierRewriteResult {
 }
 
 export function intrinsicTagForSubject(subject: string): string | undefined {
-	const member = /^styled\.([A-Za-z_$][\w$]*)(?:\.props\([\s\S]*\))?$/.exec(subject)?.[1];
+	const suffix = "(?:\\.props\\([\\s\\S]*\\)|\\.attrs\\([\\s\\S]*\\))?";
+	const member = new RegExp(`^styled\\.([A-Za-z_$][\\w$]*)${suffix}$`, "u").exec(subject)?.[1];
 	if (member !== undefined && /^[a-z][\w-]*$/.test(member)) return member;
-	const call = /^styled\(\s*["']([a-z][\w-]*)["']\s*\)(?:\.props\([\s\S]*\))?$/.exec(subject)?.[1];
+	const call = new RegExp(`^styled\\(\\s*["']([a-z][\\w-]*)["']\\s*\\)${suffix}$`, "u").exec(
+		subject,
+	)?.[1];
 	return call;
 }
 
 /** Component expression used by `styled(Component)` subjects. */
 export function componentTagForSubject(subject: string): string | undefined {
 	return (
-		intrinsicTagForSubject(subject) ?? /^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/.exec(subject)?.[1]
+		intrinsicTagForSubject(subject) ??
+		/^styled\(\s*([A-Za-z_$][\w$]*)\s*\)(?:\.attrs\([\s\S]*\))?$/.exec(subject)?.[1]
 	);
 }
 
 /** Return the authored component expression for a non-intrinsic styled subject. */
 export function componentExpressionForSubject(subject: string): string | undefined {
-	return /^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/.exec(subject)?.[1];
+	return /^styled\(\s*([A-Za-z_$][\w$]*)\s*\)(?:\.attrs\([\s\S]*\))?$/.exec(subject)?.[1];
 }
 
 /**
@@ -183,6 +189,69 @@ export function componentAttrsExpressionForSubject(subject: string): string | un
 	if (match === null) return undefined;
 	const expression = match[1]?.trim();
 	return expression === undefined || expression === "" ? undefined : expression;
+}
+
+export function componentAttrsValueExpression(
+	expression: string | undefined,
+	propsParameter = "props",
+): string | undefined {
+	if (expression === undefined) return "{}";
+	const attrsExpression = expression.trim();
+	if (/^(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>|^function\b/u.test(attrsExpression))
+		return `(${attrsExpression})(${propsParameter})`;
+	if (
+		attrsExpression.startsWith("{") &&
+		SourcePass.matchBlock(attrsExpression, 0)?.end === attrsExpression.length
+	)
+		return `(${attrsExpression})`;
+	return undefined;
+}
+
+export function wrapComponentExpressionWithAttrs(
+	expression: string,
+	attrsExpression: string | undefined,
+	framework: string | undefined,
+): {
+	readonly text: string;
+	readonly imports: readonly string[];
+	readonly residuals: readonly StyleProgramResidual[];
+} {
+	if (attrsExpression === undefined) return { text: expression, imports: [], residuals: [] };
+	if (framework !== BuiltinHostFramework.React && framework !== BuiltinHostFramework.Preact)
+		return {
+			text: "",
+			imports: [],
+			residuals: [
+				{
+					kind: "host-framework",
+					text: attrsExpression,
+					hint: `styled component attrs projection requires a React or Preact host, got ${framework ?? "unknown"}`,
+				},
+			],
+		};
+	const attrsValue = componentAttrsValueExpression(attrsExpression);
+	if (attrsValue === undefined)
+		return {
+			text: "",
+			imports: [],
+			residuals: [
+				{
+					kind: "host-framework",
+					text: attrsExpression,
+					hint: "styled component attrs must be a static object or a props callback to preserve them",
+				},
+			],
+		};
+	const moduleName = framework === BuiltinHostFramework.Preact ? "preact/compat" : "react";
+	const createElement = "__pandwindCreateElement";
+	const forwardRef = "__pandwindForwardRef";
+	return {
+		text: `((Component) => ${forwardRef}((props, ref) => { const attrs = ${attrsValue}; const { as: _attrsAs, ...attrsProps } = attrs; const { as: _propsAs, ...rest } = props; return ${createElement}(Component, { ...rest, ...attrsProps, ...(props.as === undefined && attrs.as === undefined ? {} : { as: attrs.as ?? props.as }), className: [props.className, attrs.className].filter(Boolean).join(" ") || undefined, style: { ...props.style, ...attrs.style }, ref }); }))(${expression})`,
+		imports: [
+			`import { createElement as ${createElement}, forwardRef as ${forwardRef} } from "${moduleName}";`,
+		],
+		residuals: [],
+	};
 }
 
 /** Return the static `.props({...})` payload when a styled subject exposes one. */
@@ -252,18 +321,16 @@ export function componentPropNamesForSubject(subject: string): readonly string[]
 	return names;
 }
 
-/** Preserve a styled subject, including a literal `.props(...)` suffix. */
+/** Preserve a styled subject and its source-owned `.attrs(...)` chain. */
 export function styledSubjectFromFunctionMatch(match: string): string | undefined {
-	const subject = match
-		.trim()
-		.replace(/\(\s*$/u, "")
-		.replace(/\s+/gu, " ")
-		.replace(/\.\s+/gu, ".");
-	return /^styled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\([\s\S]*\))?$/u.test(
-		subject,
-	)
-		? subject
-		: undefined;
+	const subject =
+		/^(styled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?)(\s*\.attrs\s*\([\s\S]*?\))?(?=\s*(?:\(|`))/u.exec(
+			match.trim(),
+		);
+	if (subject?.[1] === undefined) return undefined;
+	const base = subject[1].replace(/\s+/gu, " ").replace(/\.\s+/gu, ".");
+	const attrs = subject[2]?.replace(/^\s*\.\s*attrs\s*/u, ".attrs");
+	return `${base}${attrs ?? ""}`;
 }
 
 /**
@@ -382,6 +449,63 @@ function scannedTagMatches(source: string, file: string, binding: string): TagMa
 	}
 }
 
+function openingTagHasAttributeOrSpread(text: string, attribute: string): boolean {
+	const opening = /^<\s*[A-Za-z_$][\w$.-]*/u.exec(text);
+	if (opening === null) return false;
+	let cursor = opening[0].length;
+	while (cursor < text.length) {
+		while (/\s/u.test(text[cursor] ?? "")) cursor++;
+		if (text[cursor] === ">" || text[cursor] === "/") return false;
+		if (text[cursor] === "{") {
+			const block = SourcePass.matchBlock(text, cursor);
+			if (block === null || block.body.trim().startsWith("...")) return true;
+			cursor = block.end;
+			continue;
+		}
+		const name = /^[A-Za-z_$][\w$:-]*/u.exec(text.slice(cursor))?.[0];
+		if (name === undefined) return false;
+		if (name === attribute) return true;
+		cursor += name.length;
+		while (/\s/u.test(text[cursor] ?? "")) cursor++;
+		if (text[cursor] !== "=") continue;
+		cursor++;
+		while (/\s/u.test(text[cursor] ?? "")) cursor++;
+		if (text[cursor] === "{") {
+			const block = SourcePass.matchBlock(text, cursor);
+			if (block === null) return true;
+			cursor = block.end;
+			continue;
+		}
+		const quote = text[cursor];
+		if (quote === "'" || quote === '"' || quote === "`") {
+			cursor++;
+			while (cursor < text.length) {
+				if (text[cursor] === quote && text[cursor - 1] !== "\\") break;
+				cursor++;
+			}
+			cursor++;
+			continue;
+		}
+		while (cursor < text.length && !/[\s>]/u.test(text[cursor] ?? "")) cursor++;
+	}
+	return false;
+}
+
+/** Detect explicit polymorphic host props on a component binding's JSX uses. */
+export function hasComponentAttributeUse(request: {
+	readonly source: string;
+	readonly binding: string;
+	readonly attribute: string;
+	readonly file?: string;
+}): boolean {
+	const tags = scannedTagMatches(request.source, request.file ?? "component.tsx", request.binding);
+	return (
+		tags?.some(
+			(tag) => !tag.closing && openingTagHasAttributeOrSpread(tag.text, request.attribute),
+		) ?? false
+	);
+}
+
 function hostTagMatches(request: HostComponentRewriteRequest): TagMatch[] {
 	const file = request.file ?? "pandwind-component.tsx";
 	const scanned = scannedTagMatches(request.source, file, request.binding);
@@ -487,16 +611,69 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 			residuals: [],
 		};
 	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
-	const mergedClass = mergeClassExpression(request.classExpression, `props.${classAttribute}`);
+	const attrsExpression = request.attrsExpression?.trim();
+	const attrsValueExpression = componentAttrsValueExpression(attrsExpression);
+	if (
+		attrsExpression !== undefined &&
+		request.framework !== BuiltinHostFramework.React &&
+		request.framework !== BuiltinHostFramework.Preact
+	)
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: attrsExpression,
+					hint: `styled component attrs projection requires a React host, got ${request.framework}`,
+				},
+			],
+		};
+	if (attrsExpression !== undefined && attrsValueExpression === undefined)
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: attrsExpression,
+					hint: "styled component attrs must be a static object or a props callback to preserve them",
+				},
+			],
+		};
+	const attrsSetup =
+		attrsExpression === undefined
+			? ""
+			: `const attrs = ${attrsValueExpression}; const { as: _attrsAs, ...attrsProps } = attrs; `;
+	const componentExpression =
+		attrsExpression === undefined
+			? `props.as ?? ${JSON.stringify(request.tag)}`
+			: `attrs.as ?? props.as ?? ${JSON.stringify(request.tag)}`;
+	const classInputs =
+		attrsExpression === undefined
+			? `props.${classAttribute}`
+			: `cx(attrs.${classAttribute}, props.${classAttribute})`;
+	const mergedClass = mergeClassExpression(request.classExpression, classInputs);
+	const attrsStyle =
+		attrsExpression === undefined
+			? ""
+			: ` style={{ ${request.styleExpression === undefined ? "" : `...${request.styleExpression}, `}...props.style, ...attrs.style }}`;
 	const declaration =
-		`${request.binding} = (props) => <${request.tag} {...props} ` +
-		`${classAttribute}={${mergedClass.expression}} />;`;
+		request.framework === BuiltinHostFramework.React ||
+		request.framework === BuiltinHostFramework.Preact
+			? `${request.binding} = (props) => { ${attrsSetup}const Component = ${componentExpression}; const { as: _as, ...rest } = props; return <Component {...rest} ${attrsExpression === undefined ? "" : "{...attrsProps} "}${classAttribute}={${mergedClass.expression}}${attrsStyle} />; };`
+			: `${request.binding} = (props) => <${request.tag} ${attrsExpression === undefined ? "" : `{...(${attrsExpression})} `}{...props} ${classAttribute}={${mergedClass.expression}} />;`;
 	const declarationWithStyle =
-		request.styleExpression === undefined
+		request.styleExpression === undefined || attrsExpression !== undefined
 			? declaration
 			: declaration.replace(
-					" />;",
-					` style={{ ...${request.styleExpression}, ...props.style }} />;`,
+					request.framework === BuiltinHostFramework.React ||
+						request.framework === BuiltinHostFramework.Preact
+						? " />; };"
+						: " />;",
+					` style={{ ...${request.styleExpression}, ...props.style }} />;${request.framework === BuiltinHostFramework.React || request.framework === BuiltinHostFramework.Preact ? " };" : ""}`,
 				);
 	return {
 		code:
@@ -600,7 +777,7 @@ function rewriteVueDeclaration(request: HostComponentRewriteRequest): HostCompon
 		};
 	const declaration =
 		`${request.binding} = defineComponent((props, { attrs, slots }) => () => ` +
-		`h(${JSON.stringify(request.tag)}, { ...attrs, ...props, class: [${request.classExpression}, attrs.class] }, slots.default?.()));`;
+		`h(${JSON.stringify(request.tag)}, { ...props, ...attrs, class: [attrs.class, ${request.classExpression}] }, slots.default?.()));`;
 	return {
 		code:
 			request.source.slice(0, match.index + match[0].indexOf(request.binding)) +

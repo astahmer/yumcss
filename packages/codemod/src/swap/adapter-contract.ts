@@ -386,6 +386,8 @@ export interface AdapterComponentRewriteContext {
 	readonly framework: string;
 	/** Source host dialect before a target-owned host conversion. */
 	readonly sourceFramework?: HostFramework;
+	/** Static or props-derived `.attrs()` payload owned by the source adapter. */
+	readonly attrsExpression?: string;
 	readonly emittedExpression: string;
 	readonly representation: StyleHostRepresentationKind;
 }

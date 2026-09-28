@@ -48,10 +48,9 @@ test("styled-components -> tokenami: migrates concrete styled-components syntax 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ color: "red", padding: "1rem" });",
-		  "converted": 0,
+		  "code": "import { css } from "@tokenami/css";
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "red" }), propsStyle)} />; };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -67,19 +66,19 @@ test("styled-components -> tokenami: migrates concrete styled-components syntax 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		      "kind": "host-framework",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -92,10 +91,9 @@ test("styled-components -> tokenami: carries a documented secondary styled-compo
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { css } from "@tokenami/css";
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "red" }), propsStyle)} />; };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -111,19 +109,19 @@ test("styled-components -> tokenami: carries a documented secondary styled-compo
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		      "kind": "host-framework",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -145,10 +143,9 @@ test("styled-components -> tokenami: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { css } from "@tokenami/css";
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "#2563eb" }), propsStyle)} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -164,26 +161,25 @@ test("styled-components -> tokenami: loads concrete theme and project context va
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { css } from "@tokenami/css";
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -199,19 +195,19 @@ test("styled-components -> tokenami: loads concrete theme and project context va
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -227,10 +223,9 @@ test("styled-components -> tokenami: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		  "converted": 0,
+		  "code": "import { css } from "@tokenami/css";
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "var(--color_brand)" }), propsStyle)} />; };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -246,19 +241,19 @@ test("styled-components -> tokenami: resolves concrete token values with project
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		      "kind": "host-framework",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -272,10 +267,10 @@ test("styled-components -> tokenami: preserves malformed concrete styled-compone
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tokenami | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = styled.div({ color: "red", padding: "1rem" });
+		import { css } from "@tokenami/css";
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--padding": "1rem", "--color": "red" }), propsStyle)} />; };
 		const unfinished = { /* unfinished styled-components */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -291,19 +286,19 @@ test("styled-components -> tokenami: preserves malformed concrete styled-compone
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
-		      "kind": "host-framework",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

@@ -86,7 +86,7 @@ test("treat -> styled-components -> treat: preserves an actionable concrete roun
 		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "treat";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "red" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ "padding": 8, "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,7 +172,7 @@ test("treat -> styled-components -> treat: retains the documented secondary API 
 		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "treat";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "red" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ "padding": 8, "color": "red" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -273,7 +273,7 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "treat";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		      "code": "import { createCx } from "pandwind/cx";
 		import { style } from "treat";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -435,7 +435,7 @@ test("treat -> styled-components -> treat: resolves token values across both con
 		    "code": "import { createCx } from "pandwind/cx";
 		import { style } from "treat";
 		const cx = createCx();
-		export const card = (props) => <div {...props} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />;",
+		export const card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx(style({ "padding": 8, "color": "#2563eb" }), props.className)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -4,6 +4,8 @@ import {
 	type AdapterSourceObjectOptions,
 } from "../external-adapters.ts";
 import type {
+	AdapterComponentRewriteContext,
+	AdapterComponentRewriteResult,
 	AdapterConfigContext,
 	AdapterEmitContext,
 	AdapterHostRewriteContext,
@@ -36,6 +38,7 @@ import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { componentAttrsValueExpression } from "../host-component-rewriter.ts";
 import { z } from "zod";
 
 function camelCase(property: string): string {
@@ -925,6 +928,76 @@ function rewriteTokenamiStyleHost({
 	};
 }
 
+const rewriteTokenamiComponent = (
+	context: AdapterComponentRewriteContext,
+): AdapterComponentRewriteResult => {
+	if (
+		context.framework !== BuiltinHostFramework.React &&
+		context.framework !== BuiltinHostFramework.Preact
+	)
+		return {
+			code: context.code,
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: context.binding,
+					hint: "Tokenami component projection requires React-compatible JSX",
+				},
+			],
+		};
+	const tag = /^[a-z][\w-]*$/u.test(context.tag) ? context.tag : undefined;
+	if (tag === undefined)
+		return {
+			code: context.code,
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: context.program.source?.subject ?? context.binding,
+					hint: "Tokenami component projection requires a statically known intrinsic styled subject",
+				},
+			],
+		};
+	const attrsValue = componentAttrsValueExpression(context.attrsExpression, "props");
+	if (attrsValue === undefined)
+		return {
+			code: context.code,
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: context.attrsExpression ?? context.binding,
+					hint: "Tokenami component projection requires static attrs or a props callback",
+				},
+			],
+		};
+	const escapedBinding = context.binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const assignment = new RegExp(`\\b(?:const|let|var)\\s+${escapedBinding}\\s*=\\s*[^;]+;`).exec(
+		context.code,
+	);
+	if (assignment === null)
+		return {
+			code: context.code,
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: context.binding,
+					hint: "Tokenami component declaration could not be located",
+				},
+			],
+		};
+	const declaration =
+		context.attrsExpression === undefined
+			? `${context.binding} = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? ${JSON.stringify(tag)}; return <Component {...rest} style={css(${context.emittedExpression}, propsStyle)} />; };`
+			: `${context.binding} = (props) => { const attrs = ${attrsValue}; const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const { as: propsAs, className: propsClassName, style: propsStyle, ...rest } = props; const Component = attrsAs ?? propsAs ?? ${JSON.stringify(tag)}; return <Component {...rest} {...attrsProps} className={[propsClassName, attrsClassName].filter(Boolean).join(" ") || undefined} style={css(${context.emittedExpression}, propsStyle, attrsStyle)} />; };`;
+	const bindingOffset = assignment[0].indexOf(context.binding);
+	return {
+		code:
+			context.code.slice(0, assignment.index + bindingOffset) +
+			declaration +
+			context.code.slice(assignment.index + assignment[0].length),
+		residuals: [],
+	};
+};
+
 /** Semantic Tokenami source adapter. It owns Tokenami's encoded property keys and aliases. */
 export function createTokenamiAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
@@ -1003,20 +1076,22 @@ export function createTokenamiAdapter(
 					BuiltinHostFramework.Vue,
 				],
 				hostContextRequiredHint:
-					"Tokenami style objects cannot replace a styled component factory without an explicit host rewrite",
+					"Tokenami component projection requires a statically known intrinsic styled subject",
 				hostRepresentation: StyleHostRepresentationKind.StyleProp,
 				resolveHostRepresentation: ({ hasHostContext, program, framework, sourceFramework }) => {
-					if (!hasHostContext || program.source?.subject !== undefined) return undefined;
+					if (!hasHostContext && program.source?.subject === undefined) return undefined;
 					const hostFramework = sourceFramework ?? framework;
-					return hostFramework === undefined ||
+					const hostSupportsStyle =
+						hostFramework === undefined ||
 						hostFramework === BuiltinHostFramework.React ||
 						hostFramework === BuiltinHostFramework.Preact ||
 						hostFramework === BuiltinHostFramework.Solid ||
 						hostFramework === BuiltinHostFramework.Qwik ||
-						hostFramework === BuiltinHostFramework.Vue
-						? StyleHostRepresentationKind.StyleProp
-						: undefined;
+						hostFramework === BuiltinHostFramework.Vue;
+					if (!hostSupportsStyle) return undefined;
+					return StyleHostRepresentationKind.StyleProp;
 				},
+				rewriteComponent: rewriteTokenamiComponent,
 				rewriteHost: rewriteTokenamiStyleHost,
 			},
 		},

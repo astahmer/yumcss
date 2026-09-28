@@ -22,6 +22,7 @@ import {
 } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStylePropSelector } from "./jsx-style-host.ts";
 import { CodemodCallPatternFormTag, CodemodCallPatternKindTag } from "./identifiers.ts";
+import { styledSubjectFromFunctionMatch } from "./host-component-rewriter.ts";
 import { FunctionStyleCallParser } from "./function-style-parser.ts";
 import type {
 	AdapterSourceObjectOptions,
@@ -67,10 +68,10 @@ function adapterSource(
 }
 
 function styledSubject(source: string, start: number): Partial<StyleProgramSource> {
-	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/);
-	if (match?.[1] === undefined) return {};
-	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
-	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
+	const subject = styledSubjectFromFunctionMatch(source.slice(start));
+	if (subject === undefined) return {};
+	const base = /^styled(?:\.|\s*\.)/.test(subject) ? "member" : "call";
+	return { subject, subjectKind: base };
 }
 
 function parseKeyframeProgram(
@@ -685,7 +686,7 @@ function parseCalls(
 			continue;
 		}
 		for (const candidate of regexesFor(pattern))
-			for (const { match } of matchesFor(candidate)) {
+			for (const { candidate: matchedCandidate, match } of matchesFor(candidate)) {
 				const start = match.index ?? 0;
 				if (
 					candidate.binding !== undefined &&
@@ -881,7 +882,12 @@ function parseCalls(
 					matches.push({ start, end: start + template.length, program, sourceText: template });
 					continue;
 				}
-				const open = source.indexOf("{", start);
+				matchedCandidate.regex.lastIndex = 0;
+				const matchedPrefix = matchedCandidate.regex.exec(source.slice(start))?.[0] ?? match[0];
+				matchedCandidate.regex.lastIndex = 0;
+				const prefixObjectOffset = matchedPrefix.lastIndexOf("{");
+				const open =
+					prefixObjectOffset === -1 ? source.indexOf("{", start) : start + prefixObjectOffset;
 				if (open === -1) continue;
 				const block = SourcePass.matchBlock(source, open);
 				if (block === null) {

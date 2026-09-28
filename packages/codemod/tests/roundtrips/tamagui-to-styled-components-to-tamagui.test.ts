@@ -86,9 +86,10 @@ test("tamagui -> styled-components -> tamagui: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "red" });
-		export const App = () => <View className={Card} />;",
+		import { styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "$4", color: "red" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -247,9 +248,10 @@ test("tamagui -> styled-components -> tamagui: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
+		import { styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "$4", color: "#2563eb" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -320,9 +322,10 @@ test("tamagui -> styled-components -> tamagui: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
+		import { styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "$4", color: "#2563eb" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -407,9 +410,10 @@ test("tamagui -> styled-components -> tamagui: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { padding: "$4", color: "#2563eb" });
-		export const App = () => <View className={Card} />;",
+		import { styled } from "@tamagui/core";
+		const __CardTamagui = styled(View, { padding: "$4", color: "#2563eb" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

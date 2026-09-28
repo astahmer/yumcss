@@ -48,8 +48,8 @@ test("styled-components -> stitches: migrates concrete styled-components syntax 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "red" });",
+		  "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +93,8 @@ test("styled-components -> stitches: carries a documented secondary styled-compo
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "red" });",
+		  "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { padding: "1rem", color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +147,8 @@ test("styled-components -> stitches: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "#2563eb" });",
+		    "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +183,8 @@ test("styled-components -> stitches: loads concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "#2563eb" });",
+		    "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +231,8 @@ test("styled-components -> stitches: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "#2563eb" });",
+		  "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { padding: "1rem", color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +276,8 @@ test("styled-components -> stitches: preserves malformed concrete styled-compone
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const Card = css({ padding: "1rem", color: "red" });
+		  "code": "import { styled } from "@stitches/react";
+		export const Card = styled("div", { padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

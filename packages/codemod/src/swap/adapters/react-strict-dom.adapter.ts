@@ -200,6 +200,8 @@ const reactStrictDom = defineCodemodAdapter({
 			handlesHostRewrites: true,
 			handlesFrameworkSemantics: true,
 			handlesSourceHostAttributes: true,
+			hostContextRequiredHint:
+				"React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 			hostFrameworks: [BuiltinHostFramework.React],
 			hostRepresentation: StyleHostRepresentationKind.StyleProp,
 			resolveHostRepresentation: ({

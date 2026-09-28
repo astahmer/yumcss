@@ -5,6 +5,7 @@ import {
 	StyleValueKindTag,
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { componentAttrsValueExpression } from "../host-component-rewriter.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
@@ -618,7 +619,14 @@ export function createMantineAdapter(
 						? StyleHostRepresentationKind.StyleProp
 						: StyleHostRepresentationKind.Class;
 				},
-				rewriteComponent: ({ code, binding, tag, framework, emittedExpression }) => {
+				rewriteComponent: ({
+					code,
+					binding,
+					tag,
+					framework,
+					emittedExpression,
+					attrsExpression,
+				}) => {
 					if (framework !== BuiltinHostFramework.React)
 						return {
 							code,
@@ -645,9 +653,22 @@ export function createMantineAdapter(
 								},
 							],
 						};
+					const attrsValue = componentAttrsValueExpression(attrsExpression);
+					if (attrsExpression !== undefined && attrsValue === undefined)
+						return {
+							code,
+							residuals: [
+								{
+									kind: "host-framework",
+									text: attrsExpression,
+									hint: "Mantine component projection requires static attrs or a props callback",
+								},
+							],
+						};
 					const declaration =
-						`${binding} = (props) => <${tag} {...props} ` +
-						`style={{ ...${emittedExpression}, ...props.style }} />;`;
+						attrsExpression === undefined
+							? `${binding} = (props) => <${tag} {...props} style={{ ...${emittedExpression}, ...props.style }} />;`
+							: `${binding} = (props) => { const attrs = ${attrsValue}; const { as: attrsAs, ...attrsProps } = attrs; const { as: propsAs, ...rest } = props; const Component = attrsAs ?? propsAs ?? ${JSON.stringify(tag)}; return <Component {...rest} {...attrsProps} className={[props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...${emittedExpression}, ...props.style, ...attrs.style }} />; };`;
 					const bindingOffset = assignment[0].indexOf(binding);
 					return {
 						code:
