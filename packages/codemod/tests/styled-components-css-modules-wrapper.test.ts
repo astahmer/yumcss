@@ -153,7 +153,7 @@ test("styled-components -> CSS Modules keeps a reusable React component export",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
-		      "content": ".root { padding: 1rem; color: red; }
+		      "content": ".root { color: red; padding: 1rem; }
 		",
 		      "path": "src/Card.module.css",
 		      "purpose": "CSS Modules styles for a migrated React component",
@@ -350,7 +350,26 @@ test("styled-components -> CSS Modules preserves source numeric unit semantics",
 	expect(css).toContain("-ms-grid-column-span: 1px;");
 	expect({ css, residuals: result.residuals }).toMatchInlineSnapshot(`
 		{
-		  "css": ".root { --custom: 3; margin: 0; padding: 8px; -ms-grid-column: 1px; -ms-grid-column-span: 1px; -ms-grid-row: 1px; -ms-grid-row-span: 1px; box-flex: 1px; box-flex-group: 1px; box-ordinal-group: 1px; flex-negative: 1px; flex-order: 1px; flex-positive: 1px; font-weight: 700; line-height: 1.25; opacity: 0.5; z-index: 2; }
+		  "css": ".root { padding: 8px; margin: 0; opacity: 0.5; line-height: 1.25; font-weight: 700; z-index: 2; --custom: 3; box-flex: 1px; box-flex-group: 1px; box-ordinal-group: 1px; flex-positive: 1px; flex-negative: 1px; flex-order: 1px; -ms-grid-row: 1px; -ms-grid-row-span: 1px; -ms-grid-column: 1px; -ms-grid-column-span: 1px; }
+		",
+		  "residuals": [],
+		}
+	`);
+});
+
+test("styled-components -> CSS Modules preserves authored declaration precedence", () => {
+	const source =
+		'import styled from "styled-components";\n' +
+		'export const Card = styled.div({ marginTop: "2px", margin: "1px" });';
+	const result = migrate(source);
+	const css = result.generatedFiles[0]?.content;
+
+	expect(result.converted).toBe(1);
+	expect(result.residuals).toEqual([]);
+	expect(css).toBe(".root { margin-top: 2px; margin: 1px; }\n");
+	expect({ css, residuals: result.residuals }).toMatchInlineSnapshot(`
+		{
+		  "css": ".root { margin-top: 2px; margin: 1px; }
 		",
 		  "residuals": [],
 		}

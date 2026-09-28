@@ -265,11 +265,7 @@ function isUnboundedJsCallValue(rawValue: string): boolean {
 	if (match === null) return false;
 	return !CssFunctionalNotationNames.has(match[0].replace(/\s*\($/, ""));
 }
-function parseTemplateProgram(
-	body: string,
-	context: AdapterParseContext,
-	start: number,
-): StyleProgram {
+function parseTemplateProgram(body: string, context: AdapterParseContext, start: number): StyleProgram {
 	const parseBlock = (
 		input: string,
 	): {
@@ -426,7 +422,10 @@ function parseTemplateProgram(
 				order: 0,
 			},
 		],
-		{ source: adapterSource(context, start), residuals: parsed.residuals },
+		{
+			source: adapterSource(context, start),
+			residuals: parsed.residuals,
+		},
 	);
 }
 
@@ -864,9 +863,9 @@ function parseCalls(
 									start,
 									sourceName(source, start, `${pattern.name}${matches.length + 1}`),
 								)
-							: pattern.kind === CodemodCallPatternKindTag.Global
-								? parseGlobalTemplateProgram(templateBody, context, start)
-								: parseTemplateProgram(templateBody, context, start);
+				: pattern.kind === CodemodCallPatternKindTag.Global
+					? parseGlobalTemplateProgram(templateBody, context, start)
+					: parseTemplateProgram(templateBody, context, start);
 					program = {
 						...program,
 						source: {

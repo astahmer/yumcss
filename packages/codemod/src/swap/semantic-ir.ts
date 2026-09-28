@@ -341,15 +341,14 @@ function normalizeDynamicValue(value: StyleValue): StyleValue {
 	};
 }
 
+/** Preserve declaration order because overlapping shorthand and longhand values depend on it. */
 function normalizeRule(rule: StyleRuleInput, index: number): StyleRule {
 	return {
 		...rule,
-		declarations: defaultDeclarationOrdering.order(
-			rule.declarations.map((declaration) => ({
-				...declaration,
-				value: normalizeDynamicValue(declaration.value),
-			})),
-		),
+		declarations: rule.declarations.map((declaration) => ({
+			...declaration,
+			value: normalizeDynamicValue(declaration.value),
+		})),
 		children: (rule.children ?? []).map((child, childIndex) => normalizeRule(child, childIndex)),
 		order: rule.order ?? index,
 	};
@@ -502,7 +501,7 @@ export function styleProgramFromSwapIR(
 	};
 }
 
-/** Build a normalized, deterministically ordered semantic program. */
+/** Build a normalized semantic program with deterministic rule ordering. */
 export function styleProgramFromRules(
 	rules: readonly StyleRuleInput[],
 	options: StyleProgramOptions & { residuals?: readonly StyleProgramResidual[] } = {},
