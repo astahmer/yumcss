@@ -11,6 +11,56 @@ import {
 	type TokenReferenceFormat as TokenReferenceFormatValue,
 } from "../../tokens.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { NodeKind, walk } from "pandwind/tw/literal";
+
+const addPatternNames = (pattern: unknown, names: Set<string>): void => {
+	walk(pattern, (node) => {
+		if (node.type !== NodeKind.Identifier) return;
+		const name = node["name"];
+		if (typeof name === "string") names.add(name);
+	});
+};
+
+const localNames = (source: string | undefined): Set<string> => {
+	const names = new Set<string>();
+	if (source === undefined) return names;
+	try {
+		const parsed = SOURCE_SCANNER_SERVICE.parse({ file: "pandwind-panda-emission.tsx", source });
+		if (parsed.errors.length > 0) {
+			for (const name of source.match(/[A-Za-z_$][\w$]*/gu) ?? []) names.add(name);
+			return names;
+		}
+		walk(parsed.program, (node) => {
+			if (node.type === NodeKind.VariableDeclarator) addPatternNames(node["id"], names);
+			if (
+				node.type === NodeKind.FunctionDeclaration ||
+				node.type === NodeKind.FunctionExpression ||
+				node.type === NodeKind.ArrowFunctionExpression
+			) {
+				addPatternNames(node["id"], names);
+				addPatternNames(node["params"], names);
+			}
+			if (node.type === NodeKind.ClassDeclaration) addPatternNames(node["id"], names);
+			if (node.type === NodeKind.CatchClause) addPatternNames(node["param"], names);
+			if (node.type === NodeKind.ImportDeclaration) {
+				const specifiers = node["specifiers"];
+				if (Array.isArray(specifiers))
+					for (const specifier of specifiers) {
+						if (typeof specifier !== "object" || specifier === null || Array.isArray(specifier))
+							continue;
+						const local = specifier["local"];
+						if (typeof local !== "object" || local === null || Array.isArray(local)) continue;
+						const name = local["name"];
+						if (typeof name === "string") names.add(name);
+					}
+			}
+		});
+	} catch {
+		for (const name of source.match(/[A-Za-z_$][\w$]*/gu) ?? []) names.add(name);
+	}
+	return names;
+};
 
 const propertyGroups: Record<string, string> = {
 	backgroundColor: "colors",
@@ -57,6 +107,20 @@ const formatValue = (value: string | true | number | Array<string | number>): st
 		: Array.isArray(value)
 			? `[${value.map(formatValue).join(", ")}]`
 			: String(value);
+
+const pandaCssBinding = (source: string | undefined): string => {
+	const usedNames = localNames(source);
+	if (!usedNames.has("css")) return "css";
+	for (const name of source?.match(/[A-Za-z_$][\w$]*/gu) ?? []) usedNames.add(name);
+	let candidate = "pandaCss";
+	let suffix = 2;
+	while (usedNames.has(candidate)) {
+		candidate = `pandaCss${suffix}`;
+		suffix += 1;
+	}
+	return candidate;
+};
+
 const emitPanda: Emitter = (ir, meta, context) => {
 	const groups = new Map<string, SwapEntry[]>();
 	for (const entry of ir.entries) {
@@ -89,10 +153,18 @@ const emitPanda: Emitter = (ir, meta, context) => {
 			parts.push(nested);
 		}
 	}
+	const binding = pandaCssBinding(context.source);
 	return {
-		text: parts.length > 0 ? `css({ ${parts.join(", ")} })` : "",
+		text: parts.length > 0 ? `${binding}({ ${parts.join(", ")} })` : "",
 		residuals: [],
-		imports: parts.length > 0 ? ['import { css } from "styled-system/css";'] : [],
+		imports:
+			parts.length > 0
+				? [
+						binding === "css"
+							? 'import { css } from "styled-system/css";'
+							: `import { css as ${binding} } from "styled-system/css";`,
+					]
+				: [],
 	};
 };
 

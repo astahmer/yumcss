@@ -191,6 +191,29 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
 	});
 
+	test("projects Pandwind class bindings through StyleX's React props contract", () => {
+		const result = migrate(
+			'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red", padding: "1rem" });\n' +
+				"export const App = () => <div className={card} />;",
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.StyleX,
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import * as stylex from "@stylexjs/stylex";');
+		expect(result.code).toContain("<div {...stylex.props(card)} />");
+		expect(result.code).not.toContain("className={stylex.props");
+		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
+		expect(result.code).toMatchInlineSnapshot(`
+			"import * as stylex from "@stylexjs/stylex";
+			const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
+			export const App = () => <div {...stylex.props(card)} />;"
+		`);
+	});
+
 	test("projects an intrinsic React host through MUI Box instead of a DOM sx prop", () => {
 		const result = migrate(
 			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
@@ -435,6 +458,24 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { Box } from "@mantine/core";
 			export const App = () => <Box  style={{ background: theme.foreground }}/>;"
+		`);
+	});
+
+	test("lowers a Pandwind class bound to a React host into Mantine's style prop", () => {
+		const result = migrate(
+			'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red", padding: "1rem" });\n' +
+				"export const App = () => <div className={card} />;",
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.Mantine,
+		);
+
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toMatchInlineSnapshot(`
+			"const card = { padding: "1rem", color: "red" };
+			export const App = () => <div style={card} />;"
 		`);
 	});
 

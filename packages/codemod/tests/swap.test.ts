@@ -16,6 +16,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { loadMetaFromSourcesAsync } from "../src/meta.ts";
 import { runSwap, SWAP_TARGETS, TokenReferenceFormat } from "../src/swap/index.ts";
 
@@ -371,6 +372,30 @@ describe("outbound: panda", () => {
 		expect(result.code).toContain('backgroundColor: "blue.500"');
 		expect(result.code).toContain('_hover: { backgroundColor: "blue.600" }');
 		expect(result.code).toContain('import { css } from "styled-system/css";');
+		expect(result.code).toContain("css({ ");
+	});
+
+	test("chooses a free Panda css binding around existing local names", () => {
+		const result = swapTo(
+			"const css = createCss();\nconst pandaCss = existingHelper;\n" +
+				'const card = css.class({ color: "red" });',
+			"panda",
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skippedByMarker).toBe(0);
+		expect(result.unmappedTokens).toEqual([]);
+		expect(result.code).toContain('import { css as pandaCss2 } from "styled-system/css";');
+		expect(result.code).toContain('const card = pandaCss2({ color: "red" });');
+		expect(
+			SOURCE_SCANNER_SERVICE.parse({ file: "PandaCollision.tsx", source: result.code }).errors,
+		).toEqual([]);
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css as pandaCss2 } from "styled-system/css";
+			const css = createCss();
+			const pandaCss = existingHelper;
+			const card = pandaCss2({ color: "red" });"
+		`);
 	});
 });
 
@@ -390,7 +415,9 @@ describe("outbound: stylex", () => {
 		expect(result.code).toContain('import * as stylex from "@stylexjs/stylex";');
 		expect(result.code).toContain("stylex.create({");
 		expect(result.code).toContain("s1: {");
-		expect(result.code).toContain("stylex.props(swapStyles.s1)");
+		expect(result.code).toContain("stylex.props(swapStyles.s1).className");
+		expect(result.code).toContain("className={stylex.props(swapStyles.s1).className}");
+		expect(result.code).not.toContain("className={stylex.props(swapStyles.s1)}");
 		expect(result.code).toContain('default: "#3182ce"');
 		expect(result.code).toContain('":hover": "#2b6cb0"');
 		expect(result.code).toContain('":is(:focus-visible, [data-focus-visible])": 0.8');
@@ -413,7 +440,7 @@ describe("outbound: stylex", () => {
 					},
 				},
 			});
-			export const A = () => <div className={stylex.props(swapStyles.s1)} />;"
+			export const A = () => <div className={stylex.props(swapStyles.s1).className} />;"
 		`);
 	});
 
@@ -429,6 +456,7 @@ describe("outbound: stylex", () => {
 
 		expect(result.converted).toBe(1);
 		expect(result.skippedByMarker).toBe(0);
+		expect(result.code).toContain("const card = stylex.props(swapStyles.s1).className;");
 		expect(result.code).toContain('"@media (prefers-color-scheme: dark)": {');
 		expect(result.code).toContain('":hover": "blue"');
 		expect(result.code).toMatchInlineSnapshot(`
@@ -444,7 +472,7 @@ describe("outbound: stylex", () => {
 					},
 				},
 			});
-			const card = stylex.props(swapStyles.s1);"
+			const card = stylex.props(swapStyles.s1).className;"
 		`);
 	});
 
@@ -1011,6 +1039,6 @@ test("CLI spawn e2e: --to=panda emits token refs + styled-system import", () => 
 		{ cwd: resolve(import.meta.dirname, ".."), stdio: "pipe" },
 	);
 	const after = readFileSync(file, "utf8");
-	expect(after).toContain('css({ backgroundColor: "blue.500" })');
-	expect(after).toContain('import { css } from "styled-system/css";');
+	expect(after).toContain('pandaCss({ backgroundColor: "blue.500" })');
+	expect(after).toContain('import { css as pandaCss } from "styled-system/css";');
 }, 30_000);

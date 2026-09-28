@@ -39,6 +39,8 @@ import {
 export interface EmitterContext {
 	/** 1-based ordinal of the call site within the current file pass. */
 	index: number;
+	/** Original source lets a target choose collision-free local import names. */
+	source?: string;
 	/** How token references are emitted ("off" = resolved literals). */
 	tokenRefs?: TokenRefMode;
 	/** Token spelling policy for inferred token references. */

@@ -802,6 +802,7 @@ export function runSwap(
 		}
 		const result = emitter.emit(ir, meta, {
 			index: siteIndex,
+			source,
 			tokenRefs,
 			sort: options.sort,
 			program,

@@ -87,7 +87,7 @@ ${indent}}`;
 	});
 	const name = `s${context.index}`;
 	return {
-		text: `stylex.props(swapStyles.${name})`,
+		text: `stylex.props(swapStyles.${name}).className`,
 		residuals,
 		headers: [
 			`const swapStyles = stylex.create({\n\t${name}: {\n${bodyLines.join("\n")}\n\t},\n});`,
