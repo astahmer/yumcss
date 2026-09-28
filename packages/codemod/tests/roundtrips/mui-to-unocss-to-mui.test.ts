@@ -86,7 +86,7 @@ test("mui -> unocss -> mui: preserves an actionable concrete round trip", () => 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ padding: "16px", color: "red" }}/>;",
+		export const App = () => <Box sx={{ padding: "16px", color: "red" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -269,7 +269,7 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -341,7 +341,7 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -427,7 +427,7 @@ test("mui -> unocss -> mui: resolves token values across both concrete legs", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }}/>;",
+		export const App = () => <Box sx={{ padding: "16px", color: "primary.main" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

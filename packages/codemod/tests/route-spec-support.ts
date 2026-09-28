@@ -64,6 +64,25 @@ export function createInstalledChakraRouteProject(): AdapterRouteProject {
 	};
 }
 
+export function createInstalledTailwindChakraRouteProject(): AdapterRouteProject {
+	const root = installedChakraProjectRoot;
+	const loaderCalls: AdapterRouteProject["loaderCalls"] = { packages: [], files: [] };
+	return {
+		root,
+		files: { [`${root}/tailwind.css`]: '@import "tailwindcss";' },
+		moduleLoader: {
+			importPackage: (packageName, packageRoot) => {
+				loaderCalls.packages.push(packageName);
+				return packageName === "@chakra-ui/react" || packageName === "@tailwindcss/node"
+					? NODE_PROJECT_MODULE_LOADER.importPackage(packageName, packageRoot)
+					: Promise.resolve(undefined);
+			},
+			importFile: async () => undefined,
+		},
+		loaderCalls,
+	};
+}
+
 function routeProjectFiles(
 	adapter: CodemodAdapterId,
 	color: string,
@@ -86,7 +105,7 @@ function routeProjectFiles(
 			};
 		case CodemodAdapterId.Mui:
 			return {
-				[`${routeProjectRoot}/mui-theme.ts`]: `export default { palette: { primary: { main: ${quotedColor} } }, spacing: { card: "1.125rem" } };`,
+				[`${routeProjectRoot}/mui-theme.ts`]: `export default { palette: { primary: { main: ${quotedColor} } }, spacing: 8 };`,
 			};
 		case CodemodAdapterId.Mantine:
 			return {
@@ -182,6 +201,8 @@ function routeProjectLoader(
 								if (candidate === "bg-brand") return `.bg-brand{background-color:${color}}`;
 								if (candidate === "p-card") return ".p-card{padding:1.125rem}";
 								if (candidate === "brand-button") return `.brand-button{background-color:${color}}`;
+								if (candidate === "md:[display:flex]")
+									return "@media (width >= 48rem) { .md\\:\\[display\\:flex\\] { display: flex; } }";
 								const arbitrary = /^\[([^:]+):(.+)\]$/u.exec(candidate);
 								if (arbitrary?.[1] !== undefined && arbitrary[2] !== undefined) {
 									const escaped = candidate.replace(
@@ -261,7 +282,7 @@ function routeProjectLoader(
 				return {
 					default: {
 						palette: { primary: { main: color } },
-						spacing: { card: "1.125rem" },
+						spacing: 8,
 					},
 				} as T;
 			if (hasAdapter(adapters, CodemodAdapterId.Mantine) && file.endsWith("/mantine-theme.ts"))

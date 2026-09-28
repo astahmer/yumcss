@@ -55,6 +55,10 @@ const mergeClassExpression = (
 
 /** Shared host syntax port for adapters that express styles as JSX attributes. */
 export class JsxStyleHost {
+	static findAttribute(openingTag: string, name: string): JsxStyleAttribute | undefined {
+		return this.attributes(openingTag).find((attribute) => attribute.name === name);
+	}
+
 	static parse(
 		source: string,
 		start: number,

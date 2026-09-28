@@ -49,7 +49,8 @@ test("tailwind -> mui -> tailwind: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => <div  sx={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;",
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ gap: "1rem", alignItems: "center", display: "flex" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -82,7 +83,8 @@ test("tailwind -> mui -> tailwind: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" className={"[gap:1rem] [align-items:center] [display:flex]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -205,9 +207,9 @@ test("tailwind -> mui -> tailwind: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		      "converted": 0,
+		      "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -223,47 +225,63 @@ test("tailwind -> mui -> tailwind: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" className={"p-card text-brand"}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		      "converted": 0,
+		      "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -279,39 +297,55 @@ test("tailwind -> mui -> tailwind: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" className={"p-card text-brand"}/>;",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -331,9 +365,9 @@ test("tailwind -> mui -> tailwind: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		    "converted": 0,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -349,39 +383,55 @@ test("tailwind -> mui -> tailwind: resolves token values across both concrete le
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" className={"p-card text-brand"}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

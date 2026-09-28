@@ -48,7 +48,8 @@ test("tailwind -> mui: migrates concrete tailwind syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => <div  sx={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;",
+		  "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ gap: "1rem", alignItems: "center", display: "flex" }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -141,9 +142,9 @@ test("tailwind -> mui: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		    "converted": 0,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -159,33 +160,25 @@ test("tailwind -> mui: loads concrete theme and project context variants", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		    "converted": 0,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -201,25 +194,17 @@ test("tailwind -> mui: loads concrete theme and project context variants", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -237,9 +222,9 @@ test("tailwind -> mui: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> mui | lowering-residual: validation)
-		export const App = () => <div className="text-brand p-card" />;",
-		  "converted": 0,
+		  "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ padding: "1.125rem", color: "primary.main" }} />;",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -255,25 +240,17 @@ test("tailwind -> mui: resolves concrete token values with project context", asy
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -288,7 +265,8 @@ test("tailwind -> mui: preserves malformed concrete tailwind input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => <div  sx={{ gap: "1rem", alignItems: "center", display: "flex" }}/>;
+		  "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ gap: "1rem", alignItems: "center", display: "flex" }} />;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "generatedFiles": [],

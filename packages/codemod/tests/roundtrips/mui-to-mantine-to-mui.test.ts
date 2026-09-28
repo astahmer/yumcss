@@ -84,7 +84,7 @@ test("mui -> mantine -> mui: preserves an actionable concrete round trip", () =>
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  sx={{ padding: "16px", color: "red" }}/>;",
+		export const App = () => <Box sx={{ padding: "16px", color: "red" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -255,7 +255,7 @@ test("mui -> mantine -> mui: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  sx={{ padding: "16px", color: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box sx={{ padding: "16px", color: "var(--mantine-color-brand-0)" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,7 +325,7 @@ test("mui -> mantine -> mui: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  sx={{ padding: "16px", color: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box sx={{ padding: "16px", color: "var(--mantine-color-brand-0)" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -409,7 +409,7 @@ test("mui -> mantine -> mui: resolves token values across both concrete legs", a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box  sx={{ padding: "16px", color: "var(--mantine-color-brand-0)" }}/>;",
+		export const App = () => <Box sx={{ padding: "16px", color: "var(--mantine-color-brand-0)" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
