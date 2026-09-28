@@ -81,6 +81,7 @@ export const enum CodemodPatternId {
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",
 	StyleXDefineVars = "stylex-define-vars",
+	PandwindCssGroup = "css-group",
 	ReactStrictDomCreate = "react-strict-dom-create",
 	ReactStrictDomKeyframes = "react-strict-dom-keyframes",
 	ReactStrictDomDefineVars = "react-strict-dom-define-vars",

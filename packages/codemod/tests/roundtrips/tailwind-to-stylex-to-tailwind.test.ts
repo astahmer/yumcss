@@ -134,7 +134,7 @@ test("tailwind -> stylex -> tailwind: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> stylex | lowering-residual: validation)
+		    "code": "// pandwind:migrate-skip (route: tailwind -> stylex | lowering-residual: capability, validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -160,7 +160,12 @@ test("tailwind -> stylex -> tailwind: retains the documented secondary API witho
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
+		        "hint": "condition is not expressible as a StyleX property-value condition",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "canonical CSS differs; 1 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -170,6 +175,7 @@ test("tailwind -> stylex -> tailwind: retains the documented secondary API witho
 		      {
 		        "differences": [
 		          "canonical CSS differs",
+		          "1 residual conversion(s)",
 		        ],
 		        "lossiness": "unsupported",
 		        "valid": false,
@@ -178,7 +184,7 @@ test("tailwind -> stylex -> tailwind: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> stylex | lowering-residual: validation)
+		    "code": "// pandwind:migrate-skip (route: tailwind -> stylex | lowering-residual: capability, validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

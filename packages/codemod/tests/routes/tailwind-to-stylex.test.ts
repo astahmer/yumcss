@@ -93,7 +93,7 @@ test("tailwind -> stylex: carries a documented secondary tailwind API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> stylex | lowering-residual: validation)
+		  "code": "// pandwind:migrate-skip (route: tailwind -> stylex | lowering-residual: capability, validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -119,7 +119,12 @@ test("tailwind -> stylex: carries a documented secondary tailwind API explicitly
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "canonical CSS differs",
+		      "hint": "condition is not expressible as a StyleX property-value condition",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "canonical CSS differs; 1 residual conversion(s)",
 		      "kind": "validation",
 		      "preserved": undefined,
 		    },
@@ -129,6 +134,7 @@ test("tailwind -> stylex: carries a documented secondary tailwind API explicitly
 		    {
 		      "differences": [
 		        "canonical CSS differs",
+		        "1 residual conversion(s)",
 		      ],
 		      "lossiness": "unsupported",
 		      "valid": false,

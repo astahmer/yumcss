@@ -50,7 +50,14 @@ test("panda -> stylex -> panda: preserves an actionable concrete round trip", ()
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { color: "red", "&:hover": { color: "blue" } } }).style;",
+		export const card = stylex.create({
+			style: {
+				color: {
+					default: "red",
+					":hover": "blue",
+				},
+			},
+		}).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -212,7 +219,14 @@ test("panda -> stylex -> panda: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { color: "#f97316", "&:hover": { color: "#f97316" } } }).style;",
+		export const card = stylex.create({
+			style: {
+				color: {
+					default: "#f97316",
+					":hover": "#f97316",
+				},
+			},
+		}).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -284,7 +298,14 @@ test("panda -> stylex -> panda: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { color: "#2563eb", "&:hover": { color: "#2563eb" } } }).style;",
+		export const card = stylex.create({
+			style: {
+				color: {
+					default: "#2563eb",
+					":hover": "#2563eb",
+				},
+			},
+		}).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -370,7 +391,14 @@ test("panda -> stylex -> panda: resolves token values across both concrete legs"
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const card = stylex.create({ style: { color: "#2563eb", "&:hover": { color: "#2563eb" } } }).style;",
+		export const card = stylex.create({
+			style: {
+				color: {
+					default: "#2563eb",
+					":hover": "#2563eb",
+				},
+			},
+		}).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

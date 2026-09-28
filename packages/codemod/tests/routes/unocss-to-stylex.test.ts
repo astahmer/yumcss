@@ -93,7 +93,7 @@ test("unocss -> stylex: carries a documented secondary unocss API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
+		  "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: capability, validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -119,7 +119,17 @@ test("unocss -> stylex: carries a documented secondary unocss API explicitly", (
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "canonical CSS differs",
+		      "hint": "condition is not expressible as a StyleX property-value condition",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "condition is not expressible as a StyleX property-value condition",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "canonical CSS differs; 2 residual conversion(s)",
 		      "kind": "validation",
 		      "preserved": undefined,
 		    },
@@ -129,6 +139,7 @@ test("unocss -> stylex: carries a documented secondary unocss API explicitly", (
 		    {
 		      "differences": [
 		        "canonical CSS differs",
+		        "2 residual conversion(s)",
 		      ],
 		      "lossiness": "unsupported",
 		      "valid": false,

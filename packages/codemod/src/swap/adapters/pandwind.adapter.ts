@@ -2414,7 +2414,14 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 		patterns: [
 			{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g },
 			{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },
-			{ name: "css-group", regex: /\bcss\.group\s*\(\s*\{/g, objectKind: "named" },
+			{
+				name: CodemodPatternId.PandwindCssGroup,
+				regex: /\bcss\.group\s*\(\s*\{/g,
+				sourceObjectOptions: (_source, context) =>
+					context.targetId === CodemodAdapterId.StyleX
+						? { namedRuleObjects: true }
+						: { nestedObjectKind: "named" },
+			},
 		],
 		packages: CodemodAdapterKit.dependency("pandwind", "runtime"),
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {

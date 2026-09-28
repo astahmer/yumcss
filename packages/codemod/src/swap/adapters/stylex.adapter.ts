@@ -1,12 +1,18 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
-import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
+import { SemanticConditionKindTag, StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
-import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter, type CallPattern } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { StyleLowering } from "../lowering.ts";
 import { STYLE_LOWERING_SCHEMA } from "../lowering.ts";
 import type { AdapterParseContext } from "../adapter-contract.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import {
+	SOURCE_SCANNER_SERVICE,
+	SourceBindingKind,
+	SourceBindings,
+	type SourceBinding,
+	type SourceBindingIndex,
+} from "pandwind/source";
 import { SourcePass } from "../../source-pass-utils.ts";
 import type { OxcNode } from "pandwind/tw/literal";
 import { parseObjectLiteral } from "../parse.ts";
@@ -24,6 +30,78 @@ import {
 	canConvertStaticVueSfc,
 	rewriteVueSfcToJsx,
 } from "../host-adapters.ts";
+
+const STYLEX_MODULE = "@stylexjs/stylex";
+
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const stylexCallee = (binding: SourceBinding, method: string): string =>
+	binding.kind === SourceBindingKind.Namespace || binding.kind === SourceBindingKind.Default
+		? `${binding.localName}.${method}`
+		: binding.localName;
+
+const stylexMethodPattern = (
+	method: string,
+	suffix = "\\s*\\(\\s*\\{",
+): Pick<CallPattern, "regex" | "semanticBindings" | "regexForBinding"> => ({
+	regex: new RegExp(`\\bstylex\\.${method}${suffix}`, "g"),
+	semanticBindings: [
+		{ source: STYLEX_MODULE, imported: method },
+		{ source: STYLEX_MODULE, imported: "default" },
+	],
+	regexForBinding: (binding) =>
+		new RegExp(`\\b${escapeRegExp(stylexCallee(binding, method))}${suffix}`, "g"),
+});
+
+function stylexMethodReferences(
+	bindings: SourceBindingIndex | undefined,
+	method: string,
+	sources: readonly string[] = [STYLEX_MODULE],
+	fallbackApiName = "stylex",
+): readonly string[] {
+	const references = sources.flatMap((source) =>
+		(bindings?.fromModule(source) ?? [])
+			.filter(
+				(binding) =>
+					!bindings?.isShadowed(binding.localName) &&
+					(binding.kind === SourceBindingKind.Namespace ||
+						binding.kind === SourceBindingKind.Default ||
+						binding.importedName === method),
+			)
+			.map((binding) => stylexCallee(binding, method)),
+	);
+	return references.length === 0 ? [`${fallbackApiName}.${method}`] : [...new Set(references)];
+}
+
+function stylexBindingsFromSource(source: string, file: string): SourceBindingIndex | undefined {
+	try {
+		return SourceBindings.fromDocument({
+			file,
+			source,
+			language: SOURCE_SCANNER_SERVICE.languageForFile(file),
+		});
+	} catch {
+		return undefined;
+	}
+}
+
+function replaceStylexCalls(
+	code: string,
+	bindings: SourceBindingIndex | undefined,
+	method: string,
+	replacement: string,
+	file = "styles.tsx",
+): string {
+	const sourceBindings = bindings ?? stylexBindingsFromSource(code, file);
+	let rewritten = code;
+	for (const callee of stylexMethodReferences(sourceBindings, method)) {
+		rewritten = rewritten.replace(
+			new RegExp(`\\b${escapeRegExp(callee)}\\s*\\(`, "g"),
+			replacement,
+		);
+	}
+	return rewritten;
+}
 
 function generatedCssBinding(source: string): string {
 	if (/\bimport\s+css\s+from\b/.test(source) && !/\b(?:const|let|var)\s+targetCss\b/.test(source))
@@ -224,22 +302,30 @@ function rewriteStaticXstyleHosts(source: string, binding: string): string {
 	return SourcePass.applyEdits(source, edits);
 }
 
-function stylexWhenCondition(expression: string): string | undefined {
-	const when = expression.match(
-		/^stylex\.when\.(ancestor|descendant|siblingBefore|siblingAfter|anySibling)\(\s*(['"])([^'"]+)\2\s*(?:,\s*([A-Za-z_$][\w$]*))?\s*\)$/,
-	);
-	if (when?.[1] === undefined || when[3] === undefined) return undefined;
-	const marker = when[4] === undefined ? "pw-default-marker" : `pw-marker-${when[4]}`;
-	const pseudo = `${marker}${when[3]}`;
-	return when[1] === "ancestor"
-		? `:where(.${pseudo} *) &`
-		: when[1] === "descendant"
-			? `&:where(:has(.${pseudo}))`
-			: when[1] === "siblingBefore"
-				? `:where(.${pseudo} ~ *) &`
-				: when[1] === "siblingAfter"
-					? `&:where(:has(~ .${pseudo}))`
-					: `:where(.${pseudo} ~ *, :has(~ .${pseudo})) &`;
+function stylexWhenCondition(
+	expression: string,
+	whenCallees: readonly string[] = ["stylex.when"],
+): string | undefined {
+	for (const callee of whenCallees) {
+		const when = expression.match(
+			new RegExp(
+				`^${escapeRegExp(callee)}\\.(ancestor|descendant|siblingBefore|siblingAfter|anySibling)\\(\\s*(['"])([^'"]+)\\2\\s*(?:,\\s*([A-Za-z_$][\\w$]*))?\\s*\\)$`,
+			),
+		);
+		if (when?.[1] === undefined || when[3] === undefined) continue;
+		const marker = when[4] === undefined ? "pw-default-marker" : `pw-marker-${when[4]}`;
+		const pseudo = `${marker}${when[3]}`;
+		return when[1] === "ancestor"
+			? `:where(.${pseudo} *) &`
+			: when[1] === "descendant"
+				? `&:where(:has(.${pseudo}))`
+				: when[1] === "siblingBefore"
+					? `:where(.${pseudo} ~ *) &`
+					: when[1] === "siblingAfter"
+						? `&:where(:has(~ .${pseudo}))`
+						: `:where(.${pseudo} ~ *, :has(~ .${pseudo})) &`;
+	}
+	return undefined;
 }
 
 function stylexConditionValues(source: string): Readonly<Record<string, string>> {
@@ -306,6 +392,14 @@ export function createStyleXSourceObjectOptions(
 	resolver: StyleXImportedReferenceResolver | undefined,
 	apiName = "stylex",
 ) {
+	const sourceModules = context.sourceModules ?? [STYLEX_MODULE];
+	const defineVarsCallees = stylexMethodReferences(
+		context.bindings,
+		"defineVars",
+		sourceModules,
+		apiName,
+	);
+	const whenCallees = stylexMethodReferences(context.bindings, "when", sourceModules, apiName);
 	const conditionValues = stylexConditionValues(source);
 	const computedKeys = Object.fromEntries([
 		...[...source.matchAll(/\b([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\b/g)].map((match) => [
@@ -318,14 +412,14 @@ export function createStyleXSourceObjectOptions(
 		]),
 	]);
 	const dynamicReferences: Record<string, string> = {
-		...stylexVariableReferences(source, apiName),
+		...stylexVariableReferences(source, defineVarsCallees),
 		...importedStyleReferences(context, resolver),
 	};
 	return {
 		conditionValues,
 		namedRuleObjects: true,
 		computedKeys,
-		computedKeyResolver: stylexWhenCondition,
+		computedKeyResolver: (expression: string) => stylexWhenCondition(expression, whenCallees),
 		propertyValueConditions: true,
 		propertyValueConditionNames: STYLEX_PROPERTY_NAMES,
 		preserveDefaultGroup: true,
@@ -340,25 +434,27 @@ export function createStyleXSourceObjectOptions(
 
 function stylexVariableReferences(
 	source: string,
-	apiName: string,
+	defineVarsCallees: readonly string[],
 ): Readonly<Record<string, string>> {
 	const references: Record<string, string> = {};
-	const escapedApiName = apiName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	for (const match of source.matchAll(
-		new RegExp(
-			`\\b(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*${escapedApiName}\\.defineVars\\s*\\(`,
-			"g",
-		),
-	)) {
-		const binding = match[1];
-		if (binding === undefined) continue;
-		const open = source.indexOf("{", (match.index ?? 0) + match[0].length);
-		if (open < 0) continue;
-		const block = SourcePass.matchBlock(source, open);
-		if (block === null) continue;
-		const variables = parseObjectLiteral(block.body);
-		for (const entry of variables?.keys ?? [])
-			references[`${binding}.${entry.key}`] = `var(--${entry.key})`;
+	for (const callee of defineVarsCallees) {
+		const escapedCallee = escapeRegExp(callee);
+		for (const match of source.matchAll(
+			new RegExp(
+				`\\b(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*${escapedCallee}\\s*\\(`,
+				"g",
+			),
+		)) {
+			const binding = match[1];
+			if (binding === undefined) continue;
+			const open = source.indexOf("{", (match.index ?? 0) + match[0].length);
+			if (open < 0) continue;
+			const block = SourcePass.matchBlock(source, open);
+			if (block === null) continue;
+			const variables = parseObjectLiteral(block.body);
+			for (const entry of variables?.keys ?? [])
+				references[`${binding}.${entry.key}`] = `var(--${entry.key})`;
+		}
 	}
 	return references;
 }
@@ -767,6 +863,149 @@ function evaluateNumericExpression(expression: string): number | undefined {
 	return index === tokens.length ? value : undefined;
 }
 
+function stylexConditionKey(
+	condition: StyleProgram["rules"][number]["conditions"][number],
+): string | undefined {
+	const value = condition.value ?? condition.name;
+	if (condition.kind === SemanticConditionKindTag.Pseudo) {
+		const selector = value.startsWith(":") ? value : `:${value}`;
+		return selector.startsWith("::") ? undefined : selector;
+	}
+	if (condition.kind === SemanticConditionKindTag.Selector) {
+		const selector = value.startsWith("&") ? value.slice(1) : value;
+		return (selector.startsWith(":") && !selector.startsWith("::")) || selector.startsWith("[")
+			? selector
+			: undefined;
+	}
+	if (condition.kind === SemanticConditionKindTag.Media)
+		return value.startsWith("@media") ? value : `@media ${value}`;
+	if (condition.kind === SemanticConditionKindTag.Container)
+		return value.startsWith("@container") ? value : `@container ${value}`;
+	if (condition.kind === SemanticConditionKindTag.Supports)
+		return value.startsWith("@supports") ? value : `@supports ${value}`;
+	if (condition.kind === SemanticConditionKindTag.Named && condition.name === "base") return "";
+	return undefined;
+}
+
+function stylexValue(value: StyleValue): string {
+	if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
+	if (value.kind === StyleValueKindTag.Token) return JSON.stringify(value.authored);
+	return JSON.stringify(value.value);
+}
+
+interface StyleXConditionNode {
+	value?: StyleValue;
+	readonly children: Map<string, StyleXConditionNode>;
+}
+
+function renderStyleXConditionNode(node: StyleXConditionNode, entryDepth: number): string {
+	if (node.children.size === 0) return node.value === undefined ? "null" : stylexValue(node.value);
+	const indent = "\t".repeat(entryDepth);
+	const closeIndent = "\t".repeat(entryDepth - 1);
+	const entries = [
+		`${indent}default: ${node.value === undefined ? "null" : stylexValue(node.value)},`,
+		...[...node.children].map(
+			([condition, child]) =>
+				`${indent}${JSON.stringify(condition)}: ${renderStyleXConditionNode(child, entryDepth + 1)},`,
+		),
+	];
+	return `{\n${entries.join("\n")}\n${closeIndent}}`;
+}
+
+function stylexConditionalProgramObject(program: StyleProgram): {
+	readonly text?: string;
+	readonly residuals: readonly StyleProgram["residuals"][number][];
+} {
+	const hasConditions = program.rules.some(
+		(rule) =>
+			rule.conditions.length > 0 ||
+			rule.declarations.some((declaration) => declaration.conditions.length > 0),
+	);
+	if (!hasConditions) return { residuals: [] };
+	const residuals: StyleProgram["residuals"][number][] = [];
+	const addResidual = (text: string, hint: string): void => {
+		if (residuals.some((residual) => residual.text === text && residual.hint === hint)) return;
+		residuals.push({ kind: StyleProgramResidualKindTag.Capability, text, hint });
+	};
+	if (
+		program.rules.some((rule) => rule.kind !== StyleRuleKindTag.Style || rule.children.length > 0)
+	) {
+		addResidual(
+			"conditional style rules",
+			"StyleX requires conditional declarations to be property-value conditions",
+		);
+		return { residuals };
+	}
+	const rules = program.rules.filter((rule) => rule.declarations.length > 0);
+	const unnamedRules = rules.filter((rule) => rule.name === undefined);
+	if (
+		unnamedRules.length > 1 ||
+		(unnamedRules.length > 0 && rules.some((rule) => rule.name === "style"))
+	) {
+		addResidual(
+			"conditional style rules",
+			"StyleX conditional output requires one unnamed style rule or named style rules",
+		);
+		return { residuals };
+	}
+	const renderedRules = rules.map((rule) => {
+		const properties = new Map<string, StyleXConditionNode>();
+		for (const declaration of rule.declarations) {
+			if (/^-Un[A-Z]/u.test(declaration.property)) continue;
+			const conditions = [...rule.conditions, ...declaration.conditions].filter(
+				(condition) =>
+					!(condition.kind === SemanticConditionKindTag.Named && condition.name === "base"),
+			);
+			let property = properties.get(declaration.property);
+			if (property === undefined) {
+				property = { children: new Map() };
+				properties.set(declaration.property, property);
+			}
+			if (conditions.length === 0) {
+				property.value = declaration.value;
+				continue;
+			}
+			let current = property;
+			let representable = true;
+			for (const condition of conditions) {
+				const key = stylexConditionKey(condition);
+				if (key === undefined || key === "") {
+					addResidual(
+						conditions.map((item) => item.raw ?? item.name).join("__"),
+						"condition is not expressible as a StyleX property-value condition",
+					);
+					representable = false;
+					break;
+				}
+				let child = current.children.get(key);
+				if (child === undefined) {
+					child = { children: new Map() };
+					current.children.set(key, child);
+				}
+				current = child;
+			}
+			if (representable) current.value = declaration.value;
+		}
+		const propertiesText = [...properties].flatMap(([name, property]) => {
+			const propertyKey = /^[A-Za-z_$][\w$]*$/u.test(name) ? name : JSON.stringify(name);
+			if (property.children.size === 0)
+				return [
+					`\t\t${propertyKey}: ${property.value === undefined ? "null" : stylexValue(property.value)},`,
+				];
+			return [`\t\t${propertyKey}: ${renderStyleXConditionNode(property, 3)},`];
+		});
+		const name = rule.name ?? "style";
+		const ruleKey = /^[A-Za-z_$][\w$]*$/u.test(name) ? name : JSON.stringify(name);
+		return `\t${ruleKey}: {\n${propertiesText.join("\n")}\n\t},`;
+	});
+	if (residuals.length > 0) return { residuals };
+	const object = `stylex.create({\n${renderedRules.join("\n")}\n})`;
+	return {
+		text: unnamedRules.length === 1 && rules.length === 1 ? `${object}.style` : object,
+		residuals: [],
+	};
+}
+
 export function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
 	const root = program.rules[0];
 	const variableProperty = (property: string): string =>
@@ -792,6 +1031,55 @@ export function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
 	};
 }
 
+function normalizeStyleXConditionalNullDefaults(program: StyleProgram): StyleProgram {
+	const sameCondition = (
+		left: StyleProgram["rules"][number]["conditions"][number],
+		right: StyleProgram["rules"][number]["conditions"][number],
+	): boolean =>
+		left.kind === right.kind &&
+		left.name === right.name &&
+		left.value === right.value &&
+		left.raw === right.raw;
+	const normalizeRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => {
+		const declarations = rule.declarations.filter((declaration) => {
+			if (
+				declaration.value.kind !== StyleValueKindTag.Dynamic ||
+				declaration.value.expression.trim() !== "null"
+			)
+				return true;
+			const prefix = [...rule.conditions, ...declaration.conditions];
+			return !rule.declarations.some((candidate) => {
+				if (candidate === declaration || candidate.property !== declaration.property) return false;
+				const conditions = [...rule.conditions, ...candidate.conditions];
+				return (
+					conditions.length > prefix.length &&
+					prefix.every((condition, index) => {
+						const candidateCondition = conditions[index];
+						return candidateCondition !== undefined && sameCondition(condition, candidateCondition);
+					})
+				);
+			});
+		});
+		return {
+			...rule,
+			declarations,
+			children: rule.children.map(normalizeRule),
+		};
+	};
+	const rules = program.rules.map(normalizeRule);
+	return {
+		...program,
+		rules,
+		declarations: rules.flatMap((rule) =>
+			rule.kind === StyleRuleKindTag.Style &&
+			rule.name === undefined &&
+			rule.conditions.length === 0
+				? rule.declarations
+				: [],
+		),
+	};
+}
+
 export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.StyleX,
@@ -802,22 +1090,23 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		patterns: [
 			{
 				name: CodemodPatternId.StyleXCreate,
-				regex: /\bstylex\.create\s*\(\s*\{/g,
+				...stylexMethodPattern("create"),
 				objectKind: "named",
+				transform: normalizeStyleXConditionalNullDefaults,
 			},
 			{
 				name: CodemodPatternId.StyleXKeyframes,
-				regex: /\bstylex\.keyframes\s*\(\s*\{/g,
+				...stylexMethodPattern("keyframes"),
 				kind: CodemodCallPatternKindTag.Keyframes,
 			},
 			{
 				name: CodemodPatternId.StyleXDefineVars,
-				regex: /\bstylex\.defineVars\s*\(\s*\{/g,
+				...stylexMethodPattern("defineVars"),
 				transform: normalizeStyleXVariables,
 			},
 			{
 				name: "stylex-create-theme",
-				regex: /\bstylex\.createTheme\s*\(/g,
+				...stylexMethodPattern("createTheme", "\\s*\\("),
 				form: CodemodCallPatternFormTag.Residual,
 				residual: {
 					kind: StyleProgramResidualKindTag.Configuration,
@@ -942,18 +1231,22 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 					return { code: rewritten, residuals: [] };
 				},
 			},
-			prepareDynamic: ({ source, targetId, binding }) => ({
-				handled:
-					targetId === CodemodAdapterId.Pandwind &&
-					binding !== undefined &&
-					(new RegExp(
-						`\\bstylex\\.props\\([\\s\\S]*?\\b${binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*(?:\\.|\\[)`,
-					).test(source) ||
-						new RegExp(
-							`\\bexport\\s+(?:const|let|var)\\s+${binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*=`,
-						).test(source)),
-			}),
-			rewrite: ({ source, code, targetId, convertedBindings }) => {
+			prepareDynamic: ({ source, file, targetId, binding }) => {
+				const sourceBindings = stylexBindingsFromSource(source, file);
+				const escapedBinding = binding === undefined ? undefined : escapeRegExp(binding);
+				return {
+					handled:
+						targetId === CodemodAdapterId.Pandwind &&
+						binding !== undefined &&
+						(stylexMethodReferences(sourceBindings, "props").some((callee) =>
+							new RegExp(
+								`\\b${escapeRegExp(callee)}\\s*\\([\\s\\S]*?\\b${escapedBinding}\\s*(?:\\.|\\[)`,
+							).test(source),
+						) ||
+							new RegExp(`\\bexport\\s+(?:const|let|var)\\s+${escapedBinding}\\s*=`).test(source)),
+				};
+			},
+			rewrite: ({ source, code, file, targetId, convertedBindings }) => {
 				// A file may contain both statically extractable groups and a small
 				// runtime-only carrier. Rewrite the static consumers even when the
 				// file remains partial; leaving `stylex.props(staticGroup)` in place
@@ -961,6 +1254,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				// make the static portion depend on the source runtime.
 				if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
 				let rewritten = code;
+				const sourceBindings = stylexBindingsFromSource(source, file);
 				const cssBinding = generatedCssBinding(source);
 				// StyleX permits runtime-generated selector keys such as
 				// `Object.fromEntries([`:nth-child(...)`, value])`; Pandwind's
@@ -969,8 +1263,12 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 					/(Object\.fromEntries\(\s*\[[\s\S]*?)([`"'])(?=(?:[:.]|\u005b))/g,
 					"$1$2&",
 				);
-				rewritten = rewritten.replaceAll("stylex.defineConsts(", "(");
-				rewritten = rewritten.replaceAll("stylex.types.angle(", "(");
+				rewritten = replaceStylexCalls(rewritten, sourceBindings, "defineConsts", "(", file);
+				for (const callee of stylexMethodReferences(sourceBindings, "types").map(
+					(reference) => `${reference}.angle`,
+				)) {
+					rewritten = rewritten.replace(new RegExp(`\\b${escapeRegExp(callee)}\\s*\\(`, "g"), "(");
+				}
 				rewritten = rewritten.replace(
 					/import\s*\{\s*type\s+StyleXStyles\s*\}\s*from\s*['"]@stylexjs\/stylex['"];?/g,
 					"type StyleXStyles = any;",
@@ -979,24 +1277,44 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 					/import\s+type\s*,?\s*\{\s*StyleXStyles\s*\}\s*from\s*['"]@stylexjs\/stylex['"];?/g,
 					"type StyleXStyles = any;",
 				);
-				rewritten = rewritten.replaceAll("stylex.StyleXStyles", "Record<string, string> | string");
-				rewritten = rewritten.replace(
-					/(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*stylex\.defineMarker\(\)/g,
-					(_match, declaration: string, binding: string) =>
-						`${declaration} ${binding} = ${JSON.stringify(`pw-marker-${binding}`)}`,
-				);
-				rewritten = rewritten.replaceAll("stylex.defaultMarker()", '"pw-default-marker"');
-				for (const binding of convertedBindings) {
-					const escaped = binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
+				for (const callee of stylexMethodReferences(sourceBindings, "StyleXStyles").filter(
+					(reference) => reference.includes("."),
+				)) {
+					rewritten = rewritten.replaceAll(callee, "Record<string, string> | string");
+				}
+				for (const callee of stylexMethodReferences(sourceBindings, "defineMarker")) {
 					rewritten = rewritten.replace(
 						new RegExp(
-							`\\bstylex\\.props\\((\\s*${escaped}(?:\\s*\\.[A-Za-z_$][\\w$]*|\\s*\\[[^\\]]+\\]))`,
+							`(const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*${escapeRegExp(callee)}\\s*\\(\\)`,
 							"g",
 						),
-						`${cssBinding}.props($1`,
+						(_match, declaration: string, binding: string) =>
+							`${declaration} ${binding} = ${JSON.stringify(`pw-marker-${binding}`)}`,
 					);
 				}
-				rewritten = rewritten.replaceAll("stylex.props(", `${cssBinding}.props(`);
+				for (const callee of stylexMethodReferences(sourceBindings, "defaultMarker")) {
+					rewritten = rewritten.replace(
+						new RegExp(`\\b${escapeRegExp(callee)}\\s*\\(\\)`, "g"),
+						'"pw-default-marker"',
+					);
+				}
+				for (const binding of convertedBindings) {
+					for (const callee of stylexMethodReferences(sourceBindings, "props")) {
+						rewritten = rewritten.replace(
+							new RegExp(
+								`\\b${escapeRegExp(callee)}\\s*\\((\\s*${escapeRegExp(binding)}(?:\\s*\\.[A-Za-z_$][\\w$]*|\\s*\\[[^\\]]+\\]))`,
+								"g",
+							),
+							`${cssBinding}.props($1`,
+						);
+					}
+				}
+				for (const callee of stylexMethodReferences(sourceBindings, "props")) {
+					rewritten = rewritten.replace(
+						new RegExp(`\\b${escapeRegExp(callee)}\\s*\\(`, "g"),
+						`${cssBinding}.props(`,
+					);
+				}
 				rewritten = moveStyleAfterPropsSpread(rewritten, cssBinding);
 				rewritten = mergeClassNameAfterPropsSpread(rewritten, cssBinding);
 				// Some StyleX host components pass `xstyle` through StyleX's runtime
@@ -1030,14 +1348,20 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				};
 			}
 			const named = program.rules.some((rule) => rule.name !== undefined);
+			const conditionalEmission = stylexConditionalProgramObject(program);
 			return {
 				// StyleX's target value is a compiled style object, not a class
 				// string. Named programs keep their map; an unnamed program gets a
 				// stable local `style` key so it can be consumed by stylex.props.
-				text: named
-					? `stylex.create(${programObject(program)})`
-					: `stylex.create({ style: ${programObject(program)} }).style`,
+				text:
+					conditionalEmission.text ??
+					(named
+						? `stylex.create(${programObject(program)})`
+						: `stylex.create({ style: ${programObject(program)} }).style`),
 				imports: ['import * as stylex from "@stylexjs/stylex";'],
+				...(conditionalEmission.residuals.length === 0
+					? {}
+					: { residuals: conditionalEmission.residuals }),
 			};
 		},
 	});

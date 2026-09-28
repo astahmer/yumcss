@@ -134,7 +134,7 @@ test("unocss -> stylex -> unocss: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
+		    "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: capability, validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -160,7 +160,17 @@ test("unocss -> stylex -> unocss: retains the documented secondary API without s
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
+		        "hint": "condition is not expressible as a StyleX property-value condition",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "condition is not expressible as a StyleX property-value condition",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "canonical CSS differs; 2 residual conversion(s)",
 		        "kind": "validation",
 		        "preserved": undefined,
 		      },
@@ -170,6 +180,7 @@ test("unocss -> stylex -> unocss: retains the documented secondary API without s
 		      {
 		        "differences": [
 		          "canonical CSS differs",
+		          "2 residual conversion(s)",
 		        ],
 		        "lossiness": "unsupported",
 		        "valid": false,
@@ -178,7 +189,7 @@ test("unocss -> stylex -> unocss: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: validation)
+		    "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: capability, validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

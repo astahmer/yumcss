@@ -133,4 +133,46 @@ describe("StyleX source adapter", () => {
 		expect(result.code).toContain("css.vars");
 		expect(result.code).toContain("getColor()");
 	});
+
+	test("resolves an aliased StyleX namespace import", () => {
+		const result = migrate(
+			'import * as sx from "@stylexjs/stylex";\n' +
+				'const styles = sx.create({ card: { color: "red", padding: 8 } });\n' +
+				"export const App = () => <div {...sx.props(styles.card)} />;",
+			CodemodAdapterId.StyleX,
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("sx.create");
+		expect(result.code).not.toContain("sx.props");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			const styles = { "card": css.class({ padding: "8px", color: "red" }) };
+			export const App = () => <div {...css.props(styles.card)} />;"
+		`);
+	});
+
+	test("resolves aliased named StyleX imports", () => {
+		const result = migrate(
+			'import { create as makeStyles, props as mergeProps } from "@stylexjs/stylex";\n' +
+				'const styles = makeStyles({ card: { color: "red", padding: 8 } });\n' +
+				"export const App = () => <div {...mergeProps(styles.card)} />;",
+			CodemodAdapterId.StyleX,
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("makeStyles");
+		expect(result.code).not.toContain("mergeProps");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			const styles = { "card": css.class({ padding: "8px", color: "red" }) };
+			export const App = () => <div {...css.props(styles.card)} />;"
+		`);
+	});
 });
