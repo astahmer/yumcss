@@ -6,7 +6,7 @@ import type {
 	AdapterHostRewriteResult,
 	AdapterParseContext,
 } from "../adapter-contract.ts";
-import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
+import type { StyleDeclaration, StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	BuiltinHostFramework,
 	canConvertStaticVueSfc,
@@ -76,6 +76,35 @@ const spacing = new Set([
 	"pl",
 	"px",
 	"py",
+	"marginX",
+	"marginY",
+	"paddingX",
+	"paddingY",
+	"margin",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
+	"marginInline",
+	"marginInlineStart",
+	"marginInlineEnd",
+	"marginBlock",
+	"marginBlockStart",
+	"marginBlockEnd",
+	"padding",
+	"paddingTop",
+	"paddingRight",
+	"paddingBottom",
+	"paddingLeft",
+	"paddingInline",
+	"paddingInlineStart",
+	"paddingInlineEnd",
+	"paddingBlock",
+	"paddingBlockStart",
+	"paddingBlockEnd",
+	"gap",
+	"columnGap",
+	"rowGap",
 ]);
 const styleProps = ["sx"] as const;
 const propertyAliases = {
@@ -93,8 +122,25 @@ const propertyAliases = {
 	pl: "paddingLeft",
 	px: ["paddingLeft", "paddingRight"],
 	py: ["paddingTop", "paddingBottom"],
+	marginX: ["marginLeft", "marginRight"],
+	marginY: ["marginTop", "marginBottom"],
+	paddingX: ["paddingLeft", "paddingRight"],
+	paddingY: ["paddingTop", "paddingBottom"],
 	bgcolor: "backgroundColor",
 } as const;
+
+const muiSxCssLengthProperties = new Set([
+	...spacing,
+	"width",
+	"height",
+	"minWidth",
+	"maxWidth",
+	"minHeight",
+	"maxHeight",
+	"borderRadius",
+	"fontSize",
+	"letterSpacing",
+]);
 
 interface MuiThemeLike {
 	readonly spacing?:
@@ -284,7 +330,6 @@ function defaultSpacing(
 	property: string,
 	value: StyleValue,
 	theme?: MuiThemeLike,
-	targetId?: string,
 ): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal) return value;
 	if (spacing.has(property) && typeof value.value === "number") {
@@ -306,13 +351,32 @@ function defaultSpacing(
 		if (typeof base === "string") return { kind: "literal", value: base };
 		return { kind: "literal", value: `${value.value * 4}px` };
 	}
-	if (
-		targetId !== CodemodAdapterId.Pandwind &&
-		typeof value.value === "string" &&
-		/^[A-Za-z_$][\w$-]*\.[A-Za-z_$][\w$-]*$/.test(value.value)
-	)
-		return { kind: "literal", value: `var(--mui-${value.value.replace(".", "-")})` };
 	return value;
+}
+
+function resolveMuiSourceValue(
+	property: string,
+	value: string,
+	source: string,
+	theme?: MuiThemeLike,
+): string | number | undefined {
+	const themedValue = resolveMuiValue(property, value, theme);
+	if (themedValue !== undefined) return themedValue;
+	const [group, key, ...rest] = value.split(".");
+	if (
+		group === undefined ||
+		key === undefined ||
+		rest.length > 0 ||
+		!/^[A-Za-z_$][\w$]*$/u.test(group) ||
+		!/^[A-Za-z_$][\w$]*$/u.test(key)
+	)
+		return undefined;
+	const pathPrefix =
+		"\\b" + group + "\\s*:\\s*\\{[^{}]*\\b" + key + "\\s*:\\s*";
+	return (
+		new RegExp(pathPrefix + "'([^']*)'").exec(source)?.[1] ??
+		new RegExp(pathPrefix + '"([^"]*)"').exec(source)?.[1]
+	);
 }
 
 function muiTransforms(
@@ -338,19 +402,10 @@ function muiTransforms(
 			property,
 			(value: StyleValue) => {
 				if (value.kind === StyleValueKindTag.Literal && typeof value.value === "string") {
-					const resolved = resolveMuiValue(property, value.value, theme);
+					const resolved = resolveMuiSourceValue(property, value.value, source, theme);
 					if (resolved !== undefined) return { kind: "literal", value: resolved };
-					const [group, key] = value.value.split(".");
-					if (group !== undefined && key !== undefined) {
-						const escapedGroup = group.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-						const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-						const resolved = new RegExp(
-							`\\b${escapedGroup}\\s*:\\s*\\{[^{}]*\\b${escapedKey}\\s*:\\s*(['"])(.*?)\\1`,
-						).exec(source)?.[2];
-						if (resolved !== undefined) return { kind: "literal", value: resolved };
-					}
 				}
-				const fallback = defaultSpacing(property, value, theme, targetId);
+				const fallback = defaultSpacing(property, value, theme);
 				return targetId === CodemodAdapterId.Pandwind
 					? recoverSourceToken(fallback, property, muiTokenGroup, catalog)
 					: fallback;
@@ -359,13 +414,71 @@ function muiTransforms(
 	);
 }
 
-const MUI_SOURCE_COMPONENTS = {
-	Box: "div",
-	Button: "button",
-	Link: "a",
-	Typography: "p",
-	Paper: "div",
-} as const;
+function muiSxDeclarations(program: StyleProgram): readonly StyleDeclaration[] {
+	const rules: StyleProgram["rules"][number][] = [...program.rules];
+	const declarations = [...program.declarations];
+	while (rules.length > 0) {
+		const rule = rules.pop();
+		if (rule === undefined) continue;
+		declarations.push(...rule.declarations);
+		rules.push(...rule.children);
+	}
+	return declarations;
+}
+
+function unresolvedMuiThemeResiduals(
+	program: StyleProgram,
+	source: string,
+	theme?: MuiThemeLike,
+): StyleProgram["residuals"] {
+	const unresolved = new Map<string, StyleProgram["residuals"][number]>();
+	for (const declaration of muiSxDeclarations(program)) {
+		const value = declaration.value;
+		if (
+			muiTokenGroup(declaration.property) === undefined ||
+			value.kind !== StyleValueKindTag.Literal ||
+			typeof value.value !== "string" ||
+			!/^[A-Za-z_$][\w$-]*(?:\.[A-Za-z_$][\w$-]*)+$/u.test(value.value) ||
+			resolveMuiSourceValue(declaration.property, value.value, source, theme) !== undefined
+		)
+			continue;
+		const key = `${declaration.property}:${value.value}`;
+		unresolved.set(key, {
+			kind: StyleProgramResidualKindTag.RuntimeContext,
+			text: value.value,
+			hint: `MUI ${declaration.property} theme path '${value.value}' needs the effective source theme value`,
+		});
+	}
+	return [...unresolved.values()];
+}
+
+function muiSxCssValues(program: StyleProgram): StyleProgram {
+	const transform = (declaration: StyleDeclaration): StyleDeclaration => {
+		const value = declaration.value;
+		return muiSxCssLengthProperties.has(declaration.property) &&
+			value.kind === StyleValueKindTag.Literal &&
+			typeof value.value === "number"
+			? {
+					...declaration,
+					value: { kind: StyleValueKindTag.Literal, value: `${value.value}px` },
+				}
+			: declaration;
+	};
+	const transformRules = (rules: StyleProgram["rules"]): StyleProgram["rules"] =>
+		rules.map((rule) => ({
+			...rule,
+			declarations: rule.declarations.map(transform),
+			children: transformRules(rule.children),
+		}));
+	return {
+		...program,
+		declarations: program.declarations.map(transform),
+		rules: transformRules(program.rules),
+	};
+}
+
+const MUI_SOURCE_COMPONENTS = { Box: "div" } as const;
+
 
 function renderMuiSxHost(
 	openingTag: string,
@@ -583,7 +696,7 @@ function rewriteMuiIntrinsicHost(
 		);
 		if (closing !== null) {
 			const closingStart = host.start + replacement.length + closing.index;
-			rewritten = `${rewritten.slice(0, closingStart)}</Box>${rewritten.slice(closingStart + closing[0].length)}`;
+			rewritten = `${rewritten.slice(0, closingStart)}</${boxBinding}>${rewritten.slice(closingStart + closing[0].length)}`;
 		}
 	}
 	return {
@@ -616,6 +729,15 @@ export function createMuiAdapter(
 				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
 				form: CodemodCallPatternFormTag.JsxStyle,
 				styleProps,
+				sourceObjectOptions: (source, context) => ({
+					propertyAliases,
+					valueTransforms: muiTransforms(
+						source,
+						context.config.values.muiTheme as MuiThemeLike | undefined,
+						TokenCatalog.fromContract(context.config.tokenCatalog),
+						context.targetId,
+					),
+				}),
 			},
 			{
 				name: "mui-styled",
@@ -668,15 +790,6 @@ export function createMuiAdapter(
 						officialMuiConfig(context, moduleLoader),
 				}),
 		tokenPolicy: MUI_TOKEN_POLICY,
-		sourceObjectOptions: (source, context) => ({
-			propertyAliases,
-			valueTransforms: muiTransforms(
-				source,
-				context.config.values.muiTheme as MuiThemeLike | undefined,
-				TokenCatalog.fromContract(context.config.tokenCatalog),
-				context.targetId,
-			),
-		}),
 		emit(program, { programObject }, context) {
 			const subject = program.source?.subject;
 			if (subject !== undefined) {
@@ -712,21 +825,9 @@ export function createMuiAdapter(
 				};
 			}
 			if (context?.host?.representation === StyleHostRepresentationKind.StyleProp) {
-				const styleObject = programObject(program);
+				const styleObject = programObject(muiSxCssValues(program));
 				return { text: styleObject };
 			}
-			if (
-				context?.host?.representation === StyleHostRepresentationKind.Class &&
-				context.host.representationKind === StyleRepresentationKind.PortableArtifact
-			)
-				return {
-					text: `css.class(${programObject(program)})`,
-					imports: [
-						'import { createUnsafeCss } from "pandwind/unsafe/css";',
-						"const css = createUnsafeCss();",
-					],
-					semantic: program,
-				};
 			if (program.source?.hostOpenTag !== undefined) return { text: programObject(program) };
 			return {
 				text: programObject(program),
@@ -752,7 +853,7 @@ export function createMuiAdapter(
 						return framework === undefined || framework === BuiltinHostFramework.React
 							? StyleHostRepresentationKind.Component
 							: undefined;
-					if (!hasHostContext) return StyleHostRepresentationKind.Class;
+					if (!hasHostContext) return undefined;
 					if (framework !== undefined && framework !== BuiltinHostFramework.React) return undefined;
 					const host = findHostUse(source ?? "", binding);
 					const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
@@ -761,17 +862,11 @@ export function createMuiAdapter(
 						? StyleHostRepresentationKind.StyleProp
 						: undefined;
 				},
-				standaloneHostRepresentation: StyleHostRepresentationKind.Component,
-				resolveRepresentation: ({ program, hostRepresentation }) =>
-					hostRepresentation === StyleHostRepresentationKind.Class &&
-					program.source?.subject === undefined &&
-					program.residuals.length === 0
-						? StyleRepresentationKind.PortableArtifact
-						: program.source?.subject !== undefined && hasScalarDynamicProgram(program)
-							? StyleRepresentationKind.TargetNative
-							: undefined,
+				resolveRepresentation: ({ program }) =>
+					program.source?.subject !== undefined && hasScalarDynamicProgram(program)
+						? StyleRepresentationKind.TargetNative
+						: undefined,
 				capabilitiesForRepresentation: ({ program, representation }) => {
-					if (representation === StyleRepresentationKind.PortableArtifact) return ["theme-context"];
 					if (
 						representation === StyleRepresentationKind.TargetNative &&
 						hasScalarDynamicProgram(program)
@@ -889,13 +984,29 @@ export function createMuiAdapter(
 		...adapter,
 		parse(source: string, context: AdapterParseContext) {
 			const parsed = adapter.parse(source, context);
-			if (context.targetId !== CodemodAdapterId.Pandwind) return parsed;
+			const theme = context.config.values.muiTheme as MuiThemeLike | undefined;
 			return {
 				...parsed,
-				matches: parsed.matches.map((match) => ({
-					...match,
-					program: canonicalizeSourceHost(match.program, MUI_SOURCE_COMPONENTS, "MUI"),
-				})),
+				matches: parsed.matches.map((match) => {
+					const themeResiduals =
+						match.program.source?.hostOpenTag === undefined
+							? []
+							: unresolvedMuiThemeResiduals(match.program, source, theme);
+					const program =
+						themeResiduals.length === 0
+							? match.program
+							: {
+								...match.program,
+								residuals: [...match.program.residuals, ...themeResiduals],
+							};
+					return {
+						...match,
+						program:
+							context.targetId === CodemodAdapterId.Pandwind
+								? canonicalizeSourceHost(program, MUI_SOURCE_COMPONENTS, "MUI")
+								: program,
+					};
+				}),
 			};
 		},
 	};

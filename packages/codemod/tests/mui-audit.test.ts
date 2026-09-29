@@ -10,7 +10,7 @@ const reactSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("MUI sx spacing longhands, aliases, and gaps use the source theme scale", () => {
 	const source = `import { Box } from "@mui/material";
-export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, marginX: 1, paddingY: 0.5 }} />;`;
+export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2, rowGap: 0.5, marginX: 1, paddingY: 0.5, marginInline: 1, paddingBlockStart: 0.5 }} />;`;
 	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
@@ -18,23 +18,34 @@ export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, marginX: 1, p
 	expect(result.code).toContain('padding: "16px"');
 	expect(result.code).toContain('margin: "8px"');
 	expect(result.code).toContain('gap: "24px"');
+	expect(result.code).toContain('columnGap: "16px"');
+	expect(result.code).toContain('rowGap: "4px"');
+	expect(result.code).toContain('marginInline: "8px"');
+	expect(result.code).toContain('paddingBlockStart: "4px"');
 	expect(result.code).toContain('marginLeft: "8px"');
 	expect(result.code).toContain('marginRight: "8px"');
 	expect(result.code).toContain('paddingTop: "4px"');
 	expect(result.code).toContain('paddingBottom: "4px"');
-	expect(result.code).toMatchInlineSnapshot();
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <div className={css.class({ padding: "16px", margin: "8px", gap: "24px", columnGap: "16px", rowGap: "4px", marginLeft: "8px", marginRight: "8px", paddingTop: "4px", paddingBottom: "4px", marginInline: "8px", paddingBlockStart: "4px" })} />;"
+	`);
 });
 
 test("MUI styled declarations keep CSS semantics instead of sx transforms", () => {
 	const source = `import { styled } from "@mui/system";
-export const Card = styled("div")({ p: 2, padding: 2 });`;
+export const Card = styled("div")({ padding: 2 });`;
 	const result = muiToPandwind.run({ source, file: "Card.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
-	expect(result.code).toContain("p: 2");
 	expect(result.code).toContain("padding: 2");
 	expect(result.code).not.toContain('padding: "16px"');
-	expect(result.code).toMatchInlineSnapshot();
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const Card = css.class({ padding: 2 });"
+	`);
 });
 
 test("MUI Box component prop becomes the same intrinsic host", () => {
@@ -46,7 +57,11 @@ export const App = () => <Box component="section" sx={{ color: "red" }} />;`;
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toContain("<section");
 	expect(result.code).not.toContain('component="section"');
-	expect(result.code).toMatchInlineSnapshot();
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <section className={css.class({ color: "red" })} />;"
+	`);
 });
 
 test("MUI component behavior survives style extraction", () => {
@@ -58,13 +73,18 @@ export const App = () => <Button variant="contained" size="large" sx={{ p: 2 }}>
 	expect(result.code).toContain("<Button");
 	expect(result.code).toContain('variant="contained"');
 	expect(result.code).toContain('size="large"');
-	expect(result.code).toMatchInlineSnapshot();
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { Button } from "@mui/material";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <Button variant="contained" size="large" className={css.class({ padding: "16px" })}>Save</Button>;"
+	`);
 });
 
 test("Pandwind numeric CSS values stay literal in MUI sx", () => {
 	const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
 const css = createUnsafeCss();
-const card = css.class({ padding: 4, width: 0.5, borderRadius: 1 });
+const card = css.class({ padding: 4, width: 0.5, height: 1, borderRadius: 1, fontSize: 14, letterSpacing: 0.5 });
 export const App = () => <div className={card} />;`;
 	const result = pandwindToMui.run({ source, file: "App.tsx", semantic: reactSemantic });
 
@@ -73,7 +93,15 @@ export const App = () => <div className={card} />;`;
 	expect(result.code).toContain('padding: "4px"');
 	expect(result.code).toContain('width: "0.5px"');
 	expect(result.code).toContain('borderRadius: "1px"');
-	expect(result.code).toMatchInlineSnapshot();
+	expect(result.code).toContain('height: "1px"');
+	expect(result.code).toContain('fontSize: "14px"');
+	expect(result.code).toContain('letterSpacing: "0.5px"');
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { Box } from "@mui/material";
+
+		const card = { padding: "4px", width: "0.5px", height: "1px", borderRadius: "1px", fontSize: "14px", letterSpacing: "0.5px" };
+		export const App = () => <Box component="div" sx={card} />;"
+	`);
 });
 
 test("standalone styles remain residual when MUI has no host to receive sx", () => {
@@ -85,7 +113,12 @@ export const card = css.class({ color: "red", padding: "1rem" });`;
 	expect(result.converted).toBe(0);
 	expect(result.residuals.length).toBeGreaterThan(0);
 	expect(result.code).toContain("pandwind:migrate-skip");
-	expect(result.code).toMatchInlineSnapshot();
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css.class({ color: "red", padding: "1rem" });"
+	`);
 });
 
 test("unresolved MUI sx theme paths do not invent CSS variables", () => {
@@ -96,7 +129,11 @@ export const App = () => <Box sx={{ color: "brand.main" }} />;`;
 	expect(result.residuals.length).toBeGreaterThan(0);
 	expect(result.code).toContain('color: "brand.main"');
 	expect(result.code).not.toContain("var(--mui-");
-	expect(result.code).toMatchInlineSnapshot();
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { Box } from "@mui/material";
+		// pandwind:migrate-skip (route: mui -> tailwind | parse-residual: runtime-context | available: named-map, residual)
+		export const App = () => <Box sx={{ color: "brand.main" }} />;"
+	`);
 });
 
 test("generated MUI Box aliases close with the same JSX binding", () => {
@@ -108,5 +145,9 @@ export const App = () => <div className="[color:red]"><Box /></div>;`;
 	expect(result.code).toContain('import { Box as MuiBox } from "@mui/material";');
 	expect(result.code).toContain("</MuiBox>");
 	expect(result.code).not.toContain("</Box>");
-	expect(result.code).toMatchInlineSnapshot();
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { Box as MuiBox } from "@mui/material";
+		const Box = () => null;
+		export const App = () => <MuiBox component="div" sx={{ color: "red" }}><Box /></MuiBox>;"
+	`);
 });

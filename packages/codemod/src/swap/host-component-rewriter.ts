@@ -33,7 +33,7 @@ export function canonicalizeSourceHost(
 			? program
 			: { ...program, source: { ...source, hostTag: intrinsicMember } };
 	const staticIntrinsicOverride =
-		/\bas\s*=\s*(?:"([a-z][\w-]*)"|'([a-z][\w-]*)'|\{\s*["']([a-z][\w-]*)["']\s*\})/u.exec(
+		/\b(?:as|component)\s*=\s*(?:"([a-z][\w-]*)"|'([a-z][\w-]*)'|\{\s*["']([a-z][\w-]*)["']\s*\})/u.exec(
 			openingTag,
 		);
 	const hostTag = hasHostOverride
