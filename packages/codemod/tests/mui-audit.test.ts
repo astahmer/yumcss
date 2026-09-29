@@ -90,6 +90,23 @@ export const App = () => <Box sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md
 	`);
 });
 
+test("MUI CSS keywords convert without a project theme", () => {
+	const source = `import { Box } from "@mui/material";
+export const App = () => <Box sx={{ boxShadow: "none", zIndex: "auto", maxWidth: "max-content" }} />;`;
+	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+
+	expect(result.converted).toBe(1);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain('boxShadow: "none"');
+	expect(result.code).toContain('zIndex: "auto"');
+	expect(result.code).toContain('maxWidth: "max-content"');
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <div className={css.class({ boxShadow: "none", zIndex: "auto", maxWidth: "max-content" })} />;"
+	`);
+});
+
 test("MUI styled declarations preserve component shape and plain CSS semantics", () => {
 	const source = `import { styled } from "@mui/system";
 export const Card = styled("div")({ padding: 2 });

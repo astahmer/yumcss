@@ -123,6 +123,28 @@ const muiBorderProperties = new Set([
 	"borderLeft",
 	"outline",
 ]);
+const muiThemeValueCssKeywords = new Map<string, ReadonlySet<string>>([
+	["boxShadow", new Set(["none", "inherit", "initial", "unset", "revert", "revert-layer"])],
+	["zIndex", new Set(["auto", "inherit", "initial", "unset", "revert", "revert-layer"])],
+	[
+		"maxWidth",
+		new Set([
+			"none",
+			"max-content",
+			"min-content",
+			"fit-content",
+			"stretch",
+			"fill-available",
+			"available",
+			"-webkit-fill-available",
+			"inherit",
+			"initial",
+			"unset",
+			"revert",
+			"revert-layer",
+		]),
+	],
+]);
 const propertyAliases = {
 	m: "margin",
 	mt: "marginTop",
@@ -168,6 +190,7 @@ interface MuiThemeLike {
 	readonly typography?: Record<string, unknown>;
 	readonly shadows?: unknown;
 	readonly zIndex?: unknown;
+	readonly breakpoints?: { readonly values?: Record<string, string | number> };
 }
 
 interface MuiPackage {
@@ -222,6 +245,7 @@ function resolveMuiValue(
 		return resolveThemePath(theme?.typography as MuiThemeLike | undefined, value);
 	if (property === "boxShadow") return resolveValuePath(theme?.shadows, value);
 	if (property === "zIndex") return resolveValuePath(theme?.zIndex, value);
+	if (property === "maxWidth") return resolveValuePath(theme?.breakpoints?.values, value);
 	return undefined;
 }
 
@@ -370,6 +394,10 @@ function defaultMuiSystemValue(
 		return { kind: "literal", value: `${value.value * 100}%` };
 	if (muiBorderProperties.has(property) && typeof value.value === "number")
 		return { kind: "literal", value: `${value.value}px solid` };
+	if (property === "boxShadow" && typeof value.value === "number") {
+		const resolved = resolveValuePath(theme?.shadows, String(value.value));
+		if (typeof resolved === "string") return { kind: "literal", value: resolved };
+	}
 	if (property === "borderRadius" && typeof value.value === "number") {
 		const base = theme?.shape?.borderRadius;
 		if (typeof base === "number") return { kind: "literal", value: `${value.value * base}px` };
@@ -452,6 +480,12 @@ function muiSxDeclarations(program: StyleProgram): readonly StyleDeclaration[] {
 	return declarations;
 }
 
+function isMuiThemeValueKey(property: string, value: unknown): value is string {
+	if (typeof value !== "string" || !/^[A-Za-z_$][\w$-]*$/u.test(value)) return false;
+	const cssKeywords = muiThemeValueCssKeywords.get(property);
+	return cssKeywords !== undefined && !cssKeywords.has(value);
+}
+
 function unresolvedMuiThemeResiduals(
 	program: StyleProgram,
 	source: string,
@@ -460,19 +494,30 @@ function unresolvedMuiThemeResiduals(
 	const unresolved = new Map<string, StyleProgram["residuals"][number]>();
 	for (const declaration of muiSxDeclarations(program)) {
 		const value = declaration.value;
+		if (value.kind !== StyleValueKindTag.Literal) continue;
+		const rawValue = value.value;
+		const themeValue = String(rawValue);
+		const isThemeKey = isMuiThemeValueKey(declaration.property, rawValue);
+		const isThemePath =
+			typeof rawValue === "string" &&
+			muiTokenGroup(declaration.property) !== undefined &&
+			/^[A-Za-z_$][\w$-]*(?:\.[A-Za-z_$][\w$-]*)+$/u.test(rawValue);
+		const isNumericShadow = declaration.property === "boxShadow" && typeof rawValue === "number";
+		if (!isThemeKey && !isThemePath && !isNumericShadow) continue;
+		const resolved = resolveMuiSourceValue(declaration.property, themeValue, source, theme);
 		if (
-			muiTokenGroup(declaration.property) === undefined ||
-			value.kind !== StyleValueKindTag.Literal ||
-			typeof value.value !== "string" ||
-			!/^[A-Za-z_$][\w$-]*(?:\.[A-Za-z_$][\w$-]*)+$/u.test(value.value) ||
-			resolveMuiSourceValue(declaration.property, value.value, source, theme) !== undefined
+			resolved !== undefined &&
+			(declaration.property !== "boxShadow" || typeof resolved === "string")
 		)
 			continue;
-		const key = `${declaration.property}:${value.value}`;
+		const key = `${declaration.property}:${themeValue}`;
 		unresolved.set(key, {
 			kind: StyleProgramResidualKindTag.RuntimeContext,
-			text: value.value,
-			hint: `MUI ${declaration.property} theme path '${value.value}' needs the effective source theme value`,
+			text: themeValue,
+			hint:
+				declaration.property === "maxWidth"
+					? `MUI maxWidth breakpoint '${themeValue}' needs the effective source theme value`
+					: `MUI ${declaration.property} theme value '${themeValue}' needs the effective source theme value`,
 		});
 	}
 	return [...unresolved.values()];

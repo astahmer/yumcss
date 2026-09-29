@@ -1042,8 +1042,9 @@ describe("official custom-token loaders", () => {
 						palette: { brand: { main: "#123456" } },
 						shape: { borderRadius: 6 },
 						typography: { h1: { fontSize: "3rem", fontWeight: 700, lineHeight: 1.2 } },
-						shadows: { card: "0 1px 2px #0003" },
+						shadows: ["none", "0 1px 2px #0003"],
 						zIndex: { modal: 1300 },
+						breakpoints: { values: { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 } },
 					},
 				} as never;
 			},
@@ -1056,7 +1057,7 @@ describe("official custom-token loaders", () => {
 			listFiles: () => ["/project/src/theme.ts"],
 		});
 		const source =
-			'<Box sx={{ p: 2, color: "brand.main", borderRadius: 2, fontSize: "typography.h1.fontSize", boxShadow: "card", zIndex: "modal" }} />';
+			'<Box sx={{ p: 2, color: "brand.main", borderRadius: 2, fontSize: "typography.h1.fontSize", boxShadow: 1, zIndex: "modal", maxWidth: "md" }} />';
 		const parsed = adapter.parse(source, { ...context, source, config: config! });
 
 		expect(config?.values.officialConfigPackage).toBe("@mui/system");
@@ -1078,7 +1079,8 @@ describe("official custom-token loaders", () => {
 			    "base": "6",
 			  },
 			  "shadows": {
-			    "card": "0 1px 2px #0003",
+			    "0": "none",
+			    "1": "0 1px 2px #0003",
 			  },
 			  "zIndices": {
 			    "modal": "1300",
@@ -1135,6 +1137,14 @@ describe("official custom-token loaders", () => {
 			      "value": 1300,
 			    },
 			  },
+			  {
+			    "conditions": [],
+			    "property": "maxWidth",
+			    "value": {
+			      "kind": "literal",
+			      "value": 900,
+			    },
+			  },
 			]
 		`);
 		expect(parsed.matches[0]?.program.declarations.map(({ property }) => property)).toEqual([
@@ -1144,7 +1154,9 @@ describe("official custom-token loaders", () => {
 			"fontSize",
 			"boxShadow",
 			"zIndex",
+			"maxWidth",
 		]);
+		expect(parsed.matches[0]?.program.residuals).toEqual([]);
 	});
 
 	test("uses the official Mantine theme for custom colors, spacing, and typography", async () => {
