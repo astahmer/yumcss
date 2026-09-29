@@ -90,6 +90,42 @@ export const App = () => <Box sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md
 	`);
 });
 
+test("MUI typography tokens need the effective source theme", () => {
+	const source = `import { Box } from "@mui/material";
+export const App = () => <Box sx={{ fontWeight: "medium", fontSize: "default", fontFamily: "default", typography: "body1" }} />;`;
+	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+
+	expect(result.converted).toBe(0);
+	expect(result.skipped).toBe(1);
+	expect(result.residuals).toEqual(
+		expect.arrayContaining([
+			expect.objectContaining({
+				kind: "runtime-context",
+				hint: expect.stringContaining("MUI fontWeight theme value 'medium'"),
+			}),
+			expect.objectContaining({
+				kind: "runtime-context",
+				hint: expect.stringContaining("MUI fontSize theme value 'default'"),
+			}),
+			expect.objectContaining({
+				kind: "runtime-context",
+				hint: expect.stringContaining("MUI fontFamily theme value 'default'"),
+			}),
+			expect.objectContaining({
+				kind: "runtime-context",
+				hint: expect.stringContaining("MUI typography variant 'body1'"),
+			}),
+		]),
+	);
+	expect(result.code).toContain("pandwind:migrate-skip");
+	expect(result.code).toContain('typography: "body1"');
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { Box } from "@mui/material";
+		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		export const App = () => <Box sx={{ fontWeight: "medium", fontSize: "default", fontFamily: "default", typography: "body1" }} />;"
+	`);
+});
+
 test("MUI CSS keywords convert without a project theme", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ boxShadow: "none", zIndex: "auto", maxWidth: "max-content" }} />;`;

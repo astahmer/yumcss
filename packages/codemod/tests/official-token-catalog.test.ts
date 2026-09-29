@@ -1159,6 +1159,53 @@ describe("official custom-token loaders", () => {
 		expect(parsed.matches[0]?.program.residuals).toEqual([]);
 	});
 
+	test("resolves MUI typography aliases and variants from the official theme", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@mui/system"
+					? ({ createTheme: (config: Record<string, unknown>) => config } as never)
+					: undefined;
+			},
+			async importFile() {
+				return {
+					default: {
+						typography: {
+							fontFamily: "Inter",
+							fontSize: 16,
+							fontWeightLight: 300,
+							fontWeightRegular: 400,
+							fontWeightMedium: 500,
+							fontWeightBold: 700,
+							body1: {
+								fontFamily: "Inter",
+								fontSize: "1rem",
+								fontWeight: 400,
+								lineHeight: 1.5,
+								letterSpacing: "0.00938em",
+								textTransform: "none",
+							},
+						},
+					},
+				} as never;
+			},
+		};
+		const adapter = createMuiAdapter({ moduleLoader: loader });
+		const config = await adapter.loadConfigAsync?.({
+			...context,
+			file: "src/App.tsx",
+			readFile: () => "export default {}",
+			listFiles: () => ["/project/src/theme.ts"],
+		});
+		const source =
+			'<Box sx={{ fontWeight: "medium", fontSize: "default", fontFamily: "default", typography: "body1" }} />';
+		const parsed = adapter.parse(source, { ...context, source, config: config! });
+
+		expect(parsed.matches[0]?.program.declarations).toMatchInlineSnapshot(`
+			[]
+		`);
+		expect(parsed.matches[0]?.program.residuals).toEqual([]);
+	});
+
 	test("uses the official Mantine theme for custom colors, spacing, and typography", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage() {
