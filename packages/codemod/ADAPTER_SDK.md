@@ -8,14 +8,16 @@ injected loader.
 
 ## Contract
 
-The current protocol is `pandwind.style-adapter/3`. An adapter owns five
+The current protocol is `pandwind.style-adapter/4`. An adapter owns five
 operations:
 
 1. `detect` identifies source code and reports evidence and confidence.
 2. `loadConfig` reads project configuration through the supplied `readFile`.
 3. `parse` produces versioned semantic `StyleProgram` matches and residuals.
-4. `emit` lowers a program into target source plus imports, dependencies, and
-   residuals.
+4. `emit` lowers a program into target source plus imports, dependencies,
+   generated artifacts, and residuals. Its context includes the original
+   `sourceText` when migration orchestration has it, so an emitter can produce
+   target-owned source maps without re-reading the project.
 5. `validate` compares source and target programs and reports lossiness.
 
 Adapters also declare source modules, dependencies, versioned capabilities, and
@@ -132,7 +134,7 @@ const program = StyleProgramBuilder.create({ source })
 ```
 
 The builder is a construction façade over the existing
-`pandwind.style-program/4` schema. It owns rule ordering, value classification,
+`pandwind.style-program/5` schema. It owns rule ordering, value classification,
 dynamic normalization, metadata, provenance, and residual accumulation; it
 does not own target emission. Keep target syntax in the adapter's `emit`
 implementation, and keep simple literal paths on `SwapIR`.

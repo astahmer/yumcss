@@ -57,7 +57,7 @@ const registry = createStyleAdapterRegistry();
 await registry.discover(["my-pandwind-adapter"]);
 ```
 
-Adapters implement the versioned `pandwind.style-adapter/3` contract and are
+Adapters implement the versioned `pandwind.style-adapter/4` contract and are
 routed through the semantic style-program IR. Unsupported capabilities produce
 residual reports instead of silent partial rewrites.
 
@@ -169,6 +169,11 @@ Use `pandwindMigrateUnplugin.rollup`, `.webpack`, `.esbuild`, or another
 named platform export in the corresponding host configuration. This lane is
 reversible and virtual; use the CLI when the migration should become a
 committed source change.
+
+Virtual source transforms return version 3 sourcemaps. Generated CSS Modules
+artifacts include a sibling `.map` file when source provenance is available;
+its mapping points to the owning component span because the semantic IR does
+not claim property-level CSS source locations.
 
 ## One migration command
 

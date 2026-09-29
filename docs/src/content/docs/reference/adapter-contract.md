@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 
-pandwind adapters implement `pandwind.style-adapter/3`. An adapter is both a
+pandwind adapters implement `pandwind.style-adapter/4`. An adapter is both a
 source reader and a target writer around the versioned semantic style program.
 The previous `/2` contract was intentionally breaking; adapters must declare
 their version rather than silently accepting a different schema.
@@ -17,7 +17,9 @@ Every adapter provides:
 - `detect(context)` — ownership evidence and confidence for a source file;
 - `loadConfig(context)` — project-root configuration and generated metadata;
 - `parse(source, context)` — source ranges and semantic rule programs;
-- `emit(program, context)` — target text, imports, dependencies, and residuals;
+- `emit(program, context)` — target text, imports, dependencies, generated
+  artifacts, and residuals; the optional `sourceText` field supports target
+  artifact source maps;
 - `validate(source, target, residuals)` — canonical equivalence diagnostics and
   explicit `lossless`, `lossy`, or `unsupported` classification;
 - `capabilities` and `dependencies` — explicit support and installation data.

@@ -505,7 +505,7 @@ const program = StyleProgramBuilder.create({ source })
 ```
 
 The builder is a build-time construction façade over the existing
-`pandwind.style-program/4` value. It centralizes deterministic rule ordering,
+`pandwind.style-program/5` value. It centralizes deterministic rule ordering,
 value classification, dynamic normalization, program metadata, provenance,
 and residual accumulation, then delegates final normalization to the same
 semantic factory used by existing adapters. `StyleProgramBuilder.from()` can
@@ -1200,6 +1200,9 @@ malformed input, and unknown framework semantics stay typed residuals. Direct,
 aliased, and barrel imports remain valid because the public binding does not
 change. The React typecheck and Vite SSR proof live in
 `packages/codemod/tests/styled-components-css-modules-wrapper.test.ts`.
+The stylesheet artifact carries a sibling sourcemap back to the owning source
+component. The current semantic source range is component-level, so the map
+does not claim per-declaration locations.
 
 The CLI writes generated files by default and previews them with `--dry-run`.
 It preflights existing files: identical content is safe to reuse, while
@@ -1276,6 +1279,9 @@ eligibility are checked; transformed output is idempotent; generated files are
 deduplicated, resolved, loaded, invalidated, and failed closed on conflicts.
 The CSS Modules wrapper fixture also resolves and loads its generated stylesheet
 through the virtual plugin while the injected project file map remains unchanged.
+Virtual source transforms return version 3 sourcemaps with original source
+content; exact unchanged edges retain their original positions and synthesized
+blocks map to the source span they replace.
 
 ## Lint-plugin boundary
 

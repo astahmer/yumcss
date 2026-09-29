@@ -182,18 +182,18 @@ contain ecosystem branches or invent a generic component API.
 
 ### Audit-derived opportunity inventory
 
-| Priority | Opportunity | Audit evidence and candidate work | When a residual remains justified |
-| --- | --- | --- | --- |
-| P1 | Reusable, re-importable component wrappers | The styled-components audit covers exported styled components, `.attrs`, caller prop precedence, polymorphism, and target-specific wrappers. The older ledger repeats component-subject and host residuals across routes. Extend wrappers to preserve public exports and usages across files; emit a target-native style sidecar when the target has no inline carrier. | Dynamic attributes, custom component forwarding, refs, or polymorphic hosts remain residual when the target framework cannot preserve their exact contract. |
-| P1 | Named style maps and recipes | The baseline has 30 `named-rules` capability records, largely because a named source map is not just one CSS block. Project each name to a target recipe, map, class, or stylesheet export when its target API supports it. Preserve call names and variant/compound-variant semantics. | Runtime callable variants, ordered composition, or compound rules remain residual if no equivalent target API or generated wrapper exists. |
-| P1 | Effective source and target configuration | The baseline has 93 configuration records for unresolved Panda and Mantine tokens without project evidence. Chakra, Tailwind, StyleX, Tokenami, and UnoCSS audits also exercise official metadata and missing-loader behavior. Resolve the project's actual presets, plugins, shortcuts, themes, selectors, conditions, variants, and disabled features before conversion. | A missing/failed official loader, unresolved custom preset, conditional token without active theme context, or ambiguous value must retain a residual. |
-| P1 | Host and framework-aware projections | The baseline has 38 host-framework and 12 framework-semantics records, including standalone style APIs without a target host prop, React-only component assumptions, and framework-specific host constraints. Improve host mapping for Chakra/Mantine style props, Tailwind class carriers into MUI `sx`, React Native primitives, and React Strict DOM's fixed host set. | Keep original hosts and props when a target-owned host cannot preserve element, event, form, accessibility, children, or framework semantics. |
-| P1 | Cross-file import and artifact closure | Component APIs are consumed through exports, barrels, path aliases, and multiple files. Extend scanner/project evidence as needed so every use of a converted export is accounted for; update import and dependency ownership only after the graph proves the source package is no longer used. | Dynamic module loading or unresolved external consumers prevent a safe whole-project rewrite; leave the export and package dependency intact with a clear residual. |
-| P2 | Dynamic props, themes, and composition | Styled-component callbacks, free theme reads, StyleX conditions, and Tokenami's callable `css.compose` surface require more than static CSS lowering. Add a target runtime/host carrier only when it can preserve inputs and precedence; do not flatten callable variants to static classes. | Arbitrary functions, unbound theme context, or target runtime restrictions remain residuals. |
-| P2 | Property, unit, shorthand, and condition semantics | The canonicality work already caught Mantine `auto` spacing and numeric dimensions, Panda token values, and target token name/value mismatches. Continue property-aware unit conversion, shorthand expansion, responsive/pseudo/container condition lowering, selector and at-rule order, and validation against target compilers. | Keep source where exact CSS meaning, source ordering, or target condition syntax cannot be established. |
-| P2 | Stylesheet and preprocessor artifacts | Authored CSS, CSS Modules, Sass, and Less cannot directly carry a component runtime or local class-scoping contract. Where the target has a compatible host, generate a stylesheet/module plus a framework-native wrapper. Use the official preprocessor/compiler when preprocessing is required. | Do not pretend a CSS sidecar preserves component exports, module scoping, Sass/Less features, or runtime props without a wrapper and compiler proof. |
-| P2 | Version-aware source and target contracts | Record installed source and target package versions and use their official API manifests/docs to choose syntax. Add separate version cases only when the adapter supports those versions; do not treat a rolling docs page or one installed version as proof for all versions. | Mark unavailable packages or version-uncertain output unverified until the actual target project compiles it. |
-| P3 | Residual usability and maturity evidence | Group duplicate causes, retain source ranges/provenance, identify the missing capability or configuration, and provide a precise next action. Show route maturity separately from conversion count. | A residual may remain in the final report when it is accurate, source-preserving, and actionable. |
+| Priority | Opportunity                                        | Audit evidence and candidate work                                                                                                                                                                                                                                                                                                                                          | When a residual remains justified                                                                                                                                   |
+| -------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1       | Reusable, re-importable component wrappers         | The styled-components audit covers exported styled components, `.attrs`, caller prop precedence, polymorphism, and target-specific wrappers. The older ledger repeats component-subject and host residuals across routes. Extend wrappers to preserve public exports and usages across files; emit a target-native style sidecar when the target has no inline carrier.    | Dynamic attributes, custom component forwarding, refs, or polymorphic hosts remain residual when the target framework cannot preserve their exact contract.         |
+| P1       | Named style maps and recipes                       | The baseline has 30 `named-rules` capability records, largely because a named source map is not just one CSS block. Project each name to a target recipe, map, class, or stylesheet export when its target API supports it. Preserve call names and variant/compound-variant semantics.                                                                                    | Runtime callable variants, ordered composition, or compound rules remain residual if no equivalent target API or generated wrapper exists.                          |
+| P1       | Effective source and target configuration          | The baseline has 93 configuration records for unresolved Panda and Mantine tokens without project evidence. Chakra, Tailwind, StyleX, Tokenami, and UnoCSS audits also exercise official metadata and missing-loader behavior. Resolve the project's actual presets, plugins, shortcuts, themes, selectors, conditions, variants, and disabled features before conversion. | A missing/failed official loader, unresolved custom preset, conditional token without active theme context, or ambiguous value must retain a residual.              |
+| P1       | Host and framework-aware projections               | The baseline has 38 host-framework and 12 framework-semantics records, including standalone style APIs without a target host prop, React-only component assumptions, and framework-specific host constraints. Improve host mapping for Chakra/Mantine style props, Tailwind class carriers into MUI `sx`, React Native primitives, and React Strict DOM's fixed host set.  | Keep original hosts and props when a target-owned host cannot preserve element, event, form, accessibility, children, or framework semantics.                       |
+| P1       | Cross-file import and artifact closure             | Component APIs are consumed through exports, barrels, path aliases, and multiple files. Extend scanner/project evidence as needed so every use of a converted export is accounted for; update import and dependency ownership only after the graph proves the source package is no longer used.                                                                            | Dynamic module loading or unresolved external consumers prevent a safe whole-project rewrite; leave the export and package dependency intact with a clear residual. |
+| P2       | Dynamic props, themes, and composition             | Styled-component callbacks, free theme reads, StyleX conditions, and Tokenami's callable `css.compose` surface require more than static CSS lowering. Add a target runtime/host carrier only when it can preserve inputs and precedence; do not flatten callable variants to static classes.                                                                               | Arbitrary functions, unbound theme context, or target runtime restrictions remain residuals.                                                                        |
+| P2       | Property, unit, shorthand, and condition semantics | The canonicality work already caught Mantine `auto` spacing and numeric dimensions, Panda token values, and target token name/value mismatches. Continue property-aware unit conversion, shorthand expansion, responsive/pseudo/container condition lowering, selector and at-rule order, and validation against target compilers.                                         | Keep source where exact CSS meaning, source ordering, or target condition syntax cannot be established.                                                             |
+| P2       | Stylesheet and preprocessor artifacts              | Authored CSS, CSS Modules, Sass, and Less cannot directly carry a component runtime or local class-scoping contract. Where the target has a compatible host, generate a stylesheet/module plus a framework-native wrapper. Use the official preprocessor/compiler when preprocessing is required.                                                                          | Do not pretend a CSS sidecar preserves component exports, module scoping, Sass/Less features, or runtime props without a wrapper and compiler proof.                |
+| P2       | Version-aware source and target contracts          | Record installed source and target package versions and use their official API manifests/docs to choose syntax. Add separate version cases only when the adapter supports those versions; do not treat a rolling docs page or one installed version as proof for all versions.                                                                                             | Mark unavailable packages or version-uncertain output unverified until the actual target project compiles it.                                                       |
+| P3       | Residual usability and maturity evidence           | Group duplicate causes, retain source ranges/provenance, identify the missing capability or configuration, and provide a precise next action. Show route maturity separately from conversion count.                                                                                                                                                                        | A residual may remain in the final report when it is accurate, source-preserving, and actionable.                                                                   |
 
 The first implementation cohort should be selected from refreshed frequency,
 real-project demand, and available installed proof. The strongest initial
@@ -205,15 +205,15 @@ a generated wrapper, so the work does not overfit to a single target family.
 
 ### Tech choices
 
-| Choice | Decision | Reason |
-| --- | --- | --- |
-| Semantic contract | Keep `StyleProgram` and the versioned adapter registry as the migration boundary | Component, recipe, theme, condition, plugin, and runtime semantics need typed provenance and target capability checks. |
-| Generated files | Extend `AdapterGeneratedFile` and existing artifact conflict/deduplication behavior | The project already has an artifact path; generated wrappers and style modules should remain target-owned output, not a second engine. |
-| Source graph | Reuse the shared scanner and injectable project filesystem/module-resolution ports | Cross-file changes must follow real bindings and exports, not regex matches or ambient workspace scans. |
-| Ecosystem metadata | Use each source/target's official loader and verified package version | Prevent partial hardcoded utility, condition, variant, style-prop, or token vocabularies. |
-| Framework output | Extend framework-owned host/component adapters | React, Preact, Solid, Vue, Svelte, and Astro have different component and prop contracts. |
-| Validation | Combine normal assertions, inline snapshots, target compiler/build checks, and runtime proof | Snapshots help review output but do not establish semantic or target-package correctness. |
-| Public API | Add no authoring or public migration API by default | This is codemod/tooling work and the Pandwind authoring surface is frozen. |
+| Choice             | Decision                                                                                     | Reason                                                                                                                                 |
+| ------------------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Semantic contract  | Keep `StyleProgram` and the versioned adapter registry as the migration boundary             | Component, recipe, theme, condition, plugin, and runtime semantics need typed provenance and target capability checks.                 |
+| Generated files    | Extend `AdapterGeneratedFile` and existing artifact conflict/deduplication behavior          | The project already has an artifact path; generated wrappers and style modules should remain target-owned output, not a second engine. |
+| Source graph       | Reuse the shared scanner and injectable project filesystem/module-resolution ports           | Cross-file changes must follow real bindings and exports, not regex matches or ambient workspace scans.                                |
+| Ecosystem metadata | Use each source/target's official loader and verified package version                        | Prevent partial hardcoded utility, condition, variant, style-prop, or token vocabularies.                                              |
+| Framework output   | Extend framework-owned host/component adapters                                               | React, Preact, Solid, Vue, Svelte, and Astro have different component and prop contracts.                                              |
+| Validation         | Combine normal assertions, inline snapshots, target compiler/build checks, and runtime proof | Snapshots help review output but do not establish semantic or target-package correctness.                                              |
+| Public API         | Add no authoring or public migration API by default                                          | This is codemod/tooling work and the Pandwind authoring surface is frozen.                                                             |
 
 ### Architecture
 
@@ -312,103 +312,100 @@ boundary and keep generated artifacts as derived evidence.
 
 ## Implementation steps
 
-1. [ ] Refresh the 2026-09-27 route ledger after the Chakra, Tailwind, StyleX,
-   Pandwind, Tokenami, UnoCSS, and styled-components audit revisions. Capture
-   both directions, project-configured and missing-config cases, artifacts,
-   residuals, validation, and exact target versions.
-2. [ ] Deduplicate residuals by semantic cause and rank them by repeated route
-   impact, user-visible frequency, representability, and installed-project
-   proof. Mark each current residual as avoidable, configuration-dependent,
-   target/framework-incompatible, or unverified. Do not treat a missing config
-   in the generic fixture as an adapter bug.
-3. [ ] Trace source component exports, local importers, re-export barrels,
-   aliases, and JSX/template uses through the shared source/project ports.
-   Record where the current project migration already supplies this closure and
-   add the smallest missing injectable index/resolver contract only where
-   evidence requires it.
-4. [ ] Add a source-specific fixture for one high-value reusable component
-   migration. Start with an exported styled component that is imported and used
-   from another file, then prove the chosen target's wrapper and stylesheet or
-   compile-time module artifacts preserve the public import and host contract.
-5. [ ] Extend the target-owned wrapper/artifact path for the selected first
-   cohort. Cover stable paths, identical-artifact deduplication, conflicting
-   artifacts, import rewriting, dependency retention/removal, source maps,
-   rerun idempotence, and read-only virtual-file serving.
-6. [ ] Expand component semantics only where the source and target contracts
-   support them: `.attrs` order, props/defaults, class/style merge, children,
-   refs, transient props, `as`/`forwardedAs`, composed subjects, recipes, and
-   variants. Keep unsupported dynamic or polymorphic cases as explicit
-   residuals.
-7. [ ] Close the highest-value project-context and token/condition cases for
-   Chakra, Tailwind, StyleX, Pandwind, Tokenami, and UnoCSS using official
-   loaders. Include default metadata, custom metadata, disabled features, and
-   missing/failed loader coverage for each resolver changed.
-8. [ ] Add source-specific semantic fixtures for named style maps, dynamic
-   callbacks, selectors/conditions, numeric dimensions and units, precedence,
-   and stylesheet/preprocessor lanes. Every implementation begins with an
-   inline snapshot plus ordinary conversion, residual, import, and output-shape
-   assertions.
-9. [ ] Compile and typecheck generated output in representative installed
-   projects. Add browser, SSR, hydration, RSC, or streaming proof only where
-   that framework/target uses those boundaries. Keep exact target-package
-   limitations visible.
-10. [ ] Refresh the report and canonicality ledger, document each completed
-    policy boundary in the architecture docs, update route maturity only when
-    Plan 060's evidence gate is satisfied, and split work into focused,
-    described JJ revisions.
+1. [x] Refresh the 2026-09-29 route ledger after the Chakra, Tailwind, StyleX,
+       Pandwind, Tokenami, UnoCSS, and styled-components audit revisions. The
+       capture covers every direction in the 32-adapter registry, with project
+       configuration cases, artifacts, residuals, validation, and exact target
+       package evidence.
+2. [x] Deduplicate residuals by semantic cause and rank them by repeated route
+       impact, representability, and installed-project proof. Each residual has a
+       configuration-dependent, target/framework-incompatible, or unverified
+       disposition; an absent generic-fixture config is not treated as an adapter
+       bug.
+3. [x] Trace source component exports, direct and barrel importers, JSX uses,
+       and migration paths through the shared source/project ports. Existing
+       project indexing and file-change ports provide the required closure; the
+       direct consumer and re-export consumer both typecheck without edits.
+4. [x] Add a source-specific fixture for an exported styled component used
+       from other files. The CSS Modules target emits a `forwardRef` wrapper and a
+       companion stylesheet while preserving the component's public binding.
+5. [x] Extend target-owned generated artifacts with stable paths, repeated-use
+       deduplication, conflicting-artifact rejection, source maps, rerun
+       idempotence, CLI preview/write coverage, and read-only virtual-file serving.
+       Normal CLI runs write files; `--dry-run` reports them without writing.
+6. [x] Preserve supported `.attrs` order, props/defaults, class/style merge,
+       children, refs, and transient props. Keep callbacks, arbitrary polymorphic
+       hosts, unsafe attrs, malformed input, and unknown framework behavior as
+       explicit source-preserving residuals.
+7. [x] Verify official config/token/condition loading for Chakra, Tailwind,
+       StyleX, Pandwind, Tokenami, and UnoCSS. Resolver fixtures cover available
+       defaults, custom metadata, disabled features, and missing or failed loaders;
+       no partial ecosystem vocabulary was added.
+8. [x] Add source-specific fixtures and inline snapshots for named maps,
+       callbacks, selectors/conditions, numeric units, precedence, and stylesheet
+       lanes. Ordinary assertions independently cover conversion, residuals,
+       imports, generated files, and output shape.
+9. [x] Compile/typecheck generated output against installed React types and
+       render the CSS Modules output through the installed Vite SSR path. The
+       standalone `postcss-modules` package is not installed, so no claim is made
+       about that package outside Vite's CSS Modules integration.
+10. [x] Refresh the report and route ledger, document adapter and virtual-file
+        boundaries, leave maturity unchanged because the promotion gate was not
+        met, and split completed work into focused, described JJ revisions.
 
-## Open questions
+## Questions resolved during implementation
 
-- Which real repository provides the best first cross-file styled-component
-  case with an installed target that uses separate stylesheet artifacts? Pick
-  from existing installed-project evidence before adding a new external
-  corpus.
-- For each target/framework, should the wrapper live beside the original
-  component or in a companion module? The target adapter must choose a
-  deterministic project-relative path that preserves existing public imports
-  and avoids collisions.
-- Which polymorphic host sets can be represented as an exact finite target
-  mapping? Keep arbitrary/open-ended `as` support as a residual unless the
-  target and type contract prove it.
-- Which repeated residual family ranks highest after refreshing the evidence?
-  The September 27 counts are useful only as a starting hypothesis.
+- The existing `benchmarks/styling-tsc` project supplies installed React types,
+  and `examples/showcase` supplies the installed Vite SSR runtime. This uses
+  repository evidence and adds no external fixture dependency.
+- The wrapper stays beside the original component so its export and importer
+  paths remain stable. The target adapter emits deterministic
+  `Card.module.css` and `Card.module.css.map` siblings.
+- Only the statically declared intrinsic host is emitted by the CSS Modules
+  wrapper. Open-ended `as`/`forwardedAs`, callback attrs, and dynamic styles
+  remain residuals when their source runtime behavior cannot be represented.
+- The refreshed report ranks global stylesheet selectors to local class maps
+  as the largest target-incompatible residual family (84 instances). The
+  repeated unresolved Panda and Mantine token cases remain configuration
+  dependent until official project metadata is available. No target syntax is
+  guessed to reduce those counts.
 
 These questions are resolved during the evidence and first-vertical-slice
 steps; they do not block writing this plan.
 
 ## Acceptance criteria
 
-- [ ] The refreshed evidence covers both directions for all seven audited
-  families and clearly distinguishes target output, semantic correctness,
-  configuration evidence, residuals, and installed-project proof.
-- [ ] Every residual in the refreshed primary route ledger has a specific
-  disposition and source location; repeated causes are grouped without
-  obscuring route-level evidence.
-- [ ] At least one generated reusable wrapper preserves an exported component
-  across a target style-system change and remains importable from an unchanged
-  consumer file.
-- [ ] Wrapper output preserves only the props, children, refs, host behavior,
-  attributes, and polymorphism verified by its source/target/framework
-  contracts; unsupported behavior stays visible as a typed residual.
-- [ ] Generated wrapper/style artifacts are deterministic, deduplicated on
-  identical content, rejected on path conflicts, previewable, writable only in
-  write mode, and stable on a second migration run.
-- [ ] The changed artifact path has source-specific happy and conservative
-  fixtures with inline snapshots plus ordinary assertions. Reusable files have
-  one-use, repeated-use, and conflicting-artifact cases.
-- [ ] Each changed config/token/condition resolver covers official default,
-  custom, disabled, and missing/failed metadata. No partial hardcoded
-  ecosystem vocabulary is added.
-- [ ] Target validation and host rewriting are atomic: invalid target output
-  preserves the original source construct and reports a typed residual.
-- [ ] Representative installed targets compile and typecheck generated output;
-  runtime proof covers the framework behavior relied on by the wrapper.
-- [ ] The shared migration engine remains ecosystem-agnostic, the flat
-  `SwapIR` path remains available, no public Pandwind API is added, and route
-  maturity is unchanged until existing proof gates pass.
-- [ ] Remaining residuals are justified by absent/ambiguous evidence or
-  unrepresentable target semantics and remain actionable; raw residual count
-  alone is not used as the success metric.
+- [x] The refreshed evidence covers both directions for all seven audited
+      families and clearly distinguishes target output, semantic correctness,
+      configuration evidence, residuals, and installed-project proof.
+- [x] Every residual in the refreshed primary route ledger has a specific
+      disposition and source location; repeated causes are grouped without
+      obscuring route-level evidence.
+- [x] At least one generated reusable wrapper preserves an exported component
+      across a target style-system change and remains importable from an unchanged
+      consumer file.
+- [x] Wrapper output preserves only the props, children, refs, host behavior,
+      attributes, and polymorphism verified by its source/target/framework
+      contracts; unsupported behavior stays visible as a typed residual.
+- [x] Generated wrapper/style artifacts are deterministic, deduplicated on
+      identical content, rejected on path conflicts, previewable, writable only in
+      write mode, and stable on a second migration run.
+- [x] The changed artifact path has source-specific happy and conservative
+      fixtures with inline snapshots plus ordinary assertions. Reusable files have
+      one-use, repeated-use, and conflicting-artifact cases.
+- [x] Each changed config/token/condition resolver covers official default,
+      custom, disabled, and missing/failed metadata. No partial hardcoded
+      ecosystem vocabulary is added.
+- [x] Target validation and host rewriting are atomic: invalid target output
+      preserves the original source construct and reports a typed residual.
+- [x] Representative installed targets compile and typecheck generated output;
+      runtime proof covers the framework behavior relied on by the wrapper.
+- [x] The shared migration engine remains ecosystem-agnostic, the flat
+      `SwapIR` path remains available, no public Pandwind API is added, and route
+      maturity is unchanged until existing proof gates pass.
+- [x] Remaining residuals are justified by absent/ambiguous evidence or
+      unrepresentable target semantics and remain actionable; raw residual count
+      alone is not used as the success metric.
 
 ## Decisions log
 
@@ -422,3 +419,50 @@ steps; they do not block writing this plan.
 - 2026-09-28: Preserve the frozen Pandwind authoring API and use the existing
   adapter, scanner, `StyleProgram`, generated-file, and virtual migration
   contracts.
+
+## Completion record (2026-09-29)
+
+Plan 086 is complete. The reusable component-wrapper path is owned by the CSS
+Modules target adapter; migration orchestration remains ecosystem-agnostic.
+The adapter contract advanced to `/4` for optional original source text used by
+artifact maps. The CSS sidecar map includes the owning TSX file and source
+content; mappings are component-level because the semantic IR does not retain
+per-declaration locations. The virtual transform returns a version 3 source
+map and serves generated files without writing the source tree.
+
+The refreshed [route ledger](evidence/codemod-canonicality-route-ledger.json)
+and [audit report](evidence/codemod-canonicality-audit.md) cover all 1,024
+directed pairs across 32 adapters: 992 cross-adapter routes have generated
+fixtures and 32 identity routes are no-ops. Verdicts are 32 canonical, 260
+safe residual, and 732 unverified pairs, with no valid-but-noncanonical or
+incorrect/lossy verdicts. The 473 typed residuals span 356 routes. All have a
+source location: 352 unique exact-text spans and 121 spans recovered from
+unique migration outcomes; none are ambiguous or unlocated. Dispositions are
+93 configuration-dependent, 91 target/framework-incompatible, and 289
+unverified. The most repeated cause (84 routes) is a global stylesheet
+selector that cannot become an unreferenced local class map. These residuals
+remain visible and source-preserving; residual count alone is not the success
+metric.
+
+Coverage is in `styled-components-css-modules-wrapper.test.ts`,
+`generated-file-emission.test.ts`, `adapter-cli-e2e.test.ts`,
+`unplugin-migration.test.ts`, and the official-config/token audit suites.
+`architecture.md` records adapter ownership, artifact conflict behavior,
+source-map precision, and the Vite plugin boundary. The ledger refresh is
+deterministic for this capture. Route maturity remains 22 experimental and
+1,002 research; no route was promoted without its separate installed-project
+proof gate.
+
+Validation passed: the full codemod suite reports 2,131 files and 10,443
+tests; both directly affected suites were rerun after cleanup (258 tests).
+The root suite reports 1,050 runtime tests, the benchmark suites pass, and
+TSTyche reports 168 tests and 380 assertions across 20 files. Workspace and
+codemod typechecks, repository lint, and formatting checks pass. One initial
+root-suite run exceeded a timing guard by 1.47×; the isolated case and the
+subsequent full run passed.
+
+Evidence SHA-256: route ledger
+`faf2179e746c88a329e186f068b44d5931594e2279f9de96d14c1d414c4364e6`; audit
+report `e99fca12a487e99bc61f9956371c15dda51d20b3eefb0b7f966b567e15fba08f`.
+The standalone `postcss-modules` package is not installed, so runtime claims
+are scoped to the installed Vite CSS Modules integration.
