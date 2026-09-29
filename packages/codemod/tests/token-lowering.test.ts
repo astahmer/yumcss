@@ -5,7 +5,7 @@ import { STYLE_LOWERING_REGISTRY } from "../src/swap/lowering.ts";
 import { StyleProgramBuilder } from "../src/swap/style-program-builder.ts";
 
 const target = {
-	schema: "pandwind.adapter-capabilities/2" as const,
+	schema: "pandwind.adapter-capabilities/3" as const,
 	adapter: "fixture-target",
 	capabilities: {
 		declarations: AdapterCapabilityLevelTag.Exact,

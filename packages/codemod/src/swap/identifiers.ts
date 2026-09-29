@@ -112,6 +112,7 @@ export const enum CodemodCallPatternFormTag {
 /** Stable capability identities used by manifests, ledgers, and validators. */
 export const enum AdapterCapabilityTag {
 	Declarations = "declarations",
+	ImportantPriority = "important-priority",
 	TokenValues = "token-values",
 	CustomProperties = "custom-properties",
 	DynamicValues = "dynamic-values",

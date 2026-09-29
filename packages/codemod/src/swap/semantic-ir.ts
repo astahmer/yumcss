@@ -26,7 +26,7 @@ import { NodeKind, PropertyKindTag } from "pandwind/tw/literal";
 
 const defaultDeclarationOrdering = createStyleDeclarationOrderingPolicy();
 
-export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/5" as const;
+export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/6" as const;
 
 export const enum SemanticConditionKindTag {
 	Named = "named",
@@ -159,6 +159,7 @@ export interface StyleDeclaration {
 	readonly conditions: readonly StyleCondition[];
 	readonly property: string;
 	readonly value: StyleValue;
+	readonly important?: boolean;
 }
 
 /**
@@ -351,14 +352,33 @@ function normalizeDynamicValue(value: StyleValue): StyleValue {
 	};
 }
 
+const importantSuffix = /\s*!important\s*$/iu;
+
+function normalizeDeclaration(declaration: StyleDeclaration): StyleDeclaration {
+	if (
+		declaration.value.kind !== StyleValueKindTag.Literal ||
+		typeof declaration.value.value !== "string"
+	)
+		return declaration;
+	const value = declaration.value.value;
+	if (!importantSuffix.test(value)) return declaration;
+	return {
+		...declaration,
+		important: true,
+		value: { ...declaration.value, value: value.replace(importantSuffix, "") },
+	};
+}
+
 /** Preserve declaration order because overlapping shorthand and longhand values depend on it. */
 function normalizeRule(rule: StyleRuleInput, index: number): StyleRule {
 	return {
 		...rule,
-		declarations: rule.declarations.map((declaration) => ({
-			...declaration,
-			value: normalizeDynamicValue(declaration.value),
-		})),
+		declarations: rule.declarations.map((declaration) =>
+			normalizeDeclaration({
+				...declaration,
+				value: normalizeDynamicValue(declaration.value),
+			}),
+		),
 		children: (rule.children ?? []).map((child, childIndex) => normalizeRule(child, childIndex)),
 		order: rule.order ?? index,
 	};
@@ -612,7 +632,10 @@ function cssValue(value: StyleValue): string {
 function renderDeclarations(declarations: readonly StyleDeclaration[]): string {
 	return defaultDeclarationOrdering
 		.order(declarations)
-		.map((declaration) => `${declaration.property}:${cssValue(declaration.value)}`)
+		.map(
+			(declaration) =>
+				`${declaration.property}:${cssValue(declaration.value)}${declaration.important ? " !important" : ""}`,
+		)
 		.join(";");
 }
 

@@ -315,6 +315,7 @@ export function createTamaguiAdapter(
 			],
 		},
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Tamagui, "unsupported", {
+			"important-priority": "unsupported",
 			"theme-context": "partial",
 			composition: "partial",
 			components: "exact",

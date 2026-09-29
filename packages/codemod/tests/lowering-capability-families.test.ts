@@ -13,7 +13,7 @@ const target = (
 	adapter: string,
 	capabilities: Partial<Record<AdapterCapabilityTag, AdapterCapabilityLevelTag>>,
 ) => ({
-	schema: "pandwind.adapter-capabilities/2" as const,
+	schema: "pandwind.adapter-capabilities/3" as const,
 	adapter,
 	capabilities,
 });

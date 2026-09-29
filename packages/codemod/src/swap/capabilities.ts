@@ -1,14 +1,15 @@
 import { SemanticConditionKindTag, StyleRuleKindTag, StyleValueKindTag } from "./semantic-ir.ts";
 import type { SemanticConditionKind, StyleDynamicValue, StyleProgram } from "./semantic-ir.ts";
 import type { AdapterDependencies } from "./adapter-contract.ts";
-import { StyleDynamicExpressionKind } from "./identifiers.ts";
+import { AdapterCapabilityTag, StyleDynamicExpressionKind } from "./identifiers.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
 /** Versioned contract between the semantic program and a target adapter. */
-export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/2" as const;
+export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/3" as const;
 
 export type AdapterCapability =
 	| "declarations"
+	| "important-priority"
 	| "token-values"
 	| "custom-properties"
 	| "dynamic-values"
@@ -205,6 +206,8 @@ export function requiredAdapterCapabilities(
 	}
 	const declarations = StyleProgramAnalysis.declarations(program);
 	for (const declaration of declarations) {
+		if (declaration.important === true)
+			add(AdapterCapabilityTag.ImportantPriority, `${declaration.property}: !important`);
 		for (const condition of declaration.conditions) {
 			add(conditionCapability(condition.kind), `${condition.kind}: ${condition.name}`);
 		}

@@ -55,6 +55,7 @@ const CORE_CAPABILITIES = (adapter: string): AdapterCapabilities => ({
 	version: "1",
 	capabilities: {
 		declarations: "exact",
+		"important-priority": "exact",
 		"rule-level": "partial",
 		"global-rules": "partial",
 		keyframes: "partial",

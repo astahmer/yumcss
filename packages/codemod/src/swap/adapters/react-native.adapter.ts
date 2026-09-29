@@ -404,6 +404,7 @@ const reactNativeAdapter = makeExtraAdapter({
 		},
 	],
 	targetImports: ['import { StyleSheet } from "react-native";'],
+	capabilityOverrides: { "important-priority": "unsupported" },
 	namedObjects: true,
 	sourceObjectOptions: { namedRuleObjects: true },
 	lowerings: [reactNativeUnitLowering],

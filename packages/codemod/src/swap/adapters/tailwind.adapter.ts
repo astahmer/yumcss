@@ -77,6 +77,15 @@ const literal = (property: string, value: string | number): StyleDeclaration => 
 	value: { kind: "literal", value },
 });
 
+const importantSuffix = /\s*!important\s*$/iu;
+
+const declarationValue = (
+	value: string,
+): { readonly important: boolean; readonly value: string } => ({
+	important: importantSuffix.test(value),
+	value: value.replace(importantSuffix, ""),
+});
+
 const cssProperty = (value: string): string =>
 	value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 
@@ -691,6 +700,8 @@ type TailwindOfficialUtilityResolver = TailwindUtilityResolver & {
 	readonly candidates: () => readonly string[];
 };
 
+type TailwindImportantSyntax = "prefix" | "suffix";
+
 /**
  * Tailwind owns the utility vocabulary. When its design system is loaded,
  * enumerate the candidates it actually registered and let its compiler verify
@@ -702,27 +713,38 @@ function officialTailwindUtility(
 	prefix: string,
 	resolver: TailwindUtilityResolver | undefined,
 	catalog: TokenCatalog | undefined,
+	importantSyntax: TailwindImportantSyntax,
 ): string | undefined {
 	const official = resolver as TailwindOfficialUtilityResolver | undefined;
 	const candidates = official?.candidates?.();
-	if (candidates === undefined) return undefined;
+	if (official === undefined || candidates === undefined) return undefined;
 	const matches = candidates
 		.filter((candidate) => !candidate.includes(":"))
-		.filter((candidate) =>
-			equivalentTailwindDeclaration(
-				resolver?.resolve(`${prefix}${candidate}`),
-				declaration,
-				catalog,
-			),
-		);
+		.flatMap((candidate) => {
+			const spellings = importantUtilitySpellings(
+				candidate,
+				declaration.important === true,
+				importantSyntax,
+			);
+			return spellings.flatMap((spelling, priorityOrder) =>
+				equivalentTailwindDeclaration(
+					official.resolve(`${prefix}${spelling}`),
+					declaration,
+					catalog,
+				)
+					? [{ base: candidate, spelling, priorityOrder }]
+					: [],
+			);
+		});
 	return matches
 		.toSorted(
 			(left, right) =>
-				Number(left.includes("[")) - Number(right.includes("[")) ||
-				left.length - right.length ||
-				left.localeCompare(right),
+				Number(left.base.includes("[")) - Number(right.base.includes("[")) ||
+				left.base.length - right.base.length ||
+				left.base.localeCompare(right.base) ||
+				left.priorityOrder - right.priorityOrder,
 		)
-		.at(0);
+		.at(0)?.spelling;
 }
 
 function equivalentTailwindDeclaration(
@@ -740,9 +762,21 @@ function equivalentTailwindDeclaration(
 	const actual = materialized[0]!;
 	return (
 		actual.property === declaration.property &&
+		(actual.important === true) === (declaration.important === true) &&
 		JSON.stringify(actual.conditions) === JSON.stringify(declaration.conditions)
 	);
 }
+
+const importantUtilitySpellings = (
+	candidate: string,
+	important: boolean,
+	syntax: TailwindImportantSyntax,
+): readonly string[] => {
+	if (!important) return [candidate];
+	return syntax === "prefix"
+		? [`!${candidate}`, `${candidate}!`]
+		: [`${candidate}!`, `!${candidate}`];
+};
 
 function tailwindPropertyAwareUtility(
 	declaration: StyleDeclaration,
@@ -806,6 +840,7 @@ function emitTailwind(
 	program: StyleProgram,
 	catalog?: TokenCatalog,
 	resolver?: TailwindUtilityResolver,
+	importantSyntax: TailwindImportantSyntax = "suffix",
 ): {
 	text: string;
 	emissionDecisions: readonly AdapterEmissionDecision[];
@@ -835,12 +870,27 @@ function emitTailwind(
 			continue;
 		}
 		const prefix = declaration.conditions.map(utilityCondition).join("");
-		const official = officialTailwindUtility(declaration, prefix, resolver, catalog);
+		const official = officialTailwindUtility(
+			declaration,
+			prefix,
+			resolver,
+			catalog,
+			importantSyntax,
+		);
+		const namedBase = tailwindTokenUtility(declaration, catalog);
 		const named =
-			official === undefined
-				? tailwindTokenUtility(declaration, catalog)
-				: official.slice(prefix.length);
-		const propertyAware = tailwindPropertyAwareUtility(declaration, catalog);
+			namedBase === undefined
+				? undefined
+				: importantUtilitySpellings(namedBase, declaration.important === true, importantSyntax)[0];
+		const propertyAwareBase = tailwindPropertyAwareUtility(declaration, catalog);
+		const propertyAware =
+			propertyAwareBase === undefined
+				? undefined
+				: importantUtilitySpellings(
+						propertyAwareBase,
+						declaration.important === true,
+						importantSyntax,
+					)[0];
 		let selected = false;
 		for (const candidate of [official, named === official ? undefined : named, propertyAware]) {
 			if (candidate === undefined) continue;
@@ -870,7 +920,10 @@ function emitTailwind(
 			}
 		}
 		if (selected) continue;
-		const fallback = `${prefix}[${declaration.property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}:${utilityValue(resolved)}]`;
+		const fallbackUtility = `[${declaration.property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}:${utilityValue(resolved)}]`;
+		const fallback = `${prefix}${
+			importantUtilitySpellings(fallbackUtility, declaration.important === true, importantSyntax)[0]
+		}`;
 		tokens.push(fallback);
 		emissionDecisions.push({
 			representation: StyleUtilityRepresentationKind.ArbitraryProperty,
@@ -1162,10 +1215,12 @@ function parseClassicTailwindCss(css: string): TailwindOfficialUtilityResolver {
 			if (node.type === GeneratedCssNodeKind.Declaration) {
 				const property = node.prop.trim();
 				const value = node.value.trim();
-				if (property !== "" && value !== "")
+				const parsedValue = declarationValue(value);
+				if (property !== "" && parsedValue.value !== "")
 					declarations.push({
-						...literal(cssProperty(property), value),
+						...literal(cssProperty(property), parsedValue.value),
 						conditions,
+						...(parsedValue.important ? { important: true } : {}),
 					});
 				continue;
 			}
@@ -1279,10 +1334,12 @@ function parseEngineCss(css: string, token: string): readonly StyleDeclaration[]
 		if (node.type === GeneratedCssNodeKind.Declaration) {
 			const property = node.prop.trim();
 			const value = node.value.trim();
-			if (current.insideStyleRule && property !== "" && value !== "")
+			const parsedValue = declarationValue(value);
+			if (current.insideStyleRule && property !== "" && parsedValue.value !== "")
 				declarations.push({
-					...literal(cssProperty(property), value),
+					...literal(cssProperty(property), parsedValue.value),
 					conditions: current.conditions,
+					...(parsedValue.important ? { important: true } : {}),
 				});
 			continue;
 		}
@@ -1396,6 +1453,7 @@ async function classicConfig(
 			tokenCatalog: classicTokenCatalog(loaded, resolveConfig),
 			values: {
 				...fallback.values,
+				tailwindImportantSyntax: "prefix",
 				tailwindResolver: resolver,
 				officialConfigPackages: [
 					"tailwindcss",
@@ -1521,6 +1579,7 @@ async function officialConfig(
 			tokenCatalog: tailwindTokenCatalog(system, catalogCandidates, catalogCss, theme)?.contract,
 			values: {
 				...fallback.values,
+				tailwindImportantSyntax: "suffix",
 				tailwindOfficialApi: tailwindApiProbe(TAILWIND_OFFICIAL_API_STATUS.Verified),
 				tailwindResolver: resolver,
 				officialConfigPackages: ["@tailwindcss/node"],
@@ -1576,6 +1635,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			version: "1",
 			capabilities: {
 				declarations: "exact",
+				"important-priority": "exact",
 				"named-rules": "exact",
 				"token-values": "partial",
 				"rule-level": "partial",
@@ -1651,6 +1711,8 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			const resolver = context.config.values.tailwindResolver as
 				| TailwindUtilityResolver
 				| undefined;
+			const importantSyntax: TailwindImportantSyntax =
+				context.config.values.tailwindImportantSyntax === "prefix" ? "prefix" : "suffix";
 			const namedRules = program.rules.filter(
 				(rule) => rule.kind === StyleRuleKindTag.Style && rule.name !== undefined,
 			);
@@ -1666,6 +1728,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 						},
 						tokenCatalog,
 						resolver,
+						importantSyntax,
 					);
 					residuals.push(...emitted.residuals);
 					emissionDecisions.push(...emitted.emissionDecisions);
@@ -1679,7 +1742,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				};
 			}
 			return {
-				...emitTailwind(program, tokenCatalog, resolver),
+				...emitTailwind(program, tokenCatalog, resolver, importantSyntax),
 				semantic: program,
 			};
 		},

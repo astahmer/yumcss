@@ -29,6 +29,34 @@ describe("versioned semantic style-program IR", () => {
 		);
 	});
 
+	test("keeps important priority separate from a declaration's literal value", () => {
+		const program = styleProgramFromRules([
+			{
+				kind: "style",
+				selector: ".card",
+				conditions: [],
+				declarations: [
+					{
+						conditions: [],
+						property: "color",
+						value: { kind: "literal", value: "red !important" },
+					},
+				],
+				children: [],
+				order: 0,
+			},
+		]);
+
+		expect(program.declarations[0]).toMatchObject({
+			important: true,
+			property: "color",
+			value: { kind: "literal", value: "red" },
+		});
+		expect(styleProgramToCanonicalCss(program)).toMatchInlineSnapshot(
+			`".card{color:red !important}"`,
+		);
+	});
+
 	test("lifts flat declarations without changing their lossless representation", () => {
 		const ir = {
 			entries: [

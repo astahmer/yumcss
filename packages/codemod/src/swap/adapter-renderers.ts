@@ -49,10 +49,19 @@ function objectNode(): ObjectNode {
 	return { entries: [], children: [] };
 }
 
-function renderValue(value: StyleProgram["declarations"][number]["value"]): string {
-	if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
-	if (value.kind === StyleValueKindTag.Token) return JSON.stringify(value.authored);
-	return JSON.stringify(value.value);
+function renderValue(
+	value: StyleProgram["declarations"][number]["value"],
+	important = false,
+): string {
+	if (value.kind === StyleValueKindTag.Dynamic)
+		return important ? `(${value.expression}) + " !important"` : value.expression;
+	const resolved =
+		value.kind === StyleValueKindTag.Token
+			? important
+				? (value.resolved ?? value.authored)
+				: value.authored
+			: value.value;
+	return JSON.stringify(important ? `${String(resolved)} !important` : resolved);
 }
 
 function renderKey(key: string): string {
@@ -77,7 +86,10 @@ function addDeclaration(
 	// standard property or custom property is emitted separately.
 	if (/^-Un[A-Z]/u.test(declaration.property)) return;
 	if (conditions.length === 0) {
-		const entry: [string, string] = [declaration.property, renderValue(declaration.value)];
+		const entry: [string, string] = [
+			declaration.property,
+			renderValue(declaration.value, declaration.important),
+		];
 		const index = node.entries.findIndex(([property]) => property === declaration.property);
 		if (index === -1) node.entries.push(entry);
 		else node.entries[index] = entry;
@@ -237,7 +249,7 @@ function templateCss(program: StyleProgram): string {
 				.get("[]")
 				?.declarations.map(
 					(declaration) =>
-						`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)};`,
+						`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)}${declaration.important ? " !important" : ""};`,
 				)
 				.join(" ") ?? "";
 		const conditioned = [...grouped.values()]
@@ -247,7 +259,7 @@ function templateCss(program: StyleProgram): string {
 					group.declarations
 						.map(
 							(declaration) =>
-								`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)};`,
+								`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)}${declaration.important ? " !important" : ""};`,
 						)
 						.join(" "),
 					group.conditions,

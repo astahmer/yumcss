@@ -202,7 +202,7 @@ describe("Tamagui adapter", () => {
 			        ],
 			        "rules": [],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/5",
+			        "schema": "pandwind.style-program/6",
 			        "source": {
 			          "adapter": "tamagui",
 			          "end": 113,

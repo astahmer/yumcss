@@ -5,8 +5,12 @@ import {
 	createStyleAdapterRegistry,
 	createTailwindAdapter,
 	runAdapterMigrationAsync,
+	styleProgramFromSourceObject,
 } from "../src/swap/index.ts";
+import { createStyleXAdapter } from "../src/swap/adapters/stylex.adapter.ts";
 import { parseTailwindCandidateCss } from "../src/swap/adapters/tailwind.adapter.ts";
+import compiled from "../src/swap/adapters/compiled.adapter.ts";
+import goober from "../src/swap/adapters/goober.adapter.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 
 const root = "/project";
@@ -28,6 +32,8 @@ function loader(): ProjectModuleLoader {
 					candidatesToCss: (candidates: readonly string[]) =>
 						candidates.map((candidate) => {
 							if (candidate === "tab-4") return "@layer utilities { .tab-4 { tab-size: 4; } }";
+							if (candidate === "tab-4!")
+								return "@layer utilities { .tab-4\\! { tab-size: 4 !important; } }";
 							if (candidate === "hover:tab-4")
 								return "@layer utilities { .hover\\:tab-4:hover { tab-size: 4; } }";
 							if (candidate === "rtl:rotate-180")
@@ -40,6 +46,7 @@ function loader(): ProjectModuleLoader {
 								return "@layer utilities { [data-theme=midnight] .theme-tab-4 { tab-size: 4; } }";
 							return null;
 						}),
+					getClassList: () => [["tab-4", {}] as const],
 					theme: {
 						entries: () => new Map([["--spacing-4", { value: "1rem" }]]),
 					},
@@ -94,7 +101,207 @@ function spacingLoader(): ProjectModuleLoader {
 	};
 }
 
+function classicLoader(): ProjectModuleLoader {
+	return {
+		async importPackage(packageName) {
+			if (packageName === "tailwindcss") return { default: () => ({}) } as never;
+			if (packageName === "postcss")
+				return {
+					default: () => ({
+						process: async () => ({
+							css: String.raw`@layer utilities { .tab-4 { tab-size: 4; } .\!tab-4 { tab-size: 4 !important; } }`,
+						}),
+					}),
+				} as never;
+			return undefined;
+		},
+		async importFile() {
+			return { default: { content: ["src/**/*"] } } as never;
+		},
+	};
+}
+
 describe("Tailwind official CSS context", () => {
+	test("preserves priority in Compiled and generic object-carrier output", () => {
+		const program = styleProgramFromSourceObject('tabSize: "4 !important"');
+		const output = {
+			compiled: compiled.emit(program, {
+				file,
+				config: { adapter: CodemodAdapterId.Compiled, files: [], values: {} },
+				mode: "safe",
+				index: 0,
+			}).text,
+			goober: goober.emit(program, {
+				file,
+				config: { adapter: CodemodAdapterId.Goober, files: [], values: {} },
+				mode: "safe",
+				index: 0,
+			}).text,
+		};
+
+		expect(output.compiled).toContain('"4 !important"');
+		expect(output.goober).toContain('"4 !important"');
+		expect(output).toMatchInlineSnapshot(`
+			{
+			  "compiled": "css({ "tabSize": "4 !important" })",
+			  "goober": "css({ "tabSize": "4 !important" })",
+			}
+		`);
+	});
+
+	test("emits an important declaration as a verified Tailwind utility", async () => {
+		const adapter = createTailwindAdapter({ moduleLoader: loader() });
+		const projectFiles: Readonly<Record<string, string>> = files();
+		const config = await adapter.loadConfigAsync?.({
+			file,
+			root,
+			source: "",
+			readFile: (path) => projectFiles[path],
+			listFiles: () => Object.keys(projectFiles),
+		});
+		if (config === undefined) throw new Error("Tailwind config did not load");
+
+		const emitted = adapter.emit(styleProgramFromSourceObject('tabSize: "4 !important"'), {
+			file,
+			config,
+			mode: "safe",
+			index: 0,
+		});
+
+		expect(emitted.residuals).toEqual([]);
+		expect(emitted.emissionDecisions).toMatchObject([
+			{ candidate: "tab-4!", property: "tabSize", verified: true },
+		]);
+		expect(JSON.parse(emitted.text)).toMatchInlineSnapshot(`"tab-4!"`);
+	});
+
+	test("uses the Tailwind 3 leading important modifier from its loaded project config", async () => {
+		const adapter = createTailwindAdapter({ moduleLoader: classicLoader() });
+		const projectFiles: Readonly<Record<string, string>> = {
+			[`${root}/tailwind.config.cjs`]: "module.exports = {};",
+			[`${root}/${file}`]: "",
+		};
+		const config = await adapter.loadConfigAsync?.({
+			file,
+			root,
+			source: "",
+			readFile: (path) => projectFiles[path],
+			listFiles: () => Object.keys(projectFiles),
+		});
+		if (config === undefined) throw new Error("Tailwind 3 config did not load");
+
+		const emitted = adapter.emit(styleProgramFromSourceObject('tabSize: "4 !important"'), {
+			file,
+			config,
+			mode: "safe",
+			index: 0,
+		});
+
+		expect(config.values.tailwindImportantSyntax).toBe("prefix");
+		expect(emitted.residuals).toEqual([]);
+		expect(emitted.emissionDecisions).toMatchObject([
+			{ candidate: "!tab-4", property: "tabSize", verified: true },
+		]);
+		expect(JSON.parse(emitted.text)).toMatchInlineSnapshot(`"!tab-4"`);
+	});
+
+	test("parses Tailwind 3 leading important utilities into declaration priority", async () => {
+		const source = 'export const App = () => <div className="!tab-4" />;';
+		const projectFiles: Readonly<Record<string, string>> = {
+			[`${root}/tailwind.config.cjs`]: "module.exports = {};",
+			[`${root}/${file}`]: source,
+		};
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Tailwind,
+			to: CodemodAdapterId.Pandwind,
+			file,
+			root,
+			readFile: (path) => projectFiles[path],
+			listFiles: () => Object.keys(projectFiles),
+			adapterRegistry: createStyleAdapterRegistry([
+				createTailwindAdapter({ moduleLoader: classicLoader() }),
+				createPandwindAdapter({ moduleLoader: null }),
+			]),
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('tabSize: "4 !important"');
+		expect(result.validations[0]).toMatchObject({ valid: true, lossiness: "lossless" });
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			export const App = () => <div className={css.class({ tabSize: "4 !important" })}/>;"
+		`);
+	});
+
+	test("retains Tailwind's important modifier through the target migration", async () => {
+		const result = await migrate('export const App = () => <div className="tab-4!" />;', files());
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations[0]).toMatchObject({
+			valid: true,
+			lossiness: "lossless",
+			differences: [],
+		});
+		expect(result.code).toContain("!important");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			export const App = () => <div className={css.class({ tabSize: "4 !important" })}/>;"
+		`);
+	});
+
+	test("keeps important utilities as typed residuals for targets without priority support", async () => {
+		const source = 'export const App = () => <div className="tab-4!" />;';
+		const projectFiles: Readonly<Record<string, string>> = files();
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Tailwind,
+			to: CodemodAdapterId.StyleX,
+			file,
+			root,
+			readFile: (path) => projectFiles[path],
+			listFiles: () => Object.keys(projectFiles),
+			adapterRegistry: createStyleAdapterRegistry([
+				createTailwindAdapter({ moduleLoader: loader() }),
+				createStyleXAdapter(),
+			]),
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					text: '<div className="tab-4!" />',
+					hint: expect.stringContaining("important-priority"),
+				}),
+			]),
+		);
+		expect(result.code).toContain(source);
+	});
+
+	test("parses important as declaration priority in compiled Tailwind CSS", () => {
+		expect(parseTailwindCandidateCss(".tab-4\\! { tab-size: 4 !important; }", "tab-4!"))
+			.toMatchInlineSnapshot(`
+			[
+			  {
+			    "conditions": [],
+			    "important": true,
+			    "property": "tabSize",
+			    "value": {
+			      "kind": "literal",
+			      "value": "4",
+			    },
+			  },
+			]
+		`);
+	});
+
 	test("preserves nested arbitrary selectors as selectors instead of pseudo variants", () => {
 		expect(
 			parseTailwindCandidateCss(

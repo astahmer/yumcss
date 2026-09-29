@@ -194,6 +194,11 @@ function validateRule(value: unknown, path: string, issues: StyleProgramIssue[])
 					path: `${path}.declarations[${index}].property`,
 					message: "must be non-empty",
 				});
+			if (declaration.important !== undefined && typeof declaration.important !== "boolean")
+				issues.push({
+					path: `${path}.declarations[${index}].important`,
+					message: "must be a boolean when provided",
+				});
 			if (
 				!isRecord(declaration.value) ||
 				!STYLE_VALUE_KINDS.has(declaration.value.kind as StyleValue["kind"])

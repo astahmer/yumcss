@@ -97,7 +97,7 @@ describe("stylesheet source adapters", () => {
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/5",
+			  "schema": "pandwind.style-program/6",
 			  "source": {
 			    "adapter": "authored-css",
 			    "end": 36,
@@ -232,7 +232,7 @@ describe("stylesheet source adapters", () => {
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/5",
+			  "schema": "pandwind.style-program/6",
 			  "source": undefined,
 			  "sourceMap": [
 			    {
@@ -355,7 +355,7 @@ describe("stylesheet source adapters", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/5",
+			        "schema": "pandwind.style-program/6",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 45,
@@ -416,7 +416,7 @@ describe("stylesheet source adapters", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/5",
+			        "schema": "pandwind.style-program/6",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 23,
@@ -574,7 +574,7 @@ describe("stylesheet source adapters", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/5",
+			        "schema": "pandwind.style-program/6",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 21,
@@ -749,7 +749,7 @@ describe("stylesheet source adapters", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/5",
+			        "schema": "pandwind.style-program/6",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 37,

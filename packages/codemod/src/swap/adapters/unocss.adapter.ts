@@ -997,6 +997,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			version: "1",
 			capabilities: {
 				declarations: "exact",
+				"important-priority": "unsupported",
 				"token-values": "partial",
 				"named-rules": "exact",
 				components: "unsupported",

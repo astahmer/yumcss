@@ -118,6 +118,11 @@ adapters and builders enter through its normalization contract; differential
 proofs record its core version and fingerprint. Portable artifact encoding is
 available to proof/cache tooling, while target emitters remain adapter-owned.
 
+The `/6` program schema represents `!important` as optional declaration
+priority metadata, and the `/3` capability schema adds `important-priority`.
+Target adapters must preserve that priority or report it unsupported. Strict
+validation rejects `/5` portable artifacts; regenerate them from source.
+
 When an adapter needs to construct a rich program rather than parse directly
 into low-level object literals, use `StyleProgramBuilder` from the `swap`
 surface:
@@ -134,7 +139,7 @@ const program = StyleProgramBuilder.create({ source })
 ```
 
 The builder is a construction façade over the existing
-`pandwind.style-program/5` schema. It owns rule ordering, value classification,
+`pandwind.style-program/6` schema. It owns rule ordering, value classification,
 dynamic normalization, metadata, provenance, and residual accumulation; it
 does not own target emission. Keep target syntax in the adapter's `emit`
 implementation, and keep simple literal paths on `SwapIR`.

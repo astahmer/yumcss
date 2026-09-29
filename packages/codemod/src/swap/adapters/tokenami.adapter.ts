@@ -1013,6 +1013,7 @@ export function createTokenamiAdapter(
 			packages: [{ name: "@tokenami/css", kind: AdapterDependencyKindTag.Runtime }],
 		},
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Tokenami, "partial", {
+			"important-priority": "unsupported",
 			"token-values": "exact",
 			"custom-properties": "exact",
 			"named-conditions": "partial",

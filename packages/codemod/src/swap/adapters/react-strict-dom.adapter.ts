@@ -180,6 +180,7 @@ const reactStrictDom = defineCodemodAdapter({
 	],
 	packages: CodemodAdapterKit.dependency(RSD_MODULE, AdapterDependencyKindTag.Runtime),
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.ReactStrictDom, "partial", {
+		"important-priority": "unsupported",
 		"named-conditions": "exact",
 		"named-rules": "exact",
 		"dynamic-values": "partial",

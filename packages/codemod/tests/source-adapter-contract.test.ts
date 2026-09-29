@@ -124,7 +124,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/5",
+			        "schema": "pandwind.style-program/6",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 30,
@@ -185,7 +185,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/5",
+			        "schema": "pandwind.style-program/6",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 52,
@@ -314,7 +314,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/5",
+			        "schema": "pandwind.style-program/6",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 21,

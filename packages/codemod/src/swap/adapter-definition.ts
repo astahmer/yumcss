@@ -32,6 +32,7 @@ export class CodemodAdapterKit {
 			adapter: adapterId,
 			capabilities: {
 				declarations: AdapterCapabilityLevelTag.Exact,
+				"important-priority": AdapterCapabilityLevelTag.Exact,
 				"rule-level": AdapterCapabilityLevelTag.Exact,
 				"global-rules": AdapterCapabilityLevelTag.Exact,
 				keyframes: AdapterCapabilityLevelTag.Exact,

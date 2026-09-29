@@ -600,6 +600,7 @@ export function createMantineAdapter(
 		],
 		packages: CodemodAdapterKit.dependency("@mantine/core", "peer"),
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Mantine, "partial", {
+			"important-priority": "unsupported",
 			"theme-context": "partial",
 			"runtime-context": "partial",
 			"framework-semantics": "partial",

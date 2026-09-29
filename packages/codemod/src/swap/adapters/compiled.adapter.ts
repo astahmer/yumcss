@@ -38,10 +38,19 @@ const serializedObjectText = (node: SerializedObject): string => {
 };
 
 const serializedProgramText = (program: StyleProgram): string => {
-	const serializedValue = (value: StyleProgram["declarations"][number]["value"]): string => {
-		if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
-		if (value.kind === StyleValueKindTag.Token) return JSON.stringify(value.authored);
-		return JSON.stringify(value.value);
+	const serializedValue = (
+		value: StyleProgram["declarations"][number]["value"],
+		important = false,
+	): string => {
+		if (value.kind === StyleValueKindTag.Dynamic)
+			return important ? `(${value.expression}) + " !important"` : value.expression;
+		const resolved =
+			value.kind === StyleValueKindTag.Token
+				? important
+					? (value.resolved ?? value.authored)
+					: value.authored
+				: value.value;
+		return JSON.stringify(important ? `${String(resolved)} !important` : resolved);
 	};
 	const root: SerializedObject = { values: [], children: new Map() };
 	const add = (
@@ -51,7 +60,10 @@ const serializedProgramText = (program: StyleProgram): string => {
 	): void => {
 		const condition = declaration.conditions[index];
 		if (condition === undefined) {
-			node.values.push([declaration.property, serializedValue(declaration.value)]);
+			node.values.push([
+				declaration.property,
+				serializedValue(declaration.value, declaration.important),
+			]);
 			return;
 		}
 		const key = condition.raw ?? condition.value ?? condition.name;

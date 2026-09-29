@@ -1169,6 +1169,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		],
 		packages: CodemodAdapterKit.dependency("@stylexjs/stylex", "peer"),
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
+			"important-priority": "unsupported",
 			"named-conditions": "exact",
 			"named-rules": "exact",
 			"dynamic-values": "partial",

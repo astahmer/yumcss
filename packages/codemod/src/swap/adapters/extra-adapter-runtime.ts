@@ -123,6 +123,7 @@ const capabilities = (
 	version: "1",
 	capabilities: {
 		declarations: "exact",
+		"important-priority": "exact",
 		"rule-level": "partial",
 		"named-conditions": "exact",
 		...(namedRules ? { "named-rules": "exact" as const } : {}),
@@ -146,10 +147,19 @@ const config = (id: string, context: { root?: string; file: string }): AdapterPr
 	values: {},
 });
 
-const valueText = (value: StyleProgram["declarations"][number]["value"]): string => {
-	if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
-	if (value.kind === StyleValueKindTag.Token) return JSON.stringify(value.authored);
-	return JSON.stringify(value.value);
+const valueText = (
+	value: StyleProgram["declarations"][number]["value"],
+	important = false,
+): string => {
+	if (value.kind === StyleValueKindTag.Dynamic)
+		return important ? `(${value.expression}) + " !important"` : value.expression;
+	const resolved =
+		value.kind === StyleValueKindTag.Token
+			? important
+				? (value.resolved ?? value.authored)
+				: value.authored
+			: value.value;
+	return JSON.stringify(important ? `${String(resolved)} !important` : resolved);
 };
 
 const objectConditionKey = (
@@ -221,7 +231,10 @@ const objectText = (program: StyleProgram): string => {
 			const current = work.pop()!;
 			const condition = declaration.conditions[current.index];
 			if (condition === undefined) {
-				current.node.values.push([declaration.property, valueText(declaration.value)]);
+				current.node.values.push([
+					declaration.property,
+					valueText(declaration.value, declaration.important),
+				]);
 				continue;
 			}
 			const key = objectConditionKey(condition);

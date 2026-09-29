@@ -505,7 +505,7 @@ const program = StyleProgramBuilder.create({ source })
 ```
 
 The builder is a build-time construction façade over the existing
-`pandwind.style-program/5` value. It centralizes deterministic rule ordering,
+`pandwind.style-program/6` value. It centralizes deterministic rule ordering,
 value classification, dynamic normalization, program metadata, provenance,
 and residual accumulation, then delegates final normalization to the same
 semantic factory used by existing adapters. `StyleProgramBuilder.from()` can
