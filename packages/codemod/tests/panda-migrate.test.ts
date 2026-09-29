@@ -548,28 +548,36 @@ describe("runPandaMigration", () => {
 		});
 
 		expect(report.filesScanned).toBeGreaterThanOrEqual(2);
-		expect(report.cssCallsConverted).toBeGreaterThanOrEqual(1);
+		expect(report.cssCallsConverted).toBe(0);
+		expect(report.cssCallsFlagged).toBe(1);
+		expect(report.tier1Modules).not.toContain("badgeRecipe");
+		expect(report.residualsByKind["unknown-value"]).toBeGreaterThanOrEqual(1);
 
 		const app = readFileSync(join(dir, "src", "app.tsx"), "utf8");
-		expect(app).toContain("@/pandwind/css");
-		expect(app).toContain("@/pandwind/recipes");
-		expect(app).not.toContain("styled-system");
-		expect(app).toContain('className={css.class({ "paddingInline": "4", "paddingBlock": "2" })}');
-		expect(app).toContain("</div>");
-		// The fixture only declares the custom `fg` token, so the unknown Panda
-		// default path remains an authored dotted value until target metadata
-		// proves a matching Pandwind token.
-		expect(app).toContain('css.class({ backgroundColor: "gray.100"');
-
-		// recipe module emitted with identical public name
-		const barrel = readFileSync(join(dir, "src", "pandwind", "recipes", "index.ts"), "utf8");
-		expect(barrel).toContain("badgeRecipe");
-		const badgeModule = readFileSync(
-			join(dir, "src", "pandwind", "recipes", "badgeRecipe.ts"),
-			"utf8",
+		expect(app).toContain('import { css as pandwindCss } from "@/pandwind/css";');
+		expect(app).toContain("@/styled-system/css");
+		expect(app).toContain("@/styled-system/recipes");
+		expect(app).toContain(
+			'className={pandwindCss.class({ "paddingInline": "4", "paddingBlock": "2" })}',
 		);
-		expect(badgeModule).toContain('"tone"');
-		expect(badgeModule).toContain("export const badge = Object.assign");
+		expect(app).toContain("</div>");
+		expect(app).toContain("css({ bg: 'gray.100', _hover: { bg: 'white', }, })");
+		expect(app).toContain("pandwind:migrate-skip");
+		expect(app).toMatchInlineSnapshot(`
+			"import { css as pandwindCss } from "@/pandwind/css";
+			import { css } from '@/styled-system/css'
+			// pandwind:migrate-skip (Panda recipe import includes a recipe with unresolved style semantics)
+			import { badge } from '@/styled-system/recipes'
+
+			export const App = () => (
+			  <div className={pandwindCss.class({ "paddingInline": "4", "paddingBlock": "2" })}>
+			    <span className={badge({ tone: 'accent' })} />
+			    {/* pandwind:migrate-skip (token "gray.100" is not in the ingested panda theme; add it to the Pandwind preset before migration) */}
+			    <div className={css({ bg: 'gray.100', _hover: { bg: 'white', }, })}>hi</div>
+			  </div>
+			);
+			"
+		`);
 
 		// bootstrap owns the configured css binding
 		const bootstrap = readFileSync(join(dir, "src", "pandwind", "css.ts"), "utf8");
@@ -703,13 +711,11 @@ describe("runPandaMigration", () => {
 
 	it("does not duplicate residual markers on reruns", async () => {
 		const dir = makeProject();
-		writeFileSync(
-			join(dir, "src", "residual.ts"),
-			[
-				"import { css } from '@/styled-system/css'",
-				"export const styles = css({ '& > *': { mt: '2' } })",
-			].join("\n"),
-		);
+		const input = [
+			"import { css } from '@/styled-system/css'",
+			"export const styles = css({ color: 'auditUnknown.400' })",
+		].join("\n");
+		writeFileSync(join(dir, "src", "residual.ts"), input);
 		const migration = {
 			projectRoot: dir,
 			patterns: ["src/**/*.ts"],
@@ -725,6 +731,233 @@ describe("runPandaMigration", () => {
 		const twice = readFileSync(join(dir, "src", "residual.ts"), "utf8");
 		expect(twice).toBe(once);
 		expect(report.filesChanged).toBe(0);
+		expect(once).toContain("import { css } from '@/styled-system/css'");
+		expect(once).toContain("css({ color: 'auditUnknown.400' })");
+		expect(once).not.toContain("from '@/pandwind/css'");
+		expect(once).toContain("pandwind:migrate-skip");
+		expect(report.notes).not.toContain(
+			"kept Panda codegen scripts because residual Panda source still uses its generated system",
+		);
+		expect(once).toMatchInlineSnapshot(`
+			"import { css } from '@/styled-system/css'
+			// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
+			export const styles = css({ color: 'auditUnknown.400' })"
+		`);
+	});
+
+	it("converts resolvable Panda styles beside an unresolved token without rebinding Panda css", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "src", "mixed.ts"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"export const known = css({ color: 'rebeccapurple' })",
+				"export const unknown = css({ color: 'auditUnknown.400' })",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.ts"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const output = readFileSync(join(dir, "src", "mixed.ts"), "utf8");
+		expect(report.cssCallsConverted).toBe(1);
+		expect(report.cssCallsFlagged).toBe(1);
+		expect(output).toContain("import { css } from '@/styled-system/css'");
+		expect(output).toContain('import { css as pandwindCss } from "@/pandwind/css";');
+		expect(output).toContain('pandwindCss.class({ color: "rebeccapurple" })');
+		expect(output).toContain("css({ color: 'auditUnknown.400' })");
+		expect(output).toMatchInlineSnapshot(`
+			"import { css as pandwindCss } from "@/pandwind/css";
+			import { css } from '@/styled-system/css'
+			export const known = pandwindCss.class({ color: "rebeccapurple" })
+			// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
+			export const unknown = css({ color: 'auditUnknown.400' })"
+		`);
+	});
+
+	it("migrates aliased Panda css imports through their local binding", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "src", "aliased.ts"),
+			[
+				"import { css as pandaCss } from '@/styled-system/css'",
+				"export const styles = pandaCss({ color: 'rebeccapurple' })",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.ts"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const output = readFileSync(join(dir, "src", "aliased.ts"), "utf8");
+		expect(report.cssCallsConverted).toBe(1);
+		expect(report.cssCallsFlagged).toBe(0);
+		expect(output).toContain("import { css as pandaCss } from '@/pandwind/css'");
+		expect(output).toContain('pandaCss.class({ color: "rebeccapurple" })');
+		expect(output).not.toContain("pandwind:migrate-skip");
+		expect(output).toMatchInlineSnapshot(`
+			"import { css as pandaCss } from '@/pandwind/css';
+			export const styles = pandaCss.class({ color: "rebeccapurple" })"
+		`);
+	});
+
+	it("preserves dynamic Panda css calls and required generated-system scripts", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "package.json"),
+			JSON.stringify({
+				scripts: { prepare: "panda codegen", prebuild: "pnpm build && panda codegen" },
+			}),
+		);
+		writeFileSync(
+			join(dir, "src", "dynamic.ts"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"declare const runtimeStyle: Record<string, string>",
+				"export const styles = css(runtimeStyle)",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.ts"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const output = readFileSync(join(dir, "src", "dynamic.ts"), "utf8");
+		const packageJson = JSON.parse(readFileSync(join(dir, "package.json"), "utf8")) as {
+			scripts: Record<string, string>;
+		};
+		expect(report.cssCallsConverted).toBe(0);
+		expect(report.cssCallsFlagged).toBe(1);
+		expect(report.residualsByKind.dynamic).toBe(1);
+		expect(output).toContain("import { css } from '@/styled-system/css'");
+		expect(output).toContain("css(runtimeStyle)");
+		expect(output).toContain("pandwind:migrate-skip");
+		expect(packageJson.scripts).toEqual({
+			prepare: "panda codegen",
+			prebuild: "pnpm build && panda codegen",
+		});
+		expect(report.notes).toContain(
+			"kept Panda codegen scripts because residual Panda source still uses its generated system",
+		);
+		expect(output).toMatchInlineSnapshot(`
+			"import { css } from '@/styled-system/css'
+			declare const runtimeStyle: Record<string, string>
+			// pandwind:migrate-skip (non-literal Panda css() call)
+			export const styles = css(runtimeStyle)"
+		`);
+	});
+
+	it("leaves unrelated css imports alone when lowering Panda factories", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "src", "unrelated-css.tsx"),
+			[
+				"import { css } from '@emotion/css'",
+				"export const styles = css({ color: 'rebeccapurple' })",
+				'export const App = () => <panda.div px="4" />',
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.tsx"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const output = readFileSync(join(dir, "src", "unrelated-css.tsx"), "utf8");
+		expect(report.cssCallsConverted).toBe(0);
+		expect(report.cssCallsFlagged).toBe(0);
+		expect(report.factoryElementsConverted).toBe(1);
+		expect(output).toContain("import { css } from '@emotion/css'");
+		expect(output).toContain("css({ color: 'rebeccapurple' })");
+		expect(output).toContain('import { css as pandwindCss } from "@/pandwind/css";');
+		expect(output).toContain('className={pandwindCss.class({ "paddingInline": "4" })}');
+		expect(output).toMatchInlineSnapshot(`
+			"import { css as pandwindCss } from "@/pandwind/css";
+			import { css } from '@emotion/css'
+			export const styles = css({ color: 'rebeccapurple' })
+			export const App = () => <div className={pandwindCss.class({ "paddingInline": "4" })}/>"
+		`);
+	});
+
+	it("preserves Panda factory props when a token is absent from verified theme metadata", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "src", "factory.tsx"),
+			'export const App = () => <panda.div color="auditUnknown.400" px="4" />;',
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.tsx"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const output = readFileSync(join(dir, "src", "factory.tsx"), "utf8");
+		expect(report.factoryElementsConverted).toBe(0);
+		expect(report.factoryElementsFlagged).toBe(1);
+		expect(output).toContain('<panda.div color="auditUnknown.400" px="4" />');
+		expect(output).not.toContain("css.class");
+		expect(output).toContain("pandwind:migrate-skip");
+		expect(output).toMatchInlineSnapshot(`
+			"// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
+			export const App = () => <panda.div color="auditUnknown.400" px="4" />;"
+		`);
+	});
+
+	it("preserves local recipes whose nested styles contain unresolved tokens", async () => {
+		const dir = makeProject();
+		const input = [
+			"import { cva } from '@/styled-system/css'",
+			"const button = cva({ base: { color: 'auditUnknown.400' }, variants: { tone: { quiet: { color: 'rebeccapurple' } } } })",
+			"export const buttonClass = button({ tone: 'quiet' })",
+		].join("\n");
+		writeFileSync(join(dir, "src", "button.ts"), input);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.ts"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const output = readFileSync(join(dir, "src", "button.ts"), "utf8");
+		expect(report.tier0Folded).not.toContain("button");
+		expect(report.tier1Modules).not.toContain("button");
+		expect(output).toContain("import { cva } from '@/styled-system/css'");
+		expect(output).toContain("const button = cva({ base: { color: 'auditUnknown.400' }");
+		expect(output).toContain("button({ tone: 'quiet' })");
+		expect(output).toContain("pandwind:migrate-skip");
+		expect(output).toMatchInlineSnapshot(`
+			"import { cva } from '@/styled-system/css'
+			// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
+			const button = cva({ base: { color: 'auditUnknown.400' }, variants: { tone: { quiet: { color: 'rebeccapurple' } } } })
+			export const buttonClass = button({ tone: 'quiet' })"
+		`);
 	});
 
 	it("is idempotent on an already-migrated project", async () => {

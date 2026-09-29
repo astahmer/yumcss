@@ -1,4 +1,3 @@
-import { SwapResidualKindTag } from "../../semantic-ir.ts";
 /**
  * Panda project migration orchestrator.
  *
@@ -122,6 +121,16 @@ function irToText(
 const cssImportFor = (depth: number): string =>
 	depth <= 0 ? "./css" : `${"../".repeat(depth)}css`;
 
+const uniquePandaCssBinding = (source: string): string => {
+	let binding = "pandwindCss";
+	let suffix = 2;
+	while (source.includes(binding)) binding = `pandwindCss${suffix++}`;
+	return binding;
+};
+
+const pandaCssCallText = (text: string, binding: string): string =>
+	binding === "css" ? text : text.replace(/^css(?=\.class\b)/u, binding);
+
 /** Register the generated extractor in host frameworks that need a plugin. */
 function integrateNextApp(
 	projectRoot: string,
@@ -149,6 +158,7 @@ function removePandaCodegenScripts(
 	write: boolean,
 	notes: string[],
 	fileSystem: PandaProjectFileSystem,
+	preservePandaSource: boolean,
 ): void {
 	const packagePath = join(projectRoot, "package.json");
 	const packageSource = fileSystem.read(packagePath);
@@ -162,6 +172,17 @@ function removePandaCodegenScripts(
 		return;
 	}
 	if (packageJson.scripts === undefined) return;
+	const hasPandaCodegenScript = Object.values(packageJson.scripts).some((command) =>
+		/\bpanda\s+codegen\b/.test(command),
+	);
+	if (preservePandaSource) {
+		if (hasPandaCodegenScript) {
+			notes.push(
+				"kept Panda codegen scripts because residual Panda source still uses its generated system",
+			);
+		}
+		return;
+	}
 
 	let changed = false;
 	for (const [name, command] of Object.entries(packageJson.scripts)) {
@@ -442,6 +463,55 @@ function findCallSites(
 	return sites;
 }
 
+const pandaCssBindingsFromSource = (
+	source: string,
+	excluded: (start: number) => boolean,
+): Array<string> => {
+	const bindings = new Set<string>();
+	const imports = /import\s*\{([^}]*)\}\s*from\s*(["'])([^"']*styled-system\/css)\2\s*;?/gu;
+	for (const match of source.matchAll(imports)) {
+		const start = match.index ?? 0;
+		const moduleOffset = start + match[0]!.lastIndexOf(match[3]!);
+		if (excluded(moduleOffset) && !isActualImportSpecifier(source, moduleOffset)) continue;
+		for (const rawSpecifier of match[1]!.split(",")) {
+			const [imported, local = imported] = rawSpecifier.trim().split(/\s+as\s+/u);
+			if (imported !== "css" || local === undefined || !/^[A-Za-z_$][\w$]*$/u.test(local)) continue;
+			bindings.add(local);
+		}
+	}
+	if (bindings.size === 0 && !hasCssBinding(source, "css", excluded)) {
+		const globalCssCalls = /(?<![\w.])css\s*\(/gu;
+		if ([...source.matchAll(globalCssCalls)].some((match) => !excluded(match.index ?? -1))) {
+			bindings.add("css");
+		}
+	}
+	return [...bindings];
+};
+
+const escapePandaBinding = (binding: string): string =>
+	binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const unparsedPandaCssCallStarts = (
+	source: string,
+	bindings: readonly string[],
+	excluded: (start: number) => boolean,
+	parsedStarts: ReadonlySet<number>,
+): Array<number> => {
+	const starts = new Set<number>();
+	for (const binding of bindings) {
+		const calls = new RegExp(`(?<![\\w.])${escapePandaBinding(binding)}\\s*\\(`, "gu");
+		for (const match of source.matchAll(calls)) {
+			const start = match.index ?? -1;
+			if (start < 0 || excluded(start) || parsedStarts.has(start)) continue;
+			let argumentStart = start + match[0]!.length;
+			while (/\s/u.test(source[argumentStart] ?? "")) argumentStart++;
+			if (source[argumentStart] === "{") continue;
+			starts.add(start);
+		}
+	}
+	return [...starts].toSorted((left, right) => left - right);
+};
+
 /* ------------------------------------------------------------------ */
 /* <panda.x> JSX scanning + rewriting                                  */
 /* ------------------------------------------------------------------ */
@@ -685,6 +755,7 @@ export function factoryEdits(
 	meta: PandwindMeta,
 	theme: PandaTheme,
 	tokenReferenceFormat?: TokenReferenceFormatValue,
+	cssBinding = "css",
 ): Array<{ start: number; end: number; text: string }> | null {
 	const kept: Array<string> = [];
 	const styleEntries: Array<[string, unknown]> = [];
@@ -732,8 +803,9 @@ export function factoryEdits(
 	const styleObj: Record<string, unknown> = {};
 	for (const [k, v] of styleEntries) styleObj[theme.utilityCatalog.resolveProperty(k) ?? k] = v;
 	const ir = convertPandaStyle(styleObj, theme, tokenReferenceFormat);
+	if (ir.residuals.length > 0) return null;
 	const text = irToText(ir, meta, tokenReferenceFormat);
-	if (text === "") return null;
+	if (text === "" && Object.keys(styleObj).length > 0) return null;
 
 	const normalizedStyle = normalizePandaStyleObject(
 		Object.fromEntries(styleEntries),
@@ -745,8 +817,10 @@ export function factoryEdits(
 			.join(", ")} }`,
 	];
 	const classExpr = existingClassExpr
-		? `css.props(css.class(${classCallArgs}), ${existingClassExpr}).className`
-		: `css.class(${classCallArgs})`;
+		? `${cssBinding}.props(${cssBinding}.class(${classCallArgs}), ${existingClassExpr}).className`
+		: Object.keys(styleObj).length === 0
+			? (existingClassExpr ?? "")
+			: `${cssBinding}.class(${classCallArgs})`;
 
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	// strip every non-DOM attribute span inside the opening tag
@@ -759,12 +833,14 @@ export function factoryEdits(
 	// <panda.x -> <x
 	edits.push({ start: el.start, end: el.start + "<panda.".length, text: "<" });
 	// inject className just before `>` / `/>`
-	const injectAt = styleAttributeStart ?? (el.selfClosing ? el.openEnd - 2 : el.openEnd - 1);
-	edits.push({
-		start: injectAt,
-		end: injectAt,
-		text: `${openingAttributePrefix(source, injectAt, edits)}className={${classExpr}}`,
-	});
+	if (classExpr !== "") {
+		const injectAt = styleAttributeStart ?? (el.selfClosing ? el.openEnd - 2 : el.openEnd - 1);
+		edits.push({
+			start: injectAt,
+			end: injectAt,
+			text: `${openingAttributePrefix(source, injectAt, edits)}className={${classExpr}}`,
+		});
+	}
 	void kept;
 	return edits;
 }
@@ -877,6 +953,7 @@ const staticJsxComponentEdits = (
 	tokenReferenceFormat: TokenReferenceFormatValue | undefined,
 	component: string,
 	localTag: string,
+	cssBinding = "css",
 ): Array<{ start: number; end: number; text: string }> | null => {
 	const isStack = STACK_JSX_COMPONENTS[component] !== undefined || component === "Stack";
 	const targetTag = isStack ? localTag : NATIVE_JSX_COMPONENT_TAGS[component];
@@ -936,8 +1013,7 @@ const staticJsxComponentEdits = (
 		styleObject[theme.utilityCatalog.resolveProperty(key) ?? key] = value;
 	}
 	const ir = convertPandaStyle(styleObject, theme, tokenReferenceFormat);
-	if (ir.residuals.some((residual) => residual.kind === SwapResidualKindTag.Unrepresentable))
-		return null;
+	if (ir.residuals.length > 0) return null;
 	if (Object.keys(styleObject).length === 0) {
 		if (
 			targetFromAs === undefined &&
@@ -965,8 +1041,8 @@ const staticJsxComponentEdits = (
 			.map(([key, value]) => `${JSON.stringify(key)}: ${renderStyleValue(value)}`)
 			.join(", ")} }`;
 		const classExpression = existingClassExpr
-			? `css.props(css.class(${styleText}), ${existingClassExpr}).className`
-			: `css.class(${styleText})`;
+			? `${cssBinding}.props(${cssBinding}.class(${styleText}), ${existingClassExpr}).className`
+			: `${cssBinding}.class(${styleText})`;
 		injectedAttributes.push(`className={${classExpression}}`);
 	}
 	const direction = stackDirectionAttribute(component, element.attrs);
@@ -1152,6 +1228,35 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		list.push(edit);
 		fileExtras.set(path, list);
 	};
+	const preservePandaCssFiles = new Set<string>();
+	const residualPandaRecipeNames = new Set<string>();
+	let hasPandaSourceResidual = false;
+	const markSourceResidual = (file: FileEntry, index: number, hint: string): void => {
+		const edits = fileExtras.get(file.path) ?? [];
+		applyMarker(edits, file.path, file.source, index, hint, skipMarker);
+		fileExtras.set(file.path, edits);
+	};
+	const recipeResiduals = (recipe: NonNullable<ReturnType<typeof convertPandaRecipe>>) => {
+		const nested = [
+			...Object.values(recipe.base).flatMap((style) => style.residuals),
+			...Object.values(recipe.variants).flatMap((values) =>
+				Object.values(values).flatMap((slots) =>
+					Object.values(slots).flatMap((style) => style.residuals),
+				),
+			),
+			...recipe.compoundVariants.flatMap((compound) =>
+				Object.values(compound.slots).flatMap((style) => style.residuals),
+			),
+		];
+		return [
+			...new Map(
+				[...recipe.residuals, ...nested].map((residual) => [
+					`${residual.kind}:${residual.text}:${residual.hint}`,
+					residual,
+				]),
+			).values(),
+		];
+	};
 
 	const parseDefIr = (
 		def: RecipeDef,
@@ -1166,7 +1271,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		}
 		const ir = convertPandaRecipe(bodyText, def.kind, theme, tokenReferenceFormat);
 		if (ir === null) return null;
-		for (const residual of ir.residuals) countResidual(report, residual.kind);
+		for (const residual of recipeResiduals(ir)) countResidual(report, residual.kind);
 		return ir;
 	};
 
@@ -1211,6 +1316,25 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		const ir = parseDefIr(def);
 		if (ir === null) {
 			report.notes.push(`definition '${def.name}' is non-literal — flagged at call sites`);
+			residualPandaRecipeNames.add(def.name);
+			countResidual(report, "dynamic");
+			hasPandaSourceResidual = true;
+			markSourceResidual(def.file, def.start, "non-literal Panda recipe definition");
+			continue;
+		}
+		const residuals = recipeResiduals(ir);
+		if (residuals.length > 0) {
+			residualPandaRecipeNames.add(def.name);
+			if (ir.className !== null) residualPandaRecipeNames.add(ir.className);
+			hasPandaSourceResidual = true;
+			report.notes.push(
+				`definition '${def.name}' retained because its style semantics are unresolved`,
+			);
+			markSourceResidual(
+				def.file,
+				def.start,
+				residuals[0]?.hint ?? "unresolved Panda recipe semantics",
+			);
 			continue;
 		}
 		const representable =
@@ -1227,6 +1351,24 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		const ir = parseDefIr(def);
 		if (ir === null) {
 			report.notes.push(`definition '${def.name}' is non-literal — flagged at call sites`);
+			preservePandaCssFiles.add(def.file.path);
+			countResidual(report, "dynamic");
+			hasPandaSourceResidual = true;
+			markSourceResidual(def.file, def.start, "non-literal Panda recipe definition");
+			continue;
+		}
+		const residuals = recipeResiduals(ir);
+		if (residuals.length > 0) {
+			preservePandaCssFiles.add(def.file.path);
+			hasPandaSourceResidual = true;
+			report.notes.push(
+				`definition '${def.name}' retained because its style semantics are unresolved`,
+			);
+			markSourceResidual(
+				def.file,
+				def.start,
+				residuals[0]?.hint ?? "unresolved Panda recipe semantics",
+			);
 			continue;
 		}
 		// Inline declarations are file-local in Panda apps. Restrict lookup to
@@ -1380,28 +1522,43 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		];
 		const mask = SourcePass.computeExcludedRanges(file.source, file.path);
 		const masked = (start: number): boolean => mask.isExcluded(start);
+		const cssBindings = pandaCssBindingsFromSource(file.source, masked);
 		const jsxImports = importedJsxComponents(file.source);
 		const jsxComponentsByLocal = new Map(
 			jsxImports.map((component) => [component.local, component.imported]),
 		);
 		const unsupportedJsxComponents = new Set<string>();
-
-		// css({...}) -> css.class({...}) / marker
-		for (const call of parsePandaCalls(file.source, masked, {
+		const pandaCalls = parsePandaCalls(file.source, masked, {
 			theme,
 			tokenReferenceFormat,
-		})) {
+			cssBindings,
+		});
+		const cssCalls = pandaCalls.filter(
+			(call) => call.kind === PandaCallKindTag.Css && call.ir !== undefined,
+		);
+		const dynamicCssCallStarts = unparsedPandaCssCallStarts(
+			file.source,
+			cssBindings,
+			masked,
+			new Set(cssCalls.map((call) => call.start)),
+		);
+		const hasResidualCssCall =
+			cssCalls.some((call) => call.ir!.residuals.length > 0) || dynamicCssCallStarts.length > 0;
+		const preservePandaCss = preservePandaCssFiles.has(file.path) || hasResidualCssCall;
+		if (hasResidualCssCall) preservePandaCssFiles.add(file.path);
+		const cssBinding = preservePandaCss
+			? uniquePandaCssBinding(file.source)
+			: (cssBindings[0] ??
+				(hasCssBinding(file.source, "css", masked) ? uniquePandaCssBinding(file.source) : "css"));
+		if (preservePandaCss) hasPandaSourceResidual = true;
+
+		// css({...}) -> css.class({...}) / marker
+		for (const call of pandaCalls) {
 			if (call.kind !== PandaCallKindTag.Css || call.ir === undefined) continue;
-			const text = irToText(call.ir, meta, tokenReferenceFormat);
 			for (const residual of call.ir.residuals) countResidual(report, residual.kind);
-			const hasUnrepresentable = call.ir.residuals.some(
-				(residual) => residual.kind === SwapResidualKindTag.Unrepresentable,
-			);
-			if (hasUnrepresentable) {
-				// Never emit a partial style object: dropping a nested selector or
-				// spread silently changes the page. Preserving the original call is
-				// the lossless fallback.
+			if (call.ir.residuals.length > 0) {
 				report.cssCallsFlagged++;
+				hasPandaSourceResidual = true;
 				applyMarker(
 					edits,
 					file.path,
@@ -1412,60 +1569,25 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				);
 				continue;
 			}
-			if (text !== "") {
-				if (call.ir.residuals.length > 0) {
-					applyMarker(
-						edits,
-						file.path,
-						file.source,
-						call.start,
-						call.ir.residuals[0]!.hint ?? call.ir.residuals[0]!.kind,
-						skipMarker,
-					);
-				}
-				let end = call.end;
-				const tail = /^\s*\)/.exec(file.source.slice(end));
-				if (tail !== null) end += tail[0].length;
-				edits.push({ start: call.start, end, text });
-				report.cssCallsConverted++;
-			} else {
-				const residual = call.ir.residuals[0];
-				report.cssCallsFlagged++;
-				if (residual !== undefined) countResidual(report, residual.kind);
-				edits.push({
-					start: 0,
-					end: 0,
-					text: "",
-				});
-				applyMarker(
-					edits,
-					file.path,
-					file.source,
-					call.start,
-					residual?.hint ?? "non-literal css()",
-					skipMarker,
-				);
-			}
+			const sourceBinding =
+				cssBindings.find((binding) => file.source.startsWith(binding, call.start)) ?? "css";
+			const targetBinding = preservePandaCss ? cssBinding : sourceBinding;
+			const text = pandaCssCallText(irToText(call.ir, meta, tokenReferenceFormat), targetBinding);
+			let end = call.end;
+			const tail = /^\s*\)/.exec(file.source.slice(end));
+			if (tail !== null) end += tail[0].length;
+			edits.push({ start: call.start, end, text: text || '""' });
+			report.cssCallsConverted++;
+		}
+		for (const start of dynamicCssCallStarts) {
+			report.cssCallsFlagged++;
+			countResidual(report, "dynamic");
+			hasPandaSourceResidual = true;
+			applyMarker(edits, file.path, file.source, start, "non-literal Panda css() call", skipMarker);
 		}
 
 		// <panda.x …>
 		for (const el of scanFactoryElements(file.source, masked)) {
-			const elEdits = factoryEdits(el, file.source, meta, theme, tokenReferenceFormat);
-			if (elEdits === null) {
-				report.factoryElementsFlagged++;
-				countResidual(report, "dynamic");
-				applyMarker(
-					edits,
-					file.path,
-					file.source,
-					el.start,
-					"non-literal factory props",
-					skipMarker,
-				);
-				continue;
-			}
-			edits.push(...elEdits);
-			report.factoryElementsConverted++;
 			const factoryIr = convertPandaStyle(
 				Object.fromEntries(
 					el.attrs
@@ -1478,6 +1600,24 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				theme,
 				tokenReferenceFormat,
 			);
+			const elEdits = factoryEdits(el, file.source, meta, theme, tokenReferenceFormat, cssBinding);
+			if (elEdits === null) {
+				report.factoryElementsFlagged++;
+				if (factoryIr.residuals.length === 0) countResidual(report, "dynamic");
+				for (const residual of factoryIr.residuals) countResidual(report, residual.kind);
+				hasPandaSourceResidual = true;
+				applyMarker(
+					edits,
+					file.path,
+					file.source,
+					el.start,
+					factoryIr.residuals[0]?.hint ?? "non-literal factory props",
+					skipMarker,
+				);
+				continue;
+			}
+			edits.push(...elEdits);
+			report.factoryElementsConverted++;
 			for (const residual of factoryIr.residuals) countResidual(report, residual.kind);
 			// rename the matching </panda.x> closer too (nesting-aware)
 			{
@@ -1518,11 +1658,13 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				tokenReferenceFormat,
 				component,
 				el.tag,
+				cssBinding,
 			);
 			if (componentEdits === null) {
 				unsupportedJsxComponents.add(el.tag);
 				report.factoryElementsFlagged++;
 				countResidual(report, "dynamic");
+				hasPandaSourceResidual = true;
 				applyMarker(
 					edits,
 					file.path,
@@ -1554,6 +1696,22 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				// Documentation/code samples inside strings are not imports in the
 				// host program and must remain faithful to the original Panda API.
 				if (masked(startAt) && !isActualImportSpecifier(file.source, startAt)) continue;
+				if (preservePandaCss && m[0]!.endsWith("styled-system/css")) continue;
+				if (
+					m[0]!.endsWith("styled-system/recipes") &&
+					importsResidualPandaRecipe(file.source, startAt, residualPandaRecipeNames)
+				) {
+					hasPandaSourceResidual = true;
+					applyMarker(
+						edits,
+						file.path,
+						file.source,
+						startAt,
+						"Panda recipe import includes a recipe with unresolved style semantics",
+						skipMarker,
+					);
+					continue;
+				}
 				edits.push({ start: startAt, end: startAt + m[0].length, text: replacement });
 			}
 		}
@@ -1561,11 +1719,14 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 		if (edits.length === 0) continue;
 		let next = rewritePandaSource(file.source, edits);
-		// Files may use the global panda `css()` binding without importing it
-		// directly (for example via the JSX factory). Ensure every converted
-		// call has a real migrated binding.
-		if (/\bcss\.class\s*\(/.test(next) && !hasCssBinding(next)) {
-			const importText = `import { css } from "${aliasSpecifier(aliasInfo, outDirName, "css")}";\n`;
+		const targetCssCall = new RegExp(`\\b${escapePandaBinding(cssBinding)}\\.class\\s*\\(`, "u");
+		const nextMask = SourcePass.computeExcludedRanges(next, file.path);
+		if (
+			targetCssCall.test(next) &&
+			!hasCssBinding(next, cssBinding, (start) => nextMask.isExcluded(start))
+		) {
+			const importedBinding = cssBinding === "css" ? "css" : `css as ${cssBinding}`;
+			const importText = `import { ${importedBinding} } from "${aliasSpecifier(aliasInfo, outDirName, "css")}";\n`;
 			const insertion = importInsertionOffset(next);
 			next = next.slice(0, insertion) + importText + next.slice(insertion);
 		}
@@ -1593,7 +1754,13 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	// stylesheet. Next/Webpack is common enough to wire automatically, while
 	// keeping the integration local to projects that actually have Next config.
 	integrateNextApp(projectRoot, outDir, options.write, report.notes, fileSystem);
-	removePandaCodegenScripts(projectRoot, options.write, report.notes, fileSystem);
+	removePandaCodegenScripts(
+		projectRoot,
+		options.write,
+		report.notes,
+		fileSystem,
+		hasPandaSourceResidual,
+	);
 
 	return report;
 }
@@ -1609,11 +1776,42 @@ function isActualImportSpecifier(source: string, offset: number): boolean {
 	return !inTemplate;
 }
 
-function hasCssBinding(source: string): boolean {
-	return (
-		/import\s*\{[^}]*\bcss(?:\s+as\s+\w+)?\b[^}]*\}\s*from\s*["'][^"']+["']/.test(source) ||
-		/(?:const|let|var|function)\s+css\b/.test(source)
+const importsResidualPandaRecipe = (
+	source: string,
+	offset: number,
+	residualNames: ReadonlySet<string>,
+): boolean => {
+	if (residualNames.size === 0) return false;
+	const importStart = source.lastIndexOf("import", offset);
+	if (importStart < 0) return false;
+	const prefix = source.slice(importStart, offset);
+	const match = /^import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*["']\s*$/su.exec(prefix);
+	if (match === null) return false;
+	if (match[0].includes("/*") || match[0].includes("//") || /\btype\b/u.test(match[1]!))
+		return true;
+	return match[1]!
+		.split(",")
+		.some((specifier) => residualNames.has(specifier.trim().split(/\s+as\s+/u)[0]!));
+};
+
+function hasCssBinding(
+	source: string,
+	binding = "css",
+	excluded: (start: number) => boolean = () => false,
+): boolean {
+	const importedSpecifier =
+		binding === "css"
+			? "\\bcss(?:\\s+as\\s+css)?\\s*(?=,|\\})"
+			: `\\bcss\\s+as\\s+${escapePandaBinding(binding)}\\s*(?=,|\\})`;
+	const importPattern = new RegExp(
+		`import\\s*\\{[^}]*${importedSpecifier}[^}]*\\}\\s*from\\s*["'][^"']+["']`,
+		"gu",
 	);
+	if ([...source.matchAll(importPattern)].some((match) => !excluded(match.index ?? -1)))
+		return true;
+	if (binding !== "css") return false;
+	const declarationPattern = /(?:const|let|var|function|class)\s+css\b/gu;
+	return [...source.matchAll(declarationPattern)].some((match) => !excluded(match.index ?? -1));
 }
 
 function removeUnusedVariantImports(source: string, cssImportPath: string): string {

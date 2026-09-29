@@ -158,7 +158,7 @@ export function normalizePandaStyleObject(
  * Token-reference candidate: dotted path like `fg.muted` / `neutral.700`
  * (letters/digits segments only — excludes rgba(), lengths, keyword lists).
  */
-const TOKEN_PATH_RE = /^[a-zA-Z][\w-]*(?:\.[a-zA-Z][\w-]*)+$/;
+const TOKEN_PATH_RE = /^[a-zA-Z][\w-]*(?:\.[a-zA-Z0-9][\w-]*)+$/;
 
 // Simple Panda values are ambiguous across token groups (`sm` is a font size,
 // radius, spacing value, etc.). Only turn them into token references when the
@@ -649,6 +649,7 @@ export interface PandaCall {
 const PANDA_CSS_CALL_RE = /(?<![\w.])css\s*\(\s*\{/g;
 const PANDA_CVA_CALL_RE = /(?<![\w.])(?:cva|defineRecipe)\s*\(\s*\{/g;
 const PANDA_SVA_CALL_RE = /(?<![\w.])(?:sva|defineSlotRecipe)\s*\(\s*\{/g;
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Recipe-shaped placeholder carrying a single dynamic residual. */
 function dynamicRecipe(kind: "cva" | "sva"): PandaRecipeIR {
@@ -697,42 +698,56 @@ function scanCalls(
 export function parsePandaCalls(
 	source: string,
 	excluded: (start: number) => boolean,
-	options: { theme?: PandaTheme; tokenReferenceFormat?: TokenReferenceFormatValue } = {},
+	options: {
+		theme?: PandaTheme;
+		tokenReferenceFormat?: TokenReferenceFormatValue;
+		cssBindings?: readonly string[];
+	} = {},
 ): Array<PandaCall> {
 	const theme = options.theme ?? emptyPandaTheme;
 	const format = options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
 	const calls: PandaCall[] = [];
 
-	scanCalls(
-		source,
-		PANDA_CSS_CALL_RE,
-		excluded,
-		(match, block) => {
-			const parsed = parseObjectLiteral(block.body);
-			if (parsed === null) {
+	for (const binding of new Set(options.cssBindings ?? ["css"])) {
+		const pattern =
+			binding === "css"
+				? PANDA_CSS_CALL_RE
+				: new RegExp(`(?<![\\w.])${escapeRegExp(binding)}\\s*\\(\\s*\\{`, "g");
+		scanCalls(
+			source,
+			pattern,
+			excluded,
+			(match, block) => {
+				const parsed = parseObjectLiteral(block.body);
+				if (parsed === null) {
+					return {
+						start: match.index,
+						end: block.end,
+						kind: PandaCallKindTag.Css,
+						ir: {
+							entries: [],
+							residuals: [
+								{
+									kind: SwapResidualKindTag.Dynamic,
+									text: `${binding}({...})`,
+									hint: "non-literal object",
+								},
+							],
+						},
+					};
+				}
 				return {
 					start: match.index,
 					end: block.end,
 					kind: PandaCallKindTag.Css,
-					ir: {
-						entries: [],
-						residuals: [
-							{ kind: SwapResidualKindTag.Dynamic, text: "css({...})", hint: "non-literal object" },
-						],
-					},
+					ir: pandaStyleToIr(literalValueToPlain(parsed) as never, theme, {
+						tokenReferenceFormat: format,
+					}),
 				};
-			}
-			return {
-				start: match.index,
-				end: block.end,
-				kind: PandaCallKindTag.Css,
-				ir: pandaStyleToIr(literalValueToPlain(parsed) as never, theme, {
-					tokenReferenceFormat: format,
-				}),
-			};
-		},
-		calls,
-	);
+			},
+			calls,
+		);
+	}
 
 	scanCalls(
 		source,
