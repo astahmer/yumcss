@@ -60,10 +60,9 @@ test("css-modules -> vue-styled -> css-modules: preserves an actionable concrete
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
@@ -123,10 +122,9 @@ test("css-modules -> vue-styled -> css-modules: retains the documented secondary
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		      {
@@ -135,10 +133,9 @@ test("css-modules -> vue-styled -> css-modules: retains the documented secondary
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
@@ -218,7 +215,6 @@ test("css-modules -> vue-styled -> css-modules: preserves concrete theme and pro
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -299,7 +295,6 @@ test("css-modules -> vue-styled -> css-modules: preserves concrete theme and pro
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -394,7 +389,6 @@ test("css-modules -> vue-styled -> css-modules: resolves token values across bot
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

@@ -48,10 +48,11 @@ test("styled-components -> jss: migrates concrete styled-components syntax to js
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const Card = styled.div({ color: "red", padding: "1rem" });",
-		  "converted": 0,
+		  "code": "import jss from "jss";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,19 +70,19 @@ test("styled-components -> jss: migrates concrete styled-components syntax to js
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -94,10 +95,11 @@ test("styled-components -> jss: carries a documented secondary styled-components
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import jss from "jss";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +117,19 @@ test("styled-components -> jss: carries a documented secondary styled-components
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -149,10 +151,11 @@ test("styled-components -> jss: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import jss from "jss";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,26 +173,27 @@ test("styled-components -> jss: loads concrete theme and project context variant
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import jss from "jss";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,19 +211,19 @@ test("styled-components -> jss: loads concrete theme and project context variant
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -235,10 +239,11 @@ test("styled-components -> jss: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		  "converted": 0,
+		  "code": "import jss from "jss";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +261,19 @@ test("styled-components -> jss: resolves concrete token values with project cont
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -282,10 +287,12 @@ test("styled-components -> jss: preserves malformed concrete styled-components i
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const Card = styled.div({ color: "red", padding: "1rem" });
+		import jss from "jss";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
 		const unfinished = { /* unfinished styled-components */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -303,19 +310,19 @@ test("styled-components -> jss: preserves malformed concrete styled-components i
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

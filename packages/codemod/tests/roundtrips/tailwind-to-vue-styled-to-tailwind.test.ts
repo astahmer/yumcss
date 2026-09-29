@@ -60,7 +60,6 @@ test("tailwind -> vue-styled -> tailwind: preserves an actionable concrete round
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -147,7 +146,6 @@ test("tailwind -> vue-styled -> tailwind: retains the documented secondary API w
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -231,7 +229,6 @@ test("tailwind -> vue-styled -> tailwind: preserves concrete theme and project c
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -306,7 +303,6 @@ test("tailwind -> vue-styled -> tailwind: preserves concrete theme and project c
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -395,7 +391,6 @@ test("tailwind -> vue-styled -> tailwind: resolves token values across both conc
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

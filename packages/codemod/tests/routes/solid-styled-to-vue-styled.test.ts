@@ -63,7 +63,6 @@ test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-s
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -112,7 +111,6 @@ test("solid-styled -> vue-styled: carries a documented secondary solid-styled AP
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -170,7 +168,6 @@ test("solid-styled -> vue-styled: loads concrete theme and project context varia
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -210,7 +207,6 @@ test("solid-styled -> vue-styled: loads concrete theme and project context varia
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -262,7 +258,6 @@ test("solid-styled -> vue-styled: resolves concrete token values with project co
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -312,7 +307,6 @@ test("solid-styled -> vue-styled: preserves malformed concrete solid-styled inpu
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

@@ -49,7 +49,7 @@ test("compiled -> jss: migrates concrete compiled syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "red", padding: 8 });",
+		export const card = createUseStyles({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("compiled -> jss: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "#2563eb", padding: 8 });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("compiled -> jss: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "#2563eb", padding: 8 });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("compiled -> jss: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "#2563eb", padding: 8 });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("compiled -> jss: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "red", padding: 8 });
+		export const card = createUseStyles({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

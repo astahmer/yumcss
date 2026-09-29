@@ -123,7 +123,7 @@ describe("concrete adapter capability proofs", () => {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
 			const Card = css.class({ color: "red", padding: "1rem" });
-			export const App = () => <Card />;",
+			export const App = () => <div className={Card} />;",
 			    "converted": 1,
 			    "id": "styled-components-subject",
 			    "residuals": [],
@@ -188,7 +188,7 @@ describe("concrete adapter capability proofs", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
+			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
 		`);
 	});
 

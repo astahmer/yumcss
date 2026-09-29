@@ -49,7 +49,7 @@ test("aphrodite -> treat: migrates concrete aphrodite syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const styles = { "card": style({ "color": "red", "padding": 8 }) };",
+		export const styles = { "card": style({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("aphrodite -> treat: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const styles = { "card": style({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("aphrodite -> treat: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const styles = { "card": style({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("aphrodite -> treat: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const styles = { "card": style({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("aphrodite -> treat: preserves malformed concrete aphrodite input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const styles = { "card": style({ "color": "red", "padding": 8 }) };
+		export const styles = { "card": style({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

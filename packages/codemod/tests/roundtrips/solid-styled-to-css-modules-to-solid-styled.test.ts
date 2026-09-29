@@ -50,7 +50,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves an actionable concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -75,11 +75,6 @@ test("solid-styled -> css-modules -> solid-styled: preserves an actionable concr
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -91,7 +86,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves an actionable concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -118,7 +113,7 @@ test("solid-styled -> css-modules -> solid-styled: retains the documented second
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -143,11 +138,6 @@ test("solid-styled -> css-modules -> solid-styled: retains the documented second
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -159,7 +149,7 @@ test("solid-styled -> css-modules -> solid-styled: retains the documented second
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +191,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -226,11 +216,6 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "the source host is not verified as React",
 		          "kind": "capability",
 		          "preserved": undefined,
@@ -242,7 +227,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -257,7 +242,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -282,11 +267,6 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "the source host is not verified as React",
 		          "kind": "capability",
 		          "preserved": undefined,
@@ -298,7 +278,7 @@ test("solid-styled -> css-modules -> solid-styled: preserves concrete theme and 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -327,7 +307,7 @@ test("solid-styled -> css-modules -> solid-styled: resolves token values across 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -352,11 +332,6 @@ test("solid-styled -> css-modules -> solid-styled: resolves token values across 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -368,7 +343,7 @@ test("solid-styled -> css-modules -> solid-styled: resolves token values across 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, residual)
+		// pandwind:migrate-skip (route: solid-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

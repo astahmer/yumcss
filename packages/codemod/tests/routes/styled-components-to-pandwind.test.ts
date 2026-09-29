@@ -52,8 +52,8 @@ test("styled-components -> pandwind: migrates concrete styled-components syntax 
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -99,8 +99,8 @@ test("styled-components -> pandwind: carries a documented secondary styled-compo
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -156,7 +156,7 @@ test("styled-components -> pandwind: loads concrete theme and project context va
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "#2563eb", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "#2563eb", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
@@ -199,7 +199,7 @@ test("styled-components -> pandwind: loads concrete theme and project context va
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
@@ -254,7 +254,7 @@ test("styled-components -> pandwind: resolves concrete token values with project
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
@@ -305,8 +305,8 @@ test("styled-components -> pandwind: preserves malformed concrete styled-compone
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "generatedFiles": [],

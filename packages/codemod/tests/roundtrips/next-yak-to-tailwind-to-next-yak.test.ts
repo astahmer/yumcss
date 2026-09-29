@@ -132,9 +132,9 @@ test("next-yak -> tailwind -> next-yak: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
+		    "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,9 +170,9 @@ test("next-yak -> tailwind -> next-yak: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> next-yak | parse-residual: dynamic)
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };",
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

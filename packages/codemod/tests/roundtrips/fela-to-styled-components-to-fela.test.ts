@@ -86,11 +86,9 @@ test("fela -> styled-components -> fela: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import styled from "styled-components";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const card = styled.div({ color: "red" });",
-		    "converted": 0,
+		export const card = renderer.renderRule({ "color": "red" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -108,19 +106,25 @@ test("fela -> styled-components -> fela: preserves an actionable concrete round 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -172,10 +176,8 @@ test("fela -> styled-components -> fela: retains the documented secondary API wi
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled("button"); framework-semantics: react | available: static, named-map, residual)
-		export const Card = styled("button")({ color: "red" });",
-		    "converted": 0,
+		    "code": "export const Card = renderer.renderRule({ "color": "red" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -193,19 +195,25 @@ test("fela -> styled-components -> fela: retains the documented secondary API wi
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled("button"); framework-semantics: react",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -275,11 +283,9 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import styled from "styled-components";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb" });",
-		      "converted": 0,
+		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -297,19 +303,25 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: react",
-		          "kind": "capability",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -352,11 +364,9 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import styled from "styled-components";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb" });",
-		      "converted": 0,
+		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -374,19 +384,25 @@ test("fela -> styled-components -> fela: preserves concrete theme and project co
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: react",
-		          "kind": "capability",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -443,11 +459,9 @@ test("fela -> styled-components -> fela: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import styled from "styled-components";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: styled-components -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb" });",
-		    "converted": 0,
+		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -465,19 +479,25 @@ test("fela -> styled-components -> fela: resolves token values across both concr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

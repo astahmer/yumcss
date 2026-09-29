@@ -50,8 +50,10 @@ test("tamagui -> next-yak: migrates concrete tamagui syntax to next-yak", () => 
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`color: red; padding: $4;\`;
-		export const App = () => <View className={Card} />;",
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = typeof View>(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<typeof View>, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: red; padding: $4;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,8 +149,10 @@ test("tamagui -> next-yak: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`color: #2563eb; padding: $4;\`;
-		export const App = () => <View className={Card} />;",
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = typeof View>(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<typeof View>, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: #2563eb; padding: $4;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +187,10 @@ test("tamagui -> next-yak: loads concrete theme and project context variants", a
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`color: #2563eb; padding: $4;\`;
-		export const App = () => <View className={Card} />;",
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = typeof View>(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<typeof View>, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: #2563eb; padding: $4;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -231,8 +237,10 @@ test("tamagui -> next-yak: resolves concrete token values with project context",
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`color: #2563eb; padding: $4;\`;
-		export const App = () => <View className={Card} />;",
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = typeof View>(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<typeof View>, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: #2563eb; padding: $4;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -276,8 +284,10 @@ test("tamagui -> next-yak: preserves malformed concrete tamagui input", () => {
 		  "changed": true,
 		  "code": "import { View } from "tamagui";
 		import { css } from "next-yak";
-		export const Card = css\`color: red; padding: $4;\`;
-		export const App = () => <View className={Card} />;
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = typeof View>(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<typeof View>, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: red; padding: $4;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,
 		  "generatedFiles": [],

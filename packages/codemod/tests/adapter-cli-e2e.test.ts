@@ -65,6 +65,92 @@ async function runInMemory(
 }
 
 describe("adapter migration e2e matrix", () => {
+	test("previews CSS Modules artifacts and writes the component source map", () => {
+		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-css-modules-cli-"));
+		const sourceFile = join(directory, "src", "Card.tsx");
+		const cssFile = join(directory, "src", "Card.module.css");
+		const sourceMapFile = `${cssFile}.map`;
+		const source =
+			'import styled from "styled-components";\n' +
+			'export const Card = styled.div({ color: "red", padding: "1rem" });\n';
+		mkdirSync(join(directory, "src"), { recursive: true });
+		writeFileSync(sourceFile, source);
+		const runMigration = (dryRun: boolean) => {
+			const output = execFileSync(
+				"nub",
+				[
+					"src/cli.ts",
+					"migrate",
+					"--root",
+					directory,
+					`--from=${CodemodAdapterId.StyledComponents}`,
+					`--to=${CodemodAdapterId.CssModules}`,
+					...(dryRun ? ["--dry-run"] : []),
+					"--no-install",
+					"--report=json",
+					sourceFile,
+				],
+				{ cwd: codemodRoot, encoding: "utf8" },
+			);
+			return JSON.parse(output) as {
+				readonly files: readonly [{ readonly generatedFiles: readonly string[] }];
+			};
+		};
+
+		try {
+			const preview = runMigration(true);
+			expect(preview.files[0]?.generatedFiles).toEqual([
+				"src/Card.module.css",
+				"src/Card.module.css.map",
+			]);
+			expect(readFileSync(sourceFile, "utf8")).toBe(source);
+			expect(existsSync(cssFile)).toBe(false);
+			expect(existsSync(sourceMapFile)).toBe(false);
+
+			const written = runMigration(false);
+			const generatedSourceMap = JSON.parse(readFileSync(sourceMapFile, "utf8")) as {
+				readonly sources: readonly string[];
+				readonly sourcesContent: readonly string[];
+				readonly mappings: string;
+			};
+			expect(written.files[0]?.generatedFiles).toEqual([
+				"src/Card.module.css",
+				"src/Card.module.css.map",
+			]);
+			expect(readFileSync(sourceFile, "utf8")).toContain(
+				'import __pandwindCardStyles from "./Card.module.css";',
+			);
+			expect(existsSync(cssFile)).toBe(true);
+			expect(generatedSourceMap).toMatchObject({
+				sources: ["Card.tsx"],
+				sourcesContent: [source],
+			});
+			expect(generatedSourceMap.mappings).not.toBe("");
+			expect({
+				generatedFiles: written.files[0]?.generatedFiles,
+				sourceMap: {
+					sources: generatedSourceMap.sources,
+					mappingsPresent: generatedSourceMap.mappings.length > 0,
+				},
+			}).toMatchInlineSnapshot(`
+				{
+				  "generatedFiles": [
+				    "src/Card.module.css",
+				    "src/Card.module.css.map",
+				  ],
+				  "sourceMap": {
+				    "mappingsPresent": true,
+				    "sources": [
+				      "Card.tsx",
+				    ],
+				  },
+				}
+			`);
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
+	}, 120_000);
+
 	test("writes a host-dialect conversion to the target extension", () => {
 		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
 		const file = join(directory, "App.vue");
@@ -119,12 +205,10 @@ describe("adapter migration e2e matrix", () => {
 		const barrelFile = join(directory, "src/index.ts");
 		const consumerFile = join(directory, "src/ui/App.tsx");
 		const source =
-			'import { css } from "@emotion/css";\n' +
-			'export const card = css({ color: "red", padding: "1rem" });\n';
+			'import { css } from "@emotion/css";\nexport const card = css({ color: "red", padding: "1rem" });\n';
 		const barrel = 'export { card } from "./styles";\n';
 		const consumer =
-			'import { card } from "../index";\n' +
-			"export const App = () => <div className={card} />;\n";
+			'import { card } from "../index";\nexport const App = () => <div className={card} />;\n';
 		writeFileSync(sourceFile, source);
 		writeFileSync(barrelFile, barrel);
 		writeFileSync(consumerFile, consumer);

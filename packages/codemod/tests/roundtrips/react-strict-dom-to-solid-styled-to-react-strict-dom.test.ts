@@ -86,18 +86,42 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves an actiona
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { css } from "solid-styled-components";
-		const styles = { "card": css({ "color": "red", "padding": "1rem" }) };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -231,18 +255,42 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves concrete t
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		import { css } from "solid-styled-components";
-		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -285,18 +333,42 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves concrete t
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
-		import { css } from "solid-styled-components";
-		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -353,18 +425,42 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: resolves token value
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
-		import { css } from "solid-styled-components";
-		const styles = { "card": css({ "color": "#2563eb", "padding": "1rem" }) };
+		import { css } from "react-strict-dom";
+		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

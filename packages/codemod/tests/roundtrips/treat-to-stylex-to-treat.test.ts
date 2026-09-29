@@ -58,7 +58,6 @@ test("treat -> stylex -> treat: preserves an actionable concrete round trip", ()
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -146,7 +145,6 @@ test("treat -> stylex -> treat: retains the documented secondary API without sil
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -249,7 +247,6 @@ test("treat -> stylex -> treat: preserves concrete theme and project context var
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -325,7 +322,6 @@ test("treat -> stylex -> treat: preserves concrete theme and project context var
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -415,7 +411,6 @@ test("treat -> stylex -> treat: resolves token values across both concrete legs"
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",

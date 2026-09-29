@@ -25,12 +25,12 @@ const typecheckGeneratedProject = (source: string): string => {
 };
 
 describe("React Native component output", () => {
-		test("emits and typechecks a static reusable styled component with attrs", () => {
+	test("emits and typechecks a static reusable styled component with attrs", () => {
 		const source =
 			'import styled from "styled-components";\n' +
 			'import { createRef } from "react";\n' +
 			'export const Card = styled.div.attrs({ accessibilityLabel: "Saved" })({ backgroundColor: "red", padding: 2 });\n' +
-			'const cardRef = createRef<HTMLElement>();\n' +
+			"const cardRef = createRef<HTMLElement>();\n" +
 			'export const App = () => <Card accessibilityLabel="Caller" ref={cardRef} />;';
 		const result = runAdapterMigration(source, {
 			from: "styled-components",
@@ -43,13 +43,13 @@ describe("React Native component output", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { StyleSheet, View, type ViewProps } from "react-native";');
+		expect(result.code).toContain(
+			'import { StyleSheet, View, type ViewProps } from "react-native";',
+		);
 		expect(result.code).toContain("__pandwindForwardRef<ComponentRef<typeof View>, ViewProps>");
 		expect(result.code).toContain("style={[style, props.style, attrs.style]}");
 		expect(result.code).toContain('accessibilityLabel: "Saved"');
-		expect(result.code).toContain(
-			'<Card accessibilityLabel="Caller" ref={cardRef} />',
-		);
+		expect(result.code).toContain('<Card accessibilityLabel="Caller" ref={cardRef} />');
 		expect(result.code).not.toContain("styled-components");
 		expect(typecheckGeneratedProject(result.code)).toBe("");
 		expect(result.code).toMatchInlineSnapshot(`

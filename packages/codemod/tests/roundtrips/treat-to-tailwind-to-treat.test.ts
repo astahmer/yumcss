@@ -49,7 +49,7 @@ test("treat -> tailwind -> treat: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] [padding:8]";",
+		    "code": "export const card = "[color:red] [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("treat -> tailwind -> treat: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "red", "padding": "8" });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -134,7 +134,7 @@ test("treat -> tailwind -> treat: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] [padding:8]";",
+		    "code": "export const card = "[color:red] [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,7 +170,7 @@ test("treat -> tailwind -> treat: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "red", "padding": "8" });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -234,7 +234,7 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[color:#2563eb] [padding:8]";",
+		      "code": "export const card = "[color:#2563eb] [padding:8px]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -270,7 +270,7 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": "8" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -307,7 +307,7 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand [padding:8]";",
+		      "code": "export const card = "text-brand [padding:8px]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -343,7 +343,7 @@ test("treat -> tailwind -> treat: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": "8" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -394,7 +394,7 @@ test("treat -> tailwind -> treat: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand [padding:8]";",
+		    "code": "export const card = "text-brand [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +430,7 @@ test("treat -> tailwind -> treat: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": "8" });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

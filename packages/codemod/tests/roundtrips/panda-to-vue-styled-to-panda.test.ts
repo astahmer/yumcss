@@ -60,7 +60,6 @@ test("panda -> vue-styled -> panda: preserves an actionable concrete round trip"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -86,7 +85,7 @@ test("panda -> vue-styled -> panda: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div; rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = styled.div\`color: red;&:hover { color: blue; }\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -110,7 +109,7 @@ test("panda -> vue-styled -> panda: preserves an actionable concrete round trip"
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; rule-level: 1 semantic rules; nesting: style nested rules",
+		        "hint": "rule-level: 1 semantic rules; nesting: style nested rules",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -135,7 +134,7 @@ test("panda -> vue-styled -> panda: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> vue-styled | lowering-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: panda -> vue-styled | lowering-residual: composition | available: residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -146,7 +145,6 @@ test("panda -> vue-styled -> panda: retains the documented secondary API without
 		          "composition-flatten",
 		        ],
 		        "availableRepresentations": [
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "residual",
@@ -177,7 +175,7 @@ test("panda -> vue-styled -> panda: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> vue-styled | lowering-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: panda -> vue-styled | lowering-residual: composition | available: residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -229,7 +227,6 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -255,7 +252,7 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div; rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = styled.div\`color: #f97316;&:hover { color: #f97316; }\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -279,7 +276,7 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; rule-level: 1 semantic rules; nesting: style nested rules",
+		          "hint": "rule-level: 1 semantic rules; nesting: style nested rules",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -303,7 +300,6 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -329,7 +325,7 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div; rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -353,7 +349,7 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; rule-level: 1 semantic rules; nesting: style nested rules",
+		          "hint": "rule-level: 1 semantic rules; nesting: style nested rules",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -391,7 +387,6 @@ test("panda -> vue-styled -> panda: resolves token values across both concrete l
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -417,7 +412,7 @@ test("panda -> vue-styled -> panda: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div; rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -441,7 +436,7 @@ test("panda -> vue-styled -> panda: resolves token values across both concrete l
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; rule-level: 1 semantic rules; nesting: style nested rules",
+		        "hint": "rule-level: 1 semantic rules; nesting: style nested rules",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

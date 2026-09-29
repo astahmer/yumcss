@@ -64,7 +64,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -159,7 +158,6 @@ test("solid-styled -> vue-styled -> solid-styled: retains the documented seconda
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -269,7 +267,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -352,7 +349,6 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -449,7 +445,6 @@ test("solid-styled -> vue-styled -> solid-styled: resolves token values across b
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

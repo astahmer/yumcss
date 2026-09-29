@@ -49,7 +49,7 @@ test("aphrodite -> unocss -> aphrodite: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:red] [padding:8]" };",
+		    "code": "export const styles = { "card": "[color:red] [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -85,7 +85,7 @@ test("aphrodite -> unocss -> aphrodite: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": "8" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -213,7 +213,7 @@ test("aphrodite -> unocss -> aphrodite: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[color:#2563eb] [padding:8]" };",
+		      "code": "export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -249,7 +249,7 @@ test("aphrodite -> unocss -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -286,7 +286,7 @@ test("aphrodite -> unocss -> aphrodite: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "text-brand [padding:8]" };",
+		      "code": "export const styles = { "card": "text-brand [padding:8px]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,7 +322,7 @@ test("aphrodite -> unocss -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -373,7 +373,7 @@ test("aphrodite -> unocss -> aphrodite: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand [padding:8]" };",
+		    "code": "export const styles = { "card": "text-brand [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -409,7 +409,7 @@ test("aphrodite -> unocss -> aphrodite: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8" } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

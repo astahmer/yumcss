@@ -282,7 +282,7 @@ describe("official custom-token loaders", () => {
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/4",
+			  "schema": "pandwind.style-program/5",
 			  "source": {
 			    "adapter": "panda",
 			    "end": 81,
@@ -963,7 +963,7 @@ describe("official custom-token loaders", () => {
 		);
 
 		expect(result.text).toBe(
-			'"[--brand:red] m-[-1rem] bg-[rebeccapurple] rounded-ss-[8px] gap-x-[2rem] hover:ps-[1rem] w-[37px]"',
+			'"m-[-1rem] gap-x-[2rem] bg-[rebeccapurple] rounded-ss-[8px] w-[37px] hover:ps-[1rem] [--brand:red]"',
 		);
 		expect(result.emissionDecisions).toHaveLength(7);
 		expect(result.emissionDecisions?.filter((decision) => decision.verified)).toHaveLength(6);
@@ -1139,10 +1139,10 @@ describe("official custom-token loaders", () => {
 		`);
 		expect(parsed.matches[0]?.program.declarations.map(({ property }) => property)).toEqual([
 			"padding",
-			"borderRadius",
-			"boxShadow",
 			"color",
+			"borderRadius",
 			"fontSize",
+			"boxShadow",
 			"zIndex",
 		]);
 	});
@@ -1249,11 +1249,11 @@ describe("official custom-token loaders", () => {
 			]
 		`);
 		expect(parsed.matches[0]?.program.declarations.map(({ property }) => property)).toEqual([
+			"color",
 			"padding",
+			"fontSize",
 			"borderRadius",
 			"boxShadow",
-			"color",
-			"fontSize",
 		]);
 	});
 });

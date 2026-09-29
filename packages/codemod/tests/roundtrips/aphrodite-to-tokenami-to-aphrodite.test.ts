@@ -50,7 +50,7 @@ test("aphrodite -> tokenami -> aphrodite: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--color": "red", "--padding": 8 }) };",
+		export const styles = { "card": css({ "--color": "red", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,10 +83,9 @@ test("aphrodite -> tokenami -> aphrodite: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> aphrodite | parse-residual: configuration | available: named-map, residual)
-		export const styles = { "card": css({ "--color": "red", "--padding": 8 }) };",
-		    "converted": 0,
+		    "code": "import { StyleSheet } from "aphrodite";
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": "8px" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -94,28 +93,29 @@ test("aphrodite -> tokenami -> aphrodite: preserves an actionable concrete round
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
-		        "kind": "configuration",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -207,7 +207,7 @@ test("aphrodite -> tokenami -> aphrodite: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--color": "#2563eb", "--padding": 8 }) };",
+		export const styles = { "card": css({ "--color": "#2563eb", "--padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -241,7 +241,7 @@ test("aphrodite -> tokenami -> aphrodite: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -279,7 +279,7 @@ test("aphrodite -> tokenami -> aphrodite: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": 8 }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -313,7 +313,7 @@ test("aphrodite -> tokenami -> aphrodite: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -366,7 +366,7 @@ test("aphrodite -> tokenami -> aphrodite: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": 8 }) };",
+		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -400,7 +400,7 @@ test("aphrodite -> tokenami -> aphrodite: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

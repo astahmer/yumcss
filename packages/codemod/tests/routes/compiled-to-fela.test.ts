@@ -48,7 +48,7 @@ test("compiled -> fela: migrates concrete compiled syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": 8 });",
+		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("compiled -> fela: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": 8 });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("compiled -> fela: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": 8 });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("compiled -> fela: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": 8 });",
+		  "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("compiled -> fela: preserves malformed concrete compiled input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": 8 });
+		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

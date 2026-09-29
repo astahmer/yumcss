@@ -390,9 +390,10 @@ describe("target adapter emission contract", () => {
 			`${CodemodAdapterId.StyledComponents} -> ${target}: ${JSON.stringify(result.residuals)}\n${result.code}`,
 		).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('const Card = (props) => { const Component = props.as ?? "div";');
+		expect(result.code).toContain("__pandwindCardForwardRef");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
+		expect(result.code).toContain("ref={ref}");
 		expect(result.code).not.toContain("styled-components");
 	});
 
@@ -535,9 +536,10 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('const Card = (props) => { const Component = props.as ?? "div";');
+		expect(result.code).toContain("__pandwindCardForwardRef");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
+		expect(result.code).toContain("ref={ref}");
 	});
 
 	test("normalizes a registered substitute through the shared class-host port", () => {
@@ -621,7 +623,9 @@ describe("target adapter emission contract", () => {
 				hint: expect.stringContaining("Text color semantics"),
 			}),
 		]);
-		expect(result.code).toContain('export const Card = styled.div({ color: "red", padding: "1rem" });');
+		expect(result.code).toContain(
+			'export const Card = styled.div({ color: "red", padding: "1rem" });',
+		);
 		expect(result.code).not.toContain('from "react-native"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import styled from "styled-components";
@@ -633,7 +637,7 @@ describe("target adapter emission contract", () => {
 	test.each([CodemodAdapterId.NextYak, CodemodAdapterId.SolidStyled] as const)(
 		"projects a standalone static %s subject to a React Native component",
 		(sourceAdapter) => {
-		const source =
+			const source =
 				sourceAdapter === CodemodAdapterId.NextYak
 					? 'import { styled } from "next-yak";\n' +
 						"const Card = styled.div`background-color: red; padding: 1rem;`;"

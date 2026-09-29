@@ -59,10 +59,9 @@ test("css-modules -> vue-styled: migrates concrete css-modules syntax to vue-sty
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
@@ -105,10 +104,9 @@ test("css-modules -> vue-styled: carries a documented secondary css-modules API 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		    {
@@ -117,10 +115,9 @@ test("css-modules -> vue-styled: carries a documented secondary css-modules API 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
@@ -176,7 +173,6 @@ test("css-modules -> vue-styled: loads concrete theme and project context varian
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -213,7 +209,6 @@ test("css-modules -> vue-styled: loads concrete theme and project context varian
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -262,7 +257,6 @@ test("css-modules -> vue-styled: resolves concrete token values with project con
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -308,10 +302,9 @@ test("css-modules -> vue-styled: preserves malformed concrete css-modules input"
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],

@@ -59,7 +59,6 @@ test("vanilla-extract -> vue-styled: migrates concrete vanilla-extract syntax to
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +93,7 @@ test("vanilla-extract -> vue-styled: carries a documented secondary vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,7 +104,6 @@ test("vanilla-extract -> vue-styled: carries a documented secondary vanilla-extr
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -159,7 +157,6 @@ test("vanilla-extract -> vue-styled: loads concrete theme and project context va
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -195,7 +192,6 @@ test("vanilla-extract -> vue-styled: loads concrete theme and project context va
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,7 +239,6 @@ test("vanilla-extract -> vue-styled: resolves concrete token values with project
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -289,7 +284,6 @@ test("vanilla-extract -> vue-styled: preserves malformed concrete vanilla-extrac
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

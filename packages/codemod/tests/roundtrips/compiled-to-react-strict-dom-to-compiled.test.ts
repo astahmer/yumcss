@@ -49,10 +49,9 @@ test("compiled -> react-strict-dom -> compiled: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "red", padding: 8 });",
-		    "converted": 0,
+		    "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "red", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -70,40 +69,55 @@ test("compiled -> react-strict-dom -> compiled: preserves an actionable concrete
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "red", padding: 8 });",
-		    "converted": 0,
+		export const card = css({ "color": "red", "padding": "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -222,10 +236,9 @@ test("compiled -> react-strict-dom -> compiled: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		      "converted": 0,
+		      "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "#2563eb", padding: "8px" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -243,49 +256,63 @@ test("compiled -> react-strict-dom -> compiled: preserves concrete theme and pro
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		      "converted": 0,
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		      "converted": 0,
+		      "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "#2563eb", padding: "8px" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -303,40 +330,55 @@ test("compiled -> react-strict-dom -> compiled: preserves concrete theme and pro
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		      "converted": 0,
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -356,10 +398,9 @@ test("compiled -> react-strict-dom -> compiled: resolves token values across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "#2563eb", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -377,40 +418,55 @@ test("compiled -> react-strict-dom -> compiled: resolves token values across bot
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

@@ -84,16 +84,38 @@ test("bamboo -> solid-styled -> bamboo: preserves an actionable concrete round t
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "red" });",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "red" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -146,16 +168,38 @@ test("bamboo -> solid-styled -> bamboo: retains the documented secondary API wit
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const card = css({ "display": "flex", "gap": "4" });",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ display: "flex", gap: "4" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -223,16 +267,38 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#2563eb" });",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -273,16 +339,38 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#2563eb" });",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -337,16 +425,38 @@ test("bamboo -> solid-styled -> bamboo: resolves token values across both concre
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#2563eb" });",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

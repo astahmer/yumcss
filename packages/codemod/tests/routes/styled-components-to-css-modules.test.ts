@@ -51,12 +51,16 @@ test("styled-components -> css-modules: migrates concrete styled-components synt
 		  "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
 		      "path": "Card.module.css",
 		      "purpose": "CSS Modules styles for a migrated React component",
+		    },
+		    {
+		      "path": "Card.module.css.map",
+		      "purpose": "CSS Modules source map for a migrated React component",
 		    },
 		  ],
 		  "loweringPlans": [
@@ -102,12 +106,16 @@ test("styled-components -> css-modules: carries a documented secondary styled-co
 		  "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
 		      "path": "Card.module.css",
 		      "purpose": "CSS Modules styles for a migrated React component",
+		    },
+		    {
+		      "path": "Card.module.css.map",
+		      "purpose": "CSS Modules source map for a migrated React component",
 		    },
 		  ],
 		  "loweringPlans": [
@@ -162,12 +170,16 @@ test("styled-components -> css-modules: loads concrete theme and project context
 		    "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
 		        "path": "Card.module.css",
 		        "purpose": "CSS Modules styles for a migrated React component",
+		      },
+		      {
+		        "path": "Card.module.css.map",
+		        "purpose": "CSS Modules source map for a migrated React component",
 		      },
 		    ],
 		    "loweringPlans": [
@@ -204,12 +216,16 @@ test("styled-components -> css-modules: loads concrete theme and project context
 		    "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
 		        "path": "Card.module.css",
 		        "purpose": "CSS Modules styles for a migrated React component",
+		      },
+		      {
+		        "path": "Card.module.css.map",
+		        "purpose": "CSS Modules source map for a migrated React component",
 		      },
 		    ],
 		    "loweringPlans": [
@@ -258,12 +274,16 @@ test("styled-components -> css-modules: resolves concrete token values with proj
 		  "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
 		      "path": "Card.module.css",
 		      "purpose": "CSS Modules styles for a migrated React component",
+		    },
+		    {
+		      "path": "Card.module.css.map",
+		      "purpose": "CSS Modules source map for a migrated React component",
 		    },
 		  ],
 		  "loweringPlans": [
@@ -307,7 +327,7 @@ test("styled-components -> css-modules: preserves malformed concrete styled-comp
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, residual)
+		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability)
 		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 0,
@@ -332,11 +352,6 @@ test("styled-components -> css-modules: preserves malformed concrete styled-comp
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "the source file contains parse errors",
 		      "kind": "capability",

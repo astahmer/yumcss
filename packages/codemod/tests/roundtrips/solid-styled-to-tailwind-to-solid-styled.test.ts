@@ -49,9 +49,9 @@ test("solid-styled -> tailwind -> solid-styled: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
+		    "code": "import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -87,9 +87,9 @@ test("solid-styled -> tailwind -> solid-styled: preserves an actionable concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -125,9 +125,9 @@ test("solid-styled -> tailwind -> solid-styled: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
+		    "code": "import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -163,9 +163,9 @@ test("solid-styled -> tailwind -> solid-styled: retains the documented secondary
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[color:red] [padding:1rem]", props.class)} />;",
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -216,9 +216,9 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[color:#2563eb] [padding:1rem]", props.class)} />;",
+		      "code": "import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:#2563eb] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -254,9 +254,9 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("[color:#2563eb] [padding:1rem]", props.class)} />;",
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:#2563eb] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -280,9 +280,9 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
+		      "code": "import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["text-brand [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -318,9 +318,9 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["text-brand [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -358,9 +358,9 @@ test("solid-styled -> tailwind -> solid-styled: resolves token values across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
+		    "code": "import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["text-brand [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -396,9 +396,9 @@ test("solid-styled -> tailwind -> solid-styled: resolves token values across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} class={cx("text-brand [padding:1rem]", props.class)} />;",
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["text-brand [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

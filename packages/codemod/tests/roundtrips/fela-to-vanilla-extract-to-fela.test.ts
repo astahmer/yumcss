@@ -139,7 +139,7 @@ test("fela -> vanilla-extract -> fela: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> vanilla-extract | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: fela -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -169,6 +169,11 @@ test("fela -> vanilla-extract -> fela: retains the documented secondary API with
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -176,7 +181,7 @@ test("fela -> vanilla-extract -> fela: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> vanilla-extract | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: fela -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],

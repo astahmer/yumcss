@@ -48,8 +48,10 @@ test("solid-styled -> next-yak: migrates concrete solid-styled syntax to next-ya
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "code": "import { css } from "next-yak";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css\`color: red; padding: 1rem;\`, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -91,8 +93,10 @@ test("solid-styled -> next-yak: carries a documented secondary solid-styled API 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "code": "import { css } from "next-yak";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css\`color: red; padding: 1rem;\`, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,8 +147,10 @@ test("solid-styled -> next-yak: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "code": "import { css } from "next-yak";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css\`color: #2563eb; padding: 1rem;\`, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,8 +183,10 @@ test("solid-styled -> next-yak: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "code": "import { css } from "next-yak";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css\`color: #2563eb; padding: 1rem;\`, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,8 +231,10 @@ test("solid-styled -> next-yak: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		  "code": "import { css } from "next-yak";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css\`color: #2563eb; padding: 1rem;\`, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,8 +276,11 @@ test("solid-styled -> next-yak: preserves malformed concrete solid-styled input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;
+		  "code": "import { styled } from "solid-styled-components";
+		import { css } from "next-yak";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css\`color: red; padding: 1rem;\`, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

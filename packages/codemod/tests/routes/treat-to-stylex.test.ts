@@ -57,7 +57,6 @@ test("treat -> stylex: migrates concrete treat syntax to stylex", () => {
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -104,7 +103,6 @@ test("treat -> stylex: carries a documented secondary treat API explicitly", () 
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -160,7 +158,6 @@ test("treat -> stylex: loads concrete theme and project context variants", async
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -198,7 +195,6 @@ test("treat -> stylex: loads concrete theme and project context variants", async
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -248,7 +244,6 @@ test("treat -> stylex: resolves concrete token values with project context", asy
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -296,7 +291,6 @@ test("treat -> stylex: preserves malformed concrete treat input", () => {
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",

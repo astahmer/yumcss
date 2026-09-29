@@ -50,7 +50,7 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -75,8 +75,8 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "Mantine style-prop projection requires react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -86,7 +86,7 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -113,7 +113,7 @@ test("vue-styled -> mantine -> vue-styled: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -138,8 +138,8 @@ test("vue-styled -> mantine -> vue-styled: retains the documented secondary API 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "Mantine style-prop projection requires react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -149,7 +149,7 @@ test("vue-styled -> mantine -> vue-styled: retains the documented secondary API 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -191,7 +191,7 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -216,8 +216,8 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
+		          "hint": "Mantine style-prop projection requires react",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -227,7 +227,7 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -242,7 +242,7 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -267,8 +267,8 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
+		          "hint": "Mantine style-prop projection requires react",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -278,7 +278,7 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -307,7 +307,7 @@ test("vue-styled -> mantine -> vue-styled: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -332,8 +332,8 @@ test("vue-styled -> mantine -> vue-styled: resolves token values across both con
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "Mantine style-prop projection requires react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -343,7 +343,7 @@ test("vue-styled -> mantine -> vue-styled: resolves token values across both con
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

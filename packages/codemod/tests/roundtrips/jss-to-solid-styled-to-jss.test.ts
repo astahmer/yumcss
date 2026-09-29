@@ -84,16 +84,40 @@ test("jss -> solid-styled -> jss: preserves an actionable concrete round trip", 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const useStyles = { "card": css({ "color": "red" }) };",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -146,16 +170,40 @@ test("jss -> solid-styled -> jss: retains the documented secondary API without s
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const sheet = { "card": css({ "color": "red" }) };",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { createUseStyles } from "react-jss";
+		export const sheet = { "card": createUseStyles({ color: "red" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -223,16 +271,40 @@ test("jss -> solid-styled -> jss: preserves concrete theme and project context v
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const useStyles = { "card": css({ "color": "#2563eb" }) };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -273,16 +345,40 @@ test("jss -> solid-styled -> jss: preserves concrete theme and project context v
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const useStyles = { "card": css({ "color": "#2563eb" }) };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -337,16 +433,40 @@ test("jss -> solid-styled -> jss: resolves token values across both concrete leg
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const useStyles = { "card": css({ "color": "#2563eb" }) };",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

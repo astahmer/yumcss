@@ -77,6 +77,11 @@ test("vue-styled -> react-native -> vue-styled: preserves an actionable concrete
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "react-native has no host representation for vue",
 		        "kind": "host-framework",
 		        "preserved": undefined,
@@ -141,6 +146,11 @@ test("vue-styled -> react-native -> vue-styled: retains the documented secondary
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "react-native has no host representation for vue",
 		        "kind": "host-framework",
@@ -222,6 +232,11 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 		      ],
 		      "residuals": [
 		        {
+		          "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
 		          "hint": "react-native has no host representation for vue",
 		          "kind": "host-framework",
 		          "preserved": undefined,
@@ -274,6 +289,11 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 		        },
 		      ],
 		      "residuals": [
+		        {
+		          "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
 		        {
 		          "hint": "react-native has no host representation for vue",
 		          "kind": "host-framework",
@@ -341,6 +361,11 @@ test("vue-styled -> react-native -> vue-styled: resolves token values across bot
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "react-native has no host representation for vue",
 		        "kind": "host-framework",

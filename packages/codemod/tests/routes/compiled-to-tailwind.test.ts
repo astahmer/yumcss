@@ -48,7 +48,7 @@ test("compiled -> tailwind: migrates concrete compiled syntax to tailwind", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red] [padding:8]";",
+		  "code": "export const card = "[color:red] [padding:8px]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("compiled -> tailwind: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = "[color:#2563eb] [padding:8]";",
+		    "code": "export const card = "[color:#2563eb] [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +180,7 @@ test("compiled -> tailwind: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = "text-brand [padding:8]";",
+		    "code": "export const card = "text-brand [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +227,7 @@ test("compiled -> tailwind: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "text-brand [padding:8]";",
+		  "code": "export const card = "text-brand [padding:8px]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +271,7 @@ test("compiled -> tailwind: preserves malformed concrete compiled input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red] [padding:8]";
+		  "code": "export const card = "[color:red] [padding:8px]";
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

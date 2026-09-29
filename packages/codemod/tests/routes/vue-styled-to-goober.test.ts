@@ -48,10 +48,10 @@ test("vue-styled -> goober: migrates concrete vue-styled syntax to goober", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { css } from "goober";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "1rem" })] }, slots.default?.()));",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,19 +69,19 @@ test("vue-styled -> goober: migrates concrete vue-styled syntax to goober", () =
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -94,10 +94,10 @@ test("vue-styled -> goober: carries a documented secondary vue-styled API explic
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { css } from "goober";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "1rem" })] }, slots.default?.()));",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +115,19 @@ test("vue-styled -> goober: carries a documented secondary vue-styled API explic
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -149,10 +149,10 @@ test("vue-styled -> goober: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		    "converted": 0,
+		    "code": "import { css } from "goober";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,26 +170,26 @@ test("vue-styled -> goober: loads concrete theme and project context variants", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		    "converted": 0,
+		    "code": "import { css } from "goober";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,19 +207,19 @@ test("vue-styled -> goober: loads concrete theme and project context variants", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -235,10 +235,10 @@ test("vue-styled -> goober: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { css } from "goober";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +256,19 @@ test("vue-styled -> goober: resolves concrete token values with project context"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -281,11 +281,11 @@ test("vue-styled -> goober: preserves malformed concrete vue-styled input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;
+		  "code": "import { css } from "goober";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "1rem" })] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -303,19 +303,19 @@ test("vue-styled -> goober: preserves malformed concrete vue-styled input", () =
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

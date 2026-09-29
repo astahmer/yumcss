@@ -60,7 +60,6 @@ test("linaria -> vue-styled -> linaria: preserves an actionable concrete round t
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -85,59 +84,9 @@ test("linaria -> vue-styled -> linaria: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div\`color: red; padding: 1rem;\`;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		}
-	`)
-});
-
-test("linaria -> vue-styled -> linaria: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
-	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectRouteScenarioEvidence(first, "linaria -> vue-styled round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
-	expectExplicitResidualEvidence(first);
-	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import { css } from "@linaria/core";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -170,12 +119,61 @@ test("linaria -> vue-styled -> linaria: retains the documented secondary API wit
 		      },
 		    ],
 		  },
-		  "reverse": {
+		}
+	`)
+});
+
+test("linaria -> vue-styled -> linaria: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "linaria -> vue-styled round-trip secondary forward");
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		    "converted": 0,
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css } from "@linaria/core";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -193,19 +191,19 @@ test("linaria -> vue-styled -> linaria: retains the documented secondary API wit
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -249,7 +247,6 @@ test("linaria -> vue-styled -> linaria: preserves concrete theme and project con
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -274,47 +271,9 @@ test("linaria -> vue-styled -> linaria: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
-		      "validations": [],
-		    },
-		  },
-		  "blue": {
-		    "forward": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "code": "import { css } from "@linaria/core";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,12 +306,49 @@ test("linaria -> vue-styled -> linaria: preserves concrete theme and project con
 		        },
 		      ],
 		    },
-		    "reverse": {
+		  },
+		  "blue": {
+		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		      "converted": 0,
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { css } from "@linaria/core";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -370,19 +366,19 @@ test("linaria -> vue-styled -> linaria: preserves concrete theme and project con
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -404,6 +400,42 @@ test("linaria -> vue-styled -> linaria: resolves token values across both concre
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css } from "@linaria/core";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,43 +467,6 @@ test("linaria -> vue-styled -> linaria: resolves token values across both concre
 		        "valid": true,
 		      },
 		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> linaria | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

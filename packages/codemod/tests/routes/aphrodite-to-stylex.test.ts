@@ -56,7 +56,6 @@ test("aphrodite -> stylex: migrates concrete aphrodite syntax to stylex", () => 
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -165,7 +164,6 @@ test("aphrodite -> stylex: loads concrete theme and project context variants", a
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -202,7 +200,6 @@ test("aphrodite -> stylex: loads concrete theme and project context variants", a
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -251,7 +248,6 @@ test("aphrodite -> stylex: resolves concrete token values with project context",
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -298,7 +294,6 @@ test("aphrodite -> stylex: preserves malformed concrete aphrodite input", () => 
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",

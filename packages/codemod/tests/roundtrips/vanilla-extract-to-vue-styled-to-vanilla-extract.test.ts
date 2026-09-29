@@ -60,7 +60,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -86,7 +85,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
 		export const card = styled.div\`color: red; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -112,8 +111,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -137,7 +136,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: retains the documented s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -148,7 +147,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: retains the documented s
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -174,7 +172,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: retains the documented s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -226,7 +224,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -252,7 +249,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -278,8 +275,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
+		          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		          "kind": "component",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -301,7 +298,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -327,7 +323,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -353,8 +349,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
+		          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		          "kind": "component",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -390,7 +386,6 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -416,7 +411,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -442,8 +437,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],

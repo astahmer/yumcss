@@ -84,16 +84,40 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { color: "red", padding: "8px" } }).style };",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -146,16 +170,40 @@ test("stylex -> solid-styled -> stylex: retains the documented secondary API wit
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "red" }) };",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { color: "red" } }).style };",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -223,16 +271,40 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -273,16 +345,40 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -337,16 +433,40 @@ test("stylex -> solid-styled -> stylex: resolves token values across both concre
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

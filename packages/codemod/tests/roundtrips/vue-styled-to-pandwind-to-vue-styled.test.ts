@@ -102,7 +102,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves an actionable concrete rou
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -194,7 +193,6 @@ test("vue-styled -> pandwind -> vue-styled: retains the documented secondary API
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -301,7 +299,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -382,7 +379,6 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -477,7 +473,6 @@ test("vue-styled -> pandwind -> vue-styled: resolves token values across both co
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

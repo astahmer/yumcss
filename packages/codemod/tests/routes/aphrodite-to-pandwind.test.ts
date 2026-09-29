@@ -50,7 +50,7 @@ test("aphrodite -> pandwind: migrates concrete aphrodite syntax to pandwind", ()
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red", padding: 8 }) };",
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("aphrodite -> pandwind: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "#2563eb", padding: 8 }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,7 +183,7 @@ test("aphrodite -> pandwind: loads concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "brand", padding: 8 }) };",
+		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,7 +230,7 @@ test("aphrodite -> pandwind: resolves concrete token values with project context
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "brand", padding: 8 }) };",
+		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -274,7 +274,7 @@ test("aphrodite -> pandwind: preserves malformed concrete aphrodite input", () =
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red", padding: 8 }) };
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

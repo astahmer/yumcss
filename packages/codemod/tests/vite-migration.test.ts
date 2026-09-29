@@ -62,21 +62,45 @@ describe("virtual Vite migrations", () => {
 		expect(plugin.name).toBe("pandwind:virtual-migration:styled-components->tailwind");
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "code": "import { createCx } from "pandwind/cx";
-			const cx = createCx();
+			  "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
 
-			const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };
+			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
 			}
 			",
-			  "map": null,
+			  "map": SourceMap {
+			    "file": undefined,
+			    "mappings": "AAAA,MAAM,CAAC;AAAA;AAAA;AAAA,giCAKN;;AAED,MAAM,CAAC,QAAQ,CAAC,GAAG,CAAC,CAAC,CAAC;AACtB,CAAC,MAAM,CAAC,CAAC,IAAI,CAAC,OAAO,CAAC,CAAC,IAAI,CAAC;AAC5B;",
+			    "names": [],
+			    "sources": [
+			      "/virtual/project/src/Card.tsx",
+			    ],
+			    "sourcesContent": [
+			      "import styled from "styled-components";
+
+			const Card = styled.div\`
+				color: red;
+				padding: 1rem;
+			\`;
+
+			export function App() {
+				return <Card>content</Card>;
+			}
+			",
+			    ],
+			    "version": 3,
+			  },
 			}
 		`);
 		expect(result).not.toBeNull();
-		expect(result?.code).toContain("const Card = (props) =>");
-		expect(result?.code).toContain('className={cx("[color:red] [padding:1rem]", props.className)}');
+		expect(result?.code).toContain("const Card = (() => {");
+		expect(result?.code).toContain(
+			'className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")}',
+		);
+		expect(result?.code).toContain("ref={ref}");
 		expect(result?.code).toContain("return <Card>content</Card>");
 		expect(result?.code).not.toContain("styled-components");
 		expect(styledCard).toContain("styled-components");
@@ -108,7 +132,23 @@ export function App() {
 					return <ThemeProvider theme={{ color: "red" }}><div /></ThemeProvider>;
 			}
 			",
-			  "map": null,
+			  "map": SourceMap {
+			    "file": undefined,
+			    "mappings": "AAAA;AAAA;AAAA;AAAA;AAAA;AAGA,CAAC,CAAC,MAAM,CAAC,CAAC,aAAa,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC,CAAC,aAAa,CAAC;AACxE;",
+			    "names": [],
+			    "sources": [
+			      "/virtual/project/src/App.tsx",
+			    ],
+			    "sourcesContent": [
+			      "import styled, { ThemeProvider } from "styled-components";
+
+			export function App() {
+					return <ThemeProvider theme={{ color: "red" }}><div /></ThemeProvider>;
+			}
+			",
+			    ],
+			    "version": 3,
+			  },
 			}
 		`);
 		expect(result).not.toBeNull();
@@ -179,10 +219,10 @@ export function App() {
 		expect(plugin.enforce).toBe("pre");
 		expect(received).toMatchInlineSnapshot(`
 			[
-			  "import { createCx } from "pandwind/cx";
-			const cx = createCx();
+			  "import { forwardRef as __pandwindCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
 
-			const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red] [padding:1rem]", props.className)} />; };
+			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
@@ -191,7 +231,10 @@ export function App() {
 			]
 		`);
 		expect(received).toHaveLength(1);
-		expect(received[0]).toContain('className={cx("[color:red] [padding:1rem]", props.className)}');
+		expect(received[0]).toContain(
+			'className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")}',
+		);
+		expect(received[0]).toContain("ref={ref}");
 		expect(received[0]).toContain("<Card>content</Card>");
 		expect(received[0]).not.toContain("styled-components");
 	});
@@ -238,7 +281,20 @@ export function App() {
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			",
-			  "map": null,
+			  "map": SourceMap {
+			    "file": undefined,
+			    "mappings": "AAAA,MAAM,CAAC,CAAC,CAAC,CAAC;AAAA;AAAA,oBACI,EAAE,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC;",
+			    "names": [],
+			    "sources": [
+			      "/virtual/project/src/Card.tsx",
+			    ],
+			    "sourcesContent": [
+			      "import { css } from "@emotion/css";
+			const card = css({ color: "red" });
+			",
+			    ],
+			    "version": 3,
+			  },
 			}
 		`);
 		expect(result).not.toBeNull();
@@ -300,7 +356,21 @@ export function App() {
 			const card = css({ color: "red" });
 			const panel = css({ color: "blue" });
 			",
-			  "map": null,
+			  "map": SourceMap {
+			    "file": undefined,
+			    "mappings": ";AAAA,MAAM,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,IAAI,CAAC,CAAC,CAAC,OAAO,CAAC,GAAG,CAAC;AAClC,KAAK,CAAC,IAAI,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC;AAClC,KAAK,CAAC,KAAK,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,IAAI,CAAC,CAAC,CAAC,CAAC;",
+			    "names": [],
+			    "sources": [
+			      "/virtual/project/src/Card.tsx",
+			    ],
+			    "sourcesContent": [
+			      "import { css } from "@emotion/css";
+			const card = css({ color: "red" });
+			const panel = css({ color: "blue" });
+			",
+			    ],
+			    "version": 3,
+			  },
 			}
 		`);
 		expect(result).not.toBeNull();

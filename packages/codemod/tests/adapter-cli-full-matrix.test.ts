@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { createBuiltinCodemodCatalog, STYLE_MIGRATION_USE_CASE } from "../src/swap/index.ts";
+import {
+	CodemodAdapterId,
+	createBuiltinCodemodCatalog,
+	STYLE_MIGRATION_USE_CASE,
+} from "../src/swap/index.ts";
 import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
@@ -9,6 +13,11 @@ interface MatrixFileResult {
 	readonly converted: number;
 	readonly skipped: number;
 	readonly residuals: number;
+	readonly residualDetails: readonly {
+		readonly kind: string;
+		readonly text: string;
+		readonly hint?: string;
+	}[];
 	readonly source: string;
 }
 
@@ -38,6 +47,7 @@ async function runInMemoryMatrix(
 				converted: result.converted,
 				skipped: result.skipped,
 				residuals: result.residuals.length,
+				residualDetails: result.residuals,
 				source: result.code,
 			};
 		}),
@@ -82,9 +92,21 @@ describe("in-memory ordered adapter matrix", () => {
 								result.residuals,
 								`${source.id} -> ${target.id} skipped without residual evidence`,
 							).toBeGreaterThan(0);
-							expect(result.source).toContain("pandwind:migrate-skip");
+							expect(
+								result.source,
+								`${result.file} residuals=${JSON.stringify(result.residualDetails)}`,
+							).toContain("pandwind:migrate-skip");
 						}
-						if (result.residuals > 0) expect(result.source).toContain("pandwind:migrate-skip");
+						if (result.residuals > 0)
+							expect(
+								result.source,
+								`${result.file} residuals=${JSON.stringify(result.residualDetails)}`,
+							).toContain("pandwind:migrate-skip");
+						if (
+							result.file.startsWith(`${CodemodAdapterId.StyledComponents}-`) &&
+							result.file.includes("-edge-")
+						)
+							expect(result.source, result.file).toContain("theme.foreground");
 						expect(result.source).not.toContain("adapter capability mismatch");
 						if (isMalformed) expect(result.source).toContain(`/* unfinished ${source.id} */`);
 					}

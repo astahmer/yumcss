@@ -50,7 +50,7 @@ test("tamagui -> css-modules -> tamagui: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -87,7 +87,7 @@ test("tamagui -> css-modules -> tamagui: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -202,7 +202,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -239,7 +239,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -255,7 +255,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -292,7 +292,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -322,7 +322,7 @@ test("tamagui -> css-modules -> tamagui: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -359,7 +359,7 @@ test("tamagui -> css-modules -> tamagui: resolves token values across both concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,

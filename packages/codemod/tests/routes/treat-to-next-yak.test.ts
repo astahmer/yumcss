@@ -49,7 +49,7 @@ test("treat -> next-yak: migrates concrete treat syntax to next-yak", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = css\`color: red; padding: 8;\`;",
+		export const card = css\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +92,7 @@ test("treat -> next-yak: carries a documented secondary treat API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = css\`color: red; padding: 8;\`;",
+		export const card = css\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -144,7 +144,7 @@ test("treat -> next-yak: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`color: #2563eb; padding: 8;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +178,7 @@ test("treat -> next-yak: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = css\`color: #2563eb; padding: 8;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -224,7 +224,7 @@ test("treat -> next-yak: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = css\`color: #2563eb; padding: 8;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -267,7 +267,7 @@ test("treat -> next-yak: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		export const card = css\`color: red; padding: 8;\`;
+		export const card = css\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

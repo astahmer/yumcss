@@ -84,16 +84,40 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "red", "padding": "16px" });",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => css.class({ "color": "red", "padding": "16px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -146,16 +170,40 @@ test("mui -> solid-styled -> mui: retains the documented secondary API without s
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const Card = css({ "color": "red", "padding": 8 });",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const Card = css.class({ "color": "red", "padding": 8 });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -222,16 +270,40 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -272,16 +344,40 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -336,16 +432,40 @@ test("mui -> solid-styled -> mui: resolves token values across both concrete leg
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => css.class({ "color": "primary.main", "padding": "16px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

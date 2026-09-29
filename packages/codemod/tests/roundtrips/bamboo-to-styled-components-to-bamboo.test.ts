@@ -83,10 +83,9 @@ test("bamboo -> styled-components -> bamboo: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ color: "red" });",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "red" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -102,19 +101,25 @@ test("bamboo -> styled-components -> bamboo: preserves an actionable concrete ro
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -166,10 +171,9 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ display: "flex", gap: "4" });",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ display: "flex", gap: "4" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -185,19 +189,25 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -264,10 +274,9 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb" });",
-		      "converted": 0,
+		      "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -283,19 +292,25 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -335,10 +350,9 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb" });",
-		      "converted": 0,
+		      "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -354,19 +368,25 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -420,10 +440,9 @@ test("bamboo -> styled-components -> bamboo: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb" });",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -439,19 +458,25 @@ test("bamboo -> styled-components -> bamboo: resolves token values across both c
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

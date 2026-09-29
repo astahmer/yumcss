@@ -54,7 +54,7 @@ describe("semantic metadata and validator domains", () => {
 
 	test("runs standalone custom validators with the canonical registry", () => {
 		const program: StyleProgram = {
-			schema: "pandwind.style-program/4",
+			schema: "pandwind.style-program/5",
 			rules: [],
 			declarations: [],
 			residuals: [],

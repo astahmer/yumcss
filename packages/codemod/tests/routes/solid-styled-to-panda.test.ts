@@ -48,10 +48,11 @@ test("solid-styled -> panda: migrates concrete solid-styled syntax to panda", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { css } from "styled-system/css";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css({ color: "red", padding: "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -67,19 +68,19 @@ test("solid-styled -> panda: migrates concrete solid-styled syntax to panda", ()
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -92,10 +93,11 @@ test("solid-styled -> panda: carries a documented secondary solid-styled API exp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { css } from "styled-system/css";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css({ color: "red", padding: "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -111,19 +113,19 @@ test("solid-styled -> panda: carries a documented secondary solid-styled API exp
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -145,10 +147,11 @@ test("solid-styled -> panda: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css({ color: "#2563eb", padding: "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -164,26 +167,27 @@ test("solid-styled -> panda: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css({ color: "brand.500", padding: "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -199,19 +203,19 @@ test("solid-styled -> panda: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -227,10 +231,11 @@ test("solid-styled -> panda: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { css } from "styled-system/css";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css({ color: "brand.500", padding: "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -246,19 +251,19 @@ test("solid-styled -> panda: resolves concrete token values with project context
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -272,10 +277,12 @@ test("solid-styled -> panda: preserves malformed concrete solid-styled input", (
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;
+		import { css } from "styled-system/css";
+		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+		import type { JSX as __pandwindCardJSX } from "solid-js";
+		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css({ color: "red", padding: "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();
 		const unfinished = { /* unfinished solid-styled */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -291,19 +298,19 @@ test("solid-styled -> panda: preserves malformed concrete solid-styled input", (
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

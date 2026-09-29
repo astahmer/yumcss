@@ -49,45 +49,9 @@ test("style9 -> vue-styled -> style9: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: red;\`;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = styled.div\` color: red;\`;",
+		    "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -97,7 +61,6 @@ test("style9 -> vue-styled -> style9: preserves an actionable concrete round tri
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -112,12 +75,25 @@ test("style9 -> vue-styled -> style9: preserves an actionable concrete round tri
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "red" } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -137,7 +113,7 @@ test("style9 -> vue-styled -> style9: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> vue-styled | lowering-residual: validation)
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -148,41 +124,32 @@ test("style9 -> vue-styled -> style9: retains the documented secondary API witho
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
+		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> vue-styled | lowering-residual: validation)
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -223,45 +190,9 @@ test("style9 -> vue-styled -> style9: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb;\`;",
-		      "converted": 1,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "named-map",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = styled.div\` color: #2563eb;\`;",
+		      "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -271,7 +202,6 @@ test("style9 -> vue-styled -> style9: preserves concrete theme and project conte
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -286,7 +216,7 @@ test("style9 -> vue-styled -> style9: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -294,49 +224,26 @@ test("style9 -> vue-styled -> style9: preserves concrete theme and project conte
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb;\`;",
-		      "converted": 1,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "named-map",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = styled.div\` color: #2563eb;\`;",
+		      "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,7 +253,6 @@ test("style9 -> vue-styled -> style9: preserves concrete theme and project conte
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -361,12 +267,25 @@ test("style9 -> vue-styled -> style9: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -387,45 +306,9 @@ test("style9 -> vue-styled -> style9: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb;\`;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = styled.div\` color: #2563eb;\`;",
+		    "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +318,6 @@ test("style9 -> vue-styled -> style9: resolves token values across both concrete
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -450,12 +332,25 @@ test("style9 -> vue-styled -> style9: resolves token values across both concrete
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

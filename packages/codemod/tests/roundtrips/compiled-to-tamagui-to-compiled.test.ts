@@ -50,7 +50,7 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "red", padding: 8 });",
+		export const card = styled(View, { color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -82,10 +82,12 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> compiled | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { color: "red", padding: 8 });",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		import { css } from "@compiled/react";
+		import { forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
+		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindcardComponent = <C extends __pandwindcardElementType = typeof View>(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<typeof View>, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "red", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -103,19 +105,19 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -210,7 +212,7 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -242,10 +244,12 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> compiled | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
-		      "converted": 0,
+		      "code": "import { View } from "@tamagui/core";
+		import { css } from "@compiled/react";
+		import { forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
+		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindcardComponent = <C extends __pandwindcardElementType = typeof View>(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<typeof View>, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -263,26 +267,26 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -314,10 +318,12 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> compiled | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
-		      "converted": 0,
+		      "code": "import { View } from "@tamagui/core";
+		import { css } from "@compiled/react";
+		import { forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
+		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindcardComponent = <C extends __pandwindcardElementType = typeof View>(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<typeof View>, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -335,19 +341,19 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -368,7 +374,7 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -400,10 +406,12 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> compiled | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		import { css } from "@compiled/react";
+		import { forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
+		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindcardComponent = <C extends __pandwindcardElementType = typeof View>(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<typeof View>, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -421,19 +429,19 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

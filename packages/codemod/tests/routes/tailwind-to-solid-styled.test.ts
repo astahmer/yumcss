@@ -93,9 +93,9 @@ test("tailwind -> solid-styled: carries a documented secondary tailwind API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "rebeccapurple", "md": { "display": "flex" } });",
-		  "converted": 1,
+		  "code": "// pandwind:migrate-skip (route: tailwind -> solid-styled | lowering-residual: validation)
+		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -113,17 +113,25 @@ test("tailwind -> solid-styled: carries a documented secondary tailwind API expl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
 		    },
 		  ],
 		}

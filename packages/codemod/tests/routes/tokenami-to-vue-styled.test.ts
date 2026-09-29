@@ -59,7 +59,6 @@ test("tokenami -> vue-styled: migrates concrete tokenami syntax to vue-styled", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +93,7 @@ test("tokenami -> vue-styled: carries a documented secondary tokenami API explic
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -104,7 +103,6 @@ test("tokenami -> vue-styled: carries a documented secondary tokenami API explic
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -158,7 +156,6 @@ test("tokenami -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -195,7 +192,6 @@ test("tokenami -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -244,7 +240,6 @@ test("tokenami -> vue-styled: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -290,7 +285,6 @@ test("tokenami -> vue-styled: preserves malformed concrete tokenami input", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

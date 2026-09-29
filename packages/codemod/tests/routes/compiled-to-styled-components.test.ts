@@ -48,10 +48,9 @@ test("compiled -> styled-components: migrates concrete compiled syntax to styled
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> styled-components | lowering-residual: validation)
-		export const card = css({ color: "red", padding: 8 });",
-		  "converted": 0,
+		  "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "8px" });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -67,25 +66,17 @@ test("compiled -> styled-components: migrates concrete compiled syntax to styled
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -152,10 +143,9 @@ test("compiled -> styled-components: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> styled-components | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -171,34 +161,25 @@ test("compiled -> styled-components: loads concrete theme and project context va
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> styled-components | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -214,25 +195,17 @@ test("compiled -> styled-components: loads concrete theme and project context va
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -250,10 +223,9 @@ test("compiled -> styled-components: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> styled-components | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		  "converted": 0,
+		  "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -269,25 +241,17 @@ test("compiled -> styled-components: resolves concrete token values with project
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -302,11 +266,10 @@ test("compiled -> styled-components: preserves malformed concrete compiled input
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> styled-components | lowering-residual: validation)
-		export const card = css({ color: "red", padding: 8 });
+		  "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -322,25 +285,17 @@ test("compiled -> styled-components: preserves malformed concrete compiled input
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

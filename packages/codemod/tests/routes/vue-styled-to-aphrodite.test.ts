@@ -48,10 +48,10 @@ test("vue-styled -> aphrodite: migrates concrete vue-styled syntax to aphrodite"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { StyleSheet, css } from "aphrodite";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,19 +69,19 @@ test("vue-styled -> aphrodite: migrates concrete vue-styled syntax to aphrodite"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -94,10 +94,10 @@ test("vue-styled -> aphrodite: carries a documented secondary vue-styled API exp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { StyleSheet, css } from "aphrodite";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +115,19 @@ test("vue-styled -> aphrodite: carries a documented secondary vue-styled API exp
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -149,10 +149,10 @@ test("vue-styled -> aphrodite: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		    "converted": 0,
+		    "code": "import { StyleSheet, css } from "aphrodite";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -170,26 +170,26 @@ test("vue-styled -> aphrodite: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		    "converted": 0,
+		    "code": "import { StyleSheet, css } from "aphrodite";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -207,19 +207,19 @@ test("vue-styled -> aphrodite: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -235,10 +235,10 @@ test("vue-styled -> aphrodite: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
-		  "converted": 0,
+		  "code": "import { StyleSheet, css } from "aphrodite";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +256,19 @@ test("vue-styled -> aphrodite: resolves concrete token values with project conte
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -281,11 +281,11 @@ test("vue-styled -> aphrodite: preserves malformed concrete vue-styled input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const Card = styled.div\`color: red; padding: 1rem;\`;
+		  "code": "import { StyleSheet, css } from "aphrodite";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -303,19 +303,19 @@ test("vue-styled -> aphrodite: preserves malformed concrete vue-styled input", (
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

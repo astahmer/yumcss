@@ -49,8 +49,9 @@ test("vue-styled -> next-yak -> vue-styled: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import { css } from "next-yak";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,8 +84,9 @@ test("vue-styled -> next-yak -> vue-styled: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -94,7 +96,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves an actionable concrete rou
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -133,8 +134,9 @@ test("vue-styled -> next-yak -> vue-styled: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import { css } from "next-yak";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,8 +169,9 @@ test("vue-styled -> next-yak -> vue-styled: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +181,6 @@ test("vue-styled -> next-yak -> vue-styled: retains the documented secondary API
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -232,8 +234,9 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "code": "import { css } from "next-yak";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -266,8 +269,9 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -277,7 +281,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -304,8 +307,9 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "code": "import { css } from "next-yak";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -338,8 +342,9 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -349,7 +354,6 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -390,8 +394,9 @@ test("vue-styled -> next-yak -> vue-styled: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "code": "import { css } from "next-yak";
+		import { defineComponent, h } from "vue";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -424,8 +429,9 @@ test("vue-styled -> next-yak -> vue-styled: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "code": "import { defineComponent, h } from "vue";
+		import styled from "vue-styled-components";
+		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +441,6 @@ test("vue-styled -> next-yak -> vue-styled: resolves token values across both co
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

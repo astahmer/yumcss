@@ -56,7 +56,6 @@ test("compiled -> stylex: migrates concrete compiled syntax to stylex", () => {
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -156,7 +155,6 @@ test("compiled -> stylex: loads concrete theme and project context variants", as
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -193,7 +191,6 @@ test("compiled -> stylex: loads concrete theme and project context variants", as
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -242,7 +239,6 @@ test("compiled -> stylex: resolves concrete token values with project context", 
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",
@@ -289,7 +285,6 @@ test("compiled -> stylex: preserves malformed concrete compiled input", () => {
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "stylex-numeric-normalization",
 		      ],
 		      "availableRepresentations": [
 		        "static",

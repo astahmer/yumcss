@@ -50,7 +50,7 @@ test("compiled -> jss -> compiled: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "red", padding: 8 });",
+		export const card = createUseStyles({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("compiled -> jss -> compiled: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "color": "red", "padding": 8 });",
+		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("compiled -> jss -> compiled: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "#2563eb", padding: 8 });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("compiled -> jss -> compiled: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("compiled -> jss -> compiled: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "#2563eb", padding: 8 });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("compiled -> jss -> compiled: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,7 +399,7 @@ test("compiled -> jss -> compiled: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const card = createUseStyles({ color: "#2563eb", padding: 8 });",
+		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("compiled -> jss -> compiled: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

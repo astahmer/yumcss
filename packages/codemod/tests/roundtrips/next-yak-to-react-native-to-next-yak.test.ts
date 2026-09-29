@@ -134,9 +134,10 @@ test("next-yak -> react-native -> next-yak: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -155,57 +156,31 @@ test("next-yak -> react-native -> next-yak: retains the documented secondary API
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> next-yak | parse-residual: dynamic | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "object spread requires a source adapter",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "object spread requires a source adapter",
-		        "kind": "dynamic",
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

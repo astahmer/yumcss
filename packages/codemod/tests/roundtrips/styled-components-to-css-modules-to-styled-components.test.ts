@@ -52,12 +52,16 @@ test("styled-components -> css-modules -> styled-components: preserves an action
 		    "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
 		        "path": "Card.module.css",
 		        "purpose": "CSS Modules styles for a migrated React component",
+		      },
+		      {
+		        "path": "Card.module.css.map",
+		        "purpose": "CSS Modules source map for a migrated React component",
 		      },
 		    ],
 		    "loweringPlans": [
@@ -94,7 +98,7 @@ test("styled-components -> css-modules -> styled-components: preserves an action
 		    "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -122,12 +126,16 @@ test("styled-components -> css-modules -> styled-components: retains the documen
 		    "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
 		        "path": "Card.module.css",
 		        "purpose": "CSS Modules styles for a migrated React component",
+		      },
+		      {
+		        "path": "Card.module.css.map",
+		        "purpose": "CSS Modules source map for a migrated React component",
 		      },
 		    ],
 		    "loweringPlans": [
@@ -164,7 +172,7 @@ test("styled-components -> css-modules -> styled-components: retains the documen
 		    "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -207,12 +215,16 @@ test("styled-components -> css-modules -> styled-components: preserves concrete 
 		      "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
 		          "path": "Card.module.css",
 		          "purpose": "CSS Modules styles for a migrated React component",
+		        },
+		        {
+		          "path": "Card.module.css.map",
+		          "purpose": "CSS Modules source map for a migrated React component",
 		        },
 		      ],
 		      "loweringPlans": [
@@ -249,7 +261,7 @@ test("styled-components -> css-modules -> styled-components: preserves concrete 
 		      "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -265,12 +277,16 @@ test("styled-components -> css-modules -> styled-components: preserves concrete 
 		      "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
 		          "path": "Card.module.css",
 		          "purpose": "CSS Modules styles for a migrated React component",
+		        },
+		        {
+		          "path": "Card.module.css.map",
+		          "purpose": "CSS Modules source map for a migrated React component",
 		        },
 		      ],
 		      "loweringPlans": [
@@ -307,7 +323,7 @@ test("styled-components -> css-modules -> styled-components: preserves concrete 
 		      "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -337,12 +353,16 @@ test("styled-components -> css-modules -> styled-components: resolves token valu
 		    "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
 		        "path": "Card.module.css",
 		        "purpose": "CSS Modules styles for a migrated React component",
+		      },
+		      {
+		        "path": "Card.module.css.map",
+		        "purpose": "CSS Modules source map for a migrated React component",
 		      },
 		    ],
 		    "loweringPlans": [
@@ -379,7 +399,7 @@ test("styled-components -> css-modules -> styled-components: resolves token valu
 		    "code": "import __pandwindCardStyles from "../Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

@@ -49,7 +49,7 @@ test("treat -> linaria: migrates concrete treat syntax to linaria", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`color: red; padding: 8;\`;",
+		export const card = css\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("treat -> linaria: carries a documented secondary treat API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`color: red; padding: 8;\`;",
+		export const card = css\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("treat -> linaria: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`color: #2563eb; padding: 8;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("treat -> linaria: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = css\`color: #2563eb; padding: 8;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("treat -> linaria: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`color: #2563eb; padding: 8;\`;",
+		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("treat -> linaria: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = css\`color: red; padding: 8;\`;
+		export const card = css\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

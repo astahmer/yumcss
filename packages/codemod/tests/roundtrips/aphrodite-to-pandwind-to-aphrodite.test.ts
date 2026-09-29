@@ -51,7 +51,7 @@ test("aphrodite -> pandwind -> aphrodite: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red", padding: 8 }) };",
+		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("aphrodite -> pandwind -> aphrodite: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
 
-		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -241,7 +241,7 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "#2563eb", padding: 8 }) };",
+		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -276,7 +276,7 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
 
-		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -315,7 +315,7 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "brand", padding: 8 }) };",
+		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -350,7 +350,7 @@ test("aphrodite -> pandwind -> aphrodite: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
 
-		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -404,7 +404,7 @@ test("aphrodite -> pandwind -> aphrodite: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "brand", padding: 8 }) };",
+		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -439,7 +439,7 @@ test("aphrodite -> pandwind -> aphrodite: resolves token values across both conc
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
 
-		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

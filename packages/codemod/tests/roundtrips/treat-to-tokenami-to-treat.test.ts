@@ -50,7 +50,7 @@ test("treat -> tokenami -> treat: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--color": "red", "--padding": 8 });",
+		export const card = css({ "--color": "red", "--padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -83,10 +83,9 @@ test("treat -> tokenami -> treat: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> treat | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ "--color": "red", "--padding": 8 });",
-		    "converted": 0,
+		    "code": "import { style } from "treat";
+		export const card = style({ "color": "red", "padding": "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -94,28 +93,29 @@ test("treat -> tokenami -> treat: preserves an actionable concrete round trip", 
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
-		        "kind": "configuration",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -134,7 +134,7 @@ test("treat -> tokenami -> treat: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--color": "red", "--padding": 8 });",
+		export const card = css({ "--color": "red", "--padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,10 +167,9 @@ test("treat -> tokenami -> treat: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> treat | parse-residual: configuration | available: named-map, residual)
-		export const card = css({ "--color": "red", "--padding": 8 });",
-		    "converted": 0,
+		    "code": "import { style } from "treat";
+		export const card = style({ "color": "red", "padding": "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -178,28 +177,29 @@ test("treat -> tokenami -> treat: retains the documented secondary API without s
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "residual",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
-		        "kind": "configuration",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -233,7 +233,7 @@ test("treat -> tokenami -> treat: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--color": "#2563eb", "--padding": 8 });",
+		export const card = css({ "--color": "#2563eb", "--padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -267,7 +267,7 @@ test("treat -> tokenami -> treat: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -305,7 +305,7 @@ test("treat -> tokenami -> treat: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--color": "var(--color_brand)", "--padding": 8 });",
+		export const card = css({ "--color": "var(--color_brand)", "--padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +339,7 @@ test("treat -> tokenami -> treat: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -392,7 +392,7 @@ test("treat -> tokenami -> treat: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = css({ "--color": "var(--color_brand)", "--padding": 8 });",
+		export const card = css({ "--color": "var(--color_brand)", "--padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -426,7 +426,7 @@ test("treat -> tokenami -> treat: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

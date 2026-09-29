@@ -51,7 +51,7 @@ test("compiled -> pandwind -> compiled: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "red", padding: 8 });",
+		export const card = css.class({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("compiled -> pandwind -> compiled: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "color": "red", "padding": 8 });",
+		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("compiled -> pandwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "#2563eb", padding: 8 });",
+		export const card = css.class({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("compiled -> pandwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +312,7 @@ test("compiled -> pandwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "brand", padding: 8 });",
+		export const card = css.class({ color: "brand", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("compiled -> pandwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -400,7 +400,7 @@ test("compiled -> pandwind -> compiled: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "brand", padding: 8 });",
+		export const card = css.class({ color: "brand", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("compiled -> pandwind -> compiled: resolves token values across both concre
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

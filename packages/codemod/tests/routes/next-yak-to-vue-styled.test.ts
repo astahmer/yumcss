@@ -59,7 +59,6 @@ test("next-yak -> vue-styled: migrates concrete next-yak syntax to vue-styled", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -104,7 +103,6 @@ test("next-yak -> vue-styled: carries a documented secondary next-yak API explic
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -158,7 +156,6 @@ test("next-yak -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -194,7 +191,6 @@ test("next-yak -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -242,7 +238,6 @@ test("next-yak -> vue-styled: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -288,7 +283,6 @@ test("next-yak -> vue-styled: preserves malformed concrete next-yak input", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

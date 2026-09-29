@@ -12,6 +12,17 @@ import {
 
 const catalog = createBuiltinCodemodCatalog();
 const root = "/virtual/css-modules-project";
+const sourceMapReferencePrefix = ["sourceMapping", "URL="].join("");
+const sourceMapReference = (path: string) => `${sourceMapReferencePrefix}${path}`;
+
+const generatedFilesForSnapshot = (files: readonly AdapterGeneratedFile[]) =>
+	files.map((file) => ({
+		...file,
+		content: file.content.replace(sourceMapReferencePrefix, "mapReference="),
+	}));
+
+const stylesheetForSnapshot = (stylesheet: string | undefined) =>
+	stylesheet?.replace(sourceMapReferencePrefix, "mapReference=") ?? null;
 
 const migrate = (source: string) =>
 	runAdapterMigration(source, {
@@ -27,7 +38,7 @@ const migrate = (source: string) =>
 
 const typecheckGeneratedProject = (
 	componentSource: string,
-	componentTag: "button" | "div" = "div",
+	componentTag: "button" | "div" | "a" = "div",
 	consumerAttributes = "",
 ): string => {
 	const projectRoot = resolve(process.cwd(), "../../benchmarks/styling-tsc");
@@ -42,14 +53,14 @@ const typecheckGeneratedProject = (
 		writeFileSync(
 			consumerFile,
 			'import { createRef } from "react";\n' +
-			'import { Card } from "./Card";\n' +
-			`const cardRef = createRef<HTML${componentTag === "button" ? "Button" : "Div"}Element>();\n` +
-			`export const App = () => <Card title="Reusable" className="consumer-class" style={{ display: "block" }} ref={cardRef} ${consumerAttributes}>content</Card>;`,
+				'import { Card } from "./Card";\n' +
+				`const cardRef = createRef<HTML${componentTag === "button" ? "Button" : componentTag === "a" ? "Anchor" : "Div"}Element>();\n` +
+				`export const App = () => <Card title="Reusable" className="consumer-class" style={{ display: "block" }} ref={cardRef} ${consumerAttributes}>content</Card>;`,
 		);
 		writeFileSync(
 			secondConsumerFile,
 			'import { Card } from "./components";\n' +
-			'export const CardPreview = () => <Card aria-label="Preview">preview</Card>;',
+				'export const CardPreview = () => <Card aria-label="Preview">preview</Card>;',
 		);
 		writeFileSync(join(directory, "components.ts"), 'export { Card } from "./Card";');
 		writeFileSync(
@@ -69,7 +80,13 @@ const typecheckGeneratedProject = (
 						strict: true,
 						target: "ESNext",
 					},
-					files: [componentFile, consumerFile, secondConsumerFile, join(directory, "components.ts"), declarationsFile],
+					files: [
+						componentFile,
+						consumerFile,
+						secondConsumerFile,
+						join(directory, "components.ts"),
+						declarationsFile,
+					],
 				},
 				null,
 				2,
@@ -106,11 +123,11 @@ const typecheckPandwindProject = (
 		writeFileSync(
 			consumerFile,
 			'import { createRef } from "react";\n' +
-			'import { Card } from "./Card";\n' +
-			'const divRef = createRef<HTMLDivElement>();\n' +
-			'const anchorRef = createRef<HTMLAnchorElement>();\n' +
-			'export const App = () => <>\n' +
-				'<Card ref={divRef} title="Card">Card</Card>\n' +
+				'import { Card } from "./Card";\n' +
+				"const divRef = createRef<HTMLDivElement>();\n" +
+				"const anchorRef = createRef<HTMLAnchorElement>();\n" +
+				"export const App = () => <>\n" +
+				'<Card ref={divRef} title="Card" $tone="cool">Card</Card>\n' +
 				'<Card as="a" href="/card" ref={anchorRef}>Link</Card>\n' +
 				"</>;\n",
 		);
@@ -176,9 +193,9 @@ const renderGeneratedProject = (
 		writeFileSync(
 			join(sourceDirectory, "App.tsx"),
 			'import { createRef } from "react";\n' +
-			'import { Card } from "./Card";\n' +
-			'const cardRef = createRef();\n' +
-			'export const App = () => <>\n' +
+				'import { Card } from "./Card";\n' +
+				"const cardRef = createRef();\n" +
+				"export const App = () => <>\n" +
 				`<Card title="Reusable" className="consumer-class" style={{ display: "block" }} $tone="private" ref={cardRef} ${consumerAttributes}>content</Card>\n` +
 				`${additionalConsumer}\n` +
 				"</>;\n",
@@ -223,7 +240,7 @@ try {
 test("styled-components -> Pandwind keeps a reusable polymorphic component and typed refs", () => {
 	const source =
 		'import styled from "styled-components";\n' +
-		'export const Card = styled.div({ color: "red", padding: "1rem" });';
+		'export const Card = styled.div.attrs({ title: "Styled", $tone: "base" })({ color: "red", padding: "1rem" });';
 	const result = runAdapterMigration(source, {
 		from: CodemodAdapterId.StyledComponents,
 		to: CodemodAdapterId.Pandwind,
@@ -235,46 +252,56 @@ test("styled-components -> Pandwind keeps a reusable polymorphic component and t
 		semantic: { source: { framework: BuiltinHostFramework.React } },
 	});
 
+	expect(result.residuals).toEqual([]);
 	expect(result.converted).toBe(1);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toContain('from "../__pandwind/slot"');
 	expect(result.generatedFiles).toHaveLength(1);
 	expect(result.generatedFiles[0]?.path).toBe("__pandwind/slot.tsx");
-	expect(result.generatedFiles[0]?.content).toContain("forwardRef<unknown, PandwindSlotRuntimeProps>");
-	expect(result.generatedFiles[0]?.content).toContain("PandwindSlotComponent<DefaultComponent>");
+	expect(result.generatedFiles[0]?.content).toContain(
+		"forwardRef<unknown, PandwindSlotRuntimeProps>",
+	);
+	expect(result.generatedFiles[0]?.content).toContain(
+		"PandwindSlotComponent<DefaultComponent, Prefix>",
+	);
 	expect(result.generatedFiles[0]?.content).toContain("createElement(Component");
+	expect(result.generatedFiles[0]?.content).toContain("filteredPropPrefixes.some");
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
 		import { __pandwindSlot } from "../__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1vtnp7w", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });"
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1vtnp7w", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: ({ title: "Styled", $tone: "base" }), joinClass: cx });"
 	`);
 	expect(result.generatedFiles[0]?.content).toMatchInlineSnapshot(`
 		"import { createElement, forwardRef } from "react";
 		import type { ComponentPropsWithoutRef, ComponentRef, CSSProperties, ElementType, ReactElement, Ref } from "react";
 
-		type PandwindSlotProps<Component extends ElementType> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & {
+		type PandwindSlotTransientProps<Prefix extends string> = {
+			readonly [key in \`\${Prefix}\${string}\`]?: unknown;
+		};
+		type PandwindSlotProps<Component extends ElementType, Prefix extends string> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & PandwindSlotTransientProps<Prefix> & {
 			readonly as?: Component;
 			readonly className?: string;
 			readonly ref?: Ref<ComponentRef<Component>>;
 		};
-		type PandwindSlotComponent<DefaultComponent extends ElementType> = <Component extends ElementType = DefaultComponent>(
-			props: PandwindSlotProps<Component>,
+		type PandwindSlotComponent<DefaultComponent extends ElementType, Prefix extends string> = <Component extends ElementType = DefaultComponent>(
+			props: PandwindSlotProps<Component, Prefix>,
 		) => ReactElement | null;
 		type PandwindSlotRuntimeProps = Record<string, unknown> & {
 			readonly as?: ElementType;
 			readonly className?: string;
 			readonly style?: CSSProperties;
 		};
-		type PandwindSlotOptions<DefaultComponent extends ElementType> = {
+		type PandwindSlotOptions<DefaultComponent extends ElementType, Prefix extends string> = {
 			readonly defaultComponent: DefaultComponent;
 			readonly style: string;
 			readonly stableClass: string;
 			readonly inheritedClass?: string;
 			readonly classAttribute: string;
+			readonly filteredPropPrefixes: readonly Prefix[];
 			readonly attrs: Readonly<Record<string, unknown>> & {
 				readonly as?: ElementType;
 				readonly className?: string;
@@ -288,24 +315,32 @@ test("styled-components -> Pandwind keeps a reusable polymorphic component and t
 			typeof value === "symbol" ||
 			(typeof value === "object" && value !== null);
 
-		export const __pandwindSlot = <DefaultComponent extends ElementType>({
+		export const __pandwindSlot = <DefaultComponent extends ElementType, Prefix extends string = never>({
 			defaultComponent,
 			style,
 			stableClass,
 			inheritedClass,
 			classAttribute,
+			filteredPropPrefixes,
 			attrs,
 			joinClass,
-		}: PandwindSlotOptions<DefaultComponent>) => {
+		}: PandwindSlotOptions<DefaultComponent, Prefix>) => {
 			const component = forwardRef<unknown, PandwindSlotRuntimeProps>((props, ref) => {
 				const Component = isPandwindSlotElementType(props.as) ? props.as : defaultComponent;
 				const { as: _as, ...rest } = props;
 				const { as: _attrsAs, ...attrsProps } = attrs;
+				const forwarded =
+					filteredPropPrefixes.length === 0
+						? { ...rest, ...attrsProps }
+						: Object.fromEntries(
+								[...Object.entries(rest), ...Object.entries(attrsProps)].filter(
+									([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)),
+								),
+							);
 				const attrsClassName = typeof attrs.className === "string" ? attrs.className : undefined;
 				const propsClassName = typeof props.className === "string" ? props.className : undefined;
 				return createElement(Component, {
-					...rest,
-					...attrsProps,
+					...forwarded,
 					ref,
 					[classAttribute]: joinClass(
 						style,
@@ -316,7 +351,7 @@ test("styled-components -> Pandwind keeps a reusable polymorphic component and t
 					),
 				});
 			});
-			return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent>, {
+			return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent, Prefix>, {
 				__pandwindClassName: stableClass,
 			});
 		};
@@ -332,9 +367,41 @@ test("styled-components -> Pandwind keeps a reusable polymorphic component and t
 			'<Card as="a" href="/card" ref={cardRef}>Link</Card>',
 		),
 	);
-	expect(html).toContain('<div title="Reusable"');
+	expect(html).toContain('<div title="Styled"');
+	expect(html).not.toContain("$tone");
 	expect(html).toContain('<a href="/card"');
 	expect(html).toContain(">Link</a>");
+});
+
+test("styled-components -> Pandwind preserves callback attrs with a typed residual", () => {
+	const source =
+		'import styled from "styled-components";\n' +
+		'export const Card = styled.div.attrs((props) => ({ title: props.title }))({ color: "red" });';
+	const result = runAdapterMigration(source, {
+		from: CodemodAdapterId.StyledComponents,
+		to: CodemodAdapterId.Pandwind,
+		file: "/project/src/Card.tsx",
+		root: "/project",
+		mode: "safe",
+		readFile: () => undefined,
+		adapterRegistry: catalog.registry,
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+	});
+
+	expect(result.converted).toBe(0);
+	expect(result.skipped).toBe(1);
+	expect(result.code).toContain(source.slice(source.indexOf("export const Card")));
+	expect(result.residuals).toEqual([
+		expect.objectContaining({
+			kind: "host-framework",
+			hint: "Pandwind preserves callback or non-object attrs until their returned host props can be verified",
+		}),
+	]);
+	expect(result.code).toMatchInlineSnapshot(`
+		"import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> pandwind | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div.attrs((props) => ({ title: props.title }))({ color: "red" });"
+	`);
 });
 
 test("styled-components -> Pandwind preserves attrs-selected hosts as a typed residual", () => {
@@ -368,6 +435,51 @@ test("styled-components -> Pandwind preserves attrs-selected hosts as a typed re
 	`);
 });
 
+test("styled-components transient props stay filtered in a Tailwind class wrapper", () => {
+	const source =
+		'import styled from "styled-components";\n' +
+		'export const Card = styled.div.attrs({ title: "Styled" })({ color: "red" });\n' +
+		'export const App = () => <Card $tone="cool">Card</Card>;';
+	const result = runAdapterMigration(source, {
+		from: CodemodAdapterId.StyledComponents,
+		to: CodemodAdapterId.Tailwind,
+		file: "/project/src/Card.tsx",
+		mode: "safe",
+		readFile: () => undefined,
+		adapterRegistry: catalog.registry,
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+	});
+
+	expect(result.converted).toBe(1);
+	expect(result.skipped).toBe(0);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain("key.startsWith(prefix)");
+	expect(result.code).toContain("ref={ref}");
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const attrs: Record<string, any> = ({ title: "Styled" }); const { as: _attrsAs, forwardedAs: _attrsForwardedAs, ...attrsProps } = attrs; const Component = attrs.as ?? props.as ?? attrs.forwardedAs ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries({ ...rest, ...attrsProps }).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red]", [attrs.className, props.className].filter(Boolean).join(" ")].filter(Boolean).join(" ")} style={{ ...props.style, ...attrs.style }} />; }) as __pandwindCardComponent; })();
+		export const App = () => <Card $tone="cool">Card</Card>;"
+	`);
+	const html = JSON.parse(renderGeneratedProject(result.code, ""));
+	expect(html).toContain('class="[color:red] consumer-class"');
+	expect(html).toContain('title="Styled"');
+	expect(html).not.toContain("$tone");
+	expect(html).toContain(">content</div>");
+	expect(typecheckGeneratedProject(result.code)).toBe("");
+	expect(typecheckGeneratedProject(result.code, "a", 'as="a" href="/card"')).toBe("");
+	const rerun = runAdapterMigration(result.code, {
+		from: CodemodAdapterId.StyledComponents,
+		to: CodemodAdapterId.Tailwind,
+		file: "/project/src/Card.tsx",
+		mode: "safe",
+		readFile: () => undefined,
+		adapterRegistry: catalog.registry,
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+	});
+	expect(rerun.changed).toBe(false);
+});
+
 test("styled-components -> CSS Modules keeps a reusable React component export", () => {
 	const source =
 		'import styled from "styled-components";\n' +
@@ -377,21 +489,27 @@ test("styled-components -> CSS Modules keeps a reusable React component export",
 	expect({
 		code: result.code,
 		converted: result.converted,
-		generatedFiles: result.generatedFiles,
+		generatedFiles: generatedFilesForSnapshot(result.generatedFiles),
 		residuals: result.residuals,
 	}).toMatchInlineSnapshot(`
 		{
 		  "code": "import __pandwindCardStyles from "./Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div">>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"div">, __pandwindCardComponentProps<"div"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
 		      "content": ".root { color: red; padding: 1rem; }
+		/*# mapReference=Card.module.css.map */
 		",
 		      "path": "src/Card.module.css",
 		      "purpose": "CSS Modules styles for a migrated React component",
+		    },
+		    {
+		      "content": "{"version":3,"file":"Card.module.css","sources":["Card.tsx"],"sourcesContent":["import styled from \\"styled-components\\";\\nexport const Card = styled.div({ color: \\"red\\", padding: \\"1rem\\" });"],"names":[],"mappings":"AACoB;AAAA;"}",
+		      "path": "src/Card.module.css.map",
+		      "purpose": "CSS Modules source map for a migrated React component",
 		    },
 		  ],
 		  "residuals": [],
@@ -402,16 +520,23 @@ test("styled-components -> CSS Modules keeps a reusable React component export",
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toMatch(/export const Card = __pandwindCardForwardRef/u);
 	expect(result.code).toContain('import __pandwindCardStyles from "./Card.module.css";');
-	expect(result.code).toContain("__pandwindCardComponentProps<\"div\">");
+	expect(result.code).toContain('__pandwindCardComponentProps<"div">');
 	expect(result.code).toContain("ref");
-	expect(result.generatedFiles).toHaveLength(1);
+	expect(result.generatedFiles).toHaveLength(2);
 	expect(result.generatedFiles[0]).toMatchObject({ path: "src/Card.module.css" });
 	expect(result.generatedFiles[0]?.content).toContain(".root {");
 	expect(result.generatedFiles[0]?.content).toContain("padding: 1rem;");
+	expect(result.generatedFiles[0]?.content).toContain(sourceMapReference("Card.module.css.map"));
+	expect(result.generatedFiles[1]).toMatchObject({ path: "src/Card.module.css.map" });
+	expect(result.generatedFiles[1]?.content).toContain('"sources":["Card.tsx"]');
+	expect(result.generatedFiles[1]?.content).toContain(JSON.stringify(source));
+	expect(result.generatedFiles[1]?.content).not.toContain('"mappings":""');
 	expect(result.code).not.toContain("styled-components");
 	expect(typecheckGeneratedProject(result.code)).toBe("");
 	const stylesheet = result.generatedFiles[0]?.content ?? "";
-	const html = JSON.parse(renderGeneratedProject(result.code, stylesheet));
+	const html = JSON.parse(
+		renderGeneratedProject(result.code, stylesheet, "", result.generatedFiles),
+	);
 	expect(html).toContain('title="Reusable"');
 	expect(html).toMatch(/class="[^"]+ consumer-class"/u);
 	expect(html).toContain('style="display:block"');
@@ -425,27 +550,33 @@ test("styled-components -> CSS Modules keeps a reusable React component export",
 test("styled-components -> CSS Modules preserves literal DOM attrs and their precedence", () => {
 	const source =
 		'import styled from "styled-components";\n' +
-		'export const Card = styled.button.attrs({ type: "button", "aria-label": "Saved" })({ color: "red" });';
+		'export const Card = styled.button.attrs({ type: "button", "aria-label": "Saved", $tone: "base" })({ color: "red" });';
 	const result = migrate(source);
 
 	expect({
 		code: result.code,
 		converted: result.converted,
-		generatedFiles: result.generatedFiles,
+		generatedFiles: generatedFilesForSnapshot(result.generatedFiles),
 		residuals: result.residuals,
 	}).toMatchInlineSnapshot(`
 		{
 		  "code": "import __pandwindCardStyles from "./Card.module.css";
 		import { forwardRef as __pandwindCardForwardRef } from "react";
 		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"button">, __pandwindCardComponentProps<"button">>(({ className, ...props }, ref) => (<button {...Object.fromEntries([...Object.entries(props), ...Object.entries(({ type: "button", "aria-label": "Saved" }))].filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
+		export const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<"button">, __pandwindCardComponentProps<"button"> & { readonly [key in \`$\${string}\`]?: unknown }>(({ className, ...props }, ref) => (<button {...Object.fromEntries([...Object.entries(props), ...Object.entries(({ type: "button", "aria-label": "Saved", $tone: "base" }))].filter(([key]) => !key.startsWith("$")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(" ")} />));",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
 		      "content": ".root { color: red; }
+		/*# mapReference=Card.module.css.map */
 		",
 		      "path": "src/Card.module.css",
 		      "purpose": "CSS Modules styles for a migrated React component",
+		    },
+		    {
+		      "content": "{"version":3,"file":"Card.module.css","sources":["Card.tsx"],"sourcesContent":["import styled from \\"styled-components\\";\\nexport const Card = styled.button.attrs({ type: \\"button\\", \\"aria-label\\": \\"Saved\\", $tone: \\"base\\" })({ color: \\"red\\" });"],"names":[],"mappings":"AACoB;AAAA;"}",
+		      "path": "src/Card.module.css.map",
+		      "purpose": "CSS Modules source map for a migrated React component",
 		    },
 		  ],
 		  "residuals": [],
@@ -454,21 +585,30 @@ test("styled-components -> CSS Modules preserves literal DOM attrs and their pre
 	expect(result.converted).toBe(1);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('Object.entries(({ type: "button", "aria-label": "Saved" }))');
+	expect(result.code).toContain('$tone: "base"');
+	expect(result.code).toContain('!key.startsWith("$")');
 	expect(result.code).toContain('import __pandwindCardStyles from "./Card.module.css";');
-	expect(result.generatedFiles).toHaveLength(1);
-	expect(result.generatedFiles[0]?.content).toBe(".root { color: red; }\n");
-	expect(typecheckGeneratedProject(result.code, "button", 'type="submit" aria-label="Caller"')).toBe("");
+	expect(result.generatedFiles).toHaveLength(2);
+	expect(result.generatedFiles[0]?.content).toContain(".root { color: red; }");
+	expect(
+		typecheckGeneratedProject(
+			result.code,
+			"button",
+			'type="submit" aria-label="Caller" $tone="private"',
+		),
+	).toBe("");
 	const html = JSON.parse(
 		renderGeneratedProject(
 			result.code,
 			result.generatedFiles[0]?.content ?? "",
 			'type="submit" aria-label="Caller"',
+			result.generatedFiles,
 		),
 	);
 	expect(html).toContain("<button");
 	expect(html).toContain('type="button"');
 	expect(html).toContain('aria-label="Saved"');
+	expect(html).not.toContain("$tone");
 	expect(html).not.toContain('type="submit"');
 	expect(html).not.toContain('aria-label="Caller"');
 });
@@ -490,7 +630,9 @@ test("styled-components -> CSS Modules preserves dynamic component styles as a r
 			}),
 		]),
 	);
-	expect(result.code).toContain('export const Card = styled.div({ color: (props) => props.color });');
+	expect(result.code).toContain(
+		"export const Card = styled.div({ color: (props) => props.color });",
+	);
 	expect(result.code).toContain("pandwind:migrate-skip");
 	expect({ converted: result.converted, residuals: result.residuals }).toMatchInlineSnapshot(`
 		{
@@ -530,7 +672,9 @@ test("styled-components -> CSS Modules preserves polymorphic and attrs component
 	}
 	expect(polymorphic.code).toContain('export const App = () => <Card as="a" href="/">link</Card>;');
 	expect(polymorphic.code).not.toContain('<div as="a"');
-	expect(attrs.code).toContain('export const Card = styled.button.attrs({ className: "caller-class" })({ color: "red" });');
+	expect(attrs.code).toContain(
+		'export const Card = styled.button.attrs({ className: "caller-class" })({ color: "red" });',
+	);
 	expect({
 		polymorphic: polymorphic.residuals,
 		attrs: attrs.residuals,
@@ -538,31 +682,16 @@ test("styled-components -> CSS Modules preserves polymorphic and attrs component
 		{
 		  "attrs": [
 		    {
-		      "hint": "components: component subject: styled.button.attrs({ className: "caller-class" }); framework-semantics: react",
-		      "kind": "capability",
-		      "text": "styled.button.attrs({ className: "caller-class" })({ color: "red" })",
-		    },
-		    {
 		      "hint": "attrs must be a literal object of supported DOM attributes without class, style, or polymorphic props",
-		      "kind": "capability",
-		      "text": "styled.button.attrs({ className: "caller-class" })",
-		    },
-		    {
-		      "hint": "css-modules can emit only static React styled intrinsics with literal DOM attrs and without polymorphic as props",
 		      "kind": "capability",
 		      "text": "Card",
 		    },
 		  ],
 		  "polymorphic": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "text": "styled.div({ color: "red" })",
-		    },
-		    {
 		      "hint": "the component has polymorphic as usage",
 		      "kind": "capability",
-		      "text": "styled.div",
+		      "text": "Card",
 		    },
 		  ],
 		}
@@ -594,14 +723,9 @@ test("styled-components -> CSS Modules preserves a component in a malformed sour
 		  "converted": 0,
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "text": "styled.div({ color: "red" })",
-		    },
-		    {
 		      "hint": "the source file contains parse errors",
 		      "kind": "capability",
-		      "text": "styled.div",
+		      "text": "Card",
 		    },
 		  ],
 		}
@@ -634,9 +758,10 @@ test("styled-components -> CSS Modules preserves source numeric unit semantics",
 	expect(css).toContain("-ms-grid-row-span: 1px;");
 	expect(css).toContain("-ms-grid-column: 1px;");
 	expect(css).toContain("-ms-grid-column-span: 1px;");
-	expect({ css, residuals: result.residuals }).toMatchInlineSnapshot(`
+	expect({ css: stylesheetForSnapshot(css), residuals: result.residuals }).toMatchInlineSnapshot(`
 		{
 		  "css": ".root { padding: 8px; margin: 0; opacity: 0.5; line-height: 1.25; font-weight: 700; z-index: 2; --custom: 3; box-flex: 1px; box-flex-group: 1px; box-ordinal-group: 1px; flex-positive: 1px; flex-negative: 1px; flex-order: 1px; -ms-grid-row: 1px; -ms-grid-row-span: 1px; -ms-grid-column: 1px; -ms-grid-column-span: 1px; }
+		/*# mapReference=Card.module.css.map */
 		",
 		  "residuals": [],
 		}
@@ -652,10 +777,11 @@ test("styled-components -> CSS Modules preserves authored declaration precedence
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
-	expect(css).toBe(".root { margin-top: 2px; margin: 1px; }\n");
-	expect({ css, residuals: result.residuals }).toMatchInlineSnapshot(`
+	expect(css).toContain(".root { margin-top: 2px; margin: 1px; }");
+	expect({ css: stylesheetForSnapshot(css), residuals: result.residuals }).toMatchInlineSnapshot(`
 		{
 		  "css": ".root { margin-top: 2px; margin: 1px; }
+		/*# mapReference=Card.module.css.map */
 		",
 		  "residuals": [],
 		}

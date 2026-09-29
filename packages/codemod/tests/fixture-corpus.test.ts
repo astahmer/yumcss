@@ -33,12 +33,49 @@ describe("representative CSS-in-JS migration corpus", () => {
 			to: "emotion",
 			file: style9.file,
 		});
+		expect({
+			code: style9Result.code,
+			converted: style9Result.converted,
+			skipped: style9Result.skipped,
+			residuals: style9Result.residuals,
+		}).toMatchInlineSnapshot(`
+			{
+			  "code": "import { css } from "@emotion/css";
+
+			export const card = { "card": css({ color: "red", padding: "2px" }) };
+			",
+			  "converted": 1,
+			  "residuals": [],
+			  "skipped": 0,
+			}
+		`);
 		expect(jssResult.skipped).toBe(0);
 		expect(style9Result.skipped).toBe(0);
 		expect(jssResult.residuals).toEqual([]);
 		expect(style9Result.residuals).toEqual([]);
 		expect(jssResult.code).toContain('"card": css(');
 		expect(style9Result.code).toContain('"card": css(');
+		expect(style9Result.code).toContain('padding: "2px"');
+	});
+
+	test("normalizes Style9 numbers with the source serializer rules", () => {
+		const result = runAdapterMigration(
+			`import style9 from "style9";
+export const styles = style9.create({ card: { fontSize: 16, opacity: 0.5, lineHeight: 1.25, width: 2, "--scale": 3 } });`,
+			{ from: "style9", to: "emotion", file: "Numbers.ts" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('fontSize: "1rem"');
+		expect(result.code).toContain("opacity: 0.5");
+		expect(result.code).toContain("lineHeight: 1.25");
+		expect(result.code).toContain('width: "2px"');
+		expect(result.code).toContain('"--scale": 3');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css } from "@emotion/css";
+			export const styles = { "card": css({ fontSize: "1rem", opacity: 0.5, lineHeight: 1.25, width: "2px", "--scale": 3 }) };"
+		`);
 	});
 
 	test("records residuals instead of silently accepting a dynamic corpus case", () => {

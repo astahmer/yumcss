@@ -49,7 +49,7 @@ test("compiled -> vue-styled: migrates concrete compiled syntax to vue-styled", 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: red; padding: 8;\`;",
+		export const card = styled.div\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -59,7 +59,6 @@ test("compiled -> vue-styled: migrates concrete compiled syntax to vue-styled", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -93,9 +92,10 @@ test("compiled -> vue-styled: carries a documented secondary compiled API explic
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const colors = styled.div\` color: red;\`;",
-		  "converted": 1,
+		  "code": "import { cssMap } from "@compiled/react";
+		// pandwind:migrate-skip (route: compiled -> vue-styled | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		export const colors = cssMap({ red: { color: "red" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -104,28 +104,27 @@ test("compiled -> vue-styled: carries a documented secondary compiled API explic
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: red",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -148,7 +147,7 @@ test("compiled -> vue-styled: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -158,7 +157,6 @@ test("compiled -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -184,7 +182,7 @@ test("compiled -> vue-styled: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -194,7 +192,6 @@ test("compiled -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -232,7 +229,7 @@ test("compiled -> vue-styled: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -242,7 +239,6 @@ test("compiled -> vue-styled: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -277,7 +273,7 @@ test("compiled -> vue-styled: preserves malformed concrete compiled input", () =
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: red; padding: 8;\`;
+		export const card = styled.div\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -288,7 +284,6 @@ test("compiled -> vue-styled: preserves malformed concrete compiled input", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

@@ -50,7 +50,7 @@ test("solid-styled -> treat -> solid-styled: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -76,11 +76,6 @@ test("solid-styled -> treat -> solid-styled: preserves an actionable concrete ro
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -92,7 +87,7 @@ test("solid-styled -> treat -> solid-styled: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +114,7 @@ test("solid-styled -> treat -> solid-styled: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -145,11 +140,6 @@ test("solid-styled -> treat -> solid-styled: retains the documented secondary AP
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -161,7 +151,7 @@ test("solid-styled -> treat -> solid-styled: retains the documented secondary AP
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -203,7 +193,7 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -229,11 +219,6 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		          "kind": "capability",
 		          "preserved": undefined,
@@ -245,7 +230,7 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -260,7 +245,7 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -286,11 +271,6 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
 		          "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		          "kind": "capability",
 		          "preserved": undefined,
@@ -302,7 +282,7 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -331,7 +311,7 @@ test("solid-styled -> treat -> solid-styled: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -357,11 +337,6 @@ test("solid-styled -> treat -> solid-styled: resolves token values across both c
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -373,7 +348,7 @@ test("solid-styled -> treat -> solid-styled: resolves token values across both c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

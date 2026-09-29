@@ -50,7 +50,7 @@ test("aphrodite -> jss -> aphrodite: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { color: "red", padding: 8 } });",
+		export const styles = createUseStyles({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("aphrodite -> jss -> aphrodite: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 8 } });",
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -215,7 +215,7 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { color: "#2563eb", padding: 8 } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -251,7 +251,7 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -289,7 +289,7 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { color: "#2563eb", padding: 8 } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -325,7 +325,7 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +377,7 @@ test("aphrodite -> jss -> aphrodite: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const styles = createUseStyles({ card: { color: "#2563eb", padding: 8 } });",
+		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -413,7 +413,7 @@ test("aphrodite -> jss -> aphrodite: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
+		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

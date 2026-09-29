@@ -146,7 +146,7 @@ export const App = () => <Card />;`;
 			const css = createUnsafeCss();
 
 			const Card = css.class({ color: "red" });
-			export const App = () => <Card />;"
+			export const App = () => <button className={Card} />;"
 		`);
 	});
 });

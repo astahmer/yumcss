@@ -94,7 +94,6 @@ test("vue-styled -> styled-components -> vue-styled: preserves an actionable con
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -178,7 +177,6 @@ test("vue-styled -> styled-components -> vue-styled: retains the documented seco
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -277,7 +275,6 @@ test("vue-styled -> styled-components -> vue-styled: preserves concrete theme an
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -349,7 +346,6 @@ test("vue-styled -> styled-components -> vue-styled: preserves concrete theme an
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -435,7 +431,6 @@ test("vue-styled -> styled-components -> vue-styled: resolves token values acros
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

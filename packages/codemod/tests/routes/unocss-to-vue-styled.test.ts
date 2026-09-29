@@ -59,7 +59,6 @@ test("unocss -> vue-styled: migrates concrete unocss syntax to vue-styled", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -104,7 +103,6 @@ test("unocss -> vue-styled: carries a documented secondary unocss API explicitly
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -165,7 +163,6 @@ test("unocss -> vue-styled: loads concrete theme and project context variants", 
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -201,7 +198,6 @@ test("unocss -> vue-styled: loads concrete theme and project context variants", 
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -249,7 +245,6 @@ test("unocss -> vue-styled: resolves concrete token values with project context"
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -295,7 +290,6 @@ test("unocss -> vue-styled: preserves malformed concrete unocss input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

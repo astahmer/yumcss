@@ -94,7 +94,6 @@ test("vue-styled -> emotion -> vue-styled: preserves an actionable concrete roun
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -178,7 +177,6 @@ test("vue-styled -> emotion -> vue-styled: retains the documented secondary API 
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -277,7 +275,6 @@ test("vue-styled -> emotion -> vue-styled: preserves concrete theme and project 
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -349,7 +346,6 @@ test("vue-styled -> emotion -> vue-styled: preserves concrete theme and project 
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -435,7 +431,6 @@ test("vue-styled -> emotion -> vue-styled: resolves token values across both con
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

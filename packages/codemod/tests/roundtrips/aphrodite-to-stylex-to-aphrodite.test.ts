@@ -57,7 +57,6 @@ test("aphrodite -> stylex -> aphrodite: preserves an actionable concrete round t
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -231,7 +230,6 @@ test("aphrodite -> stylex -> aphrodite: preserves concrete theme and project con
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -306,7 +304,6 @@ test("aphrodite -> stylex -> aphrodite: preserves concrete theme and project con
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -395,7 +392,6 @@ test("aphrodite -> stylex -> aphrodite: resolves token values across both concre
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",

@@ -48,10 +48,9 @@ test("treat -> styled-components: migrates concrete treat syntax to styled-compo
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "red", padding: 8 });",
-		  "converted": 0,
+		  "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "8px" });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -67,25 +66,17 @@ test("treat -> styled-components: migrates concrete treat syntax to styled-compo
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -100,10 +91,9 @@ test("treat -> styled-components: carries a documented secondary treat API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "red", padding: 8 });",
-		  "converted": 0,
+		  "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "8px" });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -119,25 +109,17 @@ test("treat -> styled-components: carries a documented secondary treat API expli
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -161,10 +143,9 @@ test("treat -> styled-components: loads concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -180,34 +161,25 @@ test("treat -> styled-components: loads concrete theme and project context varia
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -223,25 +195,17 @@ test("treat -> styled-components: loads concrete theme and project context varia
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -259,10 +223,9 @@ test("treat -> styled-components: resolves concrete token values with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		  "converted": 0,
+		  "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -278,25 +241,17 @@ test("treat -> styled-components: resolves concrete token values with project co
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -311,11 +266,10 @@ test("treat -> styled-components: preserves malformed concrete treat input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "red", padding: 8 });
+		  "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -331,25 +285,17 @@ test("treat -> styled-components: preserves malformed concrete treat input", () 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

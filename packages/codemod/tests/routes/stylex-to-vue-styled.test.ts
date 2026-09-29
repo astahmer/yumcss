@@ -48,9 +48,10 @@ test("stylex -> vue-styled: migrates concrete stylex syntax to vue-styled", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: red; padding: 8px;\`;",
-		  "converted": 1,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -59,28 +60,27 @@ test("stylex -> vue-styled: migrates concrete stylex syntax to vue-styled", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -93,9 +93,10 @@ test("stylex -> vue-styled: carries a documented secondary stylex API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: red;\`;",
-		  "converted": 1,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "red" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -104,28 +105,27 @@ test("stylex -> vue-styled: carries a documented secondary stylex API explicitly
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -147,9 +147,10 @@ test("stylex -> vue-styled: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
-		    "converted": 1,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -158,34 +159,34 @@ test("stylex -> vue-styled: loads concrete theme and project context variants", 
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
-		    "converted": 1,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -194,28 +195,27 @@ test("stylex -> vue-styled: loads concrete theme and project context variants", 
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -231,9 +231,10 @@ test("stylex -> vue-styled: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
-		  "converted": 1,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -242,28 +243,27 @@ test("stylex -> vue-styled: resolves concrete token values with project context"
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -276,10 +276,11 @@ test("stylex -> vue-styled: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: red; padding: 8px;\`;
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = stylex.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished stylex */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -288,28 +289,27 @@ test("stylex -> vue-styled: preserves malformed concrete stylex input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

@@ -48,10 +48,9 @@ test("compiled -> react-strict-dom: migrates concrete compiled syntax to react-s
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "red", padding: 8 });",
-		  "converted": 0,
+		  "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "red", padding: "8px" });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,25 +68,17 @@ test("compiled -> react-strict-dom: migrates concrete compiled syntax to react-s
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -156,10 +147,9 @@ test("compiled -> react-strict-dom: loads concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "#2563eb", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -177,34 +167,25 @@ test("compiled -> react-strict-dom: loads concrete theme and project context var
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "#2563eb", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -222,25 +203,17 @@ test("compiled -> react-strict-dom: loads concrete theme and project context var
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -258,10 +231,9 @@ test("compiled -> react-strict-dom: resolves concrete token values with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "#2563eb", padding: 8 });",
-		  "converted": 0,
+		  "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "#2563eb", padding: "8px" });",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -279,25 +251,17 @@ test("compiled -> react-strict-dom: resolves concrete token values with project 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -312,11 +276,10 @@ test("compiled -> react-strict-dom: preserves malformed concrete compiled input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> react-strict-dom | lowering-residual: validation)
-		export const card = css({ color: "red", padding: 8 });
+		  "code": "import { css } from "react-strict-dom";
+		export const card = css.create({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -334,25 +297,17 @@ test("compiled -> react-strict-dom: preserves malformed concrete compiled input"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

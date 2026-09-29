@@ -59,7 +59,6 @@ test("panda -> vue-styled: migrates concrete panda syntax to vue-styled", () => 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +93,7 @@ test("panda -> vue-styled: carries a documented secondary panda API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> vue-styled | lowering-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: panda -> vue-styled | lowering-residual: composition | available: residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,7 +104,6 @@ test("panda -> vue-styled: carries a documented secondary panda API explicitly",
 		        "composition-flatten",
 		      ],
 		      "availableRepresentations": [
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -164,7 +162,6 @@ test("panda -> vue-styled: loads concrete theme and project context variants", a
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -201,7 +198,6 @@ test("panda -> vue-styled: loads concrete theme and project context variants", a
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -250,7 +246,6 @@ test("panda -> vue-styled: resolves concrete token values with project context",
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -296,7 +291,6 @@ test("panda -> vue-styled: preserves malformed concrete panda input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

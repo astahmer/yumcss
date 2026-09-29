@@ -61,7 +61,6 @@ test("pandwind -> vue-styled -> pandwind: preserves an actionable concrete round
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -152,7 +151,6 @@ test("pandwind -> vue-styled -> pandwind: retains the documented secondary API w
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -240,7 +238,6 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -319,7 +316,6 @@ test("pandwind -> vue-styled -> pandwind: preserves concrete theme and project c
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -412,7 +408,6 @@ test("pandwind -> vue-styled -> pandwind: resolves token values across both conc
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

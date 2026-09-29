@@ -49,10 +49,9 @@ test("aphrodite -> styled-components -> aphrodite: preserves an actionable concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -68,39 +67,55 @@ test("aphrodite -> styled-components -> aphrodite: preserves an actionable concr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}
@@ -204,10 +219,9 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		      "converted": 0,
+		      "code": "import styled from "styled-components";
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -223,49 +237,64 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		      "converted": 0,
+		      "code": "import styled from "styled-components";
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -281,39 +310,55 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [],
 		    },
 		  },
@@ -334,10 +379,9 @@ test("aphrodite -> styled-components -> aphrodite: resolves token values across 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -353,39 +397,55 @@ test("aphrodite -> styled-components -> aphrodite: resolves token values across 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}

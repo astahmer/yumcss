@@ -50,7 +50,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves an actionable c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -76,13 +76,13 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves an actionable c
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-		        "kind": "capability",
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -92,7 +92,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves an actionable c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: retains the documented se
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -145,13 +145,13 @@ test("solid-styled -> vanilla-extract -> solid-styled: retains the documented se
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-		        "kind": "capability",
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -161,7 +161,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: retains the documented se
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -203,7 +203,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -229,13 +229,13 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
+		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-		          "kind": "capability",
+		          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		          "kind": "component",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -245,7 +245,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -260,7 +260,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -286,13 +286,13 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: solid",
+		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-		          "kind": "capability",
+		          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		          "kind": "component",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -302,7 +302,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -331,7 +331,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: resolves token values acr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -357,13 +357,13 @@ test("solid-styled -> vanilla-extract -> solid-styled: resolves token values acr
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: solid",
+		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-		        "kind": "capability",
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -373,7 +373,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: resolves token values acr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

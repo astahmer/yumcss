@@ -137,7 +137,7 @@ test("linaria -> react-native -> linaria: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> react-native | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: linaria -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -168,6 +168,11 @@ test("linaria -> react-native -> linaria: retains the documented secondary API w
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -175,7 +180,7 @@ test("linaria -> react-native -> linaria: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> react-native | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: linaria -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

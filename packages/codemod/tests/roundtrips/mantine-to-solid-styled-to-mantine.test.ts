@@ -85,17 +85,41 @@ test("mantine -> solid-styled -> mantine: preserves an actionable concrete round
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
-		    "converted": 0,
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => css.class({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -227,17 +251,41 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
-		      "converted": 0,
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -280,17 +328,41 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
-		      "converted": 0,
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		            "portable-artifact",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -347,17 +419,41 @@ test("mantine -> solid-styled -> mantine: resolves token values across both conc
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
-		    "converted": 0,
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		          "portable-artifact",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

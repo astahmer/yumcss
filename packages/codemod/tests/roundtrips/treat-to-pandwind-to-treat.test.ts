@@ -51,7 +51,7 @@ test("treat -> pandwind -> treat: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "red", padding: 8 });",
+		export const card = css.class({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("treat -> pandwind -> treat: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { style } from "treat";
 
-		export const card = style({ "color": "red", "padding": 8 });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +137,7 @@ test("treat -> pandwind -> treat: retains the documented secondary API without s
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "red", padding: 8 });",
+		export const card = css.class({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,7 +172,7 @@ test("treat -> pandwind -> treat: retains the documented secondary API without s
 		    "changed": true,
 		    "code": "import { style } from "treat";
 
-		export const card = style({ "color": "red", "padding": 8 });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +238,7 @@ test("treat -> pandwind -> treat: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "#2563eb", padding: 8 });",
+		export const card = css.class({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("treat -> pandwind -> treat: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { style } from "treat";
 
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -312,7 +312,7 @@ test("treat -> pandwind -> treat: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "brand", padding: 8 });",
+		export const card = css.class({ color: "brand", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("treat -> pandwind -> treat: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { style } from "treat";
 
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -401,7 +401,7 @@ test("treat -> pandwind -> treat: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ color: "brand", padding: 8 });",
+		export const card = css.class({ color: "brand", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -436,7 +436,7 @@ test("treat -> pandwind -> treat: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { style } from "treat";
 
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

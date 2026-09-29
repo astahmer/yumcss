@@ -49,7 +49,7 @@ test("compiled -> solid-styled: migrates concrete compiled syntax to solid-style
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "red", "padding": 8 });",
+		export const card = css({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("compiled -> solid-styled: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("compiled -> solid-styled: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("compiled -> solid-styled: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#2563eb", "padding": 8 });",
+		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("compiled -> solid-styled: preserves malformed concrete compiled input", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "red", "padding": 8 });
+		export const card = css({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

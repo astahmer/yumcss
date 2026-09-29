@@ -88,9 +88,9 @@ test("pandwind -> styled-components -> pandwind: preserves an actionable concret
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -256,7 +256,7 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -337,7 +337,7 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
@@ -432,7 +432,7 @@ test("pandwind -> styled-components -> pandwind: resolves token values across bo
 		const cx = createCx();
 		const css = createUnsafeCss();
 
-		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+		export const card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {

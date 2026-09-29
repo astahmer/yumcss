@@ -264,7 +264,7 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("@chakra-ui/react");
 		expect(result.code).toContain("<div className={css.class({");
 		expect(result.code).toContain(
-			'css.class({ alignItems: "center", display: "flex", justifyContent: "center" })',
+			'css.class({ display: "flex", alignItems: "center", justifyContent: "center" })',
 		);
 	});
 

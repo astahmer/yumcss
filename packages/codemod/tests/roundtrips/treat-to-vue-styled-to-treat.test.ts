@@ -50,7 +50,43 @@ test("treat -> vue-styled -> treat: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: red; padding: 8;\`;",
+		export const card = styled.div\`color: red; padding: 8px;\`;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { style } from "treat";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style({ "color": "red", "padding": "8px" })] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -82,43 +118,6 @@ test("treat -> vue-styled -> treat: preserves an actionable concrete round trip"
 		        "valid": true,
 		      },
 		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div\`color: red; padding: 8;\`;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -137,7 +136,43 @@ test("treat -> vue-styled -> treat: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: red; padding: 8;\`;",
+		export const card = styled.div\`color: red; padding: 8px;\`;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { style } from "treat";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style({ "color": "red", "padding": "8px" })] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,43 +204,6 @@ test("treat -> vue-styled -> treat: retains the documented secondary API without
 		        "valid": true,
 		      },
 		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div\`color: red; padding: 8;\`;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -239,7 +237,43 @@ test("treat -> vue-styled -> treat: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { style } from "treat";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style({ "color": "#2563eb", "padding": "8px" })] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -271,50 +305,49 @@ test("treat -> vue-styled -> treat: preserves concrete theme and project context
 		          "valid": true,
 		        },
 		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { style } from "treat";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style({ "color": "#2563eb", "padding": "8px" })] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -346,43 +379,6 @@ test("treat -> vue-styled -> treat: preserves concrete theme and project context
 		          "valid": true,
 		        },
 		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -403,7 +399,43 @@ test("treat -> vue-styled -> treat: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { style } from "treat";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style({ "color": "#2563eb", "padding": "8px" })] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,43 +467,6 @@ test("treat -> vue-styled -> treat: resolves token values across both concrete l
 		        "valid": true,
 		      },
 		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

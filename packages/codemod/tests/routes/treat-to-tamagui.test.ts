@@ -49,7 +49,7 @@ test("treat -> tamagui: migrates concrete treat syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "red", padding: 8 });",
+		export const card = styled(View, { color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -91,7 +91,7 @@ test("treat -> tamagui: carries a documented secondary treat API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "red", padding: 8 });",
+		export const card = styled(View, { color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -142,7 +142,7 @@ test("treat -> tamagui: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -175,7 +175,7 @@ test("treat -> tamagui: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -220,7 +220,7 @@ test("treat -> tamagui: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "#2563eb", padding: 8 });",
+		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -262,7 +262,7 @@ test("treat -> tamagui: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const card = styled(View, { color: "red", padding: 8 });
+		export const card = styled(View, { color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

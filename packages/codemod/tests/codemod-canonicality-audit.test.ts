@@ -96,7 +96,7 @@ test("A2 maps Mantine auto spacing and numeric dimensions to CSS semantics", () 
 		expectedOutput:
 			'import { Box } from "@mantine/core";\n' +
 			'import { css } from "@linaria/core";\n' +
-			"export const App = () => <Box className={css`margin-inline: auto; color: #123456; max-width: calc(25rem * var(--mantine-scale));`}/>;",
+			"export const App = () => <Box className={css`color: #123456; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));`}/>;",
 	};
 	const result = mantineToLinaria.run({
 		source: fixture.input,
@@ -108,7 +108,7 @@ test("A2 maps Mantine auto spacing and numeric dimensions to CSS semantics", () 
 		{
 		  "expectedOutput": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box className={css\`margin-inline: auto; color: #123456; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
+		export const App = () => <Box className={css\`color: #123456; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`}/>;",
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="#123456" mx="auto" maw={400} />;",
 		}

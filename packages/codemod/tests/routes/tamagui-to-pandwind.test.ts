@@ -52,7 +52,7 @@ test("tamagui -> pandwind: migrates concrete tamagui syntax to pandwind", () => 
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "red", padding: "$4" });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -150,7 +150,7 @@ test("tamagui -> pandwind: loads concrete theme and project context variants", a
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "#2563eb", padding: "$4" });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -187,7 +187,7 @@ test("tamagui -> pandwind: loads concrete theme and project context variants", a
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "brand", padding: "$4" });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -236,7 +236,7 @@ test("tamagui -> pandwind: resolves concrete token values with project context",
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "brand", padding: "$4" });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -282,7 +282,7 @@ test("tamagui -> pandwind: preserves malformed concrete tamagui input", () => {
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "red", padding: "$4" });
-		export const App = () => <Card />;
+		export const App = () => <View className={Card} />;
 		const unfinished = { /* unfinished tamagui */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -173,7 +173,7 @@ test("mui -> goober -> mui: retains the documented secondary API without silent 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const Card = css.class({ "color": "red", "padding": 8 });",
+		export const Card = css.class({ "color": "red", "padding": "8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

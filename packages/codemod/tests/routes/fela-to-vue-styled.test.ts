@@ -61,7 +61,6 @@ test("fela -> vue-styled: migrates concrete fela syntax to vue-styled", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -106,7 +105,6 @@ test("fela -> vue-styled: carries a documented secondary fela API explicitly", (
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -162,7 +160,6 @@ test("fela -> vue-styled: loads concrete theme and project context variants", as
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -200,7 +197,6 @@ test("fela -> vue-styled: loads concrete theme and project context variants", as
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -250,7 +246,6 @@ test("fela -> vue-styled: resolves concrete token values with project context", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -298,7 +293,6 @@ test("fela -> vue-styled: preserves malformed concrete fela input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

@@ -60,7 +60,6 @@ test("pandwind -> vue-styled: migrates concrete pandwind syntax to vue-styled", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -107,7 +106,6 @@ test("pandwind -> vue-styled: carries a documented secondary pandwind API explic
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -170,7 +168,6 @@ test("pandwind -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -208,7 +205,6 @@ test("pandwind -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -258,7 +254,6 @@ test("pandwind -> vue-styled: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -305,7 +300,6 @@ test("pandwind -> vue-styled: preserves malformed concrete pandwind input", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

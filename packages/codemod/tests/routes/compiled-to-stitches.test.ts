@@ -49,7 +49,7 @@ test("compiled -> stitches: migrates concrete compiled syntax to stitches", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = css({ color: "red", padding: 8 });",
+		export const card = css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("compiled -> stitches: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = css({ color: "#2563eb", padding: 8 });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("compiled -> stitches: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		export const card = css({ color: "#2563eb", padding: 8 });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("compiled -> stitches: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = css({ color: "#2563eb", padding: 8 });",
+		export const card = css({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("compiled -> stitches: preserves malformed concrete compiled input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = css({ color: "red", padding: 8 });
+		export const card = css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

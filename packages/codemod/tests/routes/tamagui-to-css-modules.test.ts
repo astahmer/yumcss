@@ -49,7 +49,7 @@ test("tamagui -> css-modules: migrates concrete tamagui syntax to css-modules", 
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
@@ -158,7 +158,7 @@ test("tamagui -> css-modules: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -195,7 +195,7 @@ test("tamagui -> css-modules: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -244,7 +244,7 @@ test("tamagui -> css-modules: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
@@ -290,7 +290,7 @@ test("tamagui -> css-modules: preserves malformed concrete tamagui input", () =>
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
@@ -316,11 +316,6 @@ test("tamagui -> css-modules: preserves malformed concrete tamagui input", () =>
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "components: component subject: styled(View)",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "the source file contains parse errors",
 		      "kind": "capability",

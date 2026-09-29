@@ -60,7 +60,6 @@ test("styled-components -> vue-styled -> styled-components: preserves an actiona
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -144,7 +143,6 @@ test("styled-components -> vue-styled -> styled-components: retains the document
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,7 +241,6 @@ test("styled-components -> vue-styled -> styled-components: preserves concrete t
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -315,7 +312,6 @@ test("styled-components -> vue-styled -> styled-components: preserves concrete t
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -401,7 +397,6 @@ test("styled-components -> vue-styled -> styled-components: resolves token value
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

@@ -49,7 +49,7 @@ test("aphrodite -> panda: migrates concrete aphrodite syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ color: "red", padding: 8 }) };",
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +145,7 @@ test("aphrodite -> panda: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ color: "#2563eb", padding: 8 }) };",
+		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -179,7 +179,7 @@ test("aphrodite -> panda: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ color: "brand.500", padding: 8 }) };",
+		export const styles = { "card": css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -225,7 +225,7 @@ test("aphrodite -> panda: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ color: "brand.500", padding: 8 }) };",
+		export const styles = { "card": css({ color: "brand.500", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -268,7 +268,7 @@ test("aphrodite -> panda: preserves malformed concrete aphrodite input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const styles = { "card": css({ color: "red", padding: 8 }) };
+		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

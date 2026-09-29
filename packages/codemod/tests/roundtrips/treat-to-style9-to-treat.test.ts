@@ -50,7 +50,7 @@ test("treat -> style9 -> treat: preserves an actionable concrete round trip", ()
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "red", "padding": 8 });",
+		export const card = style9.create({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -86,7 +86,7 @@ test("treat -> style9 -> treat: preserves an actionable concrete round trip", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "red", "padding": 8 });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -136,7 +136,7 @@ test("treat -> style9 -> treat: retains the documented secondary API without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "red", "padding": 8 });",
+		export const card = style9.create({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -172,7 +172,7 @@ test("treat -> style9 -> treat: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "red", "padding": 8 });",
+		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -237,7 +237,7 @@ test("treat -> style9 -> treat: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -273,7 +273,7 @@ test("treat -> style9 -> treat: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -311,7 +311,7 @@ test("treat -> style9 -> treat: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -347,7 +347,7 @@ test("treat -> style9 -> treat: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -399,7 +399,7 @@ test("treat -> style9 -> treat: resolves token values across both concrete legs"
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -435,7 +435,7 @@ test("treat -> style9 -> treat: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": 8 });",
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

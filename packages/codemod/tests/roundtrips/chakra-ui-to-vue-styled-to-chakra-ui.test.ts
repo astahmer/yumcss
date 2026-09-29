@@ -63,7 +63,6 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -143,7 +142,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -154,7 +153,6 @@ test("chakra-ui -> vue-styled -> chakra-ui: retains the documented secondary API
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "residual",
@@ -180,7 +178,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: retains the documented secondary API
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -233,7 +231,6 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -312,7 +309,6 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -405,7 +401,6 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token values across both co
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

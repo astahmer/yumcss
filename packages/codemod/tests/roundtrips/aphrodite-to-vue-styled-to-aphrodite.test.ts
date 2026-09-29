@@ -49,45 +49,9 @@ test("aphrodite -> vue-styled -> aphrodite: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: red; padding: 8;\`;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = styled.div\` color: red; padding: 8;\`;",
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -97,7 +61,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves an actionable concrete rou
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -112,12 +75,25 @@ test("aphrodite -> vue-styled -> aphrodite: preserves an actionable concrete rou
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -137,7 +113,7 @@ test("aphrodite -> vue-styled -> aphrodite: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: fonts; rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -148,22 +124,21 @@ test("aphrodite -> vue-styled -> aphrodite: retains the documented secondary API
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "named-map",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules",
+		        "hint": "named-rules: named style rule: fonts; rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -174,7 +149,7 @@ test("aphrodite -> vue-styled -> aphrodite: retains the documented secondary API
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: fonts; rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -215,45 +190,9 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
-		      "converted": 1,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "named-map",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
+		      "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,7 +202,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -278,7 +216,7 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -286,49 +224,26 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
-		      "converted": 1,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "named-map",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
+		      "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -338,7 +253,6 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -353,12 +267,25 @@ test("aphrodite -> vue-styled -> aphrodite: preserves concrete theme and project
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -379,45 +306,9 @@ test("aphrodite -> vue-styled -> aphrodite: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const styles = styled.div\` color: #2563eb; padding: 8;\`;",
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -427,7 +318,6 @@ test("aphrodite -> vue-styled -> aphrodite: resolves token values across both co
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -442,12 +332,25 @@ test("aphrodite -> vue-styled -> aphrodite: resolves token values across both co
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

@@ -114,7 +114,7 @@ test("next-yak -> treat -> next-yak: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -140,11 +140,6 @@ test("next-yak -> treat -> next-yak: retains the documented secondary API withou
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -156,7 +151,7 @@ test("next-yak -> treat -> next-yak: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

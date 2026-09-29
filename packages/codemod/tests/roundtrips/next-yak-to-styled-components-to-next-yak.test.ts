@@ -83,8 +83,10 @@ test("next-yak -> styled-components -> next-yak: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const card = styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import { css } from "next-yak";
+		import { forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
+		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardComponent = <C extends __pandwindcardElementType = "div">(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<"div">, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[css\`color: red; padding: 1rem;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -165,8 +167,10 @@ test("next-yak -> styled-components -> next-yak: retains the documented secondar
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "code": "import { css } from "next-yak";
+		import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[css\`color: red; padding: 1rem;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -262,8 +266,10 @@ test("next-yak -> styled-components -> next-yak: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "next-yak";
-		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "code": "import { css } from "next-yak";
+		import { forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
+		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardComponent = <C extends __pandwindcardElementType = "div">(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<"div">, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[css\`color: #2563eb; padding: 1rem;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -332,8 +338,10 @@ test("next-yak -> styled-components -> next-yak: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "next-yak";
-		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "code": "import { css } from "next-yak";
+		import { forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
+		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardComponent = <C extends __pandwindcardElementType = "div">(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<"div">, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[css\`color: #2563eb; padding: 1rem;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -416,8 +424,10 @@ test("next-yak -> styled-components -> next-yak: resolves token values across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
-		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "code": "import { css } from "next-yak";
+		import { forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
+		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardComponent = <C extends __pandwindcardElementType = "div">(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<"div">, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={[css\`color: #2563eb; padding: 1rem;\`, props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

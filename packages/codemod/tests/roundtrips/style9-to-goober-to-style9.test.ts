@@ -172,7 +172,7 @@ test("style9 -> goober -> style9: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
+		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": "0.5" }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -94,9 +94,10 @@ test("next-yak -> react-native: carries a documented secondary next-yak API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
-		  "converted": 1,
+		  "code": "import { styled } from "next-yak";
+		// pandwind:migrate-skip (route: next-yak -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +116,19 @@ test("next-yak -> react-native: carries a documented secondary next-yak API expl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

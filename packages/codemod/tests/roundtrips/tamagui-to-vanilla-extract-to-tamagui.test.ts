@@ -50,7 +50,7 @@ test("tamagui -> vanilla-extract -> tamagui: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -81,6 +81,11 @@ test("tamagui -> vanilla-extract -> tamagui: preserves an actionable concrete ro
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -88,7 +93,7 @@ test("tamagui -> vanilla-extract -> tamagui: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -116,7 +121,7 @@ test("tamagui -> vanilla-extract -> tamagui: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | parse-residual: function-dynamic | lowering-residual: capability, component | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -155,6 +160,11 @@ test("tamagui -> vanilla-extract -> tamagui: retains the documented secondary AP
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -162,7 +172,7 @@ test("tamagui -> vanilla-extract -> tamagui: retains the documented secondary AP
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | parse-residual: function-dynamic | lowering-residual: capability, component | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -204,7 +214,7 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -235,6 +245,11 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		          "kind": "component",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
@@ -242,7 +257,7 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -258,7 +273,7 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -289,6 +304,11 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		          "kind": "component",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
@@ -296,7 +316,7 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -326,7 +346,7 @@ test("tamagui -> vanilla-extract -> tamagui: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -357,6 +377,11 @@ test("tamagui -> vanilla-extract -> tamagui: resolves token values across both c
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -364,7 +389,7 @@ test("tamagui -> vanilla-extract -> tamagui: resolves token values across both c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,

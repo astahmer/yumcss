@@ -49,7 +49,7 @@ test("tamagui -> vue-styled: migrates concrete tamagui syntax to vue-styled", ()
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		  "converted": 0,
@@ -61,7 +61,6 @@ test("tamagui -> vue-styled: migrates concrete tamagui syntax to vue-styled", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -96,7 +95,7 @@ test("tamagui -> vue-styled: carries a documented secondary tamagui API explicit
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | parse-residual: function-dynamic | lowering-residual: host-framework | available: named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | parse-residual: function-dynamic | lowering-residual: host-framework | available: residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -106,7 +105,6 @@ test("tamagui -> vue-styled: carries a documented secondary tamagui API explicit
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -155,7 +153,7 @@ test("tamagui -> vue-styled: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		    "converted": 0,
@@ -167,7 +165,6 @@ test("tamagui -> vue-styled: loads concrete theme and project context variants",
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -193,7 +190,7 @@ test("tamagui -> vue-styled: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		    "converted": 0,
@@ -205,7 +202,6 @@ test("tamagui -> vue-styled: loads concrete theme and project context variants",
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,7 +239,7 @@ test("tamagui -> vue-styled: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		  "converted": 0,
@@ -255,7 +251,6 @@ test("tamagui -> vue-styled: resolves concrete token values with project context
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -290,7 +285,7 @@ test("tamagui -> vue-styled: preserves malformed concrete tamagui input", () => 
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <View :class="Card" />;
 		const unfinished = { /* unfinished tamagui */",
@@ -303,7 +298,6 @@ test("tamagui -> vue-styled: preserves malformed concrete tamagui input", () => 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

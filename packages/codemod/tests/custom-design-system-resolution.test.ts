@@ -310,9 +310,9 @@ describe("custom design-system context resolution", () => {
 		expect(toPanda.code).toContain('padding: "card"');
 		expect(toPanda.code).toContain('color: "brand"');
 		expect(toUno.residuals).toEqual([]);
-		expect(toUno.code).toContain('"p-card text-brand"');
+		expect(toUno.code).toContain('"text-brand p-card"');
 		expect(toTailwind.residuals).toEqual([]);
-		expect(toTailwind.code).toContain('"p-card text-brand"');
+		expect(toTailwind.code).toContain('"text-brand p-card"');
 		expect(toTailwind.outcomes[0]?.detail).toContain("exact-token");
 	});
 
@@ -358,9 +358,9 @@ describe("custom design-system context resolution", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"p-card text-brand"');
+		expect(result.code).toContain('"text-brand p-card"');
 		expect(result.code).not.toContain("#123456");
-		expect(result.code).toMatchInlineSnapshot(`"export const card = "p-card text-brand";"`);
+		expect(result.code).toMatchInlineSnapshot(`"export const card = "text-brand p-card";"`);
 
 		const source = await runAdapterMigrationAsync(
 			'export const App = () => <div className="btn-brand text-brand" />;',
@@ -432,9 +432,9 @@ describe("custom design-system context resolution", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"p-card text-brand"');
+		expect(result.code).toContain('"text-brand p-card"');
 		expect(result.code).not.toContain("#123456");
-		expect(result.code).toMatchInlineSnapshot(`"export const card = "p-card text-brand";"`);
+		expect(result.code).toMatchInlineSnapshot(`"export const card = "text-brand p-card";"`);
 
 		const source = await runAdapterMigrationAsync(
 			'export const App = () => <div class="btn-brand text-brand" />;',

@@ -50,7 +50,7 @@ test("compiled -> mui: migrates concrete compiled syntax to mui", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "padding": 8 });",
+		export const card = css.class({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -149,7 +149,7 @@ test("compiled -> mui: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "color": "#2563eb", "padding": 8 });",
+		export const card = css.class({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -185,7 +185,7 @@ test("compiled -> mui: loads concrete theme and project context variants", async
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "padding": 8 });",
+		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -233,7 +233,7 @@ test("compiled -> mui: resolves concrete token values with project context", asy
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "padding": 8 });",
+		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +278,7 @@ test("compiled -> mui: preserves malformed concrete compiled input", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "padding": 8 });
+		export const card = css.class({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

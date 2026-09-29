@@ -84,7 +84,7 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -113,6 +113,11 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		      {
 		        "hint": "components: component subject: styled.div; framework-semantics: react",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -271,7 +276,7 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -300,6 +305,11 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		        {
 		          "hint": "components: component subject: styled.div; framework-semantics: react",
 		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -345,7 +355,7 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -374,6 +384,11 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		        {
 		          "hint": "components: component subject: styled.div; framework-semantics: react",
 		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -433,7 +448,7 @@ test("react-native -> styled-components -> react-native: resolves token values a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -462,6 +477,11 @@ test("react-native -> styled-components -> react-native: resolves token values a
 		      {
 		        "hint": "components: component subject: styled.div; framework-semantics: react",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],

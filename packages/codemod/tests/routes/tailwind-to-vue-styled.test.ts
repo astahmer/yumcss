@@ -59,7 +59,6 @@ test("tailwind -> vue-styled: migrates concrete tailwind syntax to vue-styled", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -104,7 +103,6 @@ test("tailwind -> vue-styled: carries a documented secondary tailwind API explic
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -165,7 +163,6 @@ test("tailwind -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -201,7 +198,6 @@ test("tailwind -> vue-styled: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -249,7 +245,6 @@ test("tailwind -> vue-styled: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -295,7 +290,6 @@ test("tailwind -> vue-styled: preserves malformed concrete tailwind input", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

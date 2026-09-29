@@ -59,7 +59,6 @@ test("goober -> vue-styled: migrates concrete goober syntax to vue-styled", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -104,7 +103,6 @@ test("goober -> vue-styled: carries a documented secondary goober API explicitly
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -158,7 +156,6 @@ test("goober -> vue-styled: loads concrete theme and project context variants", 
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -194,7 +191,6 @@ test("goober -> vue-styled: loads concrete theme and project context variants", 
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -242,7 +238,6 @@ test("goober -> vue-styled: resolves concrete token values with project context"
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -288,7 +283,6 @@ test("goober -> vue-styled: preserves malformed concrete goober input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

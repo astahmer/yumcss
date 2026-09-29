@@ -101,7 +101,8 @@ describe("codemod output file boundaries", () => {
 		const barrelFile = "src/index.ts";
 		const consumerFile = "src/ui/App.tsx";
 		const barrel = 'export { card } from "@/styles";';
-		const consumer = 'import { card } from "../index";\nexport const App = () => <div className={card} />;';
+		const consumer =
+			'import { card } from "../index";\nexport const App = () => <div className={card} />;';
 		const targetCases = [
 			{ target: CodemodAdapterId.Treat, extension: ".treat.ts", importSpecifier: "./styles.treat" },
 			{

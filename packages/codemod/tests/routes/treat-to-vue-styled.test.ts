@@ -49,7 +49,7 @@ test("treat -> vue-styled: migrates concrete treat syntax to vue-styled", () => 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: red; padding: 8;\`;",
+		export const card = styled.div\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -59,7 +59,6 @@ test("treat -> vue-styled: migrates concrete treat syntax to vue-styled", () => 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +93,7 @@ test("treat -> vue-styled: carries a documented secondary treat API explicitly",
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: red; padding: 8;\`;",
+		export const card = styled.div\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -104,7 +103,6 @@ test("treat -> vue-styled: carries a documented secondary treat API explicitly",
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -148,7 +146,7 @@ test("treat -> vue-styled: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -158,7 +156,6 @@ test("treat -> vue-styled: loads concrete theme and project context variants", a
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -184,7 +181,7 @@ test("treat -> vue-styled: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -194,7 +191,6 @@ test("treat -> vue-styled: loads concrete theme and project context variants", a
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -232,7 +228,7 @@ test("treat -> vue-styled: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: #2563eb; padding: 8;\`;",
+		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -242,7 +238,6 @@ test("treat -> vue-styled: resolves concrete token values with project context",
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -277,7 +272,7 @@ test("treat -> vue-styled: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		export const card = styled.div\`color: red; padding: 8;\`;
+		export const card = styled.div\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -288,7 +283,6 @@ test("treat -> vue-styled: preserves malformed concrete treat input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

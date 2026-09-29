@@ -49,9 +49,10 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -70,64 +71,31 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> solid-styled | parse-residual: dynamic | lowering-residual: host-framework | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "object spread requires a source adapter",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "object spread requires a source adapter",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "solid-styled has no host representation for react-native",
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -146,9 +114,10 @@ test("solid-styled -> react-native -> solid-styled: retains the documented secon
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -167,64 +136,31 @@ test("solid-styled -> react-native -> solid-styled: retains the documented secon
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> solid-styled | parse-residual: dynamic | lowering-residual: host-framework | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style, ...props.style }} />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "object spread requires a source adapter",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "object spread requires a source adapter",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "solid-styled has no host representation for react-native",
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: red; padding: 1rem;\`;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -258,9 +194,10 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
-		      "converted": 1,
+		      "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -279,59 +216,13 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> solid-styled | parse-residual: dynamic | lowering-residual: host-framework | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "residual",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "object spread requires a source adapter",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "object spread requires a source adapter",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "solid-styled has no host representation for react-native",
+		          "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -339,13 +230,27 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
-		      "converted": 1,
+		      "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -364,64 +269,31 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> solid-styled | parse-residual: dynamic | lowering-residual: host-framework | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "residual",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
 		          "outcome": "residual",
-		          "representation": "residual",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "object spread requires a source adapter",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "object spread requires a source adapter",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "solid-styled has no host representation for react-native",
+		          "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -442,9 +314,10 @@ test("solid-styled -> react-native -> solid-styled: resolves token values across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
-		    "converted": 1,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -463,64 +336,31 @@ test("solid-styled -> react-native -> solid-styled: resolves token values across
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> solid-styled | parse-residual: dynamic | lowering-residual: host-framework | available: named-map, residual)
-		export const Card = (props) => <View {...props} style={{ ...StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style, ...props.style }} />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "residual",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "object spread requires a source adapter",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "object spread requires a source adapter",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "solid-styled has no host representation for react-native",
+		        "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { styled } from "solid-styled-components";
+		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

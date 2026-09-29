@@ -18,8 +18,7 @@ describe("production differential matrix", () => {
 			JSON.stringify(
 				result.cases.flatMap((item, index) => {
 					const expected = differentialMatrixFixtures.cases[index]?.expected;
-					const failed =
-						expected === DifferentialExpectedTag.Residual ? item.valid : !item.valid;
+					const failed = expected === DifferentialExpectedTag.Residual ? item.valid : !item.valid;
 					return failed
 						? [
 								{

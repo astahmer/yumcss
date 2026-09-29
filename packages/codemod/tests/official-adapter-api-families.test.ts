@@ -152,7 +152,9 @@ describe("official adapter API families", () => {
 				if (api.name === "styled component" && api.adapter === CodemodAdapterId.Stitches) {
 					expect(result.code).toContain("const __pandwindSlot =");
 					expect(result.code).toContain("export const Card = __pandwindSlot(");
-					expect(result.code).toContain('classAttribute: "className", attrs: {}, joinClass: cx');
+					expect(result.code).toContain(
+						'classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx',
+					);
 				}
 				if (api.name === "styled tagged template" && api.adapter === CodemodAdapterId.Goober) {
 					expect(result.code).toContain("css.class");
@@ -772,8 +774,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1133,8 +1135,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1206,8 +1208,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1349,8 +1351,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1665,8 +1667,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1981,8 +1983,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2119,8 +2121,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-jifjss", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-jifjss", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2268,7 +2270,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
+			export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2598,7 +2600,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "button"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
+			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "button"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2607,15 +2609,16 @@ describe("official adapter API families", () => {
 			        "availableRepresentations": [
 			          "named-map",
 			          "residual",
+			          "target-native",
 			        ],
-			        "representation": "residual",
+			        "representation": "target-native",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "host-runtime",
-			        "representation": "residual",
+			        "representation": "target-native",
 			      },
 			    ],
 			    "residuals": [],
@@ -2634,8 +2637,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2756,8 +2759,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3036,8 +3039,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });
 			export const App = () => <Card as="a" href="/docs" />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3075,8 +3078,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Button = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1f4hbee", inheritedClass: undefined, classAttribute: "className", attrs: ({ type: "button", "aria-label": "Save" }), joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Button = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1f4hbee", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: ({ type: "button", "aria-label": "Save" }), joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3113,9 +3116,9 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 			const Link = (props: { href: string }) => <a {...props} />;
-			export const Card = __pandwindSlot({ defaultComponent: (Link), style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			export const Card = __pandwindSlot({ defaultComponent: (Link), style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3152,8 +3155,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3188,7 +3191,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (({ theme }) => theme.colors.brand)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
+			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (({ theme }) => theme.colors.brand)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3721,7 +3724,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const card = css.class({ color: "red", padding: 8 });",
+			export const card = css.class({ color: "red", padding: "8px" });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -4012,7 +4015,7 @@ describe("official adapter API families", () => {
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 			import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
 			const css = createUnsafeCss();
-			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: 4 } } } });",
+			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "4px" } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
 			      {
@@ -4123,8 +4126,8 @@ describe("official adapter API families", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -4158,11 +4161,13 @@ describe("official adapter API families", () => {
 			  "vue-styled/theme callback": {
 			    "changed": true,
 			    "code": "<script setup>
+			import { forwardRef as __pandwindForwardRef } from "react";
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { defaultPreset } from "pandwind/preset/default";
+			import type * as React from "react";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 
-			const Card = (props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }) => { const style = runtimeCss.vars({ color: (props => props.color)(props) }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries(Object.entries(rest).filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} {...attrsProps} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; };
+			const Card = __pandwindForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: (props => props.color)(props) }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });
 			</script>
 			<template><Card color="red" /></template>",
 			    "converted": 1,
@@ -4173,15 +4178,16 @@ describe("official adapter API families", () => {
 			        "availableRepresentations": [
 			          "named-map",
 			          "residual",
+			          "target-native",
 			        ],
-			        "representation": "residual",
+			        "representation": "target-native",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "host-runtime",
-			        "representation": "residual",
+			        "representation": "target-native",
 			      },
 			    ],
 			    "residuals": [],

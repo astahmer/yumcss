@@ -67,7 +67,7 @@ describe("Tamagui adapter", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('css.class({ padding: 16, color: "red" })');
+		expect(result.code).toContain('style: css.class({ color: "red", padding: 16 })');
 		expect(result.code).toContain('import { View } from "@tamagui/core";');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { View } from "@tamagui/core";
@@ -75,8 +75,8 @@ describe("Tamagui adapter", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: (View), style: css.class({ padding: 16, color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", attrs: {}, joinClass: cx });"
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: (View), style: css.class({ color: "red", padding: 16 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
 		`);
 	});
 
@@ -138,7 +138,9 @@ describe("Tamagui adapter", () => {
 			path: "__pandwind/slot.tsx",
 			purpose: "shared static component slot helper",
 		});
-		expect(card.generatedFiles[0]?.content).toContain("export const __pandwindSlot = ({");
+		expect(card.generatedFiles[0]?.content).toContain(
+			"export const __pandwindSlot = <DefaultComponent extends ElementType",
+		);
 	});
 
 	test("keeps runtime theme callbacks visible as residuals", () => {
@@ -200,7 +202,7 @@ describe("Tamagui adapter", () => {
 			        ],
 			        "rules": [],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/4",
+			        "schema": "pandwind.style-program/5",
 			        "source": {
 			          "adapter": "tamagui",
 			          "end": 113,

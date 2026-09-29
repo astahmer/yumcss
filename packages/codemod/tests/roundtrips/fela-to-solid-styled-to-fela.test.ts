@@ -86,18 +86,41 @@ test("fela -> solid-styled -> fela: preserves an actionable concrete round trip"
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = css({ "color": "red" });",
-		    "converted": 0,
+		export const card = renderer.renderRule({ "color": "red" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -151,10 +174,8 @@ test("fela -> solid-styled -> fela: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> fela | capability-blocked: components: component subject: styled("button"); framework-semantics: solid | available: static, named-map, residual)
-		export const Card = styled("button")(() => ({ "color": "red" }));",
-		    "converted": 0,
+		    "code": "export const Card = renderer.renderRule({ "color": "red" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -172,19 +193,25 @@ test("fela -> solid-styled -> fela: retains the documented secondary API without
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled("button"); framework-semantics: solid",
-		        "kind": "capability",
+		        "hint": "a reusable Solid JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -254,18 +281,41 @@ test("fela -> solid-styled -> fela: preserves concrete theme and project context
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = css({ "color": "#2563eb" });",
-		      "converted": 0,
+		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -308,18 +358,41 @@ test("fela -> solid-styled -> fela: preserves concrete theme and project context
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = css({ "color": "#2563eb" });",
-		      "converted": 0,
+		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -376,18 +449,41 @@ test("fela -> solid-styled -> fela: resolves token values across both concrete l
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { css } from "solid-styled-components";
 		const renderer = createRenderer();
-		export const card = css({ "color": "#2563eb" });",
-		    "converted": 0,
+		export const card = renderer.renderRule({ "color": "#2563eb" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

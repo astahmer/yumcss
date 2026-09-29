@@ -61,7 +61,6 @@ test("mantine -> vue-styled -> mantine: preserves an actionable concrete round t
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -138,7 +137,7 @@ test("mantine -> vue-styled -> mantine: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: named-map, residual)
+		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -148,7 +147,6 @@ test("mantine -> vue-styled -> mantine: retains the documented secondary API wit
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "residual",
@@ -174,7 +172,7 @@ test("mantine -> vue-styled -> mantine: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: named-map, residual)
+		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -227,7 +225,6 @@ test("mantine -> vue-styled -> mantine: preserves concrete theme and project con
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -304,7 +301,6 @@ test("mantine -> vue-styled -> mantine: preserves concrete theme and project con
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -395,7 +391,6 @@ test("mantine -> vue-styled -> mantine: resolves token values across both concre
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

@@ -60,7 +60,6 @@ test("unocss -> vue-styled -> unocss: preserves an actionable concrete round tri
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -147,7 +146,6 @@ test("unocss -> vue-styled -> unocss: retains the documented secondary API witho
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -231,7 +229,6 @@ test("unocss -> vue-styled -> unocss: preserves concrete theme and project conte
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -306,7 +303,6 @@ test("unocss -> vue-styled -> unocss: preserves concrete theme and project conte
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -395,7 +391,6 @@ test("unocss -> vue-styled -> unocss: resolves token values across both concrete
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

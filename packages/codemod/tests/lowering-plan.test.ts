@@ -87,7 +87,7 @@ describe("StyleProgram lowering plans", () => {
 			      },
 			    ],
 			    "runtime": undefined,
-			    "schema": "pandwind.style-program/4",
+			    "schema": "pandwind.style-program/5",
 			    "source": undefined,
 			    "sourceMap": [],
 			    "themes": undefined,

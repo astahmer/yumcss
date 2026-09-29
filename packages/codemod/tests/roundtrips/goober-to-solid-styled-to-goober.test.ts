@@ -84,16 +84,40 @@ test("goober -> solid-styled -> goober: preserves an actionable concrete round t
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
+		    "changed": true,
+		    "code": "import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "1rem" });",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -147,10 +171,9 @@ test("goober -> solid-styled -> goober: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> goober | capability-blocked: components: component subject: styled("div"); framework-semantics: solid | available: static, named-map, residual)
-		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
-		    "converted": 0,
+		    "code": "import { css } from "goober";
+		export const Card = css({ "color": "red", "padding": "1rem" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -168,19 +191,25 @@ test("goober -> solid-styled -> goober: retains the documented secondary API wit
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled("div"); framework-semantics: solid",
-		        "kind": "capability",
+		        "hint": "a reusable Solid JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -248,16 +277,40 @@ test("goober -> solid-styled -> goober: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
+		      "changed": true,
+		      "code": "import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -298,16 +351,40 @@ test("goober -> solid-styled -> goober: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
+		      "changed": true,
+		      "code": "import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
-		      "converted": 0,
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -362,16 +439,40 @@ test("goober -> solid-styled -> goober: resolves token values across both concre
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
+		    "changed": true,
+		    "code": "import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
-		    "converted": 0,
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

@@ -60,7 +60,6 @@ test("mantine -> vue-styled: migrates concrete mantine syntax to vue-styled", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -95,7 +94,7 @@ test("mantine -> vue-styled: carries a documented secondary mantine API explicit
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: named-map, residual)
+		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,7 +104,6 @@ test("mantine -> vue-styled: carries a documented secondary mantine API explicit
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -160,7 +158,6 @@ test("mantine -> vue-styled: loads concrete theme and project context variants",
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -198,7 +195,6 @@ test("mantine -> vue-styled: loads concrete theme and project context variants",
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -248,7 +244,6 @@ test("mantine -> vue-styled: resolves concrete token values with project context
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -295,7 +290,6 @@ test("mantine -> vue-styled: preserves malformed concrete mantine input", () => 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

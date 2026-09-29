@@ -49,10 +49,9 @@ test("treat -> styled-components -> treat: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "red", padding: 8 });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -68,40 +67,61 @@ test("treat -> styled-components -> treat: preserves an actionable concrete roun
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { style } from "treat";
+		export const card = style({ "color": "red", "padding": "8px" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "red", padding: 8 });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -119,10 +139,9 @@ test("treat -> styled-components -> treat: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "red", padding: 8 });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -138,40 +157,61 @@ test("treat -> styled-components -> treat: retains the documented secondary API 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { style } from "treat";
+		export const card = style({ "color": "red", "padding": "8px" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "red", padding: 8 });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -204,10 +244,9 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		      "converted": 0,
+		      "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -223,49 +262,69 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { style } from "treat";
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		      "converted": 0,
+		      "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -281,40 +340,61 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { style } from "treat";
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
+		      "converted": 1,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		      "converted": 0,
-		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -334,10 +414,9 @@ test("treat -> styled-components -> treat: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
+		    "code": "import styled from "styled-components";
+		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -353,40 +432,61 @@ test("treat -> styled-components -> treat: resolves token values across both con
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { style } from "treat";
+		export const card = style({ "color": "#2563eb", "padding": "8px" });",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> styled-components | lowering-residual: validation)
-		export const card = style({ color: "#2563eb", padding: 8 });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
 		  },
 		}
 	`)

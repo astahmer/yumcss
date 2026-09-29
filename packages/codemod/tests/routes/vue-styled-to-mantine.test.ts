@@ -49,7 +49,7 @@ test("vue-styled -> mantine: migrates concrete vue-styled syntax to mantine", ()
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -74,8 +74,8 @@ test("vue-styled -> mantine: migrates concrete vue-styled syntax to mantine", ()
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
+		      "hint": "Mantine style-prop projection requires react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -94,7 +94,7 @@ test("vue-styled -> mantine: carries a documented secondary vue-styled API expli
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -119,8 +119,8 @@ test("vue-styled -> mantine: carries a documented secondary vue-styled API expli
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
+		      "hint": "Mantine style-prop projection requires react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -148,7 +148,7 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -173,8 +173,8 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "Mantine style-prop projection requires react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -184,7 +184,7 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -209,8 +209,8 @@ test("vue-styled -> mantine: loads concrete theme and project context variants",
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "Mantine style-prop projection requires react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -232,7 +232,7 @@ test("vue-styled -> mantine: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -257,8 +257,8 @@ test("vue-styled -> mantine: resolves concrete token values with project context
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
+		      "hint": "Mantine style-prop projection requires react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -277,7 +277,7 @@ test("vue-styled -> mantine: preserves malformed concrete vue-styled input", () 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: vue-styled -> mantine | lowering-residual: host-framework)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 0,
@@ -303,8 +303,8 @@ test("vue-styled -> mantine: preserves malformed concrete vue-styled input", () 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: vue",
-		      "kind": "capability",
+		      "hint": "Mantine style-prop projection requires react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

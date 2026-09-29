@@ -48,10 +48,9 @@ test("aphrodite -> react-strict-dom: migrates concrete aphrodite syntax to react
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> react-strict-dom | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
-		  "converted": 0,
+		  "code": "import { css } from "react-strict-dom";
+		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,25 +68,17 @@ test("aphrodite -> react-strict-dom: migrates concrete aphrodite syntax to react
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -165,10 +156,9 @@ test("aphrodite -> react-strict-dom: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> react-strict-dom | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		    "code": "import { css } from "react-strict-dom";
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -186,34 +176,25 @@ test("aphrodite -> react-strict-dom: loads concrete theme and project context va
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> react-strict-dom | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		    "converted": 0,
+		    "code": "import { css } from "react-strict-dom";
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -231,25 +212,17 @@ test("aphrodite -> react-strict-dom: loads concrete theme and project context va
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -267,10 +240,9 @@ test("aphrodite -> react-strict-dom: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> react-strict-dom | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
-		  "converted": 0,
+		  "code": "import { css } from "react-strict-dom";
+		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -288,25 +260,17 @@ test("aphrodite -> react-strict-dom: resolves concrete token values with project
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -321,11 +285,10 @@ test("aphrodite -> react-strict-dom: preserves malformed concrete aphrodite inpu
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> react-strict-dom | lowering-residual: validation)
-		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
+		  "code": "import { css } from "react-strict-dom";
+		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -343,25 +306,17 @@ test("aphrodite -> react-strict-dom: preserves malformed concrete aphrodite inpu
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

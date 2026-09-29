@@ -62,7 +62,6 @@ test("chakra-ui -> vue-styled: migrates concrete chakra-ui syntax to vue-styled"
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -97,7 +96,7 @@ test("chakra-ui -> vue-styled: carries a documented secondary chakra-ui API expl
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
@@ -108,7 +107,6 @@ test("chakra-ui -> vue-styled: carries a documented secondary chakra-ui API expl
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -162,7 +160,6 @@ test("chakra-ui -> vue-styled: loads concrete theme and project context variants
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -199,7 +196,6 @@ test("chakra-ui -> vue-styled: loads concrete theme and project context variants
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -248,7 +244,6 @@ test("chakra-ui -> vue-styled: resolves concrete token values with project conte
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -295,7 +290,6 @@ test("chakra-ui -> vue-styled: preserves malformed concrete chakra-ui input", as
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

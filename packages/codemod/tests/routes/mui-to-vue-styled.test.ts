@@ -59,7 +59,6 @@ test("mui -> vue-styled: migrates concrete mui syntax to vue-styled", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -104,7 +103,6 @@ test("mui -> vue-styled: carries a documented secondary mui API explicitly", () 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -157,7 +155,6 @@ test("mui -> vue-styled: loads concrete theme and project context variants", asy
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -193,7 +190,6 @@ test("mui -> vue-styled: loads concrete theme and project context variants", asy
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -241,7 +237,6 @@ test("mui -> vue-styled: resolves concrete token values with project context", a
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -287,7 +282,6 @@ test("mui -> vue-styled: preserves malformed concrete mui input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

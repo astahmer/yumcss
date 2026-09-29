@@ -94,9 +94,10 @@ test("mui -> aphrodite: carries a documented secondary mui API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-		export const Card = StyleSheet.create({ "color": "red", "padding": 8 });",
-		  "converted": 1,
+		  "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> aphrodite | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -114,17 +115,25 @@ test("mui -> aphrodite: carries a documented secondary mui API explicitly", () =
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
 		    },
 		  ],
 		}

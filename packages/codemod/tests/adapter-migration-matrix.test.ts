@@ -391,21 +391,20 @@ describe("composed cross-ecosystem routes", () => {
 		const source =
 			'import { StyleSheet } from "aphrodite";\n' +
 			'const styles = StyleSheet.create({ button: { color: "red" } });';
-		const result = migrateTo(
-			source,
-			CodemodAdapterId.Aphrodite,
-			targetId,
-			"styles.ts",
-		);
+		const result = migrateTo(source, CodemodAdapterId.Aphrodite, targetId, "styles.ts");
 
 		if (targetId === CodemodAdapterId.VueStyled) {
 			expect(result.converted).toBe(0);
 			expect(result.skipped).toBe(1);
 			expect(
-				result.residuals.some((residual) => residual.hint?.includes("named-rules: named style rule: button")),
+				result.residuals.some((residual) =>
+					residual.hint?.includes("named-rules: named style rule: button"),
+				),
 			).toBe(true);
 			expect(result.code).toContain("pandwind:migrate-skip");
-			expect(result.code).toContain('const styles = StyleSheet.create({ button: { color: "red" } });');
+			expect(result.code).toContain(
+				'const styles = StyleSheet.create({ button: { color: "red" } });',
+			);
 			expect(result.code).toMatchInlineSnapshot(`
 				"import { StyleSheet } from "aphrodite";
 				// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: button | available: static, residual)
@@ -432,6 +431,10 @@ describe("composed cross-ecosystem routes", () => {
 				adapter.migration.targetPolicy.hostRepresentation === StyleHostRepresentationKind.Class,
 		)
 		.map((adapter) => adapter.id);
+	const inlineClassTargets: ReadonlySet<string> = new Set([
+		CodemodAdapterId.Pandwind,
+		CodemodAdapterId.Emotion,
+	]);
 
 	test.each(classTargets)("rewrites a styled subject to a static class in %s", (targetId) => {
 		const result = migrateTo(
@@ -455,18 +458,22 @@ describe("composed cross-ecosystem routes", () => {
 			return;
 		}
 
-		expect(result.residuals, `${CodemodAdapterId.StyledComponents} -> ${targetId}`).toEqual([]);
+		expect(
+			result.residuals,
+			`${CodemodAdapterId.StyledComponents} -> ${targetId}: ${result.code}`,
+		).toEqual([]);
 		expect(result.skipped).toBe(0);
 		expect(result.code).toContain("Card =");
-		if (targetId === CodemodAdapterId.Tailwind) {
-			expect(result.code).toContain('export const App = () => <Card />;');
-			expect(result.code).toContain("const Component = props.as ?? \"div\"");
-		} else if (targetId === CodemodAdapterId.CssModules) {
-			expect(result.code).toContain('export const App = () => <Card />;');
-			expect(result.code).toContain("__pandwindCardForwardRef");
+		if (inlineClassTargets.has(targetId)) {
+			expect(result.code).toContain("export const App = () => <div className={Card} />;");
+			return;
+		}
+		expect(result.code).toContain("export const App = () => <Card />;");
+		expect(result.code).toContain("__pandwindCardForwardRef");
+		if (targetId === CodemodAdapterId.CssModules) {
 			expect(result.code).toContain(".module.css");
 		} else {
-			expect(result.code).toContain("<div className={Card} />");
+			expect(result.code).toContain('props.as ?? props.forwardedAs ?? "div"');
 		}
 	});
 
@@ -488,6 +495,44 @@ describe("composed cross-ecosystem routes", () => {
 		);
 		expect(result.code).toContain("styled.div");
 		expect(result.code).toContain("<Card />");
+	});
+
+	test("wraps Solid styled components when targeting a class adapter", () => {
+		const source =
+			'import { styled } from "solid-styled-components";\n' +
+			'const Card = styled.div({ color: "red" });\n' +
+			"export const App = () => <Card />;";
+		const result = migrateTo(
+			source,
+			CodemodAdapterId.SolidStyled,
+			CodemodAdapterId.Tailwind,
+			"App.tsx",
+			sourceSemantic(CodemodAdapterId.SolidStyled),
+		);
+
+		expect({
+			code: result.code,
+			converted: result.converted,
+			skipped: result.skipped,
+			residuals: result.residuals,
+		}).toMatchInlineSnapshot(`
+			{
+			  "code": "import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
+			import type { JSX as __pandwindCardJSX } from "solid-js";
+			const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();
+			export const App = () => <Card />;",
+			  "converted": 1,
+			  "residuals": [],
+			  "skipped": 0,
+			}
+		`);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('from "solid-js";');
+		expect(result.code).toContain('class={["[color:red]", local.class].filter(Boolean).join(" ")}');
+		expect(result.code).toContain("{resolvedChildren()}</div>");
+		expect(result.code).toContain("export const App = () => <Card />;");
 	});
 
 	test("folds a resolved theme interpolation before class-target emission", () => {

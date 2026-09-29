@@ -60,7 +60,6 @@ test("tokenami -> vue-styled -> tokenami: preserves an actionable concrete round
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -135,7 +134,7 @@ test("tokenami -> vue-styled -> tokenami: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -145,7 +144,6 @@ test("tokenami -> vue-styled -> tokenami: retains the documented secondary API w
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "residual",
@@ -171,7 +169,7 @@ test("tokenami -> vue-styled -> tokenami: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -223,7 +221,6 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -297,7 +294,6 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -385,7 +381,6 @@ test("tokenami -> vue-styled -> tokenami: resolves token values across both conc
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

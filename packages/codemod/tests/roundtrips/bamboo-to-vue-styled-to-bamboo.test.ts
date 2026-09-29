@@ -60,7 +60,6 @@ test("bamboo -> vue-styled -> bamboo: preserves an actionable concrete round tri
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -85,10 +84,10 @@ test("bamboo -> vue-styled -> bamboo: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div\`color: red;\`;",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "red" })] }, slots.default?.()));",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -104,19 +103,19 @@ test("bamboo -> vue-styled -> bamboo: preserves an actionable concrete round tri
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -145,7 +144,6 @@ test("bamboo -> vue-styled -> bamboo: retains the documented secondary API witho
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -170,10 +168,10 @@ test("bamboo -> vue-styled -> bamboo: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div\`display: flex; gap: 4;\`;",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ display: "flex", gap: "4" })] }, slots.default?.()));",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -189,19 +187,19 @@ test("bamboo -> vue-styled -> bamboo: retains the documented secondary API witho
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -245,7 +243,6 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -270,10 +267,10 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div\`color: #2563eb;\`;",
-		      "converted": 0,
+		      "code": "import { css } from "styled-system/css";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "#2563eb" })] }, slots.default?.()));",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -289,19 +286,19 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -318,7 +315,6 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -343,10 +339,10 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div\`color: #2563eb;\`;",
-		      "converted": 0,
+		      "code": "import { css } from "styled-system/css";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "#2563eb" })] }, slots.default?.()));",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -362,19 +358,19 @@ test("bamboo -> vue-styled -> bamboo: preserves concrete theme and project conte
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -405,7 +401,6 @@ test("bamboo -> vue-styled -> bamboo: resolves token values across both concrete
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -430,10 +425,10 @@ test("bamboo -> vue-styled -> bamboo: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> bamboo | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div\`color: #2563eb;\`;",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		import { defineComponent, h } from "vue";
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "#2563eb" })] }, slots.default?.()));",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -449,19 +444,19 @@ test("bamboo -> vue-styled -> bamboo: resolves token values across both concrete
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

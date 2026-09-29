@@ -134,9 +134,10 @@ test("mui -> emotion -> mui: retains the documented secondary API without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const Card = css({ color: "red", padding: 8 });",
-		    "converted": 1,
+		    "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> emotion | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -152,55 +153,40 @@ test("mui -> emotion -> mui: retains the documented secondary API without silent
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = css.class({ "color": "red", "padding": 8 });",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> emotion | lowering-residual: validation)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

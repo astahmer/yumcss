@@ -49,45 +49,9 @@ test("jss -> vue-styled -> jss: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const useStyles = styled.div\` color: red;\`;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const useStyles = styled.div\` color: red;\`;",
+		    "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -97,7 +61,6 @@ test("jss -> vue-styled -> jss: preserves an actionable concrete round trip", ()
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -112,12 +75,25 @@ test("jss -> vue-styled -> jss: preserves an actionable concrete round trip", ()
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "red" } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -136,45 +112,9 @@ test("jss -> vue-styled -> jss: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const sheet = styled.div\` color: red;\`;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const sheet = styled.div\` color: red;\`;",
+		    "code": "import jss from "jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +124,6 @@ test("jss -> vue-styled -> jss: retains the documented secondary API without sil
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -199,12 +138,25 @@ test("jss -> vue-styled -> jss: retains the documented secondary API without sil
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import jss from "jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -238,45 +190,9 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const useStyles = styled.div\` color: #2563eb;\`;",
-		      "converted": 1,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "named-map",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const useStyles = styled.div\` color: #2563eb;\`;",
+		      "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -286,7 +202,6 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -301,7 +216,7 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -309,49 +224,26 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		export const useStyles = styled.div\` color: #2563eb;\`;",
-		      "converted": 1,
-		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [
-		            "dynamic-and-theme",
-		          ],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "named-map",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "target-native",
-		          "representation": "named-map",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const useStyles = styled.div\` color: #2563eb;\`;",
+		      "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -361,7 +253,6 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -376,12 +267,25 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "hint": "named-rules: named style rule: card",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -402,45 +306,9 @@ test("jss -> vue-styled -> jss: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const useStyles = styled.div\` color: #2563eb;\`;",
-		    "converted": 1,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
-		export const useStyles = styled.div\` color: #2563eb;\`;",
+		    "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -450,7 +318,6 @@ test("jss -> vue-styled -> jss: resolves token values across both concrete legs"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -465,12 +332,25 @@ test("jss -> vue-styled -> jss: resolves token values across both concrete legs"
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: vue",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

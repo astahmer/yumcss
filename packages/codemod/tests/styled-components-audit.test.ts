@@ -110,13 +110,15 @@ test("styled-components -> tailwind keeps polymorphic JSX behind a component wra
 	expect(result.converted).toBe(1);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('props.as ?? "div"');
+	expect(result.code).toContain('Component = props.as ?? props.forwardedAs ?? "div"');
+	expect(result.code).toContain("ref={ref}");
+	expect(result.code).toContain("key.startsWith(prefix)");
 	expect(result.code).toContain('<Card as="a" href="/docs" />');
 	expect(result.code).not.toContain('<div as="a"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red]", props.className)} />; };
+		"import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
 		export const App = () => <Card as="a" href="/docs" />;"
 	`);
 });
@@ -135,13 +137,16 @@ test("styled-components -> tailwind preserves an exported component without an i
 	expect(result.converted).toBe(1);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('props.as ?? "div"');
-	expect(result.code).toContain('className={cx("[color:red]", props.className)}');
+	expect(result.code).toContain('Component = props.as ?? props.forwardedAs ?? "div"');
+	expect(result.code).toContain("ref={ref}");
+	expect(result.code).toContain(
+		'className={["[color:red]", props.className].filter(Boolean).join(" ")}',
+	);
 	expect(result.code).not.toContain('export const Card = "[color:red]"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		export const Card = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; return <Component {...rest} className={cx("[color:red]", props.className)} />; };"
+		"import { forwardRef as __pandwindCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();"
 	`);
 });
 
@@ -337,20 +342,24 @@ test("styled-components attrs override caller props in Tailwind component wrappe
 	expect(result.converted).toBe(1);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('Component = attrs.as ?? props.as ?? "button"');
-	expect(result.code).toContain("{...rest} {...attrsProps}");
+	expect(result.code).toContain(
+		'Component = attrs.as ?? props.as ?? attrs.forwardedAs ?? props.forwardedAs ?? "button"',
+	);
+	expect(result.code).toContain("{ ...rest, ...attrsProps }");
+	expect(result.code).toContain("ref={ref}");
 	expect(result.code).toContain('as: "a"');
 	expect(result.code).toContain('type: "button"');
 	expect(result.code).toContain('data-testid="link"');
+	expect(result.code).not.toContain("cx(");
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		const Link = (props) => { const attrs = ({ as: "a", type: "button" }); const { as: _attrsAs, ...attrsProps } = attrs; const Component = attrs.as ?? props.as ?? "button"; const { as: _as, ...rest } = props; return <Component {...rest} {...attrsProps} className={cx("[color:red]", cx(attrs.className, props.className))} style={{ ...props.style, ...attrs.style }} />; };
+		"import { forwardRef as __pandwindLinkForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __pandwindLinkPropsWithoutRef, ComponentRef as __pandwindLinkRef, ElementType as __pandwindLinkElementType, ReactElement as __pandwindLinkReactElement, Ref as __pandwindLinkRefProp } from "react";
+		const Link = (() => { type __pandwindLinkProps<C extends __pandwindLinkElementType> = Omit<__pandwindLinkPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindLinkComponent = <C extends __pandwindLinkElementType = "button">(props: __pandwindLinkProps<C> & { ref?: __pandwindLinkRefProp<__pandwindLinkRef<C>> }) => __pandwindLinkReactElement | null; type __pandwindLinkRuntimeProps = Record<string, any>; return __pandwindLinkForwardRef<__pandwindLinkRef<"button">, __pandwindLinkRuntimeProps>((props, ref) => { const attrs: Record<string, any> = ({ as: "a", type: "button" }); const { as: _attrsAs, forwardedAs: _attrsForwardedAs, ...attrsProps } = attrs; const Component = attrs.as ?? props.as ?? attrs.forwardedAs ?? props.forwardedAs ?? "button"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries({ ...rest, ...attrsProps }).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red]", [attrs.className, props.className].filter(Boolean).join(" ")].filter(Boolean).join(" ")} style={{ ...props.style, ...attrs.style }} />; }) as __pandwindLinkComponent; })();
 		export const App = () => <Link as="span" type="submit" data-testid="link" />;"
 	`);
 });
 
-test("styled-components attrs override caller props in Pandwind component wrappers", () => {
+test("styled-components attrs-selected Pandwind hosts remain source-preserving", () => {
 	const result = migrateStyledComponents(
 		'import styled from "styled-components";\n' +
 			'const Link = styled.button.attrs({ as: "a", type: "button" })({ color: "red" });\n' +
@@ -358,27 +367,19 @@ test("styled-components attrs override caller props in Pandwind component wrappe
 		CodemodAdapterId.Pandwind,
 		"App.tsx",
 	);
-	const output = [result.code, ...result.generatedFiles.map((file) => file.content)].join("\n");
-
-	expect(result.converted).toBe(1);
-	expect(result.skipped).toBe(0);
-	expect(result.residuals).toEqual([]);
-	expect(output).toContain("attrs.as ?? props.as ?? defaultComponent");
-	expect(output).toContain("{...rest} {...attrsProps}");
-	expect(output).toContain('as: "a"');
-	expect(output).toContain('type: "button"');
-	expect(result.code).toContain('data-testid="link"');
-	expect({ code: result.code, generatedFiles: result.generatedFiles }).toMatchInlineSnapshot(`
-		{
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
-		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; return <Component {...rest} {...attrsProps} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-		const Link = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1sqh2mt", inheritedClass: undefined, classAttribute: "className", attrs: ({ as: "a", type: "button" }), joinClass: cx });
-		export const App = () => <Link as="span" type="submit" data-testid="link" />;",
-		  "generatedFiles": [],
-		}
+	expect(result.converted).toBe(0);
+	expect(result.skipped).toBe(1);
+	expect(result.generatedFiles).toEqual([]);
+	expect(result.code).toContain(
+		'const Link = styled.button.attrs({ as: "a", type: "button" })({ color: "red" });',
+	);
+	expect(result.code).toContain('<Link as="span" type="submit" data-testid="link" />');
+	expect(result.residuals).toEqual([expect.objectContaining({ kind: "host-framework" })]);
+	expect(result.code).toMatchInlineSnapshot(`
+		"import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> pandwind | lowering-residual: host-framework | available: static, named-map, residual)
+		const Link = styled.button.attrs({ as: "a", type: "button" })({ color: "red" });
+		export const App = () => <Link as="span" type="submit" data-testid="link" />;"
 	`);
 });
 
@@ -465,6 +466,11 @@ test("styled-components attrs are preserved by every target or remain a typed so
 					true,
 				);
 				expect(row.callerPropsPreserved, `${adapter.id}: caller props disappeared`).toBe(true);
+				if (adapter.id === CodemodAdapterId.NextYak) {
+					expect(result.code).toContain("forwardRef");
+					expect(result.code).toContain("attrsProps");
+					expect(result.code).toContain('import { css } from "next-yak"');
+				}
 			}
 
 			return row;
@@ -505,11 +511,18 @@ test("styled-components attrs are preserved by every target or remain a typed so
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 1,
-		    "residualDetails": [],
-		    "residualKinds": [],
-		    "skipped": 0,
-		    "sourcePreserved": false,
+		    "converted": 0,
+		    "residualDetails": [
+		      {
+		        "detail": "Emotion has no verified attrs component contract for preserving the source wrapper's props and refs",
+		        "kind": "host-framework",
+		      },
+		    ],
+		    "residualKinds": [
+		      "host-framework",
+		    ],
+		    "skipped": 1,
+		    "sourcePreserved": true,
 		    "target": "emotion",
 		  },
 		  {
@@ -521,9 +534,14 @@ test("styled-components attrs are preserved by every target or remain a typed so
 		        "detail": "Vanilla Extract styles must be emitted from a .css.ts module",
 		        "kind": "capability",
 		      },
+		      {
+		        "detail": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
+		      },
 		    ],
 		    "residualKinds": [
 		      "capability",
+		      "component",
 		    ],
 		    "skipped": 1,
 		    "sourcePreserved": true,

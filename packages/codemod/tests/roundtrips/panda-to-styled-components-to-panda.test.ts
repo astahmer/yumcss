@@ -83,10 +83,9 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ color: "red", "&:hover": { color: "blue" } });",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -102,19 +101,25 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -242,10 +247,9 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ color: "#f97316", "&:hover": { color: "#f97316" } });",
-		      "converted": 0,
+		      "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -261,19 +265,25 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -313,10 +323,9 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
-		      "converted": 0,
+		      "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -332,19 +341,25 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div",
-		          "kind": "capability",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -398,10 +413,9 @@ test("panda -> styled-components -> panda: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -417,19 +431,25 @@ test("panda -> styled-components -> panda: resolves token values across both con
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

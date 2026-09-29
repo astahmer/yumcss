@@ -83,10 +83,9 @@ test("goober -> styled-components -> goober: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const card = styled.div({ color: "red", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { css } from "goober";
+		export const card = css({ "color": "red", "padding": "1rem" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -104,19 +103,25 @@ test("goober -> styled-components -> goober: preserves an actionable concrete ro
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -168,10 +173,9 @@ test("goober -> styled-components -> goober: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const Card = styled.div({ color: "red", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { css } from "goober";
+		export const Card = css({ "color": "red", "padding": "1rem" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -189,19 +193,25 @@ test("goober -> styled-components -> goober: retains the documented secondary AP
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -268,10 +278,9 @@ test("goober -> styled-components -> goober: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		      "converted": 0,
+		      "code": "import { css } from "goober";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -289,19 +298,25 @@ test("goober -> styled-components -> goober: preserves concrete theme and projec
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: react",
-		          "kind": "capability",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -341,10 +356,9 @@ test("goober -> styled-components -> goober: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		      "converted": 0,
+		      "code": "import { css } from "goober";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -362,19 +376,25 @@ test("goober -> styled-components -> goober: preserves concrete theme and projec
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: react",
-		          "kind": "capability",
+		          "hint": "a reusable JSX wrapper requires a JSX source file",
+		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -428,10 +448,9 @@ test("goober -> styled-components -> goober: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> goober | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { css } from "goober";
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -449,19 +468,25 @@ test("goober -> styled-components -> goober: resolves token values across both c
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

@@ -98,7 +98,6 @@ test("vue-styled -> solid-styled -> vue-styled: preserves an actionable concrete
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -186,7 +185,6 @@ test("vue-styled -> solid-styled -> vue-styled: retains the documented secondary
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -289,7 +287,6 @@ test("vue-styled -> solid-styled -> vue-styled: preserves concrete theme and pro
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -365,7 +362,6 @@ test("vue-styled -> solid-styled -> vue-styled: preserves concrete theme and pro
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -455,7 +451,6 @@ test("vue-styled -> solid-styled -> vue-styled: resolves token values across bot
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

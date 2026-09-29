@@ -50,7 +50,7 @@ test("aphrodite -> solid-styled -> aphrodite: preserves an actionable concrete r
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "red", "padding": 8 }) };",
+		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -84,16 +84,40 @@ test("aphrodite -> solid-styled -> aphrodite: preserves an actionable concrete r
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "red", "padding": 8 }) };",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { StyleSheet } from "aphrodite";
+		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": "8px" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -191,7 +215,7 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -225,23 +249,47 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { StyleSheet } from "aphrodite";
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -275,16 +323,40 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "import { StyleSheet } from "aphrodite";
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -305,7 +377,7 @@ test("aphrodite -> solid-styled -> aphrodite: resolves token values across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
+		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -339,16 +411,40 @@ test("aphrodite -> solid-styled -> aphrodite: resolves token values across both 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const styles = { "card": css({ "color": "#2563eb", "padding": 8 }) };",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "import { StyleSheet } from "aphrodite";
+		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

@@ -60,7 +60,6 @@ test("emotion -> vue-styled -> emotion: preserves an actionable concrete round t
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -144,7 +143,6 @@ test("emotion -> vue-styled -> emotion: retains the documented secondary API wit
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,7 +241,6 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -315,7 +312,6 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -401,7 +397,6 @@ test("emotion -> vue-styled -> emotion: resolves token values across both concre
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",

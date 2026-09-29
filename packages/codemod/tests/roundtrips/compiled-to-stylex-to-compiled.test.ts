@@ -57,7 +57,6 @@ test("compiled -> stylex -> compiled: preserves an actionable concrete round tri
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",
@@ -245,7 +244,6 @@ test("compiled -> stylex -> compiled: preserves concrete theme and project conte
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -320,7 +318,6 @@ test("compiled -> stylex -> compiled: preserves concrete theme and project conte
 		        {
 		          "applied": [
 		            "dynamic-and-theme",
-		            "stylex-numeric-normalization",
 		          ],
 		          "availableRepresentations": [
 		            "static",
@@ -409,7 +406,6 @@ test("compiled -> stylex -> compiled: resolves token values across both concrete
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "stylex-numeric-normalization",
 		        ],
 		        "availableRepresentations": [
 		          "static",

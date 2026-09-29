@@ -47,7 +47,7 @@ describe("StyleProgramBuilder", () => {
 			})
 			.build();
 
-		expect(program.schema).toBe("pandwind.style-program/4");
+		expect(program.schema).toBe("pandwind.style-program/5");
 		expect(program.rules.map((rule) => rule.kind)).toEqual([
 			"style",
 			"global",
@@ -166,8 +166,8 @@ describe("StyleProgramBuilder", () => {
 		const emitted = createTailwindAdapter({ moduleLoader: null }).emit(program, emitContext);
 
 		expect(emitted.residuals).toEqual([]);
-		expect(emitted.text).toBe(JSON.stringify("[color:red] [display:flex]"));
-		expect(JSON.parse(emitted.text)).toMatchInlineSnapshot(`"[color:red] [display:flex]"`);
+		expect(emitted.text).toBe(JSON.stringify("[display:flex] [color:red]"));
+		expect(JSON.parse(emitted.text)).toMatchInlineSnapshot(`"[display:flex] [color:red]"`);
 	});
 
 	test("can seed a new construction without sharing mutable arrays", () => {

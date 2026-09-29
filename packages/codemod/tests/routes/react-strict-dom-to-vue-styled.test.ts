@@ -48,11 +48,11 @@ test("react-strict-dom -> vue-styled: migrates concrete react-strict-dom syntax 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
-		import styled from "vue-styled-components";
-		const styles = styled.div\` color: red; padding: 1rem;\`;
+		  "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -61,28 +61,27 @@ test("react-strict-dom -> vue-styled: migrates concrete react-strict-dom syntax 
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -96,7 +95,7 @@ test("react-strict-dom -> vue-styled: carries a documented secondary react-stric
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule; nesting: keyframes nested rules | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule; nesting: keyframes nested rules | available: static, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -107,17 +106,16 @@ test("react-strict-dom -> vue-styled: carries a documented secondary react-stric
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "named-map",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
@@ -150,11 +148,11 @@ test("react-strict-dom -> vue-styled: loads concrete theme and project context v
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
-		import styled from "vue-styled-components";
-		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
+		    "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -163,36 +161,35 @@ test("react-strict-dom -> vue-styled: loads concrete theme and project context v
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
-		import styled from "vue-styled-components";
-		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
+		    "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -201,28 +198,27 @@ test("react-strict-dom -> vue-styled: loads concrete theme and project context v
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -238,11 +234,11 @@ test("react-strict-dom -> vue-styled: resolves concrete token values with projec
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
-		import styled from "vue-styled-components";
-		const styles = styled.div\` color: #2563eb; padding: 1rem;\`;
+		  "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -251,28 +247,27 @@ test("react-strict-dom -> vue-styled: resolves concrete token values with projec
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -285,12 +280,12 @@ test("react-strict-dom -> vue-styled: preserves malformed concrete react-strict-
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
-		import styled from "vue-styled-components";
-		const styles = styled.div\` color: red; padding: 1rem;\`;
+		  "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -299,28 +294,27 @@ test("react-strict-dom -> vue-styled: preserves malformed concrete react-strict-
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

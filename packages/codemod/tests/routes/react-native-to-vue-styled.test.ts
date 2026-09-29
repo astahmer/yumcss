@@ -48,9 +48,10 @@ test("react-native -> vue-styled: migrates concrete react-native syntax to vue-s
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: red; padding: 8px;\`;",
-		  "converted": 1,
+		  "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -59,28 +60,27 @@ test("react-native -> vue-styled: migrates concrete react-native syntax to vue-s
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -93,9 +93,10 @@ test("react-native -> vue-styled: carries a documented secondary react-native AP
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` padding: 8px; background-color: red;\`;",
-		  "converted": 1,
+		  "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -104,28 +105,27 @@ test("react-native -> vue-styled: carries a documented secondary react-native AP
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -147,9 +147,10 @@ test("react-native -> vue-styled: loads concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
-		    "converted": 1,
+		    "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -158,34 +159,34 @@ test("react-native -> vue-styled: loads concrete theme and project context varia
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
-		    "converted": 1,
+		    "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -194,28 +195,27 @@ test("react-native -> vue-styled: loads concrete theme and project context varia
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "named-map",
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "named-rules: named style rule: card",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -231,9 +231,10 @@ test("react-native -> vue-styled: resolves concrete token values with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: #2563eb; padding: 8px;\`;",
-		  "converted": 1,
+		  "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -242,28 +243,27 @@ test("react-native -> vue-styled: resolves concrete token values with project co
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -276,10 +276,11 @@ test("react-native -> vue-styled: preserves malformed concrete react-native inpu
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-		export const styles = styled.div\` color: red; padding: 8px;\`;
+		  "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished react-native */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -288,28 +289,27 @@ test("react-native -> vue-styled: preserves malformed concrete react-native inpu
 		      ],
 		      "availableRepresentations": [
 		        "static",
-		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "named-map",
+		      "representation": "static",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
-		      "representation": "named-map",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

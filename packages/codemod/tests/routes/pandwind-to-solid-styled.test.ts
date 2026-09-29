@@ -94,10 +94,11 @@ test("pandwind -> solid-styled: carries a documented secondary pandwind API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
-
-		export const styles = css({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
-		  "converted": 1,
+		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> solid-styled | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,17 +116,25 @@ test("pandwind -> solid-styled: carries a documented secondary pandwind API expl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
 		    },
 		  ],
 		}

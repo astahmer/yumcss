@@ -95,7 +95,7 @@ test("goober -> react-native: carries a documented secondary goober API explicit
 		{
 		  "changed": true,
 		  "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> react-native | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: goober -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -124,6 +124,11 @@ test("goober -> react-native: carries a documented secondary goober API explicit
 		    {
 		      "hint": "components: component subject: styled.div",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

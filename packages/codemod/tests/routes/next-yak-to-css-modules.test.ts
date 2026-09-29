@@ -94,7 +94,7 @@ test("next-yak -> css-modules: carries a documented secondary next-yak API expli
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],

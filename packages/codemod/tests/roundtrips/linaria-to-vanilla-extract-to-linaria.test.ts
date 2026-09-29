@@ -136,7 +136,7 @@ test("linaria -> vanilla-extract -> linaria: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> vanilla-extract | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: linaria -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -166,6 +166,11 @@ test("linaria -> vanilla-extract -> linaria: retains the documented secondary AP
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		        "kind": "component",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -173,7 +178,7 @@ test("linaria -> vanilla-extract -> linaria: retains the documented secondary AP
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> vanilla-extract | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: linaria -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

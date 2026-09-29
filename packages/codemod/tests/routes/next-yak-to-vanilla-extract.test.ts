@@ -95,7 +95,7 @@ test("next-yak -> vanilla-extract: carries a documented secondary next-yak API e
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> vanilla-extract | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: next-yak -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -121,13 +121,13 @@ test("next-yak -> vanilla-extract: carries a documented secondary next-yak API e
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
+		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-		      "kind": "capability",
+		      "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

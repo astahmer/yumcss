@@ -49,7 +49,7 @@ test("styled-components -> treat: migrates concrete styled-components syntax to 
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -75,11 +75,6 @@ test("styled-components -> treat: migrates concrete styled-components syntax to 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
 		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		      "kind": "capability",
 		      "preserved": undefined,
@@ -100,7 +95,7 @@ test("styled-components -> treat: carries a documented secondary styled-componen
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -125,11 +120,6 @@ test("styled-components -> treat: carries a documented secondary styled-componen
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		      "kind": "capability",
@@ -160,7 +150,7 @@ test("styled-components -> treat: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -185,11 +175,6 @@ test("styled-components -> treat: loads concrete theme and project context varia
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		        "kind": "capability",
@@ -202,7 +187,7 @@ test("styled-components -> treat: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -227,11 +212,6 @@ test("styled-components -> treat: loads concrete theme and project context varia
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "components: component subject: styled.div; framework-semantics: react",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		        "kind": "capability",
@@ -256,7 +236,7 @@ test("styled-components -> treat: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,11 +262,6 @@ test("styled-components -> treat: resolves concrete token values with project co
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
 		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		      "kind": "capability",
 		      "preserved": undefined,
@@ -307,7 +282,7 @@ test("styled-components -> treat: preserves malformed concrete styled-components
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 0,
@@ -333,11 +308,6 @@ test("styled-components -> treat: preserves malformed concrete styled-components
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "components: component subject: styled.div; framework-semantics: react",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
 		      "kind": "capability",

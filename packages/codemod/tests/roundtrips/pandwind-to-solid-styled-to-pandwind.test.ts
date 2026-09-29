@@ -85,44 +85,16 @@ test("pandwind -> solid-styled -> pandwind: preserves an actionable concrete rou
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-
-		export const card = css({ "color": "red", "padding": "1rem" });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
-		}
-	`)
-});
-
-test("pandwind -> solid-styled -> pandwind: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
-	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectRouteScenarioEvidence(first, "pandwind -> solid-styled round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
-	expectExplicitResidualEvidence(first);
-	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 
-		export const styles = css({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
+		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
+		        "applied": [],
 		        "availableRepresentations": [
 		          "static",
 		          "named-map",
@@ -148,11 +120,72 @@ test("pandwind -> solid-styled -> pandwind: retains the documented secondary API
 		      },
 		    ],
 		  },
+		}
+	`)
+});
+
+test("pandwind -> solid-styled -> pandwind: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "pandwind -> solid-styled round-trip secondary forward");
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> solid-styled | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [
+		      {
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
+		      },
+		    ],
+		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-
-		export const styles = css({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> solid-styled | lowering-residual: validation)
+		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -228,17 +261,40 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
+		      "changed": true,
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 
-		export const card = css({ "color": "#f97316", "padding": "1rem" });",
-		      "converted": 0,
+		export const card = css.class({ color: "brand", padding: "1rem" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -281,17 +337,40 @@ test("pandwind -> solid-styled -> pandwind: preserves concrete theme and project
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
+		      "changed": true,
+		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 
-		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
-		      "converted": 0,
+		export const card = css.class({ color: "brand", padding: "1rem" });",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -348,17 +427,40 @@ test("pandwind -> solid-styled -> pandwind: resolves token values across both co
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
+		    "changed": true,
+		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
 
-		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
-		    "converted": 0,
+		export const card = css.class({ color: "brand", padding: "1rem" });",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

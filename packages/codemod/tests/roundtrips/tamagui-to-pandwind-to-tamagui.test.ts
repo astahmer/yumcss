@@ -53,7 +53,7 @@ test("tamagui -> pandwind -> tamagui: preserves an actionable concrete round tri
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "red", padding: "$4" });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -91,7 +91,7 @@ test("tamagui -> pandwind -> tamagui: preserves an actionable concrete round tri
 		const __CardTamagui = styled(View, { color: "red", padding: "$4" });
 
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -217,7 +217,7 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "#2563eb", padding: "$4" });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -255,7 +255,7 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -293,7 +293,7 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "brand", padding: "$4" });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -331,7 +331,7 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -383,7 +383,7 @@ test("tamagui -> pandwind -> tamagui: resolves token values across both concrete
 		import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "brand", padding: "$4" });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -421,7 +421,7 @@ test("tamagui -> pandwind -> tamagui: resolves token values across both concrete
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -49,7 +49,7 @@ test("compiled -> style9: migrates concrete compiled syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "red", "padding": 8 });",
+		export const card = style9.create({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("compiled -> style9: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("compiled -> style9: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("compiled -> style9: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("compiled -> style9: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "red", "padding": 8 });
+		export const card = style9.create({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -48,7 +48,7 @@ test("aphrodite -> fela: migrates concrete aphrodite syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red", "padding": 8 }) };",
+		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +147,7 @@ test("aphrodite -> fela: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": 8 }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +182,7 @@ test("aphrodite -> fela: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": 8 }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +229,7 @@ test("aphrodite -> fela: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": 8 }) };",
+		  "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +273,7 @@ test("aphrodite -> fela: preserves malformed concrete aphrodite input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red", "padding": 8 }) };
+		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

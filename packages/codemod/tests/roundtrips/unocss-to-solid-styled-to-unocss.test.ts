@@ -84,35 +84,8 @@ test("unocss -> solid-styled -> unocss: preserves an actionable concrete round t
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
-		}
-	`)
-});
-
-test("unocss -> solid-styled -> unocss: retains the documented secondary API without silent loss", () => {
-	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
-	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
-	expectRouteScenarioEvidence(first, "unocss -> solid-styled round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
-	expectExplicitResidualEvidence(first);
-	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } });",
+		    "code": "export const App = () => "[display:flex] [align-items:center] [gap:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -145,10 +118,68 @@ test("unocss -> solid-styled -> unocss: retains the documented secondary API wit
 		      },
 		    ],
 		  },
+		}
+	`)
+});
+
+test("unocss -> solid-styled -> unocss: retains the documented secondary API without silent loss", () => {
+	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
+	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectRouteScenarioEvidence(first, "unocss -> solid-styled round-trip secondary forward");
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "// pandwind:migrate-skip (route: unocss -> solid-styled | lowering-residual: validation)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [
+		      {
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
+		      },
+		    ],
+		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } });",
+		    "code": "// pandwind:migrate-skip (route: unocss -> solid-styled | lowering-residual: validation)
+		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -222,16 +253,39 @@ test("unocss -> solid-styled -> unocss: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#f97316", "padding": "1.125rem" });",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "export const App = () => "text-brand p-card";",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -272,16 +326,39 @@ test("unocss -> solid-styled -> unocss: preserves concrete theme and project con
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
-		      "converted": 0,
+		      "changed": true,
+		      "code": "export const App = () => "text-brand p-card";",
+		      "converted": 1,
 		      "generatedFiles": [],
-		      "loweringPlans": [],
-		      "outcomes": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [
+		            "dynamic-and-theme",
+		          ],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "static",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -336,16 +413,39 @@ test("unocss -> solid-styled -> unocss: resolves token values across both concre
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "color": "#2563eb", "padding": "1.125rem" });",
-		    "converted": 0,
+		    "changed": true,
+		    "code": "export const App = () => "text-brand p-card";",
+		    "converted": 1,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`)

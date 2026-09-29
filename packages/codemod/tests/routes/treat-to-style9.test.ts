@@ -49,7 +49,7 @@ test("treat -> style9: migrates concrete treat syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "red", "padding": 8 });",
+		export const card = style9.create({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -94,7 +94,7 @@ test("treat -> style9: carries a documented secondary treat API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "red", "padding": 8 });",
+		export const card = style9.create({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -148,7 +148,7 @@ test("treat -> style9: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -184,7 +184,7 @@ test("treat -> style9: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,7 +232,7 @@ test("treat -> style9: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "#2563eb", "padding": 8 });",
+		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -277,7 +277,7 @@ test("treat -> style9: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const card = style9.create({ "color": "red", "padding": 8 });
+		export const card = style9.create({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

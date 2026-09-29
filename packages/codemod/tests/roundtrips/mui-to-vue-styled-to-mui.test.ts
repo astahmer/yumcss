@@ -60,7 +60,6 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", ()
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -145,7 +144,6 @@ test("mui -> vue-styled -> mui: retains the documented secondary API without sil
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -244,7 +242,6 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -317,7 +314,6 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		          ],
 		          "availableRepresentations": [
 		            "static",
-		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -404,7 +400,6 @@ test("mui -> vue-styled -> mui: resolves token values across both concrete legs"
 		        ],
 		        "availableRepresentations": [
 		          "static",
-		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
