@@ -38,6 +38,26 @@ export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2,
 	`);
 });
 
+test("MUI sx sizing and numeric borders become their CSS values", () => {
+	const source = `import { Box } from "@mui/material";
+export const App = () => <Box sx={{ width: 0.5, maxWidth: 1, minHeight: 0.25, border: 1, borderTop: 2, borderRadius: 1 }} />;`;
+	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+
+	expect(result.converted).toBe(1);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain('width: "50%"');
+	expect(result.code).toContain('maxWidth: "100%"');
+	expect(result.code).toContain('minHeight: "25%"');
+	expect(result.code).toContain('border: "1px solid"');
+	expect(result.code).toContain('borderTop: "2px solid"');
+	expect(result.code).toContain('borderRadius: "4px"');
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <div className={css.class({ width: "50%", maxWidth: "100%", minHeight: "25%", border: "1px solid", borderTop: "2px solid", borderRadius: "4px" })} />;"
+	`);
+});
+
 test("MUI styled declarations preserve component shape and plain CSS semantics", () => {
 	const source = `import { styled } from "@mui/system";
 export const Card = styled("div")({ padding: 2 });
