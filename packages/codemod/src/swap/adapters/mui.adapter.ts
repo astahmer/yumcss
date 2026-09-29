@@ -1,5 +1,9 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
-import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
+import {
+	SemanticConditionKindTag,
+	StyleProgramResidualKindTag,
+	StyleValueKindTag,
+} from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
@@ -478,6 +482,33 @@ function muiSxDeclarations(program: StyleProgram): readonly StyleDeclaration[] {
 		rules.push(...rule.children);
 	}
 	return declarations;
+}
+
+function normalizeMuiDisplayPrint(program: StyleProgram): StyleProgram {
+	const declarations = (input: readonly StyleDeclaration[]): StyleDeclaration[] =>
+		input.map((declaration) =>
+			declaration.property === "displayPrint"
+				? {
+						...declaration,
+						property: "display",
+						conditions: [
+							...declaration.conditions,
+							{ kind: SemanticConditionKindTag.Media, name: "print", value: "print" },
+						],
+					}
+				: declaration,
+		);
+	const rules = (input: StyleProgram["rules"]): StyleProgram["rules"] =>
+		input.map((rule) => ({
+			...rule,
+			declarations: declarations(rule.declarations),
+			children: rules(rule.children),
+		}));
+	return {
+		...program,
+		declarations: declarations(program.declarations),
+		rules: rules(program.rules),
+	};
 }
 
 function isMuiThemeValueKey(property: string, value: unknown): value is string {
@@ -1058,16 +1089,17 @@ export function createMuiAdapter(
 			return {
 				...parsed,
 				matches: parsed.matches.map((match) => {
+					const normalized = normalizeMuiDisplayPrint(match.program);
 					const themeResiduals =
-						match.program.source?.hostOpenTag === undefined
+						normalized.source?.hostOpenTag === undefined
 							? []
-							: unresolvedMuiThemeResiduals(match.program, source, theme);
+							: unresolvedMuiThemeResiduals(normalized, source, theme);
 					const program =
 						themeResiduals.length === 0
-							? match.program
+							? normalized
 							: {
-									...match.program,
-									residuals: [...match.program.residuals, ...themeResiduals],
+									...normalized,
+									residuals: [...normalized.residuals, ...themeResiduals],
 								};
 					return {
 						...match,

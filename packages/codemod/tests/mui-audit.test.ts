@@ -111,15 +111,23 @@ test("MUI print display shorthand becomes a print media condition", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ display: "block", displayPrint: "none" }} />;`;
 	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const tailwindResult = muiToTailwind.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('"@media print": { display: "none" }');
+	expect(result.code).toContain('_print: { display: "none" }');
 	expect(result.code).not.toContain("displayPrint");
+	expect(tailwindResult.converted).toBe(1);
+	expect(tailwindResult.residuals).toEqual([]);
+	expect(tailwindResult.code).toContain("print:[display:none]");
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ display: "block", "@media print": { display: "none" } })} />;"
+		export const App = () => <div className={css.class({ display: "block", _print: { display: "none" } })} />;"
+	`);
+	expect(tailwindResult.code).toMatchInlineSnapshot(`
+		"import { Box } from "@mui/material";
+		export const App = () => <Box className={"[display:block] print:[display:none]"}/>;"
 	`);
 });
 
