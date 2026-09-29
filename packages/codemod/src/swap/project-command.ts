@@ -11,6 +11,7 @@ export interface ProjectMigrationContext {
 	readonly patterns: readonly string[];
 	readonly filePaths: readonly string[];
 	readonly meta: PandwindMeta;
+	readonly packageJson?: Readonly<Record<string, unknown>>;
 	readonly outDir?: string;
 	readonly force?: boolean;
 	readonly diff: boolean;

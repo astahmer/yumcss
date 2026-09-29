@@ -13,11 +13,17 @@
  *    `<x className={…}>`, styled-system import specifiers -> emitted
  *    modules; anything non-literal keeps a skip marker (never half-converted).
  */
-import { basename, dirname, join, relative, sep } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
-import { planPandwindNextIntegration } from "../../host-integration.ts";
+import {
+	PANDWIND_NEXT_CSS_ID,
+	planPandwindNextIntegration,
+	planPandwindViteIntegration,
+	withTypeScriptExtensionImports,
+} from "../../host-integration.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
+import { SwapResidualKindTag } from "../../ir.ts";
 import {
 	foldRecipeCall,
 	renderCssBootstrap,
@@ -38,6 +44,13 @@ import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { walk, type OxcNode } from "pandwind/tw/literal";
 import { NodeKind } from "pandwind/tw/literal";
 import { createPandaProjectFileSystem, type PandaProjectFileSystem } from "./panda-file-system.ts";
+import {
+	hasPandaStylesheetImport,
+	hasPandaStylesheetImportReference,
+	hasTargetStylesheetImport,
+	rewritePandaStylesheetImports,
+	type PandaProjectSourceFile,
+} from "./project-files.ts";
 import {
 	convertPandaRecipe,
 	convertPandaStyle,
@@ -68,6 +81,8 @@ export interface PandaMigrateOptions {
 	workspace?: PandaMigrationWorkspace;
 	/** @internal injectable host-file effects for config integration and emission. */
 	fileSystem?: PandaProjectFileSystem;
+	/** Installed dependencies used to select a host integration when no config exists. */
+	packageJson?: Readonly<Record<string, unknown>>;
 	/** Token spelling policy used by generated Pandwind sources and modules. */
 	tokenReferenceFormat?: TokenReferenceFormatValue;
 	/** Keep static style calls colocated unless module-scope hoisting is requested. */
@@ -117,26 +132,10 @@ const uniquePandaCssBinding = (source: string): string => {
 const pandaCssCallText = (text: string, binding: string): string =>
 	binding === "css" ? text : text.replace(/^css(?=\.class\b)/u, binding);
 
-/** Register the generated extractor in host frameworks that need a plugin. */
-function integrateNextApp(
-	projectRoot: string,
-	outDir: string,
-	write: boolean,
-	notes: string[],
-	fileSystem: PandaProjectFileSystem,
-): void {
-	const plan = planPandwindNextIntegration({
-		projectRoot,
-		outputDirectory: outDir,
-		fileSystem,
-		presetFile: "preset.ts",
-		presetBinding: "preset",
-	});
-	notes.push(...plan.notes);
-	if (write) {
-		for (const change of plan.fileChanges) fileSystem.write(change.path, change.content);
-	}
-}
+const pathIsWithin = (path: string, directory: string): boolean => {
+	const remainder = relative(directory, path);
+	return remainder === "" || (!remainder.startsWith("..") && !isAbsolute(remainder));
+};
 
 /** Stop package lifecycle scripts from recreating Panda's obsolete output. */
 function removePandaCodegenScripts(
@@ -1157,6 +1156,93 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 	const { aliasInfo, theme } = workspace;
 	report.notes.push(...workspace.notes);
+	const outDir = workspace.outDir;
+	const projectSourceFilesByPath = new Map(
+		sourceWorkspace
+			.collect(["**/*"], projectRoot)
+			.map(({ path, source }) => [path, { path, source } satisfies PandaProjectSourceFile]),
+	);
+	for (const { path, source } of sourceWorkspace.collect(["**/*.css"], projectRoot, {
+		includeUnsupported: true,
+	}))
+		projectSourceFilesByPath.set(path, { path, source });
+	const projectSourceFiles = [...projectSourceFilesByPath.values()];
+	const sourceGeneratedDirectory = resolve(projectRoot, theme.outdir ?? "styled-system");
+	const projectCodeFiles = projectSourceFiles.filter(
+		(file) =>
+			/\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/u.test(file.path) &&
+			!/\/(?:panda|vite|next)\.config\.[cm]?[jt]sx?$/u.test(file.path) &&
+			!pathIsWithin(file.path, sourceGeneratedDirectory) &&
+			!pathIsWithin(file.path, outDir),
+	);
+	const selectedCodePaths = new Set(
+		files
+			.filter((file) => /\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/u.test(file.path))
+			.map((file) => file.path),
+	);
+	const completeSourceScope =
+		projectCodeFiles.length > 0 &&
+		projectCodeFiles.every((file) => selectedCodePaths.has(file.path));
+	const nextIntegration = planPandwindNextIntegration({
+		projectRoot,
+		outputDirectory: outDir,
+		fileSystem,
+		...(options.packageJson === undefined ? {} : { packageJson: options.packageJson }),
+		presetBinding: "preset",
+	});
+	const viteIntegration = nextIntegration.enabled
+		? { enabled: false, fileChanges: [], notes: [] }
+		: planPandwindViteIntegration({
+				projectRoot,
+				outputDirectory: outDir,
+				fileSystem,
+				presetFile: "preset.ts",
+				presetBinding: "preset",
+			});
+	report.notes.push(...nextIntegration.notes, ...viteIntegration.notes);
+	const targetCssImport = nextIntegration.enabled
+		? PANDWIND_NEXT_CSS_ID
+		: viteIntegration.enabled
+			? "pandwind:css"
+			: undefined;
+	if (targetCssImport === undefined) {
+		countResidual(report, SwapResidualKindTag.Unrepresentable);
+		report.notes.push(
+			"preserved Panda source because no supported Next or Vite host extractor could be registered",
+		);
+		return report;
+	}
+	const stylesheetExists = fileSystem.exists(
+		resolve(projectRoot, theme.outdir ?? "styled-system", "styles.css"),
+	);
+	const stylesheetEntryOptions = {
+		projectRoot,
+		outputDirectory: theme.outdir ?? "styled-system",
+		files: projectSourceFiles,
+		aliasInfo,
+		stylesheetExists,
+	};
+	const existingTargetCssEntry = hasTargetStylesheetImport(projectCodeFiles, targetCssImport);
+	const sourceStylesheetReference = hasPandaStylesheetImportReference(stylesheetEntryOptions);
+	const sourceStylesheetEntry = hasPandaStylesheetImport(stylesheetEntryOptions);
+	if (sourceStylesheetReference && !sourceStylesheetEntry) {
+		countResidual(report, SwapResidualKindTag.Unrepresentable);
+		report.notes.push(
+			"preserved Panda source because its CSS-only stylesheet entry has no JavaScript entrypoint for Pandwind virtual CSS",
+		);
+		return report;
+	}
+	if (!sourceStylesheetEntry && !existingTargetCssEntry) {
+		countResidual(report, SwapResidualKindTag.Unrepresentable);
+		report.notes.push(
+			"preserved Panda source because no verified Panda stylesheet import or Pandwind CSS entrypoint was found",
+		);
+		return report;
+	}
+	if (!completeSourceScope)
+		report.notes.push(
+			"kept Panda stylesheet imports because the migration scope does not cover every project source file",
+		);
 
 	const usage: ProjectUsage = workspace.usage;
 
@@ -1183,27 +1269,32 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	/* ---- tier decisions ---- */
 	// Put generated files under the alias target (e.g. @/* -> src/*), so
 	// `@/pandwind/...` resolves to the files we actually emit.
-	const outDir = workspace.outDir;
 	const pandaModuleSpecifier = (filePath: string, subpath: string): string => {
 		if (aliasInfo.alias !== "") return aliasSpecifier(aliasInfo, outDirName, subpath);
 		const modulePath = relative(dirname(filePath), join(outDir, subpath)).split(sep).join("/");
 		return modulePath.startsWith(".") ? modulePath : `./${modulePath}`;
 	};
-	const emitted: Array<{ path: string; content: string }> = [];
+	const emitted: Array<{ path: string; content: string; language?: "javascript" }> = [];
 	const recipeExportNames = new Map<string, string>();
 	const recipeModuleNames = new Map<string, string>();
 	const emittedRecipeDefs: Array<RecipeDef> = [];
-	const queueEmission = (path: string, content: string): void => {
+	const queueEmission = (path: string, content: string, language?: "javascript"): void => {
 		if (fileSystem.exists(path) && options.force !== true) {
 			report.notes.push(
 				`preserved existing generated module ${relative(projectRoot, path)} (use --force to regenerate)`,
 			);
 			return;
 		}
-		emitted.push({ path, content });
+		emitted.push({ path, content, ...(language === undefined ? {} : { language }) });
 	};
 
 	queueEmission(join(outDir, "preset.ts"), renderPandaPreset(theme, tokenReferenceFormat));
+	if (nextIntegration.presetFile === "preset.mjs")
+		queueEmission(
+			join(outDir, "preset.mjs"),
+			renderPandaPreset(theme, tokenReferenceFormat, false),
+			"javascript",
+		);
 	queueEmission(join(outDir, "css.ts"), renderCssBootstrap());
 	queueEmission(join(outDir, "virtual.d.ts"), renderVirtualCssDeclaration());
 	const hasStackUsage = [...usage.jsxComponents].some(
@@ -1480,7 +1571,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	// a bad emitter from leaving a partially migrated project behind.
 	for (const e of emitted) {
 		try {
-			const validation = validatePandaSource(e.path, e.content);
+			const validation = validatePandaSource(e.path, e.content, e.language);
 			if (!validation.valid) throw new Error(validation.message);
 		} catch (error) {
 			report.notes.push(
@@ -1496,6 +1587,8 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	}
 
 	/* ---- call-site rewrite pass ---- */
+	const rewrittenSources = new Map<string, string>();
+	const changedSourcePaths = new Set<string>();
 	for (const file of files) {
 		// Generated modules are inputs to the emission pass, never call-site
 		// sources. Skipping them keeps --force reruns from reprocessing our own
@@ -1739,21 +1832,62 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			);
 			continue;
 		}
+		rewrittenSources.set(file.path, next);
+		changedSourcePaths.add(file.path);
 		report.filesChanged++;
 		if (options.diff) console.log(unifiedDiff(file.source, next, relative(projectRoot, file.path)));
 		if (options.write) fileSystem.write(file.path, next);
 	}
 
-	// The generated preset is inert until the host bundler loads the virtual
-	// stylesheet. Next/Webpack is common enough to wire automatically, while
-	// keeping the integration local to projects that actually have Next config.
-	integrateNextApp(projectRoot, outDir, options.write, report.notes, fileSystem);
+	const preservePandaStylesheet = hasPandaSourceResidual || !completeSourceScope;
+	if (hasPandaSourceResidual)
+		report.notes.push("kept Panda stylesheet imports because source Panda residuals remain");
+	const stylesheetChanges = rewritePandaStylesheetImports({
+		projectRoot,
+		outputDirectory: theme.outdir ?? "styled-system",
+		files: projectSourceFiles.map((file) => ({
+			...file,
+			source: rewrittenSources.get(file.path) ?? file.source,
+		})),
+		targetImport: targetCssImport,
+		preservePandaStylesheet,
+		aliasInfo,
+		stylesheetExists: fileSystem.exists(
+			resolve(projectRoot, theme.outdir ?? "styled-system", "styles.css"),
+		),
+	});
+	const tsConfigPath = join(projectRoot, "tsconfig.json");
+	const tsConfigSource =
+		viteIntegration.fileChanges.length > 0 ? fileSystem.read(tsConfigPath) : undefined;
+	const tsConfigContent =
+		tsConfigSource === undefined ? undefined : withTypeScriptExtensionImports(tsConfigSource);
+	const hostFileChanges = [
+		...nextIntegration.fileChanges,
+		...viteIntegration.fileChanges,
+		...(tsConfigContent === undefined || tsConfigSource === undefined
+			? []
+			: [{ path: tsConfigPath, content: tsConfigContent, expectedContent: tsConfigSource }]),
+	];
+	if (options.write) {
+		for (const change of hostFileChanges) fileSystem.write(change.path, change.content);
+	}
+	for (const change of stylesheetChanges) {
+		if (options.diff)
+			console.log(
+				unifiedDiff(change.expectedContent, change.content, relative(projectRoot, change.path)),
+			);
+		if (!changedSourcePaths.has(change.path)) {
+			report.filesChanged++;
+			changedSourcePaths.add(change.path);
+		}
+		if (options.write) fileSystem.write(change.path, change.content);
+	}
 	removePandaCodegenScripts(
 		projectRoot,
 		options.write,
 		report.notes,
 		fileSystem,
-		hasPandaSourceResidual,
+		hasPandaSourceResidual || !completeSourceScope,
 	);
 
 	return report;

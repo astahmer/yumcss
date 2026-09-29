@@ -226,13 +226,14 @@ function createFixture(root: string, includePandwind: boolean): void {
 	writeFileSync(
 		join(root, "src/main.tsx"),
 		[
-			'import "../styled-system/styles.css";',
+			'import "./global.css";',
 			'import { hydrateRoot } from "react-dom/client";',
 			'import { App } from "./App";',
 			"",
 			'hydrateRoot(document.getElementById("root")!, <App />);',
 		].join("\n"),
 	);
+	writeFileSync(join(root, "src/global.css"), '@import "../styled-system/styles.css";\n');
 	writeFileSync(join(root, "src/entry-server.tsx"), 'export { App } from "./App";\n');
 	writeFileSync(
 		join(root, "index.html"),
@@ -267,7 +268,7 @@ async function main(): Promise<void> {
 						"--root",
 						targetRoot,
 						"--no-install",
-						"src/App.tsx",
+						"src",
 						"--report",
 						"--report-format=json",
 					],
@@ -278,6 +279,7 @@ async function main(): Promise<void> {
 			run("pnpm", ["run", "typecheck"], targetRoot);
 			const migratedApp = readFileSync(join(targetRoot, "src/App.tsx"), "utf8");
 			const targetMain = readFileSync(join(targetRoot, "src/main.tsx"), "utf8");
+			const targetGlobalStyles = readFileSync(join(targetRoot, "src/global.css"), "utf8");
 			const viteConfig = readFileSync(join(targetRoot, "vite.config.ts"), "utf8");
 			const preset = readFileSync(join(targetRoot, "pandwind/preset.ts"), "utf8");
 			const sourceSsr = await renderInstalledServer(sourceRoot);
@@ -301,7 +303,10 @@ async function main(): Promise<void> {
 			const report: PandaInstalledProof = {
 				schema: proofSchema,
 				route: { from: CodemodAdapterId.Panda, to: CodemodAdapterId.Pandwind },
-				fixture: { files: ["panda.config.ts", "src/App.tsx", "vite.config.ts"], isolated: true },
+				fixture: {
+					files: ["panda.config.ts", "src/App.tsx", "src/global.css", "vite.config.ts"],
+					isolated: true,
+				},
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@pandacss/dev"),
 					targetPackage: `file:${pandwindPackageRoot}`,
@@ -313,8 +318,10 @@ async function main(): Promise<void> {
 					customTokenPreserved:
 						preset.includes("123456") &&
 						(migratedApp.includes('"$brand"') || migratedApp.includes('"brand"')),
-					sourceStylesheetImportRemoved: !targetMain.includes("styled-system/styles.css"),
-					generatedVitePresetImportIsExplicit: viteConfig.includes("./pandwind/preset.ts"),
+					sourceStylesheetImportRemoved:
+						!targetGlobalStyles.includes("styled-system/styles.css") &&
+						targetMain.includes('import "pandwind:css";'),
+					generatedVitePresetImportIsExplicit: viteConfig.includes('./pandwind/preset.ts"'),
 					generatedVitePluginPresent: viteConfig.includes("pandwindCssVite"),
 				},
 				checks: {

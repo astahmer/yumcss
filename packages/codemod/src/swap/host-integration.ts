@@ -17,6 +17,21 @@ export interface HostFileChange {
 	readonly expectedContent?: string;
 }
 
+export interface PandwindViteIntegrationRequest {
+	readonly projectRoot: string;
+	readonly outputDirectory: string;
+	readonly fileSystem: HostProjectFileSystem;
+	readonly presetFile?: string;
+	readonly presetBinding?: string;
+}
+
+export interface PandwindViteIntegrationPlan {
+	readonly enabled: boolean;
+	readonly configPath?: string;
+	readonly fileChanges: readonly HostFileChange[];
+	readonly notes: readonly string[];
+}
+
 export interface PandwindNextIntegrationRequest {
 	readonly projectRoot: string;
 	readonly outputDirectory: string;
@@ -31,6 +46,7 @@ export interface PandwindNextIntegrationRequest {
 export interface PandwindNextIntegrationPlan {
 	readonly enabled: boolean;
 	readonly configPath?: string;
+	readonly presetFile?: string;
 	readonly fileChanges: readonly HostFileChange[];
 	readonly notes: readonly string[];
 }
@@ -41,6 +57,159 @@ const NEXT_CONFIG_NAMES = [
 	"next.config.ts",
 	"next.config.cjs",
 ] as const;
+
+const VITE_CONFIG_NAMES = [
+	"vite.config.ts",
+	"vite.config.mts",
+	"vite.config.js",
+	"vite.config.mjs",
+	"vite.config.cts",
+	"vite.config.cjs",
+] as const;
+
+export const withTypeScriptExtensionImports = (source: string): string | undefined => {
+	const existingOption = /("allowImportingTsExtensions"\s*:\s*)(true|false)/u.exec(source);
+	if (existingOption?.[2] === "true") return undefined;
+	if (existingOption?.index !== undefined) {
+		return (
+			source.slice(0, existingOption.index) +
+			existingOption[1] +
+			"true" +
+			source.slice(existingOption.index + existingOption[0].length)
+		);
+	}
+	const newline = source.includes("\r\n") ? "\r\n" : "\n";
+	const compilerOptions = /("compilerOptions"\s*:\s*\{)/u.exec(source);
+	let content: string;
+	if (compilerOptions !== null && compilerOptions.index !== undefined) {
+		const lineStart = source.lastIndexOf("\n", compilerOptions.index) + 1;
+		const linePrefix = source.slice(lineStart, compilerOptions.index);
+		const indentation = /^\s*/u.exec(linePrefix)?.[0] ?? "";
+		content =
+			source.slice(0, compilerOptions.index + compilerOptions[0].length) +
+			`${newline}${indentation}\t"allowImportingTsExtensions": true,` +
+			source.slice(compilerOptions.index + compilerOptions[0].length);
+	} else {
+		const openingBrace = source.indexOf("{");
+		if (openingBrace < 0) return undefined;
+		content =
+			source.slice(0, openingBrace + 1) +
+			`${newline}\t"compilerOptions": {${newline}\t\t"allowImportingTsExtensions": true${newline}\t},` +
+			source.slice(openingBrace + 1);
+	}
+	return content === source ? undefined : content;
+};
+
+export function rewritePandwindViteConfig(input: {
+	readonly projectRoot: string;
+	readonly configPath: string;
+	readonly outputDirectory: string;
+	readonly source: string;
+	readonly presetFile?: string;
+	readonly presetBinding?: string;
+}): { readonly enabled: boolean; readonly content: string; readonly note?: string } {
+	const presetBinding = input.presetBinding ?? "preset";
+	const presetPath = resolve(
+		input.projectRoot,
+		input.outputDirectory,
+		input.presetFile ?? "preset.ts",
+	);
+	const presetSpecifier = relative(dirname(input.configPath), presetPath).replaceAll("\\", "/");
+	const moduleSpecifier = presetSpecifier.startsWith(".")
+		? presetSpecifier
+		: `./${presetSpecifier}`;
+	const pluginImport = 'import { pandwindCssVite } from "pandwind/vite";';
+	const presetImport = `import { ${presetBinding} } from "${moduleSpecifier}";`;
+	const pluginCall = `pandwindCssVite(${presetBinding}, { root: "." })`;
+	if (input.source.includes(pluginCall) && input.source.includes(presetImport))
+		return { enabled: true, content: input.source };
+	if (/\bpandwindCssVite\s*\(/u.test(input.source))
+		return {
+			enabled: false,
+			content: input.source,
+			note: `preserved existing pandwindCssVite configuration in ${relative(input.projectRoot, input.configPath)} because its preset could not be verified`,
+		};
+
+	let content = input.source;
+	const pluginArray = /\bplugins\s*:\s*\[/u.exec(content);
+	if (pluginArray !== null && pluginArray.index !== undefined) {
+		const insertion = pluginArray.index + pluginArray[0].length;
+		const remaining = content.slice(insertion);
+		const separator = /^\s*\]/u.test(remaining) ? "" : ", ";
+		content = `${content.slice(0, insertion)}${pluginCall}${separator}${content.slice(insertion)}`;
+	} else {
+		if (/\bplugins\s*:/u.test(content))
+			return {
+				enabled: false,
+				content: input.source,
+				note: `could not safely register pandwindCssVite in ${relative(input.projectRoot, input.configPath)}`,
+			};
+		const configObject = /(?:defineConfig\s*\(\s*|export\s+default\s*)\{/u.exec(content);
+		if (configObject === null || configObject.index === undefined)
+			return {
+				enabled: false,
+				content: input.source,
+				note: `could not safely register pandwindCssVite in ${relative(input.projectRoot, input.configPath)}`,
+			};
+		const insertion = configObject.index + configObject[0].length;
+		content = `${content.slice(0, insertion)}plugins: [${pluginCall}], ${content.slice(insertion)}`;
+	}
+	content = ensureImport(content, pluginImport);
+	content = ensureImport(content, presetImport);
+	return { enabled: true, content };
+}
+
+export function planPandwindViteIntegration(
+	request: PandwindViteIntegrationRequest,
+): PandwindViteIntegrationPlan {
+	const configPath = VITE_CONFIG_NAMES.map((name) => join(request.projectRoot, name)).find((path) =>
+		request.fileSystem.exists(path),
+	);
+	if (configPath === undefined)
+		return {
+			enabled: false,
+			fileChanges: [],
+			notes: ["no root Vite config found for Pandwind CSS extraction"],
+		};
+	const source = request.fileSystem.read(configPath);
+	if (source === undefined)
+		return {
+			enabled: false,
+			configPath,
+			fileChanges: [],
+			notes: [
+				`could not read ${relative(request.projectRoot, configPath)} for Pandwind CSS extraction`,
+			],
+		};
+	const rewrite = rewritePandwindViteConfig({
+		projectRoot: request.projectRoot,
+		configPath,
+		outputDirectory: request.outputDirectory,
+		source,
+		...(request.presetFile === undefined ? {} : { presetFile: request.presetFile }),
+		...(request.presetBinding === undefined ? {} : { presetBinding: request.presetBinding }),
+	});
+	if (!rewrite.enabled)
+		return {
+			enabled: false,
+			configPath,
+			fileChanges: [],
+			notes: [rewrite.note ?? `could not safely register pandwindCssVite in ${configPath}`],
+		};
+	const fileChanges =
+		rewrite.content === source
+			? []
+			: [{ path: configPath, content: rewrite.content, expectedContent: source }];
+	return {
+		enabled: true,
+		configPath,
+		fileChanges,
+		notes:
+			fileChanges.length === 0
+				? []
+				: [`registered pandwindCssVite in ${relative(request.projectRoot, configPath)}`],
+	};
+}
 
 const packageSectionHas = (
 	packageJson: Readonly<Record<string, unknown>> | undefined,
@@ -202,7 +371,7 @@ function appendConfigProperty(
 }
 
 function addWebpackPlugin(source: string, webpackBody: string, file: string): string | undefined {
-	if (source.includes("pandwindWebpackCss")) return source;
+	if (/\bpandwindWebpackCss\s*\(/u.test(source)) return source;
 	const configObject = findNextConfigObject(source, file);
 	if (configObject === undefined) return undefined;
 	const properties = (configObject.properties as ConfigAstNode[] | undefined) ?? [];
@@ -234,6 +403,38 @@ function addWebpackPlugin(source: string, webpackBody: string, file: string): st
 	const property = `\twebpack(config) {\n${webpackBody}\n\t\treturn config;\n\t},`;
 	return appendConfigProperty(source, configObject, property);
 }
+
+const existingNextPresetFile = (
+	source: string,
+	configPath: string,
+	outputDirectory: string,
+	projectRoot: string,
+	presetBinding: string,
+): string | undefined => {
+	const importedFile = ["preset.ts", "preset.mjs"].find((file) => {
+		const specifier = `./${relative(
+			dirname(configPath),
+			join(resolve(projectRoot, outputDirectory), file),
+		).replaceAll("\\", "/")}`;
+		return (
+			source.includes(`import { ${presetBinding} } from "${specifier}"`) ||
+			source.includes(`import { ${presetBinding} } from '${specifier}'`)
+		);
+	});
+	if (importedFile === undefined) return undefined;
+	const callStart = source.indexOf("pandwindWebpackCss(");
+	const callEnd = source.indexOf("})", callStart);
+	if (callStart < 0 || callEnd < 0) return undefined;
+	const options = source.slice(callStart, callEnd);
+	const optionBindings = new Set(
+		[...options.matchAll(/(?:preset\s*:\s*|[,{]\s*)([A-Za-z_$][\w$]*)/gu)].map((match) => match[1]),
+	);
+	if (!optionBindings.has(presetBinding)) return undefined;
+	const virtualId = /\bvirtualId\s*:\s*["']([^"']+)["']/u.exec(options)?.[1];
+	if (virtualId !== PANDWIND_NEXT_CSS_ID) return undefined;
+	if (!source.includes('import { pandwindWebpackCss } from "pandwind/unplugin";')) return undefined;
+	return importedFile;
+};
 
 function layoutPaths(projectRoot: string, fileSystem: HostProjectFileSystem): readonly string[] {
 	return [
@@ -267,10 +468,29 @@ export function planPandwindNextIntegration(
 	const webpackBody = `\t\tconfig.plugins.push(\n\t\t\t${plugin}\n\t\t);`;
 
 	let config = next.source;
+	let generatedPresetFile: string | undefined;
 	if (next.generated) {
 		config = generatedWebpackConfig(plugin, pluginImport, presetImport);
+		generatedPresetFile = presetFile;
 	} else {
-		if (!config.includes("pandwindWebpackCss")) {
+		if (/\bpandwindWebpackCss\s*\(/u.test(config)) {
+			generatedPresetFile = existingNextPresetFile(
+				config,
+				next.path,
+				request.outputDirectory,
+				request.projectRoot,
+				presetBinding,
+			);
+			if (generatedPresetFile === undefined)
+				return {
+					enabled: false,
+					configPath: next.path,
+					fileChanges: [],
+					notes: [
+						`preserved existing pandwindWebpackCss configuration in ${relative(request.projectRoot, next.path)} because its preset could not be verified`,
+					],
+				};
+		} else {
 			const withWebpack = addWebpackPlugin(config, webpackBody, next.path);
 			if (withWebpack === undefined) {
 				return {
@@ -283,9 +503,10 @@ export function planPandwindNextIntegration(
 				};
 			}
 			config = withWebpack;
+			config = ensureImport(config, pluginImport);
+			config = ensureImport(config, presetImport);
+			generatedPresetFile = presetFile;
 		}
-		config = ensureImport(config, pluginImport);
-		config = ensureImport(config, presetImport);
 	}
 
 	const fileChanges: HostFileChange[] = [];
@@ -319,6 +540,7 @@ export function planPandwindNextIntegration(
 	return {
 		enabled: true,
 		configPath: next.path,
+		...(generatedPresetFile === undefined ? {} : { presetFile: generatedPresetFile }),
 		fileChanges,
 		notes: [
 			`registered pandwindWebpackCss in ${relative(request.projectRoot, next.path)}`,

@@ -22,7 +22,28 @@ export function relativeModuleImport(file: string, metaDir: string, moduleName: 
 }
 
 export function ensureImport(code: string, statement: string): string {
-	if (code.includes(statement)) return code;
+	const existingLines = code.split(/\r?\n/u);
+	const statementLines = statement.split(/\r?\n/u).map((line) => line.trim());
+	let insideBlockComment = false;
+	const executableLines = existingLines.map((line) => {
+		const trimmed = line.trim();
+		if (insideBlockComment) {
+			if (trimmed.includes("*/")) insideBlockComment = false;
+			return "";
+		}
+		if (trimmed.startsWith("//")) return "";
+		if (trimmed.startsWith("/*")) {
+			insideBlockComment = !trimmed.includes("*/");
+			return "";
+		}
+		return trimmed;
+	});
+	if (
+		executableLines.some((_, index) =>
+			statementLines.every((line, offset) => executableLines[index + offset] === line),
+		)
+	)
+		return code;
 	// Multi-line-aware import-header scan: a naive per-line regex inserts
 	// INSIDE `import {\n A,\n B } from "…"` because its first line has no
 	// specifier. Track the open-import state instead: an import starts at a

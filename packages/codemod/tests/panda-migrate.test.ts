@@ -47,6 +47,10 @@ try {
 }
 
 const dirs: Array<string> = [];
+
+const sideEffectImports = (source: string): Array<string> =>
+	[...source.matchAll(/^[ \t]*import\s*["']([^"']+)["']\s*;?[ \t]*$/gmu)].map((match) => match[1]!);
+
 afterAll(() => {
 	for (const d of dirs) rmSync(d, { recursive: true, force: true });
 });
@@ -62,10 +66,23 @@ function makeProject(): string {
 		join(dir, "panda.config.ts"),
 		[
 			"export default {",
+			"  outdir: 'src/styled-system',",
 			"  theme: { extend: { semanticTokens: { colors: { fg: { DEFAULT: { value: '#111' } } } } } },",
 			"  utilities: { bg: { property: 'backgroundColor', shorthand: 'bg' }, px: { property: 'paddingX', shorthand: 'px' }, py: { property: 'paddingY', shorthand: 'py' } },",
 			"};",
 		].join("\n"),
+	);
+	writeFileSync(
+		join(dir, "vite.config.ts"),
+		['import { defineConfig } from "vite";', "export default defineConfig({ plugins: [] });"].join(
+			"\n",
+		),
+	);
+	mkdirSync(join(dir, "styled-system"), { recursive: true });
+	mkdirSync(join(dir, "src", "styled-system"), { recursive: true });
+	writeFileSync(
+		join(dir, "src", "styled-system", "styles.css"),
+		"/* Panda fixture stylesheet */\n",
 	);
 	mkdirSync(join(dir, "theme", "recipes"), { recursive: true });
 	writeFileSync(
@@ -85,6 +102,7 @@ function makeProject(): string {
 		].join("\n"),
 	);
 	mkdirSync(join(dir, "src"), { recursive: true });
+	writeFileSync(join(dir, "src", "main.tsx"), 'import "@/styled-system/styles.css";\n');
 	return dir;
 }
 
@@ -276,6 +294,30 @@ describe("supporting migration primitives", () => {
 		expect(preset).toContain("colorPalettes,");
 	});
 
+	it("serializes Panda font stacks into the target token catalog", () => {
+		const theme: PandaTheme = {
+			...emptyPandaTheme,
+			tokens: {
+				colors: { brand: "#111111" },
+				fonts: { body: ["Inter", "sans-serif"] },
+			},
+		};
+		const preset = renderPandaPreset(theme);
+		const tokenCatalog = /const appTokens = define\.tokens\((\{[\s\S]*?\n\})\);/u.exec(preset)?.[1];
+
+		expect(tokenCatalog).toMatchInlineSnapshot(`
+			"{
+				"colors": {
+					"brand": "#111111"
+				},
+				"fonts": {
+					"body": "Inter, sans-serif"
+				}
+			}"
+		`);
+		expect(preset).toContain('"fontFamily": {\n\t\t"$tokens": "fonts"\n\t}');
+	});
+
 	it("emits one canonical underscore condition for built-in aliases", () => {
 		const theme: PandaTheme = {
 			...emptyPandaTheme,
@@ -296,7 +338,11 @@ describe("supporting migration primitives", () => {
 	it("typechecks the emitted preset and reusable modules", () => {
 		const theme: PandaTheme = {
 			...emptyPandaTheme,
-			tokens: { colors: { brand: "#111111" }, spacing: { 4: "1rem" } },
+			tokens: {
+				colors: { "blue.500": "#3182ce", "blue.700": "#2c5282", brand: "#111111" },
+				fonts: { body: ["Inter", "sans-serif"] },
+				spacing: { 4: "1rem" },
+			},
 		};
 		const directory = mkdtempSync(join(tmpdir(), "pandwind-emitted-types-"));
 		dirs.push(directory);
@@ -491,10 +537,12 @@ describe("supporting migration primitives", () => {
 describe("runPandaMigration", () => {
 	it("uses the injected project-file port for host integration and emission", async () => {
 		const dir = makeProject();
+		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
 		writeFileSync(join(dir, "src", "page.tsx"), "export const Page = () => <div />;\n");
 		const files = new Map<string, string>([
 			[join(dir, "next.config.mjs"), "export default { webpack(config) { return config; } };\n"],
 			[join(dir, "package.json"), JSON.stringify({ scripts: { prepare: "panda codegen" } })],
+			[join(dir, "src", "styled-system", "styles.css"), "/* Panda fixture stylesheet */\n"],
 		]);
 		const writes = new Map<string, string>();
 		const projectFiles: PandaProjectFileSystem = {
@@ -546,7 +594,6 @@ describe("runPandaMigration", () => {
 			diff: false,
 			skipMarker: "pandwind:migrate-skip",
 		});
-
 		expect(report.filesScanned).toBeGreaterThanOrEqual(2);
 		expect(report.cssCallsConverted).toBe(0);
 		expect(report.cssCallsFlagged).toBe(1);
@@ -735,6 +782,12 @@ describe("runPandaMigration", () => {
 		expect(once).toContain("css({ color: 'auditUnknown.400' })");
 		expect(once).not.toContain("from '@/pandwind/css'");
 		expect(once).toContain("pandwind:migrate-skip");
+		const stylesEntry = readFileSync(join(dir, "src", "main.tsx"), "utf8");
+		expect(stylesEntry).toContain('import "@/styled-system/styles.css";');
+		expect(stylesEntry).toContain('import "pandwind:css";');
+		expect(report.notes).toContain(
+			"kept Panda stylesheet imports because the migration scope does not cover every project source file",
+		);
 		expect(report.notes).not.toContain(
 			"kept Panda codegen scripts because residual Panda source still uses its generated system",
 		);
@@ -743,6 +796,186 @@ describe("runPandaMigration", () => {
 			// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
 			export const styles = css({ color: 'auditUnknown.400' })"
 		`);
+	});
+
+	it("deduplicates a Panda stylesheet import against a target import in the same entry", async () => {
+		const dir = makeProject();
+		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
+		writeFileSync(
+			join(dir, "src", "main.tsx"),
+			'import "@/styled-system/styles.css";\nimport "pandwind:css";\n',
+		);
+		writeFileSync(
+			join(dir, "src", "page.tsx"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"export const Page = () => <div className={css({ color: 'rebeccapurple' })} />",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.{ts,tsx}"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const stylesEntry = readFileSync(join(dir, "src", "main.tsx"), "utf8");
+		expect(report.cssCallsConverted).toBe(1);
+		expect(report.residualsByKind).toEqual({});
+		expect(stylesEntry.match(/import "pandwind:css";/gu)).toHaveLength(1);
+		expect(stylesEntry).not.toContain("styled-system/styles.css");
+		expect(sideEffectImports(stylesEntry)).toMatchInlineSnapshot(`
+			[
+			  "pandwind:css",
+			]
+		`);
+	});
+
+	it("replaces Panda CSS @import with the Pandwind Vite entry", async () => {
+		const dir = makeProject();
+		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
+		writeFileSync(
+			join(dir, "src", "main.tsx"),
+			'// import "pandwind:css";\nimport "./global.css";\n',
+		);
+		writeFileSync(join(dir, "src", "global.css"), '@import "./styled-system/styles.css";\n');
+		writeFileSync(
+			join(dir, "src", "page.tsx"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"export const Page = () => <div className={css({ color: 'rebeccapurple' })} />",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.{ts,tsx}"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const globalStylesheet = readFileSync(join(dir, "src", "global.css"), "utf8");
+		const main = readFileSync(join(dir, "src", "main.tsx"), "utf8");
+		expect(report.cssCallsConverted).toBe(1);
+		expect(report.residualsByKind).toEqual({});
+		expect(globalStylesheet).toBe("\n");
+		expect(main).toContain('// import "pandwind:css";');
+		expect(sideEffectImports(main)).toMatchInlineSnapshot(`
+			[
+			  "./global.css",
+			  "pandwind:css",
+			]
+		`);
+	});
+
+	it("moves a nested Panda CSS @import to its JavaScript entrypoint", async () => {
+		const dir = makeProject();
+		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
+		mkdirSync(join(dir, "src", "styles"), { recursive: true });
+		writeFileSync(join(dir, "src", "main.tsx"), 'import "./styles/index.css";\n');
+		writeFileSync(join(dir, "src", "styles", "index.css"), '@import "./panda.css";\n');
+		writeFileSync(
+			join(dir, "src", "styles", "panda.css"),
+			'@import "../styled-system/styles.css";\n',
+		);
+		writeFileSync(
+			join(dir, "src", "page.tsx"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"export const Page = () => <div className={css({ color: 'rebeccapurple' })} />",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.{ts,tsx}"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const pandaStylesheet = readFileSync(join(dir, "src", "styles", "panda.css"), "utf8");
+		const main = readFileSync(join(dir, "src", "main.tsx"), "utf8");
+		expect(report.cssCallsConverted).toBe(1);
+		expect(report.residualsByKind).toEqual({});
+		expect(pandaStylesheet).toBe("\n");
+		expect(sideEffectImports(main)).toMatchInlineSnapshot(`
+			[
+			  "./styles/index.css",
+			  "pandwind:css",
+			]
+		`);
+	});
+
+	it("keeps both CSS engines available for residual Panda styles in a CSS @import", async () => {
+		const dir = makeProject();
+		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
+		writeFileSync(join(dir, "src", "main.tsx"), 'import "./global.css";\n');
+		writeFileSync(join(dir, "src", "global.css"), '@import "./styled-system/styles.css";\n');
+		writeFileSync(
+			join(dir, "src", "page.tsx"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"export const Page = () => <div className={css({ color: 'auditUnknown.400' })} />",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.{ts,tsx}"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		const globalStylesheet = readFileSync(join(dir, "src", "global.css"), "utf8");
+		const main = readFileSync(join(dir, "src", "main.tsx"), "utf8");
+		expect(report.cssCallsFlagged).toBe(1);
+		expect(report.residualsByKind).toEqual({ "unknown-value": 1 });
+		expect(globalStylesheet).toBe('@import "./styled-system/styles.css";\n');
+		expect(sideEffectImports(main)).toMatchInlineSnapshot(`
+			[
+			  "./global.css",
+			  "pandwind:css",
+			]
+		`);
+	});
+
+	it("preserves Panda when its CSS stylesheet has no JavaScript entrypoint", async () => {
+		const dir = makeProject();
+		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
+		writeFileSync(join(dir, "src", "main.tsx"), "export {};\n");
+		writeFileSync(join(dir, "src", "global.css"), '@import "./styled-system/styles.css";\n');
+		writeFileSync(
+			join(dir, "src", "page.tsx"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"export const Page = () => <div className={css({ color: 'rebeccapurple' })} />",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.{ts,tsx}"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		expect(report.cssCallsConverted).toBe(0);
+		expect(report.residualsByKind.unrepresentable).toBe(1);
+		expect(readFileSync(join(dir, "src", "page.tsx"), "utf8")).toContain("styled-system/css");
+		expect(readFileSync(join(dir, "src", "global.css"), "utf8")).toBe(
+			'@import "./styled-system/styles.css";\n',
+		);
 	});
 
 	it("converts resolvable Panda styles beside an unresolved token without rebinding Panda css", async () => {
@@ -997,6 +1230,9 @@ describe("runPandaMigration", () => {
 
 	it("keeps the current Next virtual stylesheet integration stable", async () => {
 		const dir = makeProject();
+		rmSync(join(dir, "vite.config.ts"), { force: true });
+		rmSync(join(dir, "src", "main.tsx"), { force: true });
+		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
 		mkdirSync(join(dir, "app"), { recursive: true });
 		writeFileSync(
 			join(dir, "package.json"),
@@ -1019,13 +1255,13 @@ describe("runPandaMigration", () => {
 		);
 		writeFileSync(
 			join(dir, "app", "layout.tsx"),
-			'import "pandwind-css.css";\nexport default function Layout() { return null; }\n',
+			'import "@/styled-system/styles.css";\nexport default function Layout() { return null; }\n',
 		);
 		writeFileSync(join(dir, "src", "page.tsx"), "export const Page = () => <div />;\n");
 
 		await runPandaMigration({
 			projectRoot: dir,
-			patterns: ["src/**/*.tsx"],
+			patterns: ["**/*.tsx", "theme/**/*.ts"],
 			meta,
 			outDirName: "pandwind",
 			write: true,
@@ -1047,6 +1283,85 @@ describe("runPandaMigration", () => {
 		};
 		expect(packageJson.scripts.prepare).toBeUndefined();
 		expect(packageJson.scripts.prebuild).toBe("pnpm build");
+	});
+
+	it("generates an executable Next integration when package metadata proves the host", async () => {
+		const dir = makeProject();
+		rmSync(join(dir, "vite.config.ts"), { force: true });
+		rmSync(join(dir, "src", "main.tsx"), { force: true });
+		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
+		mkdirSync(join(dir, "app"), { recursive: true });
+		writeFileSync(
+			join(dir, "app", "layout.tsx"),
+			'import "@/styled-system/styles.css";\nexport default function Layout() { return null; }\n',
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["app/**/*.tsx"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+			packageJson: { dependencies: { next: "15.0.0" } },
+		});
+
+		const nextConfig = readFileSync(join(dir, "next.config.mjs"), "utf8");
+		const layout = readFileSync(join(dir, "app", "layout.tsx"), "utf8");
+		const runtimePreset = readFileSync(join(dir, "src", "pandwind", "preset.mjs"), "utf8");
+		expect(report.residualsByKind).toEqual({});
+		expect(report.emittedModules).toContain("src/pandwind/preset.mjs");
+		expect(nextConfig).toContain('from "./src/pandwind/preset.mjs"');
+		expect(nextConfig).toContain("pandwindWebpackCss");
+		expect(layout).toBe(
+			'import "pandwind-css.css";\nexport default function Layout() { return null; }\n',
+		);
+		expect(runtimePreset).toContain('import { define } from "pandwind/preset";');
+		expect(runtimePreset).not.toContain("PandwindProperties");
+		expect(runtimePreset).not.toContain(" as const");
+		expect(nextConfig).toMatchInlineSnapshot(`
+			"import { pandwindWebpackCss } from "pandwind/unplugin";
+			import { preset } from "./src/pandwind/preset.mjs";
+
+			const config = {
+				webpack(config) {
+					config.plugins.push(
+						pandwindWebpackCss({ preset: preset, root: process.cwd(), virtualId: "pandwind-css.css" })
+					);
+					return config;
+				},
+			};
+
+			export default config;
+			"
+		`);
+	});
+
+	it("preserves Panda source with a typed residual when no host extractor exists", async () => {
+		const dir = makeProject();
+		rmSync(join(dir, "vite.config.ts"), { force: true });
+		writeFileSync(
+			join(dir, "src", "unhosted.ts"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"export const styles = css({ color: 'rebeccapurple' })",
+			].join("\n"),
+		);
+		const report = await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/unhosted.ts"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		expect(report.cssCallsConverted).toBe(0);
+		expect(report.residualsByKind.unrepresentable).toBe(1);
+		expect(readFileSync(join(dir, "src", "unhosted.ts"), "utf8")).toContain(
+			"css({ color: 'rebeccapurple' })",
+		);
 	});
 
 	it("lowers defineTextStyles so the migrated theme has no invalid Panda helper", async () => {

@@ -442,6 +442,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			patterns: args.patterns,
 			filePaths,
 			meta,
+			...(packageJson === undefined ? {} : { packageJson }),
 			...(args.outDir === undefined ? {} : { outDir: args.outDir }),
 			...(args.force === undefined ? {} : { force: args.force }),
 			diff: args.diff,

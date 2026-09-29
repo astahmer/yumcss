@@ -20,6 +20,7 @@ const pandaMigrationCommand: ProjectMigrationCommand = {
 			patterns: [...context.patterns],
 			meta: context.meta,
 			outDirName: context.outDir || "pandwind",
+			...(context.packageJson === undefined ? {} : { packageJson: context.packageJson }),
 			write: context.write,
 			diff: context.diff,
 			skipMarker: context.skipMarker,

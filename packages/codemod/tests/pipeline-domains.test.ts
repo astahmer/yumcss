@@ -57,8 +57,17 @@ describe("Panda migration pipeline", () => {
 		const output = vi.spyOn(console, "log").mockImplementation(() => undefined);
 		try {
 			mkdirSync(join(root, "src"), { recursive: true });
+			mkdirSync(join(root, "styled-system"), { recursive: true });
+			writeFileSync(join(root, "styled-system", "styles.css"), "/* Panda fixture stylesheet */\n");
+			writeFileSync(
+				join(root, "vite.config.ts"),
+				'import { defineConfig } from "vite";\nexport default defineConfig({ plugins: [] });\n',
+			);
 			const file = join(root, "src", "Page.tsx");
-			writeFileSync(file, 'export const page = css({ color: "red" });\n');
+			writeFileSync(
+				file,
+				'import "../styled-system/styles.css";\nexport const page = css({ color: "red" });\n',
+			);
 			const command = getProjectMigrationCommand(CodemodAdapterId.Panda);
 			expect(command?.id).toBe(CodemodAdapterId.Panda);
 			await command?.run({

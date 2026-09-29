@@ -51,9 +51,14 @@ export function rewritePandaSource(
 export function validatePandaSource(
 	file: string,
 	source: string,
+	language?: "javascript",
 ): { valid: true } | { valid: false; message: string } {
 	try {
-		const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+		const parsed = SOURCE_SCANNER_SERVICE.parse({
+			file,
+			source,
+			...(language === undefined ? {} : { language }),
+		});
 		if (parsed.errors.length > 0) {
 			return {
 				valid: false,

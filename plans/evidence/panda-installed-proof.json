@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "pandwind.installed-project-proof/2",
 	"route": {
 		"from": "panda",
 		"to": "pandwind"
@@ -8,6 +8,7 @@
 		"files": [
 			"panda.config.ts",
 			"src/App.tsx",
+			"src/global.css",
 			"vite.config.ts"
 		],
 		"isolated": true
@@ -18,16 +19,12 @@
 		"targetNodeModule": true
 	},
 	"migration": {
+		"filesScanned": 3,
+		"filesChanged": 3,
 		"converted": 1,
 		"skipped": 0,
 		"residuals": 0,
-		"canonical": {
-			"checked": true,
-			"equal": true,
-			"sourceBytes": 100,
-			"targetBytes": 100,
-			"differences": []
-		},
+		"residualsByKind": {},
 		"targetUsesPandwind": true,
 		"customTokenPreserved": true,
 		"sourceStylesheetImportRemoved": true,
@@ -68,7 +65,7 @@
 	},
 	"css": {
 		"sourceBytes": 16073,
-		"targetBytes": 275,
+		"targetBytes": 388,
 		"targetNotLarger": true
 	}
 }

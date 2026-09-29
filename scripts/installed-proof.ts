@@ -4,7 +4,9 @@ import { createRequire } from "node:module";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { extname, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { z } from "zod";
+
+const installedServerResultSchema = z.object({ markup: z.string(), css: z.string() });
 
 export interface InstalledProofCanonicalEvidence {
 	readonly checked: boolean;
@@ -141,64 +143,18 @@ export async function renderInstalledServer(
 ): Promise<{ readonly markup: string; readonly css: string }> {
 	run("pnpm", ["run", "ssr"], root);
 	const serverBundle = findFile(join(root, "dist"), "entry-server.js");
-	const requireFromProject = createRequire(join(root, "package.json"));
-	const React = requireFromProject("react") as {
-		readonly createElement: (type: unknown) => unknown;
-	};
-	const render =
-		options.renderer === "static"
-			? (requireFromProject("react-dom/server").renderToStaticMarkup as (
-					element: unknown,
-				) => string)
-			: (requireFromProject("react-dom/server").renderToString as (element: unknown) => string);
-	const module = (await import(pathToFileURL(serverBundle).href)) as {
-		readonly App: unknown;
-		readonly pandwindCss?: string | (() => string);
-		readonly stitchesCss?: string | (() => string);
-		readonly sourceCss?: string | (() => string);
-	};
-	const element = React.createElement(module.App);
-	if (options.collectAphrodite === true) {
-		const renderStatic = requireFromProject("aphrodite").StyleSheetServer.renderStatic as (
-			render: () => string,
-		) => { readonly html: string; readonly css: { readonly content: string } };
-		const rendered = renderStatic(() => render(element));
-		return { markup: rendered.html, css: rendered.css.content };
-	}
-	const markup = render(element);
-	if (module.pandwindCss !== undefined) {
-		return {
-			markup,
-			css: typeof module.pandwindCss === "function" ? module.pandwindCss() : module.pandwindCss,
-		};
-	}
-	if (module.stitchesCss !== undefined) {
-		return {
-			markup,
-			css: typeof module.stitchesCss === "function" ? module.stitchesCss() : module.stitchesCss,
-		};
-	}
-	if (module.sourceCss !== undefined) {
-		return {
-			markup,
-			css: typeof module.sourceCss === "function" ? module.sourceCss() : module.sourceCss,
-		};
-	}
-	if (!options.collectStyledComponents) return { markup, css: "" };
-	const ServerStyleSheet = requireFromProject("styled-components").ServerStyleSheet as new () => {
-		collectStyles(element: unknown): unknown;
-		getStyleTags(): string;
-		seal(): void;
-	};
-	const sheet = new ServerStyleSheet();
-	try {
-		return {
-			markup: render(sheet.collectStyles(element)),
-			css: sheet.getStyleTags().replace(/<style[^>]*>|<\/style>/gu, ""),
-		};
-	} finally {
-		sheet.seal();
-	}
+	// Keep the caller's source-package condition out of the installed app's module resolution.
+	const output = execFileSync(
+		process.execPath,
+		[
+			join(import.meta.dirname, "installed-proof-renderer.mjs"),
+			root,
+			serverBundle,
+			JSON.stringify(options),
+		],
+		{ cwd: root, encoding: "utf8" },
+	);
+	return installedServerResultSchema.parse(JSON.parse(output));
 }
 
 async function staticServer(root: string): Promise<InstalledServer> {

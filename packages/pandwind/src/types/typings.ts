@@ -236,8 +236,9 @@ type ColorPalettePrefix<TPath extends string> = TPath extends `${infer Head}.${i
 		: Head
 	: TPath;
 
-type ColorPaletteSourcePath<TTokens extends AnyTokens> =
-	ColorTokenName<TTokens> extends infer TPath
+type ColorPaletteSourcePath<TTokens extends AnyTokens> = string extends keyof TTokens
+	? `colors.${string}`
+	: ColorTokenName<TTokens> extends infer TPath
 		? TPath extends string
 			? `colors.${ColorPalettePrefix<TPath>}`
 			: never

@@ -328,7 +328,7 @@ describe("Pandwind project bootstrap", () => {
 							"export default defineConfig({ plugins: [] });",
 						].join("\n")
 					: file === "/project/tsconfig.json"
-						? '{"compilerOptions":{"strict":true}}'
+						? '{"compilerOptions":{"allowImportingTsExtensions":false,"strict":true}}'
 						: undefined,
 			listFiles: () => ["/project/vite.config.ts", "/project/tsconfig.json"],
 		});
@@ -341,16 +341,16 @@ describe("Pandwind project bootstrap", () => {
 					"export default defineConfig({ plugins: [] });",
 				].join("\n"),
 				content: [
+					'import { defineConfig } from "vite";',
 					'import { pandwindCssVite } from "pandwind/vite";',
 					'import { preset } from "./pandwind/preset.ts";',
-					'import { defineConfig } from "vite";',
 					'export default defineConfig({ plugins: [pandwindCssVite(preset, { root: "." })] });',
 				].join("\n"),
 			},
 			{
 				path: "tsconfig.json",
-				expectedContent: '{"compilerOptions":{"strict":true}}',
-				content: '{"compilerOptions":{\n\t"allowImportingTsExtensions": true,"strict":true}}',
+				expectedContent: '{"compilerOptions":{"allowImportingTsExtensions":false,"strict":true}}',
+				content: '{"compilerOptions":{"allowImportingTsExtensions":true,"strict":true}}',
 			},
 		]);
 	});
@@ -361,6 +361,10 @@ describe("Pandwind project bootstrap", () => {
 			[
 				`${root}/src/main.tsx`,
 				'import "../styled-system/styles.css";\nexport const App = () => null;\n',
+			],
+			[
+				`${root}/vite.config.ts`,
+				'import { defineConfig } from "vite";\nexport default defineConfig({ plugins: [] });\n',
 			],
 			[`${root}/styled-system/styles.css`, ".panda { color: red; }\n"],
 		]);
@@ -374,7 +378,7 @@ describe("Pandwind project bootstrap", () => {
 		});
 		const change = support.fileChanges.find((candidate) => candidate.path === "src/main.tsx");
 		expect(change).toMatchObject({
-			content: "\nexport const App = () => null;\n",
+			content: 'import "pandwind:css";\nexport const App = () => null;\n',
 			expectedContent: 'import "../styled-system/styles.css";\nexport const App = () => null;\n',
 		});
 	});

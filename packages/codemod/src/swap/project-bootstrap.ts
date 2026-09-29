@@ -24,9 +24,12 @@ import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
 import {
 	PANDWIND_NEXT_CSS_ID,
 	planPandwindNextIntegration,
+	rewritePandwindViteConfig,
+	withTypeScriptExtensionImports,
 	type HostFileChange,
 } from "./host-integration.ts";
 import { PANDWIND_RAW_PROPERTIES, PANDWIND_TOKEN_PROPERTIES } from "./adapters/panda/properties.ts";
+import { rewritePandaStylesheetImports } from "./adapters/panda/project-files.ts";
 import { canonicalizePandwindConditions } from "./pandwind-conditions.ts";
 import { presetConditions } from "pandwind/preset";
 
@@ -485,40 +488,32 @@ function removeTailwindStylesheetImports(
 function removePandaStylesheetImports(
 	request: ProjectBootstrapRequest,
 	config: AdapterProjectConfig,
+	targetImport: string | undefined,
 ): readonly {
 	readonly path: string;
 	readonly content: string;
 	readonly expectedContent: string;
 }[] {
-	if (config.adapter !== CodemodAdapterId.Panda) return [];
+	if (config.adapter !== CodemodAdapterId.Panda || targetImport === undefined) return [];
 	const stylesheet = request
 		.listFiles(request.root)
 		.find((file) => /(?:^|[\\/])styled-system[\\/]styles\.css$/u.test(file));
 	if (stylesheet === undefined) return [];
-	const target = resolve(request.root, stylesheet);
-	const changes: {
-		path: string;
-		content: string;
-		expectedContent: string;
-	}[] = [];
-	for (const file of request.listFiles(request.root)) {
-		const absoluteFile = resolve(request.root, file);
-		if (!/\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/u.test(absoluteFile)) continue;
-		const source = request.readFile(absoluteFile);
-		if (source === undefined) continue;
-		const next = source.replace(
-			/^[ \t]*import\s*["']([^"']+styled-system[\\/]styles\.css)["']\s*;?[ \t]*$/gmu,
-			(statement, specifier: string) =>
-				stylesheetImportTarget(absoluteFile, specifier) === target ? "" : statement,
-		);
-		if (next === source) continue;
-		changes.push({
-			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
-			content: next,
-			expectedContent: source,
-		});
-	}
-	return changes;
+	return rewritePandaStylesheetImports({
+		projectRoot: request.root,
+		outputDirectory: "styled-system",
+		files: request.listFiles(request.root).flatMap((file) => {
+			const path = resolve(request.root, file);
+			const source = request.readFile(path);
+			return source === undefined ? [] : [{ path, source }];
+		}),
+		targetImport,
+		preservePandaStylesheet: false,
+		stylesheetExists: true,
+	}).map((change) => ({
+		...change,
+		path: relative(request.root, change.path).replaceAll("\\", "/"),
+	}));
 }
 
 function removeUnoStylesheetImports(
@@ -586,13 +581,18 @@ function rewritePandwindViteConfigs(
 	request: ProjectBootstrapRequest,
 	config: AdapterProjectConfig,
 	outputDirectory: string,
-): readonly {
-	readonly path: string;
-	readonly content: string;
-	readonly expectedContent: string;
-}[] {
-	if (request.targetAdapter !== CodemodAdapterId.Pandwind) return [];
+): {
+	readonly enabled: boolean;
+	readonly fileChanges: readonly {
+		readonly path: string;
+		readonly content: string;
+		readonly expectedContent: string;
+	}[];
+} {
+	if (request.targetAdapter !== CodemodAdapterId.Pandwind)
+		return { enabled: false, fileChanges: [] };
 	const presetPath = resolve(request.root, outputDirectory, "preset");
+	let enabled = false;
 	const changes: {
 		path: string;
 		content: string;
@@ -634,23 +634,16 @@ function rewritePandwindViteConfigs(
 				)
 				.replace(call, pandwindPlugin);
 		} else {
-			if (source.includes("pandwindCssVite(")) continue;
-			const withImports =
-				`import { pandwindCssVite } from "pandwind/vite";\nimport { preset } from "${typedPresetSpecifier}";\n` +
-				source;
-			if (/\bplugins\s*:\s*\[\s*\]/u.test(withImports)) {
-				next = withImports.replace(/(\bplugins\s*:\s*)\[\s*\]/u, `$1[${pandwindPlugin}]`);
-			} else if (/\bplugins\s*:\s*\[/u.test(withImports)) {
-				next = withImports.replace(/(\bplugins\s*:\s*\[)/u, `$1${pandwindPlugin}, `);
-			} else if (/defineConfig\s*\(\s*\{\s*/u.test(withImports)) {
-				next = withImports.replace(
-					/(defineConfig\s*\(\s*\{\s*)/u,
-					`$1plugins: [${pandwindPlugin}], `,
-				);
-			} else {
-				continue;
-			}
+			const rewrite = rewritePandwindViteConfig({
+				projectRoot: request.root,
+				configPath: absoluteFile,
+				outputDirectory: resolve(request.root, outputDirectory),
+				source,
+			});
+			if (!rewrite.enabled) continue;
+			next = rewrite.content;
 		}
+		if (next.includes(pandwindPlugin) && next.includes(typedPresetSpecifier)) enabled = true;
 		if (next === source) continue;
 		changes.push({
 			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
@@ -658,7 +651,7 @@ function rewritePandwindViteConfigs(
 			expectedContent: source,
 		});
 	}
-	return changes;
+	return { enabled, fileChanges: changes };
 }
 
 function enableTypeScriptExtensionImports(
@@ -675,27 +668,9 @@ function enableTypeScriptExtensionImports(
 	});
 	if (configPath === undefined) return [];
 	const source = request.readFile(resolve(request.root, configPath));
-	if (source === undefined || /"allowImportingTsExtensions"\s*:\s*true/u.test(source)) return [];
-	const newline = source.includes("\r\n") ? "\r\n" : "\n";
-	const compilerOptions = /("compilerOptions"\s*:\s*\{)/u.exec(source);
-	let content: string;
-	if (compilerOptions !== null && compilerOptions.index !== undefined) {
-		const lineStart = source.lastIndexOf("\n", compilerOptions.index) + 1;
-		const linePrefix = source.slice(lineStart, compilerOptions.index);
-		const indentation = /^\s*/u.exec(linePrefix)?.[0] ?? "";
-		content =
-			source.slice(0, compilerOptions.index + compilerOptions[0].length) +
-			`${newline}${indentation}\t"allowImportingTsExtensions": true,` +
-			source.slice(compilerOptions.index + compilerOptions[0].length);
-	} else {
-		const openingBrace = source.indexOf("{");
-		if (openingBrace < 0) return [];
-		content =
-			source.slice(0, openingBrace + 1) +
-			`${newline}\t"compilerOptions": {${newline}\t\t"allowImportingTsExtensions": true${newline}\t},` +
-			source.slice(openingBrace + 1);
-	}
-	if (content === source) return [];
+	if (source === undefined) return [];
+	const content = withTypeScriptExtensionImports(source);
+	if (content === undefined) return [];
 	return [
 		{
 			path: relative(request.root, resolve(request.root, configPath)).replaceAll("\\", "/"),
@@ -1079,7 +1054,13 @@ export async function createPandwindProjectSupport(
 		? derivedFiles
 		: undefined;
 	const hasGeneratedTw = derivedFiles.some((file) => file.path === projectFile(directory, "tw.ts"));
-	const viteConfigChanges = rewritePandwindViteConfigs(request, sourceConfig, directory);
+	const viteIntegration = rewritePandwindViteConfigs(request, sourceConfig, directory);
+	const viteConfigChanges = viteIntegration.fileChanges;
+	const pandaStylesheetImport = nextIntegration.enabled
+		? PANDWIND_NEXT_CSS_ID
+		: viteIntegration.enabled
+			? "pandwind:css"
+			: undefined;
 	const hostFileChanges: readonly HostFileChange[] = nextIntegration.fileChanges;
 	const normalizedHostChanges = hostFileChanges.map((change) => ({
 		...change,
@@ -1107,7 +1088,7 @@ export async function createPandwindProjectSupport(
 		fileChanges: [
 			...rewriteTailwindStylesheets(request, sourceConfig),
 			...removeTailwindStylesheetImports(request, sourceConfig),
-			...removePandaStylesheetImports(request, sourceConfig),
+			...removePandaStylesheetImports(request, sourceConfig, pandaStylesheetImport),
 			...removeUnoStylesheetImports(request, sourceConfig),
 			...normalizedHostChanges,
 			...viteConfigChanges,
