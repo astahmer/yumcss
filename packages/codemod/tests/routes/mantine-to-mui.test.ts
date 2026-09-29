@@ -93,7 +93,7 @@ test("mantine -> mui: carries a documented secondary mantine API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | parse-residual: host-framework | available: named-map, residual)
+		// pandwind:migrate-skip (route: mantine -> mui | parse-residual: host-framework | lowering-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -117,6 +117,11 @@ test("mantine -> mui: carries a documented secondary mantine API explicitly", ()
 		  "residuals": [
 		    {
 		      "hint": "Mantine styles, classNames, and vars require component-aware host lowering",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

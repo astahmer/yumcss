@@ -48,10 +48,10 @@ test("style9 -> mui: migrates concrete style9 syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red" }) };",
-		  "converted": 1,
+		  "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = style9.create({ card: { color: "red" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -60,7 +60,6 @@ test("style9 -> mui: migrates concrete style9 syntax to mui", () => {
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -68,19 +67,19 @@ test("style9 -> mui: migrates concrete style9 syntax to mui", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -93,10 +92,10 @@ test("style9 -> mui: carries a documented secondary style9 API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
-		  "converted": 1,
+		  "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -105,7 +104,6 @@ test("style9 -> mui: carries a documented secondary style9 API explicitly", () =
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -113,19 +111,19 @@ test("style9 -> mui: carries a documented secondary style9 API explicitly", () =
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -147,10 +145,10 @@ test("style9 -> mui: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "#2563eb" }) };",
-		    "converted": 1,
+		    "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -159,7 +157,6 @@ test("style9 -> mui: loads concrete theme and project context variants", async (
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -167,26 +164,26 @@ test("style9 -> mui: loads concrete theme and project context variants", async (
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "primary.main" }) };",
-		    "converted": 1,
+		    "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -195,7 +192,6 @@ test("style9 -> mui: loads concrete theme and project context variants", async (
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -203,19 +199,19 @@ test("style9 -> mui: loads concrete theme and project context variants", async (
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -231,10 +227,10 @@ test("style9 -> mui: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "primary.main" }) };",
-		  "converted": 1,
+		  "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = style9.create({ card: { color: "#2563eb" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -243,7 +239,6 @@ test("style9 -> mui: resolves concrete token values with project context", async
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -251,19 +246,19 @@ test("style9 -> mui: resolves concrete token values with project context", async
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -276,11 +271,11 @@ test("style9 -> mui: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red" }) };
+		  "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = style9.create({ card: { color: "red" } });
 		const unfinished = { /* unfinished style9 */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -289,7 +284,6 @@ test("style9 -> mui: preserves malformed concrete style9 input", () => {
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -297,19 +291,19 @@ test("style9 -> mui: preserves malformed concrete style9 input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

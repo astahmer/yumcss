@@ -113,8 +113,8 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const Card = defaultSystem.css({ color: "red", padding: "8px" });",
+		    "code": "import { chakra } from "@chakra-ui/react";
+		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "8px" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -147,9 +147,9 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const Card = css.class({ "color": "red", "padding": "8px" });",
+		    "code": "import { chakra } from "@chakra-ui/react";
+		import { Box } from "@mui/material";
+		export const Card = (props) => <Box component="chakra.div" {...props} sx={{ color: "red", padding: "8px" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -159,7 +159,6 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -167,8 +166,8 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],

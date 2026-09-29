@@ -49,7 +49,7 @@ test("vue-styled -> mui: migrates concrete vue-styled syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -73,13 +73,26 @@ test("vue-styled -> mui: migrates concrete vue-styled syntax to mui", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "framework-semantics: vue",
-		      "kind": "capability",
+		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`)
 });
@@ -93,7 +106,7 @@ test("vue-styled -> mui: carries a documented secondary vue-styled API explicitl
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -117,13 +130,26 @@ test("vue-styled -> mui: carries a documented secondary vue-styled API explicitl
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "framework-semantics: vue",
-		      "kind": "capability",
+		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`)
 });
@@ -146,7 +172,7 @@ test("vue-styled -> mui: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -170,18 +196,31 @@ test("vue-styled -> mui: loads concrete theme and project context variants", asy
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -205,13 +244,26 @@ test("vue-styled -> mui: loads concrete theme and project context variants", asy
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -228,7 +280,7 @@ test("vue-styled -> mui: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -252,13 +304,26 @@ test("vue-styled -> mui: resolves concrete token values with project context", a
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "framework-semantics: vue",
-		      "kind": "capability",
+		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`)
 });
@@ -272,7 +337,7 @@ test("vue-styled -> mui: preserves malformed concrete vue-styled input", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 0,
@@ -297,13 +362,26 @@ test("vue-styled -> mui: preserves malformed concrete vue-styled input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "framework-semantics: vue",
-		      "kind": "capability",
+		      "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`)
 });

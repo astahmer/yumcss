@@ -119,7 +119,7 @@ test("mui -> css-modules: carries a documented secondary mui API explicitly", ()
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
+		      "hint": "CSS Modules lowering requires one flat rule with string literal values",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

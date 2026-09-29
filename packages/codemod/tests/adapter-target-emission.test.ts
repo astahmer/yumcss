@@ -944,7 +944,7 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([{ outcome: "residual", representation: "static" }]);
 	});
 
-	test("uses a portable static artifact for a standalone MUI style value", () => {
+	test("preserves a standalone class value when MUI has no host for sx", () => {
 		const result = migrate(
 			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
 				"const css = createUnsafeCss();\n" +
@@ -953,13 +953,19 @@ describe("target adapter emission contract", () => {
 			CodemodAdapterId.Mui,
 		);
 
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
-		expect(result.code).toContain("css.class");
-		expect(result.outcomes).toMatchObject([
-			{ outcome: "portable-artifact", representation: "portable-artifact" },
-		]);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "host-framework",
+					hint: expect.stringContaining("MUI sx output requires a MUI-owned component"),
+				}),
+			]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain('css.class({ color: "red" })');
+		expect(result.outcomes).toMatchObject([{ outcome: "residual", representation: "static" }]);
 	});
 
 	test.each([CodemodAdapterId.Emotion, CodemodAdapterId.Jss, CodemodAdapterId.Aphrodite] as const)(
@@ -1028,7 +1034,7 @@ describe("target adapter emission contract", () => {
 		},
 	);
 
-	test("uses the runtime portable artifact for a hostless dynamic MUI value", () => {
+	test("preserves a hostless dynamic MUI value with a typed host residual", () => {
 		const result = migrate(
 			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
 				"const css = createUnsafeCss();\n" +
@@ -1037,16 +1043,19 @@ describe("target adapter emission contract", () => {
 			CodemodAdapterId.Mui,
 		);
 
-		expect(result.converted).toBe(1);
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.outcomes).toMatchObject([
-			{ outcome: "portable-artifact", representation: "portable-artifact" },
-		]);
-		expect(result.loweringPlans[0]?.availableRepresentations).toContain("portable-artifact");
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css"');
-		expect(result.code).toContain("css.vars({");
-		expect(result.code).toMatch(/["']color["']:\s*theme\.foreground/);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "host-framework",
+					hint: expect.stringContaining("MUI sx output requires a MUI-owned component"),
+				}),
+			]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("css.class({ color: theme.foreground })");
+		expect(result.code).not.toContain("css.vars({");
 	});
 
 	test.each([
@@ -1157,7 +1166,7 @@ describe("target adapter emission contract", () => {
 		);
 	});
 
-	test("preserves a React Native named style map through MUI's portable target", () => {
+	test("preserves a React Native style map when MUI has no sx host", () => {
 		const result = migrate(
 			'import { StyleSheet } from "react-native";\n' +
 				'const styles = StyleSheet.create({ button: { color: "red" } });',
@@ -1165,10 +1174,18 @@ describe("target adapter emission contract", () => {
 			CodemodAdapterId.Mui,
 		);
 
-		expect(result.converted).toBe(1);
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"button": css.class({ color: "red" })');
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "host-framework",
+					hint: expect.stringContaining("MUI sx output requires a MUI-owned component"),
+				}),
+			]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain('StyleSheet.create({ button: { color: "red" } })');
 	});
 
 	test.each([

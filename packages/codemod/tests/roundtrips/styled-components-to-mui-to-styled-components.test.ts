@@ -84,7 +84,7 @@ test("styled-components -> mui -> styled-components: preserves an actionable con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled.div({ color: "red", padding: "1rem" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("styled-components -> mui -> styled-components: retains the documented seco
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		export const Card = styled.div({ color: "red", padding: "1rem" });",
+		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -263,7 +263,7 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -298,9 +298,10 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ color: "primary.main", padding: "1rem" });",
-		      "converted": 1,
+		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -316,53 +317,40 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		      "converted": 1,
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "named-map",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -382,9 +370,10 @@ test("styled-components -> mui -> styled-components: resolves token values acros
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		export const Card = styled("div")({ color: "primary.main", padding: "1rem" });",
-		    "converted": 1,
+		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -400,53 +389,40 @@ test("styled-components -> mui -> styled-components: resolves token values acros
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import styled from "styled-components";
+		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

@@ -114,7 +114,7 @@ test("mui -> vanilla-extract -> mui: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -140,8 +140,8 @@ test("mui -> vanilla-extract -> mui: retains the documented secondary API withou
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-		        "kind": "capability",
+		        "hint": "the React class wrapper requires one flat rule with string literal values",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -151,7 +151,7 @@ test("mui -> vanilla-extract -> mui: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

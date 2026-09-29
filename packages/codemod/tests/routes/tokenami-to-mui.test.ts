@@ -48,10 +48,10 @@ test("tokenami -> mui: migrates concrete tokenami syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "gap": "1rem" });",
-		  "converted": 1,
+		  "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ "--color": "red", "--gap": "1rem" });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -60,7 +60,6 @@ test("tokenami -> mui: migrates concrete tokenami syntax to mui", () => {
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -68,19 +67,19 @@ test("tokenami -> mui: migrates concrete tokenami syntax to mui", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -94,7 +93,7 @@ test("tokenami -> mui: carries a documented secondary tokenami API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: tokenami -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -121,6 +120,11 @@ test("tokenami -> mui: carries a documented secondary tokenami API explicitly", 
 		      "kind": "composition",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -144,10 +148,10 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "gap": "1rem" });",
-		    "converted": 1,
+		    "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -156,7 +160,6 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -164,26 +167,26 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "gap": "1rem" });",
-		    "converted": 1,
+		    "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -192,7 +195,6 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -200,19 +202,19 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -228,10 +230,10 @@ test("tokenami -> mui: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "gap": "1rem" });",
-		  "converted": 1,
+		  "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -240,7 +242,6 @@ test("tokenami -> mui: resolves concrete token values with project context", asy
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -248,19 +249,19 @@ test("tokenami -> mui: resolves concrete token values with project context", asy
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -273,11 +274,11 @@ test("tokenami -> mui: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "gap": "1rem" });
+		  "code": "import { css } from "@tokenami/css";
+		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ "--color": "red", "--gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -286,7 +287,6 @@ test("tokenami -> mui: preserves malformed concrete tokenami input", () => {
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -294,19 +294,19 @@ test("tokenami -> mui: preserves malformed concrete tokenami input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

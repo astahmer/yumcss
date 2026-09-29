@@ -91,10 +91,8 @@ test("mui -> mantine: carries a documented secondary mui API explicitly", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> mantine | lowering-residual: host-framework, validation)
-		export const Card = styled("div")({ color: "red", padding: 8 });",
-		  "converted": 0,
+		  "code": "export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -110,30 +108,17 @@ test("mui -> mantine: carries a documented secondary mui API explicitly", () => 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

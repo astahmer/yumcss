@@ -49,10 +49,10 @@ test("stitches -> mui -> stitches: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "padding": "1rem" });",
-		    "converted": 1,
+		    "code": "import { css } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "red", padding: "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -61,7 +61,6 @@ test("stitches -> mui -> stitches: preserves an actionable concrete round trip",
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -69,25 +68,25 @@ test("stitches -> mui -> stitches: preserves an actionable concrete round trip",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "padding": "1rem" });",
+		    "code": "import { css } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -112,10 +111,10 @@ test("stitches -> mui -> stitches: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const reset = css.class({ "margin": 0 });",
-		    "converted": 1,
+		    "code": "import { globalCss } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -124,7 +123,6 @@ test("stitches -> mui -> stitches: retains the documented secondary API without 
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -132,25 +130,25 @@ test("stitches -> mui -> stitches: retains the documented secondary API without 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const reset = css.class({ "margin": 0 });",
+		    "code": "import { globalCss } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -190,10 +188,10 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "#2563eb", "padding": "1rem" });",
-		      "converted": 1,
+		      "code": "import { css } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -202,7 +200,6 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -210,25 +207,25 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "#2563eb", "padding": "1rem" });",
+		      "code": "import { css } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -241,10 +238,10 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
-		      "converted": 1,
+		      "code": "import { css } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -253,7 +250,6 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -261,25 +257,25 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
+		      "code": "import { css } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -306,10 +302,10 @@ test("stitches -> mui -> stitches: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
-		    "converted": 1,
+		    "code": "import { css } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -318,7 +314,6 @@ test("stitches -> mui -> stitches: resolves token values across both concrete le
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -326,25 +321,25 @@ test("stitches -> mui -> stitches: resolves token values across both concrete le
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "padding": "1rem" });",
+		    "code": "import { css } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

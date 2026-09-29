@@ -94,7 +94,8 @@ test("mui -> stylex: carries a documented secondary mui API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const Card = stylex.create({ style: { color: "red", padding: "8px" } }).style;",
+		const __CardStyle = stylex.create({ style: { color: "red", padding: "8px" } }).style;
+		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

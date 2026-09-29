@@ -210,17 +210,18 @@ describe("bidirectional registered adapter matrix", () => {
 				return;
 			}
 			if (targetId === CodemodAdapterId.Mui) {
-				expect(result.converted, `${targetId} was not converted`).toBeGreaterThan(0);
-				expect(result.skipped, `${targetId} was skipped`).toBe(0);
-				expect(result.residuals).toEqual([]);
-				expect(result.outcomes).toEqual(
+				expect(result.converted, `${targetId} has no host to receive sx`).toBe(0);
+				expect(result.skipped, `${targetId} should preserve the isolated class`).toBe(1);
+				expect(result.residuals).toEqual(
 					expect.arrayContaining([
 						expect.objectContaining({
-							outcome: "portable-artifact",
-							representation: "portable-artifact",
+							kind: "host-framework",
+							hint: expect.stringContaining("MUI sx output requires a MUI-owned component"),
 						}),
 					]),
 				);
+				expect(result.code).toContain("pandwind:migrate-skip");
+				expect(result.code).toContain('css.class({ color: "red", padding: "1rem" })');
 				return;
 			}
 			if (targetId === CodemodAdapterId.Mantine) {

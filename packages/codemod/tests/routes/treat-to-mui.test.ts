@@ -48,10 +48,10 @@ test("treat -> mui: migrates concrete treat syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "padding": "8px" });",
-		  "converted": 1,
+		  "code": "import { style } from "treat";
+		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = style({ color: "red", padding: 8 });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -60,7 +60,6 @@ test("treat -> mui: migrates concrete treat syntax to mui", () => {
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -68,19 +67,19 @@ test("treat -> mui: migrates concrete treat syntax to mui", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -93,10 +92,10 @@ test("treat -> mui: carries a documented secondary treat API explicitly", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "padding": "8px" });",
-		  "converted": 1,
+		  "code": "import { style } from "treat";
+		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = style({ color: "red", padding: 8 });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -105,7 +104,6 @@ test("treat -> mui: carries a documented secondary treat API explicitly", () => 
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -113,19 +111,19 @@ test("treat -> mui: carries a documented secondary treat API explicitly", () => 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -147,10 +145,10 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "#2563eb", "padding": "8px" });",
-		    "converted": 1,
+		    "code": "import { style } from "treat";
+		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = style({ color: "#2563eb", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -159,7 +157,6 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -167,26 +164,26 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
-		    "converted": 1,
+		    "code": "import { style } from "treat";
+		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = style({ color: "#2563eb", padding: 8 });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -195,7 +192,6 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -203,19 +199,19 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -231,10 +227,10 @@ test("treat -> mui: resolves concrete token values with project context", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "padding": "8px" });",
-		  "converted": 1,
+		  "code": "import { style } from "treat";
+		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = style({ color: "#2563eb", padding: 8 });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -243,7 +239,6 @@ test("treat -> mui: resolves concrete token values with project context", async 
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -251,19 +246,19 @@ test("treat -> mui: resolves concrete token values with project context", async 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -276,11 +271,11 @@ test("treat -> mui: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "padding": "8px" });
+		  "code": "import { style } from "treat";
+		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished treat */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -289,7 +284,6 @@ test("treat -> mui: preserves malformed concrete treat input", () => {
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -297,19 +291,19 @@ test("treat -> mui: preserves malformed concrete treat input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

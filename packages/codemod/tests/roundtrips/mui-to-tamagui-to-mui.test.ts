@@ -134,7 +134,8 @@ test("mui -> tamagui -> mui: retains the documented secondary API without silent
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { color: "red", padding: 8 });",
+		const __CardTamagui = styled(View, { color: "red", padding: 8 });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +169,8 @@ test("mui -> tamagui -> mui: retains the documented secondary API without silent
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
-		export const Card = styled(View)({ color: "red", padding: 8 });",
+		const __CardTamagui = styled(View)({ color: "red", padding: 8 });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -263,11 +265,11 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "@tamagui/core";
-		import { styled } from "@mui/system";
-		const __componentTamagui = styled(View)({ color: "primary.main", padding: "16px" });
+		      "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
+		const __componentTamagui = styled(View, { color: "#f97316", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
-		      "converted": 1,
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -283,17 +285,25 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -335,11 +345,11 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "@tamagui/core";
-		import { styled } from "@mui/system";
-		const __componentTamagui = styled(View)({ color: "primary.main", padding: "16px" });
+		      "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
-		      "converted": 1,
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -355,17 +365,25 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -421,11 +439,11 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
-		import { styled } from "@mui/system";
-		const __componentTamagui = styled(View)({ color: "primary.main", padding: "16px" });
+		    "code": "import { View, styled } from "@tamagui/core";
+		// pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
+		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -441,17 +459,25 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },

@@ -95,7 +95,7 @@ test("chakra-ui -> mui: carries a documented secondary chakra-ui API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
@@ -121,6 +121,11 @@ test("chakra-ui -> mui: carries a documented secondary chakra-ui API explicitly"
 		    {
 		      "hint": "Chakra recipes and attached factory styles require explicit composition lowering",
 		      "kind": "composition",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

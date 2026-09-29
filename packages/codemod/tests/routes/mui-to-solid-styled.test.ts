@@ -93,8 +93,8 @@ test("mui -> solid-styled: carries a documented secondary mui API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
-		export const Card = css({ "color": "red", "padding": 8 });",
+		  "code": "import { styled } from "solid-styled-components";
+		export const Card = styled("div")(() => ({ "color": "red", "padding": 8 }));",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

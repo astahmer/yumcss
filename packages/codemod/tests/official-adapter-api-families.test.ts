@@ -139,6 +139,11 @@ describe("official adapter API families", () => {
 					expect(result.code).toContain('<Card as="a" href="/docs" />');
 					expect(result.code).not.toContain('<div as="a"');
 				}
+				if (api.adapter === CodemodAdapterId.Mui && api.name === "styled component") {
+					expect(result.code).toContain("const __pandwindSlot =");
+					expect(result.code).toContain("export const Card = __pandwindSlot(");
+					expect(result.code).not.toContain("export const Card = css.class");
+				}
 				if (api.adapter === CodemodAdapterId.StyledComponents && api.name === "styled attrs") {
 					expect(result.code).toContain('type: "button"');
 					expect(result.code).toContain('"aria-label": "Save"');
@@ -1876,8 +1881,11 @@ describe("official adapter API families", () => {
 			  "mui/styled component": {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createCx } from "pandwind/cx";
+			const cx = createCx();
 			const css = createUnsafeCss();
-			export const Card = css.class({ color: "red", padding: 8 });",
+			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: 8 }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [

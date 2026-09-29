@@ -326,11 +326,7 @@ async function officialMuiConfig(
 	return fallback;
 }
 
-function defaultSpacing(
-	property: string,
-	value: StyleValue,
-	theme?: MuiThemeLike,
-): StyleValue {
+function defaultSpacing(property: string, value: StyleValue, theme?: MuiThemeLike): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal) return value;
 	if (spacing.has(property) && typeof value.value === "number") {
 		const resolved =
@@ -371,8 +367,7 @@ function resolveMuiSourceValue(
 		!/^[A-Za-z_$][\w$]*$/u.test(key)
 	)
 		return undefined;
-	const pathPrefix =
-		"\\b" + group + "\\s*:\\s*\\{[^{}]*\\b" + key + "\\s*:\\s*";
+	const pathPrefix = "\\b" + group + "\\s*:\\s*\\{[^{}]*\\b" + key + "\\s*:\\s*";
 	return (
 		new RegExp(pathPrefix + "'([^']*)'").exec(source)?.[1] ??
 		new RegExp(pathPrefix + '"([^"]*)"').exec(source)?.[1]
@@ -478,7 +473,6 @@ function muiSxCssValues(program: StyleProgram): StyleProgram {
 }
 
 const MUI_SOURCE_COMPONENTS = { Box: "div" } as const;
-
 
 function renderMuiSxHost(
 	openingTag: string,
@@ -996,9 +990,9 @@ export function createMuiAdapter(
 						themeResiduals.length === 0
 							? match.program
 							: {
-								...match.program,
-								residuals: [...match.program.residuals, ...themeResiduals],
-							};
+									...match.program,
+									residuals: [...match.program.residuals, ...themeResiduals],
+								};
 					return {
 						...match,
 						program:

@@ -40,7 +40,8 @@ export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2,
 
 test("MUI styled declarations preserve component shape and plain CSS semantics", () => {
 	const source = `import { styled } from "@mui/system";
-export const Card = styled("div")({ padding: 2 });`;
+export const Card = styled("div")({ padding: 2 });
+export const Panel = styled("section")({ margin: 3 });`;
 	const result = muiToPandwind.run({
 		source,
 		file: "Card.tsx",
@@ -48,14 +49,100 @@ export const Card = styled("div")({ padding: 2 });`;
 		semantic: reactSemantic,
 	});
 
-	expect(result.converted).toBe(1);
+	expect(result.converted).toBe(2);
 	expect(result.code).toContain("export const Card = __pandwindSlot(");
+	expect(result.code).toContain("export const Panel = __pandwindSlot(");
+	expect(result.code.match(/__pandwindSlot\(/gu)).toHaveLength(2);
 	expect(result.code).not.toContain("export const Card = css.class");
 	expect(result.code).toContain('from "./__pandwind/slot"');
+	expect(result.generatedFiles).toHaveLength(1);
 	expect(result.generatedFiles?.map((file) => file.path)).toContain("__pandwind/slot.tsx");
 	expect(
 		result.generatedFiles?.find((file) => file.path === "__pandwind/slot.tsx")?.content,
 	).toContain("forwardRef");
+	expect(result.generatedFiles?.find((file) => file.path === "__pandwind/slot.tsx")?.content)
+		.toMatchInlineSnapshot(`
+		"import { createElement, forwardRef } from "react";
+		import type { ComponentPropsWithoutRef, ComponentRef, CSSProperties, ElementType, ReactElement, Ref } from "react";
+
+		type PandwindSlotTransientProps<Prefix extends string> = {
+			readonly [key in \`\${Prefix}\${string}\`]?: unknown;
+		};
+		type PandwindSlotProps<Component extends ElementType, Prefix extends string> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & PandwindSlotTransientProps<Prefix> & {
+			readonly as?: Component;
+			readonly className?: string;
+			readonly ref?: Ref<ComponentRef<Component>>;
+		};
+		type PandwindSlotComponent<DefaultComponent extends ElementType, Prefix extends string> = <Component extends ElementType = DefaultComponent>(
+			props: PandwindSlotProps<Component, Prefix>,
+		) => ReactElement | null;
+		type PandwindSlotRuntimeProps = Record<string, unknown> & {
+			readonly as?: ElementType;
+			readonly className?: string;
+			readonly style?: CSSProperties;
+		};
+		type PandwindSlotOptions<DefaultComponent extends ElementType, Prefix extends string> = {
+			readonly defaultComponent: DefaultComponent;
+			readonly style: string;
+			readonly stableClass: string;
+			readonly inheritedClass?: string;
+			readonly classAttribute: string;
+			readonly filteredPropPrefixes: readonly Prefix[];
+			readonly attrs: Readonly<Record<string, unknown>> & {
+				readonly as?: ElementType;
+				readonly className?: string;
+				readonly style?: CSSProperties;
+			};
+			readonly joinClass: (...values: (string | undefined)[]) => string;
+		};
+		const isPandwindSlotElementType = (value: unknown): value is ElementType =>
+			typeof value === "string" ||
+			typeof value === "function" ||
+			typeof value === "symbol" ||
+			(typeof value === "object" && value !== null);
+
+		export const __pandwindSlot = <DefaultComponent extends ElementType, Prefix extends string = never>({
+			defaultComponent,
+			style,
+			stableClass,
+			inheritedClass,
+			classAttribute,
+			filteredPropPrefixes,
+			attrs,
+			joinClass,
+		}: PandwindSlotOptions<DefaultComponent, Prefix>) => {
+			const component = forwardRef<unknown, PandwindSlotRuntimeProps>((props, ref) => {
+				const Component = isPandwindSlotElementType(props.as) ? props.as : defaultComponent;
+				const { as: _as, ...rest } = props;
+				const { as: _attrsAs, ...attrsProps } = attrs;
+				const forwarded =
+					filteredPropPrefixes.length === 0
+						? { ...rest, ...attrsProps }
+						: Object.fromEntries(
+								[...Object.entries(rest), ...Object.entries(attrsProps)].filter(
+									([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)),
+								),
+							);
+				const attrsClassName = typeof attrs.className === "string" ? attrs.className : undefined;
+				const propsClassName = typeof props.className === "string" ? props.className : undefined;
+				return createElement(Component, {
+					...forwarded,
+					ref,
+					[classAttribute]: joinClass(
+						style,
+						stableClass,
+						inheritedClass,
+						attrsClassName,
+						propsClassName,
+					),
+				});
+			});
+			return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent, Prefix>, {
+				__pandwindClassName: stableClass,
+			});
+		};
+		"
+	`);
 	expect(result.code).toContain("padding: 2");
 	expect(result.code).not.toContain('padding: "16px"');
 	expect(result.code).toMatchInlineSnapshot(`
@@ -64,7 +151,8 @@ export const Card = styled("div")({ padding: 2 });`;
 		import { __pandwindSlot } from "./__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: 2 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: 2 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });
+		export const Panel = __pandwindSlot({ defaultComponent: "section", style: css.class({ margin: 3 }), stableClass: "pw-1yrm3hy", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
 	`);
 });
 
@@ -124,20 +212,74 @@ export const App = () => <div className={card} />;`;
 	`);
 });
 
-test("standalone styles convert to reusable MUI sx objects", () => {
+test("isolated class styles remain residual until an MUI host can consume sx", () => {
 	const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
 const css = createUnsafeCss();
 export const card = css.class({ color: "red", padding: "4px" });`;
 	const result = pandwindToMui.run({ source, file: "styles.ts" });
 
-	expect(result.converted).toBe(1);
-	expect(result.skipped).toBe(0);
-	expect(result.residuals).toEqual([]);
-	expect(result.code).toContain('export const card = { color: "red", padding: "4px" }');
-	expect(result.code).not.toContain("pandwind/unsafe/css");
-	expect(result.code).not.toContain("css.class");
+	expect(result.converted).toBe(0);
+	expect(result.skipped).toBe(1);
+	expect(result.residuals).toEqual(
+		expect.arrayContaining([
+			expect.objectContaining({
+				kind: "host-framework",
+				hint: expect.stringContaining("MUI sx output requires a MUI-owned component"),
+			}),
+		]),
+	);
+	expect(result.code).toContain("pandwind:migrate-skip");
+	expect(result.code).toContain('css.class({ color: "red", padding: "4px" })');
 	expect(result.code).toMatchInlineSnapshot(`
-		""
+		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css.class({ color: "red", padding: "4px" });"
+	`);
+});
+
+test("MUI runtime themes remain explicit residuals", () => {
+	const styledSource = `import { styled } from "@mui/system";
+export const Card = styled("div")((theme) => ({ color: theme.palette.primary.main }));`;
+	const providerSource = `import { ThemeProvider } from "@mui/material/styles";
+export const App = () => <ThemeProvider theme={theme}><main /></ThemeProvider>;`;
+	const styledResult = muiToPandwind.run({
+		source: styledSource,
+		file: "Card.tsx",
+		semantic: reactSemantic,
+	});
+	const providerResult = muiToPandwind.run({
+		source: providerSource,
+		file: "App.tsx",
+		semantic: reactSemantic,
+	});
+
+	for (const result of [styledResult, providerResult]) {
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "runtime-context",
+				}),
+			]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+	}
+	expect(styledResult.code).toContain(
+		'styled("div")((theme) => ({ color: theme.palette.primary.main }))',
+	);
+	expect(providerResult.code).toContain("<ThemeProvider theme={theme}>");
+	expect({ styled: styledResult.code, provider: providerResult.code }).toMatchInlineSnapshot(`
+		{
+		  "provider": "// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		import { ThemeProvider } from "@mui/material/styles";
+		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		export const App = () => <ThemeProvider theme={theme}><main /></ThemeProvider>;",
+		  "styled": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		export const Card = styled("div")((theme) => ({ color: theme.palette.primary.main }));",
+		}
 	`);
 });
 

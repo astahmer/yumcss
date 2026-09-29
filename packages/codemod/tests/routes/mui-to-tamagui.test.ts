@@ -92,7 +92,8 @@ test("mui -> tamagui: carries a documented secondary mui API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-		export const Card = styled(View, { color: "red", padding: 8 });",
+		const __CardTamagui = styled(View, { color: "red", padding: 8 });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

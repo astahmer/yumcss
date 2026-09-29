@@ -48,12 +48,11 @@ test("react-strict-dom -> mui: migrates concrete react-strict-dom syntax to mui"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
+		  "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -62,7 +61,6 @@ test("react-strict-dom -> mui: migrates concrete react-strict-dom syntax to mui"
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -70,19 +68,19 @@ test("react-strict-dom -> mui: migrates concrete react-strict-dom syntax to mui"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -95,10 +93,10 @@ test("react-strict-dom -> mui: carries a documented secondary react-strict-dom A
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const pulse = css.class({ "from": { opacity: 0 }, "to": { opacity: 1 } });",
-		  "converted": 1,
+		  "code": "import { css } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -107,7 +105,6 @@ test("react-strict-dom -> mui: carries a documented secondary react-strict-dom A
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -115,19 +112,19 @@ test("react-strict-dom -> mui: carries a documented secondary react-strict-dom A
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -149,12 +146,11 @@ test("react-strict-dom -> mui: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		const styles = { "card": css.class({ color: "#2563eb", padding: "1rem" }) };
+		    "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -163,7 +159,6 @@ test("react-strict-dom -> mui: loads concrete theme and project context variants
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -171,28 +166,27 @@ test("react-strict-dom -> mui: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		const styles = { "card": css.class({ color: "primary.main", padding: "1rem" }) };
+		    "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -201,7 +195,6 @@ test("react-strict-dom -> mui: loads concrete theme and project context variants
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -209,19 +202,19 @@ test("react-strict-dom -> mui: loads concrete theme and project context variants
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -237,12 +230,11 @@ test("react-strict-dom -> mui: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		const styles = { "card": css.class({ color: "primary.main", padding: "1rem" }) };
+		  "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -251,7 +243,6 @@ test("react-strict-dom -> mui: resolves concrete token values with project conte
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -259,19 +250,19 @@ test("react-strict-dom -> mui: resolves concrete token values with project conte
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -284,13 +275,12 @@ test("react-strict-dom -> mui: preserves malformed concrete react-strict-dom inp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
+		  "code": "import { css, html } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -299,7 +289,6 @@ test("react-strict-dom -> mui: preserves malformed concrete react-strict-dom inp
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -307,19 +296,19 @@ test("react-strict-dom -> mui: preserves malformed concrete react-strict-dom inp
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

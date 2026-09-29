@@ -48,10 +48,10 @@ test("panda -> mui: migrates concrete panda syntax to mui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "_hover": { "color": "blue" } });",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "red", _hover: { color: "blue" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -60,7 +60,6 @@ test("panda -> mui: migrates concrete panda syntax to mui", () => {
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -68,19 +67,19 @@ test("panda -> mui: migrates concrete panda syntax to mui", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -94,7 +93,7 @@ test("panda -> mui: carries a documented secondary panda API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual, portable-artifact)
+		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: composition, host-framework | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -106,7 +105,6 @@ test("panda -> mui: carries a documented secondary panda API explicitly", () => 
 		      "availableRepresentations": [
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "residual",
 		      "residuals": [
@@ -120,7 +118,7 @@ test("panda -> mui: carries a documented secondary panda API explicitly", () => 
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "portable-artifact",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
@@ -132,6 +130,11 @@ test("panda -> mui: carries a documented secondary panda API explicitly", () => 
 		    {
 		      "hint": "target lacks composition support and edge has no embedded program",
 		      "kind": "composition",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -157,10 +160,10 @@ test("panda -> mui: loads concrete theme and project context variants", async ()
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -169,7 +172,6 @@ test("panda -> mui: loads concrete theme and project context variants", async ()
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -177,26 +179,26 @@ test("panda -> mui: loads concrete theme and project context variants", async ()
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -205,7 +207,6 @@ test("panda -> mui: loads concrete theme and project context variants", async ()
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -213,19 +214,19 @@ test("panda -> mui: loads concrete theme and project context variants", async ()
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -241,10 +242,10 @@ test("panda -> mui: resolves concrete token values with project context", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "primary.main", "_hover": { "color": "primary.main" } });",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -253,7 +254,6 @@ test("panda -> mui: resolves concrete token values with project context", async 
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -261,19 +261,19 @@ test("panda -> mui: resolves concrete token values with project context", async 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -286,11 +286,11 @@ test("panda -> mui: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const card = css.class({ "color": "red", "_hover": { "color": "blue" } });
+		  "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = css({ color: "red", _hover: { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -299,7 +299,6 @@ test("panda -> mui: preserves malformed concrete panda input", () => {
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "static",
 		      "residuals": [],
@@ -307,19 +306,19 @@ test("panda -> mui: preserves malformed concrete panda input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

@@ -94,7 +94,7 @@ test("mui -> sass: carries a documented secondary mui API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -119,8 +119,8 @@ test("mui -> sass: carries a documented secondary mui API explicitly", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the React class wrapper requires one flat rule with string literal values",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

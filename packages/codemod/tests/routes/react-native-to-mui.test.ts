@@ -48,10 +48,10 @@ test("react-native -> mui: migrates concrete react-native syntax to mui", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
-		  "converted": 1,
+		  "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -60,7 +60,6 @@ test("react-native -> mui: migrates concrete react-native syntax to mui", () => 
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -68,19 +67,19 @@ test("react-native -> mui: migrates concrete react-native syntax to mui", () => 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -93,10 +92,10 @@ test("react-native -> mui: carries a documented secondary react-native API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
-		  "converted": 1,
+		  "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -105,7 +104,6 @@ test("react-native -> mui: carries a documented secondary react-native API expli
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -113,19 +111,19 @@ test("react-native -> mui: carries a documented secondary react-native API expli
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -147,10 +145,10 @@ test("react-native -> mui: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
-		    "converted": 1,
+		    "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -159,7 +157,6 @@ test("react-native -> mui: loads concrete theme and project context variants", a
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -167,26 +164,26 @@ test("react-native -> mui: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
-		    "converted": 1,
+		    "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -195,7 +192,6 @@ test("react-native -> mui: loads concrete theme and project context variants", a
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -203,19 +199,19 @@ test("react-native -> mui: loads concrete theme and project context variants", a
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -231,10 +227,10 @@ test("react-native -> mui: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
-		  "converted": 1,
+		  "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -243,7 +239,6 @@ test("react-native -> mui: resolves concrete token values with project context",
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -251,19 +246,19 @@ test("react-native -> mui: resolves concrete token values with project context",
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -276,11 +271,11 @@ test("react-native -> mui: preserves malformed concrete react-native input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };
+		  "code": "import { StyleSheet } from "react-native";
+		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished react-native */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -289,7 +284,6 @@ test("react-native -> mui: preserves malformed concrete react-native input", () 
 		        "static",
 		        "named-map",
 		        "residual",
-		        "portable-artifact",
 		      ],
 		      "representation": "named-map",
 		      "residuals": [],
@@ -297,19 +291,19 @@ test("react-native -> mui: preserves malformed concrete react-native input", () 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

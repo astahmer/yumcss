@@ -131,10 +131,8 @@ test("mui -> mantine -> mui: retains the documented secondary API without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> mantine | lowering-residual: host-framework, validation)
-		export const Card = styled("div")({ color: "red", padding: 8 });",
-		    "converted": 0,
+		    "code": "export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -150,44 +148,56 @@ test("mui -> mantine -> mui: retains the documented secondary API without silent
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> mantine | lowering-residual: host-framework, validation)
-		export const Card = styled("div")({ color: "red", padding: 8 });",
+		    "changed": true,
+		    "code": "// pandwind:migrate-skip (route: mantine -> mui | parse-residual: dynamic | available: named-map, residual)
+		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}

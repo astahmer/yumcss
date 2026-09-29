@@ -925,7 +925,9 @@ function parseCalls(
 							end: fullEnd,
 							adapter: context.config.adapter,
 							...(context.document?.framework ? { framework: context.document.framework } : {}),
-							...(pattern.name === "styled" ? styledSubject(source, start) : {}),
+							...(pattern.kind === CodemodCallPatternKindTag.Styled
+								? styledSubject(source, start)
+								: {}),
 							...context.semantic?.source,
 						},
 						sourceOffset: open + 1,

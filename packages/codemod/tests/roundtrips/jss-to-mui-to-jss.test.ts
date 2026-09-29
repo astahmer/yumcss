@@ -49,10 +49,10 @@ test("jss -> mui -> jss: preserves an actionable concrete round trip", () => {
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const useStyles = { "card": css.class({ color: "red" }) };",
-		    "converted": 1,
+		    "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const useStyles = createUseStyles({ card: { color: "red" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -61,7 +61,6 @@ test("jss -> mui -> jss: preserves an actionable concrete round trip", () => {
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -69,25 +68,25 @@ test("jss -> mui -> jss: preserves an actionable concrete round trip", () => {
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const useStyles = { "card": css.class({ color: "red" }) };",
+		    "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -112,10 +111,10 @@ test("jss -> mui -> jss: retains the documented secondary API without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const sheet = { "card": css.class({ color: "red" }) };",
-		    "converted": 1,
+		    "code": "import jss from "jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -124,7 +123,6 @@ test("jss -> mui -> jss: retains the documented secondary API without silent los
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -132,25 +130,25 @@ test("jss -> mui -> jss: retains the documented secondary API without silent los
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const sheet = { "card": css.class({ color: "red" }) };",
+		    "code": "import jss from "jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -190,10 +188,10 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const useStyles = { "card": css.class({ color: "#2563eb" }) };",
-		      "converted": 1,
+		      "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -202,7 +200,6 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "named-map",
 		          "residuals": [],
@@ -210,25 +207,25 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const useStyles = { "card": css.class({ color: "#2563eb" }) };",
+		      "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -241,10 +238,10 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
-		      "converted": 1,
+		      "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -253,7 +250,6 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "named-map",
 		          "residuals": [],
@@ -261,25 +257,25 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
+		      "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -306,10 +302,10 @@ test("jss -> mui -> jss: resolves token values across both concrete legs", async
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
-		    "converted": 1,
+		    "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -318,7 +314,6 @@ test("jss -> mui -> jss: resolves token values across both concrete legs", async
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -326,25 +321,25 @@ test("jss -> mui -> jss: resolves token values across both concrete legs", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const useStyles = { "card": css.class({ color: "primary.main" }) };",
+		    "code": "import { createUseStyles } from "react-jss";
+		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

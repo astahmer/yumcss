@@ -50,11 +50,10 @@ test("fela -> mui -> fela: preserves an actionable concrete round trip", () => {
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "red" });",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = renderer.renderRule(() => ({ color: "red" }));",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -63,7 +62,6 @@ test("fela -> mui -> fela: preserves an actionable concrete round trip", () => {
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -71,27 +69,26 @@ test("fela -> mui -> fela: preserves an actionable concrete round trip", () => {
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "red" });",
+		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = renderer.renderRule(() => ({ color: "red" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -173,7 +170,13 @@ test("fela -> mui -> fela: retains the documented secondary API without silent l
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "a reusable JSX wrapper requires a JSX source file",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -215,11 +218,10 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "#2563eb" });",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -228,7 +230,6 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -236,27 +237,26 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "#2563eb" });",
+		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -270,11 +270,10 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "primary.main" });",
-		      "converted": 1,
+		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -283,7 +282,6 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "static",
 		          "residuals": [],
@@ -291,27 +289,26 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "primary.main" });",
+		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -339,11 +336,10 @@ test("fela -> mui -> fela: resolves token values across both concrete legs", asy
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "primary.main" });",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -352,7 +348,6 @@ test("fela -> mui -> fela: resolves token values across both concrete legs", asy
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "static",
 		        "residuals": [],
@@ -360,27 +355,26 @@ test("fela -> mui -> fela: resolves token values across both concrete legs", asy
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "primary.main" });",
+		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

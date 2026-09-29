@@ -95,7 +95,7 @@ test("mui -> react-strict-dom: carries a documented secondary mui API explicitly
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -121,21 +121,13 @@ test("mui -> react-strict-dom: carries a documented secondary mui API explicitly
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
+		      "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });

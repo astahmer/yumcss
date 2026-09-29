@@ -49,10 +49,10 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
-		    "converted": 1,
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -61,7 +61,6 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -69,25 +68,25 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -112,10 +111,10 @@ test("aphrodite -> mui -> aphrodite: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "fonts": css.class({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
-		    "converted": 1,
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -124,7 +123,6 @@ test("aphrodite -> mui -> aphrodite: retains the documented secondary API withou
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -132,25 +130,25 @@ test("aphrodite -> mui -> aphrodite: retains the documented secondary API withou
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "fonts": css.class({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -190,10 +188,10 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
-		      "converted": 1,
+		      "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -202,7 +200,6 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "named-map",
 		          "residuals": [],
@@ -210,25 +207,25 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
+		      "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -241,10 +238,10 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
-		      "converted": 1,
+		      "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -253,7 +250,6 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		            "static",
 		            "named-map",
 		            "residual",
-		            "portable-artifact",
 		          ],
 		          "representation": "named-map",
 		          "residuals": [],
@@ -261,25 +257,25 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
+		      "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -306,10 +302,10 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
-		    "converted": 1,
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -318,7 +314,6 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		          "static",
 		          "named-map",
 		          "residual",
-		          "portable-artifact",
 		        ],
 		        "representation": "named-map",
 		        "residuals": [],
@@ -326,25 +321,25 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "card": css.class({ color: "primary.main", padding: "8px" }) };",
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

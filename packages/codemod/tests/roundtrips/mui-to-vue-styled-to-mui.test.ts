@@ -169,7 +169,7 @@ test("mui -> vue-styled -> mui: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 8;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -193,13 +193,26 @@ test("mui -> vue-styled -> mui: retains the documented secondary API without sil
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "framework-semantics: vue",
-		        "kind": "capability",
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
 	`)

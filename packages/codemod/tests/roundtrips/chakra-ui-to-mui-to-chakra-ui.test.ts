@@ -114,7 +114,7 @@ test("chakra-ui -> mui -> chakra-ui: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -142,6 +142,11 @@ test("chakra-ui -> mui -> chakra-ui: retains the documented secondary API withou
 		        "kind": "composition",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -149,7 +154,7 @@ test("chakra-ui -> mui -> chakra-ui: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | available: named-map, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,

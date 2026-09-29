@@ -93,7 +93,7 @@ test("mui -> tokenami: carries a documented secondary mui API explicitly", () =>
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		export const Card = css({ "--color": "red", "--padding": 8 });",
+		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--padding": 8 }), propsStyle)} />; };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

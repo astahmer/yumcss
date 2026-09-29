@@ -95,7 +95,7 @@ test("mui -> treat: carries a documented secondary mui API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: mui -> treat | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -121,8 +121,8 @@ test("mui -> treat: carries a documented secondary mui API explicitly", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
+		      "hint": "the React class wrapper requires one flat rule with string literal values",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

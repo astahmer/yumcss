@@ -113,7 +113,7 @@ test("mui -> authored-css -> mui: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -138,8 +138,8 @@ test("mui -> authored-css -> mui: retains the documented secondary API without s
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
+		        "hint": "the React class wrapper requires one flat rule with string literal values",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -149,7 +149,7 @@ test("mui -> authored-css -> mui: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> authored-css | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -94,9 +94,10 @@ test("mui -> react-native: carries a documented secondary mui API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		export const Card = StyleSheet.create({ "color": "red", "padding": 8 });",
-		  "converted": 1,
+		  "code": "import { styled } from "@mui/system";
+		// pandwind:migrate-skip (route: mui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = styled("div")({ color: "red", padding: 8 });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -115,19 +116,19 @@ test("mui -> react-native: carries a documented secondary mui API explicitly", (
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "React Native View styles cannot preserve Text color semantics; keep the source until a Text host is established",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
