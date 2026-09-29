@@ -1,12 +1,17 @@
 import { expect, test } from "vitest";
 import { BuiltinHostFramework, CodemodAdapterId } from "../src/swap/index.ts";
-import { createAdapterRouteSpec } from "./route-spec-support.ts";
+import { createAdapterRouteProject, createAdapterRouteSpec } from "./route-spec-support.ts";
 
 const muiToPandwind = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Pandwind);
 const muiToTailwind = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Tailwind);
 const pandwindToMui = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.Mui);
 const tailwindToMui = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Mui);
 const reactSemantic = { source: { framework: BuiltinHostFramework.React } };
+const muiPandwindProject = createAdapterRouteProject(
+	CodemodAdapterId.Mui,
+	CodemodAdapterId.Pandwind,
+	"#2563eb",
+);
 
 test("MUI sx spacing longhands, aliases, and gaps use the source theme scale", () => {
 	const source = `import { Box } from "@mui/material";
@@ -36,19 +41,29 @@ export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2,
 test("MUI styled declarations preserve component shape and plain CSS semantics", () => {
 	const source = `import { styled } from "@mui/system";
 export const Card = styled("div")({ padding: 2 });`;
-	const result = muiToPandwind.run({ source, file: "Card.tsx", semantic: reactSemantic });
+	const result = muiToPandwind.run({
+		source,
+		file: "Card.tsx",
+		project: muiPandwindProject,
+		semantic: reactSemantic,
+	});
 
 	expect(result.converted).toBe(1);
 	expect(result.code).toContain("export const Card = __pandwindSlot(");
 	expect(result.code).not.toContain("export const Card = css.class");
+	expect(result.code).toContain('from "./__pandwind/slot"');
+	expect(result.generatedFiles?.map((file) => file.path)).toContain("__pandwind/slot.tsx");
+	expect(
+		result.generatedFiles?.find((file) => file.path === "__pandwind/slot.tsx")?.content,
+	).toContain("forwardRef");
 	expect(result.code).toContain("padding: 2");
 	expect(result.code).not.toContain('padding: "16px"');
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: 2 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
 	`);
 });
@@ -109,20 +124,20 @@ export const App = () => <div className={card} />;`;
 	`);
 });
 
-test("standalone styles remain residual when MUI has no host to receive sx", () => {
+test("standalone styles convert to reusable MUI sx objects", () => {
 	const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
 const css = createUnsafeCss();
-export const card = css.class({ color: "red", padding: "1rem" });`;
+export const card = css.class({ color: "red", padding: "4px" });`;
 	const result = pandwindToMui.run({ source, file: "styles.ts" });
 
-	expect(result.converted).toBe(0);
-	expect(result.residuals.length).toBeGreaterThan(0);
-	expect(result.code).toContain("pandwind:migrate-skip");
+	expect(result.converted).toBe(1);
+	expect(result.skipped).toBe(0);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain('export const card = { color: "red", padding: "4px" }');
+	expect(result.code).not.toContain("pandwind/unsafe/css");
+	expect(result.code).not.toContain("css.class");
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const card = css.class({ color: "red", padding: "1rem" });"
+		""
 	`);
 });
 
