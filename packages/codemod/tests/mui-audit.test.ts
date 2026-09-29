@@ -33,18 +33,23 @@ export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2,
 	`);
 });
 
-test("MUI styled declarations keep CSS semantics instead of sx transforms", () => {
+test("MUI styled declarations preserve component shape and plain CSS semantics", () => {
 	const source = `import { styled } from "@mui/system";
 export const Card = styled("div")({ padding: 2 });`;
 	const result = muiToPandwind.run({ source, file: "Card.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
+	expect(result.code).toContain("export const Card = __pandwindSlot(");
+	expect(result.code).not.toContain("export const Card = css.class");
 	expect(result.code).toContain("padding: 2");
 	expect(result.code).not.toContain('padding: "16px"');
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = css.class({ padding: 2 });"
+		const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: 2 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
 	`);
 });
 
