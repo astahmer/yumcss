@@ -107,6 +107,22 @@ const spacing = new Set([
 	"rowGap",
 ]);
 const styleProps = ["sx"] as const;
+const muiSizingProperties = new Set([
+	"width",
+	"height",
+	"minWidth",
+	"maxWidth",
+	"minHeight",
+	"maxHeight",
+]);
+const muiBorderProperties = new Set([
+	"border",
+	"borderTop",
+	"borderRight",
+	"borderBottom",
+	"borderLeft",
+	"outline",
+]);
 const propertyAliases = {
 	m: "margin",
 	mt: "marginTop",
@@ -326,7 +342,11 @@ async function officialMuiConfig(
 	return fallback;
 }
 
-function defaultSpacing(property: string, value: StyleValue, theme?: MuiThemeLike): StyleValue {
+function defaultMuiSystemValue(
+	property: string,
+	value: StyleValue,
+	theme?: MuiThemeLike,
+): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal) return value;
 	if (spacing.has(property) && typeof value.value === "number") {
 		const resolved =
@@ -341,6 +361,15 @@ function defaultSpacing(property: string, value: StyleValue, theme?: MuiThemeLik
 			return { kind: "literal", value: resolved };
 		return { kind: "literal", value: `${value.value * 8}px` };
 	}
+	if (
+		muiSizingProperties.has(property) &&
+		typeof value.value === "number" &&
+		value.value > 0 &&
+		value.value <= 1
+	)
+		return { kind: "literal", value: `${value.value * 100}%` };
+	if (muiBorderProperties.has(property) && typeof value.value === "number")
+		return { kind: "literal", value: `${value.value}px solid` };
 	if (property === "borderRadius" && typeof value.value === "number") {
 		const base = theme?.shape?.borderRadius;
 		if (typeof base === "number") return { kind: "literal", value: `${value.value * base}px` };
@@ -383,6 +412,8 @@ function muiTransforms(
 	return Object.fromEntries(
 		[
 			...spacing,
+			...muiSizingProperties,
+			...muiBorderProperties,
 			"bgcolor",
 			"backgroundColor",
 			"color",
@@ -400,7 +431,7 @@ function muiTransforms(
 					const resolved = resolveMuiSourceValue(property, value.value, source, theme);
 					if (resolved !== undefined) return { kind: "literal", value: resolved };
 				}
-				const fallback = defaultSpacing(property, value, theme);
+				const fallback = defaultMuiSystemValue(property, value, theme);
 				return targetId === CodemodAdapterId.Pandwind
 					? recoverSourceToken(fallback, property, muiTokenGroup, catalog)
 					: fallback;
