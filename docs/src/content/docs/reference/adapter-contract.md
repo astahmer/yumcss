@@ -5,10 +5,10 @@ sidebar:
   order: 7
 ---
 
-pandwind adapters implement `pandwind.style-adapter/4`. An adapter is both a
+pandwind adapters implement `pandwind.style-adapter/5`. An adapter is both a
 source reader and a target writer around the versioned semantic style program.
-The previous `/2` contract was intentionally breaking; adapters must declare
-their version rather than silently accepting a different schema.
+The current contract adds target-owned named-style host projection; adapters
+must declare their version rather than silently accepting a different schema.
 
 ## Adapter responsibilities
 
@@ -23,6 +23,14 @@ Every adapter provides:
 - `validate(source, target, residuals)` — canonical equivalence diagnostics and
   explicit `lossless`, `lossy`, or `unsupported` classification;
 - `capabilities` and `dependencies` — explicit support and installation data.
+- a target migration policy may additionally project a converted named style
+  use onto its native JSX host, including host attributes and required imports.
+
+For StyleX, converting a named style map is incomplete while a
+`stylex.props` use still refers to it. A target-owned projection can lower a
+single converted style reference in a JSX spread; unsupported or ambiguous
+uses keep the original source document with a typed residual. This prevents a
+converted map from remaining coupled to the StyleX runtime.
 
 Adapters that need to evaluate project configuration may additionally expose
 `loadConfigAsync(context)`. It is resolved through the migrated project's root

@@ -2,10 +2,14 @@ import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { SemanticConditionKindTag, StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter, type CallPattern } from "../external-adapters.ts";
-import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
+import type { StyleProgram, StyleProgramResidual, StyleValue } from "../semantic-ir.ts";
 import type { StyleLowering } from "../lowering.ts";
 import { STYLE_LOWERING_SCHEMA } from "../lowering.ts";
-import type { AdapterEmitContext, AdapterParseContext } from "../adapter-contract.ts";
+import type {
+	AdapterEmitContext,
+	AdapterNamedStyleUseProjection,
+	AdapterParseContext,
+} from "../adapter-contract.ts";
 import {
 	SOURCE_SCANNER_SERVICE,
 	SourceBindingKind,
@@ -14,7 +18,7 @@ import {
 	type SourceBindingIndex,
 } from "pandwind/source";
 import { SourcePass } from "../../source-pass-utils.ts";
-import type { OxcNode } from "pandwind/tw/literal";
+import { NodeKind, walk, type OxcNode } from "pandwind/tw/literal";
 import { parseObjectLiteral } from "../parse.ts";
 import {
 	CodemodAdapterId,
@@ -106,6 +110,316 @@ function replaceStylexCalls(
 		);
 	}
 	return rewritten;
+}
+
+function rewriteStylexPropsClassHost(
+	code: string,
+	bindings: SourceBindingIndex | undefined,
+	convertedBindings: ReadonlySet<string>,
+): string {
+	const edits: Array<{ readonly start: number; readonly end: number; readonly text: string }> = [];
+	const styleReference = `[A-Za-z_$][\\w$]*(?:(?:\\.[A-Za-z_$][\\w$]*)|(?:\\[(?:["'][^"']+["'])\\]))*`;
+	for (const callee of stylexMethodReferences(bindings, "props")) {
+		const calls = new RegExp(
+			`\\b${escapeRegExp(callee)}\\s*\\(\\s*(${styleReference})\\s*\\)`,
+			"g",
+		);
+		for (const match of code.matchAll(calls)) {
+			const styleExpression = match[1];
+			const callStart = match.index;
+			if (styleExpression === undefined || callStart === undefined) continue;
+			const styleBinding = /^([A-Za-z_$][\w$]*)/u.exec(styleExpression)?.[1];
+			if (styleBinding === undefined || !convertedBindings.has(styleBinding)) continue;
+			const callEnd = callStart + match[0].length;
+			const spreadPrefix = /\{\s*\.\.\.\s*$/u.exec(code.slice(0, callStart));
+			const spreadEnd = /^\s*\}/u.exec(code.slice(callEnd));
+			if (spreadPrefix !== null && spreadEnd !== null) {
+				const spreadStart = callStart - spreadPrefix[0].length;
+				const tagStart = code.lastIndexOf("<", spreadStart);
+				const tagEnd = code.indexOf(">", callEnd + spreadEnd[0].length);
+				const tag = tagStart < 0 || tagEnd < 0 ? "" : code.slice(tagStart, tagEnd + 1);
+				if (/\b(?:className|class)\s*=/u.test(tag)) continue;
+				edits.push({
+					start: spreadStart,
+					end: callEnd + spreadEnd[0].length,
+					text: `className={${styleExpression}}`,
+				});
+				continue;
+			}
+			const classNameSuffix = /^\.className\b/u.exec(code.slice(callEnd));
+			if (classNameSuffix !== null) {
+				edits.push({
+					start: callStart,
+					end: callEnd + classNameSuffix[0].length,
+					text: styleExpression,
+				});
+				continue;
+			}
+			edits.push({
+				start: callStart,
+				end: callEnd,
+				text: `({ className: ${styleExpression} })`,
+			});
+		}
+	}
+	for (const edit of edits.toReversed())
+		code = code.slice(0, edit.start) + edit.text + code.slice(edit.end);
+	return code;
+}
+
+const isOxcNode = (value: unknown): value is OxcNode =>
+	typeof value === "object" && value !== null && "type" in value && typeof value.type === "string";
+
+const oxcChild = (node: OxcNode, key: string): OxcNode | undefined => {
+	const value = node[key];
+	return isOxcNode(value) ? value : undefined;
+};
+
+const oxcChildren = (node: OxcNode, key: string): readonly OxcNode[] => {
+	const value = node[key];
+	return Array.isArray(value) ? value.filter(isOxcNode) : [];
+};
+
+const oxcRange = (node: OxcNode): { readonly start: number; readonly end: number } | undefined => {
+	const start = node.start;
+	const end = node.end;
+	return typeof start === "number" && typeof end === "number" ? { start, end } : undefined;
+};
+
+function stylexPropsResidual(text: string): StyleProgramResidual {
+	return {
+		kind: StyleProgramResidualKindTag.HostFramework,
+		text,
+		hint: "StyleX props use require one converted style reference and a target-native host projection",
+	};
+}
+
+function repeatedStylexPropsSpreadResiduals(
+	code: string,
+	source: string,
+	file: string,
+	convertedBindings: ReadonlySet<string>,
+): readonly StyleProgramResidual[] {
+	if (convertedBindings.size === 0) return [];
+	const bindings = stylexBindingsFromSource(source, file);
+	const callees = new Set(stylexMethodReferences(bindings, "props"));
+	if (callees.size === 0) return [];
+	const parsed = SOURCE_SCANNER_SERVICE.parse({
+		file,
+		source: code,
+		language: SOURCE_SCANNER_SERVICE.languageForFile(file),
+	});
+	if (parsed.errors.length > 0) return [];
+	const residuals: StyleProgramResidual[] = [];
+	walk(parsed.program, (element) => {
+		if (element.type !== NodeKind.JSXElement) return;
+		const opening = oxcChild(element, "openingElement");
+		if (opening === undefined) return;
+		const styleCalls = oxcChildren(opening, "attributes").flatMap((attribute) => {
+			if (attribute.type !== NodeKind.JSXSpreadAttribute) return [];
+			const call = oxcChild(attribute, "argument");
+			if (call?.type !== NodeKind.CallExpression) return [];
+			const callee = oxcChild(call, "callee");
+			const calleeRange = callee === undefined ? undefined : oxcRange(callee);
+			if (calleeRange === undefined || !callees.has(code.slice(calleeRange.start, calleeRange.end)))
+				return [];
+			const argumentsList = oxcChildren(call, "arguments");
+			const argument = argumentsList.length === 1 ? argumentsList[0] : undefined;
+			const argumentRange = argument === undefined ? undefined : oxcRange(argument);
+			const styleExpression =
+				argumentRange === undefined
+					? undefined
+					: code.slice(argumentRange.start, argumentRange.end);
+			const styleRoot =
+				styleExpression === undefined
+					? undefined
+					: /^([A-Za-z_$][\w$]*)/u.exec(styleExpression)?.[1];
+			const callRange = oxcRange(call);
+			if (styleRoot === undefined || !convertedBindings.has(styleRoot) || callRange === undefined)
+				return [];
+			return [code.slice(callRange.start, callRange.end)];
+		});
+		if (styleCalls.length > 1)
+			residuals.push({
+				kind: StyleProgramResidualKindTag.HostFramework,
+				text: styleCalls.join(", "),
+				hint: "Multiple StyleX props spreads on one host require a target-specific merge strategy",
+			});
+	});
+	return residuals;
+}
+
+function rewriteStylexPropsNamedHosts(
+	code: string,
+	source: string,
+	file: string,
+	convertedBindings: ReadonlySet<string>,
+	projectNamedStyleUse: AdapterNamedStyleUseProjection | undefined,
+): {
+	readonly code: string;
+	readonly imports: readonly string[];
+	readonly residuals: readonly StyleProgramResidual[];
+} {
+	const bindings = stylexBindingsFromSource(source, file);
+	const callees = new Set(stylexMethodReferences(bindings, "props"));
+	if (callees.size === 0) return { code, imports: [], residuals: [] };
+	const hasPropsUse = [...callees].some((callee) =>
+		new RegExp(`\\b${escapeRegExp(callee)}\\s*\\(`).test(source),
+	);
+	if (!hasPropsUse) return { code, imports: [], residuals: [] };
+	const parsed = SOURCE_SCANNER_SERVICE.parse({
+		file,
+		source: code,
+		language: SOURCE_SCANNER_SERVICE.languageForFile(file),
+	});
+	if (parsed.errors.length > 0)
+		return {
+			code,
+			imports: [],
+			residuals: [stylexPropsResidual("StyleX JSX host parse")],
+		};
+	const edits: Array<{ readonly start: number; readonly end: number; readonly text: string }> = [];
+	const imports = new Set<string>();
+	const residuals: StyleProgramResidual[] = [];
+	walk(parsed.program, (element) => {
+		if (element.type !== NodeKind.JSXElement) return;
+		const opening = oxcChild(element, "openingElement");
+		if (opening === undefined) return;
+		const openingName = oxcChild(opening, "name");
+		const openingNameRange = openingName === undefined ? undefined : oxcRange(openingName);
+		if (openingNameRange === undefined) return;
+		const attributes = oxcChildren(opening, "attributes");
+		for (const attribute of attributes) {
+			if (attribute.type !== NodeKind.JSXSpreadAttribute) continue;
+			const call = oxcChild(attribute, "argument");
+			if (call?.type !== NodeKind.CallExpression) continue;
+			const callee = oxcChild(call, "callee");
+			const calleeRange = callee === undefined ? undefined : oxcRange(callee);
+			if (calleeRange === undefined || !callees.has(code.slice(calleeRange.start, calleeRange.end)))
+				continue;
+			const argumentsList = oxcChildren(call, "arguments");
+			const argument = argumentsList.length === 1 ? argumentsList[0] : undefined;
+			const argumentRange = argument === undefined ? undefined : oxcRange(argument);
+			const styleExpression =
+				argumentRange === undefined
+					? undefined
+					: code.slice(argumentRange.start, argumentRange.end);
+			const styleRoot =
+				styleExpression === undefined
+					? undefined
+					: /^([A-Za-z_$][\w$]*)/u.exec(styleExpression)?.[1];
+			if (
+				styleExpression === undefined ||
+				styleRoot === undefined ||
+				!convertedBindings.has(styleRoot)
+			)
+				continue;
+			const hostTag = code.slice(openingNameRange.start, openingNameRange.end);
+			const otherAttributes = attributes
+				.filter((candidate) => candidate !== attribute)
+				.flatMap((candidate) => {
+					const range = oxcRange(candidate);
+					return range === undefined ? [] : [code.slice(range.start, range.end)];
+				});
+			const projection = projectNamedStyleUse?.({
+				code,
+				file,
+				styleExpression,
+				hostTag,
+				hostAttributes: otherAttributes,
+				hasChildren: oxcChildren(element, "children").length > 0,
+				selfClosing: opening.selfClosing === true,
+			});
+			if (projection === undefined) {
+				const callRange = oxcRange(call);
+				residuals.push(
+					stylexPropsResidual(
+						callRange === undefined ? "stylex.props" : code.slice(callRange.start, callRange.end),
+					),
+				);
+				continue;
+			}
+			residuals.push(...projection.residuals);
+			if (projection.residuals.length > 0) continue;
+			const projectedHostTag = projection.hostTag;
+			if (
+				projectedHostTag === undefined ||
+				!/^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*$/u.test(projectedHostTag)
+			) {
+				residuals.push(
+					stylexPropsResidual(code.slice(openingNameRange.start, openingNameRange.end)),
+				);
+				continue;
+			}
+			const attributeRange = oxcRange(attribute);
+			if (attributeRange === undefined) {
+				residuals.push(stylexPropsResidual("StyleX JSX spread range"));
+				continue;
+			}
+			const replacementAttributes = (projection.attributes ?? []).join(" ");
+			if (projectedHostTag !== hostTag)
+				edits.push({
+					start: openingNameRange.start,
+					end: openingNameRange.end,
+					text: projectedHostTag,
+				});
+			edits.push({
+				start: attributeRange.start,
+				end: attributeRange.end,
+				text: replacementAttributes,
+			});
+			const closing = oxcChild(element, "closingElement");
+			const closingName = closing === undefined ? undefined : oxcChild(closing, "name");
+			const closingNameRange = closingName === undefined ? undefined : oxcRange(closingName);
+			if (closingNameRange !== undefined && projectedHostTag !== hostTag)
+				edits.push({
+					start: closingNameRange.start,
+					end: closingNameRange.end,
+					text: projectedHostTag,
+				});
+			for (const statement of projection.imports ?? []) imports.add(statement);
+		}
+	});
+	const rewritten = SourcePass.applyEdits(code, edits);
+	const rewrittenParse = SOURCE_SCANNER_SERVICE.parse({
+		file,
+		source: rewritten,
+		language: SOURCE_SCANNER_SERVICE.languageForFile(file),
+	});
+	if (rewrittenParse.errors.length > 0) {
+		return {
+			code: rewritten,
+			imports: [...imports],
+			residuals: [...residuals, stylexPropsResidual("JSX host after projection")],
+		};
+	}
+	walk(rewrittenParse.program, (node) => {
+		if (node.type !== NodeKind.CallExpression) return;
+		const callee = oxcChild(node, "callee");
+		const range = callee === undefined ? undefined : oxcRange(callee);
+		if (range !== undefined && callees.has(rewritten.slice(range.start, range.end))) {
+			const callRange = oxcRange(node);
+			residuals.push(
+				stylexPropsResidual(
+					callRange === undefined
+						? "stylex.props"
+						: rewritten.slice(callRange.start, callRange.end),
+				),
+			);
+		}
+	});
+	return {
+		code: rewritten,
+		imports: [...imports],
+		residuals: [
+			...new Map(
+				residuals.map((residual) => [
+					`${residual.kind}:${residual.text}:${residual.hint}`,
+					residual,
+				]),
+			).values(),
+		],
+	};
 }
 
 function generatedCssBinding(source: string): string {
@@ -1298,13 +1612,60 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 							new RegExp(`\\bexport\\s+(?:const|let|var)\\s+${escapedBinding}\\s*=`).test(source)),
 				};
 			},
-			rewrite: ({ source, code, file, targetId, convertedBindings }) => {
+			rewrite: ({
+				source,
+				code,
+				file,
+				targetId,
+				convertedBindings,
+				targetHostRepresentation,
+				targetHostFramework,
+				projectNamedStyleUse,
+			}) => {
 				// A file may contain both statically extractable groups and a small
 				// runtime-only carrier. Rewrite the static consumers even when the
 				// file remains partial; leaving `stylex.props(staticGroup)` in place
 				// would type-check against the wrong compiled-style contract and would
 				// make the static portion depend on the source runtime.
-				if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
+				if (targetId !== CodemodAdapterId.Pandwind) {
+					const repeatedPropsResiduals = repeatedStylexPropsSpreadResiduals(
+						code,
+						source,
+						file,
+						convertedBindings,
+					);
+					if (repeatedPropsResiduals.length > 0)
+						return {
+							code: source,
+							residuals: repeatedPropsResiduals,
+							preserveSource: true,
+						};
+					let rewritten = code;
+					if (
+						targetHostRepresentation === StyleHostRepresentationKind.Class &&
+						targetHostFramework === BuiltinHostFramework.React &&
+						convertedBindings.size > 0
+					)
+						rewritten = rewriteStylexPropsClassHost(
+							rewritten,
+							stylexBindingsFromSource(source, file),
+							convertedBindings,
+						);
+					const projected = rewriteStylexPropsNamedHosts(
+						rewritten,
+						source,
+						file,
+						convertedBindings,
+						projectNamedStyleUse,
+					);
+					if (projected.residuals.length > 0)
+						return {
+							code: source,
+							residuals: projected.residuals,
+							preserveSource: true,
+						};
+					return { code: projected.code, imports: projected.imports, residuals: [] };
+				}
 				let rewritten = code;
 				const sourceBindings = stylexBindingsFromSource(source, file);
 				const cssBinding = generatedCssBinding(source);

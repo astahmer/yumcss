@@ -12,6 +12,7 @@ import {
 } from "../identifiers.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { createStyleXSourceObjectOptions, normalizeStyleXVariables } from "./stylex.adapter.ts";
+import { uniqueLocalIdentifier } from "./named-style-use.ts";
 
 const RSD_MODULE = "react-strict-dom";
 const RSD_CSS_BINDING = "css";
@@ -205,6 +206,26 @@ const reactStrictDom = defineCodemodAdapter({
 				"React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
 			hostFrameworks: [BuiltinHostFramework.React],
 			hostRepresentation: StyleHostRepresentationKind.StyleProp,
+			projectNamedStyleUse: ({ code, hostTag, hostAttributes, styleExpression }) => {
+				if (
+					!isIntrinsicHost(`<${hostTag} />`, code) ||
+					hostAttributes.some((attribute) =>
+						/^(?:class|className|style)(?:\s|=|$)/u.test(attribute),
+					)
+				)
+					return undefined;
+				const html = uniqueLocalIdentifier(code, "html");
+				return {
+					hostTag: `${html}.${hostTag}`,
+					attributes: [`style={${styleExpression}}`],
+					imports: [
+						html === "html"
+							? 'import { html } from "react-strict-dom";'
+							: `import { html as ${html} } from "react-strict-dom";`,
+					],
+					residuals: [],
+				};
+			},
 			resolveHostRepresentation: ({
 				framework,
 				sourceFramework,

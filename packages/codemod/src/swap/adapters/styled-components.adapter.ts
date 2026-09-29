@@ -281,6 +281,20 @@ export default defineCodemodAdapter({
 			hostRepresentation: StyleHostRepresentationKind.Component,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			hostFrameworks: [BuiltinHostFramework.React],
+			projectNamedStyleUse: ({ styleExpression, hostTag, hostAttributes }) => {
+				if (!/^[a-z][A-Za-z0-9-]*$/u.test(hostTag)) return undefined;
+				if (
+					hostAttributes.some((attribute) =>
+						/^(?:as|class|className|style)(?:\s|=|$)/u.test(attribute),
+					)
+				)
+					return undefined;
+				return {
+					hostTag: styleExpression,
+					attributes: hostTag === "div" ? [] : [`as=${JSON.stringify(hostTag)}`],
+					residuals: [],
+				};
+			},
 		},
 	},
 	detectPatterns: [/styled-components/, /\bstyled\s*\./],

@@ -8,7 +8,7 @@ injected loader.
 
 ## Contract
 
-The current protocol is `pandwind.style-adapter/4`. An adapter owns five
+The current protocol is `pandwind.style-adapter/5`. An adapter owns five
 operations:
 
 1. `detect` identifies source code and reports evidence and confidence.
@@ -24,6 +24,13 @@ Adapters also declare source modules, dependencies, versioned capabilities, and
 lossiness behavior. Unsupported semantics must remain residuals; an adapter
 must not silently drop a selector, dynamic value, theme edge, plugin transform,
 or runtime/framework dependency.
+
+Target migration policies may also provide a named-style host projection. The
+source adapter identifies a converted StyleX style reference in a JSX
+`stylex.props` spread; the target adapter supplies the native host tag,
+attributes, and imports. If a host use cannot be represented, the source
+adapter requests atomic source preservation and returns a typed residual rather
+than leaving source runtime calls beside converted style declarations.
 
 ## Plugin shape
 

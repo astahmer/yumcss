@@ -202,6 +202,18 @@ const solidStyled = makeExtraAdapter({
 		],
 		hostRepresentation: StyleHostRepresentationKind.Component,
 		standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+		projectNamedStyleUse: ({ styleExpression, hostTag, hostAttributes }) => {
+			if (!/^[a-z][A-Za-z0-9-]*$/u.test(hostTag)) return undefined;
+			if (
+				hostAttributes.some((attribute) => /^(?:class|className|style)(?:\s|=|$)/u.test(attribute))
+			)
+				return undefined;
+			return {
+				hostTag,
+				attributes: [`class={${styleExpression}}`],
+				residuals: [],
+			};
+		},
 		resolveHostRepresentation: ({ framework, program }) =>
 			supportsStaticOrFunctionProgram(program) &&
 			(framework === undefined ||

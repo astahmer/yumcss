@@ -1180,6 +1180,17 @@ composition primitive, framework binding, import shape, and file organization
 are part of the migration contract. The runner transports that decision; it
 does not rewrite target code into a generic lowest-common-denominator form.
 
+StyleX named-style maps also require projecting each `stylex.props` use onto
+the target host. The StyleX source adapter resolves the imported call and
+converted style reference through the shared AST; the target adapter owns the
+replacement host tag, attributes, and imports. The projection edits only the
+tag and spread ranges, preserving comments and JSX type arguments. If any use
+is unsupported or ambiguous, finalization restores the original document and
+reports a typed residual instead of leaving StyleX runtime calls beside
+converted declarations. The full outbound route audit, unresolved-use
+fallback, and registered target substitution are covered by
+`packages/codemod/tests/stylex-migration-audit.test.ts`.
+
 Most declarations should stay inline. When the target's idiomatic form needs a
 shared theme, helper, recipe, or runtime bridge, `AdapterEmitResult` may return
 `generatedFiles`. Each artifact has a project-relative path, source content,

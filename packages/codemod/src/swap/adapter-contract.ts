@@ -33,7 +33,7 @@ import type {
 import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
-export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/4" as const;
+export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/5" as const;
 
 export type AdapterDependencyKind = `${AdapterDependencyKindTag}`;
 
@@ -402,11 +402,35 @@ export interface AdapterComponentRewriteResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+export interface AdapterNamedStyleUseContext {
+	readonly code: string;
+	readonly file: string;
+	readonly styleExpression: string;
+	readonly hostTag: string;
+	readonly hostAttributes: readonly string[];
+	readonly hasChildren: boolean;
+	readonly selfClosing: boolean;
+}
+
+export interface AdapterNamedStyleUseResult {
+	readonly hostTag?: string;
+	readonly attributes?: readonly string[];
+	readonly imports?: readonly string[];
+	readonly residuals: readonly StyleProgramResidual[];
+}
+
+export type AdapterNamedStyleUseProjection = (
+	context: AdapterNamedStyleUseContext,
+) => AdapterNamedStyleUseResult | undefined;
+
 export interface AdapterRewriteContext {
 	readonly source: string;
 	readonly code: string;
 	readonly file: string;
 	readonly targetId: string;
+	readonly targetHostRepresentation?: StyleHostRepresentationKind;
+	readonly targetHostFramework?: HostFramework;
+	readonly projectNamedStyleUse?: AdapterNamedStyleUseProjection;
 	readonly sourceConfig?: AdapterProjectConfig;
 	/** Shared target modules prepared by the project bootstrap. */
 	readonly project?: AdapterProjectBindings;
@@ -420,6 +444,8 @@ export interface AdapterRewriteResult {
 	readonly residuals: readonly StyleProgramResidual[];
 	/** Source residuals fully handled by this target-aware whole-file rewrite. */
 	readonly handledResiduals?: readonly StyleProgramResidual[];
+	/** Preserve the original document when final host projection finds an unrepresentable use. */
+	readonly preserveSource?: boolean;
 }
 
 export interface AdapterMigrationHooks {
@@ -581,6 +607,8 @@ export interface AdapterTargetMigrationPolicy {
 	readonly rewriteHost?: (context: AdapterHostRewriteContext) => AdapterHostRewriteResult;
 	/** Optional target-owned finalization after a shared class-host projection. */
 	readonly postRewriteHost?: (context: AdapterHostRewriteContext) => AdapterHostRewriteResult;
+	/** Project a converted named style map onto a source JSX host. */
+	readonly projectNamedStyleUse?: AdapterNamedStyleUseProjection;
 	/** Target-owned rewrite for styled subjects that become intrinsic hosts. */
 	readonly rewriteComponent?: (
 		context: AdapterComponentRewriteContext,

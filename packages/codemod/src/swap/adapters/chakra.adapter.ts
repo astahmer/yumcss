@@ -39,6 +39,7 @@ import {
 	componentAttrsValueExpression,
 } from "../host-component-rewriter.ts";
 import { materializeSourceTokenValues, recoverSourceToken, TokenCatalog } from "../tokens.ts";
+import { uniqueLocalIdentifier } from "./named-style-use.ts";
 
 const nativeConditionAttributeCollisions = new Set([
 	"checked",
@@ -1904,6 +1905,26 @@ export function createChakraAdapter(
 				hostContextRequiredHint:
 					"Chakra css props require an intrinsic Chakra factory host or a Chakra-owned component",
 				hostRepresentation: StyleHostRepresentationKind.StyleProp,
+				projectNamedStyleUse: ({ code, hostTag, hostAttributes, styleExpression }) => {
+					if (!/^[a-z][A-Za-z0-9-]*$/u.test(hostTag)) return undefined;
+					if (
+						hostAttributes.some((attribute) =>
+							/^(?:class|className|css|style)(?:\s|=|$)/u.test(attribute),
+						)
+					)
+						return undefined;
+					const factory = uniqueLocalIdentifier(code, "chakra");
+					return {
+						hostTag: `${factory}.${hostTag}`,
+						attributes: [`css={${styleExpression}}`],
+						imports: [
+							factory === "chakra"
+								? 'import { chakra } from "@chakra-ui/react";'
+								: `import { chakra as ${factory} } from "@chakra-ui/react";`,
+						],
+						residuals: [],
+					};
+				},
 				hostFrameworks: [BuiltinHostFramework.React, BuiltinHostFramework.Preact],
 				handlesSourceHostAttributes: true,
 				handlesDynamicValues: true,

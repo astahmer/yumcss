@@ -227,6 +227,20 @@ export default defineCodemodAdapter({
 			hostRepresentation: StyleHostRepresentationKind.Component,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			hostFrameworks: [BuiltinHostFramework.React],
+			projectNamedStyleUse: ({ styleExpression, hostTag, hostAttributes }) => {
+				if (!/^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*$/u.test(styleExpression)) return undefined;
+				if (
+					hostAttributes.some((attribute) =>
+						/^(?:class|className|style)(?:\s|=|$)/u.test(attribute),
+					)
+				)
+					return undefined;
+				return {
+					hostTag,
+					attributes: [`className={${styleExpression}()}`],
+					residuals: [],
+				};
+			},
 			hostFrameworkConversions: [
 				{
 					from: BuiltinHostFramework.Solid,

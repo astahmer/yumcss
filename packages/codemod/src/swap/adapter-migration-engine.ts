@@ -342,6 +342,8 @@ function runAdapterMigrationInternal(
 	const loweringPlans: StyleLoweringPlan[] = [];
 	const outcomes: AdapterMigrationOutcome[] = [];
 	const convertedBindings = new Set<string>();
+	const convertedHostRepresentations = new Set<StyleHostRepresentationKind>();
+	const convertedHostFrameworks = new Set<HostFramework>();
 	const componentRewrites: HostComponentRewriteRequest[] = [];
 	const pendingComponentDeclarationRewrites = new Map<
 		number,
@@ -1365,6 +1367,8 @@ function runAdapterMigrationInternal(
 		}
 		const emittedBinding = bindingBeforeMatch;
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
+		if (hostRepresentation !== undefined) convertedHostRepresentations.add(hostRepresentation);
+		if (hostFramework !== undefined) convertedHostFrameworks.add(hostFramework);
 		const deferSourceHostReplacement =
 			targetAdapter.migration?.targetPolicy?.handlesSourceHostAttributes === true &&
 			targetAdapter.migration.targetPolicy.rewriteHost !== undefined &&
@@ -1519,6 +1523,15 @@ function runAdapterMigrationInternal(
 		code: runtimeEdited,
 		file: options.file,
 		targetId: targetAdapter.id,
+		...(convertedHostRepresentations.size === 1
+			? { targetHostRepresentation: [...convertedHostRepresentations][0] }
+			: {}),
+		...(convertedHostFrameworks.size === 1
+			? { targetHostFramework: [...convertedHostFrameworks][0] }
+			: {}),
+		...(targetAdapter.migration?.targetPolicy?.projectNamedStyleUse === undefined
+			? {}
+			: { projectNamedStyleUse: targetAdapter.migration.targetPolicy.projectNamedStyleUse }),
 		sourceConfig: config,
 		...(options.project === undefined ? {} : { project: options.project }),
 		convertedBindings,
@@ -1528,7 +1541,57 @@ function runAdapterMigrationInternal(
 		runtimeEdited = rewrite.code;
 		for (const statement of rewrite.imports ?? []) imports.add(statement);
 		residuals.push(...rewrite.residuals);
-		for (const handled of rewrite.handledResiduals ?? []) {
+		if (rewrite.preserveSource === true) {
+			const blockedResiduals =
+				residuals.length > 0
+					? residuals
+					: [
+							{
+								kind: "host-framework",
+								text: source,
+								hint: "adapter finalization could not preserve the whole source document",
+							},
+						];
+			runtimeEdited =
+				renderSkipMarker(
+					0,
+					migrationSkipMarkerText(
+						{
+							marker,
+							sourceAdapter: sourceAdapter.id,
+							targetAdapter: targetAdapter.id,
+							loweringResiduals: blockedResiduals,
+						},
+						"document",
+					),
+				) + source;
+			converted = 0;
+			skipped = Math.max(1, skipped);
+			outputExtension = undefined;
+			moduleFileOutputExtension = undefined;
+			moduleFileRenameChanges.clear();
+			imports.clear();
+			generatedStatements.clear();
+			generatedFiles.clear();
+			sourceModulesToRemove.clear();
+			demotedFactoryHosts.clear();
+			convertedBindings.clear();
+			convertedHostRepresentations.clear();
+			convertedHostFrameworks.clear();
+			dependencies.length = 0;
+			validations.length = 0;
+			loweringPlans.length = 0;
+			outcomes.length = 0;
+			outcomes.push({
+				sourceStart: 0,
+				sourceText: source,
+				outcome: StyleMigrationOutcome.Residual,
+				representation: StyleRepresentationKind.Residual,
+				detail: "target host projection preserved the original document",
+			});
+			needsCx = false;
+		}
+		for (const handled of rewrite.preserveSource === true ? [] : (rewrite.handledResiduals ?? [])) {
 			converted++;
 			for (let index = residuals.length - 1; index >= 0; index--) {
 				const residual = residuals[index];

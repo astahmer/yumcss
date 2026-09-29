@@ -22,6 +22,7 @@ import {
 	componentAttrsValueExpression,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
+import { uniqueLocalIdentifier } from "./named-style-use.ts";
 
 const reactLayoutHosts = new Set([
 	"article",
@@ -415,6 +416,23 @@ const reactNativeAdapter = makeExtraAdapter({
 		hostFrameworkConversions: reactToReactNative,
 		handlesSourceHostAttributes: true,
 		hostRepresentation: StyleHostRepresentationKind.StyleProp,
+		projectNamedStyleUse: ({ code, hostTag, hostAttributes, hasChildren, styleExpression }) => {
+			if (!/^[a-z][A-Za-z0-9-]*$/u.test(hostTag) || hostAttributes.length > 0 || hasChildren)
+				return undefined;
+			const nativeTag = reactNativeHostTag(hostTag);
+			if (nativeTag === undefined) return undefined;
+			const hostBinding = uniqueLocalIdentifier(code, nativeTag);
+			return {
+				hostTag: hostBinding,
+				attributes: [`style={${styleExpression}}`],
+				imports: [
+					hostBinding === nativeTag
+						? `import { ${nativeTag} } from "react-native";`
+						: `import { ${nativeTag} as ${hostBinding} } from "react-native";`,
+				],
+				residuals: [],
+			};
+		},
 		standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 		preflight: ({ program }) => {
 			const sourceTag =

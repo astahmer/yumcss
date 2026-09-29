@@ -1079,6 +1079,20 @@ export function createTokenamiAdapter(
 				hostContextRequiredHint:
 					"Tokenami component projection requires a statically known intrinsic styled subject",
 				hostRepresentation: StyleHostRepresentationKind.StyleProp,
+				projectNamedStyleUse: ({ hostTag, hostAttributes, styleExpression }) => {
+					if (!/^[a-z][A-Za-z0-9-]*$/u.test(hostTag)) return undefined;
+					if (
+						hostAttributes.some((attribute) =>
+							/^(?:class|className|style)(?:\s|=|$)/u.test(attribute),
+						)
+					)
+						return undefined;
+					return {
+						hostTag,
+						attributes: [`style={${styleExpression}}`],
+						residuals: [],
+					};
+				},
 				resolveHostRepresentation: ({ hasHostContext, program, framework, sourceFramework }) => {
 					if (!hasHostContext && program.source?.subject === undefined) return undefined;
 					const hostFramework = sourceFramework ?? framework;

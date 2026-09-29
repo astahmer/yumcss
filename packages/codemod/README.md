@@ -57,9 +57,11 @@ const registry = createStyleAdapterRegistry();
 await registry.discover(["my-pandwind-adapter"]);
 ```
 
-Adapters implement the versioned `pandwind.style-adapter/4` contract and are
-routed through the semantic style-program IR. Unsupported capabilities produce
-residual reports instead of silent partial rewrites.
+Adapters implement the versioned `pandwind.style-adapter/5` contract and are
+routed through the semantic style-program IR. Target adapters may own a named
+style-use projection when lowering a source style map also requires rewriting
+its JSX host. Unsupported capabilities produce residual reports instead of
+silent partial rewrites.
 
 The published codemod keeps `magic-string` as a runtime dependency. Its
 `SourcePass` utility is used by the migration entrypoints to apply source-range
