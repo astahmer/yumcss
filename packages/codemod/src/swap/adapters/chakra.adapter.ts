@@ -39,7 +39,6 @@ import {
 	componentAttrsValueExpression,
 } from "../host-component-rewriter.ts";
 import { materializeSourceTokenValues, recoverSourceToken, TokenCatalog } from "../tokens.ts";
-import { CSS_RAW_PROPERTIES } from "../css-properties.ts";
 
 const nativeConditionAttributeCollisions = new Set([
 	"checked",
@@ -368,27 +367,16 @@ function lowerChakraComponentDeclaration(
 	return { declaration: { ...declaration, property: alias } };
 }
 
-/** Lower Chakra utilities before the target emitter sees the program. */
-function lowerChakraProgram(program: StyleProgram, context: AdapterParseContext): StyleProgram {
+/** Lower Chakra declarations to CSS semantics before any target emitter sees them. */
+function lowerChakraDeclarations(
+	program: StyleProgram,
+	context: AdapterParseContext,
+): StyleProgram {
 	const component = chakraSourceComponentNameFromTag(
 		sourceHostTag(program.source?.hostOpenTag ?? ""),
 		context,
 	);
 	const residuals: StyleProgramResidual[] = [...program.residuals];
-	const keyframeConditions = new Set<string>();
-	const collectKeyframeConditions = (rule: StyleProgram["rules"][number]): void => {
-		for (const declaration of rule.declarations)
-			for (const condition of declaration.conditions)
-				if (/^@keyframes\b/u.test(condition.name)) keyframeConditions.add(condition.name);
-		for (const child of rule.children) collectKeyframeConditions(child);
-	};
-	for (const rule of program.rules) collectKeyframeConditions(rule);
-	for (const condition of keyframeConditions)
-		residuals.push({
-			kind: StyleProgramResidualKindTag.Capability,
-			text: condition,
-			hint: "Chakra keyframes require an explicit target keyframes API",
-		});
 	const lowerRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => {
 		const declarations: Array<StyleProgram["declarations"][number]> = [];
 		for (const declaration of rule.declarations) {
@@ -440,6 +428,26 @@ function lowerChakraProgram(program: StyleProgram, context: AdapterParseContext)
 		declarations: root?.declarations ?? [],
 		residuals,
 	};
+}
+
+function lowerChakraProgram(program: StyleProgram, context: AdapterParseContext): StyleProgram {
+	const lowered = lowerChakraDeclarations(program, context);
+	const residuals: StyleProgramResidual[] = [...lowered.residuals];
+	const keyframeConditions = new Set<string>();
+	const collectKeyframeConditions = (rule: StyleProgram["rules"][number]): void => {
+		for (const declaration of rule.declarations)
+			for (const condition of declaration.conditions)
+				if (/^@keyframes\b/u.test(condition.name)) keyframeConditions.add(condition.name);
+		for (const child of rule.children) collectKeyframeConditions(child);
+	};
+	for (const rule of lowered.rules) collectKeyframeConditions(rule);
+	for (const condition of keyframeConditions)
+		residuals.push({
+			kind: StyleProgramResidualKindTag.Capability,
+			text: condition,
+			hint: "Chakra keyframes require an explicit target keyframes API",
+		});
+	return { ...lowered, residuals };
 }
 
 /** Preserve CSS-in-JS numeric dimensions before Chakra's token normalizer runs. */
@@ -874,14 +882,12 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 } {
 	const system = context.config.values.chakraSystem as ChakraSystemLike | undefined;
 	const aliases = system?.utility?.shorthands;
-	const sourceValueProperties =
-		context.targetId === CodemodAdapterId.Pandwind
-			? Object.keys(CSS_RAW_PROPERTIES).filter((property) => property !== "content")
-			: [];
 	const sourceConditionNames = new Set(Object.keys(context.config.conditionCatalog ?? {}));
+	const systemConfig = recordValue(system?._config);
+	const officialUtilities = recordValue(systemConfig?.utilities);
 	const knownProperties = new Set<string>([
-		...sourceValueProperties,
 		...(system?.properties ?? []),
+		...Object.keys(officialUtilities ?? {}),
 	]);
 	const chakraTheme = recordValue(recordValue(context.config.values.chakraConfig)?.theme);
 	if (Object.keys(recordValue(chakraTheme?.textStyles) ?? {}).length > 0)
@@ -904,11 +910,7 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 			Object.hasOwn(resolvedAliases, property),
 		propertyAliases: resolvedAliases,
 		valueTransformProperties: [
-			...new Set([
-				...resolvedProperties,
-				...sourceValueProperties,
-				...Object.keys(resolvedAliases),
-			]),
+			...new Set([...resolvedProperties, ...Object.keys(resolvedAliases)]),
 		],
 	};
 }
@@ -1284,6 +1286,31 @@ const isChakraSourceHost = (host: JsxStyleHostMatch, context: AdapterParseContex
 	return knownSourceHost && !hasChakraNativeHostBlockedProp(host, context);
 };
 
+const isUnsupportedChakraGridColumnsHost = (
+	host: JsxStyleHostMatch,
+	context: AdapterParseContext,
+): boolean => {
+	const tag = sourceHostTag(host.openingTag);
+	if (tag === undefined) return false;
+	const localName = tag.split(".", 1)[0];
+	if (localName === undefined) return false;
+	const binding = context.resolveBinding?.(localName) ?? context.bindings?.binding(localName);
+	if (binding !== undefined && !isChakraSourceModule(binding.source)) return false;
+	if (binding === undefined) {
+		const member = tag.slice(tag.lastIndexOf(".") + 1);
+		const knownSourceHost =
+			tag.startsWith("chakra.") ||
+			(!tag.includes(".") && Object.hasOwn(CHAKRA_SOURCE_COMPONENTS, tag)) ||
+			(tag.startsWith("styled.") && Object.hasOwn(CHAKRA_SOURCE_COMPONENTS, member));
+		if (!knownSourceHost) return false;
+	}
+	return (
+		chakraSourceComponentName(host, context) === "Grid" &&
+		host.attributes.some((attribute) => attribute.name === "columns") &&
+		hasChakraNativeHostBlockedProp(host, context)
+	);
+};
+
 const CHAKRA_NATIVE_HOST_BLOCKED_PROPS: Readonly<Record<string, readonly string[]>> = {
 	Box: ["as", "asChild", "colorPalette", "component", "renderRoot", "size", "variant"],
 	Text: ["as", "asChild", "colorPalette", "component", "renderRoot", "size", "variant"],
@@ -1351,7 +1378,7 @@ const CHAKRA_NATIVE_HOST_BLOCKED_PROPS: Readonly<Record<string, readonly string[
 		"variant",
 	],
 	Center: ["as", "asChild", "colorPalette", "component", "renderRoot", "size", "variant"],
-	Grid: ["as", "asChild", "colorPalette", "component", "renderRoot", "size", "variant"],
+	Grid: ["as", "asChild", "columns", "colorPalette", "component", "renderRoot", "size", "variant"],
 	SimpleGrid: ["as", "asChild", "colorPalette", "component", "renderRoot", "size", "variant"],
 	Wrap: ["as", "asChild", "colorPalette", "component", "renderRoot", "size", "variant"],
 	Container: ["as", "asChild", "colorPalette", "component", "renderRoot", "size", "variant"],
@@ -1435,6 +1462,7 @@ const isUnprojectedChakraHost = (
 	context: AdapterParseContext,
 ): boolean => {
 	if (context.targetId !== CodemodAdapterId.Pandwind) return false;
+	if (hasChakraNativeHostBlockedProp(host, context)) return false;
 	const sourceStyleProps = chakraSourceVocabulary(context).styleProps;
 	const hasSourceStyleProps = host.attributes.some((attribute) =>
 		typeof sourceStyleProps === "function"
@@ -1730,6 +1758,25 @@ export function createChakraAdapter(
 		},
 		patterns: [
 			{
+				name: "chakra-unsupported-grid-columns",
+				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
+				form: CodemodCallPatternFormTag.JsxStyle,
+				styleProps: [],
+				matchWithoutStyleProps: true,
+				hostGuard: isUnsupportedChakraGridColumnsHost,
+				transform: (program) => ({
+					...program,
+					residuals: [
+						...program.residuals,
+						{
+							kind: StyleProgramResidualKindTag.Component,
+							text: program.source?.hostOpenTag ?? "Chakra component host",
+							hint: "Chakra Grid has no columns prop; choose SimpleGrid or templateColumns explicitly",
+						},
+					],
+				}),
+			},
+			{
 				name: "chakra-style-props",
 				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
 				form: CodemodCallPatternFormTag.JsxStyle,
@@ -1984,23 +2031,26 @@ export function createChakraAdapter(
 		...adapter,
 		parse(source: string, context: AdapterParseContext) {
 			const parsed = adapter.parse(source, context);
-			if (context.targetId !== CodemodAdapterId.Pandwind) return parsed;
 			return {
 				...parsed,
-				matches: parsed.matches.map((match) => ({
-					...match,
-					program: lowerChakraProgram(
-						applyChakraHostDefaults(
-							canonicalizeSourceHost(
-								match.program,
-								chakraSourceComponentsForContext(context),
-								"Chakra",
+				matches: parsed.matches.map((match) => {
+					if (context.targetId !== CodemodAdapterId.Pandwind)
+						return { ...match, program: lowerChakraDeclarations(match.program, context) };
+					return {
+						...match,
+						program: lowerChakraProgram(
+							applyChakraHostDefaults(
+								canonicalizeSourceHost(
+									match.program,
+									chakraSourceComponentsForContext(context),
+									"Chakra",
+								),
+								context,
 							),
 							context,
 						),
-						context,
-					),
-				})),
+					};
+				}),
 			};
 		},
 	};

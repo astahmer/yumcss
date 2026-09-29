@@ -15,11 +15,11 @@
       "Canonical": 32,
       "Valid but noncanonical": 0,
       "Incorrect or lossy": 0,
-      "Safe residual": 260,
-      "Unverified": 732
+      "Safe residual": 285,
+      "Unverified": 707
     },
-    "residualCount": 473,
-    "routesWithResiduals": 356,
+    "residualCount": 463,
+    "routesWithResiduals": 369,
     "residualCauseSummary": [
       {
         "causeId": "811b86ad6195",
@@ -249,7 +249,7 @@
         "kind": "capability",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 27,
+        "count": 23,
         "routeKeys": [
           "aphrodite->authored-css",
           "bamboo->authored-css",
@@ -266,92 +266,14 @@
           "pandwind->authored-css",
           "react-native->authored-css",
           "react-strict-dom->authored-css",
-          "solid-styled->authored-css",
           "stitches->authored-css",
           "style9->authored-css",
-          "styled-components->authored-css",
           "stylex->authored-css",
           "tailwind->authored-css",
-          "tamagui->authored-css",
           "tokenami->authored-css",
           "treat->authored-css",
           "unocss->authored-css",
-          "vanilla-extract->authored-css",
-          "vue-styled->authored-css"
-        ]
-      },
-      {
-        "causeId": "e82421b07e6f",
-        "cause": "capability: less emits stylesheet documents and cannot represent a typescript style call without a generated stylesheet artifact",
-        "kind": "capability",
-        "disposition": "unverified",
-        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 27,
-        "routeKeys": [
-          "aphrodite->less",
-          "bamboo->less",
-          "compiled->less",
-          "emotion->less",
-          "fela->less",
-          "goober->less",
-          "jss->less",
-          "linaria->less",
-          "mantine->less",
-          "mui->less",
-          "next-yak->less",
-          "panda->less",
-          "pandwind->less",
-          "react-native->less",
-          "react-strict-dom->less",
-          "solid-styled->less",
-          "stitches->less",
-          "style9->less",
-          "styled-components->less",
-          "stylex->less",
-          "tailwind->less",
-          "tamagui->less",
-          "tokenami->less",
-          "treat->less",
-          "unocss->less",
-          "vanilla-extract->less",
-          "vue-styled->less"
-        ]
-      },
-      {
-        "causeId": "38861a3cfa7d",
-        "cause": "capability: sass emits stylesheet documents and cannot represent a typescript style call without a generated stylesheet artifact",
-        "kind": "capability",
-        "disposition": "unverified",
-        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 27,
-        "routeKeys": [
-          "aphrodite->sass",
-          "bamboo->sass",
-          "compiled->sass",
-          "emotion->sass",
-          "fela->sass",
-          "goober->sass",
-          "jss->sass",
-          "linaria->sass",
-          "mantine->sass",
-          "mui->sass",
-          "next-yak->sass",
-          "panda->sass",
-          "pandwind->sass",
-          "react-native->sass",
-          "react-strict-dom->sass",
-          "solid-styled->sass",
-          "stitches->sass",
-          "style9->sass",
-          "styled-components->sass",
-          "stylex->sass",
-          "tailwind->sass",
-          "tamagui->sass",
-          "tokenami->sass",
-          "treat->sass",
-          "unocss->sass",
-          "vanilla-extract->sass",
-          "vue-styled->sass"
+          "vanilla-extract->authored-css"
         ]
       },
       {
@@ -388,12 +310,108 @@
         ]
       },
       {
+        "causeId": "e82421b07e6f",
+        "cause": "capability: less emits stylesheet documents and cannot represent a typescript style call without a generated stylesheet artifact",
+        "kind": "capability",
+        "disposition": "unverified",
+        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+        "count": 23,
+        "routeKeys": [
+          "aphrodite->less",
+          "bamboo->less",
+          "compiled->less",
+          "emotion->less",
+          "fela->less",
+          "goober->less",
+          "jss->less",
+          "linaria->less",
+          "mantine->less",
+          "mui->less",
+          "next-yak->less",
+          "panda->less",
+          "pandwind->less",
+          "react-native->less",
+          "react-strict-dom->less",
+          "stitches->less",
+          "style9->less",
+          "stylex->less",
+          "tailwind->less",
+          "tokenami->less",
+          "treat->less",
+          "unocss->less",
+          "vanilla-extract->less"
+        ]
+      },
+      {
+        "causeId": "38861a3cfa7d",
+        "cause": "capability: sass emits stylesheet documents and cannot represent a typescript style call without a generated stylesheet artifact",
+        "kind": "capability",
+        "disposition": "unverified",
+        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+        "count": 23,
+        "routeKeys": [
+          "aphrodite->sass",
+          "bamboo->sass",
+          "compiled->sass",
+          "emotion->sass",
+          "fela->sass",
+          "goober->sass",
+          "jss->sass",
+          "linaria->sass",
+          "mantine->sass",
+          "mui->sass",
+          "next-yak->sass",
+          "panda->sass",
+          "pandwind->sass",
+          "react-native->sass",
+          "react-strict-dom->sass",
+          "stitches->sass",
+          "style9->sass",
+          "stylex->sass",
+          "tailwind->sass",
+          "tokenami->sass",
+          "treat->sass",
+          "unocss->sass",
+          "vanilla-extract->sass"
+        ]
+      },
+      {
+        "causeId": "2125e3363547",
+        "cause": "host-framework: mui sx output requires a mui-owned component or an intrinsic host that can accept sx",
+        "kind": "host-framework",
+        "disposition": "unverified",
+        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+        "count": 20,
+        "routeKeys": [
+          "aphrodite->mui",
+          "bamboo->mui",
+          "compiled->mui",
+          "emotion->mui",
+          "fela->mui",
+          "goober->mui",
+          "jss->mui",
+          "linaria->mui",
+          "mantine->mui",
+          "next-yak->mui",
+          "panda->mui",
+          "pandwind->mui",
+          "react-native->mui",
+          "react-strict-dom->mui",
+          "stitches->mui",
+          "style9->mui",
+          "stylex->mui",
+          "tokenami->mui",
+          "treat->mui",
+          "vanilla-extract->mui"
+        ]
+      },
+      {
         "causeId": "88685f2873b1",
         "cause": "validation: <number> residual conversion(s)",
         "kind": "validation",
         "disposition": "unverified",
         "nextAction": "Review the exact source and target contracts before changing this residual.",
-        "count": 18,
+        "count": 19,
         "routeKeys": [
           "aphrodite->mantine",
           "bamboo->mantine",
@@ -412,7 +430,8 @@
           "stylex->mantine",
           "tokenami->mantine",
           "treat->mantine",
-          "vanilla-extract->mantine"
+          "vanilla-extract->mantine",
+          "vue-styled->mui"
         ]
       },
       {
@@ -421,7 +440,7 @@
         "kind": "capability",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 16,
+        "count": 15,
         "routeKeys": [
           "aphrodite->treat",
           "bamboo->treat",
@@ -437,8 +456,7 @@
           "style9->treat",
           "stylex->treat",
           "tokenami->treat",
-          "vanilla-extract->treat",
-          "vue-styled->treat"
+          "vanilla-extract->treat"
         ]
       },
       {
@@ -447,7 +465,7 @@
         "kind": "capability",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 16,
+        "count": 15,
         "routeKeys": [
           "aphrodite->vanilla-extract",
           "bamboo->vanilla-extract",
@@ -463,8 +481,7 @@
           "style9->vanilla-extract",
           "stylex->vanilla-extract",
           "tokenami->vanilla-extract",
-          "treat->vanilla-extract",
-          "vue-styled->vanilla-extract"
+          "treat->vanilla-extract"
         ]
       },
       {
@@ -491,24 +508,23 @@
         ]
       },
       {
-        "causeId": "414f7f07874c",
-        "cause": "capability: components: component subject: styled.div",
-        "kind": "capability",
+        "causeId": "510eac277de1",
+        "cause": "component: the source host is not verified as react",
+        "kind": "component",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 11,
+        "count": 10,
         "routeKeys": [
           "solid-styled->authored-css",
           "solid-styled->less",
           "solid-styled->sass",
-          "solid-styled->tokenami",
-          "styled-components->authored-css",
-          "styled-components->less",
-          "styled-components->sass",
+          "solid-styled->treat",
+          "solid-styled->vanilla-extract",
           "vue-styled->authored-css",
           "vue-styled->less",
           "vue-styled->sass",
-          "vue-styled->tokenami"
+          "vue-styled->treat",
+          "vue-styled->vanilla-extract"
         ]
       },
       {
@@ -517,17 +533,14 @@
         "kind": "capability",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 10,
+        "count": 7,
         "routeKeys": [
           "compiled->treat",
           "mantine->treat",
           "mui->treat",
           "next-yak->treat",
           "react-strict-dom->treat",
-          "solid-styled->treat",
-          "styled-components->treat",
           "tailwind->treat",
-          "tamagui->treat",
           "unocss->treat"
         ]
       },
@@ -537,37 +550,15 @@
         "kind": "capability",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 10,
+        "count": 7,
         "routeKeys": [
           "compiled->vanilla-extract",
           "mantine->vanilla-extract",
           "mui->vanilla-extract",
           "next-yak->vanilla-extract",
           "react-strict-dom->vanilla-extract",
-          "solid-styled->vanilla-extract",
-          "styled-components->vanilla-extract",
           "tailwind->vanilla-extract",
-          "tamagui->vanilla-extract",
           "unocss->vanilla-extract"
-        ]
-      },
-      {
-        "causeId": "3f155233c9af",
-        "cause": "framework-semantics: target lacks framework semantics",
-        "kind": "framework-semantics",
-        "disposition": "unverified",
-        "nextAction": "Review the exact source and target contracts before changing this residual.",
-        "count": 9,
-        "routeKeys": [
-          "solid-styled->authored-css",
-          "solid-styled->less",
-          "solid-styled->sass",
-          "styled-components->authored-css",
-          "styled-components->less",
-          "styled-components->sass",
-          "vue-styled->authored-css",
-          "vue-styled->less",
-          "vue-styled->sass"
         ]
       },
       {
@@ -603,31 +594,18 @@
         ]
       },
       {
-        "causeId": "78a71deef4c8",
-        "cause": "capability: components: component subject: styled(view)",
-        "kind": "capability",
+        "causeId": "e38c8f0dbb75",
+        "cause": "component: the styled subject is not a verified intrinsic element",
+        "kind": "component",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 4,
+        "count": 5,
         "routeKeys": [
           "tamagui->authored-css",
           "tamagui->less",
           "tamagui->sass",
-          "tamagui->tokenami"
-        ]
-      },
-      {
-        "causeId": "5f045e26c5b4",
-        "cause": "component: vanilla extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
-        "kind": "component",
-        "disposition": "unverified",
-        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 4,
-        "routeKeys": [
-          "solid-styled->vanilla-extract",
-          "styled-components->vanilla-extract",
-          "tamagui->vanilla-extract",
-          "vue-styled->vanilla-extract"
+          "tamagui->treat",
+          "tamagui->vanilla-extract"
         ]
       },
       {
@@ -671,6 +649,19 @@
         ]
       },
       {
+        "causeId": "8219f3458634",
+        "cause": "capability: the source host is not verified as react",
+        "kind": "capability",
+        "disposition": "unverified",
+        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+        "count": 3,
+        "routeKeys": [
+          "solid-styled->css-modules",
+          "tamagui->css-modules",
+          "vue-styled->css-modules"
+        ]
+      },
+      {
         "causeId": "ca5c4d506e41",
         "cause": "host-framework: react native view styles cannot preserve text color semantics; keep the source until a text host is established",
         "kind": "host-framework",
@@ -684,15 +675,15 @@
         ]
       },
       {
-        "causeId": "cd1d99e394a2",
-        "cause": "capability: framework-semantics: vue",
+        "causeId": "414f7f07874c",
+        "cause": "capability: components: component subject: styled.div",
         "kind": "capability",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
         "count": 2,
         "routeKeys": [
-          "vue-styled->mui",
-          "vue-styled->stitches"
+          "solid-styled->tokenami",
+          "vue-styled->tokenami"
         ]
       },
       {
@@ -708,18 +699,6 @@
         ]
       },
       {
-        "causeId": "8219f3458634",
-        "cause": "capability: the source host is not verified as react",
-        "kind": "capability",
-        "disposition": "unverified",
-        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 2,
-        "routeKeys": [
-          "solid-styled->css-modules",
-          "tamagui->css-modules"
-        ]
-      },
-      {
         "causeId": "e40f5925c425",
         "cause": "host-framework: mantine style-prop projection requires react",
         "kind": "host-framework",
@@ -729,6 +708,18 @@
         "routeKeys": [
           "solid-styled->mantine",
           "vue-styled->mantine"
+        ]
+      },
+      {
+        "causeId": "1189a7ff667d",
+        "cause": "host-framework: mui sx styles require a host component prop; no standalone sx() api exists",
+        "kind": "host-framework",
+        "disposition": "target/framework-incompatible",
+        "nextAction": "Keep the source construct until a documented target host contract supports this framework.",
+        "count": 2,
+        "routeKeys": [
+          "css-modules->mui",
+          "vue-styled->mui"
         ]
       },
       {
@@ -754,14 +745,25 @@
         ]
       },
       {
-        "causeId": "b120d2eeaa71",
-        "cause": "capability: the react wrapper requires a tsx source module",
+        "causeId": "78a71deef4c8",
+        "cause": "capability: components: component subject: styled(view)",
         "kind": "capability",
         "disposition": "unverified",
         "nextAction": "Verify the source and target contracts and project context before removing this residual.",
         "count": 1,
         "routeKeys": [
-          "vue-styled->css-modules"
+          "tamagui->tokenami"
+        ]
+      },
+      {
+        "causeId": "cd1d99e394a2",
+        "cause": "capability: framework-semantics: vue",
+        "kind": "capability",
+        "disposition": "unverified",
+        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+        "count": 1,
+        "routeKeys": [
+          "vue-styled->stitches"
         ]
       },
       {
@@ -773,28 +775,6 @@
         "count": 1,
         "routeKeys": [
           "tamagui->solid-styled"
-        ]
-      },
-      {
-        "causeId": "2125e3363547",
-        "cause": "host-framework: mui sx output requires a mui-owned component or an intrinsic host that can accept sx",
-        "kind": "host-framework",
-        "disposition": "unverified",
-        "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-        "count": 1,
-        "routeKeys": [
-          "mantine->mui"
-        ]
-      },
-      {
-        "causeId": "1189a7ff667d",
-        "cause": "host-framework: mui sx styles require a host component prop; no standalone sx() api exists",
-        "kind": "host-framework",
-        "disposition": "target/framework-incompatible",
-        "nextAction": "Keep the source construct until a documented target host contract supports this framework.",
-        "count": 1,
-        "routeKeys": [
-          "css-modules->mui"
         ]
       },
       {
@@ -1659,7 +1639,24 @@
         "id": "unclassified:aphrodite->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "StyleSheet.create({ card: { color: \"red\", padding: 8 } })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 62,
+            "line": 2,
+            "column": 23,
+            "length": 57,
+            "sourceText": "StyleSheet.create({ card: { color: \"red\", padding: 8 } })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -1667,31 +1664,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const styles = { \"card\": css.class({ color: \"red\", padding: \"8px\" }) };",
+      "currentOutput": "import { StyleSheet } from \"aphrodite\";\n// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 62,
           "sourceText": "StyleSheet.create({ card: { color: \"red\", padding: 8 } })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "named-map",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:8px;color:red}",
-          "canonicalTarget": "&{padding:8px;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "StyleSheet.create",
         "documentation": "https://github.com/Khan/aphrodite#usage"
@@ -5405,7 +5394,24 @@
         "id": "unclassified:bamboo->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css({ color: \"red\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 61,
+            "line": 2,
+            "column": 21,
+            "length": 21,
+            "sourceText": "css({ color: \"red\" })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -5413,31 +5419,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\" });",
+      "currentOutput": "import { css } from \"styled-system/css\";\n// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css({ color: \"red\" });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 61,
           "sourceText": "css({ color: \"red\" })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{color:red}",
-          "canonicalTarget": "&{color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "styled-system css object",
         "documentation": "https://styled-system.com/"
@@ -8338,7 +8336,24 @@
         "id": "unclassified:compiled->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css({ color: \"red\", padding: 8 })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 59,
+            "line": 2,
+            "column": 21,
+            "length": 33,
+            "sourceText": "css({ color: \"red\", padding: 8 })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -8346,31 +8361,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"padding\": \"8px\" });",
+      "currentOutput": "import { css } from \"@compiled/react\";\n// pandwind:migrate-skip (route: compiled -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css({ color: \"red\", padding: 8 });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 59,
           "sourceText": "css({ color: \"red\", padding: 8 })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:8px;color:red}",
-          "canonicalTarget": "&{padding:8px;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "compiled css object",
         "documentation": "https://compiledcssinjs.com/docs/api-css-prop"
@@ -11786,7 +11793,24 @@
         "id": "unclassified:emotion->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css({ color: \"red\", padding: \"1rem\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 56,
+            "line": 2,
+            "column": 21,
+            "length": 38,
+            "sourceText": "css({ color: \"red\", padding: \"1rem\" })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -11794,31 +11818,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"padding\": \"1rem\" });",
+      "currentOutput": "import { css } from \"@emotion/css\";\n// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css({ color: \"red\", padding: \"1rem\" });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 56,
           "sourceText": "css({ color: \"red\", padding: \"1rem\" })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:1rem;color:red}",
-          "canonicalTarget": "&{padding:1rem;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "@emotion/css object",
         "documentation": "https://emotion.sh/docs/%40emotion/css"
@@ -13531,7 +13547,24 @@
         "id": "unclassified:fela->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "renderer.renderRule(() => ({ color: \"red\" }))",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 94,
+            "line": 3,
+            "column": 21,
+            "length": 45,
+            "sourceText": "renderer.renderRule(() => ({ color: \"red\" }))"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -13539,31 +13572,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createRenderer } from \"fela\";\nimport { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nconst renderer = createRenderer();\nexport const card = css.class({ \"color\": \"red\" });",
+      "currentOutput": "import { createRenderer } from \"fela\";\nconst renderer = createRenderer();\n// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = renderer.renderRule(() => ({ color: \"red\" }));",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 94,
           "sourceText": "renderer.renderRule(() => ({ color: \"red\" }))",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{color:red}",
-          "canonicalTarget": "&{color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "renderer.renderRule",
         "documentation": "https://fela.js.org/docs/"
@@ -15276,7 +15301,24 @@
         "id": "unclassified:goober->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css({ color: \"red\", padding: \"1rem\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 50,
+            "line": 2,
+            "column": 21,
+            "length": 38,
+            "sourceText": "css({ color: \"red\", padding: \"1rem\" })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -15284,31 +15326,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"padding\": \"1rem\" });",
+      "currentOutput": "import { css } from \"goober\";\n// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css({ color: \"red\", padding: \"1rem\" });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 50,
           "sourceText": "css({ color: \"red\", padding: \"1rem\" })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:1rem;color:red}",
-          "canonicalTarget": "&{padding:1rem;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "css object",
         "documentation": "https://goober.js.org/api/css/"
@@ -17069,7 +17103,24 @@
         "id": "unclassified:jss->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "createUseStyles({ card: { color: \"red\" } })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 70,
+            "line": 2,
+            "column": 26,
+            "length": 43,
+            "sourceText": "createUseStyles({ card: { color: \"red\" } })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -17077,31 +17128,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const useStyles = { \"card\": css.class({ color: \"red\" }) };",
+      "currentOutput": "import { createUseStyles } from \"react-jss\";\n// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const useStyles = createUseStyles({ card: { color: \"red\" } });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 70,
           "sourceText": "createUseStyles({ card: { color: \"red\" } })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "named-map",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{color:red}",
-          "canonicalTarget": "&{color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "react-jss createUseStyles",
         "documentation": "https://cssinjs.org/react-jss"
@@ -20830,7 +20873,24 @@
         "id": "unclassified:linaria->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css`color: red; padding: 1rem;`",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 57,
+            "line": 2,
+            "column": 21,
+            "length": 31,
+            "sourceText": "css`color: red; padding: 1rem;`"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -20838,31 +20898,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"padding\": \"1rem\" });",
+      "currentOutput": "import { css } from \"@linaria/core\";\n// pandwind:migrate-skip (route: linaria -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css`color: red; padding: 1rem;`;",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 57,
           "sourceText": "css`color: red; padding: 1rem;`",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:1rem;color:red}",
-          "canonicalTarget": "&{padding:1rem;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "css template",
         "documentation": "https://linaria.dev/"
@@ -26451,7 +26503,24 @@
         "id": "unclassified:next-yak->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css`color: red; padding: 1rem;`",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 52,
+            "line": 2,
+            "column": 21,
+            "length": 31,
+            "sourceText": "css`color: red; padding: 1rem;`"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -26459,31 +26528,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"padding\": \"1rem\" });",
+      "currentOutput": "import { css } from \"next-yak\";\n// pandwind:migrate-skip (route: next-yak -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css`color: red; padding: 1rem;`;",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 52,
           "sourceText": "css`color: red; padding: 1rem;`",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:1rem;color:red}",
-          "canonicalTarget": "&{padding:1rem;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "next-yak css template",
         "documentation": "https://yak.js.org/docs/features"
@@ -28532,6 +28593,22 @@
             "length": 8,
             "sourceText": "blue.300"
           }
+        },
+        {
+          "kind": "host-framework",
+          "text": "css({ color: \"red.300\", _hover: { color: \"blue.300\" } })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 61,
+            "line": 2,
+            "column": 21,
+            "length": 56,
+            "sourceText": "css({ color: \"red.300\", _hover: { color: \"blue.300\" } })"
+          }
         }
       ],
       "targetPackage": {
@@ -28544,7 +28621,7 @@
         "verdict": "Safe residual",
         "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { css } from \"styled-system/css\";\n// pandwind:migrate-skip (route: panda -> mui | parse-residual: configuration | available: named-map, residual)\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });",
+      "currentOutput": "import { css } from \"styled-system/css\";\n// pandwind:migrate-skip (route: panda -> mui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)\nexport const card = css({ color: \"red.300\", _hover: { color: \"blue.300\" } });",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -30715,7 +30792,24 @@
         "id": "unclassified:pandwind->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css.vars({ color: \"var(--card-color)\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 106,
+            "line": 3,
+            "column": 21,
+            "length": 40,
+            "sourceText": "css.vars({ color: \"var(--card-color)\" })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -30723,31 +30817,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"var(--card-color)\" });",
+      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\n// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css.vars({ color: \"var(--card-color)\" });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 106,
           "sourceText": "css.vars({ color: \"var(--card-color)\" })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{color:var(--card-color)}",
-          "canonicalTarget": "&{color:var(--card-color)}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "css.vars object",
         "documentation": "../../docs/src/content/docs/api/css.md"
@@ -32512,7 +32598,24 @@
         "id": "unclassified:react-native->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "StyleSheet.create({ card: { color: \"red\", padding: 8 } })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 65,
+            "line": 2,
+            "column": 23,
+            "length": 57,
+            "sourceText": "StyleSheet.create({ card: { color: \"red\", padding: 8 } })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -32520,31 +32623,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const styles = { \"card\": css.class({ color: \"red\", padding: \"8px\" }) };",
+      "currentOutput": "import { StyleSheet } from \"react-native\";\n// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 8 } });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 65,
           "sourceText": "StyleSheet.create({ card: { color: \"red\", padding: 8 } })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "named-map",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:8px;color:red}",
-          "canonicalTarget": "&{padding:8px;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "React Native StyleSheet",
         "documentation": "https://reactnative.dev/docs/stylesheet"
@@ -34339,7 +34434,24 @@
         "id": "unclassified:react-strict-dom->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css.create({ card: { color: \"red\", padding: \"1rem\" } })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 61,
+            "line": 2,
+            "column": 16,
+            "length": 55,
+            "sourceText": "css.create({ card: { color: \"red\", padding: \"1rem\" } })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -34347,31 +34459,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { html } from \"react-strict-dom\";\nimport { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nconst styles = { \"card\": css.class({ color: \"red\", padding: \"1rem\" }) };\nexport const Card = () => <html.div style={styles.card} />;",
+      "currentOutput": "import { css, html } from \"react-strict-dom\";\n// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nconst styles = css.create({ card: { color: \"red\", padding: \"1rem\" } });\nexport const Card = () => <html.div style={styles.card} />;",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 61,
           "sourceText": "css.create({ card: { color: \"red\", padding: \"1rem\" } })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "named-map",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:1rem;color:red}",
-          "canonicalTarget": "&{padding:1rem;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "react-strict-dom css.create",
         "documentation": "https://github.com/react/react-strict-dom/blob/main/packages/react-strict-dom/README.md"
@@ -37406,51 +37510,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 70,
+            "offset": 63,
             "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "solid",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 24,
-            "line": 1,
-            "column": 25,
-            "length": 5,
-            "sourceText": "solid"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;",
-          "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "d8163b7deb74",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 109,
-            "sourceText": "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -37461,10 +37533,10 @@
       },
       "targetDocumentation": "https://developer.mozilla.org/en-US/docs/Web/CSS",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> authored-css | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -37473,8 +37545,8 @@
           "sourceStart": 70,
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "representation": "static",
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -37958,51 +38030,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 70,
+            "offset": 63,
             "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "solid",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 24,
-            "line": 1,
-            "column": 25,
-            "length": 5,
-            "sourceText": "solid"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;",
-          "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "e82421b07e6f",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 109,
-            "sourceText": "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -38013,10 +38053,10 @@
       },
       "targetDocumentation": "https://lesscss.org/features/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> less | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -38025,8 +38065,8 @@
           "sourceStart": 70,
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "representation": "static",
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -38335,7 +38375,7 @@
         "verdict": "Unverified",
         "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nimport { createCx } from \"pandwind/cx\";\nimport { __pandwindSlot } from \"../__pandwind/solid-slot\";\nconst cx = createCx();\nconst css = createUnsafeCss();\nexport const Card = __pandwindSlot({ defaultComponent: \"div\", style: css.class({ color: \"red\", padding: \"1rem\" }), stableClass: \"pw-t6bw3o\", inheritedClass: undefined, classAttribute: \"class\", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nimport { createCx } from \"pandwind/cx\";\nimport { __pandwindSlot } from \"./__pandwind/solid-slot\";\nconst cx = createCx();\nconst css = createUnsafeCss();\nexport const Card = __pandwindSlot({ defaultComponent: \"div\", style: css.class({ color: \"red\", padding: \"1rem\" }), stableClass: \"pw-t6bw3o\", inheritedClass: undefined, classAttribute: \"class\", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
       "generatedFiles": [
         {
           "path": "__pandwind/solid-slot.tsx",
@@ -38509,51 +38549,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 70,
+            "offset": 63,
             "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "solid",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 24,
-            "line": 1,
-            "column": 25,
-            "length": 5,
-            "sourceText": "solid"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;",
-          "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "38861a3cfa7d",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 109,
-            "sourceText": "import { styled } from \"solid-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -38564,10 +38572,10 @@
       },
       "targetDocumentation": "https://sass-lang.com/documentation/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> sass | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> sass | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -38576,8 +38584,8 @@
           "sourceStart": 70,
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "representation": "static",
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -39021,19 +39029,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-          "causeId": "68a1af3deef7",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 70,
+            "offset": 63,
             "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -39047,7 +39055,7 @@
         "verdict": "Safe residual",
         "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -39057,7 +39065,7 @@
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
           "representation": "static",
-          "detail": "semantic residual remains after lowering"
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -39136,35 +39144,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-          "causeId": "e5af4b112201",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 70,
-            "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
-          }
-        },
-        {
           "kind": "component",
-          "text": "styled.div",
-          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
-          "causeId": "5f045e26c5b4",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 70,
+            "offset": 63,
             "line": 2,
-            "column": 21,
-            "length": 10,
-            "sourceText": "styled.div"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -39178,7 +39170,7 @@
         "verdict": "Safe residual",
         "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import { styled } from \"solid-styled-components\";\n// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -39188,7 +39180,7 @@
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
           "representation": "static",
-          "detail": "semantic residual remains after lowering"
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -40010,7 +40002,24 @@
         "id": "unclassified:stitches->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css({ color: \"red\", padding: \"1rem\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 59,
+            "line": 2,
+            "column": 21,
+            "length": 38,
+            "sourceText": "css({ color: \"red\", padding: \"1rem\" })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -40018,31 +40027,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"padding\": \"1rem\" });",
+      "currentOutput": "import { css } from \"@stitches/react\";\n// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css({ color: \"red\", padding: \"1rem\" });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 59,
           "sourceText": "css({ color: \"red\", padding: \"1rem\" })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:1rem;color:red}",
-          "canonicalTarget": "&{padding:1rem;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "css object",
         "documentation": "https://stitches.dev/docs/styling"
@@ -41803,7 +41804,24 @@
         "id": "unclassified:style9->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "style9.create({ card: { color: \"red\" } })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 51,
+            "line": 2,
+            "column": 23,
+            "length": 41,
+            "sourceText": "style9.create({ card: { color: \"red\" } })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -41811,31 +41829,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const styles = { \"card\": css.class({ color: \"red\" }) };",
+      "currentOutput": "import style9 from \"style9\";\n// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const styles = style9.create({ card: { color: \"red\" } });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 51,
           "sourceText": "style9.create({ card: { color: \"red\" } })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "named-map",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{color:red}",
-          "canonicalTarget": "&{color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "style9.create",
         "documentation": "https://github.com/jaredpalmer/style9#readme"
@@ -42890,58 +42900,7 @@
         "id": "unclassified:styled-components->authored-css",
         "execution": "unavailable"
       },
-      "residuals": [
-        {
-          "kind": "capability",
-          "text": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "react",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "outcome",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })",
-            "outcomeDetail": "target capability has no validated representation",
-            "representation": "residual"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
-          "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "d8163b7deb74",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 106,
-            "sourceText": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });"
-          }
-        }
-      ],
+      "residuals": [],
       "targetPackage": {
         "package": "CSS standard; PostCSS parser",
         "version": "8.5.28",
@@ -42952,20 +42911,34 @@
         "verdict": "Unverified",
         "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
       },
-      "currentOutput": "import styled from \"styled-components\";\n// pandwind:migrate-skip (route: styled-components -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
-      "generatedFiles": [],
-      "converted": 0,
-      "skipped": 1,
+      "currentOutput": "import { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from \"react\";\nimport \"./Card.styles.css\";\nimport type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from \"react\";\nexport const Card = (() => { type __pandwindCardProps<As extends import(\"react\").ElementType> = Omit<__pandwindCardComponentProps<As>, \"as\" | \"forwardedAs\" | \"className\" | \"style\"> & { as?: As; forwardedAs?: As; className?: string; style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; type __pandwindCardPolymorphicComponent = <As extends import(\"react\").ElementType = \"div\">(props: __pandwindCardProps<As> & { ref?: import(\"react\").Ref<__pandwindCardComponentRef<As>> }) => import(\"react\").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly forwardedAs?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? \"div\") as import(\"react\").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith(\"$\"))), ref, className: [\"pw-Card-wwrtu8\", attrsClassName, className].filter(Boolean).join(\" \"), style: Object.assign({}, style, attrsStyle) } as import(\"react\").ComponentPropsWithRef<import(\"react\").ElementType>); }) as __pandwindCardPolymorphicComponent; })();",
+      "generatedFiles": [
+        {
+          "path": "Card.styles.css",
+          "content": ".pw-Card-wwrtu8 { color: red; padding: 1rem; }\n",
+          "purpose": "css styles for a migrated React component"
+        }
+      ],
+      "converted": 1,
+      "skipped": 0,
       "outcomes": [
         {
           "sourceStart": 60,
           "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "outcome": "static",
+          "representation": "static"
         }
       ],
-      "validations": [],
+      "validations": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
       "sourceCase": {
         "name": "styled object",
         "documentation": "https://styled-components.com/docs/api"
@@ -43156,7 +43129,7 @@
         "verdict": "Unverified",
         "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
       },
-      "currentOutput": "import __pandwindCardStyles from \"../Card.module.css\";\nimport { forwardRef as __pandwindCardForwardRef } from \"react\";\nimport type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from \"react\";\nexport const Card = __pandwindCardForwardRef<__pandwindCardComponentRef<\"div\">, __pandwindCardComponentProps<\"div\"> & { readonly [key in `$${string}`]?: unknown }>(({ className, ...props }, ref) => (<div {...Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith(\"$\")))} ref={ref} className={[__pandwindCardStyles.root, className].filter(Boolean).join(\" \")} />));",
+      "currentOutput": "import __pandwindCardStyles from \"./Card.module.css\";\nimport { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from \"react\";\nimport type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from \"react\";\nexport const Card = (() => { type __pandwindCardProps<As extends import(\"react\").ElementType> = Omit<__pandwindCardComponentProps<As>, \"as\" | \"forwardedAs\" | \"className\" | \"style\"> & { as?: As; forwardedAs?: As; className?: string; style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; type __pandwindCardPolymorphicComponent = <As extends import(\"react\").ElementType = \"div\">(props: __pandwindCardProps<As> & { ref?: import(\"react\").Ref<__pandwindCardComponentRef<As>> }) => import(\"react\").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly forwardedAs?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? \"div\") as import(\"react\").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith(\"$\"))), ref, className: [__pandwindCardStyles.root, attrsClassName, className].filter(Boolean).join(\" \"), style: Object.assign({}, style, attrsStyle) } as import(\"react\").ComponentPropsWithRef<import(\"react\").ElementType>); }) as __pandwindCardPolymorphicComponent; })();",
       "generatedFiles": [
         {
           "path": "Card.module.css",
@@ -43421,58 +43394,7 @@
         "id": "unclassified:styled-components->less",
         "execution": "unavailable"
       },
-      "residuals": [
-        {
-          "kind": "capability",
-          "text": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "react",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "outcome",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })",
-            "outcomeDetail": "target capability has no validated representation",
-            "representation": "residual"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
-          "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "e82421b07e6f",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 106,
-            "sourceText": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });"
-          }
-        }
-      ],
+      "residuals": [],
       "targetPackage": {
         "package": "less",
         "version": "4.9.1",
@@ -43483,20 +43405,34 @@
         "verdict": "Unverified",
         "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
       },
-      "currentOutput": "import styled from \"styled-components\";\n// pandwind:migrate-skip (route: styled-components -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
-      "generatedFiles": [],
-      "converted": 0,
-      "skipped": 1,
+      "currentOutput": "import { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from \"react\";\nimport \"./Card.styles.less\";\nimport type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from \"react\";\nexport const Card = (() => { type __pandwindCardProps<As extends import(\"react\").ElementType> = Omit<__pandwindCardComponentProps<As>, \"as\" | \"forwardedAs\" | \"className\" | \"style\"> & { as?: As; forwardedAs?: As; className?: string; style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; type __pandwindCardPolymorphicComponent = <As extends import(\"react\").ElementType = \"div\">(props: __pandwindCardProps<As> & { ref?: import(\"react\").Ref<__pandwindCardComponentRef<As>> }) => import(\"react\").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly forwardedAs?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? \"div\") as import(\"react\").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith(\"$\"))), ref, className: [\"pw-Card-wwrtu8\", attrsClassName, className].filter(Boolean).join(\" \"), style: Object.assign({}, style, attrsStyle) } as import(\"react\").ComponentPropsWithRef<import(\"react\").ElementType>); }) as __pandwindCardPolymorphicComponent; })();",
+      "generatedFiles": [
+        {
+          "path": "Card.styles.less",
+          "content": ".pw-Card-wwrtu8 { color: red; padding: 1rem; }\n",
+          "purpose": "less styles for a migrated React component"
+        }
+      ],
+      "converted": 1,
+      "skipped": 0,
       "outcomes": [
         {
           "sourceStart": 60,
           "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "outcome": "static",
+          "representation": "static"
         }
       ],
-      "validations": [],
+      "validations": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
       "sourceCase": {
         "name": "styled object",
         "documentation": "https://styled-components.com/docs/api"
@@ -43793,7 +43729,7 @@
         "verdict": "Unverified",
         "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nimport { createCx } from \"pandwind/cx\";\nimport { __pandwindSlot } from \"../__pandwind/slot\";\nconst cx = createCx();\nconst css = createUnsafeCss();\nexport const Card = __pandwindSlot({ defaultComponent: \"div\", style: css.class({ color: \"red\", padding: \"1rem\" }), stableClass: \"pw-1fn70s4\", inheritedClass: undefined, classAttribute: \"className\", filteredPropPrefixes: [\"$\"], attrs: {}, joinClass: cx });",
+      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nimport { createCx } from \"pandwind/cx\";\nimport { __pandwindSlot } from \"./__pandwind/slot\";\nconst cx = createCx();\nconst css = createUnsafeCss();\nexport const Card = __pandwindSlot({ defaultComponent: \"div\", style: css.class({ color: \"red\", padding: \"1rem\" }), stableClass: \"pw-1fn70s4\", inheritedClass: undefined, classAttribute: \"className\", filteredPropPrefixes: [\"$\"], attrs: {}, joinClass: cx });",
       "generatedFiles": [
         {
           "path": "__pandwind/slot.tsx",
@@ -43965,58 +43901,7 @@
         "id": "unclassified:styled-components->sass",
         "execution": "unavailable"
       },
-      "residuals": [
-        {
-          "kind": "capability",
-          "text": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "react",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "outcome",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })",
-            "outcomeDetail": "target capability has no validated representation",
-            "representation": "residual"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
-          "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "38861a3cfa7d",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 106,
-            "sourceText": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });"
-          }
-        }
-      ],
+      "residuals": [],
       "targetPackage": {
         "package": "sass",
         "version": "1.104.0",
@@ -44027,20 +43912,34 @@
         "verdict": "Unverified",
         "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
       },
-      "currentOutput": "import styled from \"styled-components\";\n// pandwind:migrate-skip (route: styled-components -> sass | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
-      "generatedFiles": [],
-      "converted": 0,
-      "skipped": 1,
+      "currentOutput": "import { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from \"react\";\nimport \"./Card.styles.scss\";\nimport type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from \"react\";\nexport const Card = (() => { type __pandwindCardProps<As extends import(\"react\").ElementType> = Omit<__pandwindCardComponentProps<As>, \"as\" | \"forwardedAs\" | \"className\" | \"style\"> & { as?: As; forwardedAs?: As; className?: string; style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; type __pandwindCardPolymorphicComponent = <As extends import(\"react\").ElementType = \"div\">(props: __pandwindCardProps<As> & { ref?: import(\"react\").Ref<__pandwindCardComponentRef<As>> }) => import(\"react\").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly forwardedAs?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? \"div\") as import(\"react\").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith(\"$\"))), ref, className: [\"pw-Card-wwrtu8\", attrsClassName, className].filter(Boolean).join(\" \"), style: Object.assign({}, style, attrsStyle) } as import(\"react\").ComponentPropsWithRef<import(\"react\").ElementType>); }) as __pandwindCardPolymorphicComponent; })();",
+      "generatedFiles": [
+        {
+          "path": "Card.styles.scss",
+          "content": ".pw-Card-wwrtu8 { color: red; padding: 1rem; }\n",
+          "purpose": "sass styles for a migrated React component"
+        }
+      ],
+      "converted": 1,
+      "skipped": 0,
       "outcomes": [
         {
           "sourceStart": 60,
           "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "outcome": "static",
+          "representation": "static"
         }
       ],
-      "validations": [],
+      "validations": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
       "sourceCase": {
         "name": "styled object",
         "documentation": "https://styled-components.com/docs/api"
@@ -44470,24 +44369,7 @@
         "id": "unclassified:styled-components->treat",
         "execution": "unavailable"
       },
-      "residuals": [
-        {
-          "kind": "capability",
-          "text": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-          "causeId": "68a1af3deef7",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })"
-          }
-        }
-      ],
+      "residuals": [],
       "targetPackage": {
         "package": "treat",
         "version": "2.0.4",
@@ -44495,23 +44377,37 @@
       },
       "targetDocumentation": "https://seek-oss.github.io/treat/how-it-works/",
       "canonicality": {
-        "verdict": "Safe residual",
-        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
+        "verdict": "Unverified",
+        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
       },
-      "currentOutput": "import styled from \"styled-components\";\n// pandwind:migrate-skip (route: styled-components -> treat | lowering-residual: capability | available: static, named-map, residual)\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
-      "generatedFiles": [],
-      "converted": 0,
-      "skipped": 1,
+      "currentOutput": "import { __pandwindCardStyles } from \"./Card.styles.treat\";\nimport { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from \"react\";\nimport type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from \"react\";\nexport const Card = (() => { type __pandwindCardProps<As extends import(\"react\").ElementType> = Omit<__pandwindCardComponentProps<As>, \"as\" | \"forwardedAs\" | \"className\" | \"style\"> & { as?: As; forwardedAs?: As; className?: string; style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; type __pandwindCardPolymorphicComponent = <As extends import(\"react\").ElementType = \"div\">(props: __pandwindCardProps<As> & { ref?: import(\"react\").Ref<__pandwindCardComponentRef<As>> }) => import(\"react\").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly forwardedAs?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? \"div\") as import(\"react\").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith(\"$\"))), ref, className: [__pandwindCardStyles, attrsClassName, className].filter(Boolean).join(\" \"), style: Object.assign({}, style, attrsStyle) } as import(\"react\").ComponentPropsWithRef<import(\"react\").ElementType>); }) as __pandwindCardPolymorphicComponent; })();",
+      "generatedFiles": [
+        {
+          "path": "Card.styles.treat.ts",
+          "content": "import { style } from \"treat\";\nexport const __pandwindCardStyles = style({ \"color\": \"red\", \"padding\": \"1rem\" });\n",
+          "purpose": "Treat styles for a migrated React component"
+        }
+      ],
+      "converted": 1,
+      "skipped": 0,
       "outcomes": [
         {
           "sourceStart": 60,
           "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "outcome": "residual",
-          "representation": "static",
-          "detail": "semantic residual remains after lowering"
+          "outcome": "static",
+          "representation": "static"
         }
       ],
-      "validations": [],
+      "validations": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
       "sourceCase": {
         "name": "styled object",
         "documentation": "https://styled-components.com/docs/api"
@@ -44585,40 +44481,7 @@
         "id": "unclassified:styled-components->vanilla-extract",
         "execution": "unavailable"
       },
-      "residuals": [
-        {
-          "kind": "capability",
-          "text": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-          "causeId": "e5af4b112201",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })"
-          }
-        },
-        {
-          "kind": "component",
-          "text": "styled.div",
-          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
-          "causeId": "5f045e26c5b4",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 10,
-            "sourceText": "styled.div"
-          }
-        }
-      ],
+      "residuals": [],
       "targetPackage": {
         "package": "@vanilla-extract/css",
         "version": "1.21.2",
@@ -44626,23 +44489,37 @@
       },
       "targetDocumentation": "https://vanilla-extract.style/documentation/api/style/",
       "canonicality": {
-        "verdict": "Safe residual",
-        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
+        "verdict": "Unverified",
+        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
       },
-      "currentOutput": "import styled from \"styled-components\";\n// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
-      "generatedFiles": [],
-      "converted": 0,
-      "skipped": 1,
+      "currentOutput": "import { __pandwindCardStyles } from \"./Card.styles.css.ts\";\nimport { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from \"react\";\nimport type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from \"react\";\nexport const Card = (() => { type __pandwindCardProps<As extends import(\"react\").ElementType> = Omit<__pandwindCardComponentProps<As>, \"as\" | \"forwardedAs\" | \"className\" | \"style\"> & { as?: As; forwardedAs?: As; className?: string; style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; type __pandwindCardPolymorphicComponent = <As extends import(\"react\").ElementType = \"div\">(props: __pandwindCardProps<As> & { ref?: import(\"react\").Ref<__pandwindCardComponentRef<As>> }) => import(\"react\").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly forwardedAs?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } & { readonly [key in `$${string}`]?: unknown }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import(\"react\").ElementType; readonly className?: string; readonly style?: import(\"react\").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? \"div\") as import(\"react\").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith(\"$\"))), ref, className: [__pandwindCardStyles, attrsClassName, className].filter(Boolean).join(\" \"), style: Object.assign({}, style, attrsStyle) } as import(\"react\").ComponentPropsWithRef<import(\"react\").ElementType>); }) as __pandwindCardPolymorphicComponent; })();",
+      "generatedFiles": [
+        {
+          "path": "Card.styles.css.ts",
+          "content": "import { style } from \"@vanilla-extract/css\";\nexport const __pandwindCardStyles = style({ color: \"red\", padding: \"1rem\" });\n",
+          "purpose": "Vanilla Extract styles for a migrated React component"
+        }
+      ],
+      "converted": 1,
+      "skipped": 0,
       "outcomes": [
         {
           "sourceStart": 60,
           "sourceText": "styled.div({ color: \"red\", padding: \"1rem\" })",
-          "outcome": "residual",
-          "representation": "static",
-          "detail": "semantic residual remains after lowering"
+          "outcome": "static",
+          "representation": "static"
         }
       ],
-      "validations": [],
+      "validations": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
       "sourceCase": {
         "name": "styled object",
         "documentation": "https://styled-components.com/docs/api"
@@ -45513,7 +45390,24 @@
         "id": "unclassified:stylex->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "stylex.create({ card: { color: \"red\", padding: 8 } })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 66,
+            "line": 2,
+            "column": 23,
+            "length": 53,
+            "sourceText": "stylex.create({ card: { color: \"red\", padding: 8 } })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -45521,31 +45415,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const styles = { \"card\": css.class({ color: \"red\", padding: \"8px\" }) };",
+      "currentOutput": "import * as stylex from \"@stylexjs/stylex\";\n// pandwind:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 66,
           "sourceText": "stylex.create({ card: { color: \"red\", padding: 8 } })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "named-map",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:8px;color:red}",
-          "canonicalTarget": "&{padding:8px;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "stylex.create",
         "documentation": "https://stylexjs.com/docs/learn/"
@@ -48303,35 +48189,21 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled(View, { color: \"red\", padding: \"$4\" })",
-          "hint": "components: component subject: styled(View)",
-          "causeId": "78a71deef4c8",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the styled subject is not a verified intrinsic element",
+          "causeId": "e38c8f0dbb75",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
-            "status": "unique",
+            "status": "outcome",
             "offset": 60,
             "line": 2,
             "column": 21,
             "length": 45,
-            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
-          "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "d8163b7deb74",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 141,
-            "sourceText": "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;"
+            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
+            "outcomeDetail": "the styled subject is not a verified intrinsic element",
+            "representation": "static"
           }
         }
       ],
@@ -48342,10 +48214,10 @@
       },
       "targetDocumentation": "https://developer.mozilla.org/en-US/docs/Web/CSS",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
+      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -48355,7 +48227,7 @@
           "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
           "outcome": "residual",
           "representation": "static",
-          "detail": "target capability has no validated representation"
+          "detail": "the styled subject is not a verified intrinsic element"
         }
       ],
       "validations": [],
@@ -48807,35 +48679,21 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled(View, { color: \"red\", padding: \"$4\" })",
-          "hint": "components: component subject: styled(View)",
-          "causeId": "78a71deef4c8",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the styled subject is not a verified intrinsic element",
+          "causeId": "e38c8f0dbb75",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
-            "status": "unique",
+            "status": "outcome",
             "offset": 60,
             "line": 2,
             "column": 21,
             "length": 45,
-            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
-          "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "e82421b07e6f",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 141,
-            "sourceText": "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;"
+            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
+            "outcomeDetail": "the styled subject is not a verified intrinsic element",
+            "representation": "static"
           }
         }
       ],
@@ -48846,10 +48704,10 @@
       },
       "targetDocumentation": "https://lesscss.org/features/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> less | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
+      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> less | lowering-residual: component)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -48859,7 +48717,7 @@
           "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
           "outcome": "residual",
           "representation": "static",
-          "detail": "target capability has no validated representation"
+          "detail": "the styled subject is not a verified intrinsic element"
         }
       ],
       "validations": [],
@@ -49322,35 +49180,21 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled(View, { color: \"red\", padding: \"$4\" })",
-          "hint": "components: component subject: styled(View)",
-          "causeId": "78a71deef4c8",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the styled subject is not a verified intrinsic element",
+          "causeId": "e38c8f0dbb75",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
-            "status": "unique",
+            "status": "outcome",
             "offset": 60,
             "line": 2,
             "column": 21,
             "length": 45,
-            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
-          "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "38861a3cfa7d",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 141,
-            "sourceText": "import { styled, View } from \"tamagui\";\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;"
+            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
+            "outcomeDetail": "the styled subject is not a verified intrinsic element",
+            "representation": "static"
           }
         }
       ],
@@ -49361,10 +49205,10 @@
       },
       "targetDocumentation": "https://sass-lang.com/documentation/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
+      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> sass | lowering-residual: component)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -49374,7 +49218,7 @@
           "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
           "outcome": "residual",
           "representation": "static",
-          "detail": "target capability has no validated representation"
+          "detail": "the styled subject is not a verified intrinsic element"
         }
       ],
       "validations": [],
@@ -49836,19 +49680,21 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled(View, { color: \"red\", padding: \"$4\" })",
-          "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-          "causeId": "68a1af3deef7",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the styled subject is not a verified intrinsic element",
+          "causeId": "e38c8f0dbb75",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
-            "status": "unique",
+            "status": "outcome",
             "offset": 60,
             "line": 2,
             "column": 21,
             "length": 45,
-            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })"
+            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
+            "outcomeDetail": "the styled subject is not a verified intrinsic element",
+            "representation": "static"
           }
         }
       ],
@@ -49862,7 +49708,7 @@
         "verdict": "Safe residual",
         "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: capability | available: static, named-map, residual)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
+      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: component)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -49872,7 +49718,7 @@
           "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
           "outcome": "residual",
           "representation": "static",
-          "detail": "semantic residual remains after lowering"
+          "detail": "the styled subject is not a verified intrinsic element"
         }
       ],
       "validations": [],
@@ -49949,26 +49795,10 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled(View, { color: \"red\", padding: \"$4\" })",
-          "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
-          "causeId": "e5af4b112201",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 60,
-            "line": 2,
-            "column": 21,
-            "length": 45,
-            "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })"
-          }
-        },
-        {
           "kind": "component",
-          "text": "styled(View)",
-          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
-          "causeId": "5f045e26c5b4",
+          "text": "Card",
+          "hint": "the styled subject is not a verified intrinsic element",
+          "causeId": "e38c8f0dbb75",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
@@ -49978,7 +49808,7 @@
             "column": 21,
             "length": 45,
             "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
-            "outcomeDetail": "semantic residual remains after lowering",
+            "outcomeDetail": "the styled subject is not a verified intrinsic element",
             "representation": "static"
           }
         }
@@ -49993,7 +49823,7 @@
         "verdict": "Safe residual",
         "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
+      "currentOutput": "import { styled, View } from \"tamagui\";\n// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component)\nexport const Card = styled(View, { color: \"red\", padding: \"$4\" });\nexport const App = () => <Card />;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -50003,7 +49833,7 @@
           "sourceText": "styled(View, { color: \"red\", padding: \"$4\" })",
           "outcome": "residual",
           "representation": "static",
-          "detail": "semantic residual remains after lowering"
+          "detail": "the styled subject is not a verified intrinsic element"
         }
       ],
       "validations": [],
@@ -50838,7 +50668,24 @@
         "id": "unclassified:tokenami->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css({ color: \"red\", \"--card-gap\": \"1rem\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 57,
+            "line": 2,
+            "column": 21,
+            "length": 43,
+            "sourceText": "css({ color: \"red\", \"--card-gap\": \"1rem\" })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -50846,31 +50693,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"cardGap\": \"1rem\" });",
+      "currentOutput": "import { css } from \"@tokenami/css\";\n// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = css({ color: \"red\", \"--card-gap\": \"1rem\" });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 57,
           "sourceText": "css({ color: \"red\", \"--card-gap\": \"1rem\" })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{cardGap:1rem;color:red}",
-          "canonicalTarget": "&{cardGap:1rem;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "Tokenami css object",
         "documentation": "https://tokenami.dev/"
@@ -52587,7 +52426,24 @@
         "id": "unclassified:treat->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "style({ color: \"red\", padding: 8 })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 51,
+            "line": 2,
+            "column": 21,
+            "length": 35,
+            "sourceText": "style({ color: \"red\", padding: 8 })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -52595,31 +52451,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"padding\": \"8px\" });",
+      "currentOutput": "import { style } from \"treat\";\n// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = style({ color: \"red\", padding: 8 });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 51,
           "sourceText": "style({ color: \"red\", padding: 8 })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:8px;color:red}",
-          "canonicalTarget": "&{padding:8px;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "treat style",
         "documentation": "https://seek-oss.github.io/treat/how-it-works/"
@@ -56030,7 +55878,24 @@
         "id": "unclassified:vanilla-extract->mui",
         "execution": "unavailable"
       },
-      "residuals": [],
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "style({ color: \"red\", padding: 8 })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
+          "causeId": "2125e3363547",
+          "disposition": "unverified",
+          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "sourceLocation": {
+            "status": "unique",
+            "offset": 66,
+            "line": 2,
+            "column": 21,
+            "length": 35,
+            "sourceText": "style({ color: \"red\", padding: 8 })"
+          }
+        }
+      ],
       "targetPackage": {
         "package": "@mui/material + @mui/system",
         "version": null,
@@ -56038,31 +55903,23 @@
       },
       "targetDocumentation": "https://mui.com/system/getting-started/the-sx-prop/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ \"color\": \"red\", \"padding\": \"8px\" });",
+      "currentOutput": "import { style } from \"@vanilla-extract/css\";\n// pandwind:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)\nexport const card = style({ color: \"red\", padding: 8 });",
       "generatedFiles": [],
-      "converted": 1,
-      "skipped": 0,
+      "converted": 0,
+      "skipped": 1,
       "outcomes": [
         {
           "sourceStart": 66,
           "sourceText": "style({ color: \"red\", padding: 8 })",
-          "outcome": "portable-artifact",
-          "representation": "portable-artifact"
+          "outcome": "residual",
+          "representation": "static",
+          "detail": "semantic residual remains after lowering"
         }
       ],
-      "validations": [
-        {
-          "valid": true,
-          "lossiness": "lossless",
-          "canonicalSource": "&{padding:8px;color:red}",
-          "canonicalTarget": "&{padding:8px;color:red}",
-          "differences": [],
-          "residuals": []
-        }
-      ],
+      "validations": [],
       "sourceCase": {
         "name": "style object",
         "documentation": "https://vanilla-extract.style/documentation/api/style/"
@@ -57076,51 +56933,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 64,
+            "offset": 57,
             "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "vue",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 20,
-            "line": 1,
-            "column": 21,
-            "length": 3,
-            "sourceText": "vue"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;",
-          "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "d8163b7deb74",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 103,
-            "sourceText": "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -57131,10 +56956,10 @@
       },
       "targetDocumentation": "https://developer.mozilla.org/en-US/docs/Web/CSS",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> authored-css | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -57143,8 +56968,8 @@
           "sourceStart": 64,
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "representation": "static",
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -57356,8 +57181,8 @@
         {
           "kind": "capability",
           "text": "Card",
-          "hint": "the React wrapper requires a TSX source module",
-          "causeId": "b120d2eeaa71",
+          "hint": "the source host is not verified as React",
+          "causeId": "8219f3458634",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
@@ -57390,7 +57215,7 @@
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
           "representation": "static",
-          "detail": "the React wrapper requires a TSX source module"
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -57628,51 +57453,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 64,
+            "offset": 57,
             "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "vue",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 20,
-            "line": 1,
-            "column": 21,
-            "length": 3,
-            "sourceText": "vue"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;",
-          "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "e82421b07e6f",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 103,
-            "sourceText": "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -57683,10 +57476,10 @@
       },
       "targetDocumentation": "https://lesscss.org/features/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -57695,8 +57488,8 @@
           "sourceStart": 64,
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "representation": "static",
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -57837,19 +57630,39 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "framework-semantics: vue",
-          "causeId": "cd1d99e394a2",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
+          "kind": "host-framework",
+          "text": "{ color: \"red\", padding: \"1rem\" }",
+          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+          "causeId": "1189a7ff667d",
+          "disposition": "target/framework-incompatible",
+          "nextAction": "Keep the source construct until a documented target host contract supports this framework.",
           "sourceLocation": {
-            "status": "unique",
+            "status": "outcome",
             "offset": 64,
             "line": 2,
             "column": 21,
             "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
+            "sourceText": "styled.div`color: red; padding: 1rem;`",
+            "outcomeDetail": "1 residual conversion(s)",
+            "representation": "static"
+          }
+        },
+        {
+          "kind": "validation",
+          "text": "{ color: \"red\", padding: \"1rem\" }",
+          "hint": "1 residual conversion(s)",
+          "causeId": "88685f2873b1",
+          "disposition": "unverified",
+          "nextAction": "Review the exact source and target contracts before changing this residual.",
+          "sourceLocation": {
+            "status": "outcome",
+            "offset": 64,
+            "line": 2,
+            "column": 21,
+            "length": 38,
+            "sourceText": "styled.div`color: red; padding: 1rem;`",
+            "outcomeDetail": "1 residual conversion(s)",
+            "representation": "static"
           }
         }
       ],
@@ -57863,7 +57676,7 @@
         "verdict": "Safe residual",
         "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -57873,10 +57686,27 @@
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
           "representation": "static",
-          "detail": "target capability has no validated representation"
+          "detail": "1 residual conversion(s)"
         }
       ],
-      "validations": [],
+      "validations": [
+        {
+          "valid": false,
+          "lossiness": "lossy",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [
+            "1 residual conversion(s)"
+          ],
+          "residuals": [
+            {
+              "kind": "host-framework",
+              "text": "{ color: \"red\", padding: \"1rem\" }",
+              "hint": "MUI sx styles require a host component prop; no standalone sx() API exists"
+            }
+          ]
+        }
+      ],
       "sourceCase": {
         "name": "vue styled template",
         "documentation": "https://github.com/styled-components/vue-styled-components"
@@ -58198,51 +58028,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "components: component subject: styled.div",
-          "causeId": "414f7f07874c",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 64,
+            "offset": 57,
             "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
-          }
-        },
-        {
-          "kind": "framework-semantics",
-          "text": "vue",
-          "hint": "target lacks framework semantics",
-          "causeId": "3f155233c9af",
-          "disposition": "unverified",
-          "nextAction": "Review the exact source and target contracts before changing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 20,
-            "line": 1,
-            "column": 21,
-            "length": 3,
-            "sourceText": "vue"
-          }
-        },
-        {
-          "kind": "capability",
-          "text": "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;",
-          "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-          "causeId": "38861a3cfa7d",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 0,
-            "line": 1,
-            "column": 1,
-            "length": 103,
-            "sourceText": "import styled from \"vue-styled-components\";\nexport const Card = styled.div`color: red; padding: 1rem;`;"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -58253,10 +58051,10 @@
       },
       "targetDocumentation": "https://sass-lang.com/documentation/",
       "canonicality": {
-        "verdict": "Unverified",
-        "reason": "Adapter capture alone does not prove canonical target syntax or target-project behavior; see the linked route and installed-project evidence."
+        "verdict": "Safe residual",
+        "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> sass | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> sass | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -58265,8 +58063,8 @@
           "sourceStart": 64,
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
-          "representation": "residual",
-          "detail": "target capability has no validated representation"
+          "representation": "static",
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -58753,19 +58551,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module; the source module is not present in the project file index",
-          "causeId": "cdf5d8f8f9ab",
+          "kind": "component",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 64,
+            "offset": 57,
             "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -58779,7 +58577,7 @@
         "verdict": "Safe residual",
         "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> treat | lowering-residual: capability | available: static, named-map, residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> treat | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -58789,7 +58587,7 @@
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
           "representation": "static",
-          "detail": "semantic residual remains after lowering"
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],
@@ -58868,35 +58666,19 @@
       },
       "residuals": [
         {
-          "kind": "capability",
-          "text": "styled.div`color: red; padding: 1rem;`",
-          "hint": "Vanilla Extract styles must be emitted from a .css.ts module; the source module is not present in the project file index",
-          "causeId": "6c98a97d712b",
-          "disposition": "unverified",
-          "nextAction": "Verify the source and target contracts and project context before removing this residual.",
-          "sourceLocation": {
-            "status": "unique",
-            "offset": 64,
-            "line": 2,
-            "column": 21,
-            "length": 38,
-            "sourceText": "styled.div`color: red; padding: 1rem;`"
-          }
-        },
-        {
           "kind": "component",
-          "text": "styled.div",
-          "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
-          "causeId": "5f045e26c5b4",
+          "text": "Card",
+          "hint": "the source host is not verified as React",
+          "causeId": "510eac277de1",
           "disposition": "unverified",
           "nextAction": "Verify the source and target contracts and project context before removing this residual.",
           "sourceLocation": {
             "status": "unique",
-            "offset": 64,
+            "offset": 57,
             "line": 2,
-            "column": 21,
-            "length": 10,
-            "sourceText": "styled.div"
+            "column": 14,
+            "length": 4,
+            "sourceText": "Card"
           }
         }
       ],
@@ -58910,7 +58692,7 @@
         "verdict": "Safe residual",
         "reason": "Unsupported or unverified source is retained at its authored location with typed residual evidence; successful fragments remain separately validated."
       },
-      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: capability, component | available: static, named-map, residual)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
+      "currentOutput": "import styled from \"vue-styled-components\";\n// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)\nexport const Card = styled.div`color: red; padding: 1rem;`;",
       "generatedFiles": [],
       "converted": 0,
       "skipped": 1,
@@ -58920,7 +58702,7 @@
           "sourceText": "styled.div`color: red; padding: 1rem;`",
           "outcome": "residual",
           "representation": "static",
-          "detail": "semantic residual remains after lowering"
+          "detail": "the source host is not verified as React"
         }
       ],
       "validations": [],

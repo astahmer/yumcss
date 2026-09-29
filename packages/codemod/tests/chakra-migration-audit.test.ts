@@ -12,6 +12,7 @@ import {
 	createAdapterRouteProject,
 	createAdapterRouteSpec,
 	createInstalledChakraRouteProject,
+	expectConfiguredProjectEvidence,
 	routeEvidence,
 } from "./route-spec-support.ts";
 
@@ -32,6 +33,247 @@ const migrate = (
 	});
 
 describe("Chakra migration audit", () => {
+	test("lowers Chakra layout component props for foreign style targets", async () => {
+		const route = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tailwind);
+		const project = createAdapterRouteProject(
+			CodemodAdapterId.ChakraUi,
+			CodemodAdapterId.Tailwind,
+			"#2a57c8",
+		);
+		const source = [
+			'import { Flex, Grid, SimpleGrid } from "@chakra-ui/react";',
+			'export const App = () => <><Flex direction="column" align="center" justify="space-between" /><Grid columns={2} /><SimpleGrid columns={2} /></>;',
+		].join("\n");
+		const result = await route.runAsync({
+			source,
+			file: "App.tsx",
+			semantic: { source: { framework: BuiltinHostFramework.React } },
+			project,
+		});
+		expect(routeEvidence(result)).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": "import { Flex, Grid, SimpleGrid } from "@chakra-ui/react";
+			// pandwind:migrate-skip (route: chakra-ui -> tailwind | parse-residual: component | available: named-map, residual)
+			export const App = () => <><Flex className={"[flex-direction:column] [align-items:center] [justify-content:space-between]"}/><Grid columns={2} /><SimpleGrid className={"[grid-template-columns:repeat(2,_minmax(0,_1fr))]"}/></>;",
+			  "converted": 2,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [
+			        "dynamic-and-theme",
+			      ],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			    {
+			      "applied": [
+			        "dynamic-and-theme",
+			      ],
+			      "availableRepresentations": [
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "residual",
+			      "residuals": [],
+			    },
+			    {
+			      "applied": [
+			        "dynamic-and-theme",
+			      ],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "outcome": "static",
+			      "representation": "static",
+			    },
+			    {
+			      "outcome": "residual",
+			      "representation": "residual",
+			    },
+			    {
+			      "outcome": "static",
+			      "representation": "static",
+			    },
+			  ],
+			  "residuals": [
+			    {
+			      "hint": "Chakra Grid has no columns prop; choose SimpleGrid or templateColumns explicitly",
+			      "kind": "component",
+			      "preserved": undefined,
+			    },
+			  ],
+			  "skipped": 1,
+			  "validations": [
+			    {
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "valid": true,
+			    },
+			    {
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "valid": true,
+			    },
+			  ],
+			}
+		`);
+
+		expect(result.converted).toBe(2);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "component",
+					text: expect.stringContaining("Grid columns={2}"),
+					hint: "Chakra Grid has no columns prop; choose SimpleGrid or templateColumns explicitly",
+				}),
+			]),
+		);
+		expect(result.validations).toHaveLength(2);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).toContain('import { Flex, Grid, SimpleGrid } from "@chakra-ui/react";');
+		expectConfiguredProjectEvidence(project, CodemodAdapterId.ChakraUi, CodemodAdapterId.Tailwind);
+		expect(result.code).toContain("[flex-direction:column]");
+		expect(result.code).toContain("[align-items:center]");
+		expect(result.code).toContain("[justify-content:space-between]");
+		expect(result.code).toContain("<Grid columns={2} />");
+		expect(result.code).not.toContain("[columns:2]");
+		expect(result.code).toContain("[grid-template-columns:repeat(2,_minmax(0,_1fr))]");
+		expect(result.code).not.toContain("[direction:");
+		expect(result.code).not.toContain("[align:");
+	});
+
+	test("converts Tailwind responsive styles when its project graph is available", async () => {
+		const route = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.ChakraUi);
+		const project = createAdapterRouteProject(
+			CodemodAdapterId.Tailwind,
+			CodemodAdapterId.ChakraUi,
+			"#2a57c8",
+		);
+		const result = await route.runAsync({
+			source: 'export const App = () => <div className="md:[display:flex]" />;',
+			file: "App.tsx",
+			project,
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expectConfiguredProjectEvidence(project, CodemodAdapterId.Tailwind, CodemodAdapterId.ChakraUi);
+		expect(result.code).toContain('import { chakra } from "@chakra-ui/react";');
+		expect(result.code).toContain('"@media (width >= 48rem)"');
+		expect(result.code).toContain('display: "flex"');
+		expect(routeEvidence(result)).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": "import { chakra } from "@chakra-ui/react";
+			export const App = () => <chakra.div  css={{ "@media (width >= 48rem)": { display: "flex" } }}/>;",
+			  "converted": 1,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "outcome": "static",
+			      "representation": "static",
+			    },
+			  ],
+			  "residuals": [],
+			  "skipped": 0,
+			  "validations": [
+			    {
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "valid": true,
+			    },
+			  ],
+			}
+		`);
+	});
+
+	test("keeps an unverified Tailwind breakpoint residual without its project graph", async () => {
+		const route = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.ChakraUi);
+		const source = 'export const App = () => <div className="md:[display:flex]" />;';
+		const result = await route.runAsync({
+			source,
+			file: "App.tsx",
+			project: createInstalledChakraRouteProject(),
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: "named-conditions: named: md",
+				}),
+			]),
+		);
+		expect(result.code).toContain('className="md:[display:flex]"');
+		expect(routeEvidence(result)).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": "// pandwind:migrate-skip (route: tailwind -> chakra-ui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+			export const App = () => <div className="md:[display:flex]" />;",
+			  "converted": 0,
+			  "generatedFiles": [],
+			  "loweringPlans": [
+			    {
+			      "applied": [],
+			      "availableRepresentations": [
+			        "static",
+			        "named-map",
+			        "residual",
+			      ],
+			      "representation": "static",
+			      "residuals": [],
+			    },
+			  ],
+			  "outcomes": [
+			    {
+			      "outcome": "residual",
+			      "representation": "static",
+			    },
+			  ],
+			  "residuals": [
+			    {
+			      "hint": "named-conditions: named: md",
+			      "kind": "capability",
+			      "preserved": undefined,
+			    },
+			  ],
+			  "skipped": 1,
+			  "validations": [],
+			}
+		`);
+	});
+
 	test("uses the configured Tailwind color variable without changing Chakra background semantics", async () => {
 		const route = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tailwind);
 		const project = createAdapterRouteProject(
@@ -974,36 +1216,47 @@ describe("Chakra migration audit", () => {
 		`);
 	});
 
-	test("keeps CSS columns distinct from SimpleGrid column count", async () => {
+	test("preserves unsupported Grid columns while converting SimpleGrid column count", async () => {
 		const result = await migrate(
 			'import { Grid, SimpleGrid } from "@chakra-ui/react";\nexport const App = () => <><Grid columns={2} /><SimpleGrid columns={2} /></>;',
 			CodemodAdapterId.ChakraUi,
 			CodemodAdapterId.Pandwind,
 		);
 
-		expect(result.converted).toBe(2);
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("columns: 2");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "component",
+					text: expect.stringContaining("Grid columns={2}"),
+					hint: "Chakra Grid has no columns prop; choose SimpleGrid or templateColumns explicitly",
+				}),
+			]),
+		);
+		expect(result.code).toContain("<Grid columns={2} />");
+		expect(result.code).toContain('import { Grid } from "@chakra-ui/react";');
+		expect(result.code).not.toContain("columns: 2");
 		expect(result.code).toContain('gridTemplateColumns: "repeat(2, minmax(0, 1fr))"');
 		expect(result.code).not.toContain("gridTemplateColumns: 2");
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { Grid } from "@chakra-ui/react";
+			import { createUnsafeCss } from "pandwind/unsafe/css";
 			const css = createUnsafeCss();
-			export const App = () => <><div className={css.class({ display: "grid", columns: 2 })} /><div className={css.class({ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))" })} /></>;",
-			  "converted": 2,
+			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: component | available: named-map, residual)
+			export const App = () => <><Grid columns={2} /><div className={css.class({ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))" })} /></>;",
+			  "converted": 1,
 			  "generatedFiles": [],
 			  "loweringPlans": [
 			    {
 			      "applied": [],
 			      "availableRepresentations": [
-			        "static",
 			        "named-map",
 			        "residual",
 			      ],
-			      "representation": "static",
+			      "representation": "residual",
 			      "residuals": [],
 			    },
 			    {
@@ -1019,22 +1272,23 @@ describe("Chakra migration audit", () => {
 			  ],
 			  "outcomes": [
 			    {
-			      "outcome": "static",
-			      "representation": "static",
+			      "outcome": "residual",
+			      "representation": "residual",
 			    },
 			    {
 			      "outcome": "static",
 			      "representation": "static",
 			    },
 			  ],
-			  "residuals": [],
-			  "skipped": 0,
-			  "validations": [
+			  "residuals": [
 			    {
-			      "differences": [],
-			      "lossiness": "lossless",
-			      "valid": true,
+			      "hint": "Chakra Grid has no columns prop; choose SimpleGrid or templateColumns explicitly",
+			      "kind": "component",
+			      "preserved": undefined,
 			    },
+			  ],
+			  "skipped": 1,
+			  "validations": [
 			    {
 			      "differences": [],
 			      "lossiness": "lossless",
@@ -1087,20 +1341,10 @@ describe("Chakra migration audit", () => {
 			  "changed": true,
 			  "code": "import { Button, Heading } from "@chakra-ui/react";
 			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: component | available: named-map, residual)
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: component | available: named-map, residual)
 			export const App = () => <><Button variant="solid">Save</Button><Heading size="lg">Title</Heading></>;",
 			  "converted": 0,
 			  "generatedFiles": [],
 			  "loweringPlans": [
-			    {
-			      "applied": [],
-			      "availableRepresentations": [
-			        "named-map",
-			        "residual",
-			      ],
-			      "representation": "residual",
-			      "residuals": [],
-			    },
 			    {
 			      "applied": [],
 			      "availableRepresentations": [
@@ -1116,24 +1360,15 @@ describe("Chakra migration audit", () => {
 			      "outcome": "residual",
 			      "representation": "residual",
 			    },
-			    {
-			      "outcome": "residual",
-			      "representation": "residual",
-			    },
 			  ],
 			  "residuals": [
-			    {
-			      "hint": "Chakra host 'Button' has no verified intrinsic projection",
-			      "kind": "component",
-			      "preserved": undefined,
-			    },
 			    {
 			      "hint": "Chakra host 'Heading' has no verified intrinsic projection",
 			      "kind": "component",
 			      "preserved": undefined,
 			    },
 			  ],
-			  "skipped": 2,
+			  "skipped": 1,
 			  "validations": [],
 			}
 		`);
