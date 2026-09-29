@@ -435,6 +435,10 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			return;
 		}
 		await projectMigration.run({
+			projectRoot: root,
+			from: args.from,
+			to: args.to,
+			reportFormat: args.reportFormat,
 			patterns: args.patterns,
 			filePaths,
 			meta,

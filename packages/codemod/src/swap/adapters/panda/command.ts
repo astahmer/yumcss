@@ -1,4 +1,4 @@
-import { inferCommonRoot, runPandaMigration } from "./panda-migrate.ts";
+import { runPandaMigration } from "./panda-migrate.ts";
 import type { ProjectMigrationCommand } from "../../project-command.ts";
 import { AdapterDependencyKindTag } from "../../adapter-contract.ts";
 import { CodemodAdapterId, SwapTargetId } from "../../identifiers.ts";
@@ -15,9 +15,8 @@ const pandaMigrationCommand: ProjectMigrationCommand = {
 			process.exitCode = 1;
 			return;
 		}
-		const projectRoot = inferCommonRoot(context.filePaths.map((path) => ({ path })));
 		const report = await runPandaMigration({
-			projectRoot,
+			projectRoot: context.projectRoot,
 			patterns: [...context.patterns],
 			meta: context.meta,
 			outDirName: context.outDir || "pandwind",
@@ -28,6 +27,16 @@ const pandaMigrationCommand: ProjectMigrationCommand = {
 			tokenReferenceFormat: context.tokenReferenceFormat,
 			hoistStaticStyles: context.hoistStaticStyles,
 		});
+		if (context.reportFormat === "json") {
+			console.log(
+				JSON.stringify({
+					from: context.from,
+					to: context.to,
+					report,
+				}),
+			);
+			return;
+		}
 		console.log(
 			`\nproject migration: ${report.filesScanned} file(s) scanned · ${report.filesChanged} changed · ` +
 				`${report.cssCallsConverted} css() converted · ${report.cssCallsFlagged} flagged · ` +

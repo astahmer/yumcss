@@ -4,6 +4,10 @@ import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Port for project-wide migrations that need more than one source match. */
 export interface ProjectMigrationContext {
+	readonly projectRoot: string;
+	readonly from: string;
+	readonly to: string;
+	readonly reportFormat: "text" | "json";
 	readonly patterns: readonly string[];
 	readonly filePaths: readonly string[];
 	readonly meta: PandwindMeta;

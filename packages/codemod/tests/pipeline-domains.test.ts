@@ -1,7 +1,7 @@
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import type { PandwindMeta } from "../src/meta.ts";
 import {
 	PANDA_MIGRATION_PIPELINE,
@@ -54,21 +54,35 @@ describe("Panda migration pipeline", () => {
 
 	test("routes the Panda project command through the project migration port", async () => {
 		const root = mkdtempSync(join(tmpdir(), "pandwind-command-"));
+		const output = vi.spyOn(console, "log").mockImplementation(() => undefined);
 		try {
-			const file = join(root, "Page.tsx");
+			mkdirSync(join(root, "src"), { recursive: true });
+			const file = join(root, "src", "Page.tsx");
 			writeFileSync(file, 'export const page = css({ color: "red" });\n');
 			const command = getProjectMigrationCommand(CodemodAdapterId.Panda);
 			expect(command?.id).toBe(CodemodAdapterId.Panda);
 			await command?.run({
-				patterns: ["Page.tsx"],
+				projectRoot: root,
+				from: CodemodAdapterId.Panda,
+				to: CodemodAdapterId.Pandwind,
+				reportFormat: "json",
+				patterns: ["src/Page.tsx"],
 				filePaths: [file],
 				meta: { bridgeInverse: new Map() } as unknown as PandwindMeta,
 				diff: false,
 				report: true,
-				write: false,
+				write: true,
 				skipMarker: "pandwind:command-test",
 			});
+			expect(readFileSync(file, "utf8")).toContain("css.class");
+			expect(readFileSync(file, "utf8")).toContain('from "../pandwind/css"');
+			expect(JSON.parse(output.mock.calls[0]?.join("") ?? "")).toMatchObject({
+				from: CodemodAdapterId.Panda,
+				to: CodemodAdapterId.Pandwind,
+				report: { filesScanned: 1, filesChanged: 1, cssCallsConverted: 1 },
+			});
 		} finally {
+			output.mockRestore();
 			rmSync(root, { recursive: true, force: true });
 		}
 	});

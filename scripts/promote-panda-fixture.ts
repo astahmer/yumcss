@@ -8,11 +8,11 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { z } from "zod";
 import {
 	browserProof,
 	generatedCss,
 	packageInstalled,
-	parseInstalledProofMigration,
 	renderInstalledServer,
 	run,
 	runCaptured,
@@ -20,12 +20,11 @@ import {
 	writeIndex,
 	writeJson,
 	type InstalledProofBrowserEvidence,
-	type InstalledProofCanonicalEvidence,
 } from "./installed-proof.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const proofSchema = "pandwind.installed-project-proof/2" as const;
 const versions = {
 	"@pandacss/dev": "1.12.1",
 	"@types/node": "26.4.1",
@@ -101,6 +100,32 @@ const tsConfig = {
 	include: ["src", "vite.config.ts", "panda.config.ts"],
 };
 
+const pandaProjectMigrationSchema = z.object({
+	from: z.literal(CodemodAdapterId.Panda),
+	to: z.literal(CodemodAdapterId.Pandwind),
+	report: z.object({
+		filesScanned: z.number().int().nonnegative(),
+		filesChanged: z.number().int().nonnegative(),
+		cssCallsConverted: z.number().int().nonnegative(),
+		cssCallsFlagged: z.number().int().nonnegative(),
+		factoryElementsConverted: z.number().int().nonnegative(),
+		factoryElementsFlagged: z.number().int().nonnegative(),
+		residualsByKind: z.record(z.string(), z.number().int().nonnegative()),
+	}),
+});
+
+const parsePandaProjectMigration = (output: string) => {
+	const { report } = pandaProjectMigrationSchema.parse(JSON.parse(output.trim()));
+	return {
+		filesScanned: report.filesScanned,
+		filesChanged: report.filesChanged,
+		converted: report.cssCallsConverted + report.factoryElementsConverted,
+		skipped: report.cssCallsFlagged + report.factoryElementsFlagged,
+		residuals: Object.values(report.residualsByKind).reduce((total, count) => total + count, 0),
+		residualsByKind: report.residualsByKind,
+	};
+};
+
 interface PandaInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
@@ -114,10 +139,12 @@ interface PandaInstalledProof {
 		readonly targetNodeModule: boolean;
 	};
 	readonly migration: {
+		readonly filesScanned: number;
+		readonly filesChanged: number;
 		readonly converted: number;
 		readonly skipped: number;
 		readonly residuals: number;
-		readonly canonical: InstalledProofCanonicalEvidence;
+		readonly residualsByKind: Readonly<Record<string, number>>;
 		readonly targetUsesPandwind: boolean;
 		readonly customTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
@@ -144,11 +171,11 @@ interface PandaInstalledProof {
 
 function proofIsComplete(report: PandaInstalledProof): boolean {
 	return (
+		report.migration.filesScanned > 0 &&
+		report.migration.filesChanged > 0 &&
 		report.migration.converted > 0 &&
 		report.migration.skipped === 0 &&
 		report.migration.residuals === 0 &&
-		report.migration.canonical.checked &&
-		report.migration.canonical.equal &&
 		report.migration.targetUsesPandwind &&
 		report.migration.customTokenPreserved &&
 		report.migration.sourceStylesheetImportRemoved &&
@@ -225,7 +252,7 @@ async function main(): Promise<void> {
 			run("pnpm", ["run", "build"], sourceRoot);
 			createTargetFixture(sourceRoot, targetRoot);
 			run("pnpm", ["install", "--ignore-scripts"], targetRoot);
-			const migration = parseInstalledProofMigration(
+			const migration = parsePandaProjectMigration(
 				runCaptured(
 					"nub",
 					[
@@ -316,6 +343,7 @@ async function main(): Promise<void> {
 			writeJson(join(repositoryRoot, "plans/evidence/panda-installed-proof.json"), report);
 			console.log(JSON.stringify(report, null, 2));
 		},
+		{ retainOnError: true },
 	);
 }
 

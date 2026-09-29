@@ -13,7 +13,7 @@
  *    `<x className={…}>`, styled-system import specifiers -> emitted
  *    modules; anything non-literal keeps a skip marker (never half-converted).
  */
-import { basename, dirname, join, relative } from "node:path";
+import { basename, dirname, join, relative, sep } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
 import { planPandwindNextIntegration } from "../../host-integration.ts";
@@ -91,20 +91,6 @@ export interface PandaMigrateReport {
 }
 
 type FileEntry = PandaMigrationFile;
-
-/** Longest common directory of all collected files (project-root guess). */
-export function inferCommonRoot(files: Array<{ path: string }>): string {
-	if (files.length === 0) return process.cwd();
-	let common = dirname(files[0]!.path);
-	for (const f of files.slice(1)) {
-		while (!f.path.startsWith(`${common}/`)) {
-			const parent = dirname(common);
-			if (parent === common) return common;
-			common = parent;
-		}
-	}
-	return common;
-}
 
 /* ------------------------------------------------------------------ */
 /* emission helpers                                                    */
@@ -1198,6 +1184,11 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	// Put generated files under the alias target (e.g. @/* -> src/*), so
 	// `@/pandwind/...` resolves to the files we actually emit.
 	const outDir = workspace.outDir;
+	const pandaModuleSpecifier = (filePath: string, subpath: string): string => {
+		if (aliasInfo.alias !== "") return aliasSpecifier(aliasInfo, outDirName, subpath);
+		const modulePath = relative(dirname(filePath), join(outDir, subpath)).split(sep).join("/");
+		return modulePath.startsWith(".") ? modulePath : `./${modulePath}`;
+	};
 	const emitted: Array<{ path: string; content: string }> = [];
 	const recipeExportNames = new Map<string, string>();
 	const recipeModuleNames = new Map<string, string>();
@@ -1215,7 +1206,6 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	queueEmission(join(outDir, "preset.ts"), renderPandaPreset(theme, tokenReferenceFormat));
 	queueEmission(join(outDir, "css.ts"), renderCssBootstrap());
 	queueEmission(join(outDir, "virtual.d.ts"), renderVirtualCssDeclaration());
-	const stackImport = aliasSpecifier(aliasInfo, outDirName, "stack");
 	const hasStackUsage = [...usage.jsxComponents].some(
 		(component) => component === "Stack" || component === "HStack" || component === "VStack",
 	);
@@ -1401,7 +1391,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		emitTier1(def, ir, false, true);
 		// re-point the binding at the emitted module
 		addExtra(def.file.path, { start: def.start, end: def.end, text: "" });
-		const spec = aliasSpecifier(aliasInfo, outDirName, "recipes");
+		const spec = pandaModuleSpecifier(def.file.path, "recipes");
 		const insertion = importInsertionOffset(def.file.source);
 		addExtra(def.file.path, {
 			start: insertion,
@@ -1506,17 +1496,16 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	}
 
 	/* ---- call-site rewrite pass ---- */
-	const specifierRewrites: Array<[RegExp, string]> = [
-		[/([\w@./-]*)styled-system\/recipes/g, aliasSpecifier(aliasInfo, outDirName, "recipes")],
-		[/([\w@./-]*)styled-system\/css/g, aliasSpecifier(aliasInfo, outDirName, "css")],
-		[/([\w@./-]*)styled-system\/tokens/g, aliasSpecifier(aliasInfo, outDirName, "token")],
-	];
-
 	for (const file of files) {
 		// Generated modules are inputs to the emission pass, never call-site
 		// sources. Skipping them keeps --force reruns from reprocessing our own
 		// output and falsely reporting generated files as changed.
 		if (file.path.includes(`/${outDirName}/`)) continue;
+		const specifierRewrites: Array<[RegExp, string]> = [
+			[/([\w@./-]*)styled-system\/recipes/g, pandaModuleSpecifier(file.path, "recipes")],
+			[/([\w@./-]*)styled-system\/css/g, pandaModuleSpecifier(file.path, "css")],
+			[/([\w@./-]*)styled-system\/tokens/g, pandaModuleSpecifier(file.path, "token")],
+		];
 		const edits: Array<{ start: number; end: number; text: string }> = [
 			...(fileExtras.get(file.path) ?? []),
 		];
@@ -1679,13 +1668,18 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			report.factoryElementsConverted++;
 		}
 		edits.push(
-			...rewritePandaJsxImports(file.source, jsxImports, unsupportedJsxComponents, stackImport),
+			...rewritePandaJsxImports(
+				file.source,
+				jsxImports,
+				unsupportedJsxComponents,
+				pandaModuleSpecifier(file.path, "stack"),
+			),
 		);
 		edits.push(
 			...rewritePandaPatternImports(
 				file.source,
 				new Set(emittedPatternNames),
-				aliasSpecifier(aliasInfo, outDirName, "patterns"),
+				pandaModuleSpecifier(file.path, "patterns"),
 			),
 		);
 
@@ -1726,14 +1720,14 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			!hasCssBinding(next, cssBinding, (start) => nextMask.isExcluded(start))
 		) {
 			const importedBinding = cssBinding === "css" ? "css" : `css as ${cssBinding}`;
-			const importText = `import { ${importedBinding} } from "${aliasSpecifier(aliasInfo, outDirName, "css")}";\n`;
+			const importText = `import { ${importedBinding} } from "${pandaModuleSpecifier(file.path, "css")}";\n`;
 			const insertion = importInsertionOffset(next);
 			next = next.slice(0, insertion) + importText + next.slice(insertion);
 		}
 		if (next === file.source) continue;
 		// cva/sva definitions folded into generated output no longer need their
 		// panda-only named imports; leaving them would create unresolved exports.
-		next = removeUnusedVariantImports(next, aliasSpecifier(aliasInfo, outDirName, "css"));
+		next = removeUnusedVariantImports(next, pandaModuleSpecifier(file.path, "css"));
 		next = removeUnusedFactoryImports(next);
 		next = simplifyPandwindStaticStyles(next, file.path, {
 			hoistStaticStyles: options.hoistStaticStyles,
