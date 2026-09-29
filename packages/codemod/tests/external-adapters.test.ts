@@ -2876,7 +2876,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(1);
 		expect(
 			result.residuals.some(
-				(residual) => residual.kind === StyleProgramResidualKindTag.DynamicValues,
+				(residual) =>
+					residual.kind === StyleProgramResidualKindTag.RuntimeContext &&
+					residual.hint?.includes("MUI sx callbacks require effective theme evaluation") === true,
 			),
 		).toBe(true);
 		expect(result.code).toContain("pandwind:migrate-skip");

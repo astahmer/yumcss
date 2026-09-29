@@ -10,7 +10,12 @@ import type {
 	AdapterHostRewriteResult,
 	AdapterParseContext,
 } from "../adapter-contract.ts";
-import type { StyleDeclaration, StyleProgram, StyleValue } from "../semantic-ir.ts";
+import type {
+	StyleDeclaration,
+	StyleProgram,
+	StyleProgramOptions,
+	StyleValue,
+} from "../semantic-ir.ts";
 import {
 	BuiltinHostFramework,
 	canConvertStaticVueSfc,
@@ -61,6 +66,34 @@ const MUI_TOKEN_POLICY = createTokenPolicy(muiTargetTokenGroup, (match) => match
 
 const isMuiSourceModule = (moduleSpecifier: string): boolean =>
 	/^@mui\/(?:material|system)(?:\/|$)/u.test(moduleSpecifier);
+
+function hasMuiThemeComponentOverrides(source: string): boolean {
+	const themeFactoryNames = new Set<string>();
+	const muiNamespaces = new Set<string>();
+	for (const match of source.matchAll(
+		/import\s*\{([^}]*)\}\s*from\s*["']@mui\/(?:material(?:\/styles)?|system)["']/gu,
+	)) {
+		for (const specifier of (match[1] ?? "").split(",")) {
+			const [imported, local] = specifier.trim().split(/\s+as\s+/u);
+			if (imported === "createTheme" || imported === "createMuiTheme")
+				themeFactoryNames.add(local ?? imported);
+		}
+	}
+	for (const match of source.matchAll(
+		/import\s*\*\s*as\s+([A-Za-z_$][\w$]*)\s*from\s*["']@mui\/(?:material(?:\/styles)?|system)["']/gu,
+	)) {
+		if (match[1] !== undefined) muiNamespaces.add(match[1]);
+	}
+	const usesThemeFactory =
+		[...themeFactoryNames].some((name) => new RegExp(`\\b${name}\\s*\\(`, "u").test(source)) ||
+		[...muiNamespaces].some((name) =>
+			new RegExp(`\\b${name}\\.(?:createTheme|createMuiTheme)\\s*\\(`, "u").test(source),
+		);
+	return (
+		usesThemeFactory &&
+		/\bcomponents\s*:\s*\{[\s\S]*?\b(?:styleOverrides|variants)\s*:/u.test(source)
+	);
+}
 
 // These are documented MUI source spellings, not a project vocabulary. The
 // official theme loader below supplies project-specific values and overrides
@@ -149,6 +182,30 @@ const muiThemeValueCssKeywords = new Map<string, ReadonlySet<string>>([
 		]),
 	],
 ]);
+const muiTypographyAliases: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+	fontFamily: { default: "fontFamily", fontFamily: "fontFamily" },
+	fontSize: { default: "fontSize", fontSize: "fontSize" },
+	fontWeight: {
+		light: "fontWeightLight",
+		regular: "fontWeightRegular",
+		medium: "fontWeightMedium",
+		bold: "fontWeightBold",
+		fontWeightLight: "fontWeightLight",
+		fontWeightRegular: "fontWeightRegular",
+		fontWeightMedium: "fontWeightMedium",
+		fontWeightBold: "fontWeightBold",
+	},
+};
+const muiTypographyFields = new Map<string, string>([
+	["fontFamily", "fontFamily"],
+	["fontSize", "fontSize"],
+	["fontWeight", "fontWeight"],
+	["fontStyle", "fontStyle"],
+	["lineHeight", "lineHeight"],
+	["letterSpacing", "letterSpacing"],
+	["textTransform", "textTransform"],
+]);
+const muiTypographyMappedProperties = new Set(muiTypographyFields.keys());
 const propertyAliases = {
 	m: "margin",
 	mt: "marginTop",
@@ -194,7 +251,11 @@ interface MuiThemeLike {
 	readonly typography?: Record<string, unknown>;
 	readonly shadows?: unknown;
 	readonly zIndex?: unknown;
-	readonly breakpoints?: { readonly values?: Record<string, string | number> };
+	readonly breakpoints?: {
+		readonly values?: Record<string, string | number>;
+		readonly keys?: readonly string[];
+		readonly up?: (key: string) => string;
+	};
 }
 
 interface MuiPackage {
@@ -209,7 +270,7 @@ function muiThemeCandidate(value: unknown): Record<string, unknown> | undefined 
 	if (!isRecord(value)) return undefined;
 	// `spacing` alone is not enough to identify a MUI theme: Mantine exposes
 	// the same field. Require metadata owned by MUI's theme contract.
-	return ["palette", "shape", "typography", "breakpoints", "shadows", "zIndex"].some(
+	return ["palette", "shape", "typography", "breakpoints", "shadows", "zIndex", "components"].some(
 		(key) => value[key] !== undefined,
 	)
 		? value
@@ -237,14 +298,21 @@ function resolveMuiValue(
 ): string | number | undefined {
 	const direct = resolveThemePath(theme, value);
 	if (direct !== undefined) return direct;
+	const typographyAlias = muiTypographyAliases[property]?.[value];
+	if (typographyAlias !== undefined) {
+		const resolved = resolveThemePath(theme, `typography.${typographyAlias}`);
+		if (resolved !== undefined) return resolved;
+	}
 	if (property === "color" || property === "backgroundColor" || property === "borderColor")
 		return resolveThemePath(theme?.palette as MuiThemeLike | undefined, value);
 	if (
 		property === "fontFamily" ||
 		property === "fontSize" ||
 		property === "fontWeight" ||
+		property === "fontStyle" ||
 		property === "lineHeight" ||
-		property === "letterSpacing"
+		property === "letterSpacing" ||
+		property === "textTransform"
 	)
 		return resolveThemePath(theme?.typography as MuiThemeLike | undefined, value);
 	if (property === "boxShadow") return resolveValuePath(theme?.shadows, value);
@@ -317,9 +385,6 @@ async function officialMuiConfig(
 		"theme.mjs",
 		...discovered,
 	];
-	const muiSystem = await loader.importPackage<MuiPackage>("@mui/system", context.root);
-	const mui = muiSystem ?? (await loader.importPackage<MuiPackage>("@mui/material", context.root));
-	const officialPackage = muiSystem === undefined ? "@mui/material" : "@mui/system";
 	const hasThemeFile = candidates.some(
 		(candidate) =>
 			context.readFile?.(
@@ -328,6 +393,25 @@ async function officialMuiConfig(
 					: joinDocumentPath(context.root!, candidate),
 			) !== undefined,
 	);
+	let muiSystem: MuiPackage | undefined;
+	try {
+		muiSystem = await loader.importPackage<MuiPackage>("@mui/system", context.root);
+	} catch {
+		muiSystem = undefined;
+	}
+	let mui = muiSystem;
+	let officialPackage = "@mui/system";
+	if (muiSystem?.createTheme === undefined) {
+		try {
+			const muiMaterial = await loader.importPackage<MuiPackage>("@mui/material", context.root);
+			if (muiMaterial !== undefined) {
+				mui = muiMaterial;
+				officialPackage = "@mui/material";
+			}
+		} catch {
+			mui = muiSystem;
+		}
+	}
 	if (mui === undefined)
 		return hasThemeFile
 			? AdapterEvidence.configurationFailure(
@@ -340,13 +424,32 @@ async function officialMuiConfig(
 		const path = candidate.startsWith(context.root)
 			? candidate
 			: joinDocumentPath(context.root, candidate);
-		const module = await loader.importFile<Record<string, unknown>>(path);
+		let module: Record<string, unknown> | undefined;
+		try {
+			module = await loader.importFile<Record<string, unknown>>(path);
+		} catch {
+			if (context.readFile?.(path) === undefined) continue;
+			return AdapterEvidence.configurationFailure(
+				fallback,
+				"MUI project theme",
+				`the discovered theme module could not be imported by ${officialPackage}`,
+			);
+		}
 		if (module === undefined) continue;
 		const config = [module.default, ...Object.values(module)]
 			.map(muiThemeCandidate)
 			.find((value): value is Record<string, unknown> => value !== undefined);
 		if (config === undefined) continue;
-		const theme = mui.createTheme?.(config) ?? (config as MuiThemeLike);
+		let theme: MuiThemeLike;
+		try {
+			theme = mui.createTheme?.(config) ?? (config as MuiThemeLike);
+		} catch {
+			return AdapterEvidence.configurationFailure(
+				fallback,
+				"MUI project theme",
+				`the discovered theme module could not be evaluated by ${officialPackage}`,
+			);
+		}
 		return {
 			...fallback,
 			files: [...fallback.files, path],
@@ -367,7 +470,31 @@ async function officialMuiConfig(
 			},
 		};
 	}
-	return fallback;
+	if (hasThemeFile)
+		return AdapterEvidence.configurationFailure(
+			fallback,
+			"MUI project theme",
+			"the discovered theme module could not be evaluated to a supported static MUI theme configuration",
+		);
+	if (mui.createTheme === undefined)
+		return AdapterEvidence.configurationFailure(
+			fallback,
+			"MUI default theme",
+			`the official ${officialPackage} package cannot provide its default theme values`,
+		);
+	try {
+		const theme = mui.createTheme();
+		return {
+			...fallback,
+			values: { muiTheme: theme, officialConfigPackage: officialPackage },
+		};
+	} catch {
+		return AdapterEvidence.configurationFailure(
+			fallback,
+			"MUI default theme",
+			`the default theme could not be evaluated by ${officialPackage}`,
+		);
+	}
 }
 
 function defaultMuiSystemValue(
@@ -450,10 +577,13 @@ function muiTransforms(
 			"backgroundColor",
 			"color",
 			"borderRadius",
+			"fontFamily",
 			"fontSize",
 			"fontWeight",
+			"fontStyle",
 			"lineHeight",
 			"letterSpacing",
+			"textTransform",
 			"boxShadow",
 			"zIndex",
 		].map((property) => [
@@ -472,6 +602,40 @@ function muiTransforms(
 	);
 }
 
+function muiBreakpointOptions(
+	theme?: MuiThemeLike,
+): Pick<
+	StyleProgramOptions,
+	"conditionKinds" | "conditionValues" | "propertyValueConditions" | "propertyValueConditionArrays"
+> {
+	const breakpoints = theme?.breakpoints;
+	const conditionKinds: Record<string, SemanticConditionKindTag> = {};
+	const conditionValues: Record<string, string> = {};
+	for (const key of Object.keys(breakpoints?.values ?? {})) {
+		let query: string | undefined;
+		try {
+			query = breakpoints?.up?.(key);
+		} catch {
+			continue;
+		}
+		if (query === undefined || !query.startsWith("@media ")) continue;
+		conditionKinds[key] = SemanticConditionKindTag.Media;
+		conditionValues[key] = query.slice("@media ".length);
+	}
+	const arrayConditions = breakpoints?.keys;
+	const propertyValueConditionArrays =
+		arrayConditions !== undefined &&
+		arrayConditions.every((key) => conditionValues[key] !== undefined)
+			? arrayConditions
+			: undefined;
+	return {
+		conditionKinds,
+		conditionValues,
+		propertyValueConditions: true,
+		...(propertyValueConditionArrays === undefined ? {} : { propertyValueConditionArrays }),
+	};
+}
+
 function muiSxDeclarations(program: StyleProgram): readonly StyleDeclaration[] {
 	const rules: StyleProgram["rules"][number][] = [...program.rules];
 	const declarations = [...program.declarations];
@@ -484,7 +648,26 @@ function muiSxDeclarations(program: StyleProgram): readonly StyleDeclaration[] {
 	return declarations;
 }
 
+function unresolvedMuiResponsiveResiduals(program: StyleProgram): StyleProgram["residuals"] {
+	const residuals = new Map<string, StyleProgram["residuals"][number]>();
+	for (const declaration of muiSxDeclarations(program)) {
+		if (
+			declaration.value.kind !== StyleValueKindTag.Dynamic ||
+			!/^\s*[{[]/u.test(declaration.value.expression)
+		)
+			continue;
+		const text = declaration.value.expression.trim();
+		residuals.set(text, {
+			kind: StyleProgramResidualKindTag.RuntimeContext,
+			text,
+			hint: "MUI responsive values need the effective source breakpoint theme",
+		});
+	}
+	return [...residuals.values()];
+}
+
 function normalizeMuiDisplayPrint(program: StyleProgram): StyleProgram {
+	if (program.source?.hostOpenTag === undefined) return program;
 	const declarations = (input: readonly StyleDeclaration[]): StyleDeclaration[] =>
 		input.map((declaration) =>
 			declaration.property === "displayPrint"
@@ -511,8 +694,77 @@ function normalizeMuiDisplayPrint(program: StyleProgram): StyleProgram {
 	};
 }
 
+function normalizeMuiTypography(program: StyleProgram, theme?: MuiThemeLike): StyleProgram {
+	if (program.source?.hostOpenTag === undefined) return program;
+	const residuals = new Map<string, StyleProgram["residuals"][number]>();
+	const declarations = (input: readonly StyleDeclaration[]): StyleDeclaration[] =>
+		input.flatMap<StyleDeclaration>((declaration) => {
+			if (
+				declaration.property !== "typography" ||
+				declaration.value.kind !== StyleValueKindTag.Literal ||
+				typeof declaration.value.value !== "string"
+			)
+				return [declaration];
+			const name = declaration.value.value;
+			const variant = theme?.typography?.[name];
+			const unsupportedFields = isRecord(variant)
+				? Object.keys(variant).filter((property) => !muiTypographyMappedProperties.has(property))
+				: [];
+			const entries: Array<readonly [string, string | number | undefined]> = [];
+			if (isRecord(variant))
+				for (const [property, field] of muiTypographyFields) {
+					const value = variant[field];
+					if (typeof value === "string" || typeof value === "number")
+						entries.push([property, value]);
+					else if (value !== undefined) entries.push([property, undefined]);
+				}
+			const hasNonScalarField = entries.some(([, value]) => value === undefined);
+			if (
+				!isRecord(variant) ||
+				unsupportedFields.length > 0 ||
+				hasNonScalarField ||
+				entries.length === 0
+			) {
+				const reason =
+					unsupportedFields.length > 0
+						? ` contains unsupported fields: ${unsupportedFields.join(", ")}`
+						: " needs the effective source theme value";
+				residuals.set(name, {
+					kind: StyleProgramResidualKindTag.RuntimeContext,
+					text: name,
+					hint: `MUI typography variant '${name}'${reason}`,
+				});
+				return [];
+			}
+			return entries.flatMap(([property, value]): StyleDeclaration[] =>
+				value === undefined
+					? []
+					: [
+							{
+								...declaration,
+								property,
+								value: { kind: StyleValueKindTag.Literal, value },
+							},
+						],
+			);
+		});
+	const rules = (input: StyleProgram["rules"]): StyleProgram["rules"] =>
+		input.map((rule) => ({
+			...rule,
+			declarations: declarations(rule.declarations),
+			children: rules(rule.children),
+		}));
+	return {
+		...program,
+		declarations: declarations(program.declarations),
+		rules: rules(program.rules),
+		residuals: [...program.residuals, ...residuals.values()],
+	};
+}
+
 function isMuiThemeValueKey(property: string, value: unknown): value is string {
 	if (typeof value !== "string" || !/^[A-Za-z_$][\w$-]*$/u.test(value)) return false;
+	if (muiTypographyAliases[property]?.[value] !== undefined) return true;
 	const cssKeywords = muiThemeValueCssKeywords.get(property);
 	return cssKeywords !== undefined && !cssKeywords.has(value);
 }
@@ -531,7 +783,8 @@ function unresolvedMuiThemeResiduals(
 		const isThemeKey = isMuiThemeValueKey(declaration.property, rawValue);
 		const isThemePath =
 			typeof rawValue === "string" &&
-			muiTokenGroup(declaration.property) !== undefined &&
+			(muiTokenGroup(declaration.property) !== undefined ||
+				muiTypographyMappedProperties.has(declaration.property)) &&
 			/^[A-Za-z_$][\w$-]*(?:\.[A-Za-z_$][\w$-]*)+$/u.test(rawValue);
 		const isNumericShadow = declaration.property === "boxShadow" && typeof rawValue === "number";
 		if (!isThemeKey && !isThemePath && !isNumericShadow) continue;
@@ -552,6 +805,27 @@ function unresolvedMuiThemeResiduals(
 		});
 	}
 	return [...unresolved.values()];
+}
+
+function muiSxCallbackResiduals(program: StyleProgram): StyleProgram["residuals"] {
+	const openingTag = program.source?.hostOpenTag;
+	if (openingTag === undefined) return [];
+	const sxAttribute = JsxStyleHost.findAttribute(openingTag, "sx");
+	if (
+		sxAttribute?.expression !== true ||
+		typeof sxAttribute.value !== "string" ||
+		!/^(?:async\s+)?(?:(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>|function\b)/u.test(
+			sxAttribute.value.trim(),
+		)
+	)
+		return [];
+	return [
+		{
+			kind: StyleProgramResidualKindTag.RuntimeContext,
+			text: sxAttribute.raw,
+			hint: "MUI sx callbacks require effective theme evaluation and runtime-context lowering",
+		},
+	];
 }
 
 function muiSxCssValues(program: StyleProgram): StyleProgram {
@@ -830,15 +1104,20 @@ export function createMuiAdapter(
 				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
 				form: CodemodCallPatternFormTag.JsxStyle,
 				styleProps,
-				sourceObjectOptions: (source, context) => ({
-					propertyAliases,
-					valueTransforms: muiTransforms(
-						source,
-						context.config.values.muiTheme as MuiThemeLike | undefined,
-						TokenCatalog.fromContract(context.config.tokenCatalog),
-						context.targetId,
-					),
-				}),
+				sourceObjectOptions: (source, context) => {
+					const theme = context.config.values.muiTheme as MuiThemeLike | undefined;
+					return {
+						...muiBreakpointOptions(theme),
+						objectArrayStyleKeys: ["sx"],
+						propertyAliases,
+						valueTransforms: muiTransforms(
+							source,
+							theme,
+							TokenCatalog.fromContract(context.config.tokenCatalog),
+							context.targetId,
+						),
+					};
+				},
 			},
 			{
 				name: "mui-styled",
@@ -853,6 +1132,24 @@ export function createMuiAdapter(
 					kind: StyleProgramResidualKindTag.RuntimeContext,
 					hint: "MUI styled theme callbacks require target-aware theme lowering",
 				},
+			},
+			{
+				name: "mui-theme-component-overrides",
+				regex: /\b(?:createTheme|createMuiTheme)\s*\(/g,
+				semanticBindings: [
+					{ source: "@mui/material", imported: "createTheme" },
+					{ source: "@mui/material/styles", imported: "createTheme" },
+					{ source: "@mui/system", imported: "createTheme" },
+					{ source: "@mui/material", imported: "createMuiTheme" },
+					{ source: "@mui/material/styles", imported: "createMuiTheme" },
+				],
+				regexForBinding: (binding) => new RegExp(`\\b${binding.localName}\\s*\\(`, "g"),
+				form: CodemodCallPatternFormTag.Residual,
+				residual: {
+					kind: StyleProgramResidualKindTag.RuntimeContext,
+					hint: "MUI theme component overrides and variants require component-theme lowering",
+				},
+				sourceGuard: hasMuiThemeComponentOverrides,
 			},
 			{
 				name: "runtime-context",
@@ -1085,30 +1382,47 @@ export function createMuiAdapter(
 		...adapter,
 		parse(source: string, context: AdapterParseContext) {
 			const parsed = adapter.parse(source, context);
+			const sxCallbackMatches = new Set(
+				parsed.matches.filter((match) => muiSxCallbackResiduals(match.program).length > 0),
+			);
 			const theme = context.config.values.muiTheme as MuiThemeLike | undefined;
 			return {
 				...parsed,
-				matches: parsed.matches.map((match) => {
-					const normalized = normalizeMuiDisplayPrint(match.program);
-					const themeResiduals =
-						normalized.source?.hostOpenTag === undefined
-							? []
-							: unresolvedMuiThemeResiduals(normalized, source, theme);
-					const program =
-						themeResiduals.length === 0
-							? normalized
-							: {
-									...normalized,
-									residuals: [...normalized.residuals, ...themeResiduals],
-								};
-					return {
-						...match,
-						program:
-							context.targetId === CodemodAdapterId.Pandwind
-								? canonicalizeSourceHost(program, MUI_SOURCE_COMPONENTS, "MUI")
-								: program,
-					};
-				}),
+				residuals: [
+					...parsed.residuals,
+					...parsed.matches
+						.filter((match) => sxCallbackMatches.has(match))
+						.flatMap((match) => muiSxCallbackResiduals(match.program)),
+				],
+				matches: parsed.matches
+					.filter((match) => !sxCallbackMatches.has(match))
+					.map((match) => {
+						const normalized = normalizeMuiTypography(
+							normalizeMuiDisplayPrint(match.program),
+							theme,
+						);
+						const themeResiduals =
+							normalized.source?.hostOpenTag === undefined
+								? []
+								: [
+										...unresolvedMuiThemeResiduals(normalized, source, theme),
+										...unresolvedMuiResponsiveResiduals(normalized),
+									];
+						const program =
+							themeResiduals.length === 0
+								? normalized
+								: {
+										...normalized,
+										residuals: [...normalized.residuals, ...themeResiduals],
+									};
+						return {
+							...match,
+							program:
+								context.targetId === CodemodAdapterId.Pandwind
+									? canonicalizeSourceHost(program, MUI_SOURCE_COMPONENTS, "MUI")
+									: program,
+						};
+					}),
 			};
 		},
 	};

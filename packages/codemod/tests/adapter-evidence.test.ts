@@ -70,7 +70,7 @@ describe("adapter evidence contracts", () => {
 			    "id": "mantine",
 			  },
 			  {
-			    "apiCount": 4,
+			    "apiCount": 5,
 			    "configCount": 3,
 			    "id": "mui",
 			  },

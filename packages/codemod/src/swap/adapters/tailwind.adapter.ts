@@ -598,6 +598,16 @@ function utilityCondition(conditionValue: StyleCondition): string {
 		const selector = conditionValue.value ?? conditionValue.name;
 		return `[&${selector.startsWith("&") ? selector.slice(1) : selector}]:`;
 	}
+	if (
+		conditionValue.kind === SemanticConditionKindTag.Media &&
+		conditionValue.value !== undefined
+	) {
+		if (conditionValue.name === "print" && conditionValue.value === "print") return "print:";
+		const authored = conditionValue.value.startsWith("@media ")
+			? conditionValue.value
+			: `@media ${conditionValue.value}`;
+		return `[${authored.replace(/\s+/gu, "_")}]:`;
+	}
 	return `${conditionValue.name}:`;
 }
 

@@ -91,6 +91,8 @@ export type AdapterSourceObjectOptions = Pick<
 	| "nestedObjectKind"
 	| "namedRuleObjects"
 	| "propertyValueConditions"
+	| "propertyValueConditionArrays"
+	| "objectArrayStyleKeys"
 	| "unwrapNestedObjectKeys"
 	| "ignoredObjectKeys"
 	| "variantContainerKeys"

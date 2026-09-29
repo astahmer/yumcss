@@ -164,6 +164,95 @@ describe("official project-context loaders", () => {
 		}
 	});
 
+	test("publishes a MUI configuration residual when a discovered theme cannot be evaluated", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@mui/system"
+					? ({ createTheme: (config: Record<string, unknown>) => config } as never)
+					: undefined;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+		const config = await createMuiAdapter({ moduleLoader: loader }).loadConfigAsync?.({
+			file: "src/App.tsx",
+			source: "",
+			root: "/project",
+			readFile: (file) =>
+				file.endsWith("/src/theme.ts") ? "export const theme = evaluateTheme()" : undefined,
+			listFiles: () => ["/project/src/theme.ts"],
+		});
+
+		expect(config?.residuals).toEqual([
+			expect.objectContaining({
+				kind: "configuration",
+				text: "MUI project theme",
+				hint: expect.stringContaining("discovered theme module could not be evaluated"),
+			}),
+		]);
+		const source = `import { Box } from "@mui/material";
+export const App = () => <Box sx={{ padding: 2 }} />;`;
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Mui,
+			to: CodemodAdapterId.Pandwind,
+			file: "src/App.tsx",
+			root: "/project",
+			readFile: (file) =>
+				file.endsWith("/src/theme.ts") ? "export const theme = evaluateTheme()" : undefined,
+			listFiles: () => ["/project/src/theme.ts"],
+			moduleLoader: loader,
+			mode: "safe",
+			adapterRegistry: createBuiltinCodemodCatalog(loader).registry,
+		});
+
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "configuration",
+					text: "MUI project theme",
+				}),
+			]),
+		);
+		expect(result.skipped).toBe(1);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("sx={{ padding: 2 }}");
+		expect(result.code).toMatchInlineSnapshot(`
+			"// pandwind:migrate-skip (configuration-residual: configuration)
+			import { Box } from "@mui/material";
+			export const App = () => <Box sx={{ padding: 2 }} />;"
+		`);
+	});
+
+	test("publishes a MUI configuration residual when importing a discovered theme throws", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@mui/system"
+					? ({ createTheme: (config: Record<string, unknown>) => config } as never)
+					: undefined;
+			},
+			async importFile() {
+				throw new Error("theme load failed");
+			},
+		};
+		const config = await createMuiAdapter({ moduleLoader: loader }).loadConfigAsync?.({
+			file: "src/App.tsx",
+			source: "",
+			root: "/project",
+			readFile: (file) =>
+				file.endsWith("/src/theme.ts") ? "export const theme = createTheme({})" : undefined,
+			listFiles: () => ["/project/src/theme.ts"],
+		});
+
+		expect(config?.residuals).toEqual([
+			expect.objectContaining({
+				kind: "configuration",
+				text: "MUI project theme",
+				hint: expect.stringContaining("discovered theme module could not be imported"),
+			}),
+		]);
+	});
+
 	test("preserves a configuration residual when no UnoCSS config is discovered", async () => {
 		const config = await createUnoCssAdapter({ moduleLoader: unavailableLoader }).loadConfigAsync?.(
 			{

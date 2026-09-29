@@ -1199,11 +1199,240 @@ describe("official custom-token loaders", () => {
 		const source =
 			'<Box sx={{ fontWeight: "medium", fontSize: "default", fontFamily: "default", typography: "body1" }} />';
 		const parsed = adapter.parse(source, { ...context, source, config: config! });
+		const legacySource =
+			'<Box sx={{ fontWeight: "fontWeightMedium", fontSize: "fontSize", fontFamily: "fontFamily" }} />';
+		const legacyParsed = adapter.parse(legacySource, {
+			...context,
+			source: legacySource,
+			config: config!,
+		});
 
-		expect(parsed.matches[0]?.program.declarations).toMatchInlineSnapshot(`
-			[]
+		const declarations = parsed.matches[0]?.program.declarations ?? [];
+		expect(declarations).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ property: "fontWeight", value: { kind: "literal", value: 500 } }),
+				expect.objectContaining({ property: "fontSize", value: { kind: "literal", value: 16 } }),
+				expect.objectContaining({
+					property: "fontFamily",
+					value: { kind: "literal", value: "Inter" },
+				}),
+				expect.objectContaining({ property: "lineHeight", value: { kind: "literal", value: 1.5 } }),
+				expect.objectContaining({
+					property: "textTransform",
+					value: { kind: "literal", value: "none" },
+				}),
+			]),
+		);
+		expect(declarations).toMatchInlineSnapshot(`
+			[
+			  {
+			    "conditions": [],
+			    "property": "fontWeight",
+			    "value": {
+			      "kind": "literal",
+			      "value": 500,
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "fontSize",
+			    "value": {
+			      "kind": "literal",
+			      "value": 16,
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "fontFamily",
+			    "value": {
+			      "kind": "literal",
+			      "value": "Inter",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "fontFamily",
+			    "value": {
+			      "kind": "literal",
+			      "value": "Inter",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "fontSize",
+			    "value": {
+			      "kind": "literal",
+			      "value": "1rem",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "fontWeight",
+			    "value": {
+			      "kind": "literal",
+			      "value": 400,
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "lineHeight",
+			    "value": {
+			      "kind": "literal",
+			      "value": 1.5,
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "letterSpacing",
+			    "value": {
+			      "kind": "literal",
+			      "value": "0.00938em",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "textTransform",
+			    "value": {
+			      "kind": "literal",
+			      "value": "none",
+			    },
+			  },
+			]
 		`);
 		expect(parsed.matches[0]?.program.residuals).toEqual([]);
+		const legacyDeclarations = legacyParsed.matches[0]?.program.declarations ?? [];
+		expect(legacyDeclarations).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ property: "fontWeight", value: { kind: "literal", value: 500 } }),
+				expect.objectContaining({ property: "fontSize", value: { kind: "literal", value: 16 } }),
+				expect.objectContaining({
+					property: "fontFamily",
+					value: { kind: "literal", value: "Inter" },
+				}),
+			]),
+		);
+		expect(legacyParsed.matches[0]?.program.residuals).toEqual([]);
+	});
+
+	test("loads MUI default breakpoints from the official package without a theme file", async () => {
+		const breakpointValues = { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 };
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@mui/system"
+					? ({
+							createTheme: () => ({
+								breakpoints: {
+									values: breakpointValues,
+									keys: Object.keys(breakpointValues),
+									up: (key: string) =>
+										`@media (min-width:${breakpointValues[key as keyof typeof breakpointValues]}px)`,
+								},
+							}),
+						} as never)
+					: undefined;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+		const adapter = createMuiAdapter({ moduleLoader: loader });
+		const config = await adapter.loadConfigAsync?.({
+			...context,
+			readFile: () => undefined,
+			listFiles: () => [],
+		});
+		const source = "<Box sx={{ width: { xs: 0.5, md: 0.75 } }} />";
+		const parsed = adapter.parse(source, { ...context, source, config: config! });
+		const declarations = parsed.matches[0]?.program.declarations ?? [];
+
+		expect(config?.values.officialConfigPackage).toBe("@mui/system");
+		expect(declarations).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					property: "width",
+					value: { kind: "literal", value: "50%" },
+					conditions: [
+						expect.objectContaining({
+							kind: "media",
+							name: "xs",
+							value: "(min-width:0px)",
+						}),
+					],
+				}),
+				expect.objectContaining({
+					property: "width",
+					value: { kind: "literal", value: "75%" },
+					conditions: [
+						expect.objectContaining({
+							kind: "media",
+							name: "md",
+							value: "(min-width:900px)",
+						}),
+					],
+				}),
+			]),
+		);
+		expect(parsed.matches[0]?.program.residuals).toEqual([]);
+		expect(declarations).toMatchInlineSnapshot(`
+			[
+			  {
+			    "conditions": [
+			      {
+			        "kind": "media",
+			        "name": "xs",
+			        "value": "(min-width:0px)",
+			      },
+			    ],
+			    "property": "width",
+			    "value": {
+			      "kind": "literal",
+			      "value": "50%",
+			    },
+			  },
+			  {
+			    "conditions": [
+			      {
+			        "kind": "media",
+			        "name": "md",
+			        "value": "(min-width:900px)",
+			      },
+			    ],
+			    "property": "width",
+			    "value": {
+			      "kind": "literal",
+			      "value": "75%",
+			    },
+			  },
+			]
+		`);
+	});
+
+	test("recognizes a MUI theme config containing only component overrides", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@mui/system"
+					? ({ createTheme: (config: Record<string, unknown>) => config } as never)
+					: undefined;
+			},
+			async importFile() {
+				return {
+					default: {
+						components: { MuiButton: { styleOverrides: { root: { borderRadius: 8 } } } },
+					},
+				} as never;
+			},
+		};
+		const adapter = createMuiAdapter({ moduleLoader: loader });
+		const config = await adapter.loadConfigAsync?.({
+			...context,
+			readFile: () => "export default { components: { MuiButton: {} } }",
+			listFiles: () => ["/project/src/theme.ts"],
+		});
+
+		expect(config?.residuals).toBeUndefined();
+		expect(config?.values.muiTheme).toMatchObject({
+			components: { MuiButton: { styleOverrides: { root: { borderRadius: 8 } } } },
+		});
 	});
 
 	test("uses the official Mantine theme for custom colors, spacing, and typography", async () => {

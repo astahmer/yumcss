@@ -294,6 +294,10 @@ export interface StyleProgramOptions {
 	readonly propertyValueConditions?: boolean;
 	/** Optional adapter-owned allow-list for property-value condition keys. */
 	readonly propertyValueConditionNames?: ReadonlySet<string>;
+	/** Ordered breakpoint names for source systems with responsive array values. */
+	readonly propertyValueConditionArrays?: readonly string[];
+	/** Style object arrays that merge entries in authored order, with later values winning. */
+	readonly objectArrayStyleKeys?: readonly string[];
 	/** Adapter-owned variant containers, for example Stitches `variants`. */
 	readonly variantContainerKeys?: readonly string[];
 	/** Source-adapter mappings for computed custom-property keys. */
@@ -1141,6 +1145,36 @@ export function styleProgramFromSourceObject(
 			);
 		}
 	};
+	const addConditionalArrayValues = (
+		name: string,
+		valueNode: SourceNode,
+		conditions: readonly StyleCondition[],
+	): void => {
+		const breakpoints = options.propertyValueConditionArrays;
+		if (breakpoints === undefined) return;
+		const elements = valueNode.elements ?? [];
+		if (
+			elements.some(
+				(element, index) =>
+					element !== undefined &&
+					!(element.type === NodeKind.Literal && element.value === null) &&
+					breakpoints[index] === undefined,
+			)
+		) {
+			addDynamicResidual(
+				sourceSlice(body, valueNode),
+				"responsive array values exceed the effective source breakpoint theme",
+			);
+			return;
+		}
+		for (const [index, element] of elements.entries()) {
+			if (element === undefined || (element.type === NodeKind.Literal && element.value === null))
+				continue;
+			const breakpoint = breakpoints[index];
+			if (breakpoint === undefined) continue;
+			addConditionalValues(name, element, [...conditions, sourceConditionFor(breakpoint, options)]);
+		}
+	};
 
 	let root: SourceNode | undefined;
 	try {
@@ -1202,6 +1236,45 @@ export function styleProgramFromSourceObject(
 				continue;
 			}
 			if (options.ignoredObjectKeys?.includes(name) === true) continue;
+			if (
+				options.objectArrayStyleKeys?.includes(name) === true &&
+				valueNode.type === NodeKind.ArrayExpression
+			) {
+				const declarationStart = declarations.length;
+				for (const element of valueNode.elements ?? []) {
+					if (element === undefined) continue;
+					if (
+						element.type === NodeKind.Literal &&
+						(element.value === null || element.value === false)
+					)
+						continue;
+					const styleObject =
+						element.type === NodeKind.ParenthesizedExpression ? element.expression : element;
+					if (styleObject !== undefined && sourceObject(styleObject)) walk(styleObject, conditions);
+					else
+						addDynamicResidual(
+							sourceSlice(body, element),
+							"style object arrays require static object entries or falsey values",
+						);
+				}
+				const merged = new Map<string, StyleDeclaration>();
+				for (const declaration of declarations.splice(declarationStart)) {
+					const key = JSON.stringify([
+						declaration.property,
+						declaration.conditions.map((condition) => [
+							condition.kind,
+							condition.name,
+							condition.value,
+							condition.raw,
+							condition.operator,
+						]),
+					]);
+					merged.delete(key);
+					merged.set(key, declaration);
+				}
+				declarations.push(...merged.values());
+				continue;
+			}
 			if (
 				options.compositionArrayKeys?.includes(name) === true &&
 				valueNode.type === NodeKind.ArrayExpression
@@ -1303,6 +1376,13 @@ export function styleProgramFromSourceObject(
 			}
 			if (looksLikePropertyValueConditions(name, valueNode, body, options)) {
 				addConditionalValues(name, valueNode, conditions);
+				continue;
+			}
+			if (
+				valueNode.type === NodeKind.ArrayExpression &&
+				options.propertyValueConditionArrays !== undefined
+			) {
+				addConditionalArrayValues(name, valueNode, conditions);
 				continue;
 			}
 			if (sourceObject(valueNode) && options.unwrapNestedObjectKeys?.includes(name)) {
