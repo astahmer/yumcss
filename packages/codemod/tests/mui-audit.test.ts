@@ -58,6 +58,38 @@ export const App = () => <Box sx={{ width: 0.5, maxWidth: 1, minHeight: 0.25, bo
 	`);
 });
 
+test("MUI numeric shadow tokens need the effective source theme", () => {
+	const source = `import { Box } from "@mui/material";
+export const App = () => <Box sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md" }} />;`;
+	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+
+	expect(result.converted).toBe(0);
+	expect(result.skipped).toBe(1);
+	expect(result.residuals).toEqual(
+		expect.arrayContaining([
+			expect.objectContaining({
+				kind: "runtime-context",
+				hint: expect.stringContaining("MUI boxShadow theme value '1'"),
+			}),
+			expect.objectContaining({
+				kind: "runtime-context",
+				hint: expect.stringContaining("MUI zIndex theme value 'modal'"),
+			}),
+			expect.objectContaining({
+				kind: "runtime-context",
+				hint: expect.stringContaining("MUI maxWidth breakpoint 'md'"),
+			}),
+		]),
+	);
+	expect(result.code).toContain("pandwind:migrate-skip");
+	expect(result.code).toContain('sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md" }}');
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { Box } from "@mui/material";
+		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		export const App = () => <Box sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md" }} />;"
+	`);
+});
+
 test("MUI styled declarations preserve component shape and plain CSS semantics", () => {
 	const source = `import { styled } from "@mui/system";
 export const Card = styled("div")({ padding: 2 });
