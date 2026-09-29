@@ -50,7 +50,7 @@ test("tamagui -> authored-css -> tamagui: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -76,13 +76,8 @@ test("tamagui -> authored-css -> tamagui: preserves an actionable concrete round
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
+		        "hint": "the styled subject is not a verified intrinsic element",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -92,7 +87,7 @@ test("tamagui -> authored-css -> tamagui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -120,7 +115,7 @@ test("tamagui -> authored-css -> tamagui: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | parse-residual: function-dynamic | lowering-residual: component | capability-blocked: components: component subject: View | available: residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,8 +149,8 @@ test("tamagui -> authored-css -> tamagui: retains the documented secondary API w
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
+		        "hint": "the source host is not verified as React",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -165,7 +160,7 @@ test("tamagui -> authored-css -> tamagui: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | parse-residual: function-dynamic | lowering-residual: component | capability-blocked: components: component subject: View | available: residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -207,7 +202,7 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -233,13 +228,8 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		          "kind": "capability",
+		          "hint": "the styled subject is not a verified intrinsic element",
+		          "kind": "component",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -249,7 +239,7 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -265,7 +255,7 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -291,13 +281,8 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled(View)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		          "kind": "capability",
+		          "hint": "the styled subject is not a verified intrinsic element",
+		          "kind": "component",
 		          "preserved": undefined,
 		        },
 		      ],
@@ -307,7 +292,7 @@ test("tamagui -> authored-css -> tamagui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -337,7 +322,7 @@ test("tamagui -> authored-css -> tamagui: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -363,13 +348,8 @@ test("tamagui -> authored-css -> tamagui: resolves token values across both conc
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
+		        "hint": "the styled subject is not a verified intrinsic element",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -379,7 +359,7 @@ test("tamagui -> authored-css -> tamagui: resolves token values across both conc
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, residual)
+		// pandwind:migrate-skip (route: tamagui -> authored-css | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,

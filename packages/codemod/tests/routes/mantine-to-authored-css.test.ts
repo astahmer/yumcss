@@ -94,7 +94,7 @@ test("mantine -> authored-css: carries a documented secondary mantine API explic
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> authored-css | parse-residual: host-framework | lowering-residual: framework-semantics, capability | available: residual)
+		// pandwind:migrate-skip (route: mantine -> authored-css | parse-residual: host-framework | lowering-residual: capability | available: residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -102,18 +102,12 @@ test("mantine -> authored-css: carries a documented secondary mantine API explic
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
 		        "residual",
 		      ],
 		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
@@ -126,11 +120,6 @@ test("mantine -> authored-css: carries a documented secondary mantine API explic
 		    {
 		      "hint": "Mantine styles, classNames, and vars require component-aware host lowering",
 		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
 		      "preserved": undefined,
 		    },
 		    {

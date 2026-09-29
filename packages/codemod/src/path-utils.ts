@@ -37,8 +37,12 @@ export function isAbsoluteDocumentPath(file: string): boolean {
 }
 
 export function relativeDocumentPath(fromFile: string, toFile: string): string {
-	const from = joinDocumentPath(fromFile).split("/").filter(Boolean);
-	const to = joinDocumentPath(toFile).split("/").filter(Boolean);
+	const from = joinDocumentPath(fromFile)
+		.split("/")
+		.filter((segment) => segment !== "" && segment !== ".");
+	const to = joinDocumentPath(toFile)
+		.split("/")
+		.filter((segment) => segment !== "" && segment !== ".");
 	let common = 0;
 	while (common < from.length && common < to.length && from[common] === to[common]) common++;
 	const result = [...from.slice(common).map(() => ".."), ...to.slice(common)].join("/");

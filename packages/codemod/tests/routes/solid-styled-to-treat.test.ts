@@ -49,7 +49,7 @@ test("solid-styled -> treat: migrates concrete solid-styled syntax to treat", ()
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -75,8 +75,8 @@ test("solid-styled -> treat: migrates concrete solid-styled syntax to treat", ()
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -95,7 +95,7 @@ test("solid-styled -> treat: carries a documented secondary solid-styled API exp
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -121,8 +121,8 @@ test("solid-styled -> treat: carries a documented secondary solid-styled API exp
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -150,7 +150,7 @@ test("solid-styled -> treat: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -176,8 +176,8 @@ test("solid-styled -> treat: loads concrete theme and project context variants",
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		        "kind": "capability",
+		        "hint": "the source host is not verified as React",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -187,7 +187,7 @@ test("solid-styled -> treat: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -213,8 +213,8 @@ test("solid-styled -> treat: loads concrete theme and project context variants",
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		        "kind": "capability",
+		        "hint": "the source host is not verified as React",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -236,7 +236,7 @@ test("solid-styled -> treat: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -262,8 +262,8 @@ test("solid-styled -> treat: resolves concrete token values with project context
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -282,7 +282,7 @@ test("solid-styled -> treat: preserves malformed concrete solid-styled input", (
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 0,
@@ -309,8 +309,8 @@ test("solid-styled -> treat: preserves malformed concrete solid-styled input", (
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
+		      "hint": "the source file contains parse errors",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

@@ -115,7 +115,7 @@ test("fela -> less -> fela: retains the documented secondary API without silent 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> less | lowering-residual: capability | capability-blocked: components: component subject: styled("button") | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> less | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -145,8 +145,8 @@ test("fela -> less -> fela: retains the documented secondary API without silent 
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
+		        "hint": "the source host is not verified as React",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -156,7 +156,7 @@ test("fela -> less -> fela: retains the documented secondary API without silent 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> less | lowering-residual: capability | capability-blocked: components: component subject: styled("button") | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> less | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],

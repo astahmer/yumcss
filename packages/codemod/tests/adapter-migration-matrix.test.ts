@@ -435,6 +435,14 @@ describe("composed cross-ecosystem routes", () => {
 		CodemodAdapterId.Pandwind,
 		CodemodAdapterId.Emotion,
 	]);
+	const sidecarClassTargets: ReadonlyMap<string, string> = new Map([
+		[CodemodAdapterId.AuthoredCss, "./Card.styles.css"],
+		[CodemodAdapterId.CssModules, "./Card.module.css"],
+		[CodemodAdapterId.Sass, "./Card.styles.scss"],
+		[CodemodAdapterId.Less, "./Card.styles.less"],
+		[CodemodAdapterId.Treat, "./Card.styles.treat"],
+		[CodemodAdapterId.VanillaExtract, "./Card.styles.css.ts"],
+	]);
 
 	test.each(classTargets)("rewrites a styled subject to a static class in %s", (targetId) => {
 		const result = migrateTo(
@@ -446,17 +454,6 @@ describe("composed cross-ecosystem routes", () => {
 			"Card.tsx",
 			{ source: { framework: "react" } },
 		);
-
-		if (targetId === CodemodAdapterId.Treat || targetId === CodemodAdapterId.VanillaExtract) {
-			expect(result.converted).toBe(0);
-			expect(result.skipped).toBeGreaterThan(0);
-			expect(result.residuals).toEqual(
-				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
-			);
-			expect(result.code).toContain("styled.div");
-			expect(result.code).toContain("<Card />");
-			return;
-		}
 
 		expect(
 			result.residuals,
@@ -470,11 +467,89 @@ describe("composed cross-ecosystem routes", () => {
 		}
 		expect(result.code).toContain("export const App = () => <Card />;");
 		expect(result.code).toContain("__pandwindCardForwardRef");
-		if (targetId === CodemodAdapterId.CssModules) {
-			expect(result.code).toContain(".module.css");
+		const sidecarImport = sidecarClassTargets.get(targetId);
+		if (sidecarImport !== undefined) {
+			expect(result.code).toContain("__pandwindCardCreateElement");
+			expect(result.code).toContain("as?: As");
+			expect(result.code).toContain(JSON.stringify(sidecarImport));
+			expect(result.generatedFiles).toHaveLength(targetId === CodemodAdapterId.CssModules ? 2 : 1);
+			if (targetId === CodemodAdapterId.CssModules)
+				expect(result.generatedFiles.map((artifact) => artifact.path)).toEqual([
+					"Card.module.css",
+					"Card.module.css.map",
+				]);
+			if (targetId === CodemodAdapterId.Treat) expect(result.code).toContain(".styles.treat");
+			if (targetId === CodemodAdapterId.VanillaExtract)
+				expect(result.code).toContain(".styles.css");
 		} else {
 			expect(result.code).toContain('props.as ?? props.forwardedAs ?? "div"');
 		}
+	});
+
+	test("emits root-level component sidecars with relative imports", () => {
+		const source =
+			'import styled from "styled-components";\n' +
+			'const Card = styled.div({ color: "red" });\n' +
+			"export const App = () => <Card />;";
+		const outputs = [...sidecarClassTargets].map(([target, specifier]) => {
+			const result = migrateTo(source, CodemodAdapterId.StyledComponents, target, "Card.tsx", {
+				source: { framework: "react" },
+			});
+			expect(result.residuals, `${CodemodAdapterId.StyledComponents} -> ${target}`).toEqual([]);
+			return {
+				target,
+				import: result.code.split("\n").find((line) => line.includes(JSON.stringify(specifier))),
+				files: result.generatedFiles.map(({ path }) => path),
+			};
+		});
+
+		expect(outputs).toMatchInlineSnapshot(`
+			[
+			  {
+			    "files": [
+			      "Card.styles.css",
+			    ],
+			    "import": "import "./Card.styles.css";",
+			    "target": "authored-css",
+			  },
+			  {
+			    "files": [
+			      "Card.module.css",
+			      "Card.module.css.map",
+			    ],
+			    "import": "import __pandwindCardStyles from "./Card.module.css";",
+			    "target": "css-modules",
+			  },
+			  {
+			    "files": [
+			      "Card.styles.scss",
+			    ],
+			    "import": "import "./Card.styles.scss";",
+			    "target": "sass",
+			  },
+			  {
+			    "files": [
+			      "Card.styles.less",
+			    ],
+			    "import": "import "./Card.styles.less";",
+			    "target": "less",
+			  },
+			  {
+			    "files": [
+			      "Card.styles.treat.ts",
+			    ],
+			    "import": "import { __pandwindCardStyles } from "./Card.styles.treat";",
+			    "target": "treat",
+			  },
+			  {
+			    "files": [
+			      "Card.styles.css.ts",
+			    ],
+			    "import": "import { __pandwindCardStyles } from "./Card.styles.css.ts";",
+			    "target": "vanilla-extract",
+			  },
+			]
+		`);
 	});
 
 	test("rewrites a styled subject into a static class target", () => {
@@ -488,12 +563,16 @@ describe("composed cross-ecosystem routes", () => {
 			{ source: { framework: "react" } },
 		);
 
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBeGreaterThan(0);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
-		);
-		expect(result.code).toContain("styled.div");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.generatedFiles).toEqual([
+			expect.objectContaining({
+				path: "Card.styles.css.ts",
+				content: expect.stringContaining('style({ color: "red" })'),
+			}),
+		]);
+		expect(result.code).toContain("__pandwindCardCreateElement");
 		expect(result.code).toContain("<Card />");
 	});
 
@@ -555,12 +634,16 @@ describe("composed cross-ecosystem routes", () => {
 			},
 		);
 
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBeGreaterThan(0);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
-		);
-		expect(result.code).toContain("theme.colors.foreground");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.generatedFiles).toEqual([
+			expect.objectContaining({
+				path: "Card.styles.css.ts",
+				content: expect.stringContaining('style({ color: "red" })'),
+			}),
+		]);
+		expect(result.code).not.toContain("theme.colors.foreground");
 	});
 
 	const appDir = resolve(import.meta.dirname, "../../../examples/example/src");

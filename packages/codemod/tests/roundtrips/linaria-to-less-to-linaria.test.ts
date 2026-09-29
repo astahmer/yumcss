@@ -113,7 +113,7 @@ test("linaria -> less -> linaria: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, residual)
+		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -143,8 +143,8 @@ test("linaria -> less -> linaria: retains the documented secondary API without s
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
+		        "hint": "the source host is not verified as React",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -154,7 +154,7 @@ test("linaria -> less -> linaria: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, residual)
+		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

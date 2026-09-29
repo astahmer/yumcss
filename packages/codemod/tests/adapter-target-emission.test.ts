@@ -375,13 +375,28 @@ describe("target adapter emission contract", () => {
 			},
 		);
 		if (target === CodemodAdapterId.VanillaExtract) {
-			expect(result.converted).toBe(0);
-			expect(result.skipped).toBeGreaterThan(0);
-			expect(result.residuals).toEqual(
-				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
-			);
-			expect(result.code).toContain("styled.div({ color: theme.foreground })");
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain('from "./App.styles.css.ts"');
+			expect(result.code).toContain("String(theme.foreground)");
 			expect(result.code).toContain("<Card />");
+			expect(result.generatedFiles).toHaveLength(1);
+			expect(result.generatedFiles[0]).toMatchObject({
+				path: "App.styles.css.ts",
+				content: expect.stringContaining("var(--pandwind-dynamic-"),
+			});
+			expect(result.generatedFiles.map(({ path, content }) => ({ path, content })))
+				.toMatchInlineSnapshot(`
+					[
+					  {
+					    "content": "import { style } from "@vanilla-extract/css";
+					export const __pandwindCardStyles = style({ color: "var(--pandwind-dynamic-5qa8dh)" });
+					",
+					    "path": "App.styles.css.ts",
+					  },
+					]
+				`);
 			return;
 		}
 
@@ -524,14 +539,15 @@ describe("target adapter emission contract", () => {
 			},
 		);
 		if (target === CodemodAdapterId.VanillaExtract || target === CodemodAdapterId.Treat) {
-			expect(result.converted).toBe(0);
-			expect(result.skipped).toBeGreaterThan(0);
-			expect(result.residuals).toEqual(
-				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain("String(theme.foreground)");
+			expect(result.generatedFiles).toHaveLength(1);
+			expect(result.generatedFiles[0]?.content).toContain("var(--pandwind-dynamic-");
+			expect(result.generatedFiles[0]?.path).toBe(
+				target === CodemodAdapterId.VanillaExtract ? "App.styles.css.ts" : "App.styles.treat.ts",
 			);
-			expect(result.code).toContain("theme.foreground");
-			expect(result.code).toContain("<Card />");
-			return;
 		}
 
 		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
@@ -540,6 +556,62 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
 		expect(result.code).toContain("ref={ref}");
+	});
+
+	test("emits dynamic styled values through Treat and Vanilla Extract sidecars", () => {
+		const source =
+			'import styled from "styled-components";\n' +
+			"const Card = styled.div({ color: theme.foreground });\n" +
+			"export const App = () => <Card />;";
+		const outputs = [CodemodAdapterId.Treat, CodemodAdapterId.VanillaExtract].map((target) => {
+			const result = runAdapterMigration(source, {
+				from: CodemodAdapterId.StyledComponents,
+				to: target,
+				file: "src/Card.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			});
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain("String(theme.foreground)");
+			return {
+				target,
+				import: result.code.split("\n").find((line) => line.includes("__pandwindCardStyles")),
+				files: result.generatedFiles.map(({ path, content }) => ({ path, content })),
+			};
+		});
+
+		expect(outputs).toMatchInlineSnapshot(`
+			[
+			  {
+			    "files": [
+			      {
+			        "content": "import { style } from "treat";
+			export const __pandwindCardStyles = style({ "color": "var(--pandwind-dynamic-5qa8dh)" });
+			",
+			        "path": "src/Card.styles.treat.ts",
+			      },
+			    ],
+			    "import": "import { __pandwindCardStyles } from "./Card.styles.treat";",
+			    "target": "treat",
+			  },
+			  {
+			    "files": [
+			      {
+			        "content": "import { style } from "@vanilla-extract/css";
+			export const __pandwindCardStyles = style({ color: "var(--pandwind-dynamic-5qa8dh)" });
+			",
+			        "path": "src/Card.styles.css.ts",
+			      },
+			    ],
+			    "import": "import { __pandwindCardStyles } from "./Card.styles.css.ts";",
+			    "target": "vanilla-extract",
+			  },
+			]
+		`);
 	});
 
 	test("normalizes a registered substitute through the shared class-host port", () => {

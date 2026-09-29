@@ -125,7 +125,7 @@ test("fela -> css-modules: carries a documented secondary fela API explicitly", 
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "the React wrapper requires a TSX source module",
+		      "hint": "the source host is not verified as React",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

@@ -145,7 +145,7 @@ test("fela -> css-modules -> fela: retains the documented secondary API without 
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "the React wrapper requires a TSX source module",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

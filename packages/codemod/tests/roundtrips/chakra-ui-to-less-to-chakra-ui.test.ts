@@ -115,7 +115,7 @@ test("chakra-ui -> less -> chakra-ui: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: framework-semantics, capability | available: residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: capability | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -124,18 +124,12 @@ test("chakra-ui -> less -> chakra-ui: retains the documented secondary API witho
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
 		          "residual",
 		        ],
 		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
@@ -151,11 +145,6 @@ test("chakra-ui -> less -> chakra-ui: retains the documented secondary API witho
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -167,7 +156,7 @@ test("chakra-ui -> less -> chakra-ui: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: framework-semantics, capability | available: residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: capability | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,

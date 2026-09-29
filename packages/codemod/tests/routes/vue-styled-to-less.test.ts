@@ -49,7 +49,7 @@ test("vue-styled -> less: migrates concrete vue-styled syntax to less", () => {
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -57,40 +57,25 @@ test("vue-styled -> less: migrates concrete vue-styled syntax to less", () => {
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -109,7 +94,7 @@ test("vue-styled -> less: carries a documented secondary vue-styled API explicit
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -117,40 +102,25 @@ test("vue-styled -> less: carries a documented secondary vue-styled API explicit
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -178,7 +148,7 @@ test("vue-styled -> less: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -186,40 +156,25 @@ test("vue-styled -> less: loads concrete theme and project context variants", as
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
+		        "hint": "the source host is not verified as React",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -229,7 +184,7 @@ test("vue-styled -> less: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -237,40 +192,25 @@ test("vue-styled -> less: loads concrete theme and project context variants", as
 		      {
 		        "applied": [
 		          "dynamic-and-theme",
-		          "runtime-and-plugin",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "residual",
 		        ],
-		        "representation": "residual",
-		        "residuals": [
-		          {
-		            "hint": "target lacks framework semantics",
-		            "kind": "framework-semantics",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "residual",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
+		        "hint": "the source host is not verified as React",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -292,7 +232,7 @@ test("vue-styled -> less: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -300,40 +240,25 @@ test("vue-styled -> less: resolves concrete token values with project context", 
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -352,7 +277,7 @@ test("vue-styled -> less: preserves malformed concrete vue-styled input", () => 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: framework-semantics, capability | capability-blocked: components: component subject: styled.div | available: residual)
+		// pandwind:migrate-skip (route: vue-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 0,
@@ -361,40 +286,25 @@ test("vue-styled -> less: preserves malformed concrete vue-styled input", () => 
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the source file contains parse errors",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

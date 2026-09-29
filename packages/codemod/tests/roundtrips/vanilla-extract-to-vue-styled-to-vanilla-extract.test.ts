@@ -85,7 +85,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: red; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -249,7 +249,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -323,7 +323,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -411,7 +411,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

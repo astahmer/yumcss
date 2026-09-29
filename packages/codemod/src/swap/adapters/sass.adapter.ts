@@ -59,6 +59,10 @@ export function createSassAdapter(moduleLoader?: ProjectModuleLoader) {
 		extensions: [".sass", ".scss"],
 		packages: { packages: [{ name: "sass", kind: AdapterDependencyKindTag.Config }] },
 		compilerName: "sass",
+		reactComponentArtifact: {
+			outputExtension: ".scss",
+			importSpecifierExtension: ".scss",
+		},
 		...(moduleLoader === undefined ? {} : { compiler: createSassCompiler(moduleLoader) }),
 	});
 }

@@ -18,17 +18,20 @@ import {
 	hasComponentAttributeUse,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
-import { parseObjectLiteral } from "../parse.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 import {
 	StyleProgramResidualKindTag,
-	StyleRuleKindTag,
-	StyleValueKindTag,
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import { createStylesheetAdapter } from "./stylesheet-adapter.ts";
+import {
+	isPlainReactStyleProgram,
+	isReactWrapperSourceFile,
+	rewriteReactStyledComponent,
+	staticDomAttrsExpression,
+} from "./react-styled-component.ts";
 
 const baseAdapter = createStylesheetAdapter({
 	id: CodemodAdapterId.CssModules,
@@ -39,85 +42,7 @@ const baseAdapter = createStylesheetAdapter({
 });
 
 const unsupportedComponentHint =
-	"css-modules can emit only static React styled intrinsics with literal DOM attrs and without polymorphic as props";
-
-const globalDomAttributes = new Set([
-	"accessKey",
-	"autoCapitalize",
-	"classID",
-	"contentEditable",
-	"dir",
-	"draggable",
-	"enterKeyHint",
-	"hidden",
-	"id",
-	"lang",
-	"nonce",
-	"role",
-	"slot",
-	"spellCheck",
-	"tabIndex",
-	"title",
-	"translate",
-]);
-
-const staticDomAttrsExpression = (
-	expression: string | undefined,
-	tag: string,
-	filteredPropPrefixes: readonly string[] = [],
-): string | undefined => {
-	if (expression === undefined) return undefined;
-	const normalized = expression.trim();
-	if (!normalized.startsWith("{") || !normalized.endsWith("}")) return undefined;
-	const body = normalized.slice(1, -1);
-	if (body.trim() === "") return "({})";
-	const attributes = parseObjectLiteral(body);
-	if (attributes === null) return undefined;
-	if (
-		attributes.keys.some(({ key }) => {
-			if (filteredPropPrefixes.some((prefix) => key.startsWith(prefix))) return false;
-			if (key === "type") return tag !== "button" && tag !== "input";
-			if (key === "as" || key === "forwardedAs" || key === "className" || key === "style")
-				return true;
-			return (
-				key.startsWith("$") ||
-				(!globalDomAttributes.has(key) &&
-					!/^aria-[a-z0-9-]+$/u.test(key) &&
-					!/^data-[a-z0-9-]+$/u.test(key))
-			);
-		})
-	)
-		return undefined;
-	return `(${normalized})`;
-};
-
-const hostPropFilterPredicate = (program: StyleProgram): string => {
-	const prefixes = program.source?.hostPropFilter?.prefixes ?? [];
-	return prefixes.length === 0
-		? "true"
-		: prefixes.map((prefix) => `!key.startsWith(${JSON.stringify(prefix)})`).join(" && ");
-};
-
-const hostPropFilterType = (program: StyleProgram): string => {
-	const prefixes = program.source?.hostPropFilter?.prefixes ?? [];
-	if (prefixes.length === 0) return "";
-	const keys = prefixes.map((prefix) => `\`${prefix}\${string}\``).join(" | ");
-	return ` & { readonly [key in ${keys}]?: unknown }`;
-};
-
-const isPlainStyleProgram = (program: StyleProgram): boolean =>
-	program.rules.length === 1 &&
-	program.rules[0]?.kind === StyleRuleKindTag.Style &&
-	program.rules[0].name === undefined &&
-	program.rules[0].selector === undefined &&
-	program.rules[0].conditions.length === 0 &&
-	program.rules[0].children.length === 0 &&
-	program.rules[0].declarations.length > 0 &&
-	program.rules[0].declarations.every(
-		(declaration) =>
-			declaration.value.kind === StyleValueKindTag.Literal &&
-			typeof declaration.value.value === "string",
-	);
+	"css-modules can emit only static React styled intrinsics with flat literal styles and literal attrs";
 
 const sourceHasParseErrors = (file: string, source: string): boolean => {
 	try {
@@ -161,7 +86,8 @@ const componentHostUnsupportedReason = (
 ): string | undefined => {
 	const subject = program.source?.subject;
 	if (sourceHasParseErrors(file, source)) return "the source file contains parse errors";
-	if (!file.endsWith(".tsx")) return "the React wrapper requires a TSX source module";
+	if (!isReactWrapperSourceFile(file))
+		return "the React wrapper requires a JavaScript or TypeScript source module";
 	if (program.source?.framework !== BuiltinHostFramework.React)
 		return "the source host is not verified as React";
 	if (subject === undefined || intrinsicTagForSubject(subject) === undefined)
@@ -175,11 +101,9 @@ const componentHostUnsupportedReason = (
 			program.source?.hostPropFilter?.prefixes,
 		) === undefined
 	)
-		return "attrs must be a literal object of supported DOM attributes without class, style, or polymorphic props";
+		return "attrs must be a literal object with static values and supported as, className, and style values";
 	const binding = sourceBindingForProgram(file, source, program);
 	if (binding !== undefined) {
-		if (hasComponentAttributeUse({ source, file, binding, attribute: "as" }))
-			return "the component has polymorphic as usage";
 		if (hasComponentAttributeUse({ source, file, binding, attribute: "forwardedAs" }))
 			return "the component has forwardedAs usage";
 	}
@@ -211,7 +135,7 @@ const componentUnsupportedReason = (
 		return "runtime style dependencies need a target runtime";
 	if (StyleProgramAnalysis.hasDynamic(program))
 		return "dynamic values need a target runtime or verified CSS variable carrier";
-	if (!isPlainStyleProgram(program))
+	if (!isPlainReactStyleProgram(program))
 		return "CSS Modules lowering requires one flat rule with string literal values";
 	const binding = sourceBindingForProgram(file, source, program);
 	if (binding === undefined || !declarationPrefixExists(source, file, program))
@@ -291,7 +215,7 @@ const targetComponentRewrite = (
 	}
 	if (
 		context.framework !== BuiltinHostFramework.React ||
-		context.file.endsWith(".tsx") === false ||
+		!isReactWrapperSourceFile(context.file) ||
 		sourceHasParseErrors(context.file, context.source) ||
 		(context.attrsExpression !== undefined &&
 			staticDomAttrsExpression(
@@ -299,52 +223,24 @@ const targetComponentRewrite = (
 				context.tag,
 				context.program.source?.hostPropFilter?.prefixes,
 			) === undefined) ||
-		!isPlainStyleProgram(context.program)
+		!isPlainReactStyleProgram(context.program)
 	)
 		return { code: context.code, residuals: [componentResidual(context.binding)] };
 	if (context.code === context.source) return { code: context.code, residuals: [] };
-	const tag = context.tag;
 	const classExpression = /^(__pandwind[A-Za-z_$][\w$]*Styles)\.root$/u.exec(
 		context.emittedExpression,
 	);
 	if (classExpression === null)
 		return { code: context.code, residuals: [componentResidual(context.binding)] };
-	const styleBinding = classExpression[1];
-	const attrsExpression = staticDomAttrsExpression(
-		context.attrsExpression,
-		tag,
-		context.program.source?.hostPropFilter?.prefixes,
-	);
-	const escapedBinding = context.binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	const escapedExpression = context.emittedExpression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	const assignment = new RegExp(
-		`((?:export\\s+)?(?:const|let|var)\\s+${escapedBinding}\\s*=\\s*)${escapedExpression}(?=\\s*(?:;|$|\\n))`,
-		"u",
-	);
-	const match = assignment.exec(context.code);
-	if (match === null)
-		return { code: context.code, residuals: [componentResidual(context.binding)] };
-	const forwardRefBinding = `__pandwind${context.binding}ForwardRef`;
-	const componentRefBinding = `__pandwind${context.binding}ComponentRef`;
-	const componentPropsBinding = `__pandwind${context.binding}ComponentProps`;
-	const tagType = JSON.stringify(tag);
-	const filterPredicate = hostPropFilterPredicate(context.program);
-	const filterType = hostPropFilterType(context.program);
-	const forwardedProps =
-		attrsExpression === undefined
-			? `Object.fromEntries(Object.entries(props).filter(([key]) => ${filterPredicate}))`
-			: `Object.fromEntries([...Object.entries(props), ...Object.entries(${attrsExpression})].filter(([key]) => ${filterPredicate}))`;
-	const replacement =
-		`${forwardRefBinding}<${componentRefBinding}<${tagType}>, ${componentPropsBinding}<${tagType}>${filterType}>(` +
-		`({ className, ...props }, ref) => (` +
-		`<${tag} {...${forwardedProps}} ref={ref} className={[${styleBinding}.root, className].filter(Boolean).join(" ")} />` +
-		`))`;
+	const rewrite = rewriteReactStyledComponent(context, `${classExpression[1]}.root`);
+	if (rewrite.reason !== undefined)
+		return {
+			code: context.code,
+			residuals: [componentResidual(context.binding, rewrite.reason)],
+		};
 	return {
-		code: `${context.code.slice(0, match.index)}${match[1]}${replacement}${context.code.slice(match.index + match[0].length)}`,
-		imports: [
-			`import { forwardRef as ${forwardRefBinding} } from "react";`,
-			`import type { ComponentRef as ${componentRefBinding}, ComponentPropsWithoutRef as ${componentPropsBinding} } from "react";`,
-		],
+		code: rewrite.code,
+		imports: rewrite.imports,
 		residuals: [],
 	};
 };
@@ -382,7 +278,7 @@ export const cssModulesAdapter: StyleAdapter = {
 			context.host?.framework !== BuiltinHostFramework.React ||
 			intrinsicTagForSubject(subject) === undefined ||
 			StyleProgramAnalysis.hasDynamic(program) ||
-			!isPlainStyleProgram(program)
+			!isPlainReactStyleProgram(program)
 		)
 			return emission;
 		const artifact = stylesheetArtifact(context, binding);

@@ -293,29 +293,35 @@ export function componentAttrsValueExpression(
 	return undefined;
 }
 
-export function wrapComponentExpressionWithAttrs(
-	expression: string,
-	attrsExpression: string | undefined,
-	framework: string | undefined,
-): {
+export function wrapComponentExpressionWithAttrs(request: {
+	readonly expression: string;
+	readonly attrsExpression?: string;
+	readonly file?: string;
+	readonly filteredPropPrefixes?: readonly string[];
+	readonly framework?: string;
+}): {
 	readonly text: string;
 	readonly imports: readonly string[];
 	readonly residuals: readonly StyleProgramResidual[];
 } {
-	if (attrsExpression === undefined) return { text: expression, imports: [], residuals: [] };
-	if (framework !== BuiltinHostFramework.React && framework !== BuiltinHostFramework.Preact)
+	if (request.attrsExpression === undefined)
+		return { text: request.expression, imports: [], residuals: [] };
+	if (
+		request.framework !== BuiltinHostFramework.React &&
+		request.framework !== BuiltinHostFramework.Preact
+	)
 		return {
 			text: "",
 			imports: [],
 			residuals: [
 				{
 					kind: "host-framework",
-					text: attrsExpression,
-					hint: `styled component attrs projection requires a React or Preact host, got ${framework ?? "unknown"}`,
+					text: request.attrsExpression,
+					hint: `styled component attrs projection requires a React or Preact host, got ${request.framework ?? "unknown"}`,
 				},
 			],
 		};
-	const attrsValue = componentAttrsValueExpression(attrsExpression);
+	const attrsValue = componentAttrsValueExpression(request.attrsExpression);
 	if (attrsValue === undefined)
 		return {
 			text: "",
@@ -323,16 +329,23 @@ export function wrapComponentExpressionWithAttrs(
 			residuals: [
 				{
 					kind: "host-framework",
-					text: attrsExpression,
+					text: request.attrsExpression,
 					hint: "styled component attrs must be a static object or a props callback to preserve them",
 				},
 			],
 		};
-	const moduleName = framework === BuiltinHostFramework.Preact ? "preact/compat" : "react";
+	const moduleName = request.framework === BuiltinHostFramework.Preact ? "preact/compat" : "react";
 	const createElement = "__pandwindCreateElement";
 	const forwardRef = "__pandwindForwardRef";
+	const propFilterPrefixes = JSON.stringify(request.filteredPropPrefixes ?? []);
+	const wrapperBody = `const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const { as: propsAs, className, style, ...rest } = props; const forwardedProps = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !${propFilterPrefixes}.some((prefix) => key.startsWith(prefix)))); return ${createElement}(Component, { ...forwardedProps, ...(propsAs === undefined && attrsAs === undefined ? {} : { as: attrsAs ?? propsAs }), className: [className, attrsClassName].filter(Boolean).join(" ") || undefined, style: Object.assign({}, style, attrsStyle !== null && typeof attrsStyle === "object" ? attrsStyle : {}), ref } as import("${moduleName}").ComponentPropsWithRef<ComponentType>);`;
+	const typescript =
+		request.file?.endsWith(".ts") === true || request.file?.endsWith(".tsx") === true;
+	const component = typescript
+		? `(<ComponentType extends import("${moduleName}").ElementType, Attrs extends Record<string, unknown>,>(Component: ComponentType, attrs: Attrs) => { type Props<As extends import("${moduleName}").ElementType> = Omit<import("${moduleName}").ComponentPropsWithoutRef<As>, "as" | "className" | "style"> & { as?: As; className?: string; style?: import("${moduleName}").CSSProperties }; type PolymorphicComponent = <As extends import("${moduleName}").ElementType = ComponentType>(props: Props<As> & { ref?: import("${moduleName}").Ref<import("${moduleName}").ComponentRef<As>> }) => import("${moduleName}").ReactElement | null; type InternalProps = { readonly [key: string]: unknown; readonly as?: import("${moduleName}").ElementType; readonly className?: string; readonly style?: import("${moduleName}").CSSProperties }; const Wrapped = ${forwardRef}<unknown, InternalProps>((props, ref) => { ${wrapperBody} }); return Wrapped as PolymorphicComponent; })(${request.expression}, ${attrsValue})`
+		: `((Component, attrs) => ${forwardRef}((props, ref) => { ${wrapperBody} }))(${request.expression}, ${attrsValue})`;
 	return {
-		text: `((Component) => ${forwardRef}((props, ref) => { const attrs = ${attrsValue}; const { as: _attrsAs, ...attrsProps } = attrs; const { as: _propsAs, ...rest } = props; return ${createElement}(Component, { ...rest, ...attrsProps, ...(props.as === undefined && attrs.as === undefined ? {} : { as: attrs.as ?? props.as }), className: [props.className, attrs.className].filter(Boolean).join(" ") || undefined, style: { ...props.style, ...attrs.style }, ref }); }))(${expression})`,
+		text: component,
 		imports: [
 			`import { createElement as ${createElement}, forwardRef as ${forwardRef} } from "${moduleName}";`,
 		],

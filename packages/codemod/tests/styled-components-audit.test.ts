@@ -511,40 +511,21 @@ test("styled-components attrs are preserved by every target or remain a typed so
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 0,
-		    "residualDetails": [
-		      {
-		        "detail": "Emotion has no verified attrs component contract for preserving the source wrapper's props and refs",
-		        "kind": "host-framework",
-		      },
-		    ],
-		    "residualKinds": [
-		      "host-framework",
-		    ],
-		    "skipped": 1,
-		    "sourcePreserved": true,
+		    "converted": 1,
+		    "residualDetails": [],
+		    "residualKinds": [],
+		    "skipped": 0,
+		    "sourcePreserved": false,
 		    "target": "emotion",
 		  },
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 0,
-		    "residualDetails": [
-		      {
-		        "detail": "Vanilla Extract styles must be emitted from a .css.ts module",
-		        "kind": "capability",
-		      },
-		      {
-		        "detail": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
-		        "kind": "component",
-		      },
-		    ],
-		    "residualKinds": [
-		      "capability",
-		      "component",
-		    ],
-		    "skipped": 1,
-		    "sourcePreserved": true,
+		    "converted": 1,
+		    "residualDetails": [],
+		    "residualKinds": [],
+		    "skipped": 0,
+		    "sourcePreserved": false,
 		    "target": "vanilla-extract",
 		  },
 		  {
@@ -697,18 +678,11 @@ test("styled-components attrs are preserved by every target or remain a typed so
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 0,
-		    "residualDetails": [
-		      {
-		        "detail": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		        "kind": "capability",
-		      },
-		    ],
-		    "residualKinds": [
-		      "capability",
-		    ],
-		    "skipped": 1,
-		    "sourcePreserved": true,
+		    "converted": 1,
+		    "residualDetails": [],
+		    "residualKinds": [],
+		    "skipped": 0,
+		    "sourcePreserved": false,
 		    "target": "treat",
 		  },
 		  {
@@ -786,27 +760,11 @@ test("styled-components attrs are preserved by every target or remain a typed so
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 0,
-		    "residualDetails": [
-		      {
-		        "detail": "components: component subject: styled.button.attrs({ type: "button", "aria-label": "Save" })",
-		        "kind": "capability",
-		      },
-		      {
-		        "detail": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		      },
-		      {
-		        "detail": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		      },
-		    ],
-		    "residualKinds": [
-		      "capability",
-		      "framework-semantics",
-		    ],
-		    "skipped": 1,
-		    "sourcePreserved": true,
+		    "converted": 1,
+		    "residualDetails": [],
+		    "residualKinds": [],
+		    "skipped": 0,
+		    "sourcePreserved": false,
 		    "target": "authored-css",
 		  },
 		  {
@@ -822,53 +780,21 @@ test("styled-components attrs are preserved by every target or remain a typed so
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 0,
-		    "residualDetails": [
-		      {
-		        "detail": "components: component subject: styled.button.attrs({ type: "button", "aria-label": "Save" })",
-		        "kind": "capability",
-		      },
-		      {
-		        "detail": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		      },
-		      {
-		        "detail": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		      },
-		    ],
-		    "residualKinds": [
-		      "capability",
-		      "framework-semantics",
-		    ],
-		    "skipped": 1,
-		    "sourcePreserved": true,
+		    "converted": 1,
+		    "residualDetails": [],
+		    "residualKinds": [],
+		    "skipped": 0,
+		    "sourcePreserved": false,
 		    "target": "sass",
 		  },
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 0,
-		    "residualDetails": [
-		      {
-		        "detail": "components: component subject: styled.button.attrs({ type: "button", "aria-label": "Save" })",
-		        "kind": "capability",
-		      },
-		      {
-		        "detail": "target lacks framework semantics",
-		        "kind": "framework-semantics",
-		      },
-		      {
-		        "detail": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		      },
-		    ],
-		    "residualKinds": [
-		      "capability",
-		      "framework-semantics",
-		    ],
-		    "skipped": 1,
-		    "sourcePreserved": true,
+		    "converted": 1,
+		    "residualDetails": [],
+		    "residualKinds": [],
+		    "skipped": 0,
+		    "sourcePreserved": false,
 		    "target": "less",
 		  },
 		  {

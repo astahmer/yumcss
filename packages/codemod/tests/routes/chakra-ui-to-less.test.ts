@@ -96,7 +96,7 @@ test("chakra-ui -> less: carries a documented secondary chakra-ui API explicitly
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: framework-semantics, capability | available: residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: capability | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
@@ -105,18 +105,12 @@ test("chakra-ui -> less: carries a documented secondary chakra-ui API explicitly
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
 		        "residual",
 		      ],
 		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
@@ -129,11 +123,6 @@ test("chakra-ui -> less: carries a documented secondary chakra-ui API explicitly
 		    {
 		      "hint": "Chakra recipes and attached factory styles require explicit composition lowering",
 		      "kind": "composition",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
 		      "preserved": undefined,
 		    },
 		    {

@@ -45,6 +45,10 @@ export function createLessAdapter(moduleLoader?: ProjectModuleLoader) {
 		extensions: [".less"],
 		packages: { packages: [{ name: "less", kind: AdapterDependencyKindTag.Config }] },
 		compilerName: "less",
+		reactComponentArtifact: {
+			outputExtension: ".less",
+			importSpecifierExtension: ".less",
+		},
 		...(moduleLoader === undefined ? {} : { compiler: createLessCompiler(moduleLoader) }),
 	});
 }

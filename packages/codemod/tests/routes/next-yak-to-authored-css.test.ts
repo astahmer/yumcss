@@ -94,7 +94,7 @@ test("next-yak -> authored-css: carries a documented secondary next-yak API expl
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: component | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -119,13 +119,8 @@ test("next-yak -> authored-css: carries a documented secondary next-yak API expl
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "components: component subject: styled.div",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

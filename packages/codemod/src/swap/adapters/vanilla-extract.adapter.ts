@@ -3,6 +3,7 @@ import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
+import type { AdapterComponentRewriteContext } from "../adapter-contract.ts";
 import {
 	CodemodCallPatternKindTag,
 	CodemodAdapterId,
@@ -14,10 +15,51 @@ import {
 import { preserveUnsupportedRecipeFields, recipeSourceObjectOptions } from "./recipe-source.ts";
 import { literalValueToPlain, parseObjectLiteral } from "../parse.ts";
 import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	isPlainReactStyleProgram,
+	reactStyledComponentArtifact,
+	reactStyledComponentUnsupportedReason,
+	rewriteReactStyledComponent,
+} from "./react-styled-component.ts";
 import type { AdapterParseContext } from "../adapter-contract.ts";
 
 const runtimeFallbackVar =
 	"const __pandwindFallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
+
+const componentResidual = (text: string, hint: string) => ({
+	kind: StyleProgramResidualKindTag.Component,
+	text,
+	hint,
+});
+
+const componentModuleReason = (file: string): string | undefined =>
+	file.endsWith(".css.ts")
+		? "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted"
+		: undefined;
+
+const rewriteComponent = (context: AdapterComponentRewriteContext) => {
+	if (context.phase === "preflight") {
+		const reason =
+			componentModuleReason(context.file) ??
+			reactStyledComponentUnsupportedReason(
+				context.file,
+				context.source,
+				context.program,
+				context.sourceFramework,
+			);
+		return reason === undefined
+			? { code: context.code, residuals: [] }
+			: { code: context.code, residuals: [componentResidual(context.binding, reason)] };
+	}
+	const rewrite = rewriteReactStyledComponent(context, context.emittedExpression);
+	return {
+		code: rewrite.code,
+		...(rewrite.imports.length === 0 ? {} : { imports: rewrite.imports }),
+		residuals:
+			rewrite.reason === undefined ? [] : [componentResidual(context.binding, rewrite.reason)],
+	};
+};
 
 const vanillaExtractAdapter = defineCodemodAdapter({
 	id: CodemodAdapterId.VanillaExtract,
@@ -124,20 +166,19 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 				importSpecifierExtension: ".css.ts",
 				unsupportedFileHint: "Vanilla Extract styles must be emitted from a .css.ts module",
 			},
-			preflight: ({ program }) => {
+			preflight: ({ file, source, program }) => {
 				if (program.source?.subject === undefined) return [];
-				return [
-					{
-						kind: StyleProgramResidualKindTag.Component,
-						text: program.source.subject,
-						hint: "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
-					},
-				];
+				const reason =
+					componentModuleReason(file) ??
+					reactStyledComponentUnsupportedReason(file, source, program);
+				return reason === undefined ? [] : [componentResidual(program.source.subject, reason)];
 			},
 			handlesHostRewrites: true,
 			dynamicClassCarrier: true,
 			handlesFrameworkSemantics: true,
+			hostFrameworks: [BuiltinHostFramework.React],
 			hostRepresentation: StyleHostRepresentationKind.Class,
+			rewriteComponent,
 		},
 		prepareDynamic: ({ targetId, program }) => ({
 			handled:
@@ -280,8 +321,43 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 			dynamicReferences,
 		};
 	},
-	emit(program, { firstKind, programObject, declarationsObject }) {
+	emit(program, { firstKind, programObject, declarationsObject }, context) {
 		const kind = firstKind(program);
+		const binding = context?.host?.binding;
+		if (
+			context?.host?.representation === StyleHostRepresentationKind.Class &&
+			context.host.framework === BuiltinHostFramework.React &&
+			context.host.subject !== undefined &&
+			binding !== undefined &&
+			isPlainReactStyleProgram(program)
+		) {
+			const artifact = reactStyledComponentArtifact(
+				context,
+				binding,
+				".css.ts",
+				".css.ts",
+				`import { style } from "@vanilla-extract/css";\nexport const __pandwind${binding}Styles = style(${programObject(program)});\n`,
+				"Vanilla Extract styles for a migrated React component",
+			);
+			if (artifact === undefined)
+				return {
+					text: "",
+					semantic: program,
+					residuals: [
+						componentResidual(
+							binding,
+							"the generated Vanilla Extract path cannot be resolved relative to the project root",
+						),
+					],
+				};
+			return {
+				text: artifact.local,
+				semantic: program,
+				imports: [`import { ${artifact.local} } from ${JSON.stringify(artifact.specifier)};`],
+				generatedFiles: [artifact.file],
+				residuals: [],
+			};
+		}
 		if (kind === StyleRuleKindTag.Keyframes)
 			return {
 				text: `keyframes(${programObject(program)})`,

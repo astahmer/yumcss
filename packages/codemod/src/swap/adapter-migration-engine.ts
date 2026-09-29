@@ -460,10 +460,13 @@ function runAdapterMigrationInternal(
 			support.hasInlineHostUse(bindings, match.start, source) ||
 			support.hasComponentBindingUse(bindings, bindingBeforeMatch);
 		const moduleFile = targetPolicy?.moduleFile;
+		const moduleFileComponentWrapper =
+			program.source?.subject !== undefined && targetPolicy?.rewriteComponent !== undefined;
 		let moduleFileResiduals: StyleProgramResidual[] = [];
 		if (
 			moduleFile !== undefined &&
-			!moduleFile.acceptedSuffixes.some((suffix) => options.file.endsWith(suffix))
+			!moduleFile.acceptedSuffixes.some((suffix) => options.file.endsWith(suffix)) &&
+			!moduleFileComponentWrapper
 		) {
 			if (hasHostContext || !/\.(?:ts|js)$/u.test(options.file)) {
 				moduleFileResiduals = [

@@ -267,7 +267,7 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "the React wrapper requires a TSX source module",
+		          "hint": "the React wrapper requires a JavaScript or TypeScript source module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -346,7 +346,7 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "the React wrapper requires a TSX source module",
+		          "hint": "the React wrapper requires a JavaScript or TypeScript source module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -439,7 +439,7 @@ test("css-modules -> styled-components -> css-modules: resolves token values acr
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "the React wrapper requires a TSX source module",
+		        "hint": "the React wrapper requires a JavaScript or TypeScript source module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

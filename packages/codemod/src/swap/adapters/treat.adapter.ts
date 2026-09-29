@@ -1,9 +1,11 @@
 import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
+import type { AdapterComponentRewriteContext } from "../adapter-contract.ts";
 import type { AdapterParseContext } from "../adapter-contract.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
@@ -11,6 +13,39 @@ import {
 	StyleNamedRuleStrategy,
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
+import {
+	isPlainReactStyleProgram,
+	reactStyledComponentArtifact,
+	reactStyledComponentUnsupportedReason,
+	rewriteReactStyledComponent,
+} from "./react-styled-component.ts";
+
+const componentResidual = (text: string, hint: string) => ({
+	kind: StyleProgramResidualKindTag.Component,
+	text,
+	hint,
+});
+
+const rewriteComponent = (context: AdapterComponentRewriteContext) => {
+	if (context.phase === "preflight") {
+		const reason = reactStyledComponentUnsupportedReason(
+			context.file,
+			context.source,
+			context.program,
+			context.sourceFramework,
+		);
+		return reason === undefined
+			? { code: context.code, residuals: [] }
+			: { code: context.code, residuals: [componentResidual(context.binding, reason)] };
+	}
+	const rewrite = rewriteReactStyledComponent(context, context.emittedExpression);
+	return {
+		code: rewrite.code,
+		...(rewrite.imports.length === 0 ? {} : { imports: rewrite.imports }),
+		residuals:
+			rewrite.reason === undefined ? [] : [componentResidual(context.binding, rewrite.reason)],
+	};
+};
 
 const treat = makeExtraAdapter({
 	id: CodemodAdapterId.Treat,
@@ -57,7 +92,46 @@ const treat = makeExtraAdapter({
 		handlesHostRewrites: true,
 		dynamicClassCarrier: true,
 		handlesFrameworkSemantics: true,
+		hostFrameworks: [BuiltinHostFramework.React],
 		hostRepresentation: StyleHostRepresentationKind.Class,
+		rewriteComponent,
+	},
+	targetEmit: (program, context, programObject) => {
+		const binding = context?.host?.binding;
+		if (
+			context?.host?.representation !== StyleHostRepresentationKind.Class ||
+			context.host.framework !== BuiltinHostFramework.React ||
+			context.host.subject === undefined ||
+			binding === undefined ||
+			!isPlainReactStyleProgram(program)
+		)
+			return undefined;
+		const artifact = reactStyledComponentArtifact(
+			context,
+			binding,
+			".treat.ts",
+			".treat",
+			`import { style } from "treat";\nexport const __pandwind${binding}Styles = style(${programObject(program)});\n`,
+			"Treat styles for a migrated React component",
+		);
+		if (artifact === undefined)
+			return {
+				text: "",
+				semantic: program,
+				residuals: [
+					componentResidual(
+						binding,
+						"the generated Treat path cannot be resolved relative to the project root",
+					),
+				],
+			};
+		return {
+			text: artifact.local,
+			semantic: program,
+			imports: [`import { ${artifact.local} } from ${JSON.stringify(artifact.specifier)};`],
+			generatedFiles: [artifact.file],
+			residuals: [],
+		};
 	},
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 });

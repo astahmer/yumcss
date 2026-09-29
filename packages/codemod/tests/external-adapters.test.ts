@@ -1486,13 +1486,29 @@ describe("CSS-in-JS adapter contract v2", () => {
 				'export const App = () => <Card color="red" />;',
 			{ from: "styled-components", to: "vanilla-extract", file: "Card.tsx", mode: "safe" },
 		);
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBeGreaterThan(0);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
-		);
-		expect(result.code).toContain("styled.div((props)");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('from "./Card.styles.css.ts"');
+		expect(result.code).toContain("String(((props) => props.color)(props))");
 		expect(result.code).toContain('<Card color="red" />');
+		expect(result.generatedFiles).toEqual([
+			expect.objectContaining({
+				path: "Card.styles.css.ts",
+				content: expect.stringContaining("var(--pandwind-dynamic-"),
+			}),
+		]);
+		expect(result.generatedFiles.map(({ path, content }) => ({ path, content })))
+			.toMatchInlineSnapshot(`
+				[
+				  {
+				    "content": "import { style } from "@vanilla-extract/css";
+				export const __pandwindCardStyles = style({ color: "var(--pandwind-dynamic-hiipfm)" });
+				",
+				    "path": "Card.styles.css.ts",
+				  },
+				]
+			`);
 	});
 
 	test("keeps a function-valued subject residual on a target without a function carrier", () => {
@@ -1643,7 +1659,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual([
 			expect.objectContaining({
 				kind: "component",
-				text: "styled.div",
+				text: "Card",
 				hint: expect.stringContaining("separate .css.ts style artifact"),
 			}),
 		]);
@@ -1651,7 +1667,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "@vanilla-extract/css"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import styled from "styled-components";
-			// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+			// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 			const Card = styled.div({ color: "red" });"
 		`);
 	});

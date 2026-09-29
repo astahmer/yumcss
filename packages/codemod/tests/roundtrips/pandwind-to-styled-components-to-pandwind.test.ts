@@ -252,7 +252,7 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 
@@ -333,7 +333,7 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 
@@ -428,7 +428,7 @@ test("pandwind -> styled-components -> pandwind: resolves token values across bo
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 

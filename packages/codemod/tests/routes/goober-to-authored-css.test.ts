@@ -94,7 +94,7 @@ test("goober -> authored-css: carries a documented secondary goober API explicit
 		{
 		  "changed": true,
 		  "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> authored-css | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, residual)
+		// pandwind:migrate-skip (route: goober -> authored-css | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -124,8 +124,8 @@ test("goober -> authored-css: carries a documented secondary goober API explicit
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

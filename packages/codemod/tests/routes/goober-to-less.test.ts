@@ -94,7 +94,7 @@ test("goober -> less: carries a documented secondary goober API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> less | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, residual)
+		// pandwind:migrate-skip (route: goober -> less | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -124,8 +124,8 @@ test("goober -> less: carries a documented secondary goober API explicitly", () 
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

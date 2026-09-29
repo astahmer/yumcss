@@ -75,7 +75,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves an actionable concrete 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "the React wrapper requires a TSX source module",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -138,7 +138,7 @@ test("vue-styled -> css-modules -> vue-styled: retains the documented secondary 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "the React wrapper requires a TSX source module",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -216,7 +216,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "the React wrapper requires a TSX source module",
+		          "hint": "the source host is not verified as React",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -267,7 +267,7 @@ test("vue-styled -> css-modules -> vue-styled: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "the React wrapper requires a TSX source module",
+		          "hint": "the source host is not verified as React",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -332,7 +332,7 @@ test("vue-styled -> css-modules -> vue-styled: resolves token values across both
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "the React wrapper requires a TSX source module",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

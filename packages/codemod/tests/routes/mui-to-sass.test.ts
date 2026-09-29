@@ -94,7 +94,7 @@ test("mui -> sass: carries a documented secondary mui API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: framework-semantics, capability | available: residual)
+		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -102,32 +102,22 @@ test("mui -> sass: carries a documented secondary mui API explicitly", () => {
 		    {
 		      "applied": [
 		        "dynamic-and-theme",
-		        "runtime-and-plugin",
 		      ],
 		      "availableRepresentations": [
+		        "static",
 		        "residual",
 		      ],
-		      "representation": "residual",
-		      "residuals": [
-		        {
-		          "hint": "target lacks framework semantics",
-		          "kind": "framework-semantics",
-		        },
-		      ],
+		      "representation": "static",
+		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "residual",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "target lacks framework semantics",
-		      "kind": "framework-semantics",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",

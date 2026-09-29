@@ -271,7 +271,7 @@ test("css-modules -> vue-styled -> css-modules: preserves concrete theme and pro
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "the React wrapper requires a TSX source module",
+		          "hint": "the React wrapper requires a JavaScript or TypeScript source module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -351,7 +351,7 @@ test("css-modules -> vue-styled -> css-modules: preserves concrete theme and pro
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "the React wrapper requires a TSX source module",
+		          "hint": "the React wrapper requires a JavaScript or TypeScript source module",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -445,7 +445,7 @@ test("css-modules -> vue-styled -> css-modules: resolves token values across bot
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "the React wrapper requires a TSX source module",
+		        "hint": "the React wrapper requires a JavaScript or TypeScript source module",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

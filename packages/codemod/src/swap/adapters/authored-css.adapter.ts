@@ -6,4 +6,8 @@ export const authoredCssAdapter = createStylesheetAdapter({
 	name: "css",
 	extensions: [".css"],
 	packages: { packages: [] },
+	reactComponentArtifact: {
+		outputExtension: ".css",
+		importSpecifierExtension: ".css",
+	},
 });

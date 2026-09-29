@@ -95,7 +95,7 @@ test("fela -> sass: carries a documented secondary fela API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | capability-blocked: components: component subject: styled("button") | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -125,8 +125,8 @@ test("fela -> sass: carries a documented secondary fela API explicitly", () => {
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
+		      "hint": "the source host is not verified as React",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

@@ -83,10 +83,17 @@ test("treat -> styled-components -> treat: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		export const card = style({ "color": "red", "padding": "8px" });",
+		    "code": "import { __pandwindcardStyles } from "./styles.treat.styles.treat";
+		import { createElement as __pandwindcardCreateElement, forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentRef as __pandwindcardComponentRef, ComponentPropsWithoutRef as __pandwindcardComponentProps } from "react";
+		export const card = (() => { type __pandwindcardProps<As extends import("react").ElementType> = Omit<__pandwindcardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __pandwindcardProps<As> & { ref?: import("react").Ref<__pandwindcardComponentRef<As>> }) => import("react").ReactElement | null; type __pandwindcardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; return __pandwindcardForwardRef<unknown, __pandwindcardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __pandwindcardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))), ref, className: [__pandwindcardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __pandwindcardPolymorphicComponent; })();",
 		    "converted": 1,
-		    "generatedFiles": [],
+		    "generatedFiles": [
+		      {
+		        "path": "styles.treat.styles.treat.ts",
+		        "purpose": "Treat styles for a migrated React component",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -107,13 +114,7 @@ test("treat -> styled-components -> treat: preserves an actionable concrete roun
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "a reusable JSX wrapper requires a JSX source file",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -173,10 +174,17 @@ test("treat -> styled-components -> treat: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		export const card = style({ "color": "red", "padding": "8px" });",
+		    "code": "import { __pandwindcardStyles } from "./styles.treat.styles.treat";
+		import { createElement as __pandwindcardCreateElement, forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentRef as __pandwindcardComponentRef, ComponentPropsWithoutRef as __pandwindcardComponentProps } from "react";
+		export const card = (() => { type __pandwindcardProps<As extends import("react").ElementType> = Omit<__pandwindcardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __pandwindcardProps<As> & { ref?: import("react").Ref<__pandwindcardComponentRef<As>> }) => import("react").ReactElement | null; type __pandwindcardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; return __pandwindcardForwardRef<unknown, __pandwindcardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __pandwindcardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))), ref, className: [__pandwindcardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __pandwindcardPolymorphicComponent; })();",
 		    "converted": 1,
-		    "generatedFiles": [],
+		    "generatedFiles": [
+		      {
+		        "path": "styles.treat.styles.treat.ts",
+		        "purpose": "Treat styles for a migrated React component",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -197,13 +205,7 @@ test("treat -> styled-components -> treat: retains the documented secondary API 
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "a reusable JSX wrapper requires a JSX source file",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -278,10 +280,17 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": "8px" });",
+		      "code": "import { __pandwindcardStyles } from "./styles.treat.styles.treat";
+		import { createElement as __pandwindcardCreateElement, forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentRef as __pandwindcardComponentRef, ComponentPropsWithoutRef as __pandwindcardComponentProps } from "react";
+		export const card = (() => { type __pandwindcardProps<As extends import("react").ElementType> = Omit<__pandwindcardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __pandwindcardProps<As> & { ref?: import("react").Ref<__pandwindcardComponentRef<As>> }) => import("react").ReactElement | null; type __pandwindcardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; return __pandwindcardForwardRef<unknown, __pandwindcardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __pandwindcardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))), ref, className: [__pandwindcardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __pandwindcardPolymorphicComponent; })();",
 		      "converted": 1,
-		      "generatedFiles": [],
+		      "generatedFiles": [
+		        {
+		          "path": "styles.treat.styles.treat.ts",
+		          "purpose": "Treat styles for a migrated React component",
+		        },
+		      ],
 		      "loweringPlans": [
 		        {
 		          "applied": [
@@ -302,13 +311,7 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "a reusable JSX wrapper requires a JSX source file",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
+		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -356,10 +359,17 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": "8px" });",
+		      "code": "import { __pandwindcardStyles } from "./styles.treat.styles.treat";
+		import { createElement as __pandwindcardCreateElement, forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentRef as __pandwindcardComponentRef, ComponentPropsWithoutRef as __pandwindcardComponentProps } from "react";
+		export const card = (() => { type __pandwindcardProps<As extends import("react").ElementType> = Omit<__pandwindcardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __pandwindcardProps<As> & { ref?: import("react").Ref<__pandwindcardComponentRef<As>> }) => import("react").ReactElement | null; type __pandwindcardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; return __pandwindcardForwardRef<unknown, __pandwindcardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __pandwindcardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))), ref, className: [__pandwindcardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __pandwindcardPolymorphicComponent; })();",
 		      "converted": 1,
-		      "generatedFiles": [],
+		      "generatedFiles": [
+		        {
+		          "path": "styles.treat.styles.treat.ts",
+		          "purpose": "Treat styles for a migrated React component",
+		        },
+		      ],
 		      "loweringPlans": [
 		        {
 		          "applied": [
@@ -380,13 +390,7 @@ test("treat -> styled-components -> treat: preserves concrete theme and project 
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "a reusable JSX wrapper requires a JSX source file",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
+		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -448,10 +452,17 @@ test("treat -> styled-components -> treat: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "padding": "8px" });",
+		    "code": "import { __pandwindcardStyles } from "./styles.treat.styles.treat";
+		import { createElement as __pandwindcardCreateElement, forwardRef as __pandwindcardForwardRef } from "react";
+		import type { ComponentRef as __pandwindcardComponentRef, ComponentPropsWithoutRef as __pandwindcardComponentProps } from "react";
+		export const card = (() => { type __pandwindcardProps<As extends import("react").ElementType> = Omit<__pandwindcardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindcardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __pandwindcardProps<As> & { ref?: import("react").Ref<__pandwindcardComponentRef<As>> }) => import("react").ReactElement | null; type __pandwindcardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; return __pandwindcardForwardRef<unknown, __pandwindcardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __pandwindcardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))), ref, className: [__pandwindcardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __pandwindcardPolymorphicComponent; })();",
 		    "converted": 1,
-		    "generatedFiles": [],
+		    "generatedFiles": [
+		      {
+		        "path": "styles.treat.styles.treat.ts",
+		        "purpose": "Treat styles for a migrated React component",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -472,13 +483,7 @@ test("treat -> styled-components -> treat: resolves token values across both con
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "a reusable JSX wrapper requires a JSX source file",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {

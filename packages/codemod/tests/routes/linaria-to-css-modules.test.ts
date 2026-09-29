@@ -124,7 +124,7 @@ test("linaria -> css-modules: carries a documented secondary linaria API explici
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "the React wrapper requires a TSX source module",
+		      "hint": "the source host is not verified as React",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

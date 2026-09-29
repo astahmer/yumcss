@@ -19,8 +19,11 @@ import { SourceBindingKind, type SourceBinding } from "pandwind/source";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	componentAttrsExpressionForSubject,
+	intrinsicTagForSubject,
 	wrapComponentExpressionWithAttrs,
 } from "../host-component-rewriter.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
+import { staticDomAttrsExpression } from "./react-styled-component.ts";
 
 function importedModulePath(context: AdapterParseContext, specifier: string): string {
 	const directory = dirnameDocumentPath(context.file);
@@ -393,18 +396,33 @@ const emotionAdapter = defineCodemodAdapter({
 			handlesFrameworkSemantics: true,
 			hostRepresentation: StyleHostRepresentationKind.Class,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
-			resolveHostRepresentation: ({ program }) =>
-				canRewriteEmotionHost(program) ? StyleHostRepresentationKind.Class : undefined,
+			resolveHostRepresentation: ({ program }) => {
+				const subject = program.source?.subject;
+				if (subject !== undefined && componentAttrsExpressionForSubject(subject) !== undefined)
+					return StyleHostRepresentationKind.Component;
+				return canRewriteEmotionHost(program) ? StyleHostRepresentationKind.Class : undefined;
+			},
 			preflight: ({ program }) => {
 				const subject = program.source?.subject;
 				if (subject === undefined) return [];
 				const attrsExpression = componentAttrsExpressionForSubject(subject);
 				if (attrsExpression === undefined) return [];
+				const tag = intrinsicTagForSubject(subject);
+				if (
+					program.source?.framework === BuiltinHostFramework.React &&
+					tag !== undefined &&
+					staticDomAttrsExpression(
+						attrsExpression,
+						tag,
+						program.source.hostPropFilter?.prefixes,
+					) !== undefined
+				)
+					return [];
 				return [
 					{
 						kind: StyleProgramResidualKindTag.HostFramework,
 						text: attrsExpression,
-						hint: "Emotion has no verified attrs component contract for preserving the source wrapper's props and refs",
+						hint: "Emotion attrs conversion requires a React intrinsic with statically verifiable attributes",
 					},
 				];
 			},
@@ -445,11 +463,13 @@ const emotionAdapter = defineCodemodAdapter({
 			const attrsIndex = subject.indexOf(".attrs");
 			const targetSubject = attrsIndex < 0 ? subject : subject.slice(0, attrsIndex).trimEnd();
 			const targetExpression = `${targetSubject}(${programObject(program)})`;
-			const wrapped = wrapComponentExpressionWithAttrs(
-				targetExpression,
+			const wrapped = wrapComponentExpressionWithAttrs({
+				expression: targetExpression,
 				attrsExpression,
-				context?.host?.framework,
-			);
+				file: context?.file,
+				filteredPropPrefixes: program.source?.hostPropFilter?.prefixes,
+				framework: context?.host?.framework,
+			});
 			if (wrapped.residuals.length > 0) return { text: "", residuals: wrapped.residuals };
 			return {
 				text: wrapped.text,

@@ -246,7 +246,7 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "#2563eb", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
@@ -289,7 +289,7 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      "changed": true,
 		      "code": "
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		import styled from "styled-components";
 		const cx = createCx();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ color: "#2563eb", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
@@ -329,7 +329,7 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
@@ -372,7 +372,7 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      "changed": true,
 		      "code": "
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		import styled from "styled-components";
 		const cx = createCx();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ color: "#2563eb", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
@@ -426,7 +426,7 @@ test("styled-components -> pandwind -> styled-components: resolves token values 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
@@ -469,7 +469,7 @@ test("styled-components -> pandwind -> styled-components: resolves token values 
 		    "changed": true,
 		    "code": "
 		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "../__pandwind/slot";
+		import { __pandwindSlot } from "./__pandwind/slot";
 		import styled from "styled-components";
 		const cx = createCx();
 		export const Card = __pandwindSlot({ defaultComponent: "div", style: styled.div({ color: "#2563eb", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",

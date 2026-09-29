@@ -698,11 +698,12 @@ export function createMuiAdapter(
 				const base = componentExpressionForSubject(subject);
 				const targetSubject = tag === undefined ? (base ?? subject) : JSON.stringify(tag);
 				const attrsExpression = componentAttrsExpressionForSubject(subject);
-				const wrapped = wrapComponentExpressionWithAttrs(
-					`styled(${targetSubject})(${programObject(program)})`,
+				const wrapped = wrapComponentExpressionWithAttrs({
+					expression: `styled(${targetSubject})(${programObject(program)})`,
 					attrsExpression,
-					context?.host?.framework,
-				);
+					file: context?.file,
+					framework: context?.host?.framework,
+				});
 				if (wrapped.residuals.length > 0) return { text: "", residuals: wrapped.residuals };
 				return {
 					text: wrapped.text,

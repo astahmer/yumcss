@@ -143,7 +143,7 @@ test("goober -> css-modules -> goober: retains the documented secondary API with
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "the React wrapper requires a TSX source module",
+		        "hint": "the source host is not verified as React",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

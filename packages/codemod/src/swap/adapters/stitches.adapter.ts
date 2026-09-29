@@ -299,11 +299,12 @@ export default defineCodemodAdapter({
 					],
 				};
 			const attrsExpression = componentAttrsExpressionForSubject(subject);
-			const wrapped = wrapComponentExpressionWithAttrs(
-				`styled(${base ?? JSON.stringify(tag)}, ${programObject(program)})`,
+			const wrapped = wrapComponentExpressionWithAttrs({
+				expression: `styled(${base ?? JSON.stringify(tag)}, ${programObject(program)})`,
 				attrsExpression,
-				context.host.framework,
-			);
+				file: context.file,
+				framework: context.host.framework,
+			});
 			if (wrapped.residuals.length > 0)
 				return {
 					text: "",

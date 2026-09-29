@@ -49,7 +49,7 @@ test("tamagui -> treat: migrates concrete tamagui syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: component)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
@@ -76,8 +76,8 @@ test("tamagui -> treat: migrates concrete tamagui syntax to treat", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
+		      "hint": "the styled subject is not a verified intrinsic element",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -96,7 +96,7 @@ test("tamagui -> treat: carries a documented secondary tamagui API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> treat | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> treat | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -130,11 +130,6 @@ test("tamagui -> treat: carries a documented secondary tamagui API explicitly", 
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
-		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -160,7 +155,7 @@ test("tamagui -> treat: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -187,8 +182,8 @@ test("tamagui -> treat: loads concrete theme and project context variants", asyn
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		        "kind": "capability",
+		        "hint": "the styled subject is not a verified intrinsic element",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -198,7 +193,7 @@ test("tamagui -> treat: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -225,8 +220,8 @@ test("tamagui -> treat: loads concrete theme and project context variants", asyn
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		        "kind": "capability",
+		        "hint": "the styled subject is not a verified intrinsic element",
+		        "kind": "component",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -248,7 +243,7 @@ test("tamagui -> treat: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: component)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
@@ -275,8 +270,8 @@ test("tamagui -> treat: resolves concrete token values with project context", as
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
+		      "hint": "the styled subject is not a verified intrinsic element",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -295,7 +290,7 @@ test("tamagui -> treat: preserves malformed concrete tamagui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: tamagui -> treat | lowering-residual: component)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
@@ -323,8 +318,8 @@ test("tamagui -> treat: preserves malformed concrete tamagui input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Treat styles must be emitted from a .treat.ts or .treat.js module",
-		      "kind": "capability",
+		      "hint": "the source file contains parse errors",
+		      "kind": "component",
 		      "preserved": undefined,
 		    },
 		  ],

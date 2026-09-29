@@ -124,7 +124,7 @@ test("goober -> css-modules: carries a documented secondary goober API explicitl
 		      "preserved": undefined,
 		    },
 		    {
-		      "hint": "the React wrapper requires a TSX source module",
+		      "hint": "the source host is not verified as React",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

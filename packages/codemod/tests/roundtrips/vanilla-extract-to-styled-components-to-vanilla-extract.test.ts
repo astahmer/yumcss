@@ -84,7 +84,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "red", padding: "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -268,7 +268,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -341,7 +341,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -428,7 +428,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: resolves token va
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],

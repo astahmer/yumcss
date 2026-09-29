@@ -134,7 +134,7 @@ test("panda -> pandwind -> panda: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createRecipe as __pandwindcreateRecipe } from "../__pandwind/recipe";
+		import { createRecipe as __pandwindcreateRecipe } from "./__pandwind/recipe";
 		const css = createUnsafeCss();
 		export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
 		    "converted": 1,
