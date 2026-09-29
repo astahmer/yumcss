@@ -107,6 +107,22 @@ export const App = () => <Box sx={{ boxShadow: "none", zIndex: "auto", maxWidth:
 	`);
 });
 
+test("MUI print display shorthand becomes a print media condition", () => {
+	const source = `import { Box } from "@mui/material";
+export const App = () => <Box sx={{ display: "block", displayPrint: "none" }} />;`;
+	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+
+	expect(result.converted).toBe(1);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain('"@media print": { display: "none" }');
+	expect(result.code).not.toContain("displayPrint");
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <div className={css.class({ display: "block", "@media print": { display: "none" } })} />;"
+	`);
+});
+
 test("MUI styled declarations preserve component shape and plain CSS semantics", () => {
 	const source = `import { styled } from "@mui/system";
 export const Card = styled("div")({ padding: 2 });
