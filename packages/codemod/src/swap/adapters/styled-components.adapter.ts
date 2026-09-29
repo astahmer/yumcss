@@ -256,6 +256,7 @@ export default defineCodemodAdapter({
 		},
 	],
 	packages: CodemodAdapterKit.dependency("styled-components", "peer"),
+	hostPropFilter: { prefixes: ["$"] },
 	sourceObjectOptions: {
 		propertyAliases: STYLED_COMPONENTS_VENDOR_PROPERTY_ALIASES,
 		valueTransforms: { "*": styledComponentsNumericValue },

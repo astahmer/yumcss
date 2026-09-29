@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
-import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodCallPatternFormTag,
@@ -26,6 +26,15 @@ const goober = makeExtraAdapter({
 	call: /\b(?:css\s*(?:\(\s*\{|`)|styled\.[A-Za-z_$][\w$]*\s*`)/g,
 	forms: [CodemodCallPatternFormTag.Object, CodemodCallPatternFormTag.Template],
 	prefix: "css(",
+	// Goober's object parser serializes numeric values as authored, so targets must not add units.
+	sourceObjectOptions: {
+		valueTransforms: {
+			"*": (value) =>
+				value.kind === StyleValueKindTag.Literal && typeof value.value === "number"
+					? { ...value, value: String(value.value) }
+					: value,
+		},
+	},
 	residualPatterns: [
 		{
 			name: "setup",

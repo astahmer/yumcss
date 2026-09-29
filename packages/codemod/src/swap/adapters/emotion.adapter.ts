@@ -395,6 +395,19 @@ const emotionAdapter = defineCodemodAdapter({
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			resolveHostRepresentation: ({ program }) =>
 				canRewriteEmotionHost(program) ? StyleHostRepresentationKind.Class : undefined,
+			preflight: ({ program }) => {
+				const subject = program.source?.subject;
+				if (subject === undefined) return [];
+				const attrsExpression = componentAttrsExpressionForSubject(subject);
+				if (attrsExpression === undefined) return [];
+				return [
+					{
+						kind: StyleProgramResidualKindTag.HostFramework,
+						text: attrsExpression,
+						hint: "Emotion has no verified attrs component contract for preserving the source wrapper's props and refs",
+					},
+				];
+			},
 			rewriteHost: ({ code, program, emittedExpression }) =>
 				rewriteEmotionHost({ code, program, emittedExpression }),
 		},

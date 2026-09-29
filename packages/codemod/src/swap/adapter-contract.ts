@@ -33,7 +33,7 @@ import type {
 import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
-export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/3" as const;
+export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/4" as const;
 
 export type AdapterDependencyKind = `${AdapterDependencyKindTag}`;
 
@@ -226,6 +226,8 @@ export interface AdapterParseResult {
 
 export interface AdapterEmitContext {
 	readonly file: string;
+	/** Original file text available to target emitters that create source maps. */
+	readonly sourceText?: string;
 	readonly config: AdapterProjectConfig;
 	readonly sourceConfig?: AdapterProjectConfig;
 	readonly mode: AdapterCapabilityMode;
@@ -376,6 +378,8 @@ export interface AdapterHostRewriteResult {
 }
 
 export interface AdapterComponentRewriteContext {
+	/** Distinguish a capability probe from the final rewrite over emitted code. */
+	readonly phase?: "preflight" | "rewrite";
 	readonly source: string;
 	readonly code: string;
 	readonly file: string;

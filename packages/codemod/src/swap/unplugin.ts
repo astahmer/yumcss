@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { MagicString } from "magic-string";
 import { createUnplugin } from "unplugin";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
@@ -83,6 +84,36 @@ function generatedAbsolutePath(root: string, file: AdapterGeneratedFile): string
 	return resolve(root, file.path);
 }
 
+function migrationSourceMap(source: string, code: string, file: string) {
+	const output = new MagicString(source);
+	let prefixLength = 0;
+	while (
+		prefixLength < source.length &&
+		prefixLength < code.length &&
+		source[prefixLength] === code[prefixLength]
+	)
+		prefixLength += 1;
+
+	let suffixLength = 0;
+	while (
+		suffixLength < source.length - prefixLength &&
+		suffixLength < code.length - prefixLength &&
+		source[source.length - suffixLength - 1] === code[code.length - suffixLength - 1]
+	)
+		suffixLength += 1;
+
+	const sourceMiddleEnd = source.length - suffixLength;
+	const codeMiddle = code.slice(prefixLength, code.length - suffixLength);
+	if (prefixLength < sourceMiddleEnd) {
+		if (codeMiddle.length === 0) output.remove(prefixLength, sourceMiddleEnd);
+		else output.update(prefixLength, sourceMiddleEnd, codeMiddle);
+	} else if (codeMiddle.length > 0) {
+		output.appendLeft(prefixLength, codeMiddle);
+	}
+
+	return output.generateMap({ source: file, includeContent: true, hires: "boundary" });
+}
+
 /**
  * Bundler-neutral virtual migration mechanics. The unplugin factory below
  * projects this one use case into each host bundler; source matching,
@@ -163,7 +194,9 @@ function createVirtualMigrationPlugin(options: PandwindMigrateOptions) {
 					residuals: result.residuals,
 				});
 			if (result.generatedFiles.length > 0) emitGeneratedFiles(result.generatedFiles, file);
-			return result.code === code ? null : { code: result.code, map: null };
+			return result.code === code
+				? null
+				: { code: result.code, map: migrationSourceMap(code, result.code, file) };
 		},
 		resolveId(source: string, importer?: string) {
 			if (importer === undefined) return null;

@@ -9,7 +9,7 @@ import {
 } from "./host-adapters.ts";
 import { HostComponentRewriterId } from "./identifiers.ts";
 
-export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
+export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/2" as const;
 
 /** Canonical intrinsic host projection for source component adapters. */
 export function canonicalizeSourceHost(
@@ -106,6 +106,8 @@ export interface HostComponentRewriteRequest {
 	readonly styleExpression?: string;
 	/** Source component attributes projected by the owning target adapter. */
 	readonly attrsExpression?: string;
+	/** Prefixes removed by the source framework before attributes reach the host. */
+	readonly filteredPropPrefixes?: readonly string[];
 	/** The class expression is actually a complete component value from the target emitter. */
 	readonly componentExpression?: boolean;
 }
@@ -127,6 +129,11 @@ export interface StandaloneHostComponentRewriteRequest {
 	/** Expression that evaluates to the generated Pandwind class string. */
 	readonly classExpression: string;
 }
+
+export type HostComponentDeclarationPreflightRequest = Omit<
+	HostComponentRewriteRequest,
+	"source" | "classExpression"
+>;
 
 const isPandwindCarrier = (expression: string): boolean =>
 	/^css\.(?:class|vars)\(/u.test(expression.trim());
@@ -157,7 +164,9 @@ export interface HostDynamicCarrierRewriteResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
-const styledCallParts = (subject: string): { readonly arguments: readonly string[] } | undefined => {
+const styledCallParts = (
+	subject: string,
+): { readonly arguments: readonly string[] } | undefined => {
 	if (!subject.startsWith("styled(")) return undefined;
 	let callDepth = 0;
 	let quote: string | undefined;
@@ -198,7 +207,10 @@ const styledCallParts = (subject: string): { readonly arguments: readonly string
 	}
 	if (callEnd === undefined) return undefined;
 	const modifiers = subject.slice(callEnd + 1).trim();
-	if (modifiers !== "" && !/^(?:<[^>]*>)?(?:\.attrs\([\s\S]*\)|\.props\([\s\S]*\))?$/u.test(modifiers))
+	if (
+		modifiers !== "" &&
+		!/^(?:<[^>]*>)?(?:\.attrs\([\s\S]*\)|\.props\([\s\S]*\))?$/u.test(modifiers)
+	)
 		return undefined;
 	const argumentsList: string[] = [];
 	let start = 0;
@@ -231,10 +243,12 @@ export function intrinsicTagForSubject(subject: string): string | undefined {
 	const member = new RegExp(`^styled\\.([A-Za-z_$][\\w$]*)${suffix}$`, "u").exec(subject)?.[1];
 	if (member !== undefined && /^[a-z][\w-]*$/.test(member)) return member;
 	const call = styledCallParts(subject);
-	if (call === undefined || call.arguments.length < 1 || call.arguments.length > 2) return undefined;
+	if (call === undefined || call.arguments.length < 1 || call.arguments.length > 2)
+		return undefined;
 	const tag = /^['"]([a-z][\w-]*)['"]$/u.exec(call.arguments[0] ?? "")?.[1];
 	if (tag === undefined) return undefined;
-	if (call.arguments.length === 2 && componentPropsExpressionForSubject(subject) === undefined) return undefined;
+	if (call.arguments.length === 2 && componentPropsExpressionForSubject(subject) === undefined)
+		return undefined;
 	return tag;
 }
 
@@ -664,6 +678,235 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 	return { code, changed: code !== request.source, needsCx, residuals: [] };
 }
 
+function rewriteReactComponentDeclaration(
+	request: HostComponentRewriteRequest,
+	match: RegExpExecArray,
+): HostComponentRewriteResult {
+	const attrsExpression = request.attrsExpression?.trim();
+	const attrsValueExpression = componentAttrsValueExpression(attrsExpression);
+	if (attrsExpression !== undefined && attrsValueExpression === undefined)
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: attrsExpression,
+					hint: "styled component attrs must be a static object or a props callback to preserve them",
+				},
+			],
+		};
+	if (!/\.(?:tsx|jsx|mdx)$/u.test(request.file ?? ""))
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.binding,
+					hint: "a reusable JSX wrapper requires a JSX source file",
+				},
+			],
+		};
+	const classAttribute = "className";
+	const filteredPropPrefixes = request.filteredPropPrefixes ?? [];
+	const typeScript = /\.(?:ts|tsx)$/u.test(request.file ?? "");
+	const attrsSetup =
+		attrsExpression === undefined
+			? ""
+			: `const attrs${typeScript ? ": Record<string, any>" : ""} = ${attrsValueExpression}; const { as: _attrsAs, forwardedAs: _attrsForwardedAs, ...attrsProps } = attrs; `;
+	const targetComponent =
+		attrsExpression === undefined
+			? `props.as ?? props.forwardedAs ?? ${JSON.stringify(request.tag)}`
+			: `attrs.as ?? props.as ?? attrs.forwardedAs ?? props.forwardedAs ?? ${JSON.stringify(request.tag)}`;
+	const mergedClass = mergeClassExpression(
+		request.classExpression,
+		attrsExpression === undefined
+			? `props.${classAttribute}`
+			: `[attrs.${classAttribute}, props.${classAttribute}].filter(Boolean).join(" ")`,
+	);
+	const forwardedProps =
+		filteredPropPrefixes.length === 0
+			? attrsExpression === undefined
+				? "{...rest}"
+				: "{...rest} {...attrsProps}"
+			: `{...Object.fromEntries(Object.entries(${attrsExpression === undefined ? "rest" : "{ ...rest, ...attrsProps }"}).filter(([key]) => !${JSON.stringify(filteredPropPrefixes)}.some((prefix) => key.startsWith(prefix))))}`;
+	const styleAttribute =
+		attrsExpression !== undefined
+			? ` style={{ ${request.styleExpression === undefined ? "" : `...${request.styleExpression}, `}...props.style, ...attrs.style }}`
+			: request.styleExpression === undefined
+				? ""
+				: ` style={{ ...${request.styleExpression}, ...props.style }}`;
+	const componentName = request.binding.replace(/[^A-Za-z0-9_$]/gu, "_");
+	const localBindings = new Set<string>();
+	const uniqueBinding = (candidate: string): string => {
+		let value = candidate;
+		let suffix = 2;
+		while (request.source.includes(value) || localBindings.has(value))
+			value = `${candidate}${suffix++}`;
+		localBindings.add(value);
+		return value;
+	};
+	const forwardRefBinding = uniqueBinding(`__pandwind${componentName}ForwardRef`);
+	const componentPropsWithoutRefType = uniqueBinding(`__pandwind${componentName}PropsWithoutRef`);
+	const componentRefType = uniqueBinding(`__pandwind${componentName}Ref`);
+	const componentElementType = uniqueBinding(`__pandwind${componentName}ElementType`);
+	const componentReactElementType = uniqueBinding(`__pandwind${componentName}ReactElement`);
+	const componentPropsType = `__pandwind${componentName}Props`;
+	const componentType = `__pandwind${componentName}Component`;
+	const runtimePropsType = `__pandwind${componentName}RuntimeProps`;
+	const defaultComponentType = /^[a-z][a-z\d-]*$/u.test(request.tag)
+		? JSON.stringify(request.tag)
+		: `typeof ${request.tag}`;
+	const transientKeyTypes = filteredPropPrefixes
+		.map((prefix) => `\`${prefix.replace(/[\\`]/gu, "\\$&")}${"${string}"}\``)
+		.join(" | ");
+	const transientPropsType =
+		transientKeyTypes === "" ? "" : ` & { readonly [key in ${transientKeyTypes}]?: unknown }`;
+	const forwardRefTypes = typeScript
+		? `<${componentRefType}<${defaultComponentType}>, ${runtimePropsType}>`
+		: "";
+	const componentRefPropType = uniqueBinding(`__pandwind${componentName}RefProp`);
+	const typeDefinitions = typeScript
+		? `type ${componentPropsType}<C extends ${componentElementType}> = Omit<${componentPropsWithoutRefType}<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }${transientPropsType}; type ${componentType} = <C extends ${componentElementType} = ${defaultComponentType}>(props: ${componentPropsType}<C> & { ref?: ${componentRefPropType}<${componentRefType}<C>> }) => ${componentReactElementType} | null; type ${runtimePropsType} = Record<string, any>;`
+		: "";
+	const declarationExpression =
+		`${request.binding} = ${typeScript ? `(() => { ${typeDefinitions} return ` : ""}` +
+		`${forwardRefBinding}${forwardRefTypes}((props, ref) => { ${attrsSetup}const Component = ${targetComponent}; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component ${forwardedProps} ref={ref} ${classAttribute}={${mergedClass.expression}}${styleAttribute} />; })` +
+		`${typeScript ? ` as ${componentType}; })()` : ""};`;
+	const bindingStart = match.index + match[0].indexOf(request.binding);
+	const assignmentEnd = match.index + match[0].length;
+	return {
+		code:
+			request.source.slice(0, bindingStart) +
+			declarationExpression +
+			request.source.slice(assignmentEnd),
+		changed: true,
+		needsCx: mergedClass.needsCx,
+		imports: [
+			`import { forwardRef as ${forwardRefBinding} } from "react";`,
+			...(typeScript
+				? [
+						`import type { ComponentPropsWithoutRef as ${componentPropsWithoutRefType}, ComponentRef as ${componentRefType}, ElementType as ${componentElementType}, ReactElement as ${componentReactElementType}, Ref as ${componentRefPropType} } from "react";`,
+					]
+				: []),
+		],
+		residuals: [],
+	};
+}
+
+function rewriteSolidComponentDeclaration(
+	request: HostComponentRewriteRequest,
+	match: RegExpExecArray,
+): HostComponentRewriteResult {
+	if (!/^[a-z][a-z\d-]*$/u.test(request.tag))
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.tag,
+					hint: "Solid class wrappers currently require a verified intrinsic host",
+				},
+			],
+		};
+	if ((request.filteredPropPrefixes?.length ?? 0) > 0)
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.binding,
+					hint: "Solid class wrappers cannot prove source transient-prop filtering",
+				},
+			],
+		};
+	if (request.attrsExpression !== undefined)
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.attrsExpression,
+					hint: "Solid class wrappers do not yet preserve styled-component attrs precedence",
+				},
+			],
+		};
+	if (request.styleExpression !== undefined)
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.binding,
+					hint: "Solid class wrappers do not yet preserve a dynamic style carrier",
+				},
+			],
+		};
+	if (!/\.(?:tsx|jsx|mdx)$/u.test(request.file ?? ""))
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.binding,
+					hint: "a reusable Solid JSX wrapper requires a JSX source file",
+				},
+			],
+		};
+	const typeScript = /\.(?:tsx|ts)$/u.test(request.file ?? "");
+	const componentName = request.binding.replace(/[^A-Za-z0-9_$]/gu, "_");
+	const localBindings = new Set<string>();
+	const uniqueBinding = (candidate: string): string => {
+		let value = candidate;
+		let suffix = 2;
+		while (request.source.includes(value) || localBindings.has(value))
+			value = `${candidate}${suffix++}`;
+		localBindings.add(value);
+		return value;
+	};
+	const childrenBinding = uniqueBinding(`__pandwind${componentName}Children`);
+	const splitPropsBinding = uniqueBinding(`__pandwind${componentName}SplitProps`);
+	const jsxTypeBinding = uniqueBinding(`__pandwind${componentName}JSX`);
+	const propsType = `__pandwind${componentName}Props`;
+	const classAttribute = "class";
+	const mergedClass = mergeClassExpression(request.classExpression, `local.${classAttribute}`);
+	const typeDefinitions = typeScript
+		? `type ${propsType} = ${jsxTypeBinding}.IntrinsicElements[${JSON.stringify(request.tag)}];`
+		: "";
+	const declarationExpression =
+		`${request.binding} = ${typeScript ? `(() => { ${typeDefinitions} return ` : ""}` +
+		`(props${typeScript ? `: ${propsType}` : ""}) => { const [local, forwarded] = ${splitPropsBinding}(props, ["class", "children", "ref"]); const resolvedChildren = ${childrenBinding}(() => local.children); return <${request.tag} {...forwarded} ref={local.ref} ${classAttribute}={${mergedClass.expression}}>{resolvedChildren()}</${request.tag}>; }` +
+		`${typeScript ? "; })()" : ""};`;
+	const bindingStart = match.index + match[0].indexOf(request.binding);
+	const assignmentEnd = match.index + match[0].length;
+	return {
+		code:
+			request.source.slice(0, bindingStart) +
+			declarationExpression +
+			request.source.slice(assignmentEnd),
+		changed: true,
+		needsCx: mergedClass.needsCx,
+		imports: [
+			`import { children as ${childrenBinding}, splitProps as ${splitPropsBinding} } from "solid-js";`,
+			...(typeScript ? [`import type { JSX as ${jsxTypeBinding} } from "solid-js";`] : []),
+		],
+		residuals: [],
+	};
+}
+
 function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostComponentRewriteResult {
 	const escapedBinding = request.binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const escapedExpression = request.classExpression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -692,14 +935,9 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 			needsCx: false,
 			residuals: [],
 		};
-	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
-	const attrsExpression = request.attrsExpression?.trim();
-	const attrsValueExpression = componentAttrsValueExpression(attrsExpression);
-	if (
-		attrsExpression !== undefined &&
-		request.framework !== BuiltinHostFramework.React &&
-		request.framework !== BuiltinHostFramework.Preact
-	)
+	if (request.framework === BuiltinHostFramework.Solid)
+		return rewriteSolidComponentDeclaration(request, match);
+	if (request.framework !== BuiltinHostFramework.React)
 		return {
 			code: request.source,
 			changed: false,
@@ -707,70 +945,37 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 			residuals: [
 				{
 					kind: "host-framework",
-					text: attrsExpression,
-					hint: `styled component attrs projection requires a React host, got ${request.framework}`,
+					text: request.binding,
+					hint: `a ref-preserving reusable class wrapper is not verified for ${request.framework}`,
 				},
 			],
 		};
-	if (attrsExpression !== undefined && attrsValueExpression === undefined)
+	return rewriteReactComponentDeclaration(request, match);
+}
+
+export function preflightHostComponentDeclaration(
+	request: HostComponentDeclarationPreflightRequest,
+): HostComponentRewriteResult {
+	const classExpression = "__pandwindClassPreflight";
+	const rewriter = getHostComponentRewriter(request.framework);
+	if (rewriter?.rewriteDeclaration === undefined)
 		return {
-			code: request.source,
+			code: "",
 			changed: false,
 			needsCx: false,
 			residuals: [
 				{
 					kind: "host-framework",
-					text: attrsExpression,
-					hint: "styled component attrs must be a static object or a props callback to preserve them",
+					text: request.binding,
+					hint: `a reusable class wrapper is not verified for ${request.framework}`,
 				},
 			],
 		};
-	const attrsSetup =
-		attrsExpression === undefined
-			? ""
-			: `const attrs = ${attrsValueExpression}; const { as: _attrsAs, ...attrsProps } = attrs; `;
-	const componentExpression =
-		attrsExpression === undefined
-			? `props.as ?? ${JSON.stringify(request.tag)}`
-			: `attrs.as ?? props.as ?? ${JSON.stringify(request.tag)}`;
-	const classInputs =
-		attrsExpression === undefined
-			? `props.${classAttribute}`
-			: `cx(attrs.${classAttribute}, props.${classAttribute})`;
-	const mergedClass = mergeClassExpression(request.classExpression, classInputs);
-	const attrsStyle =
-		attrsExpression === undefined
-			? ""
-			: ` style={{ ${request.styleExpression === undefined ? "" : `...${request.styleExpression}, `}...props.style, ...attrs.style }}`;
-	const declaration =
-		request.framework === BuiltinHostFramework.React ||
-		request.framework === BuiltinHostFramework.Preact
-			? `${request.binding} = (props) => { ${attrsSetup}const Component = ${componentExpression}; const { as: _as, ...rest } = props; return <Component {...rest} ${attrsExpression === undefined ? "" : "{...attrsProps} "}${classAttribute}={${mergedClass.expression}}${attrsStyle} />; };`
-			: `${request.binding} = (props) => <${request.tag} ${attrsExpression === undefined ? "" : `{...(${attrsExpression})} `}{...props} ${classAttribute}={${mergedClass.expression}} />;`;
-	const declarationWithStyle =
-		request.styleExpression === undefined || attrsExpression !== undefined
-			? declaration
-			: declaration.replace(
-					request.framework === BuiltinHostFramework.React ||
-						request.framework === BuiltinHostFramework.Preact
-						? " />; };"
-						: " />;",
-					` style={{ ...${request.styleExpression}, ...props.style }} />;${request.framework === BuiltinHostFramework.React || request.framework === BuiltinHostFramework.Preact ? " };" : ""}`,
-				);
-	return {
-		code:
-			request.source.slice(0, match.index + match[0].indexOf(request.binding)) +
-			declarationWithStyle +
-			request.source.slice(
-				match.index +
-					match[0].indexOf(request.binding) +
-					match[0].length -
-					match[0].indexOf(request.binding),
-			),
-		changed: true,
-		needsCx: mergedClass.needsCx,
-		residuals: [],
-	};
+	return rewriter.rewriteDeclaration({
+		...request,
+		source: `const ${request.binding} = ${classExpression};`,
+		classExpression,
+	});
 }
 
 function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRewriteResult {
@@ -914,7 +1119,7 @@ function rewriteStandaloneJsx(
 	}
 	const className = "__pandwindStandaloneClass";
 	const componentName = "__pandwindStandaloneComponent";
-	const forwardRefBinding = "__pandwindStandaloneForwardRef";	
+	const forwardRefBinding = "__pandwindStandaloneForwardRef";
 	const componentRefBinding = "__pandwindStandaloneComponentRef";
 	const componentPropsBinding = "__pandwindStandaloneComponentProps";
 	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
@@ -922,12 +1127,11 @@ function rewriteStandaloneJsx(
 	const typeScript = /\.(?:ts|tsx)$/u.test(request.file ?? "");
 	const isPreact = request.framework === BuiltinHostFramework.Preact;
 	const runtimeModule = isPreact ? "preact/compat" : "react";
-	const forwardRefTypes =
-		!typeScript
-			? ""
-			: isPreact
-				? `<HTMLElement, JSX.HTMLAttributes<HTMLElement>>`
-				: `<${componentRefBinding}<${JSON.stringify(request.tag)}>, ${componentPropsBinding}<${JSON.stringify(request.tag)}>>`;
+	const forwardRefTypes = !typeScript
+		? ""
+		: isPreact
+			? `<HTMLElement, JSX.HTMLAttributes<HTMLElement>>`
+			: `<${componentRefBinding}<${JSON.stringify(request.tag)}>, ${componentPropsBinding}<${JSON.stringify(request.tag)}>>`;
 	const imports = [
 		`import { forwardRef as ${forwardRefBinding} } from "${runtimeModule}";`,
 		...(typeScript && isPreact ? ['import type { JSX } from "preact";'] : []),

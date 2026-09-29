@@ -79,6 +79,7 @@ function projectStaticSubjectToClass(
 					framework: context.framework,
 					classExpression: context.emittedExpression,
 					attrsExpression: context.attrsExpression,
+					filteredPropPrefixes: context.program.source?.hostPropFilter?.prefixes,
 				});
 				return {
 					code: rewritten.code,
@@ -89,6 +90,40 @@ function projectStaticSubjectToClass(
 							: []),
 					],
 					residuals: rewritten.residuals,
+				};
+			}
+			const filteredPropPrefixes = context.program.source?.hostPropFilter?.prefixes ?? [];
+			if (filteredPropPrefixes.length > 0) {
+				if (context.code === context.source) return { code: context.code, residuals: [] };
+				const declaration = rewriter.rewriteDeclaration?.({
+					source: context.code,
+					file: context.file,
+					binding: context.binding,
+					tag: context.tag,
+					framework: context.framework,
+					classExpression: context.emittedExpression,
+					filteredPropPrefixes,
+				});
+				if (declaration === undefined)
+					return {
+						code: context.code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: context.binding,
+								hint: `${context.targetId} cannot filter source transient props in a class wrapper`,
+							},
+						],
+					};
+				return {
+					code: declaration.code,
+					imports: [
+						...(declaration.imports ?? []),
+						...(declaration.needsCx
+							? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+							: []),
+					],
+					residuals: declaration.residuals,
 				};
 			}
 

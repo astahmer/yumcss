@@ -1,4 +1,8 @@
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
+import {
+	getHostComponentRewriter,
+	preflightHostComponentDeclaration,
+} from "../host-component-rewriter.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
 	CodemodCallPatternKindTag,
@@ -56,6 +60,56 @@ export default defineCodemodAdapter({
 			handlesFrameworkSemantics: true,
 			hostRepresentation: StyleHostRepresentationKind.Class,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+			rewriteComponent: (context) => {
+				if (context.representation === StyleHostRepresentationKind.Component)
+					return { code: context.code, residuals: [] };
+				const rewriteDeclaration = getHostComponentRewriter(context.framework)?.rewriteDeclaration;
+				if (rewriteDeclaration === undefined)
+					return {
+						code: context.code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: context.binding,
+								hint: "Linaria class projection requires a reusable wrapper for the source component contract",
+							},
+						],
+					};
+				if (context.phase === "preflight") {
+					const preview = preflightHostComponentDeclaration({
+						file: context.file,
+						binding: context.binding,
+						tag: context.tag,
+						framework: context.framework,
+						...(context.attrsExpression === undefined
+							? {}
+							: { attrsExpression: context.attrsExpression }),
+						...(context.program.source?.hostPropFilter?.prefixes === undefined
+							? {}
+							: { filteredPropPrefixes: context.program.source.hostPropFilter.prefixes }),
+					});
+					return { code: context.code, residuals: preview.residuals };
+				}
+				const rewritten = rewriteDeclaration({
+					source: context.code,
+					file: context.file,
+					binding: context.binding,
+					tag: context.tag,
+					framework: context.framework,
+					classExpression: context.emittedExpression,
+					...(context.attrsExpression === undefined
+						? {}
+						: { attrsExpression: context.attrsExpression }),
+					...(context.program.source?.hostPropFilter?.prefixes === undefined
+						? {}
+						: { filteredPropPrefixes: context.program.source.hostPropFilter.prefixes }),
+				});
+				return {
+					code: rewritten.code,
+					...(rewritten.imports === undefined ? {} : { imports: rewritten.imports }),
+					residuals: rewritten.residuals,
+				};
+			},
 		},
 	},
 	emit(program, { templateCss }, context) {

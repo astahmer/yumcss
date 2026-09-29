@@ -83,7 +83,7 @@ export interface ExtraAdapterOptions {
 	readonly functionValues?: boolean;
 	readonly sourceObjectOptions?: Pick<
 		StyleProgramOptions,
-		"nestedObjectKind" | "namedRuleObjects" | "arrayRuleKinds" | "emissionHints"
+		"nestedObjectKind" | "namedRuleObjects" | "arrayRuleKinds" | "emissionHints" | "valueTransforms"
 	>;
 	readonly migration?: AdapterMigrationHooks;
 	/** Adapter-owned semantic strategies composed by the route lowering registry. */

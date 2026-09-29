@@ -4,6 +4,7 @@ import {
 	type StyleProgram,
 	type StyleProgramOptions,
 	type StyleProgramResidual,
+	type StyleHostPropFilter,
 } from "./semantic-ir.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
@@ -137,6 +138,8 @@ export interface CodemodAdapterSpec {
 	readonly capabilities: AdapterCapabilities;
 	readonly detectPatterns: readonly RegExp[];
 	readonly sourceModules: readonly string[];
+	/** Source-owned prop-filter semantics copied onto component programs. */
+	readonly hostPropFilter?: StyleHostPropFilter;
 	/** Optional target-specific source modules to remove after a complete migration. */
 	readonly sourceModulesToRemove?: (targetId: string) => readonly string[];
 	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
@@ -244,9 +247,28 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 					loadConfigAsync: async (context: AdapterConfigContext) =>
 						AdapterEvidence.normalizeConfig(await spec.loadConfigAsync!(context)),
 				}),
-		parse: (source, context) =>
-			spec.parse?.(source, context) ??
-			AdapterParser.parse(source, context, spec.patterns, spec.sourceObjectOptions),
+		parse: (source, context) => {
+			const parsed =
+				spec.parse?.(source, context) ??
+				AdapterParser.parse(source, context, spec.patterns, spec.sourceObjectOptions);
+			if (spec.hostPropFilter === undefined) return parsed;
+			return {
+				...parsed,
+				matches: parsed.matches.map((match) => {
+					if (match.program.source?.subject === undefined) return match;
+					return {
+						...match,
+						program: {
+							...match.program,
+							source: {
+								...match.program.source,
+								hostPropFilter: spec.hostPropFilter,
+							},
+						},
+					};
+				}),
+			};
+		},
 		emit: (program, context) => {
 			const renderers = AdapterRenderersImplementation;
 			const render = (value: StyleProgram) => spec.emit(value, renderers, context);

@@ -26,7 +26,7 @@ import { NodeKind, PropertyKindTag } from "pandwind/tw/literal";
 
 const defaultDeclarationOrdering = createStyleDeclarationOrderingPolicy();
 
-export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/4" as const;
+export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/5" as const;
 
 export const enum SemanticConditionKindTag {
 	Named = "named",
@@ -180,6 +180,10 @@ export interface StyleRule {
 	readonly source?: StyleProgramSource;
 }
 
+export interface StyleHostPropFilter {
+	readonly prefixes?: readonly string[];
+}
+
 export interface StyleProgramSource {
 	readonly file?: string;
 	readonly start?: number;
@@ -192,6 +196,8 @@ export interface StyleProgramSource {
 	readonly subjectKind?: "member" | "call";
 	/** Authored `.attrs(...)` expression attached to a styled subject. */
 	readonly subjectAttrs?: string;
+	/** Source-owned prop prefixes omitted from the rendered host but accepted by its wrapper. */
+	readonly hostPropFilter?: StyleHostPropFilter;
 	readonly framework?: string;
 	/** Original JSX opening element when a source adapter owns style props. */
 	readonly hostOpenTag?: string;

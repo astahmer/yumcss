@@ -38,9 +38,7 @@ const mayAliasSourceFile = (sourceFile: string, specifier: string) => {
 	const specifierPath = specifier.split(/[?#]/u, 1)[0] ?? specifier;
 	if (/^(?:@\/|~\/|#)/u.test(specifierPath)) return true;
 	const moduleLeaf = stripScriptSuffix(sourceFile).split("/").at(-1);
-	const specifierLeaf = stripScriptSuffix(specifierPath)
-		.split("/")
-		.at(-1);
+	const specifierLeaf = stripScriptSuffix(specifierPath).split("/").at(-1);
 	return moduleLeaf !== undefined && moduleLeaf === specifierLeaf;
 };
 
@@ -54,7 +52,10 @@ const relativeModule = (
 	if (resolvedByHost !== undefined) return projectPath(root, resolvedByHost);
 	if (!specifier.startsWith(".")) return undefined;
 	const importerPath = projectRelativePath(root, importer);
-	const base = joinDocumentPath(dirnameDocumentPath(importerPath), specifier.split(/[?#]/u, 1)[0] ?? specifier);
+	const base = joinDocumentPath(
+		dirnameDocumentPath(importerPath),
+		specifier.split(/[?#]/u, 1)[0] ?? specifier,
+	);
 	const candidates = [
 		base,
 		...scriptSuffixes.map((suffix) => `${base}${suffix}`),
@@ -68,10 +69,15 @@ const relativeModule = (
 export const planProjectModuleRename = (
 	request: ProjectModuleRenameRequest,
 ): ProjectModuleRenamePlan => {
-	if (request.root === undefined || request.listFiles === undefined || request.readFile === undefined)
+	if (
+		request.root === undefined ||
+		request.listFiles === undefined ||
+		request.readFile === undefined
+	)
 		return {
 			status: "blocked",
-			reason: "a complete project file index is required to update imports before renaming this module",
+			reason:
+				"a complete project file index is required to update imports before renaming this module",
 		};
 	const root = joinDocumentPath(request.root);
 	const sourceFile = projectPath(root, request.file);
@@ -86,7 +92,8 @@ export const planProjectModuleRename = (
 	const changes = new Map<string, AdapterFileChange>();
 	for (const listedFile of sourceFiles) {
 		const consumerFile = projectPath(root, listedFile);
-		if (consumerFile === sourceFile || !SOURCE_SCANNER_SERVICE.isSupportedFile(consumerFile)) continue;
+		if (consumerFile === sourceFile || !SOURCE_SCANNER_SERVICE.isSupportedFile(consumerFile))
+			continue;
 		const source = request.readFile(listedFile);
 		if (source === undefined)
 			return {
@@ -118,7 +125,9 @@ export const planProjectModuleRename = (
 		}
 		let code = source;
 		let changed = false;
-		for (const reference of references.toSorted((left, right) => right.range.start - left.range.start)) {
+		for (const reference of references.toSorted(
+			(left, right) => right.range.start - left.range.start,
+		)) {
 			const resolved = relativeModule(request, root, listedFile, reference.source);
 			if (resolved === undefined && mayAliasSourceFile(sourceFile, reference.source))
 				return {
@@ -136,7 +145,7 @@ export const planProjectModuleRename = (
 					reason: `the import range in ${listedFile} is invalid`,
 				};
 			const quote = source[reference.range.start];
-			if ((quote !== "\"" && quote !== "'") || source[reference.range.end - 1] !== quote)
+			if ((quote !== '"' && quote !== "'") || source[reference.range.end - 1] !== quote)
 				return {
 					status: "blocked",
 					reason: `the import in ${listedFile} cannot be rewritten without changing its syntax`,

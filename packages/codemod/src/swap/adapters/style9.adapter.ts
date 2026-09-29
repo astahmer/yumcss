@@ -1,12 +1,59 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
+import { StyleValueKindTag } from "../semantic-ir.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
+
+// Mirrors style9 0.18.2's normalizeValue unitless-property contract.
+const STYLE9_UNITLESS_PROPERTIES = new Set([
+	"animationIterationCount",
+	"borderImageOutset",
+	"borderImageSlice",
+	"borderImageWidth",
+	"boxFlex",
+	"boxFlexGroup",
+	"boxOrdinalGroup",
+	"columnCount",
+	"flex",
+	"flexGrow",
+	"flexOrder",
+	"flexPositive",
+	"flexShrink",
+	"flexNegative",
+	"fontWeight",
+	"gridRowEnd",
+	"gridRowSpan",
+	"gridRowStart",
+	"gridColumnEnd",
+	"gridColumnSpan",
+	"gridColumnStart",
+	"lineClamp",
+	"lineHeight",
+	"opacity",
+	"order",
+	"orphans",
+	"tabSize",
+	"widows",
+	"zIndex",
+	"zoom",
+	"fillOpacity",
+	"floodOpacity",
+	"stopOpacity",
+	"strokeDasharray",
+	"strokeDashoffset",
+	"strokeMiterlimit",
+	"strokeOpacity",
+	"strokeWidth",
+	"scale",
+	"scaleX",
+	"scaleY",
+	"scaleZ",
+]);
 
 const style9 = makeExtraAdapter({
 	id: CodemodAdapterId.Style9,
@@ -25,7 +72,20 @@ const style9 = makeExtraAdapter({
 	targetImports: ['import style9 from "style9";'],
 	namedObjects: true,
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-	sourceObjectOptions: { namedRuleObjects: true },
+	sourceObjectOptions: {
+		namedRuleObjects: true,
+		valueTransforms: {
+			"*": (value, property) => {
+				if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "number")
+					return value;
+				if (property === undefined || property.startsWith("--")) return value;
+				if (property === "fontSize") return { ...value, value: `${value.value / 16}rem` };
+				return STYLE9_UNITLESS_PROPERTIES.has(property)
+					? value
+					: { ...value, value: `${value.value}px` };
+			},
+		},
+	},
 	targetPolicy: {
 		handlesHostRewrites: true,
 		dynamicClassCarrier: true,

@@ -1,5 +1,11 @@
+import { MagicString } from "magic-string";
 import { SOURCE_SCANNER_SERVICE, SourceBindings } from "pandwind/source";
-import { dirnameDocumentPath, isAbsoluteDocumentPath, joinDocumentPath, relativeDocumentPath } from "../../path-utils.ts";
+import {
+	dirnameDocumentPath,
+	isAbsoluteDocumentPath,
+	joinDocumentPath,
+	relativeDocumentPath,
+} from "../../path-utils.ts";
 import type {
 	AdapterComponentRewriteContext,
 	AdapterEmitContext,
@@ -13,10 +19,7 @@ import {
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
 import { parseObjectLiteral } from "../parse.ts";
-import {
-	CodemodAdapterId,
-	StyleHostRepresentationKind,
-} from "../identifiers.ts";
+import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 import {
 	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
@@ -58,7 +61,11 @@ const globalDomAttributes = new Set([
 	"translate",
 ]);
 
-const staticDomAttrsExpression = (expression: string | undefined, tag: string): string | undefined => {
+const staticDomAttrsExpression = (
+	expression: string | undefined,
+	tag: string,
+	filteredPropPrefixes: readonly string[] = [],
+): string | undefined => {
 	if (expression === undefined) return undefined;
 	const normalized = expression.trim();
 	if (!normalized.startsWith("{") || !normalized.endsWith("}")) return undefined;
@@ -68,6 +75,7 @@ const staticDomAttrsExpression = (expression: string | undefined, tag: string): 
 	if (attributes === null) return undefined;
 	if (
 		attributes.keys.some(({ key }) => {
+			if (filteredPropPrefixes.some((prefix) => key.startsWith(prefix))) return false;
 			if (key === "type") return tag !== "button" && tag !== "input";
 			if (key === "as" || key === "forwardedAs" || key === "className" || key === "style")
 				return true;
@@ -81,6 +89,20 @@ const staticDomAttrsExpression = (expression: string | undefined, tag: string): 
 	)
 		return undefined;
 	return `(${normalized})`;
+};
+
+const hostPropFilterPredicate = (program: StyleProgram): string => {
+	const prefixes = program.source?.hostPropFilter?.prefixes ?? [];
+	return prefixes.length === 0
+		? "true"
+		: prefixes.map((prefix) => `!key.startsWith(${JSON.stringify(prefix)})`).join(" && ");
+};
+
+const hostPropFilterType = (program: StyleProgram): string => {
+	const prefixes = program.source?.hostPropFilter?.prefixes ?? [];
+	if (prefixes.length === 0) return "";
+	const keys = prefixes.map((prefix) => `\`${prefix}\${string}\``).join(" | ");
+	return ` & { readonly [key in ${keys}]?: unknown }`;
 };
 
 const isPlainStyleProgram = (program: StyleProgram): boolean =>
@@ -119,11 +141,7 @@ const sourceBindingForProgram = (
 	)?.assignedBinding;
 };
 
-const declarationPrefixExists = (
-	source: string,
-	file: string,
-	program: StyleProgram,
-): boolean => {
+const declarationPrefixExists = (source: string, file: string, program: StyleProgram): boolean => {
 	const binding = sourceBindingForProgram(file, source, program);
 	const start = program.source?.start;
 	if (binding === undefined || start === undefined) return false;
@@ -136,7 +154,7 @@ const declarationPrefixExists = (
 	).test(prefix);
 };
 
-const componentUnsupportedReason = (
+const componentHostUnsupportedReason = (
 	file: string,
 	source: string,
 	program: StyleProgram,
@@ -151,9 +169,32 @@ const componentUnsupportedReason = (
 	const attrsExpression = componentAttrsExpressionForSubject(subject);
 	if (
 		attrsExpression !== undefined &&
-		staticDomAttrsExpression(attrsExpression, intrinsicTagForSubject(subject) ?? "") === undefined
+		staticDomAttrsExpression(
+			attrsExpression,
+			intrinsicTagForSubject(subject) ?? "",
+			program.source?.hostPropFilter?.prefixes,
+		) === undefined
 	)
 		return "attrs must be a literal object of supported DOM attributes without class, style, or polymorphic props";
+	const binding = sourceBindingForProgram(file, source, program);
+	if (binding !== undefined) {
+		if (hasComponentAttributeUse({ source, file, binding, attribute: "as" }))
+			return "the component has polymorphic as usage";
+		if (hasComponentAttributeUse({ source, file, binding, attribute: "forwardedAs" }))
+			return "the component has forwardedAs usage";
+	}
+	return undefined;
+};
+
+const componentUnsupportedReason = (
+	file: string,
+	source: string,
+	program: StyleProgram,
+): string | undefined => {
+	const hostReason = componentHostUnsupportedReason(file, source, program);
+	if (hostReason !== undefined) return hostReason;
+	const subject = program.source?.subject;
+	if (subject === undefined) return "the styled subject is not a verified intrinsic element";
 	if (program.residuals.length > 0) return "the style program already contains source residuals";
 	if ((program.themes?.length ?? 0) > 0)
 		return "theme-bound styles need a project theme projection";
@@ -175,15 +216,8 @@ const componentUnsupportedReason = (
 	const binding = sourceBindingForProgram(file, source, program);
 	if (binding === undefined || !declarationPrefixExists(source, file, program))
 		return "the styled expression is not a named component declaration";
-	if (hasComponentAttributeUse({ source, file, binding, attribute: "as" }))
-		return "the component has polymorphic as usage";
-	if (hasComponentAttributeUse({ source, file, binding, attribute: "forwardedAs" }))
-		return "the component has forwardedAs usage";
 	return undefined;
 };
-
-const canEmitComponent = (file: string, source: string, program: StyleProgram): boolean =>
-	componentUnsupportedReason(file, source, program) === undefined;
 
 const componentResidual = (
 	text: string,
@@ -217,27 +251,70 @@ const stylesheetArtifact = (
 	return { path, specifier, local: `__pandwind${binding}Styles` };
 };
 
+const stylesheetSourceMap = (
+	context: AdapterEmitContext,
+	program: StyleProgram,
+	path: string,
+	content: string,
+): string | undefined => {
+	const sourceStart = program.source?.start;
+	const sourceFile = projectRelativeFile(context);
+	if (
+		context.sourceText === undefined ||
+		sourceStart === undefined ||
+		sourceFile === undefined ||
+		sourceStart < 0 ||
+		sourceStart >= context.sourceText.length
+	)
+		return undefined;
+
+	const source = new MagicString(context.sourceText);
+	source.update(sourceStart, sourceStart + 1, content);
+	return source
+		.snip(sourceStart, sourceStart + 1)
+		.generateMap({ file: path, source: sourceFile, includeContent: true, hires: "boundary" })
+		.toString();
+};
+
 const targetComponentRewrite = (
 	context: AdapterComponentRewriteContext,
-): { readonly code: string; readonly imports?: readonly string[]; readonly residuals: readonly StyleProgramResidual[] } => {
+): {
+	readonly code: string;
+	readonly imports?: readonly string[];
+	readonly residuals: readonly StyleProgramResidual[];
+} => {
+	if (context.phase === "preflight") {
+		const reason = componentHostUnsupportedReason(context.file, context.source, context.program);
+		return reason === undefined
+			? { code: context.code, residuals: [] }
+			: { code: context.code, residuals: [componentResidual(context.binding, reason)] };
+	}
 	if (
 		context.framework !== BuiltinHostFramework.React ||
 		context.file.endsWith(".tsx") === false ||
 		sourceHasParseErrors(context.file, context.source) ||
 		(context.attrsExpression !== undefined &&
-			staticDomAttrsExpression(context.attrsExpression, context.tag) === undefined) ||
-		!isPlainStyleProgram(context.program) ||
-		hasComponentAttributeUse({ source: context.source, file: context.file, binding: context.binding, attribute: "as" }) ||
-		hasComponentAttributeUse({ source: context.source, file: context.file, binding: context.binding, attribute: "forwardedAs" })
+			staticDomAttrsExpression(
+				context.attrsExpression,
+				context.tag,
+				context.program.source?.hostPropFilter?.prefixes,
+			) === undefined) ||
+		!isPlainStyleProgram(context.program)
 	)
 		return { code: context.code, residuals: [componentResidual(context.binding)] };
 	if (context.code === context.source) return { code: context.code, residuals: [] };
 	const tag = context.tag;
-	const classExpression = /^(__pandwind[A-Za-z_$][\w$]*Styles)\.root$/u.exec(context.emittedExpression);
+	const classExpression = /^(__pandwind[A-Za-z_$][\w$]*Styles)\.root$/u.exec(
+		context.emittedExpression,
+	);
 	if (classExpression === null)
 		return { code: context.code, residuals: [componentResidual(context.binding)] };
 	const styleBinding = classExpression[1];
-	const attrsExpression = staticDomAttrsExpression(context.attrsExpression, tag);
+	const attrsExpression = staticDomAttrsExpression(
+		context.attrsExpression,
+		tag,
+		context.program.source?.hostPropFilter?.prefixes,
+	);
 	const escapedBinding = context.binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const escapedExpression = context.emittedExpression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const assignment = new RegExp(
@@ -251,12 +328,14 @@ const targetComponentRewrite = (
 	const componentRefBinding = `__pandwind${context.binding}ComponentRef`;
 	const componentPropsBinding = `__pandwind${context.binding}ComponentProps`;
 	const tagType = JSON.stringify(tag);
+	const filterPredicate = hostPropFilterPredicate(context.program);
+	const filterType = hostPropFilterType(context.program);
 	const forwardedProps =
 		attrsExpression === undefined
-			? `Object.fromEntries(Object.entries(props).filter(([key]) => !key.startsWith("$")))`
-			: `Object.fromEntries([...Object.entries(props), ...Object.entries(${attrsExpression})].filter(([key]) => !key.startsWith("$")))`;
+			? `Object.fromEntries(Object.entries(props).filter(([key]) => ${filterPredicate}))`
+			: `Object.fromEntries([...Object.entries(props), ...Object.entries(${attrsExpression})].filter(([key]) => ${filterPredicate}))`;
 	const replacement =
-		`${forwardRefBinding}<${componentRefBinding}<${tagType}>, ${componentPropsBinding}<${tagType}>>(` +
+		`${forwardRefBinding}<${componentRefBinding}<${tagType}>, ${componentPropsBinding}<${tagType}>${filterType}>(` +
 		`({ className, ...props }, ref) => (` +
 		`<${tag} {...${forwardedProps}} ref={ref} className={[${styleBinding}.root, className].filter(Boolean).join(" ")} />` +
 		`))`;
@@ -312,16 +391,46 @@ export const cssModulesAdapter: StyleAdapter = {
 				text: "",
 				residuals: [componentResidual(subject)],
 			};
+		const sourceMapPath = `${artifact.path}.map`;
+		const sourceMapName = sourceMapPath.split("/").at(-1);
+		const baseContent = `.root { ${emission.text.trim()} }\n`;
+		const sourceMap =
+			sourceMapName === undefined
+				? undefined
+				: stylesheetSourceMap(
+						context,
+						program,
+						artifact.path,
+						`${baseContent}/*# sourceMappingURL=${sourceMapName} */\n`,
+					);
 		const generatedFile: AdapterGeneratedFile = {
 			path: artifact.path,
-			content: `.root { ${emission.text.trim()} }\n`,
+			content:
+				sourceMap === undefined
+					? baseContent
+					: `${baseContent}/*# sourceMappingURL=${sourceMapName} */\n`,
 			purpose: "CSS Modules styles for a migrated React component",
 		};
 		return {
 			...emission,
 			text: `${artifact.local}.root`,
-			imports: [...(emission.imports ?? []), `import ${artifact.local} from ${JSON.stringify(artifact.specifier)};`],
-			generatedFiles: [...(emission.generatedFiles ?? []), generatedFile],
+			imports: [
+				...(emission.imports ?? []),
+				`import ${artifact.local} from ${JSON.stringify(artifact.specifier)};`,
+			],
+			generatedFiles: [
+				...(emission.generatedFiles ?? []),
+				generatedFile,
+				...(sourceMap === undefined
+					? []
+					: [
+							{
+								path: sourceMapPath,
+								content: sourceMap,
+								purpose: "CSS Modules source map for a migrated React component",
+							},
+						]),
+			],
 		};
 	},
 };

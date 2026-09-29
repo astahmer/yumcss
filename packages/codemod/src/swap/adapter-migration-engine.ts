@@ -380,7 +380,10 @@ function runAdapterMigrationInternal(
 	let moduleFileOutputExtension: string | undefined;
 	let moduleFileRenameChecked = false;
 	let moduleFileRenameBlockedReason: string | undefined;
-	let moduleFileRenameChanges = new Map<string, import("./adapter-contract.ts").AdapterFileChange>();
+	let moduleFileRenameChanges = new Map<
+		string,
+		import("./adapter-contract.ts").AdapterFileChange
+	>();
 	const unpreservedParseResiduals = parsed.residuals.filter(
 		(residual) => residual.preserved !== true,
 	);
@@ -741,6 +744,7 @@ function runAdapterMigrationInternal(
 				framework !== undefined &&
 				targetComponentRewriter !== undefined
 					? targetComponentRewriter({
+							phase: "preflight",
 							source,
 							code: source,
 							file: options.file,
@@ -758,11 +762,11 @@ function runAdapterMigrationInternal(
 			if (sourceSubjectAttrs !== undefined && targetComponentPreview?.residuals.length) {
 				loweringResiduals = [...loweringResiduals, ...targetComponentPreview.residuals];
 			}
+			const hasTargetComponentUsage = targetComponentPreview?.residuals.length === 0;
 			const rewriter =
 				binding !== undefined && tag !== undefined && framework !== undefined
 					? getHostComponentRewriter(framework)
 					: undefined;
-			const hasTargetComponentUsage = targetComponentPreview?.residuals.length === 0;
 			const hasHostUsage =
 				hasTargetComponentUsage ||
 				(binding !== undefined &&
@@ -787,6 +791,40 @@ function runAdapterMigrationInternal(
 				// factory even when its host-bound representation is a class. Select the
 				// standalone contract before deciding whether a class wrapper is needed.
 				hostRepresentation = targetPolicy.standaloneHostRepresentation;
+			}
+			if (
+				hostRepresentation === StyleHostRepresentationKind.Class &&
+				targetComponentPreview !== undefined &&
+				targetComponentPreview.residuals.length > 0
+			) {
+				const componentResiduals = targetComponentPreview.residuals;
+				const detail = componentResiduals
+					.map((residual) => residual.hint ?? residual.kind)
+					.join("; ");
+				skipped++;
+				residuals.push(...componentResiduals);
+				outcomes.push({
+					sourceStart: match.start,
+					sourceText: match.sourceText,
+					outcome: StyleMigrationOutcome.Residual,
+					representation: targetRepresentationKind,
+					detail,
+				});
+				edits.push(
+					skipMarkerEdit(
+						match.start,
+						migrationSkipMarkerText(
+							{
+								marker,
+								sourceAdapter: sourceAdapter.id,
+								targetAdapter: targetAdapter.id,
+								loweringResiduals: componentResiduals,
+							},
+							"embedded-code",
+						),
+					),
+				);
+				continue;
 			}
 			const standaloneExport =
 				binding === undefined &&
@@ -842,6 +880,7 @@ function runAdapterMigrationInternal(
 						binding,
 						tag,
 						framework,
+						file: options.file,
 						...(sourceSubjectAttrs === undefined ? {} : { attrsExpression: sourceSubjectAttrs }),
 						...(DynamicClassHost.styleExpression(carrierResiduals, "props") === undefined
 							? {}
@@ -886,6 +925,7 @@ function runAdapterMigrationInternal(
 					binding,
 					tag,
 					framework,
+					file: options.file,
 					...(sourceSubjectAttrs === undefined ? {} : { attrsExpression: sourceSubjectAttrs }),
 					styleExpression: DynamicClassHost.styleExpression(carrierResiduals),
 				});
@@ -995,6 +1035,7 @@ function runAdapterMigrationInternal(
 						binding,
 						tag,
 						framework,
+						file: options.file,
 						...(sourceSubjectAttrs === undefined ? {} : { attrsExpression: sourceSubjectAttrs }),
 						...(DynamicClassHost.styleExpression(loweringResiduals, "props") === undefined
 							? {}
@@ -1080,6 +1121,7 @@ function runAdapterMigrationInternal(
 		residuals.push(...loweringResiduals);
 		const emitContext = {
 			file: options.file,
+			sourceText: source,
 			config: targetConfig,
 			sourceConfig: config,
 			mode,
@@ -1150,9 +1192,9 @@ function runAdapterMigrationInternal(
 		// the registry. Reparsing the TS carrier through the target parser would
 		// only fabricate parse residuals for valid emitted source.
 		const semanticArtifactEmission =
-		emitted.semantic !== undefined &&
-		(targetRepresentationKind === StyleRepresentationKind.PortableArtifact ||
-			(emitted.generatedFiles?.length ?? 0) > 0);
+			emitted.semantic !== undefined &&
+			(targetRepresentationKind === StyleRepresentationKind.PortableArtifact ||
+				(emitted.generatedFiles?.length ?? 0) > 0);
 		const reparsed = semanticArtifactEmission
 			? undefined
 			: targetAdapter.parse(emittedForValidation, {
@@ -1383,6 +1425,7 @@ function runAdapterMigrationInternal(
 	}
 	for (const request of targetComponentRewrites) {
 		const rewrite = targetAdapter.migration?.targetPolicy?.rewriteComponent?.({
+			phase: "rewrite",
 			source,
 			code: runtimeEdited,
 			file: options.file,

@@ -1142,6 +1142,7 @@ export function createStylesheetFileMigration(
 				const program = lowering.program;
 				const emitContext: AdapterEmitContext = {
 					file: context.file,
+					sourceText: context.source,
 					config: context.targetConfig,
 					mode: "safe",
 					capability: effectiveCapabilityReport,

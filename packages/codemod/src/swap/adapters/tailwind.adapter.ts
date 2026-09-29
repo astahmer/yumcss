@@ -40,7 +40,10 @@ import {
 } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
-import { getHostComponentRewriter } from "../host-component-rewriter.ts";
+import {
+	getHostComponentRewriter,
+	preflightHostComponentDeclaration,
+} from "../host-component-rewriter.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import { TokenCatalog, resolvedStyleValue } from "../tokens.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
@@ -1679,8 +1682,9 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				standaloneHostRepresentation: StyleHostRepresentationKind.Class,
 				resolveHostRepresentation: () => StyleHostRepresentationKind.Class,
 				rewriteComponent: ({
+					phase,
+					program,
 					code,
-					source,
 					file,
 					binding,
 					tag,
@@ -1694,7 +1698,6 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 						representation !== StyleHostRepresentationKind.Class
 					)
 						return { code, residuals: [] };
-					if (code === source) return { code, residuals: [] };
 					const rewriteDeclaration = getHostComponentRewriter(framework)?.rewriteDeclaration;
 					if (rewriteDeclaration === undefined)
 						return {
@@ -1707,6 +1710,19 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 								},
 							],
 						};
+					if (phase === "preflight") {
+						const preview = preflightHostComponentDeclaration({
+							file: file ?? "component.tsx",
+							binding,
+							tag,
+							framework,
+							...(attrsExpression === undefined ? {} : { attrsExpression }),
+							...(program.source?.hostPropFilter?.prefixes === undefined
+								? {}
+								: { filteredPropPrefixes: program.source.hostPropFilter.prefixes }),
+						});
+						return { code, residuals: preview.residuals };
+					}
 					const rewritten = rewriteDeclaration({
 						source: code,
 						file: file ?? "component.tsx",
@@ -1715,9 +1731,13 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 						framework,
 						classExpression: emittedExpression,
 						...(attrsExpression === undefined ? {} : { attrsExpression }),
+						...(program.source?.hostPropFilter?.prefixes === undefined
+							? {}
+							: { filteredPropPrefixes: program.source.hostPropFilter.prefixes }),
 					});
 					return {
 						code: rewritten.code,
+						...(rewritten.imports === undefined ? {} : { imports: rewritten.imports }),
 						...(rewritten.needsCx
 							? {
 									imports: ['import { createCx } from "pandwind/cx";', "const cx = createCx();"],
