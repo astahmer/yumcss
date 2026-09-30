@@ -91,6 +91,6 @@ residuals or report omissions rather than being guessed.
   cross-file css mode requires an existing `css` binding; template-literal
   classNames are never touched.
 
-> **2026-08-26:** panda-css inbound migration landed via plan 024
-> (`swap --from=panda`) — see plans/024-panda-inbound-codemod.md and
-> plans/024-baseline-report.md.
+> **2026-08-26:** Panda inbound migration landed via `swap --from=panda`.
+> See the [baseline report](024-baseline-report.md) and
+> [installed website proof](evidence/panda-website-proof.md).

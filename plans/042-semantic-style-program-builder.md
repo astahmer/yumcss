@@ -18,8 +18,8 @@ The relevant architecture is:
   through the richer builder when it is unnecessary.
 
 This plan adds a construction façade over that existing IR. It does not create
-a second AST or a new runtime styling API. It is related to
-`plans/040-pivot-any-to-any-lowering.md` and
+a second AST or a new runtime styling API. It follows the finite semantic
+route contract and works alongside
 `plans/041-any-direction-adapter-completeness.md`.
 
 ## Goal

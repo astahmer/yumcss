@@ -286,7 +286,6 @@
 			"externalContract": false,
 			"evidence": [
 				"packages/pandwind/package.json",
-				"plans/059-product-surface-and-package-boundary.md",
 				"docs/src/content/docs/contributing/architecture.md"
 			],
 			"note": "Workspace compatibility paths. New consumers should use an owning package entry."
@@ -397,7 +396,6 @@
 			"externalContract": false,
 			"evidence": [
 				"packages/codemod/package.json",
-				"plans/060-real-world-migration-proof.md",
 				"packages/codemod/tests/official-adapter-api-matrix.test.ts"
 			],
 			"note": "Catalog and proof data used by the migration lab and verification tooling."
@@ -458,8 +456,7 @@
 			"externalContract": true,
 			"evidence": [
 				"packages/analyze/package.json",
-				"packages/analyze/README.md",
-				"plans/062-tooling-trust-and-agent-surfaces.md"
+				"packages/analyze/README.md"
 			],
 			"note": "Analyzer, Migration Preview, and MCP are host tooling rather than runtime authoring APIs."
 		},
@@ -471,8 +468,7 @@
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/devtools/package.json",
-				"plans/062-tooling-trust-and-agent-surfaces.md"
+				"packages/devtools/package.json"
 			],
 			"note": "Optional Vite inspection tooling."
 		},

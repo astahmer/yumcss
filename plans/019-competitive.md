@@ -37,7 +37,7 @@ in-time competitive snapshot.
 3. **Editor experience**: tsserver types give autocomplete inside object
    calls, but there's no IntelliSense extension for class STRINGS, and no
    hover docs for utilities.
-4. **Recipes/composition API**: deliberate rejection (plans/001) — keep
+4. **Recipes/composition API**: deliberate rejection of a generic API — keep
    saying no until a real consumer asks twice.
 5. **Critical CSS / route-chunks beyond splitByRoute** (designed, unbuilt).
 6. **RSC guidance**: server-components compatibility is likely fine

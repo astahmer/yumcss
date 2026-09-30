@@ -19,9 +19,9 @@ Pandwind already has the required architectural boundaries:
   hydration, and output size.
 
 The current emitter does not yet have a verified property-aware candidate
-selection policy. Related work includes [Plan 040](./040-pivot-any-to-any-lowering.md),
-[Plan 041](./041-any-direction-adapter-completeness.md), and
-[Plan 044](./044-ast-config-and-project-context.md).
+selection policy. It builds on the finite semantic migration contract and
+shared official project-context loading; adapter proof remains tracked in
+[Plan 041](./041-any-direction-adapter-completeness.md).
 
 ## Goal
 

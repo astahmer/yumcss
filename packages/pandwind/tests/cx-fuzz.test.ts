@@ -2,8 +2,8 @@
  * Seeded differential/invariant fuzz suite for the cx() runtime.
  *
  * The hot path was reworked for speed (memoized token/signature resolution,
- * allocation-free tokenizer — see plans/004-cx-runtime-perf.md); example-based
- * suites alone cannot pin behavior across the input space. This suite throws
+ * allocation-free tokenizer); example-based suites alone cannot pin behavior
+ * across the input space. This suite throws
  * several thousand seeded-random inputs at cx() and asserts INVARIANTS rather
  * than exact strings:
  *

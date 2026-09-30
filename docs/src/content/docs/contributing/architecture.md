@@ -1114,7 +1114,7 @@ then checks the pinned baseline and migrated applications in the browser and
 records route, hydration, screenshot, and CSS-size evidence. This proof is
 kept as a script and a pinned reference rather than as a vendored website.
 
-## Token governance (plans/054)
+## Token governance
 
 `packages/analyze/src/governance` owns the versioned token-governance ledger (`pandwind.analyze.governance/1`, `TOKEN_GOVERNANCE_REPORT_VERSION = 1`): one neutral report shared by the analyzer CLI, Inspector, the lint plugin, and the tokenization codemod. Nothing in the ledger touches the frozen runtime API. One service pass (`analyzeTokenGovernance`) assembles it from the effective token universe (`EffectiveTokenContextInputs`: authored preset groups, crawled CSS theme variables, interop-artifact variables, loader-failure diagnostics), positioned usage facts from `tw()`/`css()` call-site objects, exact raw-to-token suggestions, and reachability classification over explicit coverage boundaries (dynamic expressions, public exports, safelist, plugin output, generated CSS, unscanned files, unresolved imports, configuration failures). A zero-use claim requires proven reachability; unknown is always explicit.
 
@@ -1135,49 +1135,36 @@ roots and reads generated `pandwind.interop/1` snapshots without scanning the
 repository or registry. Inspector shows release comparison within its existing
 Usage & cleanup view, alongside token validation/export fidelity.
 
-## Plan inventory and remaining claims
+## Remaining plan boundaries
 
-Every Markdown file under `plans/` was reviewed against the current source,
-tests, and recorded evidence on 2026-09-08. Plans marked complete describe
-shipped behavior; they are not reopened because an older design sketch still
-contains an unchecked example. The remaining implementation boundaries are
-deliberate:
+Completed plan documents have been removed from the active plan set; JJ history
+retains their implementation notes and closure records. Remaining plan files
+cover open work, deferred options, or evidence.
 
-- `plans/040-pivot-any-to-any-lowering.md` and
-  `plans/041-any-direction-adapter-completeness.md` have executable gates for
-  the current semantic families, target representations, route matrix, and
-  residual policy. Installed browser/SSR/RSC evidence remains a separate
-  promotion dimension for adapters without a real host proof; a residual matrix
-  is safety evidence, not universal-compatibility proof.
-- `plans/044-ast-config-and-project-context.md` is complete for shared AST
-  imports, shadow scopes, semantic call-site ranges, bounded relative
-  re-export resolution, scanner-owned supported JSX host ranges, strict-first
-  official loaders, custom-context evidence, and port substitution tests.
-  Adapter-specific template dialects remain target-owned and fail closed when
-  their framework contract is not proven.
-- `plans/024-panda-inbound-codemod.md` now also has an installed pinned-host
-  proof for Velite, website typechecking, Next production build, and
-  representative `/` and `/showcase` browser rendering. The proof is recorded
-  in `plans/evidence/panda-website-proof.md`.
+- `plans/041-any-direction-adapter-completeness.md` records the finite
+  registered-adapter semantic and route contract. Adapter-specific browser,
+  SSR, and RSC proof remains a separate promotion dimension; residual-matrix
+  safety is not universal-compatibility proof.
+- Shared AST and official-project-context boundaries are in place for imports,
+  shadow scopes, semantic call-site ranges, supported JSX host ranges, and
+  loader evidence. Adapter-specific template dialects remain target-owned and
+  fail closed when their framework contract is unproven.
+- Panda's installed pinned-host proof covers Velite, website typechecking,
+  Next production build, and representative `/` and `/showcase` browser
+  rendering in `plans/evidence/panda-website-proof.md`.
 - `plans/021-multi-target-backends.md` keeps canvas and build-time Metro
-  intentionally deferred until a concrete consumer requires them. Plan 028
-  ships a narrow third-argument `define.preset(theme, options, web)` build-time surface without
-  turning the preset into a second global-CSS language.
+  deferred until a concrete consumer requires them. The preset also exposes a
+  narrow third-argument `define.preset(theme, options, web)` build-time surface
+  without becoming a second global-CSS language.
 - Runtime-only lazy method accessors were rejected after measurement. The
   shipped compiler-aware runtime pruning removes unused attachments without
   imposing a first-access tax on every factory instance.
-- `plans/054-token-usage-governance.md` is complete for the tooling ledger: versioned report, effective universe, strictness classification, exact suggestions, reachability, prune changesets, CLI/Inspector/lint/codemod consumption, and the governance bench. Migration Preview pagination for very large catalogs and an approved write-mode removal command remain bounded follow-ups inside their owning plans, not open governance work.
-- `plans/065-proof-and-adoption-closure.md` is complete for ordinary-CI
-  evidence checks, scanner-backed shared JSX host rewrites, official-loader
-  context fixtures, multi-file installed-project proofs, typed opt-in MCP host
-  seams, and consumer generated-artifact verification. Adapter-specific host
-  syntax, broader frameworks, and arbitrary project execution remain bounded by
-  their owning contracts.
+- Migration Preview pagination for very large catalogs and a write-mode
+  removal command remain deferred ideas; governance stays report-first.
 
-The remaining installed-proof items in plans 040 and 041 are explicit evidence
-requests owned by the relevant adapter; the current semantic and orchestration
-gates are complete. New work should first add a capability contract and proof
-to an owning plan rather than create a parallel architecture or duplicate an
+Remaining installed-proof items are explicit evidence requests owned by the
+relevant adapters. New work should add a capability contract and proof to an
+owning active plan rather than create a parallel architecture or duplicate an
 already-shipped plan.
 
 ## Expert target emission and generated files
@@ -1368,7 +1355,7 @@ entry, every stale file, and the exact app command that refreshes it. The same
 gate checks the Playground's generated Monaco declarations through
 `editor:types:check`.
 
-## Migration evidence contracts (plan 087)
+## Migration evidence contracts
 
 Generated reverse-route tests rebuild an immutable target project through
 `createReverseRouteInput`: actual output file identities, expected-content

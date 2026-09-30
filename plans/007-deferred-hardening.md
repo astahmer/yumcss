@@ -82,7 +82,7 @@ are skipped.
 ## C. Extend `UTILITY_SUBKEYS` beyond `text`
 
 **State:** `textSize/textColor/textAlign/textWrap/textOverflow` exist. Audit in
-`plans/001` Outcomes lists candidates: `bg` (8 concerns), `mask` (9),
+The utility split review lists candidates: `bg` (8 concerns), `mask` (9),
 `border`, `decoration`, `outline`, `flex`, `break`, `snap`.
 **Approach:** data-only change — one entry per key in the `UTILITY_SUBKEYS`
 table, plus typegen partitioning assertions in `tw-typegen.test.ts` and one

@@ -138,9 +138,8 @@ stylesheet handles them natively.
 
 - `tw()` — its semantics are class-string-shaped by definition; faking that
   on other targets is someone else's pain.
-- Runtime theme switching via CSS custom properties (plan 015's var-based
-  approach) — vars are a stylesheet concept. Non-web targets share tokens
-  through the same DTCG preset instead.
+- Runtime theme switching via CSS custom properties — vars are a stylesheet
+  concept. Non-web targets share tokens through the same DTCG preset instead.
 
 ## Guarantees
 

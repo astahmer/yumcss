@@ -163,4 +163,3 @@ The ledger captures one primary input per pair; linked generated route tests con
 - [Exhaustive route ledger](./codemod-canonicality-route-ledger.json)
 - [Registered official API cases](../../packages/codemod/src/swap/official-api-cases.ts)
 - [Route proof catalog](../../packages/codemod/src/swap/route-proof-catalog.ts)
-- [Product focus and codemod audit plan](../085-product-focus-and-codemod-audit.md)

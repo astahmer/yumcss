@@ -394,7 +394,7 @@ pnpm exec pandwind-codemod migrate -f pandwind -t unocss src
 
 ## Panda inbound migration (`migrate --from=panda`)
 
-Migrates a panda-css codebase to pandwind (plan 024):
+Migrates a panda-css codebase to pandwind:
 
 ```bash
 pnpm add pandwind
@@ -420,6 +420,7 @@ pnpm exec pandwind-codemod migrate --from=panda --to=pandwind-css '<site>/{src,a
   target project must have the `pandwind` package installed before typechecking.
   Existing generated modules are preserved on reruns; add `--force` to regenerate them.
 
-See `plans/024-panda-inbound-codemod.md` and
-`plans/024-baseline-report.md` (real-world run on the panda docs website:
-146/154 css sites + 86/86 factory elements converted, zero silent drops).
+Migration proof: [baseline report](../../plans/024-baseline-report.md) and
+[installed website proof](../../plans/evidence/panda-website-proof.md). The
+baseline run converted 146/154 CSS sites and 86/86 factory elements with zero
+silent drops.

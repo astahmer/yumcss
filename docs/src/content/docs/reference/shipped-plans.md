@@ -13,7 +13,7 @@ source of truth when a plan and an older example disagree.
 
 ## Authoring, code generation, and runtime
 
-### Typed utilities and tokens — plans 001–002
+### Typed utilities and tokens
 
 `tw()` keeps Tailwind's overloaded utilities while exposing semantic subkeys
 when the generated conflict map can prove the distinction:
@@ -28,7 +28,7 @@ and optional interop metadata; the real Tailwind compiler remains the
 validation oracle. See [the `tw()` API](/api/tw/) and
 [code generation](/tooling/codegen/).
 
-### Compile-time composition and strategies — plans 003–005
+### Compile-time composition and strategies
 
 Literal `cx()` expressions are folded by the Vite compiler when their values
 are provably static. Unknown identifiers, dynamic interpolations, spreads,
@@ -41,7 +41,7 @@ emitted through different class systems without changing application code.
 See [advanced mode](/guides/advanced/) and
 [the Tailwind adapter](/interop/tailwind-adapter/).
 
-### Dynamic values, themes, and layout — plans 014–016
+### Dynamic values, themes, and layout
 
 The static-first runtime boundary is explicit:
 
@@ -59,7 +59,7 @@ These features preserve the small frozen authoring API while moving runtime
 work into compiler and host contracts. See [theming](/api/theming/),
 [Vite plugins](/tooling/vite-plugins/), and [backends](/reference/backends/).
 
-### Dynamic value lowering — plan 057
+### Dynamic value lowering
 
 Every dynamic styling value resolves to one of three honest outcomes. A
 finite value set registers every possible output class (`tw()`) or folds the
@@ -74,7 +74,7 @@ generated CSS. See [tw() dynamic values](/api/tw/), the
 [css() vars carrier](/api/css/), and the codemod residuals in
 [codemod tooling](/tooling/codemod/).
 
-### Plans 053–058 closeout
+### Tooling and adoption closeout
 
 The local codebase Migration Preview (053), token-governance ledger (054), non-CSS-in-JS
 source adapters (055), renderer-neutral Stack bindings (056), and dynamic
@@ -126,7 +126,7 @@ changing adapter or scanner contracts.
 
 ## Multi-target and migration contracts
 
-### Backends — plan 021
+### Backends
 
 The resolved style IR is lowered through one backend contract with separate
 CSS, React Native, React Strict DOM, and OpenTUI implementations. CSS owns
@@ -134,7 +134,7 @@ selectors, cascade, SSR, and browser artifacts; object backends own their unit,
 condition, and capability policies. Canvas remains deferred until a concrete
 consumer exists.
 
-### React Strict DOM support — plan 066
+### React Strict DOM support
 
 React Strict DOM has a target-owned style backend and
 `pandwind/react-strict-dom` surface. Web uses StyleX-compatible compiled maps;
@@ -144,7 +144,7 @@ native uses the React Native object policy. The codemod recognizes `css.create`,
 The package is not bundled into Pandwind; RSD remains responsible for its host
 runtime and platform compiler. See [React Strict DOM integration](/interop/react-strict-dom/).
 
-### Bidirectional codemods and Panda — plans 022 and 024
+### Bidirectional codemods and Panda
 
 The swap pipeline supports Pandwind-to-Pandwind and outbound routes through a
 neutral IR, while Panda project migration is a staged pipeline for discovery,
@@ -161,7 +161,7 @@ StyleX export.
 See [codemods](/tooling/codemod/), [adapter migrations](/interop/css-in-js-adapters/),
 and [the adapter contract](/reference/adapter-contract/).
 
-### The CSS-in-JS pivot — plans 025–027 and 029–039
+### The CSS-in-JS pivot
 
 The pivot is defined as a capability contract rather than an unconditional
 claim that unrelated runtimes are interchangeable:
@@ -236,11 +236,10 @@ evidence stay in the engineering workspace until complete.
 
 These records must not be presented as shipped product commitments:
 
-- Plan 018 is an audited, non-blocking inspector UX review; presentation
-  polish remains optional.
-- Plan 019 is a point-in-time competitive research record, not a feature
-  checklist.
-- Plan 028's third-argument `define.preset(theme, options, web)` contract is shipped for the narrow
+- The Inspector UX review was non-blocking; presentation polish remains
+  optional.
+- Competitive research was point-in-time context, not a feature checklist.
+- The third-argument `define.preset(theme, options, web)` contract is shipped for the narrow
   build-time surface described in [Preset contracts](/api/presets/); authored
   CSS remains the complete web-global escape hatch for broader syntax.
 - Canvas and build-time Metro support remain extension points without a
@@ -252,5 +251,5 @@ These records must not be presented as shipped product commitments:
   boundary, not a publication claim.
 
 When adding a new capability, update the owning adapter contract, add a
-substitution/conformance fixture, add or update the relevant user-facing
-guide, and record the evidence in the appropriate plan and proof artifact.
+substitution/conformance fixture, add or update the relevant user-facing guide,
+and record evidence in an active plan and proof artifact.

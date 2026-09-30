@@ -46,8 +46,8 @@ Packages PR, tag the new version. Nothing else.
 
 ## 2. Upstream kumo migration PR
 
-- Branch `pandwind-migration` exists in /tmp/pandwind-kumo-dogfood
-  (54 files migrated, 1:1 CSS parity verified — see plans/013).
+- The Kumo dogfood migration passed 1:1 CSS parity through
+  `packages/analyze/css-parity-kumo.mts`.
 - Steps: fork cloudflare/kumo → push branch → open PR describing the codemod,
   parity harness (`packages/analyze/css-parity-kumo.mts`) and remaining
   verbatim keeps (by-design). Expect review on: import ordering, their lint
@@ -66,8 +66,9 @@ From research.md — before scoping a custom extension:
 - [ ] Open examples/example dev build; confirm it resolves hashed/named atom
       classes to declarations.
 - [ ] Check whether any origin/source-file info is shown (expected: no).
-- [ ] If insufficient AND the sourceMappingURL spike (plans/014 §4a) shows
-      class origins natively in Chromium Styles pane — reconsider scope.
+- [ ] If insufficient, run the zero-code `sourceMappingURL` experiment; if
+      Chromium surfaces class origins natively in the Styles pane, reconsider
+      scope.
 
 ## 5. CI trend lane
 

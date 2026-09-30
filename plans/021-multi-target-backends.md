@@ -14,7 +14,7 @@ What exists today (the whole pipeline assumes CSS as the terminal artifact):
 design vocabulary (css()/createDesignCss: ~30 Figma-style props, $frame/$layout/$text)
   → resolveDesignStyle()        design/types.ts + design/resolve.ts
   → flat StyleObject            keys like `_hover__color`, values are strings
-  → ClassNameStrategy           css/class-name-strategy.ts (plan 005)
+  → ClassNameStrategy           css/class-name-strategy.ts
        ├─ default atomic        hash → opaque class, atom registry
        ├─ named-atoms           readable classes, sheetBacked
        └─ tailwind adapter      external compiler, not sheetBacked
@@ -23,12 +23,12 @@ design vocabulary (css()/createDesignCss: ~30 Figma-style props, $frame/$layout/
   → cx()                        merge = drop shadowed class names
 ```
 
-- Tokens are DTCG (`definePreset`, plan 002); conditions (`_hover`, `_dark`) are
+- Tokens are DTCG (`definePreset`); conditions (`_hover`, `_dark`) are
   preset-declared and flattened into keys before any strategy sees them.
 - `tw()` is Tailwind-class-string-shaped by definition — it is NOT the portable
   layer. Everything portable lives in `css()`/`createDesignCss`.
-- Precedent: plan 005 proved "one `css()` API, swappable output" at the class-name
-  level. This plan generalizes the _terminal artifact_ itself (classes+sheet →
+- The existing `ClassNameStrategy` proves one `css()` API can support swappable
+  output at the class-name level. This plan generalizes the _terminal artifact_ itself (classes+sheet →
   whatever the target consumes).
 
 ## Goal
@@ -71,7 +71,7 @@ wrapper.
 Out of scope:
 
 - `tw()` on non-CSS targets (it stays web-only).
-- Runtime theme switching on non-CSS targets (plan 015 is var-based = CSS-only).
+- Runtime theme switching on non-CSS targets (var-inline is CSS-only).
 - Full RN platform-conditioning (`.ios.ts`/`.android.ts` file conventions).
 
 ## Why

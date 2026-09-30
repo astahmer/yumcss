@@ -62344,11 +62344,11 @@
     "targetValidation": "adapter semantic validation; not a substitute for target compiler proof",
     "maturity": "unchanged; governed by the route-proof catalog"
   },
-  "sourceRevision": "69f5be1c3c38d73fac1e0e2ee28b76c062881780",
+  "sourceRevision": "119e80e1820f1a9420dde7a2272ae479fe20c412",
   "configuredEvidence": {
     "path": "plans/evidence/codemod-configured-audit.json",
     "sha256": "920ba606cb20213c265830e8dc6038ab34d1542bf9034f672e44bc60bc315388",
     "scope": "48 injected configuration-port scenarios; separate from primary ledger and installed evidence"
   },
-  "sourceFingerprint": "956ed0c98d6ac77d96f8915e82f0c7f2b01a3fd8ac19833aa09f3a588c9622fd"
+  "sourceFingerprint": "baff899592674bc27a69502706bb31f6f3f94aa648322f92bb713b9165aba550"
 }
