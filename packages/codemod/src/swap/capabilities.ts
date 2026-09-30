@@ -202,7 +202,8 @@ export function requiredAdapterCapabilities(
 	for (const rule of program.rules) {
 		if (needsRuleLevel) add(ruleCapability(rule.kind), `${rule.kind} rule`);
 		if (rule.selector !== undefined) add("selectors", `selector: ${rule.selector}`);
-		if (rule.children.length > 0) add("nesting", `${rule.kind} nested rules`);
+		if (rule.children.length > 0 && rule.kind !== StyleRuleKindTag.Keyframes)
+			add("nesting", `${rule.kind} nested rules`);
 	}
 	const declarations = StyleProgramAnalysis.declarations(program);
 	for (const declaration of declarations) {

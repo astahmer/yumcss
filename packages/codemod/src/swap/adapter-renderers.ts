@@ -234,6 +234,20 @@ function templateCss(program: StyleProgram): string {
 			body,
 		);
 	const renderRule = (rule: StyleProgram["rules"][number]): string => {
+		if (rule.kind === StyleRuleKindTag.Keyframes) {
+			const frames = rule.children
+				.map((frame) => {
+					const declarations = frame.declarations
+						.map(
+							(declaration) =>
+								`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)}${declaration.important ? " !important" : ""};`,
+						)
+						.join(" ");
+					return `${frame.selector ?? frame.name ?? "from"} { ${declarations} }`;
+				})
+				.join(" ");
+			return `@keyframes ${rule.name ?? "keyframes"} { ${frames} }`;
+		}
 		const grouped = new Map<
 			string,
 			{ conditions: StyleProgram["rules"][number]["conditions"]; declarations: StyleDeclaration[] }

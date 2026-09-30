@@ -39,6 +39,11 @@ const baseAdapter = createStylesheetAdapter({
 	extensions: [".module.css", ".module.scss", ".module.sass"],
 	packages: { packages: [] },
 	composition: "partial",
+	classStringArtifact: {
+		kind: "css-modules",
+		outputExtension: ".module.css",
+		importSpecifierExtension: ".module.css",
+	},
 });
 
 const unsupportedComponentHint =

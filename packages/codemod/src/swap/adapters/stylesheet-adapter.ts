@@ -9,14 +9,27 @@ import type {
 	AdapterDependencies,
 	AdapterComponentRewriteContext,
 	AdapterEmitContext,
+	AdapterGeneratedFile,
 } from "../adapter-contract.ts";
+import {
+	dirnameDocumentPath,
+	isAbsoluteDocumentPath,
+	joinDocumentPath,
+	relativeDocumentPath,
+} from "../../path-utils.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
+	StyleProgramEmissionHint,
 	StyleHostRepresentationKind,
 } from "../identifiers.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
-import { StyleProgramResidualKindTag, type StyleProgramResidual } from "../semantic-ir.ts";
+import {
+	StyleRuleKindTag,
+	StyleProgramResidualKindTag,
+	type StyleProgram,
+	type StyleProgramResidual,
+} from "../semantic-ir.ts";
 import {
 	createPreprocessorFileMigration,
 	createStylesheetFileMigration,
@@ -44,6 +57,15 @@ export interface StylesheetAdapterDefinition {
 		readonly outputExtension: string;
 		readonly importSpecifierExtension: string;
 	};
+	readonly classStringArtifact?: {
+		readonly kind: "global" | "css-modules";
+		readonly outputExtension: string;
+		readonly importSpecifierExtension: string;
+	};
+	readonly keyframesArtifact?: {
+		readonly outputExtension: string;
+		readonly importSpecifierExtension: string;
+	};
 }
 
 function projectConfig(id: CodemodAdapterId, context: AdapterConfigContext): AdapterProjectConfig {
@@ -58,6 +80,80 @@ function projectConfig(id: CodemodAdapterId, context: AdapterConfigContext): Ada
 function fileMatches(file: string, extensions: readonly string[]): boolean {
 	return extensions.some((extension) => file.endsWith(extension));
 }
+
+const isStaticClassStringProgram = (program: StyleProgram): boolean =>
+	program.emissionHints?.includes(StyleProgramEmissionHint.ClassString) === true &&
+	program.residuals.length === 0 &&
+	!StyleProgramAnalysis.hasDynamic(program) &&
+	(program.themes?.length ?? 0) === 0 &&
+	(program.compositions?.length ?? 0) === 0 &&
+	(program.plugins?.length ?? 0) === 0 &&
+	program.runtime === undefined;
+
+const isStaticNamedClassMapProgram = (program: StyleProgram): boolean =>
+	program.emissionHints?.includes(StyleProgramEmissionHint.NamedClassMap) === true &&
+	program.rules.some((rule) => rule.kind === StyleRuleKindTag.Style && rule.name !== undefined) &&
+	program.rules.every(
+		(rule) =>
+			(rule.kind === StyleRuleKindTag.Style && rule.name !== undefined) ||
+			(rule.kind === StyleRuleKindTag.Style &&
+				rule.name === undefined &&
+				rule.declarations.length === 0 &&
+				rule.children.length === 0),
+	) &&
+	program.residuals.length === 0 &&
+	!StyleProgramAnalysis.hasDynamic(program) &&
+	(program.themes?.length ?? 0) === 0 &&
+	(program.compositions?.length ?? 0) === 0 &&
+	(program.plugins?.length ?? 0) === 0 &&
+	program.runtime === undefined;
+
+const isStaticKeyframesProgram = (program: StyleProgram): boolean =>
+	program.emissionHints?.includes(StyleProgramEmissionHint.KeyframeName) === true &&
+	program.rules.length === 1 &&
+	program.rules[0]?.kind === StyleRuleKindTag.Keyframes &&
+	program.residuals.length === 0 &&
+	!StyleProgramAnalysis.hasDynamic(program) &&
+	(program.themes?.length ?? 0) === 0 &&
+	(program.compositions?.length ?? 0) === 0 &&
+	(program.plugins?.length ?? 0) === 0 &&
+	program.runtime === undefined;
+
+const projectRelativeFile = (context: AdapterEmitContext): string | undefined => {
+	if (!isAbsoluteDocumentPath(context.file)) return joinDocumentPath(context.file);
+	if (context.config.root === undefined) return undefined;
+	return relativeDocumentPath(context.config.root, context.file);
+};
+
+const cssModuleClassArtifact = (
+	context: AdapterEmitContext,
+	binding: string,
+	className: string,
+	outputExtension: string,
+	content: string,
+):
+	| { readonly file: AdapterGeneratedFile; readonly specifier: string; readonly local: string }
+	| undefined => {
+	const file = projectRelativeFile(context);
+	if (file === undefined) return undefined;
+	const directory = dirnameDocumentPath(file);
+	const fileName = file.split("/").at(-1);
+	if (fileName === undefined) return undefined;
+	const stem = fileName.replace(/\.[^.]+$/u, "");
+	const path = joinDocumentPath(directory, stem + ".pandwind-" + className + outputExtension);
+	let specifier = relativeDocumentPath(directory, path);
+	if (!specifier.startsWith(".")) specifier = "./" + specifier;
+	const safeBinding = binding.replace(/[^A-Za-z0-9_$]/gu, "_");
+	return {
+		file: {
+			path,
+			content,
+			purpose: "CSS Modules styles for a migrated static class",
+		},
+		specifier,
+		local: "__pandwind" + safeBinding + "Styles",
+	};
+};
 
 /** Shared stylesheet adapter mechanics; each source family owns its definition module. */
 export function createStylesheetAdapter(definition: StylesheetAdapterDefinition) {
@@ -94,6 +190,7 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 		packages: definition.packages,
 		capabilities: CodemodAdapterKit.allRuleCapabilities(definition.id, "unsupported", {
 			"global-rules": "exact",
+			"named-rules": "exact",
 			keyframes: "exact",
 			"font-face": "exact",
 			selectors: "exact",
@@ -147,6 +244,23 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 						const reason = reactStyledComponentUnsupportedReason(file, source, program);
 						return reason === undefined ? [] : [componentResidual(program.source.subject, reason)];
 					}
+					if (definition.classStringArtifact !== undefined && isStaticClassStringProgram(program))
+						return [];
+					if (definition.classStringArtifact !== undefined && isStaticNamedClassMapProgram(program))
+						return [];
+					if (definition.keyframesArtifact !== undefined && isStaticKeyframesProgram(program))
+						return [];
+					if (
+						program.emissionHints?.includes(StyleProgramEmissionHint.KeyframeName) === true &&
+						definition.keyframesArtifact === undefined
+					)
+						return [
+							{
+								kind: StyleProgramResidualKindTag.Capability,
+								text: source,
+								hint: `${definition.name} cannot reference a generated keyframe name without a verified global keyframe artifact`,
+							},
+						];
 					return [
 						{
 							kind: StyleProgramResidualKindTag.Capability,
@@ -159,6 +273,220 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 		},
 		emit: (program, renderers, context?: AdapterEmitContext) => {
 			const binding = context?.host?.binding;
+			if (
+				definition.classStringArtifact !== undefined &&
+				context !== undefined &&
+				(context.loweringResiduals?.length ?? 0) === 0 &&
+				isStaticNamedClassMapProgram(program)
+			) {
+				const namedRules = program.rules.filter((rule) => rule.name !== undefined);
+				const artifactBinding = binding ?? `group${context.index}`;
+				const classNames = namedRules.map((rule, index) =>
+					reactStyledComponentClassName(context.file, `${artifactBinding}-${rule.name ?? index}`),
+				);
+				const stylesheet =
+					namedRules
+						.map((rule, index) => {
+							const styleProgram: StyleProgram = {
+								...program,
+								rules: [{ ...rule, name: undefined }],
+								emissionHints: [],
+							};
+							return `.${classNames[index]} { ${renderers.templateCss(styleProgram).trim()} }`;
+						})
+						.join("\n") + "\n";
+				if (definition.classStringArtifact.kind === "global") {
+					const artifact = reactStyledComponentArtifact(
+						context,
+						artifactBinding,
+						definition.classStringArtifact.outputExtension,
+						definition.classStringArtifact.importSpecifierExtension,
+						stylesheet,
+						`${definition.name} styles for a migrated static group`,
+					);
+					if (artifact === undefined)
+						return {
+							text: "{}",
+							semantic: program,
+							residuals: [
+								{
+									kind: StyleProgramResidualKindTag.Capability,
+									text: artifactBinding,
+									hint:
+										definition.name + " cannot resolve a project-relative stylesheet artifact path",
+								},
+							],
+						};
+					const entries = namedRules.map(
+						(rule, index) => `${JSON.stringify(rule.name)}: ${JSON.stringify(classNames[index])}`,
+					);
+					return {
+						text: `{ ${entries.join(", ")} }`,
+						semantic: program,
+						imports: [`import ${JSON.stringify(artifact.specifier)};`],
+						generatedFiles: [artifact.file],
+						residuals: [],
+					};
+				}
+				const artifact = cssModuleClassArtifact(
+					context,
+					artifactBinding,
+					reactStyledComponentClassName(context.file, `group${context.index}`),
+					definition.classStringArtifact.outputExtension,
+					stylesheet,
+				);
+				if (artifact === undefined)
+					return {
+						text: "{}",
+						semantic: program,
+						residuals: [
+							{
+								kind: StyleProgramResidualKindTag.Capability,
+								text: artifactBinding,
+								hint:
+									definition.name + " cannot resolve a project-relative stylesheet artifact path",
+							},
+						],
+					};
+				const entries = namedRules.map(
+					(rule, index) =>
+						`${JSON.stringify(rule.name)}: ${artifact.local}[${JSON.stringify(classNames[index])}]`,
+				);
+				return {
+					text: `{ ${entries.join(", ")} }`,
+					semantic: program,
+					imports: [`import ${artifact.local} from ${JSON.stringify(artifact.specifier)};`],
+					generatedFiles: [artifact.file],
+					residuals: [],
+				};
+			}
+			if (
+				definition.keyframesArtifact !== undefined &&
+				context !== undefined &&
+				(context.loweringResiduals?.length ?? 0) === 0 &&
+				isStaticKeyframesProgram(program)
+			) {
+				const artifactBinding = binding ?? `keyframes${context.index}`;
+				const keyframeName = reactStyledComponentClassName(
+					context.file,
+					`keyframes${context.index}`,
+				).replace(/^pw-/u, "pw-kf-");
+				const keyframeProgram: StyleProgram = {
+					...program,
+					rules: program.rules.map((rule) => ({ ...rule, name: keyframeName })),
+				};
+				const artifact = reactStyledComponentArtifact(
+					context,
+					artifactBinding,
+					definition.keyframesArtifact.outputExtension,
+					definition.keyframesArtifact.importSpecifierExtension,
+					renderers.templateCss(keyframeProgram) + "\n",
+					`${definition.name} keyframes for a migrated static animation`,
+				);
+				if (artifact === undefined)
+					return {
+						text: "",
+						semantic: program,
+						residuals: [
+							{
+								kind: StyleProgramResidualKindTag.Capability,
+								text: artifactBinding,
+								hint: definition.name + " cannot resolve a project-relative keyframe artifact path",
+							},
+						],
+					};
+				return {
+					text: JSON.stringify(keyframeName),
+					semantic: keyframeProgram,
+					imports: [`import ${JSON.stringify(artifact.specifier)};`],
+					generatedFiles: [artifact.file],
+					residuals: [],
+				};
+			}
+			if (
+				definition.classStringArtifact !== undefined &&
+				context !== undefined &&
+				(context.loweringResiduals?.length ?? 0) === 0 &&
+				isStaticClassStringProgram(program)
+			) {
+				const styleText = renderers.templateCss(program).trim();
+				if (styleText.length === 0)
+					return { text: JSON.stringify(""), semantic: program, residuals: [] };
+				const projectFile = projectRelativeFile(context);
+				if (projectFile === undefined)
+					return {
+						text: "",
+						semantic: program,
+						residuals: [
+							{
+								kind: StyleProgramResidualKindTag.Capability,
+								text: binding ?? program.source?.pattern ?? definition.name,
+								hint:
+									definition.name + " cannot resolve a project-relative stylesheet artifact path",
+							},
+						],
+					};
+				const artifactBinding = binding ?? "style" + context.index;
+				const className = reactStyledComponentClassName(projectFile, artifactBinding);
+				const stylesheet = "." + className + " { " + styleText + " }\n";
+				if (definition.classStringArtifact.kind === "global") {
+					const artifact = reactStyledComponentArtifact(
+						context,
+						artifactBinding,
+						definition.classStringArtifact.outputExtension,
+						definition.classStringArtifact.importSpecifierExtension,
+						stylesheet,
+						definition.name + " styles for a migrated static class",
+					);
+					if (artifact === undefined)
+						return {
+							text: "",
+							semantic: program,
+							residuals: [
+								{
+									kind: StyleProgramResidualKindTag.Capability,
+									text: artifactBinding,
+									hint:
+										definition.name + " cannot resolve a project-relative stylesheet artifact path",
+								},
+							],
+						};
+					return {
+						text: JSON.stringify(className),
+						semantic: program,
+						imports: ['import "' + artifact.specifier + '";'],
+						generatedFiles: [artifact.file],
+						residuals: [],
+					};
+				}
+				const artifact = cssModuleClassArtifact(
+					context,
+					artifactBinding,
+					className,
+					definition.classStringArtifact.outputExtension,
+					stylesheet,
+				);
+				if (artifact === undefined)
+					return {
+						text: "",
+						semantic: program,
+						residuals: [
+							{
+								kind: StyleProgramResidualKindTag.Capability,
+								text: artifactBinding,
+								hint:
+									definition.name + " cannot resolve a project-relative stylesheet artifact path",
+							},
+						],
+					};
+				return {
+					text: artifact.local + "[" + JSON.stringify(className) + "]",
+					semantic: program,
+					imports: ["import " + artifact.local + ' from "' + artifact.specifier + '";'],
+					generatedFiles: [artifact.file],
+					residuals: [],
+				};
+			}
 			if (
 				componentArtifact !== undefined &&
 				context?.host?.representation === StyleHostRepresentationKind.Class &&

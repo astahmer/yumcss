@@ -59,6 +59,15 @@ export function createSassAdapter(moduleLoader?: ProjectModuleLoader) {
 		extensions: [".sass", ".scss"],
 		packages: { packages: [{ name: "sass", kind: AdapterDependencyKindTag.Config }] },
 		compilerName: "sass",
+		classStringArtifact: {
+			kind: "global",
+			outputExtension: ".scss",
+			importSpecifierExtension: ".scss",
+		},
+		keyframesArtifact: {
+			outputExtension: ".scss",
+			importSpecifierExtension: ".scss",
+		},
 		reactComponentArtifact: {
 			outputExtension: ".scss",
 			importSpecifierExtension: ".scss",

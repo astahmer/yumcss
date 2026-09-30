@@ -232,13 +232,15 @@ describe("bidirectional registered adapter matrix", () => {
 				return;
 			}
 			if (stylesheetTargets.has(targetId)) {
-				expect(result.converted).toBe(0);
-				expect(result.skipped).toBeGreaterThan(0);
-				expect(result.residuals).toEqual(
-					expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
-				);
-				expect(result.code).toContain("pandwind:migrate-skip");
-				expect(result.code).toContain("css.class");
+				expect(result.converted, `${targetId} did not emit the static class`).toBe(1);
+				expect(result.skipped, `${targetId} retained a convertible static class`).toBe(0);
+				expect(result.residuals).toEqual([]);
+				expect(result.generatedFiles).toHaveLength(1);
+				expect(result.generatedFiles[0]?.content).toContain("color: red");
+				expect(result.generatedFiles[0]?.content).toContain("padding: 1rem");
+				expect(result.code).not.toContain("pandwind:migrate-skip");
+				expect(result.code).not.toContain("css.class");
+				expect(result.validations.every((validation) => validation.valid)).toBe(true);
 				return;
 			}
 			expect(

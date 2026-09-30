@@ -49,12 +49,16 @@ test("pandwind -> css-modules -> pandwind: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | available: static, residual)
-		export const card = css.class({ color: "red", padding: "1rem" });",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import __pandwindcardStyles from "./styles.pandwind-pw-card-8cd0mc.module.css";
+
+		export const card = __pandwindcardStyles["pw-card-8cd0mc"];",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "styles.pandwind-pw-card-8cd0mc.module.css",
+		        "purpose": "CSS Modules styles for a migrated static class",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -62,6 +66,7 @@ test("pandwind -> css-modules -> pandwind: preserves an actionable concrete roun
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -70,26 +75,25 @@ test("pandwind -> css-modules -> pandwind: preserves an actionable concrete roun
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | available: static, residual)
-		export const card = css.class({ color: "red", padding: "1rem" });",
+		    "code": "import __pandwindcardStyles from "./styles.pandwind-pw-card-8cd0mc.module.css";
+
+		export const card = __pandwindcardStyles["pw-card-8cd0mc"];",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -114,12 +118,16 @@ test("pandwind -> css-modules -> pandwind: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | capability-blocked: named-conditions: named: card | available: static, residual)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import __pandwindstylesStyles from "./styles.pandwind-pw-group0-mxggr.module.css";
+
+		export const styles = { "card": __pandwindstylesStyles["pw-styles-card-1trzka1"], "muted": __pandwindstylesStyles["pw-styles-muted-1kk79fq"] };",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "styles.pandwind-pw-group0-mxggr.module.css",
+		        "purpose": "CSS Modules styles for a migrated static class",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -127,39 +135,34 @@ test("pandwind -> css-modules -> pandwind: retains the documented secondary API 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "named-conditions: named: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | capability-blocked: named-conditions: named: card | available: static, residual)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		    "code": "import __pandwindstylesStyles from "./styles.pandwind-pw-group0-mxggr.module.css";
+
+		export const styles = { "card": __pandwindstylesStyles["pw-styles-card-1trzka1"], "muted": __pandwindstylesStyles["pw-styles-muted-1kk79fq"] };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -198,12 +201,16 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | available: static, residual)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
-		      "converted": 0,
-		      "generatedFiles": [],
+		      "code": "import __pandwindcardStyles from "./styles.pandwind-pw-card-8cd0mc.module.css";
+
+		export const card = __pandwindcardStyles["pw-card-8cd0mc"];",
+		      "converted": 1,
+		      "generatedFiles": [
+		        {
+		          "path": "styles.pandwind-pw-card-8cd0mc.module.css",
+		          "purpose": "CSS Modules styles for a migrated static class",
+		        },
+		      ],
 		      "loweringPlans": [
 		        {
 		          "applied": [
@@ -211,6 +218,7 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -219,26 +227,25 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | available: static, residual)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
+		      "code": "import __pandwindcardStyles from "./styles.pandwind-pw-card-8cd0mc.module.css";
+
+		export const card = __pandwindcardStyles["pw-card-8cd0mc"];",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -251,12 +258,16 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | available: static, residual)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
-		      "converted": 0,
-		      "generatedFiles": [],
+		      "code": "import __pandwindcardStyles from "./styles.pandwind-pw-card-8cd0mc.module.css";
+
+		export const card = __pandwindcardStyles["pw-card-8cd0mc"];",
+		      "converted": 1,
+		      "generatedFiles": [
+		        {
+		          "path": "styles.pandwind-pw-card-8cd0mc.module.css",
+		          "purpose": "CSS Modules styles for a migrated static class",
+		        },
+		      ],
 		      "loweringPlans": [
 		        {
 		          "applied": [
@@ -264,6 +275,7 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -272,26 +284,25 @@ test("pandwind -> css-modules -> pandwind: preserves concrete theme and project 
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | available: static, residual)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
+		      "code": "import __pandwindcardStyles from "./styles.pandwind-pw-card-8cd0mc.module.css";
+
+		export const card = __pandwindcardStyles["pw-card-8cd0mc"];",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [],
@@ -318,12 +329,16 @@ test("pandwind -> css-modules -> pandwind: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | available: static, residual)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import __pandwindcardStyles from "./styles.pandwind-pw-card-8cd0mc.module.css";
+
+		export const card = __pandwindcardStyles["pw-card-8cd0mc"];",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "styles.pandwind-pw-card-8cd0mc.module.css",
+		        "purpose": "CSS Modules styles for a migrated static class",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -331,6 +346,7 @@ test("pandwind -> css-modules -> pandwind: resolves token values across both con
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -339,26 +355,25 @@ test("pandwind -> css-modules -> pandwind: resolves token values across both con
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> css-modules | lowering-residual: capability | available: static, residual)
-		export const card = css.class({ color: "$brand", padding: "1rem" });",
+		    "code": "import __pandwindcardStyles from "./styles.pandwind-pw-card-8cd0mc.module.css";
+
+		export const card = __pandwindcardStyles["pw-card-8cd0mc"];",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

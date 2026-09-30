@@ -116,6 +116,7 @@ function parseKeyframeProgram(
 		{
 			source: adapterSource(context, start),
 			residuals: base.residuals,
+			emissionHints: sourceObjectOptions.emissionHints,
 		},
 	);
 }

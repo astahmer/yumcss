@@ -9,8 +9,11 @@ import {
 import {
 	CodemodAdapterKit,
 	defineCodemodAdapter,
+	type CallPattern,
 	type AdapterRenderers,
+	type AdapterSourceObjectOptions,
 } from "../external-adapters.ts";
+import { AdapterParser } from "../adapter-parser.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import type {
 	AdapterConfigContext,
@@ -36,6 +39,8 @@ import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
 	CodemodAdapterId,
 	AdapterCapabilityTag,
+	CodemodCallPatternFormTag,
+	CodemodCallPatternKindTag,
 	CodemodPatternId,
 	CodemodStyleIdentity,
 	StyleProgramCompositionKind,
@@ -43,7 +48,7 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
-import { SourceBindingKind } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, SourceBindingKind, SourceBindings } from "pandwind/source";
 import { presetConditions } from "pandwind/preset";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
@@ -2694,6 +2699,116 @@ function pandwindRecipeMatches(
 	return { matches, residuals };
 }
 
+const PANDWIND_CSS_FACTORY_IMPORTS = [
+	{ source: "pandwind/css", imported: "createCss" },
+	{ source: "pandwind/css/generated", imported: "createGeneratedCss" },
+	{ source: "pandwind/unsafe/css", imported: "createUnsafeCss" },
+	{ source: "pandwind/css/runtime", imported: "createRuntimeCss" },
+] as const;
+
+const pandwindCssFactoryImport = (
+	source: string,
+	imported: string | undefined,
+	semanticMatchers: AdapterParseContext["sourceModuleSemanticMatchers"] = [],
+): boolean =>
+	PANDWIND_CSS_FACTORY_IMPORTS.some(
+		(candidate) =>
+			candidate.imported === imported &&
+			(candidate.source === source ||
+				semanticMatchers?.some((matcher) => matcher(source, candidate.source))),
+	);
+
+const pandwindCssReceivers = (context: AdapterParseContext): readonly string[] => {
+	const receivers = context.bindings?.callSites.flatMap((site) => {
+		if (site.assignedBinding === undefined || site.binding === undefined) return [];
+		if (context.bindings?.isShadowedAt(site.binding.localName, site.start) === true) return [];
+		const binding = context.resolveBinding?.(site.binding.localName) ?? site.binding;
+		const imported =
+			site.binding.kind === SourceBindingKind.Namespace ? site.property : binding.importedName;
+		const ownsFactory = pandwindCssFactoryImport(
+			binding.source,
+			imported,
+			context.sourceModuleSemanticMatchers,
+		);
+		return ownsFactory ? [site.assignedBinding] : [];
+	});
+	return [...new Set(receivers ?? [])];
+};
+
+const pandwindCssPatternsForReceiver = (receiver: string): readonly CallPattern[] => {
+	const escaped = receiver.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const memberCall = (method: string): RegExp =>
+		new RegExp(`\\b${escaped}\\.${method}\\s*\\(\\s*\\{`, "g");
+	const unsupportedCall = (name: CodemodPatternId, method: string, hint: string): CallPattern => ({
+		name,
+		regex: new RegExp(`\\b${escaped}\\.${method}\\s*\\(`, "g"),
+		form: CodemodCallPatternFormTag.Residual,
+		residual: { kind: StyleProgramResidualKindTag.Capability, hint },
+	});
+	const groupSourceOptions = (
+		_source: string,
+		context: AdapterParseContext,
+	): AdapterSourceObjectOptions => {
+		const stylesheetTarget =
+			context.targetId === CodemodAdapterId.AuthoredCss ||
+			context.targetId === CodemodAdapterId.CssModules ||
+			context.targetId === CodemodAdapterId.Less ||
+			context.targetId === CodemodAdapterId.Sass;
+		if (stylesheetTarget)
+			return {
+				namedRuleObjects: true,
+				emissionHints: [StyleProgramEmissionHint.NamedClassMap],
+			};
+		return context.targetId === CodemodAdapterId.StyleX
+			? { namedRuleObjects: true }
+			: { nestedObjectKind: "named" };
+	};
+	return [
+		{
+			name: CodemodPatternId.PandwindCssMap,
+			regex: new RegExp(`\\b${escaped}\\s*\\(\\s*\\{`, "g"),
+		},
+		{
+			name: CodemodPatternId.PandwindCssClass,
+			regex: memberCall("class"),
+			sourceObjectOptions: { emissionHints: [StyleProgramEmissionHint.ClassString] },
+		},
+		{
+			name: CodemodPatternId.PandwindCssVars,
+			regex: memberCall("vars"),
+		},
+		{
+			name: CodemodPatternId.PandwindCssKeyframes,
+			regex: memberCall("keyframes"),
+			kind: CodemodCallPatternKindTag.Keyframes,
+			sourceObjectOptions: { emissionHints: [StyleProgramEmissionHint.KeyframeName] },
+		},
+		{
+			name: CodemodPatternId.PandwindCssGroup,
+			regex: memberCall("group"),
+			sourceObjectOptions: groupSourceOptions,
+		},
+		unsupportedCall(
+			CodemodPatternId.PandwindCssRaw,
+			"raw",
+			"Pandwind css.raw() returns an uncompiled style object; preserving it as a stylesheet requires its consumer and precedence context",
+		),
+		unsupportedCall(
+			CodemodPatternId.PandwindCssProps,
+			"props",
+			"Pandwind css.props() projects compiled classes and runtime variables into host props; the target host contract is not available at this call site",
+		),
+	];
+};
+
+const pandwindSourceObjectOptions = (_source: string, context: AdapterParseContext) => ({
+	...pandwindConditionOptions(context.config.conditionCatalog),
+	valueTransforms: {
+		"*": (value: StyleValue, property?: string) =>
+			pandwindSourceValue(value, property ?? "", context),
+	},
+});
+
 export interface PandwindAdapterOptions {
 	readonly moduleLoader?: ProjectModuleLoader | null;
 	readonly conditionCatalog?: AdapterConditionCatalog;
@@ -2709,18 +2824,37 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			compilerIntegrations: ["pandwind/vite", "pandwind/unplugin"],
 			ssrHooks: ["createRuntimeCss", "renderToString"],
 		},
-		patterns: [
-			{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g },
-			{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },
-			{
-				name: CodemodPatternId.PandwindCssGroup,
-				regex: /\bcss\.group\s*\(\s*\{/g,
-				sourceObjectOptions: (_source, context) =>
-					context.targetId === CodemodAdapterId.StyleX
-						? { namedRuleObjects: true }
-						: { nestedObjectKind: "named" },
-			},
-		],
+		detect: (context, fallback) => {
+			const detected = fallback();
+			if (detected.matched) return detected;
+			try {
+				const bindings = SourceBindings.fromDocument(
+					SOURCE_SCANNER_SERVICE.scan({
+						file: context.file,
+						source: context.source,
+						root: context.root,
+					}).document,
+				);
+				const hasFactoryCall = bindings.callSites.some((site) => {
+					if (site.binding === undefined) return false;
+					const imported =
+						site.binding.kind === SourceBindingKind.Namespace
+							? site.property
+							: site.binding.importedName;
+					return pandwindCssFactoryImport(site.binding.source, imported);
+				});
+				return hasFactoryCall
+					? {
+							matched: true,
+							confidence: 1,
+							evidence: ["Pandwind CSS factory import and call"],
+						}
+					: detected;
+			} catch {
+				return detected;
+			}
+		},
+		patterns: [...pandwindCssPatternsForReceiver("css")],
 		packages: CodemodAdapterKit.dependency("pandwind", "runtime"),
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {
 			"named-conditions": "exact",
@@ -2737,8 +2871,12 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			context.sourceModules?.includes("style9") === true ||
 			context.sourceModules?.includes("styled-system/css") === true,
 		detectPatterns: [
+			/\bcss\s*\(\s*\{/,
 			/\bcss\.class\s*\(/,
+			/\bcss\.vars\s*\(/,
+			/\bcss\.group\s*\(/,
 			/\bcreateCss\s*\(/,
+			/\bcreateGeneratedCss\s*\(/,
 			/\bcreateUnsafeCss\s*\(/,
 			/\bcreateRuntimeCss\s*\(/,
 			/\b(?:createRecipe|createSlotRecipe)\s*\(/,
@@ -2746,6 +2884,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 		],
 		sourceModules: [
 			"pandwind/css",
+			"pandwind/css/generated",
 			"pandwind/unsafe/css",
 			"pandwind/css/runtime",
 			"pandwind/recipe",
@@ -2762,12 +2901,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 						officialPandwindConfig(context, moduleLoader, configuredConditionCatalog),
 				}),
 		tokenPolicy: PANDWIND_TOKEN_POLICY,
-		sourceObjectOptions: (_source, context) => ({
-			...pandwindConditionOptions(context.config.conditionCatalog),
-			valueTransforms: {
-				"*": (value, property) => pandwindSourceValue(value, property ?? "", context),
-			},
-		}),
+		sourceObjectOptions: pandwindSourceObjectOptions,
 		migration: {
 			targetPolicy: PANDWIND_TARGET_POLICY,
 			rewrite: ({ code, targetId, complete }) => {
@@ -3178,6 +3312,13 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 		...adapter,
 		parse(source: string, context: AdapterParseContext) {
 			const parsed = adapter.parse(source, context);
+			const aliasPatterns = pandwindCssReceivers(context)
+				.filter((receiver) => receiver !== "css")
+				.flatMap(pandwindCssPatternsForReceiver);
+			const aliasParsed =
+				aliasPatterns.length === 0
+					? { matches: [], residuals: [] }
+					: AdapterParser.parse(source, context, aliasPatterns, pandwindSourceObjectOptions);
 			const recipe = pandwindRecipeMatches(
 				source,
 				context,
@@ -3191,15 +3332,34 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				CodemodPatternId.PandwindSlotRecipe,
 			);
 			const runtime = runtimeSemanticRuleMatches(source, context);
+			const matches = [
+				...parsed.matches,
+				...aliasParsed.matches,
+				...recipe.matches,
+				...slotRecipe.matches,
+				...runtime.matches,
+			].map((match) => {
+				if (match.program.source?.pattern !== CodemodPatternId.PandwindCssMap) return match;
+				return {
+					...match,
+					program: {
+						...match.program,
+						residuals: [
+							...match.program.residuals,
+							{
+								kind: StyleProgramResidualKindTag.Capability,
+								text: match.sourceText,
+								hint: "Pandwind css() returns a property-keyed CompiledStyles map whose precedence and css.props consumers cannot be preserved by emitting one target class",
+							},
+						],
+					},
+				};
+			});
 			return {
-				matches: [
-					...parsed.matches,
-					...recipe.matches,
-					...slotRecipe.matches,
-					...runtime.matches,
-				].toSorted((a, b) => a.start - b.start),
+				matches: matches.toSorted((a, b) => a.start - b.start),
 				residuals: [
 					...parsed.residuals,
+					...aliasParsed.residuals,
 					...recipe.residuals,
 					...slotRecipe.residuals,
 					...runtime.residuals,

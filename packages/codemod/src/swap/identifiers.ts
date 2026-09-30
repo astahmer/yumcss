@@ -81,7 +81,13 @@ export const enum CodemodPatternId {
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",
 	StyleXDefineVars = "stylex-define-vars",
+	PandwindCssMap = "pandwind-css-map",
+	PandwindCssClass = "pandwind-css-class",
+	PandwindCssVars = "pandwind-css-vars",
 	PandwindCssGroup = "css-group",
+	PandwindCssRaw = "pandwind-css-raw",
+	PandwindCssProps = "pandwind-css-props",
+	PandwindCssKeyframes = "pandwind-css-keyframes",
 	ReactStrictDomCreate = "react-strict-dom-create",
 	ReactStrictDomKeyframes = "react-strict-dom-keyframes",
 	ReactStrictDomDefineVars = "react-strict-dom-define-vars",
@@ -196,9 +202,12 @@ export const enum AdapterOfficialApiStatusTag {
 
 export const enum StyleProgramEmissionHint {
 	GlobalVariables = "global-variables",
+	ClassString = "class-string",
 	RuntimeClass = "runtime-class",
 	RuntimeFunction = "runtime-function",
 	Recipe = "recipe",
+	KeyframeName = "keyframe-name",
+	NamedClassMap = "named-class-map",
 	RawTemplate = "raw-template",
 }
 
