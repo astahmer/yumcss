@@ -36,7 +36,7 @@ const serialize = (groups: ScalarTokenImport): string => {
 };
 
 export const themeTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/2",
+	schema: "pandwind.token-format/1",
 	id: TokenFormatId.Theme,
 	canImport: true,
 	canExport: true,

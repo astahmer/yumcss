@@ -337,7 +337,7 @@ const resolverSidecar = (
 };
 
 export const dtcgTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/2",
+	schema: "pandwind.token-format/1",
 	id: TokenFormatId.Dtcg,
 	canImport: true,
 	canExport: true,

@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 
-pandwind adapters implement `pandwind.style-adapter/5`. An adapter is both a
+pandwind adapters implement `pandwind.style-adapter/1`. An adapter is both a
 source reader and a target writer around the versioned semantic style program.
 The current contract adds target-owned named-style host projection; adapters
 must declare their version rather than silently accepting a different schema.

@@ -517,7 +517,7 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/6",
+			  "schema": "pandwind.style-program/1",
 			  "source": {
 			    "adapter": "chakra-ui",
 			    "file": "src/App.tsx",

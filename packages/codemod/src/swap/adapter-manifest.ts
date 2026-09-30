@@ -11,7 +11,7 @@ import {
 import type { AdapterOfficialApiManifest } from "./adapter-evidence.ts";
 
 /** Package metadata convention consumed before an adapter is registered. */
-export const ADAPTER_MANIFEST_SCHEMA = "pandwind.style-adapter-manifest/2" as const;
+export const ADAPTER_MANIFEST_SCHEMA = "pandwind.style-adapter-manifest/1" as const;
 export const ADAPTER_PACKAGE_FIELD = "pandwind" as const;
 
 export interface StyleAdapterManifestEntry {

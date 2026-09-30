@@ -15,7 +15,7 @@ const target = (
 	adapter: string,
 	capabilities: Partial<Record<AdapterCapabilityTag, AdapterCapabilityLevelTag>>,
 ) => ({
-	schema: "pandwind.adapter-capabilities/3" as const,
+	schema: "pandwind.adapter-capabilities/1" as const,
 	adapter,
 	capabilities,
 });
@@ -87,7 +87,7 @@ describe("StyleProgram lowering plans", () => {
 			      },
 			    ],
 			    "runtime": undefined,
-			    "schema": "pandwind.style-program/6",
+			    "schema": "pandwind.style-program/1",
 			    "source": undefined,
 			    "sourceMap": [],
 			    "themes": undefined,

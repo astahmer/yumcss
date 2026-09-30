@@ -9,7 +9,7 @@ import {
 } from "./host-adapters.ts";
 import { HostComponentRewriterId } from "./identifiers.ts";
 
-export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/2" as const;
+export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
 
 /** Canonical intrinsic host projection for source component adapters. */
 export function canonicalizeSourceHost(

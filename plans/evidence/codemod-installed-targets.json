@@ -1,7 +1,7 @@
 {
-	"schema": "pandwind.codemod-installed-targets/2",
-	"sourceFingerprint": "fc97e1f9d55cab782c5d3955ab43ed701cce0bac1de4d5664208e5f91ec254bf",
-	"proofImplementationHash": "1bbe280ce9d11c2c157aaef6be783a3e8ae8ece5a0c55a4a89d38a1b2e3e90a6",
+	"schema": "pandwind.codemod-installed-targets/1",
+	"sourceFingerprint": "956ed0c98d6ac77d96f8915e82f0c7f2b01a3fd8ac19833aa09f3a588c9622fd",
+	"proofImplementationHash": "0c975e9549507db64f6b07647d2caac403570a8edda58e8bc554bab2f9c378ce",
 	"scope": "Nine exact static React route scenarios; no route maturity promotion or universal framework claim.",
 	"reports": [
 		{
@@ -758,5 +758,5 @@
 			}
 		}
 	],
-	"reportFingerprint": "2f06e0aa3a91e57503ee2645ede5fd3b9d6b6c9c4094e1c70dc4eaa5bd401956"
+	"reportFingerprint": "2bac8698d3ac4fc97a0573ddd259d24ffdc7cb3f96907ef8bd9a394a952fcf33"
 }

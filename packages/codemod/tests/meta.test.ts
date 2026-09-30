@@ -105,7 +105,7 @@ describe("project-aware migration metadata", () => {
 		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-meta-"));
 		try {
 			const path = join(dir, "pandwind.interop.json");
-			writeFileSync(path, '{"schema":"pandwind.interop/99"}\n');
+			writeFileSync(path, '{"schema":"pandwind.interop/future"}\n');
 			expect(() => loadMetaFromSources({ interopPath: path })).toThrow(
 				"invalid pandwind.interop/1 artifact",
 			);

@@ -22,7 +22,7 @@ export const tw = createTw(__pandwindConfig);
 `;
 
 describe("Tailwind bridge interop artifact refresh", () => {
-	test("preserves v1 token snapshots and rejects previous schemas", async () => {
+	test("preserves token snapshots and rejects unsupported schemas", async () => {
 		const project = mkdtempSync(join(import.meta.dirname, ".tw-bridge-interop-"));
 		try {
 			const cssEntry = join(project, "tailwind.css");
@@ -68,12 +68,12 @@ describe("Tailwind bridge interop artifact refresh", () => {
 			expect(refreshed.tokens).toEqual(retainedArtifact.tokens);
 			expect(readFileSync(bridgeFile, "utf8")).toContain('"#123456"');
 
-			writeFileSync(interopFile, `${JSON.stringify({ schema: "pandwind.interop/99" })}\n`);
+			writeFileSync(interopFile, `${JSON.stringify({ schema: "pandwind.interop/future" })}\n`);
 			await expect(generateTwBridge(options)).rejects.toThrow(
-				"unsupported existing interop schema 'pandwind.interop/99'",
+				"unsupported existing interop schema 'pandwind.interop/future'",
 			);
 			expect(JSON.parse(readFileSync(interopFile, "utf8"))).toEqual({
-				schema: "pandwind.interop/99",
+				schema: "pandwind.interop/future",
 			});
 		} finally {
 			rmSync(project, { recursive: true, force: true });

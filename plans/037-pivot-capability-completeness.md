@@ -273,7 +273,8 @@ deferred by the task scope.
 ## Evidence status
 
 The machine-readable source-corpus artifact is
-`plans/evidence/real-repository-migrations-v2.json` (schema `/3`). Its
+`plans/evidence/real-repository-migrations-v2.json` (schema
+`pandwind.real-repository-report/1`). Its
 `promotion` object records canonical CSS, browser, SSR/hydration, streaming,
 dependency, and CSS-size evidence independently. The current source-only
 runner therefore reports static entries as `source-static`, the next-yak CSS

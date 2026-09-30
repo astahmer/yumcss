@@ -8,7 +8,7 @@ import {
 import murmurHash from "../lib/murmur-hash2.ts";
 import type { CssConfigReturn, TokenDeclaration } from "../types/typings.ts";
 
-export const PANDWIND_LIB_SCHEMA = "pandwind.lib/3" as const;
+export const PANDWIND_LIB_SCHEMA = "pandwind.lib/1" as const;
 export const PANDWIND_LIB_COMPILER = "pandwind-css/1" as const;
 export const PANDWIND_LIB_GENERATOR = "pandwind-codemod lib build" as const;
 

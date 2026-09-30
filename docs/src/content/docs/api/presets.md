@@ -108,7 +108,7 @@ their configured groups by default; unmapped CSS properties and custom
 properties accept scalar CSS values.
 
 The build-time stylesheet compiler and Vite/Unplugin output include this CSS;
-route splitting keeps it in the common bucket, and `pandwind.lib/3` artifacts
+route splitting keeps it in the common bucket, and `pandwind.lib/1` artifacts
 carry it for registered component libraries. The runtime stylesheet does not
 consume `web`, so importing a preset does not create a browser-global side
 effect. This is intentionally not a second CSS language: use authored CSS for

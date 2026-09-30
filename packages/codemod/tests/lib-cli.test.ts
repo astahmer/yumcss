@@ -119,7 +119,7 @@ describe("pandwind-codemod lib", () => {
 		writeFileSync(
 			output,
 			JSON.stringify({
-				schema: "pandwind.lib/3",
+				schema: "pandwind.lib/1",
 				generator: "pandwind-codemod lib build",
 				hash: "stale",
 			}),

@@ -26,7 +26,7 @@ import { NodeKind, PropertyKindTag } from "pandwind/tw/literal";
 
 const defaultDeclarationOrdering = createStyleDeclarationOrderingPolicy();
 
-export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/6" as const;
+export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/1" as const;
 
 export const enum SemanticConditionKindTag {
 	Named = "named",

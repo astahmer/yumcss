@@ -2,6 +2,13 @@
 
 Status: accepted and implemented in the current work.
 
+## Current pre-launch schema
+
+The current library artifact uses `pandwind.lib/1` with cascade-layer
+identity. Since the artifact has not been published, producers and consumers
+use this one contract directly and generated artifacts are regenerated when
+the contract changes.
+
 ## Context
 
 - Pandwind already supports `cascade: "specificity"` and `cascade: "layers"`.
@@ -72,8 +79,9 @@ createCss(preset, cascade policy)
 - Validate layer paths before serializing them into CSS.
 - Preserve `pandwind` for the existing `"layers"` shorthand.
 - Carry the resolved layer into library-artifact compatibility fingerprints.
-- Bump the publishable artifact envelope to `pandwind.lib/2`; old artifacts
-  fail closed rather than being interpreted with incomplete compatibility data.
+- Carry the cascade-layer identity in the library artifact envelope. Artifacts
+  missing that identity fail closed rather than being interpreted with
+  incomplete compatibility data.
 - Expose `--cascade-layer <name>` for `pandwind-codemod lib build`, requiring
   `--cascade layers`.
 
@@ -85,7 +93,7 @@ createCss(preset, cascade policy)
 | Existing shorthand | Keep `cascade: "layers"`                | Preserves the current default and keeps the common case compact.                                                                   |
 | Layer scope        | One outer generated-sheet layer         | Keeps class generation and cascade ordering unchanged; per-call layers would require separate rule registries and split semantics. |
 | Validation         | Unescaped dotted CSS identifier path    | Prevents CSS injection and keeps serialization deterministic without inventing an escaping contract.                               |
-| Artifact version   | `pandwind.lib/2`                        | The compatibility schema gains a required layer field; stale v1 artifacts must fail closed.                                        |
+| Artifact contract  | `pandwind.lib/1`                        | The artifact includes the layer identity so consumers can validate the emitted cascade semantics.                                   |
 
 ### Architecture
 
@@ -153,9 +161,9 @@ semantic CSS feature and is intentionally not part of this change.
 
 | Date       | Decision                                                 | Rationale                                                                                      |
 | ---------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| 2026-09-21 | Use a structured `cascade` value with a legacy shorthand | Keeps mode and layer ownership explicit without adding a silently inert top-level option.      |
-| 2026-09-21 | Version artifacts as `pandwind.lib/2`                    | Layer identity is part of compatibility; old artifacts lack the field and must not be trusted. |
+| 2026-09-21 | Use a structured `cascade` value with a shorthand       | Keeps mode and layer ownership explicit without adding a silently inert top-level option.      |
+| 2026-09-21 | Include the layer in the library artifact contract     | Layer identity is required to validate the emitted cascade semantics.                         |
 
-The later `plans/028-define-preset-web-notes.md` completion wave supersedes
-the artifact envelope with `pandwind.lib/3` so generated preset-owned web CSS
-is carried and validated alongside the existing rule entries.
+The completed `plans/028-define-preset-web-notes.md` work carries generated
+preset-owned web CSS through the same `pandwind.lib/1` contract as the rule
+entries.

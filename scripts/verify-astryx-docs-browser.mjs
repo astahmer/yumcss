@@ -220,7 +220,7 @@ const comparisons = baseline.map((reference, index) => {
 	};
 });
 const report = {
-	schema: "pandwind.astryx-docs-browser-report/3",
+	schema: "pandwind.astryx-docs-browser-report/1",
 	baselineUrl,
 	migratedUrl,
 	routes,

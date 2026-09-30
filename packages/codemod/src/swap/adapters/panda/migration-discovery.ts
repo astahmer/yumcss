@@ -6,7 +6,7 @@ import type { PandaMigrateOptions } from "./panda-migrate.ts";
 import { detectAlias, scanProjectUsage, type AliasInfo, type ProjectUsage } from "./project.ts";
 import { emptyPandaTheme, loadPandaTheme, type PandaTheme } from "./theme.ts";
 
-export const PANDA_DISCOVERY_SCHEMA = "pandwind.panda-discovery/2" as const;
+export const PANDA_DISCOVERY_SCHEMA = "pandwind.panda-discovery/1" as const;
 
 export interface PandaMigrationFile {
 	readonly path: string;

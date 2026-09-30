@@ -3,7 +3,7 @@ import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import { RealRepositoryProofDimension, RealRepositoryProofDimensionStatus } from "./identifiers.ts";
 
 /** Versioned evidence contract for adapter and capability coverage gates. */
-export const ADAPTER_COVERAGE_SCHEMA = "pandwind.adapter-coverage/2" as const;
+export const ADAPTER_COVERAGE_SCHEMA = "pandwind.adapter-coverage/1" as const;
 
 export type AdapterCoverageEvidenceKind = "contract" | "real-repository" | "browser";
 

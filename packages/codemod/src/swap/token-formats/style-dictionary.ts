@@ -13,7 +13,7 @@ import {
 } from "../token-format-contracts.ts";
 
 export const styleDictionaryTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/2",
+	schema: "pandwind.token-format/1",
 	id: TokenFormatId.StyleDictionary,
 	canImport: true,
 	canExport: true,

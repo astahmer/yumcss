@@ -25,7 +25,7 @@ import {
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/2" as const;
+const proofSchema = "pandwind.installed-project-proof/1" as const;
 const versions = {
 	"@pandacss/dev": "1.12.1",
 	"@types/node": "26.4.1",

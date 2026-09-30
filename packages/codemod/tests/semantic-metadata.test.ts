@@ -54,7 +54,7 @@ describe("semantic metadata and validator domains", () => {
 
 	test("runs standalone custom validators with the canonical registry", () => {
 		const program: StyleProgram = {
-			schema: "pandwind.style-program/6",
+			schema: "pandwind.style-program/1",
 			rules: [],
 			declarations: [],
 			residuals: [],
@@ -93,7 +93,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.lower({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/3",
+				schema: "pandwind.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: {
 					declarations: "exact",
@@ -118,7 +118,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.lower({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/3",
+				schema: "pandwind.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: {
 					declarations: "exact",
@@ -147,7 +147,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.lower({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/3",
+				schema: "pandwind.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: {
 					declarations: "exact",
@@ -171,7 +171,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.plan({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/3",
+				schema: "pandwind.adapter-capabilities/1",
 				adapter: "function-target",
 				capabilities: {
 					declarations: "exact",
@@ -195,7 +195,7 @@ describe("semantic metadata and validator domains", () => {
 		const plan = STYLE_LOWERING_REGISTRY.plan({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/3",
+				schema: "pandwind.adapter-capabilities/1",
 				adapter: "runtime-target",
 				capabilities: {
 					declarations: "exact",
@@ -220,7 +220,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.lower({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/3",
+				schema: "pandwind.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: { declarations: "exact", "plugin-transforms": "unsupported" },
 			},
@@ -243,7 +243,7 @@ describe("semantic metadata and validator domains", () => {
 		const plan = STYLE_LOWERING_REGISTRY.plan({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/3",
+				schema: "pandwind.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: {
 					declarations: "exact",
@@ -285,7 +285,7 @@ describe("semantic metadata and validator domains", () => {
 		const plan = registry.plan({
 			program: input,
 			target: {
-				schema: "pandwind.adapter-capabilities/3",
+				schema: "pandwind.adapter-capabilities/1",
 				adapter: "fixture-target",
 				capabilities: { declarations: "exact" },
 			},

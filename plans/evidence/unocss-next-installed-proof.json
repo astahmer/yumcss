@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.unocss-next-installed-proof/2",
+	"schema": "pandwind.unocss-next-installed-proof/1",
 	"reference": {
 		"repository": "https://github.com/unocss/unocss",
 		"commit": "75103d5e12ec9876069daf6b97a7db1d73428829",
@@ -19,9 +19,9 @@
 		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
 	},
 	"migration": {
-		"converted": 12,
-		"skipped": 0,
-		"residuals": 0,
+		"converted": 11,
+		"skipped": 1,
+		"residuals": 2,
 		"canonical": {
 			"checked": true,
 			"equal": true,
@@ -82,7 +82,7 @@
 	},
 	"css": {
 		"sourceBytes": 5462,
-		"targetBytes": 2647,
+		"targetBytes": 2422,
 		"targetNotLarger": true
 	}
 }

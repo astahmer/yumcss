@@ -96,7 +96,7 @@ describe("Pandwind MCP tools", () => {
 		const result = await service.call(MCP_TOOL.InspectProject, {});
 		const value = structured(result);
 		const adapters = value.adapters as Array<{ id: string }>;
-		expect(value.schema).toBe("pandwind.mcp.project/2");
+		expect(value.schema).toBe("pandwind.mcp.project/1");
 		expect(adapters.some((adapter) => adapter.id === "pandwind")).toBe(true);
 		expect(
 			(value.registeredAdapters as Array<{ id: string }>).some(
@@ -235,7 +235,7 @@ describe("Pandwind MCP tools", () => {
 			iterations: 1,
 		});
 		expect(structured(benchmark)).toMatchObject({
-			schema: "pandwind.mcp.benchmark/2",
+			schema: "pandwind.mcp.benchmark/1",
 			executionLane: MCP_EXECUTION_LANE.InProcess,
 			scope: MCP_BENCHMARK_SCOPE.InProcessMigration,
 			measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Warm,
@@ -261,7 +261,7 @@ describe("Pandwind MCP tools", () => {
 			benchmarkMode: MCP_BENCHMARK_MEASUREMENT_MODE.Cold,
 		});
 		expect(structured(result)).toMatchObject({
-			schema: "pandwind.mcp.benchmark/2",
+			schema: "pandwind.mcp.benchmark/1",
 			measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Cold,
 			profile: "cold-in-process",
 			inputs: {
@@ -329,7 +329,7 @@ describe("Pandwind MCP tools", () => {
 		});
 		expect(structured(result)).toMatchObject({
 			schema: "pandwind.mcp.analyze-project/1",
-			analysis: { schema: "pandwind.analyze/2" },
+			analysis: { schema: "pandwind.analyze/1" },
 			governance: { schema: "pandwind.analyze.governance/1" },
 		});
 	});
@@ -342,7 +342,7 @@ describe("Pandwind MCP tools", () => {
 			to: "pandwind",
 		});
 		expect(structured(result)).toMatchObject({
-			schema: "pandwind.mcp.validate-migration/2",
+			schema: "pandwind.mcp.validate-migration/1",
 			valid: true,
 			files: [{ valid: true }],
 			checks: [
@@ -457,7 +457,7 @@ describe("Pandwind MCP tools", () => {
 			iterations: 1,
 		});
 		expect(structured(benchmark)).toMatchObject({
-			schema: "pandwind.mcp.benchmark/2",
+			schema: "pandwind.mcp.benchmark/1",
 			benchmark: {
 				executionLane: MCP_EXECUTION_LANE.HostProject,
 				scope: MCP_BENCHMARK_SCOPE.Project,

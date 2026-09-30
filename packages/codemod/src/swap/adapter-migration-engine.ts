@@ -1,4 +1,5 @@
 import {
+	STYLE_PROGRAM_SCHEMA,
 	StyleProgramResidualKindTag,
 	SwapResidualKindTag,
 	styleProgramFromRules,
@@ -251,12 +252,26 @@ function runAdapterMigrationInternal(
 	// Every frontend crosses the same compiler-core boundary before lowering.
 	// This keeps target adapters independent from source-specific object shape
 	// and makes the versioned StyleProgram contract observable at the pivot.
-	const parsed = {
-		...parsedResult,
-		matches: parsedResult.matches.map((match) => ({
+	const normalizedMatches: Array<(typeof parsedResult.matches)[number]> = [];
+	const parseResiduals: StyleProgramResidual[] = [...parsedResult.residuals];
+	for (const match of parsedResult.matches) {
+		if (match.program.schema !== STYLE_PROGRAM_SCHEMA) {
+			parseResiduals.push({
+				kind: StyleProgramResidualKindTag.Parse,
+				text: match.sourceText,
+				hint: `source adapter emitted ${String(match.program.schema)}; expected ${STYLE_PROGRAM_SCHEMA}`,
+			});
+			continue;
+		}
+		normalizedMatches.push({
 			...match,
 			program: StyleProgramCore.normalize(match.program),
-		})),
+		});
+	}
+	const parsed = {
+		...parsedResult,
+		matches: normalizedMatches,
+		residuals: parseResiduals,
 	};
 	const mode = options.mode ?? "safe";
 	const loweringRegistry = loweringRegistryForRoute(

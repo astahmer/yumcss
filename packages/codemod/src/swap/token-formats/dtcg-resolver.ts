@@ -9,7 +9,7 @@ import {
 const emptyRoot: TokenGroup = { kind: "group", children: {} };
 
 export const dtcgResolverTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/2",
+	schema: "pandwind.token-format/1",
 	id: TokenFormatId.DtcgResolver,
 	canImport: true,
 	canExport: true,

@@ -229,7 +229,7 @@ const importStylexVars = (text: string) => {
 };
 
 export const stylexTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/2",
+	schema: "pandwind.token-format/1",
 	id: TokenFormatId.StyleX,
 	canImport: true,
 	canExport: true,

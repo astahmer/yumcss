@@ -39,7 +39,7 @@ const read = async (path: string) => {
 };
 
 export const pandaTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/2",
+	schema: "pandwind.token-format/1",
 	id: TokenFormatId.Panda,
 	canImport: true,
 	canExport: true,

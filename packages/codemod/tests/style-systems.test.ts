@@ -23,7 +23,7 @@ const stub = (id: string) => ({
 	version: "2",
 	sourceModules: [],
 	capabilities: {
-		schema: "pandwind.adapter-capabilities/3" as const,
+		schema: "pandwind.adapter-capabilities/1" as const,
 		adapter: id,
 		capabilities: {},
 	},

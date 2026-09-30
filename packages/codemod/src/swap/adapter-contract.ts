@@ -33,7 +33,7 @@ import type {
 import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
-export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/6" as const;
+export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/1" as const;
 
 export type AdapterDependencyKind = `${AdapterDependencyKindTag}`;
 

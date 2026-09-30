@@ -386,7 +386,7 @@ the selectors emitted by the official engine.
 ## Boundaries
 
 The publishable CSS artifact is its own boundary: `vite/lib-artifact.ts` owns
-the `pandwind.lib/3` contract, compatibility fingerprint (including the
+the `pandwind.lib/1` contract, compatibility fingerprint (including the
 cascade layer), content validation,
 and rule-entry types; `packages/codemod/src/lib/` owns source scanning and
 artifact writing; `vite/css.ts` owns explicit package resolution; and
@@ -514,7 +514,7 @@ const program = StyleProgramBuilder.create({ source })
 ```
 
 The builder is a build-time construction façade over the existing
-`pandwind.style-program/6` value. It centralizes deterministic rule ordering,
+`pandwind.style-program/1` value. It centralizes deterministic rule ordering,
 value classification, dynamic normalization, program metadata, provenance,
 and residual accumulation, then delegates final normalization to the same
 semantic factory used by existing adapters. `StyleProgramBuilder.from()` can

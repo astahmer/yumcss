@@ -263,7 +263,7 @@ const reports = await withInstalledProofProject(
 	{ retainOnError: true },
 );
 const reportBody = {
-	schema: "pandwind.codemod-installed-targets/2",
+	schema: "pandwind.codemod-installed-targets/1",
 	sourceFingerprint: proofSourceFingerprint(repositoryRoot),
 	proofImplementationHash: digest(readFileSync(import.meta.filename, "utf8")),
 	scope:

@@ -26,7 +26,7 @@ Repeat `--include` for source globs and `--css-source` for custom CSS factory
 module names. The command scans source with the shared workspace, compiles
 literal `css()`/`css.class()` calls, includes structural rules for
 `css.vars()`, preset-owned `web` CSS, and writes a deterministic
-`pandwind.lib/3` artifact.
+`pandwind.lib/1` artifact.
 
 The artifact records used token declarations, stable rule identities and
 priorities, source content hashes, and a compatibility fingerprint covering
@@ -254,7 +254,7 @@ pnpm exec pandwind-analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root 
 
 - `--tw <path>` — generated tw module (default `src/tw.ts` resolved against
   `--root`).
-- `--json` — JSON output tagged with schema `pandwind.analyze/2`. In addition
+- `--json` — JSON output tagged with schema `pandwind.analyze/1`. In addition
   to fold coverage, it includes `authoredCss` explicit web stylesheet imports,
   `cssSources` call-site provenance and
   `cssDiagnostics` with source positions, reasons, and suggestions for calls

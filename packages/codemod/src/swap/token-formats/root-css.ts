@@ -43,7 +43,7 @@ const serialize = (groups: ScalarTokenImport): string => {
 };
 
 export const rootCssTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/2",
+	schema: "pandwind.token-format/1",
 	id: TokenFormatId.RootCss,
 	canImport: true,
 	canExport: true,

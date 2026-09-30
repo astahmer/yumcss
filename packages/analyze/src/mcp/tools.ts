@@ -37,7 +37,7 @@ import {
 } from "./contract.ts";
 import type { McpToolDefinition, McpToolResult } from "./contract.ts";
 
-const MCP_PROJECT_SCHEMA = "pandwind.mcp.project/2" as const;
+const MCP_PROJECT_SCHEMA = "pandwind.mcp.project/1" as const;
 const MCP_FILE_LIST_LIMIT = 500;
 
 export interface McpProjectContext {
@@ -1101,7 +1101,7 @@ async function benchmarkProject(
 			measurementMode,
 		);
 		return textToolResult({
-			schema: "pandwind.mcp.benchmark/2",
+			schema: "pandwind.mcp.benchmark/1",
 			root: context.root,
 			from,
 			to,
@@ -1149,7 +1149,7 @@ async function benchmarkProject(
 	const filesPerSecond =
 		(expanded.size * iterations * 1000) / Math.max(migrationMilliseconds, 0.001);
 	return textToolResult({
-		schema: "pandwind.mcp.benchmark/2",
+		schema: "pandwind.mcp.benchmark/1",
 		root: context.root,
 		from,
 		to,
@@ -1315,7 +1315,7 @@ async function validateMigration(
 	}
 	const checks = [...staticChecks, ...projectChecks];
 	return textToolResult({
-		schema: "pandwind.mcp.validate-migration/2",
+		schema: "pandwind.mcp.validate-migration/1",
 		...preview,
 		valid:
 			files.every((file) => file.valid) &&

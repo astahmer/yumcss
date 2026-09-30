@@ -162,7 +162,7 @@ describe("language-neutral source scanner registry", () => {
 			id: "custom-source-plugin",
 			adapters: [
 				{
-					schema: "pandwind.source-scanner/2",
+					schema: "pandwind.source-scanner/1",
 					id: "custom-source",
 					languages: ["custom"],
 					extensions: [".custom"],

@@ -50,7 +50,7 @@ export const preset = define.preset(
 ```
 
 The Vite/Unplugin build emits these rules in the generated stylesheet and
-`pandwind.lib/3` carries them for registered component-library artifacts.
+`pandwind.lib/1` carries them for registered component-library artifacts.
 `web.globals` accepts selector-to-flat-declaration rules only; keyframe names
 are explicit CSS identifiers and font-face descriptor values remain authored
 CSS values. The runtime stylesheet does not consume this section, so the

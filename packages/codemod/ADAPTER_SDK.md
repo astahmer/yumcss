@@ -8,7 +8,7 @@ injected loader.
 
 ## Contract
 
-The current protocol is `pandwind.style-adapter/6`. An adapter owns five
+The current protocol is `pandwind.style-adapter/1`. An adapter owns five
 operations:
 
 1. `detect` identifies source code and reports evidence and confidence.
@@ -62,7 +62,7 @@ The package may advertise the same entry points in `package.json`:
 }
 ```
 
-The manifest is `pandwind.style-adapter-manifest/2` and records each adapter's
+The manifest is `pandwind.style-adapter-manifest/1` and records each adapter's
 ID, implementation version, contract version, capabilities, and dependencies.
 It also carries a `pandwind.style-program-core-compatibility/1` requirement,
 for example `{ schema: "pandwind.style-program-core-compatibility/1",
@@ -151,7 +151,7 @@ const program = StyleProgramBuilder.create({ source })
 ```
 
 The builder is a construction façade over the existing
-`pandwind.style-program/6` schema. It owns rule ordering, value classification,
+`pandwind.style-program/1` schema. It owns rule ordering, value classification,
 dynamic normalization, metadata, provenance, and residual accumulation; it
 does not own target emission. Keep target syntax in the adapter's `emit`
 implementation, and keep simple literal paths on `SwapIR`.

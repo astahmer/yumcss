@@ -23,7 +23,7 @@ const referenceRoot = referenceWorkspace.path("unocss");
 const nextExampleRoot = join(referenceRoot, "examples/next");
 const unocssCommit = "75103d5e12ec9876069daf6b97a7db1d73428829";
 const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.unocss-next-installed-proof/2" as const;
+const proofSchema = "pandwind.unocss-next-installed-proof/1" as const;
 
 const versions = {
 	"@types/node": "26.4.1",

@@ -2,6 +2,13 @@
 
 **Status: complete — narrow preset-owned web CSS, Vite emission, library artifacts, tests, and docs shipped**
 
+## Current pre-launch schema
+
+The current library artifact uses `pandwind.lib/1`, including the `web` CSS
+and cascade-layer fields. Because the artifact has not been published, its
+producer and consumers use this one contract directly; generated artifacts
+must be regenerated when the contract changes.
+
 ## Decision
 
 Pandwind now supports a deliberately narrow `web` section on `define.preset`.
@@ -28,7 +35,7 @@ const preset = define.preset(theme, {
 ```
 
 The compiler emits `preset.web` through `createStylesheet`, the Vite and
-Unplugin virtual stylesheet, and `pandwind.lib/3` artifacts. Route splitting
+Unplugin virtual stylesheet, and `pandwind.lib/1` artifacts. Route splitting
 keeps it in the common bucket. `createRuntimeStylesheet` intentionally does
 not consume it: importing a preset must not create browser-global runtime
 work, and runtime-created globals already have the explicit semantic-rule
@@ -76,7 +83,7 @@ fail before CSS is served.
   split output, including external-compiler mode.
 - `packages/pandwind/src/vite/lib-artifact.ts` and
   `packages/codemod/src/lib/build.ts` carry the generated section through the
-  versioned `pandwind.lib/3` contract.
+  versioned `pandwind.lib/1` contract.
 - `packages/pandwind/tests/preset-web.test.ts` covers deterministic output,
   used-token emission, split-bucket ownership, and the authored-CSS boundary.
 - The measured build-time stylesheet generator is now 28.617 KB min / 10.547

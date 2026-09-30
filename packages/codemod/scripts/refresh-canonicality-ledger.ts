@@ -529,7 +529,7 @@ const refresh = async () => {
 		.toSorted((left, right) => right.count - left.count || left.cause.localeCompare(right.cause));
 	const result = {
 		...ledger,
-		schema: "pandwind.codemod-canonicality-route-ledger/2",
+		schema: "pandwind.codemod-canonicality-route-ledger/1",
 		sourceRevision: execFileSync("jj", ["log", "-r", "@", "--no-graph", "-T", "commit_id"], {
 			encoding: "utf8",
 		}).trim(),

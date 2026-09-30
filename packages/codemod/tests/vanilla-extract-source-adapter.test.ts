@@ -135,7 +135,7 @@ describe("Vanilla Extract source adapter", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/6",
+			        "schema": "pandwind.style-program/1",
 			        "source": {
 			          "adapter": "vanilla-extract",
 			          "end": 144,

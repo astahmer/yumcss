@@ -88,7 +88,7 @@ describe("pandwind interop artifact", () => {
 
 		expect(artifact.tokens).not.toHaveProperty("schema");
 		expect(() =>
-			parsePandwindInteropArtifact({ ...artifact, schema: "pandwind.interop/99" }),
+			parsePandwindInteropArtifact({ ...artifact, schema: "pandwind.interop/future" }),
 		).toThrow("invalid pandwind.interop/1 artifact");
 		expect(() =>
 			parsePandwindInteropArtifact({

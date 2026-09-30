@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.real-repository-report/4",
+  "schema": "pandwind.real-repository-report/1",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
   "cloneRoot": "${PANDWIND_REFERENCE_ROOT:-~/.references}",
   "sourceFiles": 32,
@@ -18,12 +18,14 @@
         ]
       },
       "sourceBytes": 1421,
-      "outputBytes": 1420,
-      "outputByteDelta": -1,
-      "converted": 1,
+      "outputBytes": 1421,
+      "outputByteDelta": 0,
+      "converted": 0,
       "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
+      "residuals": 1,
+      "residualKinds": {
+        "unrepresentable": 1
+      },
       "validations": 0,
       "canonicalCss": {
         "checked": false,
@@ -69,6 +71,7 @@
         },
         "reasons": [
           "pipeline migration has no adapter-level canonical pair",
+          "1 residual conversion(s) remain",
           "adapter-level canonical CSS pair was not exposed",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
@@ -80,13 +83,7 @@
         ]
       },
       "manualFixes": [],
-      "emittedModules": [
-        "pandwind/preset.ts",
-        "pandwind/css.ts",
-        "pandwind/virtual.d.ts",
-        "pandwind/recipes/index.ts",
-        "pandwind/patterns/index.ts"
-      ],
+      "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
         "measurement": "source-artifact",
@@ -103,7 +100,7 @@
         "removed": [
           "@pandacss/dev"
         ],
-        "byteDelta": -1
+        "byteDelta": 0
       }
     },
     {
@@ -220,8 +217,8 @@
         ]
       },
       "sourceBytes": 333,
-      "outputBytes": 304,
-      "outputByteDelta": -29,
+      "outputBytes": 316,
+      "outputByteDelta": -17,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -301,7 +298,7 @@
         "removed": [
           "styled-components"
         ],
-        "byteDelta": -29
+        "byteDelta": -17
       }
     },
     {
@@ -318,12 +315,14 @@
         ]
       },
       "sourceBytes": 1422,
-      "outputBytes": 1421,
-      "outputByteDelta": -1,
-      "converted": 1,
+      "outputBytes": 1422,
+      "outputByteDelta": 0,
+      "converted": 0,
       "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
+      "residuals": 1,
+      "residualKinds": {
+        "unrepresentable": 1
+      },
       "validations": 0,
       "canonicalCss": {
         "checked": false,
@@ -369,6 +368,7 @@
         },
         "reasons": [
           "pipeline migration has no adapter-level canonical pair",
+          "1 residual conversion(s) remain",
           "adapter-level canonical CSS pair was not exposed",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
@@ -380,13 +380,7 @@
         ]
       },
       "manualFixes": [],
-      "emittedModules": [
-        "pandwind/preset.ts",
-        "pandwind/css.ts",
-        "pandwind/virtual.d.ts",
-        "pandwind/recipes/index.ts",
-        "pandwind/patterns/index.ts"
-      ],
+      "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
         "measurement": "source-artifact",
@@ -403,7 +397,7 @@
         "removed": [
           "@pandacss/dev"
         ],
-        "byteDelta": -1
+        "byteDelta": 0
       }
     },
     {
@@ -520,8 +514,8 @@
         ]
       },
       "sourceBytes": 333,
-      "outputBytes": 561,
-      "outputByteDelta": 228,
+      "outputBytes": 1466,
+      "outputByteDelta": 1133,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -599,7 +593,7 @@
         "removed": [
           "styled-components"
         ],
-        "byteDelta": 228
+        "byteDelta": 1133
       }
     },
     {
@@ -1003,13 +997,13 @@
         ]
       },
       "sourceBytes": 5663,
-      "outputBytes": 5339,
-      "outputByteDelta": -324,
+      "outputBytes": 6074,
+      "outputByteDelta": 411,
       "converted": 8,
-      "skipped": 1,
+      "skipped": 7,
       "residuals": 7,
       "residualKinds": {
-        "dynamic": 7
+        "configuration": 7
       },
       "validations": 8,
       "canonicalCss": {
@@ -1057,7 +1051,7 @@
         },
         "reasons": [
           "7 residual conversion(s) remain",
-          "1 source match(es) were skipped",
+          "7 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -1067,7 +1061,7 @@
         ]
       },
       "manualFixes": [
-        "Fela renderRule props require a target-aware dynamic projection"
+        "Fela renderer configuration and plugins require target-aware lowering"
       ],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -1088,7 +1082,7 @@
           "fela",
           "react-fela"
         ],
-        "byteDelta": -324
+        "byteDelta": 411
       }
     },
     {
@@ -1105,8 +1099,8 @@
         ]
       },
       "sourceBytes": 3301,
-      "outputBytes": 3503,
-      "outputByteDelta": 202,
+      "outputBytes": 3505,
+      "outputByteDelta": 204,
       "converted": 1,
       "skipped": 1,
       "residuals": 1,
@@ -1188,7 +1182,7 @@
         "removed": [
           "goober"
         ],
-        "byteDelta": 202
+        "byteDelta": 204
       }
     },
     {
@@ -1205,8 +1199,8 @@
         ]
       },
       "sourceBytes": 16434,
-      "outputBytes": 14778,
-      "outputByteDelta": -1656,
+      "outputBytes": 14826,
+      "outputByteDelta": -1608,
       "converted": 22,
       "skipped": 0,
       "residuals": 0,
@@ -1215,8 +1209,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1222,
-        "targetBytes": 1222,
+        "sourceBytes": 1246,
+        "targetBytes": 1246,
         "byteDelta": 0
       },
       "promotion": {
@@ -1284,7 +1278,7 @@
         "removed": [
           "aphrodite"
         ],
-        "byteDelta": -1656
+        "byteDelta": -1608
       }
     },
     {
@@ -1593,8 +1587,8 @@
         ]
       },
       "sourceBytes": 4251,
-      "outputBytes": 4840,
-      "outputByteDelta": 589,
+      "outputBytes": 7836,
+      "outputByteDelta": 3585,
       "converted": 9,
       "skipped": 0,
       "residuals": 0,
@@ -1670,7 +1664,7 @@
         "removed": [
           "solid-styled-components"
         ],
-        "byteDelta": 589
+        "byteDelta": 3585
       }
     },
     {
@@ -1688,13 +1682,13 @@
         ]
       },
       "sourceBytes": 6953,
-      "outputBytes": 9179,
-      "outputByteDelta": 2226,
+      "outputBytes": 8655,
+      "outputByteDelta": 1702,
       "converted": 6,
       "skipped": 2,
-      "residuals": 4,
+      "residuals": 2,
       "residualKinds": {
-        "dynamic": 4
+        "dynamic": 2
       },
       "validations": 6,
       "canonicalCss": {
@@ -1741,7 +1735,7 @@
           }
         },
         "reasons": [
-          "4 residual conversion(s) remain",
+          "2 residual conversion(s) remain",
           "2 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
@@ -1771,7 +1765,7 @@
         "removed": [
           "vue-styled-components"
         ],
-        "byteDelta": 2226
+        "byteDelta": 1702
       }
     },
     {
@@ -2180,27 +2174,27 @@
         ]
       },
       "sourceBytes": 647,
-      "outputBytes": 1364,
-      "outputByteDelta": 717,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
+      "outputBytes": 761,
+      "outputByteDelta": 114,
+      "converted": 0,
+      "skipped": 1,
+      "residuals": 1,
+      "residualKinds": {
+        "dynamic": 1
+      },
+      "validations": 0,
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 106,
-        "targetBytes": 106,
-        "byteDelta": 0
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "source-static",
+        "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
           "canonical-css": {
-            "status": "passed"
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
           },
           "typecheck": {
             "status": "pending",
@@ -2232,6 +2226,10 @@
           }
         },
         "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "1 residual conversion(s) remain",
+          "1 source match(es) were skipped",
+          "adapter-level canonical CSS pair was not exposed",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -2241,7 +2239,9 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "function interpolation requires a framework prop wrapper"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -2259,7 +2259,7 @@
         "removed": [
           "next-yak"
         ],
-        "byteDelta": 717
+        "byteDelta": 114
       }
     },
     {
@@ -2374,20 +2374,18 @@
         ]
       },
       "sourceBytes": 831,
-      "outputBytes": 1188,
-      "outputByteDelta": 357,
-      "converted": 3,
-      "skipped": 1,
-      "residuals": 1,
-      "residualKinds": {
-        "unknown-utility": 1
-      },
-      "validations": 3,
+      "outputBytes": 989,
+      "outputByteDelta": 158,
+      "converted": 1,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 1,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 145,
-        "targetBytes": 145,
+        "sourceBytes": 47,
+        "targetBytes": 47,
         "byteDelta": 0
       },
       "promotion": {
@@ -2428,8 +2426,6 @@
           }
         },
         "reasons": [
-          "1 residual conversion(s) remain",
-          "1 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -2439,9 +2435,7 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [
-        "textStyle is not present in the Chakra theme"
-      ],
+      "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -2459,7 +2453,7 @@
         "removed": [
           "@chakra-ui/react"
         ],
-        "byteDelta": 357
+        "byteDelta": 158
       }
     },
     {
@@ -2579,20 +2573,20 @@
         ]
       },
       "sourceBytes": 3131,
-      "outputBytes": 3823,
-      "outputByteDelta": 692,
-      "converted": 6,
-      "skipped": 3,
-      "residuals": 3,
+      "outputBytes": 3807,
+      "outputByteDelta": 676,
+      "converted": 8,
+      "skipped": 1,
+      "residuals": 1,
       "residualKinds": {
-        "component": 3
+        "component": 1
       },
-      "validations": 6,
+      "validations": 8,
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 138,
-        "targetBytes": 138,
+        "sourceBytes": 436,
+        "targetBytes": 436,
         "byteDelta": 0
       },
       "promotion": {
@@ -2633,8 +2627,8 @@
           }
         },
         "reasons": [
-          "3 residual conversion(s) remain",
-          "3 source match(es) were skipped",
+          "1 residual conversion(s) remain",
+          "1 source match(es) were skipped",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -2645,9 +2639,7 @@
         ]
       },
       "manualFixes": [
-        "Mantine host 'Anchor' has no verified intrinsic projection",
-        "Mantine host 'Center' has no verified intrinsic projection",
-        "Mantine host 'Text' has no verified intrinsic projection"
+        "Mantine host 'Anchor' has no verified intrinsic projection"
       ],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -2664,7 +2656,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 692
+        "byteDelta": 676
       }
     },
     {
@@ -2682,27 +2674,28 @@
         ]
       },
       "sourceBytes": 1921,
-      "outputBytes": 2264,
-      "outputByteDelta": 343,
-      "converted": 2,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 2,
+      "outputBytes": 2187,
+      "outputByteDelta": 266,
+      "converted": 0,
+      "skipped": 2,
+      "residuals": 6,
+      "residualKinds": {
+        "configuration": 4,
+        "composition": 2
+      },
+      "validations": 0,
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 356,
-        "targetBytes": 356,
-        "byteDelta": 0
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "source-static",
+        "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
           "canonical-css": {
-            "status": "passed"
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
           },
           "typecheck": {
             "status": "pending",
@@ -2734,6 +2727,10 @@
           }
         },
         "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "6 residual conversion(s) remain",
+          "2 source match(es) were skipped",
+          "adapter-level canonical CSS pair was not exposed",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -2743,7 +2740,10 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
+        "Tokenami css.compose returns a reusable class/style helper; flattening it to a style value changes its callable API"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
@@ -2760,10 +2760,9 @@
           "pandwind"
         ],
         "removed": [
-          "@tokenami/css",
-          "@tokenami/config"
+          "@tokenami/css"
         ],
-        "byteDelta": 343
+        "byteDelta": 266
       }
     },
     {
@@ -3080,27 +3079,27 @@
         ]
       },
       "sourceBytes": 210,
-      "outputBytes": 309,
-      "outputByteDelta": 99,
-      "converted": 2,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 2,
+      "outputBytes": 270,
+      "outputByteDelta": 60,
+      "converted": 0,
+      "skipped": 2,
+      "residuals": 1,
+      "residualKinds": {
+        "capability": 1
+      },
+      "validations": 0,
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 101,
-        "targetBytes": 101,
-        "byteDelta": 0
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "source-static",
+        "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
           "canonical-css": {
-            "status": "passed"
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
           },
           "typecheck": {
             "status": "pending",
@@ -3132,6 +3131,10 @@
           }
         },
         "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "1 residual conversion(s) remain",
+          "2 source match(es) were skipped",
+          "adapter-level canonical CSS pair was not exposed",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
           "real browser states have not been executed for this reference",
@@ -3141,21 +3144,19 @@
           "built CSS size is not measured by the source-only runner"
         ]
       },
-      "manualFixes": [],
+      "manualFixes": [
+        "renaming apps/docsite/src/app/not-found.module.css to apps/docsite/src/app/not-found.module.ts requires updating project imports"
+      ],
       "emittedModules": [],
       "runtimeBundleImpact": {
         "measured": false,
         "measurement": "source-artifact",
         "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
         "sourceRuntimePackages": [],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
+        "targetRuntimePackages": [],
+        "added": [],
         "removed": [],
-        "byteDelta": 99
+        "byteDelta": 60
       }
     },
     {
@@ -3172,13 +3173,14 @@
         ]
       },
       "sourceBytes": 245,
-      "outputBytes": 310,
-      "outputByteDelta": 65,
+      "outputBytes": 305,
+      "outputByteDelta": 60,
       "converted": 0,
-      "skipped": 1,
-      "residuals": 1,
+      "skipped": 2,
+      "residuals": 2,
       "residualKinds": {
-        "configuration": 1
+        "parse": 1,
+        "capability": 1
       },
       "validations": 0,
       "canonicalCss": {
@@ -3224,8 +3226,8 @@
         },
         "reasons": [
           "pipeline migration has no adapter-level canonical pair",
-          "1 residual conversion(s) remain",
-          "1 source match(es) were skipped",
+          "2 residual conversion(s) remain",
+          "2 source match(es) were skipped",
           "adapter-level canonical CSS pair was not exposed",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
@@ -3236,7 +3238,8 @@
         ]
       },
       "manualFixes": [
-        "official preprocessor compilation failed: The argument 'filename' must be a file URL object, file URL string, or absolute path string. Received 'package.json'"
+        "stylesheet statement is preserved outside the style program",
+        "global stylesheet selectors cannot become an unreferenced class map"
       ],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -3247,7 +3250,7 @@
         "targetRuntimePackages": [],
         "added": [],
         "removed": [],
-        "byteDelta": 65
+        "byteDelta": 60
       }
     },
     {
@@ -3264,13 +3267,107 @@
         ]
       },
       "sourceBytes": 44,
-      "outputBytes": 109,
-      "outputByteDelta": 65,
+      "outputBytes": 104,
+      "outputByteDelta": 60,
       "converted": 0,
       "skipped": 1,
+      "residuals": 2,
+      "residualKinds": {
+        "parse": 1,
+        "capability": 1
+      },
+      "validations": 0,
+      "canonicalCss": {
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "pipeline-unpaired",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
+          },
+          "typecheck": {
+            "status": "pending",
+            "reason": "the converted reference was not typechecked with its installed dependencies"
+          },
+          "build": {
+            "status": "pending",
+            "reason": "the converted reference was not built with its installed project tooling"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "2 residual conversion(s) remain",
+          "1 source match(es) were skipped",
+          "adapter-level canonical CSS pair was not exposed",
+          "the converted reference was not typechecked with its installed dependencies",
+          "the converted reference was not built with its installed project tooling",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [
+        "stylesheet statement is preserved outside the style program",
+        "global stylesheet selectors cannot become an unreferenced class map"
+      ],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [],
+        "targetRuntimePackages": [],
+        "added": [],
+        "removed": [],
+        "byteDelta": 60
+      }
+    },
+    {
+      "id": "posthog-global-authored-css",
+      "repository": "https://github.com/PostHog/posthog.com",
+      "commit": "8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff",
+      "path": "src/components/Layout/SkeletonLoading.css",
+      "adapterRoute": "authored-css -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 1,
+        "evidence": [
+          "css"
+        ]
+      },
+      "sourceBytes": 283,
+      "outputBytes": 343,
+      "outputByteDelta": 60,
+      "converted": 0,
+      "skipped": 5,
       "residuals": 1,
       "residualKinds": {
-        "configuration": 1
+        "capability": 1
       },
       "validations": 0,
       "canonicalCss": {
@@ -3317,7 +3414,7 @@
         "reasons": [
           "pipeline migration has no adapter-level canonical pair",
           "1 residual conversion(s) remain",
-          "1 source match(es) were skipped",
+          "5 source match(es) were skipped",
           "adapter-level canonical CSS pair was not exposed",
           "the converted reference was not typechecked with its installed dependencies",
           "the converted reference was not built with its installed project tooling",
@@ -3328,7 +3425,7 @@
         ]
       },
       "manualFixes": [
-        "official preprocessor compilation failed: The argument 'filename' must be a file URL object, file URL string, or absolute path string. Received 'package.json'"
+        "global stylesheet selectors cannot become an unreferenced class map"
       ],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -3339,97 +3436,7 @@
         "targetRuntimePackages": [],
         "added": [],
         "removed": [],
-        "byteDelta": 65
-      }
-    },
-    {
-      "id": "posthog-global-authored-css",
-      "repository": "https://github.com/PostHog/posthog.com",
-      "commit": "8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff",
-      "path": "src/components/Layout/SkeletonLoading.css",
-      "adapterRoute": "authored-css -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 1,
-        "evidence": [
-          "css"
-        ]
-      },
-      "sourceBytes": 283,
-      "outputBytes": 461,
-      "outputByteDelta": 178,
-      "converted": 5,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 5,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 117,
-        "targetBytes": 117,
-        "byteDelta": 0
-      },
-      "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
-        "status": "source-static",
-        "eligible": false,
-        "dimensions": {
-          "canonical-css": {
-            "status": "passed"
-          },
-          "typecheck": {
-            "status": "pending",
-            "reason": "the converted reference was not typechecked with its installed dependencies"
-          },
-          "build": {
-            "status": "pending",
-            "reason": "the converted reference was not built with its installed project tooling"
-          },
-          "browser-states": {
-            "status": "pending",
-            "reason": "real browser states have not been executed for this reference"
-          },
-          "ssr-hydration": {
-            "status": "pending",
-            "reason": "real SSR and hydration have not been executed for this reference"
-          },
-          "rsc-streaming": {
-            "status": "not-applicable"
-          },
-          "dependencies": {
-            "status": "pending",
-            "reason": "dependency graphs are not installed by the reference runner"
-          },
-          "css-size": {
-            "status": "pending",
-            "reason": "built CSS size is not measured by the source-only runner"
-          }
-        },
-        "reasons": [
-          "the converted reference was not typechecked with its installed dependencies",
-          "the converted reference was not built with its installed project tooling",
-          "real browser states have not been executed for this reference",
-          "real SSR and hydration have not been executed for this reference",
-          "dependency graphs are not installed by the reference runner",
-          "built CSS size is not measured by the source-only runner"
-        ]
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [],
-        "byteDelta": 178
+        "byteDelta": 60
       }
     }
   ],
@@ -3544,6 +3551,7 @@
       ],
       "reasons": [
         "pipeline migration has no adapter-level canonical pair",
+        "1 residual conversion(s) remain",
         "adapter-level canonical CSS pair was not exposed",
         "the converted reference was not typechecked with its installed dependencies",
         "the converted reference was not built with its installed project tooling",
@@ -3553,6 +3561,7 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner",
         "pipeline migration has no adapter-level canonical pair",
+        "1 residual conversion(s) remain",
         "adapter-level canonical CSS pair was not exposed",
         "the converted reference was not typechecked with its installed dependencies",
         "the converted reference was not built with its installed project tooling",
@@ -3902,8 +3911,8 @@
         "mantine-style-props"
       ],
       "reasons": [
-        "3 residual conversion(s) remain",
-        "3 source match(es) were skipped",
+        "1 residual conversion(s) remain",
+        "1 source match(es) were skipped",
         "the converted reference was not typechecked with its installed dependencies",
         "the converted reference was not built with its installed project tooling",
         "real browser states have not been executed for this reference",
@@ -3934,7 +3943,7 @@
       ],
       "dimensions": {
         "canonical-css": {
-          "status": "passed"
+          "status": "pending"
         },
         "typecheck": {
           "status": "pending"
@@ -3961,6 +3970,10 @@
         "tokenami-nextjs-button"
       ],
       "reasons": [
+        "pipeline migration has no adapter-level canonical pair",
+        "6 residual conversion(s) remain",
+        "2 source match(es) were skipped",
+        "adapter-level canonical CSS pair was not exposed",
         "the converted reference was not typechecked with its installed dependencies",
         "the converted reference was not built with its installed project tooling",
         "real browser states have not been executed for this reference",
@@ -4075,7 +4088,7 @@
       ],
       "reasons": [
         "7 residual conversion(s) remain",
-        "1 source match(es) were skipped",
+        "7 source match(es) were skipped",
         "the converted reference was not typechecked with its installed dependencies",
         "the converted reference was not built with its installed project tooling",
         "real browser states have not been executed for this reference",
@@ -4276,7 +4289,7 @@
       ],
       "dimensions": {
         "canonical-css": {
-          "status": "passed"
+          "status": "pending"
         },
         "typecheck": {
           "status": "pending"
@@ -4314,6 +4327,10 @@
         "RSC/streaming proof is not available in the source-only runner",
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner",
+        "pipeline migration has no adapter-level canonical pair",
+        "1 residual conversion(s) remain",
+        "1 source match(es) were skipped",
+        "adapter-level canonical CSS pair was not exposed",
         "the converted reference was not typechecked with its installed dependencies",
         "the converted reference was not built with its installed project tooling",
         "real browser states have not been executed for this reference",
@@ -4547,7 +4564,7 @@
         "vue-styled-css-test"
       ],
       "reasons": [
-        "4 residual conversion(s) remain",
+        "2 residual conversion(s) remain",
         "2 source match(es) were skipped",
         "the converted reference was not typechecked with its installed dependencies",
         "the converted reference was not built with its installed project tooling",

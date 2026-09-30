@@ -238,7 +238,7 @@ describe("installed adapter proof artifacts", () => {
 			),
 		) as PandaInstalledProofReport;
 		expect(report).toMatchObject({
-			schema: "pandwind.installed-project-proof/2",
+			schema: "pandwind.installed-project-proof/1",
 			route: { from: "panda", to: "pandwind" },
 			dependencies: { installed: true, targetNodeModule: true },
 			migration: {

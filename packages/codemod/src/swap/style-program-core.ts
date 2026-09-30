@@ -70,6 +70,8 @@ const STYLE_VALUE_KINDS: ReadonlySet<StyleValue["kind"]> = new Set([
  */
 export class StyleProgramCore {
 	static normalize(program: StyleProgram): StyleProgram {
+		if (program.schema !== STYLE_PROGRAM_SCHEMA)
+			throw new TypeError(`invalid StyleProgram: schema expected ${STYLE_PROGRAM_SCHEMA}`);
 		const { schema: _schema, rules, declarations: _declarations, ...options } = program;
 		return styleProgramFromRules(
 			rules,

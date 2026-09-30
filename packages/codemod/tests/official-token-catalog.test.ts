@@ -282,7 +282,7 @@ describe("official custom-token loaders", () => {
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/6",
+			  "schema": "pandwind.style-program/1",
 			  "source": {
 			    "adapter": "panda",
 			    "end": 81,

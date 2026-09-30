@@ -9,6 +9,7 @@ import {
 	StyleProgramCompatibility,
 	StyleProgramBuilder,
 	StyleProgramCore,
+	StyleProgramResidualKindTag,
 } from "../src/swap/index.ts";
 
 const program = StyleProgramBuilder.create({
@@ -42,7 +43,7 @@ describe("StyleProgramCore", () => {
 			}),
 		).not.toBe(StyleProgramCore.fingerprint(normalized));
 		expect(StyleProgramCore.canonical(normalized)).toMatchInlineSnapshot(
-			`"{"compositions":[],"declarations":[{"conditions":[],"property":"color","value":{"authored":"$brand","kind":"token","ref":"color.brand","resolved":"#2563eb"}},{"conditions":[],"property":"padding","value":{"kind":"literal","value":8}},{"conditions":[],"property":"backgroundColor","value":{"dependencies":["props.tone"],"expression":"props.tone","expressionKind":"member","kind":"dynamic","staticEvaluation":{"attempted":true,"reason":"expression depends on runtime or unresolved source bindings","status":"unresolved"}}}],"emissionHints":[],"plugins":[],"residuals":[{"hint":"review plugin output","kind":"plugin-transform","text":"custom-shadow()"}],"rules":[{"children":[],"conditions":[],"declarations":[{"conditions":[],"property":"margin","value":{"kind":"literal","value":0}}],"kind":"global","order":1,"selector":"body"},{"children":[],"conditions":[],"declarations":[{"conditions":[],"property":"color","value":{"authored":"$brand","kind":"token","ref":"color.brand","resolved":"#2563eb"}},{"conditions":[],"property":"padding","value":{"kind":"literal","value":8}},{"conditions":[],"property":"backgroundColor","value":{"dependencies":["props.tone"],"expression":"props.tone","expressionKind":"member","kind":"dynamic","staticEvaluation":{"attempted":true,"reason":"expression depends on runtime or unresolved source bindings","status":"unresolved"}}}],"kind":"style","order":2,"selector":".card"}],"schema":"pandwind.style-program/6","source":{"adapter":"stylex","file":"src/Card.tsx","pattern":"stylex.create"},"sourceMap":[{"adapter":"stylex","file":"src/Card.tsx","pattern":"stylex.create"}],"themes":[{"authored":"$brand","path":"color.brand","resolved":"#2563eb"}]}"`,
+			`"{"compositions":[],"declarations":[{"conditions":[],"property":"color","value":{"authored":"$brand","kind":"token","ref":"color.brand","resolved":"#2563eb"}},{"conditions":[],"property":"padding","value":{"kind":"literal","value":8}},{"conditions":[],"property":"backgroundColor","value":{"dependencies":["props.tone"],"expression":"props.tone","expressionKind":"member","kind":"dynamic","staticEvaluation":{"attempted":true,"reason":"expression depends on runtime or unresolved source bindings","status":"unresolved"}}}],"emissionHints":[],"plugins":[],"residuals":[{"hint":"review plugin output","kind":"plugin-transform","text":"custom-shadow()"}],"rules":[{"children":[],"conditions":[],"declarations":[{"conditions":[],"property":"margin","value":{"kind":"literal","value":0}}],"kind":"global","order":1,"selector":"body"},{"children":[],"conditions":[],"declarations":[{"conditions":[],"property":"color","value":{"authored":"$brand","kind":"token","ref":"color.brand","resolved":"#2563eb"}},{"conditions":[],"property":"padding","value":{"kind":"literal","value":8}},{"conditions":[],"property":"backgroundColor","value":{"dependencies":["props.tone"],"expression":"props.tone","expressionKind":"member","kind":"dynamic","staticEvaluation":{"attempted":true,"reason":"expression depends on runtime or unresolved source bindings","status":"unresolved"}}}],"kind":"style","order":2,"selector":".card"}],"schema":"pandwind.style-program/1","source":{"adapter":"stylex","file":"src/Card.tsx","pattern":"stylex.create"},"sourceMap":[{"adapter":"stylex","file":"src/Card.tsx","pattern":"stylex.create"}],"themes":[{"authored":"$brand","path":"color.brand","resolved":"#2563eb"}]}"`,
 		);
 	});
 
@@ -58,7 +59,7 @@ describe("StyleProgramCore", () => {
 		expect(artifact).toMatchInlineSnapshot(`
 			{
 			  "coreVersion": "1",
-			  "fingerprint": "sp-ug9na2",
+			  "fingerprint": "sp-1qmdgar",
 			  "program": {
 			    "canonicalization": undefined,
 			    "compositions": [],
@@ -172,7 +173,7 @@ describe("StyleProgramCore", () => {
 			      },
 			    ],
 			    "runtime": undefined,
-			    "schema": "pandwind.style-program/6",
+			    "schema": "pandwind.style-program/1",
 			    "source": {
 			      "adapter": "stylex",
 			      "file": "src/Card.tsx",
@@ -200,7 +201,7 @@ describe("StyleProgramCore", () => {
 
 	test("rejects malformed and tampered artifacts explicitly", () => {
 		const malformed = StyleProgramCore.validate({
-			schema: "pandwind.style-program/6",
+			schema: "pandwind.style-program/1",
 			rules: [{ kind: "not-a-rule", declarations: [], children: [], conditions: [] }],
 			declarations: [],
 			residuals: [],
@@ -249,7 +250,7 @@ describe("StyleProgramCore", () => {
 		).toMatchObject({ supported: false });
 	});
 
-	test("normalizes a replaceable frontend before the target adapter sees it", () => {
+	test("rejects a replaceable frontend that emits an unsupported StyleProgram schema", () => {
 		const builtin = createBuiltinCodemodCatalog();
 		const emotion = builtin.registry.get(CodemodAdapterId.Emotion)!;
 		const stylex = builtin.registry.get(CodemodAdapterId.StyleX)!;
@@ -264,7 +265,7 @@ describe("StyleProgramCore", () => {
 						...match,
 						program: {
 							...match.program,
-							schema: "stale-schema" as typeof match.program.schema,
+							schema: "pandwind.style-program/future" as typeof match.program.schema,
 							declarations: [],
 						},
 					})),
@@ -293,10 +294,20 @@ describe("StyleProgramCore", () => {
 			},
 		);
 
-		expect(result.residuals).toEqual([]);
-		expect(result.converted).toBe(1);
-		expect(received).toBeDefined();
-		expect(StyleProgramCore.validate(received)).toEqual({ valid: true, issues: [] });
-		expect(received?.declarations.length).toBeGreaterThan(0);
+		expect(result.code).toContain('const card = css({ color: "red" });');
+		expect(result.residuals).toContainEqual({
+			kind: StyleProgramResidualKindTag.Parse,
+			text: 'css({ color: "red" })',
+			hint: "source adapter emitted pandwind.style-program/future; expected pandwind.style-program/1",
+		});
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(received).toBeUndefined();
+		expect(() =>
+			StyleProgramCore.normalize({
+				...program,
+				schema: "pandwind.style-program/future" as typeof program.schema,
+			}),
+		).toThrow("invalid StyleProgram: schema expected pandwind.style-program/1");
 	});
 });

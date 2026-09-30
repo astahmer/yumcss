@@ -15,6 +15,7 @@ import type {
 	AdapterMigrationResult,
 } from "./adapter-migration-contract.ts";
 import {
+	STYLE_PROGRAM_SCHEMA,
 	StyleProgramResidualKindTag,
 	type StyleProgram,
 	type StyleProgramResidual,
@@ -198,8 +199,7 @@ const sourceProgramsForTargetConfig = (
 			? {}
 			: { matchers: route.source.sourceModuleMatchers }),
 	};
-	return route.source
-		.parse(source, {
+	const parsed = route.source.parse(source, {
 			...context,
 			config: sourceConfig,
 			targetId: route.target.id,
@@ -210,8 +210,13 @@ const sourceProgramsForTargetConfig = (
 			...(sourceOwnership.semanticMatchers === undefined
 				? {}
 				: { sourceModuleSemanticMatchers: sourceOwnership.semanticMatchers }),
-		})
-		.matches.map(({ program }) => StyleProgramCore.normalize(program));
+		});
+	const programs: StyleProgram[] = [];
+	for (const { program } of parsed.matches) {
+		if (program.schema !== STYLE_PROGRAM_SCHEMA) continue;
+		programs.push(StyleProgramCore.normalize(program));
+	}
+	return programs;
 };
 
 export function prepareMigration(

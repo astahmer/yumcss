@@ -99,7 +99,7 @@ export function evaluateBudget(
 }
 
 /** Version tag stamped into `--json` output for consumers. */
-export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/2";
+export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/1";
 /** Version tag for the governance lane document. */
 export const GOVERNANCE_JSON_SCHEMA = "pandwind.analyze.governance/1";
 /** Default official preset for the governance lane. */

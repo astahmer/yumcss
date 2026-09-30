@@ -3,7 +3,7 @@ import { walk, type OxcNode } from "./tw/literal.ts";
 import { NodeKind } from "./ast-node-kind.ts";
 
 /** Versioned, package-level source analysis protocol shared by every lane. */
-export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;
+export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/1" as const;
 export const SOURCE_SCANNER_PLUGIN_SCHEMA = "pandwind.source-scanner-plugin/1" as const;
 
 export const SourceLanguageAdapterId = {

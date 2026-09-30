@@ -47,7 +47,7 @@ describe("StyleProgramBuilder", () => {
 			})
 			.build();
 
-		expect(program.schema).toBe("pandwind.style-program/6");
+		expect(program.schema).toBe("pandwind.style-program/1");
 		expect(program.rules.map((rule) => rule.kind)).toEqual([
 			"style",
 			"global",

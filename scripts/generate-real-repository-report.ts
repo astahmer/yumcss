@@ -259,7 +259,7 @@ for (const fixture of fixtures) {
 }
 
 const report = {
-	schema: "pandwind.real-repository-report/4",
+	schema: "pandwind.real-repository-report/1",
 	generatedFrom: "scripts/generate-real-repository-report.ts",
 	cloneRoot: "${PANDWIND_REFERENCE_ROOT:-~/.references}",
 	sourceFiles: corpus.references.length,

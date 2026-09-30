@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.codemod-canonicality-route-ledger/2",
+  "schema": "pandwind.codemod-canonicality-route-ledger/1",
   "created": "2026-09-27",
   "method": "Direct in-process runAdapterMigration capture using each registered route's primary input, source framework, safe mode, empty read-only project index, generated artifacts, typed residuals, outcomes, and semantic validations. Route maturity is copied unchanged from the proof catalog. Configured and missing-config secondary cases remain linked to route fixtures.",
   "registry": {
@@ -62344,11 +62344,11 @@
     "targetValidation": "adapter semantic validation; not a substitute for target compiler proof",
     "maturity": "unchanged; governed by the route-proof catalog"
   },
-  "sourceRevision": "cea8ba7d20be76f4446836dbdf0635d3257a4ee1",
+  "sourceRevision": "69f5be1c3c38d73fac1e0e2ee28b76c062881780",
   "configuredEvidence": {
     "path": "plans/evidence/codemod-configured-audit.json",
     "sha256": "920ba606cb20213c265830e8dc6038ab34d1542bf9034f672e44bc60bc315388",
     "scope": "48 injected configuration-port scenarios; separate from primary ledger and installed evidence"
   },
-  "sourceFingerprint": "e3c65e6e790ea8fbe8f386599fd86fff4c76827cdab952141b641038c40c7d60"
+  "sourceFingerprint": "956ed0c98d6ac77d96f8915e82f0c7f2b01a3fd8ac19833aa09f3a588c9622fd"
 }

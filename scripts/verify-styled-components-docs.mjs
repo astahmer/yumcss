@@ -423,7 +423,7 @@ await comparisonPageBrowser.close();
 
 const totalBytes = (result) => result.uniqueCssBytes + result.inlineStyleBytes;
 const report = {
-	schema: "pandwind.styled-components-docs-verification/2",
+	schema: "pandwind.styled-components-docs-verification/1",
 	baselineUrl,
 	runtimeUrl,
 	designUrl,

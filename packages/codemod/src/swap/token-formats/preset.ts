@@ -23,7 +23,7 @@ const read = async (path: string) => {
 };
 
 export const presetTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/2",
+	schema: "pandwind.token-format/1",
 	id: TokenFormatId.Preset,
 	canImport: true,
 	canExport: true,
