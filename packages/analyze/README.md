@@ -27,7 +27,7 @@ the project and reports what it found; it does not rewrite your source files.
 
 ## Token release impact
 
-Compare a prior token document with the generated `pandwind.interop/3` token
+Compare a prior token document with the generated `pandwind.interop/1` token
 snapshot, then attach exact usage and coverage evidence from declared consumer
 roots:
 
@@ -41,7 +41,7 @@ pnpm exec pandwind-analyze \
 ```
 
 The baseline defaults to DTCG; `--release-format` selects another registered
-token input adapter. The current artifact must be a validated `/3` snapshot
+token input adapter. The current artifact must be a validated `/1` snapshot
 with token data. With one consumer, `--release-current` defaults to that
 consumer's `src/pandwind.interop.json`; multiple consumers require an explicit
 current artifact. The report lists path additions and removals, value, type,

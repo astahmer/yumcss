@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.interop/3",
+	"schema": "pandwind.interop/1",
 	"generatedFrom": {
 		"types": "types.d.ts",
 		"runtime": "tw.ts",
@@ -21324,7 +21324,6 @@
 		"scopes": ["[data-theme=\"forest\"]", "[data-theme=\"ocean\"]", "[data-theme=\"sunset\"]"]
 	},
 	"tokens": {
-		"schema": "pandwind.interop.tokens/1",
 		"state": "available",
 		"source": {
 			"kind": "configured-token-module",

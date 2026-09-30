@@ -15,7 +15,6 @@ import { createCssExtractionService } from "pandwind/vite/css-extract";
 import {
 	buildTokenGraph,
 	parsePandwindInteropArtifact,
-	PANDWIND_INTEROP_TOKEN_SCHEMA,
 	type PandwindInteropTokenSnapshot,
 } from "pandwind-codemod/tw";
 import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
@@ -256,12 +255,11 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	);
 	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);
 	let interopTokens: PandwindInteropTokenSnapshot = {
-		schema: PANDWIND_INTEROP_TOKEN_SCHEMA,
 		state: "unavailable",
 		source: null,
 		fidelity: null,
 		document: null,
-		diagnostics: ["No generated pandwind.interop/3 artifact was found."],
+		diagnostics: ["No generated pandwind.interop/1 artifact was found."],
 	};
 	let interopVariables: Record<string, string> = {};
 	try {
@@ -273,7 +271,6 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		}
 	} catch (error) {
 		interopTokens = {
-			schema: PANDWIND_INTEROP_TOKEN_SCHEMA,
 			state: "unavailable",
 			source: null,
 			fidelity: null,

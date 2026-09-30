@@ -31,7 +31,6 @@ const tokenDocument = parseDtcgTokenDocument(
 	}),
 );
 const tokenSnapshot = {
-	schema: "pandwind.interop.tokens/1" as const,
 	state: "available" as const,
 	source: {
 		kind: "configured-token-module" as const,
@@ -146,7 +145,6 @@ describe("tokensToDtcg", () => {
 		const unavailable = {
 			...payload,
 			interopTokens: {
-				schema: "pandwind.interop.tokens/1" as const,
 				state: "unavailable" as const,
 				source: null,
 				fidelity: null,

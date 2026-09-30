@@ -47,7 +47,7 @@ export interface CliArgs {
 	preset: string;
 	/** Explicit baseline token document for read-only release impact analysis. */
 	releaseBaselinePath?: string;
-	/** Optional generated pandwind.interop/3 token snapshot to compare. */
+	/** Optional generated pandwind.interop/1 token snapshot to compare. */
 	releaseCurrentPath?: string;
 	releaseFormat: string;
 	/** Explicit extra consumer roots; empty means the --root project only. */
@@ -147,11 +147,11 @@ const configureAnalyzeCommand = (command: Command): void => {
 		})
 		.option(
 			"--release-baseline <path>",
-			"Compare this explicit token document to current pandwind.interop/3 tokens",
+			"Compare this explicit token document to current pandwind.interop/1 tokens",
 		)
 		.option(
 			"--release-current <path>",
-			"Current pandwind.interop/3 artifact; defaults to <consumer>/src/pandwind.interop.json",
+			"Current pandwind.interop/1 artifact; defaults to <consumer>/src/pandwind.interop.json",
 		)
 		.option("--release-format <format>", "Format of the release baseline", { default: "dtcg" })
 		.option(

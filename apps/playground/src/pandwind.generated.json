@@ -21,7 +21,7 @@
 		{
 			"path": "src/pandwind.interop.json",
 			"ownership": "build-only",
-			"hash": "feec0611c5932617800993dc4a92d64e9b93897add4f1fac164f81076a2046fc"
+			"hash": "7378ecdb38b2ac406bfc56cef5a9a1429238bd2f09c727c729902e096a35c9b3"
 		},
 		{
 			"path": "src/tw.build.ts",

@@ -28,7 +28,6 @@ import {
 	buildPandwindInteropArtifact,
 	parsePandwindInteropArtifact,
 	PANDWIND_INTEROP_SCHEMA,
-	PANDWIND_INTEROP_V2_SCHEMA,
 	type PandwindInteropTokenSnapshot,
 } from "./interop-artifact.ts";
 import { loadTokenDocument } from "./codegen-theme-input.ts";
@@ -132,7 +131,7 @@ export const twAdapter = createTwAdapter({
 			if (existingInterop?.schema === PANDWIND_INTEROP_SCHEMA) {
 				tokenSnapshot = parsePandwindInteropArtifact(existingInterop).tokens;
 			} else {
-				if (existingInterop !== undefined && existingInterop.schema !== PANDWIND_INTEROP_V2_SCHEMA)
+				if (existingInterop !== undefined)
 					throw new Error(
 						`pandwind-codemod tw bridge: unsupported existing interop schema '${String(existingInterop.schema)}'`,
 					);

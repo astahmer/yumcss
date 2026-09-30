@@ -131,7 +131,7 @@ export interface CollectPayload {
 	/** Token governance report (plans/054) — computed when the app's
 	 * official preset is loadable; report-only when it is not. */
 	governance?: import("../governance/contracts.ts").TokenGovernanceReport;
-	/** Validated token snapshot from the codegen-owned pandwind.interop/3 artifact. */
+	/** Validated token snapshot from the codegen-owned pandwind.interop/1 artifact. */
 	interopTokens?: PandwindInteropTokenSnapshot;
 	/** Deterministic prune-changeset proposal derived from the report. */
 	governanceChangeset?: import("../governance/prune-changeset.ts").GovernancePruneChangeset;

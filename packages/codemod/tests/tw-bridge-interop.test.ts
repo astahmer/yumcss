@@ -4,7 +4,6 @@ import { describe, expect, test } from "vitest";
 import {
 	buildPandwindInteropArtifact,
 	parsePandwindInteropArtifact,
-	PANDWIND_INTEROP_V2_SCHEMA,
 } from "../src/tw/interop-artifact.ts";
 import { generateTwBridge } from "../src/tw/generate-bridge.ts";
 import { parseDtcgTokenDocument } from "../src/swap/token-document.ts";
@@ -23,7 +22,7 @@ export const tw = createTw(__pandwindConfig);
 `;
 
 describe("Tailwind bridge interop artifact refresh", () => {
-	test("preserves v3 token snapshots and upgrades v2 artifacts from the configured preset", async () => {
+	test("preserves v1 token snapshots and rejects previous schemas", async () => {
 		const project = mkdtempSync(join(import.meta.dirname, ".tw-bridge-interop-"));
 		try {
 			const cssEntry = join(project, "tailwind.css");
@@ -69,15 +68,13 @@ describe("Tailwind bridge interop artifact refresh", () => {
 			expect(refreshed.tokens).toEqual(retainedArtifact.tokens);
 			expect(readFileSync(bridgeFile, "utf8")).toContain('"#123456"');
 
-			writeFileSync(interopFile, `${JSON.stringify({ schema: PANDWIND_INTEROP_V2_SCHEMA })}\n`);
-			await generateTwBridge(options);
-			const upgraded = parsePandwindInteropArtifact(JSON.parse(readFileSync(interopFile, "utf8")));
-			expect(upgraded.tokens).toMatchObject({
-				state: "available",
-				source: { kind: "configured-token-module", module: presetFile },
+			writeFileSync(interopFile, `${JSON.stringify({ schema: "pandwind.interop/3" })}\n`);
+			await expect(generateTwBridge(options)).rejects.toThrow(
+				"unsupported existing interop schema 'pandwind.interop/3'",
+			);
+			expect(JSON.parse(readFileSync(interopFile, "utf8"))).toEqual({
+				schema: "pandwind.interop/3",
 			});
-			expect(JSON.stringify(upgraded.tokens.document)).toContain('"brand"');
-			expect(JSON.stringify(upgraded.tokens.document)).toContain("#123456");
 		} finally {
 			rmSync(project, { recursive: true, force: true });
 		}

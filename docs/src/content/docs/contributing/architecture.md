@@ -391,7 +391,7 @@ cascade layer), content validation,
 and rule-entry types; `packages/codemod/src/lib/` owns source scanning and
 artifact writing; `vite/css.ts` owns explicit package resolution; and
 `vite/css-core.ts` only merges already-validated entries. It remains separate
-from the project-context `pandwind.interop/3` artifact because the two files
+from the project-context `pandwind.interop/1` artifact because the two files
 serve different consumers and failure policies.
 
 | Domain                 | Port boundary                                                                                                                                | Default implementation                                                                                                                                                                                                                                                                                                                |
@@ -412,7 +412,7 @@ serve different consumers and failure policies.
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
 bridge generation refreshes the optional bridge section from the compiled
-design system. The `pandwind.interop/3` token section comes from the same token
+design system. The `pandwind.interop/1` token section comes from the same token
 module used by codegen and carries its source fingerprint and fidelity
 diagnostics. It is project metadata rather than an authored token file or
 compiled CSS. Pandwind does not import generated `bridge.ts` automatically;
@@ -1131,7 +1131,7 @@ changes as remove-plus-add and never guesses renames. Exact governance IDs and
 their existing usages, suggestions, removal-safety reasons, public-export
 evidence, and dynamic/unknown coverage boundaries attach where the current
 governance report proves them. `pandwind analyze` requires explicit consumer
-roots and reads generated `pandwind.interop/3` snapshots without scanning the
+roots and reads generated `pandwind.interop/1` snapshots without scanning the
 repository or registry. Inspector shows release comparison within its existing
 Usage & cleanup view, alongside token validation/export fidelity.
 

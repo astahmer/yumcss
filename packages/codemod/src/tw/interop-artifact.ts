@@ -6,9 +6,7 @@ import { parseTokenDocument, type TokenDocument } from "../swap/token-document.t
 import type { TokenFormatLoss } from "../swap/token-format-contracts.ts";
 
 /** Stable generated metadata consumed by migration and analysis tooling. */
-export const PANDWIND_INTEROP_SCHEMA = "pandwind.interop/3" as const;
-export const PANDWIND_INTEROP_V2_SCHEMA = "pandwind.interop/2" as const;
-export const PANDWIND_INTEROP_TOKEN_SCHEMA = "pandwind.interop.tokens/1" as const;
+export const PANDWIND_INTEROP_SCHEMA = "pandwind.interop/1" as const;
 
 export interface PandwindInteropUtility {
 	readonly key: string;
@@ -44,7 +42,6 @@ export interface PandwindInteropArtifact {
 
 export type PandwindInteropTokenSnapshot =
 	| {
-			readonly schema: typeof PANDWIND_INTEROP_TOKEN_SCHEMA;
 			readonly state: "available";
 			readonly source: {
 				readonly kind: "configured-token-module";
@@ -58,17 +55,12 @@ export type PandwindInteropTokenSnapshot =
 			readonly document: TokenDocument;
 	  }
 	| {
-			readonly schema: typeof PANDWIND_INTEROP_TOKEN_SCHEMA;
 			readonly state: "unavailable";
 			readonly source: null;
 			readonly fidelity: null;
 			readonly document: null;
 			readonly diagnostics: readonly string[];
 	  };
-
-export interface ExistingPandwindInteropTokenSnapshot {
-	readonly tokens: PandwindInteropTokenSnapshot;
-}
 
 export interface BuildPandwindInteropArtifactOptions {
 	readonly typesDts: string;
@@ -90,7 +82,6 @@ const TokenLossSchema = z.strictObject({
 });
 const TokenSnapshotSchema = z.discriminatedUnion("state", [
 	z.strictObject({
-		schema: z.literal(PANDWIND_INTEROP_TOKEN_SCHEMA),
 		state: z.literal("available"),
 		source: z.strictObject({
 			kind: z.literal("configured-token-module"),
@@ -104,7 +95,6 @@ const TokenSnapshotSchema = z.discriminatedUnion("state", [
 		document: z.json(),
 	}),
 	z.strictObject({
-		schema: z.literal(PANDWIND_INTEROP_TOKEN_SCHEMA),
 		state: z.literal("unavailable"),
 		source: z.null(),
 		fidelity: z.null(),
@@ -138,7 +128,7 @@ export const parsePandwindInteropArtifact = (value: unknown): PandwindInteropArt
 	const result = PandwindInteropArtifactSchema.safeParse(value);
 	if (!result.success) {
 		throw new Error(
-			`pandwind interop: invalid pandwind.interop/3 artifact: ${result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ")}`,
+			`pandwind interop: invalid pandwind.interop/1 artifact: ${result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ")}`,
 		);
 	}
 	const tokens =
@@ -233,7 +223,6 @@ export function buildPandwindInteropArtifact(
 			options.tokenSnapshot ??
 			(options.tokenDocument === undefined
 				? {
-						schema: PANDWIND_INTEROP_TOKEN_SCHEMA,
 						state: "unavailable",
 						source: null,
 						fidelity: null,
@@ -244,7 +233,6 @@ export function buildPandwindInteropArtifact(
 						const document = parseTokenDocument(options.tokenDocument);
 						const losses = document.sourceLosses ?? [];
 						return {
-							schema: PANDWIND_INTEROP_TOKEN_SCHEMA,
 							state: "available",
 							source: {
 								kind: "configured-token-module",

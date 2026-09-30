@@ -33,7 +33,7 @@ describe("pandwind interop artifact", () => {
 			bridge: { "background-color": { "#3182ce": "bg-blue-500" } },
 		});
 
-		expect(artifact.schema).toBe("pandwind.interop/3");
+		expect(artifact.schema).toBe("pandwind.interop/1");
 		expect(artifact.utilities).toEqual([
 			{ key: "bgColor", base: "bg", valueType: "BgColorValue" },
 			{ key: "textColor", base: "text", valueType: "BgColorValue" },
@@ -81,5 +81,20 @@ describe("pandwind interop artifact", () => {
 				},
 			},
 		});
+	});
+
+	test("uses the root schema for tokens and rejects previous schema envelopes", () => {
+		const artifact = buildPandwindInteropArtifact({ typesDts: types, twTs: tw });
+
+		expect(artifact.tokens).not.toHaveProperty("schema");
+		expect(() =>
+			parsePandwindInteropArtifact({ ...artifact, schema: "pandwind.interop/3" }),
+		).toThrow("invalid pandwind.interop/1 artifact");
+		expect(() =>
+			parsePandwindInteropArtifact({
+				...artifact,
+				tokens: { ...artifact.tokens, schema: "pandwind.interop.tokens/1" },
+			}),
+		).toThrow("invalid pandwind.interop/1 artifact");
 	});
 });

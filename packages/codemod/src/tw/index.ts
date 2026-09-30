@@ -68,11 +68,9 @@ export {
 	buildPandwindInteropArtifact,
 	parsePandwindInteropArtifact,
 	PANDWIND_INTEROP_SCHEMA,
-	PANDWIND_INTEROP_TOKEN_SCHEMA,
 	type BuildPandwindInteropArtifactOptions,
 	type PandwindInteropArtifact,
 	type PandwindInteropTokenSnapshot,
-	type ExistingPandwindInteropTokenSnapshot,
 	type PandwindInteropUtility,
 } from "./interop-artifact.ts";
 export {

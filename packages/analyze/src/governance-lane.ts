@@ -164,7 +164,7 @@ export async function runTokenReleaseLane(args: CliArgs): Promise<string> {
 		interop = parsePandwindInteropArtifact(JSON.parse(readFileSync(currentPath, "utf8")));
 	} catch (error) {
 		throw new Error(
-			`analyze release: could not load current pandwind.interop/3 artifact '${currentPath}': ${error instanceof Error ? error.message : String(error)}`,
+			`analyze release: could not load current pandwind.interop/1 artifact '${currentPath}': ${error instanceof Error ? error.message : String(error)}`,
 			{ cause: error },
 		);
 	}
