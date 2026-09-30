@@ -49,8 +49,8 @@ Deliver two connected capabilities:
    existing token-governance report for the consumer project.
 
 The DTCG file remains the interoperable file format at external tool
-boundaries. Generated project context belongs in a new version of
-`pandwind.interop.json`; do not add a parallel `pandwind.tokens.json` artifact.
+boundaries. Generated project context and tokens share the existing
+`pandwind.interop/1` artifact; tokens have no separate schema or artifact.
 Other registered format adapters remain available, but each must report what
 it preserves and must reject unsupported lossy exports by default.
 
@@ -79,7 +79,7 @@ flowchart TD
     Source["DTCG files or registered source adapter"] --> Codec["Token format registry and validation"]
     Codec --> Document["Typed TokenDocument"]
     Document --> Export["Target format export with fidelity diagnostics"]
-    Document --> Interop["Codegen-owned pandwind.interop/3"]
+    Document --> Interop["Codegen-owned pandwind.interop/1"]
     Baseline["Explicit prior token document"] --> Diff["TokenReleaseReport/1"]
     Document --> Diff
     Usage["Existing TokenGovernanceReport"] --> Diff
@@ -124,7 +124,7 @@ emits values that the existing preset/compiler can represent safely.
 | -------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Canonical exchange         | DTCG 2025.10 Format, Color, and Resolver modules                                     | Use stable, tool-neutral contracts instead of inventing a second authored token format.                                                                       |
 | Internal representation    | Replace the scalar-only `TokenSet` with a versioned typed document model             | Keep hierarchy, metadata, references, structured values, and contexts intact.                                                                                 |
-| Generated project artifact | Extend `pandwind.interop/2` to `pandwind.interop/3`                                  | The repo already assigns generated design-system context to this artifact. Do not use the compiled-rule `pandwind.lib/1` or create a parallel token artifact. |
+| Generated project artifact | Keep token context in the existing `pandwind.interop/1` envelope                     | The repo already assigns generated design-system context to this artifact. Do not use the compiled-rule `pandwind.lib/1` or create a parallel token artifact. |
 | Existing source adapters   | Declare import/export fidelity and validation per adapter                            | DTCG can be lossless first; other formats must state limits instead of pretending to preserve all semantics.                                                  |
 | Release identity           | Use canonical token paths; only recognize renames from explicit replacement metadata | Similar names or values do not prove token identity.                                                                                                          |
 | Release analysis           | Add a separate versioned `TokenReleaseReport/1` and consume `TokenGovernanceReport`  | Keep current-project usage analysis authoritative and avoid overloading its report contract.                                                                  |
@@ -140,7 +140,7 @@ emits values that the existing preset/compiler can represent safely.
 - The DTCG adapter preserves unresolved references and resolver contexts. A
   separate resolver produces an explicitly selected context view; CSS
   compilation consumes only representable scalar values.
-- Codegen serializes generated token context into `pandwind.interop/3` and
+- Codegen serializes generated token context into `pandwind.interop/1` and
   owns the complete artifact. `pandwind.lib/1` continues to carry extracted
   rules only.
 - The release comparator accepts an explicit baseline and current document,
@@ -270,9 +270,10 @@ source metadata whose owning adapter does not interpret them.
 5. [x] Migrate existing format adapters to the richer model. Add fidelity fixtures
        for each adapter; refuse unsupported lossy exports by default. Improve
        individual formats only where real project needs justify the work.
-6. [x] Generate `pandwind.interop/3` from codegen-owned token inputs and provenance.
-       Update readers and bridge generation atomically, regenerate checked-in
-       artifacts, and reject stale schema output with a regeneration diagnostic.
+6. [x] Generate token context inside the existing `pandwind.interop/1` envelope
+       from codegen-owned inputs and provenance. Keep the root schema authoritative,
+       update readers and bridge generation atomically, and regenerate checked-in
+       artifacts.
 7. [x] Implement baseline comparison and join it with the existing governance
        report. Cover aliases, conditions, deprecations, removal safety, exact
        replacements, public exports, and dynamic/unknown boundaries.
@@ -291,7 +292,7 @@ source metadata whose owning adapter does not interpret them.
    lossy output unless the caller opts in.
 3. Accept any registered token format as an explicit baseline (`dtcg` by
    default, configurable with `--release-format`). Read the current release
-   only from a validated `pandwind.interop/3` token snapshot. This keeps
+   only from the validated token section of `pandwind.interop/1`. This keeps
    authored baseline files separate from generated current-project metadata.
 
 ## Acceptance criteria
@@ -306,7 +307,7 @@ source metadata whose owning adapter does not interpret them.
 - [x] Every registered format adapter declares its supported fidelity, and
       lossy exports fail by default with a machine-readable explanation.
 - [x] Codegen owns and deterministically writes the token section of
-      `pandwind.interop/3`; bridge generation refreshes only bridge-owned data
+      `pandwind.interop/1`; bridge generation refreshes only bridge-owned data
       or regenerates the full artifact from authoritative inputs.
 - [x] `pandwind.lib/1` remains the compiled CSS-rule artifact and is not used
       as the token interchange contract.

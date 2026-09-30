@@ -1706,13 +1706,13 @@ const renderTwCodegenDetails = (snapshot: TwCodegenSnapshot): string[] => {
 			new Set([1, 2, 3]),
 		),
 		"",
-		"Interop changed from " +
+		"Historical prototype measurement: this compared " +
 			artifacts.interopBefore.schema +
 			" to " +
 			artifacts.interopAfter.schema +
-			". V2 stores each generated value union once by type alias and keeps utility rows as references, so the artifact remains self-contained. " +
+			" before publication. The prototype stored each generated value union once by type alias and kept utility rows as references. The current pre-launch artifact is flattened to the single pandwind.interop/1 schema, with no token sub-schema or compatibility reader. " +
 			artifacts.gzipMethod +
-			". The after bundle was verified to contain the v2 schema and generated utility values (" +
+			". The then-after bundle was verified to contain the measured prototype schema and generated utility values (" +
 			(migrationRoute.containsInteropV2 && migrationRoute.containsGeneratedUtilityValues
 				? "both present"
 				: "verification incomplete") +

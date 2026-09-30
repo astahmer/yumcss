@@ -318,7 +318,7 @@ The shared default-catalog design remains a no-go: measurements do not show a lo
 | Playground MigrationLabPage (raw)      |   536,967 B |   431,679 B | -105,288 B (19.6%) |
 | Playground MigrationLabPage (gzip)     |    52,058 B |    48,176 B |    -3,882 B (7.5%) |
 
-Interop changed from pandwind.interop/1 to pandwind.interop/2. V2 stores each generated value union once by type alias and keeps utility rows as references, so the artifact remains self-contained. Node zlib gzipSync default level on Node 24.20.0. The after bundle was verified to contain the v2 schema and generated utility values (both present).
+Historical prototype measurement: this compared pandwind.interop/1 to pandwind.interop/2 before publication. The prototype stored each generated value union once by type alias and kept utility rows as references. The current pre-launch artifact is flattened to the single pandwind.interop/1 schema, with no token sub-schema or compatibility reader. Node zlib gzipSync default level on Node 24.20.0. The then-after bundle was verified to contain the measured prototype schema and generated utility values (both present).
 
 TypeScript diagnostics were 340,769 instantiations; 467,842 KiB; 0.462 s check before and 340,499 instantiations; 465,901 KiB; 0.604 s check after. The after run includes one additional test file and its check time is not lower; this is not a typecheck-performance claim.
 

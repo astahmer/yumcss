@@ -83,17 +83,17 @@ describe("pandwind interop artifact", () => {
 		});
 	});
 
-	test("uses the root schema for tokens and rejects previous schema envelopes", () => {
+	test("uses the root schema for tokens and rejects unsupported schema envelopes", () => {
 		const artifact = buildPandwindInteropArtifact({ typesDts: types, twTs: tw });
 
 		expect(artifact.tokens).not.toHaveProperty("schema");
 		expect(() =>
-			parsePandwindInteropArtifact({ ...artifact, schema: "pandwind.interop/3" }),
+			parsePandwindInteropArtifact({ ...artifact, schema: "pandwind.interop/99" }),
 		).toThrow("invalid pandwind.interop/1 artifact");
 		expect(() =>
 			parsePandwindInteropArtifact({
 				...artifact,
-				tokens: { ...artifact.tokens, schema: "pandwind.interop.tokens/1" },
+				tokens: { ...artifact.tokens, schema: "unexpected" },
 			}),
 		).toThrow("invalid pandwind.interop/1 artifact");
 	});

@@ -68,12 +68,12 @@ describe("Tailwind bridge interop artifact refresh", () => {
 			expect(refreshed.tokens).toEqual(retainedArtifact.tokens);
 			expect(readFileSync(bridgeFile, "utf8")).toContain('"#123456"');
 
-			writeFileSync(interopFile, `${JSON.stringify({ schema: "pandwind.interop/3" })}\n`);
+			writeFileSync(interopFile, `${JSON.stringify({ schema: "pandwind.interop/99" })}\n`);
 			await expect(generateTwBridge(options)).rejects.toThrow(
-				"unsupported existing interop schema 'pandwind.interop/3'",
+				"unsupported existing interop schema 'pandwind.interop/99'",
 			);
 			expect(JSON.parse(readFileSync(interopFile, "utf8"))).toEqual({
-				schema: "pandwind.interop/3",
+				schema: "pandwind.interop/99",
 			});
 		} finally {
 			rmSync(project, { recursive: true, force: true });

@@ -114,7 +114,7 @@ describe("runCli --governance", () => {
 		expect(human).toContain("policy:");
 	});
 
-	test("compares an explicit DTCG baseline to interop/3 across declared consumer roots", async () => {
+	test("compares an explicit DTCG baseline to interop/1 across declared consumer roots", async () => {
 		const current = parseDtcgTokenDocument(
 			JSON.stringify({
 				colors: {
