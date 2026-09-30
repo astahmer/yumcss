@@ -1,3 +1,4 @@
+import { toOxcNode } from "../oxc-node.ts";
 import { ImportKindTag, NodeKind } from "../ast-node-kind.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { type OxcNode, walk } from "../tw/literal.ts";
@@ -79,11 +80,11 @@ export const findCssFactoryBindingsInProgram = (program: OxcNode): readonly CssF
 
 export const findCssFactoryBindings = (code: string, id: string): readonly CssFactoryBinding[] => {
 	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssFactoryImport(code)) return [];
-	const program = SOURCE_SCANNER_SERVICE.parse({
+	const program = toOxcNode(SOURCE_SCANNER_SERVICE.parse({
 		file: id,
 		source: code,
 		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-	}).program as unknown as OxcNode;
+	}).program);
 	return findCssFactoryBindingsInProgram(program);
 };
 

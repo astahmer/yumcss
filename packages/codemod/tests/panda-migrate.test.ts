@@ -8,7 +8,7 @@ import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
-import { loadMetaFromSources } from "../src/meta.ts";
+import { createEmptyPandwindMeta, loadMetaFromSources } from "../src/meta.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import {
 	runPandaMigration,
@@ -41,9 +41,7 @@ try {
 		tokens: examplePreset.tokens,
 	});
 } catch {
-	meta = {
-		bridgeInverse: new Map(),
-	} as unknown as PandwindMeta;
+	meta = createEmptyPandwindMeta();
 }
 
 const dirs: Array<string> = [];

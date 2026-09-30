@@ -1,4 +1,5 @@
 import { expect, test } from "tstyche";
+import { typeValue } from "./type-fixtures.ts";
 import { createCss } from "pandwind/css";
 import type { PandwindPropertyValue } from "../src/types/css-values.ts";
 import { define, type PandwindProperties } from "pandwind/preset";
@@ -161,9 +162,9 @@ const intrinsicPreset = define.preset(
 const css = createCss(intrinsicPreset);
 
 test("intrinsic CSS values remain available across every curated property group", () => {
-	expect(undefined as unknown as AcceptedIntrinsicCases).type.toBe<true>();
-	expect(undefined as unknown as RejectedInvalidCases).type.toBe<true>();
-	expect(undefined as unknown as CssWideCases).type.toBe<true>();
+	expect(typeValue<AcceptedIntrinsicCases>()).type.toBe<true>();
+	expect(typeValue<RejectedInvalidCases>()).type.toBe<true>();
+	expect(typeValue<CssWideCases>()).type.toBe<true>();
 });
 
 test("strict CSS accepts the intrinsic and CSS-wide values at call sites", () => {
@@ -229,5 +230,5 @@ test("the shared property contract keeps every curated property non-widened", ()
 			: never;
 	}[keyof PandwindProperties];
 
-	expect(undefined as unknown as WidenedPropertyNames).type.toBe<never>();
+	expect(typeValue<WidenedPropertyNames>()).type.toBe<never>();
 });

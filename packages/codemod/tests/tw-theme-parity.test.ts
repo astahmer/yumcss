@@ -20,7 +20,7 @@
  * Current-behavior pins are marked as such (dark-only tokens), with rationale.
  */
 import { compile } from "@tailwindcss/node";
-import { parse, type Root, type Rule } from "postcss";
+import { parse, type AtRule, type Root, type Rule } from "postcss";
 import { describe, expect, test } from "vitest";
 import {
 	buildThemeBlock,
@@ -208,21 +208,15 @@ describe("condition-bound tokens compile through real Tailwind", () => {
 	test("media-conditioned variant applies within its query", async () => {
 		const root = await compileSheet(["bg-danger"]);
 		const media = root.nodes.find(
-			(node) =>
-				node?.type === PostCssNodeKind.AtRule &&
-				(node as { name?: string }).name === "media" &&
-				(node as { params?: string }).params?.includes("max-width: 640px"),
-		) as
-			| undefined
-			| Extract<(typeof root)["nodes"][number], { type: typeof PostCssNodeKind.AtRule }>;
-		expect(media, "@media (max-width: 640px) block emitted").toBeDefined();
+			(node): node is AtRule =>
+				node.type === PostCssNodeKind.AtRule &&
+				node.name === "media" &&
+				node.params.includes("max-width: 640px"),
+		);
+		if (media === undefined) throw new Error("@media (max-width: 640px) block was not emitted");
 
 		const inner: Record<string, string> = {};
-		(
-			media as unknown as {
-				walkDecls: (cb: (d: { prop: string; value: string }) => void) => void;
-			}
-		).walkDecls((d) => {
+		media.walkDecls((d) => {
 			inner[d.prop] = d.value;
 		});
 		expect(inner["--color-danger"]).toBe("#fc8181");
@@ -235,19 +229,15 @@ describe("condition-bound tokens compile through real Tailwind", () => {
 	test("compound condition nests the media query around :root:hover", async () => {
 		const root = await compileSheet(["bg-cta"]);
 		const hoverMedia = root.nodes.find(
-			(node) =>
-				node?.type === PostCssNodeKind.AtRule &&
-				(node as { name?: string }).name === "media" &&
-				(node as { params?: string }).params?.includes("(hover: hover)"),
-		) as
-			| undefined
-			| Extract<(typeof root)["nodes"][number], { type: typeof PostCssNodeKind.AtRule }>;
-		expect(hoverMedia).toBeDefined();
+			(node): node is AtRule =>
+				node.type === PostCssNodeKind.AtRule &&
+				node.name === "media" &&
+				node.params.includes("(hover: hover)"),
+		);
+		if (hoverMedia === undefined) throw new Error("hover media query was not emitted");
 
 		const selectors: string[] = [];
-		(hoverMedia! as unknown as { walkRules: (cb: (r: Rule) => void) => void }).walkRules((r) =>
-			selectors.push(r.selector),
-		);
+		hoverMedia.walkRules((rule) => selectors.push(rule.selector));
 		expect(selectors).toContain(":root:hover");
 		const decls = declsInRule(root, ":root:hover", "--color-cta");
 		expect(decls["--color-cta"]).toBe("#6b46c1");

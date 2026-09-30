@@ -7,19 +7,9 @@ import {
 } from "../src/swap/index.ts";
 import { pandwindMigrateVite as createVitePlugin } from "../src/swap/unplugin.ts";
 
-type VirtualMigrationTestPlugin = {
-	readonly name: string;
-	readonly enforce: "pre";
-	readonly transform: (code: string, id: string) => Promise<{ code: string; map: null } | null>;
-	readonly resolveId: (source: string, importer?: string) => string | null;
-	readonly load: (id: string) => string | null;
-	readonly watchChange: (id: string) => void;
-	readonly configResolved?: (config: { readonly root: string }) => void;
-};
-
 const pandwindMigrateVite = (
 	options: Parameters<typeof createVitePlugin>[0],
-): VirtualMigrationTestPlugin => createVitePlugin(options) as unknown as VirtualMigrationTestPlugin;
+): ReturnType<typeof createVitePlugin> => createVitePlugin(options);
 
 const catalog = createBuiltinCodemodCatalog();
 const virtualPrefix = String.fromCharCode(0);

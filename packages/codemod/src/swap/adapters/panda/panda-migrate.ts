@@ -540,7 +540,7 @@ const scanJsxElements = (
 	let program: OxcNode;
 	try {
 		program = SOURCE_SCANNER_SERVICE.parse({ file: "panda-factory.tsx", source })
-			.program as unknown as OxcNode;
+			.program as OxcNode;
 	} catch {
 		return out;
 	}

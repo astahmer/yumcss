@@ -64,7 +64,7 @@ export function createDesignObjectCss<TPreset extends DesignPreset>(
 			if (!style) continue;
 			resolved = assign(
 				resolved,
-				resolveDesignStyle(style as unknown as Record<string, unknown>, preset.tokens) as never,
+				resolveDesignStyle(style as Record<string, unknown>, preset.tokens) as never,
 			);
 		}
 		return resolved;

@@ -44,7 +44,7 @@ export function createDesignCss<TPreset extends DesignPreset>(
 	options: OpentuiBackendOptions = {},
 ): OpentuiCssFn<TPreset> {
 	const backend = createOpentuiBackend(options);
-	return createDesignObjectCss(preset, backend) as unknown as OpentuiCssFn<TPreset>;
+	return createDesignObjectCss(preset, backend) as OpentuiCssFn<TPreset>;
 }
 
 /** Last-wins merge of OpenTUI style objects (registered, stable identity). */

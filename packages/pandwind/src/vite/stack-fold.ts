@@ -135,7 +135,7 @@ const evaluateStaticExpression = (expression: string): unknown => {
 			file: "/pandwind/stack-expression.tsx",
 			source: `const value = ${expression};`,
 		});
-		const program = parsed.program as unknown as {
+		const program = parsed.program as {
 			body?: readonly {
 				type?: string;
 				declarations?: readonly { init?: OxcNode }[];
@@ -230,7 +230,7 @@ export function foldStackElements(
 
 	const targets: FoldTarget[] = [];
 	const classAttribute = options.classAttribute ?? "className";
-	walk(parsed.program as unknown as OxcNode, (node) => {
+	walk(parsed.program, (node) => {
 		if ((node as { type?: string }).type !== NodeKind.JSXElement) return;
 		const el = node as {
 			openingElement?: Record<string, unknown>;

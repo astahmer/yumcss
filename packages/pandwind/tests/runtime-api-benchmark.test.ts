@@ -7,6 +7,7 @@ import { readFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { resolve } from "node:path";
 import { expect, test } from "vitest";
+import { updatingSnapshots } from "./snapshot-state.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createCss, createGeneratedCss } from "../src/css/create-css.ts";
@@ -136,13 +137,6 @@ const measure = (definition: RuntimeScenarioDefinition): RuntimeScenarioRecord =
 		p10: Math.round(samples[0]!),
 		p90: Math.round(samples[samples.length - 1]!),
 	};
-};
-
-const updatingSnapshots = (): boolean => {
-	const snapshotState = expect.getState() as unknown as {
-		snapshotState?: { _updateSnapshot?: string };
-	};
-	return snapshotState.snapshotState?._updateSnapshot === "all";
 };
 
 const cssDefault = createCss(defaultPreset);

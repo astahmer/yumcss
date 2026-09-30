@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, test } from "vitest";
+import { updatingSnapshots } from "./snapshot-state.ts";
 import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -260,13 +261,6 @@ const typescriptVersion = (): string => {
 		throw new Error(`could not determine the TypeScript version\n${output}`);
 	}
 	return match[1];
-};
-
-const updatingSnapshots = (): boolean => {
-	const snapshotState = (
-		expect.getState() as unknown as { snapshotState?: { _updateSnapshot?: string } }
-	).snapshotState;
-	return snapshotState?._updateSnapshot === "all";
 };
 
 const buildSnapshot = (scenarios: readonly ScenarioResult[], typescript: string): Snapshot => ({

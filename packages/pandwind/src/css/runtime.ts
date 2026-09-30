@@ -251,14 +251,14 @@ function withRuntimeFlush(css: CssFn<StyleObject>, runtime: RuntimeBinding): Css
 			runtime.flush();
 		}
 	};
-	const group = original.group as unknown as (groups: Record<string, unknown>) => unknown;
+	const group = original.group as (groups: Record<string, unknown>) => unknown;
 	flushed.group = ((groups: Record<string, unknown>) => {
 		try {
 			return group(groups);
 		} finally {
 			runtime.flush();
 		}
-	}) as unknown as typeof flushed.group;
+	}) as typeof flushed.group;
 	return flushed;
 }
 
@@ -303,8 +303,8 @@ export function createRuntimeCss<
 > {
 	const runtime = runtimeOptions(preset, options);
 	const css = createCss(preset, runtime.cssOptions) as CssFn<TypedStyleObject<TPreset>>;
-	runtime.registerVars(css as unknown as CssFn<StyleObject>);
-	const flushed = withRuntimeFlush(css as unknown as CssFn<StyleObject>, runtime);
+	runtime.registerVars(css as CssFn<StyleObject>);
+	const flushed = withRuntimeFlush(css as CssFn<StyleObject>, runtime);
 	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
 		TypedStyleObject<TPreset>,
 		TypedDynamicStyleObject<TPreset>,
@@ -349,8 +349,8 @@ export function createRuntimeDesignCss<TPreset extends DesignPreset>(
 > {
 	const runtime = runtimeOptions(preset, options);
 	const dss = createDesignCss(preset, runtime.cssOptions) as CssFn<DesignStyleObject<TPreset>>;
-	runtime.registerVars(dss as unknown as CssFn<StyleObject>);
-	const flushed = withRuntimeFlush(dss as unknown as CssFn<StyleObject>, runtime);
+	runtime.registerVars(dss as CssFn<StyleObject>);
+	const flushed = withRuntimeFlush(dss as CssFn<StyleObject>, runtime);
 	return Object.assign(flushed, { sheet: runtime.sheet }) as RuntimeCssFn<
 		DesignStyleObject<TPreset>,
 		DesignDynamicStyleObject<TPreset>,

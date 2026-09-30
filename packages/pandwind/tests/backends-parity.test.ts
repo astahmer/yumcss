@@ -29,9 +29,9 @@
  * (cx-twmerge-parity), theme var() mechanics (tw-theme-parity).
  */
 import { describe, expect, test } from "vitest";
-import { ATOM_REGISTRY, type AtomRegistry } from "../src/css/atoms.ts";
 import { createCx as createWebCx } from "../src/cx/index.ts";
 import { createDesignCss as createWebDesignCss } from "../src/design/index.ts";
+import { atomRegistryOf } from "./atom-registry.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import {
 	createCx as createOpentuiCx,
@@ -45,7 +45,7 @@ import { createCx as createRnCx, createDesignCss as createRnDesignCss } from "..
 
 const webCss = createWebDesignCss(examplePreset);
 const webCx = createWebCx({ css: webCss });
-const registry = (webCss as unknown as { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY];
+const registry = atomRegistryOf(webCss);
 
 const rnCss = createRnDesignCss(examplePreset);
 const rnCx = createRnCx();
@@ -68,7 +68,7 @@ const survivorsOf = (classes: string): Set<string> => {
 	);
 	return new Set(
 		parts.map((cls) => {
-			const key = registry?.get(cls);
+			const key = registry.get(cls);
 			expect(key, `unregistered atom "${cls}"`).toBeTruthy();
 			return key!.split("__").at(-1)!;
 		}),

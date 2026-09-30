@@ -260,6 +260,7 @@ export const validatePandwindLibArtifact = (value: unknown): PandwindLibValidati
 	}
 
 	if (errors.length > 0) return { valid: false, errors };
+	// SAFETY: every artifact field has passed its corresponding validator above.
 	const artifact = value as unknown as PandwindLibArtifact;
 	const { hash: _hash, ...content } = artifact;
 	if (artifact.hash !== hashValue(content))

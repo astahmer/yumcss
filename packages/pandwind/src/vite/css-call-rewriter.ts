@@ -1,3 +1,4 @@
+import { toOxcNode } from "../oxc-node.ts";
 import { createUnsafeCss } from "../unsafe/css.ts";
 import { cssPropertyFromKey, isEmptyCondition } from "../backends/css.ts";
 import { isLiteralKeyframeBody } from "../css/keyframes.ts";
@@ -199,7 +200,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				.map(({ local }) => local),
 		);
 		const unsafeCssNames = new Set(unsafeFactoryNames);
-		walk(parsed as unknown as OxcNode, (node) => {
+		walk(toOxcNode(parsed), (node) => {
 			if (node.type !== NodeKind.VariableDeclarator) return;
 			const declarator = node as {
 				id?: { name?: string };
@@ -214,26 +215,26 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 			)
 				unsafeCssNames.add(declarator.id.name);
 		});
-		const firstThatWorksNames = findFirstThatWorksBindings(parsed as unknown as OxcNode);
+		const firstThatWorksNames = findFirstThatWorksBindings(toOxcNode(parsed));
 		const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksNames);
 		const resolveLiteralScope = createCssLiteralScopeResolver(
-			parsed as unknown as OxcNode,
+			toOxcNode(parsed),
 			evaluateCall,
 		);
 		const firstThatWorksValueNames = findCssFallbackValueNames(
-			parsed as unknown as OxcNode,
+			toOxcNode(parsed),
 			firstThatWorksNames,
 		);
 		const staticHelperCalls = new Map(
 			findStaticCssHelperCallSites(
-				parsed as unknown as OxcNode,
+				toOxcNode(parsed),
 				names,
 				resolveLiteralScope,
 				evaluateCall,
 			).map((site) => [site.start, site]),
 		);
 		const usedIdentifiers = new Set<string>();
-		walk(parsed as unknown as OxcNode, (node) => {
+		walk(toOxcNode(parsed), (node) => {
 			if (node.type !== NodeKind.Identifier) return;
 			const name = (node as { name?: string }).name;
 			if (name !== undefined) usedIdentifiers.add(name);
@@ -872,18 +873,18 @@ const literalGroup = (
 
 export const markCssFactoryCallsPure = (code: string, id: string): string => {
 	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssFactoryImport(code)) return code;
-	const program = SOURCE_SCANNER_SERVICE.parse({
+	const program = toOxcNode(SOURCE_SCANNER_SERVICE.parse({
 		file: id,
 		source: code,
 		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-	}).program as unknown as OxcNode;
+	}).program);
 	const bindings = findCssFactoryBindingsInProgram(program);
 	if (bindings.length === 0) return code;
 	const factoryNames = new Set(bindings.map((binding) => binding.local));
 	const starts: number[] = [];
 	walk(program, (node) => {
 		if (node.type !== NodeKind.CallExpression) return;
-		const call = node as unknown as {
+		const call = node as {
 			start?: number;
 			callee?: { type?: string; name?: string };
 		};

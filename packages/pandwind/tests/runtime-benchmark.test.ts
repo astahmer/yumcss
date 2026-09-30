@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { resolve } from "node:path";
 import { expect, test } from "vitest";
+import { updatingSnapshots } from "./snapshot-state.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createRuntimeCss, createRuntimeSheet } from "../src/css/runtime.ts";
@@ -58,13 +59,6 @@ const measure = (fn: () => void, iterations: number): BenchmarkRecord => {
 		p10: Math.round(samples[0]!),
 		p90: Math.round(samples[4]!),
 	};
-};
-
-const updatingSnapshots = (): boolean => {
-	const snapshotState = expect.getState() as unknown as {
-		snapshotState?: { _updateSnapshot?: string };
-	};
-	return snapshotState.snapshotState?._updateSnapshot === "all";
 };
 
 test("runtime throughput stays within the recorded evidence band", async () => {

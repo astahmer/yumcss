@@ -34,7 +34,7 @@
 		// Enable shared checks as their existing repository findings are resolved.
 		"antislop/no-unknown-type-aliases": "error",
 		"antislop/no-widen-then-assert": "error",
-		"antislop/no-chained-type-assertions": "off",
+		"antislop/no-chained-type-assertions": "error",
 		"antislop/no-broad-object-parameters": "off",
 		"antislop/no-conditional-empty-object-spread": "off",
 		"antislop/no-known-value-widening": "off",

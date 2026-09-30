@@ -49,6 +49,7 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	DesignDynamicStyleObject<TPreset>,
 	DesignStyleObject<TPreset>
 > => {
+	// SAFETY: ALL_RUNTIME_METHODS installs every CssFn projection before this escapes.
 	return createDesignCssRuntime(preset, options, ALL_RUNTIME_METHODS) as unknown as CssFn<
 		DesignStyleObject<TPreset>,
 		DesignDynamicStyleObject<TPreset>,

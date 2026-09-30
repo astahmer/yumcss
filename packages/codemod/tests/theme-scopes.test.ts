@@ -35,11 +35,11 @@ describe("buildThemeScopes — deterministic emission", () => {
 	});
 
 	test("invalid entries are warned about and skipped, never guessed", () => {
-		const out = buildThemeScopes(
-			{
-				dark: { "--color-ok": "#000", "not-a-var": "#111", broken: 42 as unknown as string },
-				brokenScope: "nope" as unknown as Record<string, string>,
-			},
+	const out = buildThemeScopes(
+		{
+			dark: { "--color-ok": "#000", "not-a-var": "#111", broken: 42 },
+			brokenScope: "nope",
+		},
 			collectWarn,
 		);
 		expect(out).toContain("--color-ok");

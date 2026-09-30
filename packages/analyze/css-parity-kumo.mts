@@ -63,7 +63,7 @@ const twCallClasses = (src: string, file: string): Set<string> => {
 		const rec = node as Record<string, unknown>;
 		if (typeof rec.type !== "string") return;
 		if (rec.type === "CallExpression") {
-			const call = rec as unknown as {
+			const call = rec as {
 				callee?: { type?: string; name?: string };
 				arguments?: Array<unknown>;
 			};

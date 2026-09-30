@@ -186,12 +186,14 @@ export function preset<
 	tokens: TTokens;
 	web?: TWeb;
 } {
-	return {
+	const runtimePreset = {
 		...preset,
 		...(web === undefined ? {} : { web }),
 		strict: preset.strict ?? true,
 		tokens: theme.tokens,
-	} as unknown as Omit<TPreset, "strict" | "web"> & {
+	};
+	// SAFETY: `_config` is a type-only witness; runtime preset data keeps the authored shape.
+	return runtimePreset as unknown as Omit<TPreset, "strict" | "web"> & {
 		strict: EffectiveStrict<TPreset>;
 		_config: TConfig;
 		tokens: TTokens;

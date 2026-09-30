@@ -308,7 +308,7 @@ function findNextConfigObject(source: string, file: string): ConfigAstNode | und
 			file,
 			source,
 			language: file.endsWith(".ts") ? "typescript" : "javascript",
-		}).program as unknown as ConfigAstNode;
+		}).program as ConfigAstNode;
 	} catch {
 		return undefined;
 	}

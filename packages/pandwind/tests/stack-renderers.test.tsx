@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 import { h } from "preact";
+import { createTextVNode, isVNode, type SetupContext, type VNode } from "vue";
 import renderPreactToString from "preact-render-to-string";
 import { renderToString } from "solid-js/web";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
@@ -25,6 +26,16 @@ const configuredInput = { ...stackInput, gap: 4, padding: "1rem" };
 const configuredClassName =
 	"app-display-flex app-flexDirection-column app-gap-4px app-padding-1rem " +
 	"app-alignItems-center app-justifyContent-space-between";
+
+const vueSetupContext = (
+	attrs: Record<string, unknown>,
+	child: VNode,
+): SetupContext => ({
+	attrs,
+	slots: { default: () => [child] },
+	emit: () => undefined,
+	expose: () => undefined,
+});
 
 describe("Stack renderer family", () => {
 	test("React preserves the shared class contract and forwards HTML attributes", () => {
@@ -61,35 +72,23 @@ describe("Stack renderer family", () => {
 	});
 
 	test("Vue delegates attrs, slots, and class normalization to Vue", () => {
-		if (VueStack.setup === undefined) throw new Error("Vue Stack setup is missing");
-		const render = (
-			VueStack.setup as unknown as (
-				props: typeof stackInput,
-				context: { attrs: Record<string, unknown>; slots: { default: () => string } },
-			) => () => unknown
-		)(stackInput, {
-			attrs: { class: "custom", id: "vue-stack" },
-			slots: { default: () => "content" },
-		});
-		const vnode = render?.() as {
-			type: unknown;
-			props: Record<string, unknown>;
-			children: unknown;
-		};
+		const setup = VueStack.setup;
+		if (setup === undefined) throw new Error("Vue Stack setup is missing");
+		const child = createTextVNode("content");
+		const render = setup(
+			stackInput,
+			vueSetupContext({ class: "custom", id: "vue-stack" }, child),
+		);
+		if (typeof render !== "function") throw new Error("Vue Stack setup did not return a render function");
+		const rendered = render();
+		if (!isVNode(rendered)) throw new Error("Vue Stack render did not return a VNode");
 
-		expect({ type: vnode.type, props: vnode.props, children: vnode.children })
-			.toMatchInlineSnapshot(`
-			{
-			  "children": "content",
-			  "props": {
-			    "class": "flex flex-col gap-4 p-6 items-center justify-between custom",
-			    "id": "vue-stack",
-			  },
-			  "type": "div",
-			}
-		`);
-		expect(vnode.props.id).toBe("vue-stack");
-		expect(vnode.props.class).toBe("flex flex-col gap-4 p-6 items-center justify-between custom");
+		expect(rendered.type).toBe("div");
+		expect(rendered.props).toMatchObject({
+			id: "vue-stack",
+			class: "flex flex-col gap-4 p-6 items-center justify-between custom",
+		});
+		expect(rendered.children).toEqual([child]);
 	});
 
 	test("Preact preserves the shared class contract and forwards HTML attributes", () => {
@@ -118,18 +117,23 @@ describe("Stack renderer family", () => {
 		expect(solidOutput.replace(/\s+"/, '"')).toContain(`class="${configuredClassName}"`);
 
 		const configuredVue = createVueStack(configuredCss);
-		if (configuredVue.setup === undefined) throw new Error("Configured Vue Stack setup is missing");
-		const vueRender = (
-			configuredVue.setup as unknown as (
-				props: typeof configuredInput,
-				context: { attrs: Record<string, unknown>; slots: { default: () => string } },
-			) => () => unknown
-		)(configuredInput, {
-			attrs: { class: "custom", id: "vue-configured" },
-			slots: { default: () => "content" },
+		const configuredSetup = configuredVue.setup;
+		if (configuredSetup === undefined) throw new Error("Configured Vue Stack setup is missing");
+		const configuredChild = createTextVNode("content");
+		const vueRender = configuredSetup(
+			configuredInput,
+			vueSetupContext({ class: "custom", id: "vue-configured" }, configuredChild),
+		);
+		if (typeof vueRender !== "function") {
+			throw new Error("Configured Vue Stack setup did not return a render function");
+		}
+		const rendered = vueRender();
+		if (!isVNode(rendered)) throw new Error("Configured Vue Stack render did not return a VNode");
+		expect(rendered.props).toMatchObject({
+			id: "vue-configured",
+			class: `${configuredClassName} custom`,
 		});
-		const vueVNode = vueRender() as { props: Record<string, unknown> };
-		expect(vueVNode.props.class).toBe(`${configuredClassName} custom`);
+		expect(rendered.children).toEqual([configuredChild]);
 
 		const configuredPreact = createPreactStack(configuredCss);
 		const preactOutput = renderPreactToString(

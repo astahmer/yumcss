@@ -1,3 +1,4 @@
+import { toOxcNode } from "../oxc-node.ts";
 import type { Expression } from "oxc-parser";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { createCx, type CxInput } from "../cx/index.ts";
@@ -252,7 +253,7 @@ export class CxCallRewriter {
 		if (cxNames.size === 0 && fold === undefined) return { code, inlined: 0 };
 		const program =
 			options.parsedProgram ??
-			(SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program as unknown as OxcNode);
+			toOxcNode(SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program);
 		const constants =
 			options.constants === false
 				? new Map<string, KnownConstant>()
@@ -267,7 +268,10 @@ export class CxCallRewriter {
 			directionalConflicts: config.directionalConflicts,
 			...(fold === undefined
 				? {}
-				: { css: { [ATOM_REGISTRY]: fold.engine.registry } as unknown as CssFn<never> }),
+				: {
+						// SAFETY: createCx reads only ATOM_REGISTRY from this compiler-only carrier.
+						css: { [ATOM_REGISTRY]: fold.engine.registry } as unknown as CssFn<never>,
+					}),
 		});
 		const merge = (inputs: CxInput[]): string | undefined => {
 			try {

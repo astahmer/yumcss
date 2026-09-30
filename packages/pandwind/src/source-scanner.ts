@@ -1,3 +1,4 @@
+import { toOxcNode } from "./oxc-node.ts";
 import { parseSync, type ParseResult } from "oxc-parser";
 import { walk, type OxcNode } from "./tw/literal.ts";
 import { NodeKind } from "./ast-node-kind.ts";
@@ -357,14 +358,12 @@ export function computeExcludedRanges(
 	}
 	const parsed = parseSourceProgram({ file, source });
 	const excluded: Array<[number, number]> = [];
-	for (const comment of (
-		parsed as unknown as { comments?: Array<{ start?: number; end?: number }> }
-	).comments ?? []) {
+	for (const comment of parsed.comments) {
 		if (typeof comment.start === "number" && typeof comment.end === "number")
 			excluded.push([comment.start, comment.end]);
 	}
 	const supportedStyleQuasis: Array<[number, number]> = [];
-	walk(parsed.program as unknown as OxcNode, (node) => {
+	walk(parsed.program, (node) => {
 		const n = node as {
 			type?: string;
 			start?: number;
@@ -428,7 +427,7 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 	if (parserDocument(document) !== undefined) {
 		try {
 			const parsed = parseSourceProgram({ ...document, language });
-			program = parsed.program as unknown as OxcNode;
+			program = toOxcNode(parsed.program);
 			diagnostics.push(
 				...parsed.errors.map((error) => ({ kind: "parse" as const, message: error.message })),
 			);

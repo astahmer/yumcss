@@ -125,7 +125,7 @@ interface CallInfo {
 const NOT_STATIC: unknown = (() => {
 	const probe = SOURCE_SCANNER_SERVICE.parse({ file: "probe.ts", source: `unknownRuntimeValue` });
 	let sentinel: unknown;
-	walk(probe.program as unknown as OxcNode, (node) => {
+	walk(probe.program as OxcNode, (node) => {
 		if ((node as { type?: string }).type !== NodeKind.ExpressionStatement) return;
 		sentinel = evalStaticCx((node as { expression?: unknown }).expression as never);
 	});
@@ -154,7 +154,7 @@ function parseModule(
 	cxFold?: CxFoldContext,
 ): ParsedModule {
 	const program =
-		parsedProgram ?? (SOURCE_SCANNER_SERVICE.parse({ file, source }).program as unknown as OxcNode);
+		parsedProgram ?? (SOURCE_SCANNER_SERVICE.parse({ file, source }).program as OxcNode);
 
 	const imported = new Map<string, string>();
 	walk(program, (node) => {

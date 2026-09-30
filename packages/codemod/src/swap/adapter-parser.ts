@@ -621,7 +621,7 @@ function parseCalls(
 		candidate.regex.lastIndex = 0;
 		const localMatch = candidate.regex.exec(sourceText);
 		if (localMatch === null) return [];
-		const match = [sourceText, ...localMatch.slice(1)] as unknown as RegExpMatchArray;
+		const match = [sourceText, ...localMatch.slice(1)] as RegExpMatchArray;
 		match.index = candidate.callSite.start;
 		match.input = source;
 		return [{ candidate, match }];

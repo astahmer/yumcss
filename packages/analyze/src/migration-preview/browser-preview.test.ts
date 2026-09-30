@@ -8,8 +8,8 @@ const request = (targetCss: string): MigrationPreviewRequest =>
 		selection: null,
 		target: null,
 		theme: { scope: null },
-		workspace: {},
-	}) as unknown as MigrationPreviewRequest;
+		workspace: { revision: 0, root: "/preview", files: [] },
+	});
 
 describe("Migration Preview browser host", () => {
 	test("injects evaluated CSS and returns computed-style evidence", async () => {

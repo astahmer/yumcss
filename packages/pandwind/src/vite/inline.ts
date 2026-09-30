@@ -159,6 +159,7 @@ export function extractTwConfigFromSources(sources: readonly string[]): TwConfig
 			node.kind !== VariableDeclarationKindTag.Const
 		)
 			return;
+		// SAFETY: the checked VariableDeclaration node has the Oxc fields used below.
 		for (const declarator of (
 			node as unknown as {
 				declarations: Array<{
@@ -181,7 +182,7 @@ export function extractTwConfigFromSources(sources: readonly string[]): TwConfig
 	const constantScope = { get: (name: string) => resolveConstant(name) } as LiteralConstantScope;
 	const evaluateCall = (node: Expression, consts?: LiteralConstantScope): unknown => {
 		if (node.type !== NodeKind.CallExpression) return undefined;
-		const call = node as unknown as CallNode;
+		const call = node;
 		const callee = call.callee;
 		if (
 			callee?.type === NodeKind.Identifier &&
@@ -192,7 +193,7 @@ export function extractTwConfigFromSources(sources: readonly string[]): TwConfig
 				evalLiteral(call.arguments[0] as Expression, consts, evaluateCall),
 			);
 		if (callee === null || callee.type !== NodeKind.MemberExpression) return undefined;
-		const member = callee as unknown as {
+		const member = callee as {
 			computed?: boolean;
 			object?: { type?: string; name?: string };
 			property?: { type?: string; name?: string };
@@ -345,7 +346,7 @@ export function inlineTwCalls(
 	const consts: LiteralConstantScope = new Map([
 		// Cross-module imported constants sit under same-module declarations.
 		...[...importedScope].map(([name, known]) => [name, known.value] as const),
-		...[...collectModuleConstants(result.program as unknown as OxcNode)].map(
+		...[...collectModuleConstants(result.program as OxcNode)].map(
 			([name, known]) => [name, known.value] as const,
 		),
 	]);
@@ -359,7 +360,8 @@ export function inlineTwCalls(
 
 	walk(result.program, (node) => {
 		if (node.type !== NodeKind.CallExpression) return;
-		const call = node as CallNode;
+		// SAFETY: the checked CallExpression node has the call fields used below.
+		const call = node as unknown as CallNode;
 		const callee = call.callee;
 		const calleeName = (callee as { name?: string } | null)?.name;
 		if (callee?.type !== NodeKind.Identifier || !twNames.has(calleeName ?? "")) {

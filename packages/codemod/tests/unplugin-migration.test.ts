@@ -37,17 +37,6 @@ const sourceMapReferencePrefix = ["sourceMapping", "URL="].join("");
 const sourceMapReference = (path: string) => `${sourceMapReferencePrefix}${path}`;
 type HostResult = { readonly code: string; readonly map: object } | null;
 type HostRecord = { readonly name: string; readonly result: HostResult };
-type RawPlugin = {
-	readonly name: string;
-	readonly transform?: (code: string, id: string) => Promise<HostResult>;
-};
-
-type GeneratedFilePlugin = {
-	readonly transform: (code: string, id: string) => Promise<HostResult>;
-	readonly resolveId: (source: string, importer?: string) => string | null;
-	readonly load: (id: string) => string | null;
-};
-
 describe("codemod unplugin factory", () => {
 	test("publishes one factory and every unplugin platform slice", () => {
 		expect({
@@ -86,10 +75,11 @@ describe("codemod unplugin factory", () => {
 					const plugin = pandwindMigrateUnplugin.raw(options, {
 						framework,
 						versions: {},
-					}) as unknown as RawPlugin;
-					const transform = plugin.transform;
-					expect(typeof transform).toBe("function");
-					const result = await transform!(styledCard, "/virtual/project/Card.tsx");
+					});
+					if (typeof plugin.transform !== "function") {
+						throw new Error(`${framework} plugin has no transform hook`);
+					}
+					const result = await plugin.transform(styledCard, "/virtual/project/Card.tsx");
 					return [framework, { name: plugin.name, result }];
 				}),
 			),
@@ -216,12 +206,19 @@ describe("codemod unplugin factory", () => {
 				from: CodemodAdapterId.StyledComponents,
 				to: CodemodAdapterId.CssModules,
 				root: "/virtual/project",
-				readFile: (file) => files.get(file),
-				listFiles: () => [...files.keys()],
-				onResidual: (event) => residuals.push(event),
-			},
-			{ framework: "vite", versions: {} },
-		) as unknown as GeneratedFilePlugin;
+					readFile: (file) => files.get(file),
+					listFiles: () => [...files.keys()],
+					onResidual: (event) => residuals.push(event),
+				},
+				{ framework: "vite", versions: {} },
+		);
+		if (
+			typeof plugin.transform !== "function" ||
+			typeof plugin.resolveId !== "function" ||
+			typeof plugin.load !== "function"
+		) {
+			throw new Error("Vite migration plugin is missing a virtual module hook");
+		}
 		const transformed = await plugin.transform(source, sourceFile);
 		const stylesheetId = plugin.resolveId("./Card.module.css", sourceFile);
 		const stylesheet = stylesheetId === null ? null : plugin.load(stylesheetId);

@@ -14,9 +14,12 @@ import { join } from "node:path";
 import { rollup } from "rollup";
 import { describe, expect, test } from "vitest";
 import { examplePreset } from "@pandwind/example-preset";
-import { pandwindRollup, pandwindUnpluginCss } from "../src/unplugin.ts";
+import { pandwindRollup } from "../src/unplugin.ts";
+import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
+import { createInlineTwPluginCore } from "../src/vite/index.ts";
 import { writeJsTwModule } from "./helpers/generated-tw.ts";
 import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
+
 
 describe("pandwindRollup", () => {
 	test("folds tw() calls in a real rollup build", async () => {
@@ -111,17 +114,19 @@ describe("pandwindRollup", () => {
 				].join("\n");
 			writeFileSync(entry, source());
 
-			const plugin = pandwindRollup({}) as unknown as {
-				transform: (code: string, id: string) => Promise<{ code: string } | null>;
-				watchChange: (id: string) => void;
+			const plugin = createInlineTwPluginCore();
+			const resolver = {
+				async resolve(source: string) {
+					return source === twModule ? { id: twModule } : null;
+				},
 			};
-			const before = await plugin.transform(readFileSync(entry, "utf8"), entry);
+			const before = await plugin.transform(readFileSync(entry, "utf8"), entry, resolver);
 			expect(before?.code).toContain('"p-6"');
 
 			writeFileSync(constants, 'export const P = "8";');
-			plugin.watchChange(constants);
+			plugin.invalidate(constants);
 			writeFileSync(entry, source());
-			const after = await plugin.transform(readFileSync(entry, "utf8"), entry);
+			const after = await plugin.transform(readFileSync(entry, "utf8"), entry, resolver);
 			expect(after?.code).toContain('"p-8"');
 		} finally {
 			rmSync(dir, { recursive: true, force: true });
@@ -129,21 +134,14 @@ describe("pandwindRollup", () => {
 	});
 });
 
-describe("pandwindUnpluginCss", () => {
-	test("resolveId maps the virtual id through the unplugin vite slice", () => {
-		const plugin = pandwindUnpluginCss.vite({
-			preset: examplePreset,
-			root: tmpdir(),
-		});
-		const resolved = (
-			plugin as unknown as {
-				resolveId: (source: string) => string | null;
-			}
-		).resolveId("pandwind:css");
+describe("CSS extraction plugin core", () => {
+	test("resolveId maps the virtual stylesheet id", () => {
+		const plugin = createCssExtractorPluginCore(examplePreset, { root: tmpdir() });
+		const resolved = plugin.resolveId("pandwind:css");
 		expect(resolved).toContain("pandwind:css.css");
 	});
 
-	test("load serves the generated stylesheet from a scanned directory", async () => {
+	test("load serves the generated stylesheet from a scanned directory", () => {
 		const root = mkdtempSync(join(tmpdir(), "pandwind-unplugin-css-"));
 		try {
 			writeFileSync(
@@ -154,14 +152,7 @@ describe("pandwindUnpluginCss", () => {
 			);
 			mkdirSync(join(root, "keep"), { recursive: true });
 
-			const plugin = pandwindUnpluginCss.vite({
-				preset: examplePreset,
-				root,
-				cssSources: ["css"],
-			}) as unknown as {
-				resolveId: (source: string) => string | null;
-				load: (id: string) => string | null;
-			};
+			const plugin = createCssExtractorPluginCore(examplePreset, { root, cssSources: ["css"] });
 
 			const id = plugin.resolveId("pandwind:css");
 			expect(id).not.toBeNull();
@@ -172,7 +163,7 @@ describe("pandwindUnpluginCss", () => {
 		}
 	});
 
-	test("watchChange invalidates the Rollup stylesheet scan", async () => {
+	test("invalidate refreshes the scanned stylesheet", () => {
 		const root = mkdtempSync(join(tmpdir(), "pandwind-unplugin-rollup-watch-"));
 		try {
 			writeFileSync(
@@ -182,15 +173,7 @@ describe("pandwindUnpluginCss", () => {
 					'export const a = css({ $frame: { fill: "$blue-500" } });',
 				].join("\n"),
 			);
-			const plugin = pandwindUnpluginCss.rollup({
-				preset: examplePreset,
-				root,
-				cssSources: ["css"],
-			}) as unknown as {
-				resolveId: (source: string) => string | null;
-				load: (id: string) => string | null;
-				watchChange: (id: string) => void;
-			};
+			const plugin = createCssExtractorPluginCore(examplePreset, { root, cssSources: ["css"] });
 			const id = plugin.resolveId("pandwind:css");
 			expect(id).not.toBeNull();
 			expect(plugin.load(id!)).toContain("#3182ce");
@@ -200,7 +183,7 @@ describe("pandwindUnpluginCss", () => {
 				extra,
 				['import { css } from "./css";', 'css({ $frame: { fill: "$green-500" } });'].join("\n"),
 			);
-			plugin.watchChange(extra);
+			plugin.invalidate(extra);
 			expect(plugin.load(id!)?.toLowerCase()).toContain("#60a3bc");
 		} finally {
 			rmSync(root, { recursive: true, force: true });

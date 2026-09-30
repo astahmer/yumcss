@@ -128,7 +128,7 @@ export function evalLiteral(
 		case NodeKind.Literal:
 			return node.value;
 		case NodeKind.Identifier: {
-			const name = (node as unknown as { name?: string }).name;
+			const name = (node as { name?: string }).name;
 			if (consts !== undefined && typeof name === "string") {
 				const known = consts.get(name);
 				if (known !== undefined) return known;
@@ -281,9 +281,9 @@ function evalSetNode(
 	const type = (node as OxcNode).type;
 	switch (type) {
 		case NodeKind.Literal:
-			return { single: (node as unknown as { value?: unknown }).value };
+			return { single: (node as { value?: unknown }).value };
 		case NodeKind.Identifier: {
-			const name = (node as unknown as { name?: string }).name;
+			const name = (node as { name?: string }).name;
 			if (consts !== undefined && typeof name === "string" && consts.has(name)) {
 				return { single: consts.get(name) };
 			}
@@ -295,7 +295,7 @@ function evalSetNode(
 			return value === undefined ? { sets: [] } : { single: value };
 		}
 		case NodeKind.TemplateLiteral: {
-			const template = node as unknown as {
+			const template = node as {
 				quasis: Array<{ value: { cooked: string | null; raw: string } }>;
 				expressions: Expression[];
 			};
@@ -321,7 +321,7 @@ function evalSetNode(
 			return { sets: pieces };
 		}
 		case NodeKind.BinaryExpression: {
-			const binary = node as unknown as { operator: string; left: Expression; right: Expression };
+			const binary = node as { operator: string; left: Expression; right: Expression };
 			if (binary.operator !== "+") return { sets: [] };
 			const left = collectValueSet(evalSetNode(binary.left, consts, evaluateCall));
 			if (left === undefined) return { sets: [] };
@@ -337,7 +337,7 @@ function evalSetNode(
 			return { sets: out };
 		}
 		case NodeKind.UnaryExpression: {
-			const unary = node as unknown as { operator: string; argument: Expression };
+			const unary = node as { operator: string; argument: Expression };
 			if (unary.operator !== "-") return { sets: [] };
 			const inner = evalSetNode(unary.argument, consts, evaluateCall);
 			if (inner === undefined || !("single" in inner)) return { sets: [] };
@@ -345,7 +345,7 @@ function evalSetNode(
 			return typeof value === "number" ? { single: -value } : { sets: [] };
 		}
 		case NodeKind.ConditionalExpression: {
-			const conditional = node as unknown as {
+			const conditional = node as {
 				test: Expression;
 				consequent: Expression;
 				alternate: Expression | undefined;
@@ -358,7 +358,7 @@ function evalSetNode(
 			return evalBranchUnion([conditional.consequent, conditional.alternate], consts, evaluateCall);
 		}
 		case NodeKind.LogicalExpression: {
-			const logical = node as unknown as { operator: string; left: Expression; right: Expression };
+			const logical = node as { operator: string; left: Expression; right: Expression };
 			const left = collectValueSet(evalSetNode(logical.left, consts, evaluateCall));
 			if (left === undefined) return { sets: [] };
 			const right = collectValueSet(evalSetNode(logical.right, consts, evaluateCall));
@@ -400,7 +400,7 @@ function evalSetNode(
 			return { sets: [] };
 		}
 		case NodeKind.ArrayExpression: {
-			const array = node as unknown as { elements: Array<Expression | null | { type: string }> };
+			const array = node as { elements: Array<Expression | null | { type: string }> };
 			const entries: Array<readonly unknown[]> = [];
 			for (const element of array.elements) {
 				if (element === null || (element as { type: string }).type === NodeKind.SpreadElement) {
@@ -425,7 +425,7 @@ function evalSetNode(
 			return { sets: combinations };
 		}
 		case NodeKind.ObjectExpression: {
-			const object = node as unknown as { properties: unknown[] };
+			const object = node as { properties: unknown[] };
 			const keys: string[] = [];
 			const entries: Array<readonly unknown[]> = [];
 			for (const property of object.properties) {

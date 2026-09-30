@@ -251,7 +251,7 @@ const flattenDocument = (document: TokenDocument): FlatDocument => {
 		contexts.set(pointerFor(segments), value);
 	};
 	if (document.resolver !== undefined)
-		visitJson(document.resolver as unknown as TokenJsonValue, ["resolver"]);
+		visitJson(document.resolver as TokenJsonValue, ["resolver"]);
 	return { tokens, groups, contexts, contextTokenPaths };
 };
 

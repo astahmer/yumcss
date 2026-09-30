@@ -1,3 +1,4 @@
+import { toOxcNode } from "../oxc-node.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { canonicalTokenName } from "../lib/token-path.ts";
 import { isDesignModuleKey, type DesignModuleKey } from "../design/contracts.ts";
@@ -822,8 +823,7 @@ export const explainRuntimePruning = ({
 	preset,
 }: RuntimePruningExplanationOptions): readonly RuntimePruningExplanation[] => {
 	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return [];
-	const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
-		.program as unknown as OxcNode;
+	const program = toOxcNode(SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program);
 	return collectImports(program).map((runtimeImport) => {
 		const variables = findFactoryVariables(program, new Set([runtimeImport.local]));
 		if (variables.size === 0)
@@ -928,8 +928,9 @@ export const createRuntimePruningTransform = (
 			const pureCode = markCssFactoryCallsPure(code, id);
 			const pureChanged = pureCode !== code;
 			code = pureCode;
-			const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
-				.program as unknown as OxcNode;
+			const program = toOxcNode(
+				SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program,
+			);
 			const imports = collectImports(program);
 			if (imports.length === 0) return pureChanged ? { code, map: null } : null;
 			const replacements = new Map<string, { start: number; end: number; text: string }>();

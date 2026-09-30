@@ -1,4 +1,5 @@
 import { expect, test } from "tstyche";
+import { typeValue } from "./type-fixtures.ts";
 import { createCss, type AtomicStyleProps, type ClassNameStrategy } from "pandwind/css";
 import { createUnsafeCss } from "pandwind/unsafe/css";
 import { define, type AnyCssConfig, type PandwindProperties } from "pandwind/preset";
@@ -176,15 +177,15 @@ test("curated CSS values stay literal unions for editor suggestions", () => {
 	type OpenStrictDisplay = NonNullish<OpenStrictStyle["display"]>;
 	expect(openStrictCss.class({ display: "block" })).type.toBe<string>();
 
-	expect(undefined as unknown as WidenedPropertyNames).type.toBe<never>();
-	expect(undefined as unknown as string extends ExampleDisplay ? true : false).type.toBe<false>();
-	expect(undefined as unknown as string extends StrictDisplay ? true : false).type.toBe<false>();
+	expect(typeValue<WidenedPropertyNames>()).type.toBe<never>();
+	expect(typeValue<string extends ExampleDisplay ? true : false>()).type.toBe<false>();
+	expect(typeValue<string extends StrictDisplay ? true : false>()).type.toBe<false>();
 	expect(
-		undefined as unknown as string extends OpenStrictDisplay ? true : false,
+		typeValue<string extends OpenStrictDisplay ? true : false>(),
 	).type.toBe<false>();
-	expect(undefined as unknown as Extract<ExampleDisplay, "flex">).type.toBe<"flex">();
-	expect(undefined as unknown as Extract<StrictDisplay, "flex">).type.toBe<"flex">();
-	expect(undefined as unknown as Extract<OpenStrictDisplay, "flex">).type.toBe<"flex">();
+	expect(typeValue<Extract<ExampleDisplay, "flex">>()).type.toBe<"flex">();
+	expect(typeValue<Extract<StrictDisplay, "flex">>()).type.toBe<"flex">();
+	expect(typeValue<Extract<OpenStrictDisplay, "flex">>()).type.toBe<"flex">();
 });
 
 test("PandwindProperties exposes a curated CSS contract with an explicit csstype escape hatch", () => {

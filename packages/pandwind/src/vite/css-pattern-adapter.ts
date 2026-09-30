@@ -163,6 +163,7 @@ export class PandwindPatternAdapter implements CssPatternAdapter {
 		const sources: ExtractedCssStyle[] = [];
 		walkWithParent(parsed, (node, _parent, ancestors) => {
 			if (node.type !== NodeKind.JSXElement) return;
+			// SAFETY: the checked JSXElement tag guarantees the Oxc fields used below.
 			const element = node as unknown as JsxElement;
 			const local = element.openingElement?.name?.name;
 			const pattern = local === undefined ? undefined : imported.get(local);

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, test, vi } from "vitest";
-import type { PandwindMeta } from "../src/meta.ts";
+import { createEmptyPandwindMeta } from "../src/meta.ts";
 import {
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
@@ -39,7 +39,7 @@ describe("Panda migration pipeline", () => {
 			const report = await PANDA_MIGRATION_PIPELINE.run({
 				projectRoot: root,
 				patterns: ["Page.tsx"],
-				meta: { bridgeInverse: new Map() } as unknown as PandwindMeta,
+				meta: createEmptyPandwindMeta(),
 				write: false,
 				diff: false,
 				skipMarker: "pandwind:pipeline-test",
@@ -77,7 +77,7 @@ describe("Panda migration pipeline", () => {
 				reportFormat: "json",
 				patterns: ["src/Page.tsx"],
 				filePaths: [file],
-				meta: { bridgeInverse: new Map() } as unknown as PandwindMeta,
+				meta: createEmptyPandwindMeta(),
 				diff: false,
 				report: true,
 				write: true,

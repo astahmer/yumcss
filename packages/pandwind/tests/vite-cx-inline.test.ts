@@ -20,10 +20,10 @@ import { resolve } from "node:path";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import { parseSync } from "oxc-parser";
+import { toOxcNode } from "../src/oxc-node.ts";
 import { describe, expect, test } from "vitest";
 import { createCx } from "../src/cx/index.ts";
 import type { CxInput } from "../src/cx/index.ts";
-import type { OxcNode } from "../src/tw/literal.ts";
 import { inlineTwCalls } from "../src/vite/inline.ts";
 import { collectModuleConstants, findCxImports, inlineCxCalls } from "../src/vite/cx-inline.ts";
 import {
@@ -164,7 +164,7 @@ describe("folded output equals runtime output byte-for-byte", () => {
 		{
 			name: "nested arrays flatten",
 			source: 'cx(["px-2", ["py-4"]], "m-1")',
-			args: [["px-2", ["py-4"]], "m-1"] as unknown as CxInput[],
+			args: [["px-2", ["py-4"]], "m-1"],
 		},
 	];
 
@@ -362,10 +362,11 @@ describe("module-level constant propagation", () => {
 		const program = parseSync("fixture.ts", 'const P6 = "p-6";', {
 			sourceType: "module",
 			lang: "ts",
-		}).program as unknown as OxcNode;
-		addParentPointers(program);
+		}).program;
+		const ast = toOxcNode(program);
+		addParentPointers(ast);
 
-		expect(collectModuleConstants(program).get("P6")?.value).toBe("p-6");
+		expect(collectModuleConstants(ast).get("P6")?.value).toBe("p-6");
 	});
 
 	test("template interpolation of a known const folds", () => {
@@ -446,7 +447,7 @@ describe("module-level constant propagation", () => {
 			'const TOKEN = "flex";\nexport const classes = cx(TOKEN);',
 			{ lang: "ts" },
 		);
-		const program = parsed.program as unknown as OxcNode & { parent?: unknown };
+		const program = toOxcNode(parsed.program);
 		program.parent = program;
 
 		expect(collectModuleConstants(program).get("TOKEN")?.value).toBe("flex");

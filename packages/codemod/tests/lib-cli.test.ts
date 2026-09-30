@@ -90,7 +90,7 @@ describe("pandwind-codemod lib", () => {
 		const cli = createLibCli(
 			{
 				moduleLoader: {
-					importPackage: async <T>() => ({ preset: examplePreset }) as unknown as T,
+					importPackage: async <T>() => ({ preset: examplePreset }) as T,
 					importFile: async () => undefined,
 				},
 			},
@@ -127,7 +127,7 @@ describe("pandwind-codemod lib", () => {
 		const cli = createLibCli(
 			{
 				moduleLoader: {
-					importPackage: async <T>() => ({ preset: examplePreset }) as unknown as T,
+					importPackage: async <T>() => ({ preset: examplePreset }) as T,
 					importFile: async () => undefined,
 				},
 			},

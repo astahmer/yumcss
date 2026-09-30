@@ -1,3 +1,4 @@
+import { toOxcNode } from "../oxc-node.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import type { OxcNode } from "../tw/literal.ts";
 import { NodeKind } from "../ast-node-kind.ts";
@@ -18,11 +19,11 @@ class CxImportScanner {
 	): CxImportInfo {
 		const program =
 			parsedProgram ??
-			(SOURCE_SCANNER_SERVICE.parse({
+			toOxcNode(SOURCE_SCANNER_SERVICE.parse({
 				file: id,
 				source: code,
 				language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-			}).program as unknown as OxcNode);
+			}).program);
 		const info = { localNames: new Set<string>(), sources: [] as string[] };
 		const queue: unknown[] = [program];
 		for (let head = 0; head < queue.length; head++) {

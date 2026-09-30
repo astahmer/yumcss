@@ -159,7 +159,7 @@ async function generateUtilityBridge(
 	const valueFilter = options.values;
 	const authoredTokenNames = authoredThemeTokenNames(entry);
 	const resolveTheme = (name: string): string | undefined =>
-		(ds as unknown as { resolveThemeValue: (n: string) => string | undefined }).resolveThemeValue(
+		(ds as { resolveThemeValue: (n: string) => string | undefined }).resolveThemeValue(
 			name,
 		);
 

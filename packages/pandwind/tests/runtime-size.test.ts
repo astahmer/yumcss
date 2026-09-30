@@ -26,6 +26,7 @@ import { gzipSync } from "node:zlib";
 import { dirname, resolve } from "node:path";
 import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
+import { updatingSnapshots } from "./snapshot-state.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import { fixturePreset } from "./fixtures/fixture-preset.ts";
 import { createCssExtractionService } from "../src/vite/css-extract.ts";
@@ -147,23 +148,6 @@ const bundleGeneratedRuntime = (methods: readonly string[]): { min: number; gz: 
 	});
 	const code = result.outputFiles[0]!.text;
 	return { min: code.length, gz: gzipSync(code).byteLength };
-};
-
-/**
- * True when running `vitest run -u` / `--update`.
- *
- * `process.argv` in a worker only contains node + the worker script, so the
- * CLI flag must be read from the snapshot state instead: vitest resolves
- * `-u` once on the server and propagates it to the worker as
- * `_updateSnapshot === "all"` (default local runs are "new", CI is "none").
- */
-const updatingSnapshots = (): boolean => {
-	const snapshotState = (
-		expect.getState() as unknown as {
-			snapshotState?: { _updateSnapshot?: string };
-		}
-	).snapshotState;
-	return snapshotState?._updateSnapshot === "all";
 };
 
 test("runtime entries stay stylex-sized", async () => {

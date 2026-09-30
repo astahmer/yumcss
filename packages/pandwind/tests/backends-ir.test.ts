@@ -16,7 +16,7 @@
 import { describe, expect, test } from "vitest";
 import { createCssBackend } from "../src/backends/css.ts";
 import type { FlatStyleIR } from "../src/backends/types.ts";
-import { ATOM_REGISTRY } from "../src/css/atoms.ts";
+import { atomRegistryOf } from "./atom-registry.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { flattenStyle } from "../src/lib/utils.ts";
@@ -69,7 +69,7 @@ describe("css backend", () => {
 	test("values are stringified on the way in", () => {
 		const backend = createCssBackend();
 		const fromString = backend.declare("line-height", "4");
-		expect(backend.declare("line-height", 4 as unknown as string)).toBe(fromString);
+		expect(backend.declare("line-height", 4)).toBe(fromString);
 	});
 
 	test("sheet-backed strategy classes join the registry", () => {
@@ -92,7 +92,7 @@ describe("css backend", () => {
 		const css = createUnsafeCss();
 		const compiled = css({ color: "red" });
 		const atom = compiled.color!;
-		const registry = (css as unknown as { [ATOM_REGISTRY]?: Map<string, string> })[ATOM_REGISTRY];
+		const registry = atomRegistryOf(css);
 		expect(registry?.get(atom)).toBe("color");
 		// cx resolves atoms back to property signatures: a later same-property
 		// atom wins (eager conflict resolution).

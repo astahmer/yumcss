@@ -3,6 +3,7 @@ import { gzipSync } from "node:zlib";
 import { resolve } from "node:path";
 import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
+import { updatingSnapshots } from "./snapshot-state.ts";
 import { createInlineTwPluginCore } from "../src/vite/index.ts";
 import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
@@ -62,13 +63,6 @@ const bundleSource = (source: string, resolveDir: string): BundleMeasurement => 
 
 const hasInput = (measurement: BundleMeasurement, file: string): boolean =>
 	measurement.inputs.some((input) => input.endsWith(file));
-
-const updatingSnapshots = (): boolean => {
-	const snapshotState = expect.getState() as unknown as {
-		snapshotState?: { _updateSnapshot?: string };
-	};
-	return snapshotState.snapshotState?._updateSnapshot === "all";
-};
 
 const bundleAfterGeneratedExtraction = async (): Promise<BundleMeasurement> => {
 	const generatedTwEntry = resolve(GENERATED_DIRECTORY, "tw.ts");

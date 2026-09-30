@@ -265,7 +265,7 @@ export function collectModuleConstants(program: OxcNode, fold?: CxFoldContext): 
 }
 
 const cssCall = (node: Expression, fold: CxFoldContext): boolean => {
-	const call = node as unknown as { callee?: OxcNode | null };
+	const call = node as { callee?: OxcNode | null };
 	const callee = call.callee;
 	if (callee?.type === NodeKind.Identifier)
 		return fold.cssNames.has((callee as { name?: string }).name ?? "");
@@ -333,7 +333,7 @@ export function evalStaticCx(
 				if (value === NOT_STATIC) return NOT_STATIC;
 				values.push(value);
 			}
-			return values as unknown as CxInput;
+			return values as CxInput;
 		}
 		case NodeKind.LogicalExpression: {
 			const left = evalStaticCx((node as { left: Expression }).left, fold, consts);
@@ -360,7 +360,7 @@ export function evalStaticCx(
 		case NodeKind.CallExpression: {
 			if (fold === undefined || !cssCall(node, fold)) return NOT_STATIC;
 			const classes: string[] = [];
-			for (const argument of (node as unknown as { arguments: Expression[] }).arguments) {
+			for (const argument of (node as { arguments: Expression[] }).arguments) {
 				const literal = evalLiteralForCx(argument, consts, fold);
 				if (
 					literal === NOT_STATIC ||
@@ -398,7 +398,7 @@ export const classMapMember = (
 ): StaticClassMapMember | undefined => {
 	const node = input as OxcNode;
 	if (node.type !== NodeKind.MemberExpression) return undefined;
-	const member = node as unknown as {
+	const member = node as {
 		object?: Expression;
 		property?: Expression;
 		computed?: boolean;
@@ -512,7 +512,7 @@ export function buildFoldSkeleton(
 	if (value !== NOT_STATIC) return { kind: "leaf", value };
 	const type = (node as { type?: string }).type;
 	if (type === "ConditionalExpression") {
-		const test = (node as { test: Expression }).test as unknown as { start: number; end: number };
+		const test = (node as { test: Expression }).test as { start: number; end: number };
 		const consequent = buildFoldSkeleton(
 			(node as { consequent: Expression }).consequent,
 			consts,

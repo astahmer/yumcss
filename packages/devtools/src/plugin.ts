@@ -277,7 +277,7 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): PluginW
 					// while the underlying hub register method accepts the narrower
 					// devframe context. The runtime contract is the same; bridge the
 					// contravariant context type at this single integration boundary.
-					ctx.rpc.register(definition as unknown as Parameters<typeof ctx.rpc.register>[0]);
+					ctx.rpc.register(definition as Parameters<typeof ctx.rpc.register>[0]);
 				};
 				registerRpc(
 					defineRpcFunction({

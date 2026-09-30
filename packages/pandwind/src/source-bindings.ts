@@ -1,3 +1,4 @@
+import { toOxcNode } from "./oxc-node.ts";
 import type { ParseResult } from "oxc-parser";
 import { SOURCE_SCANNER_SERVICE, type SourceDocument, type SourceRange } from "./source-scanner.ts";
 import { walkWithParent, type OxcNode } from "./tw/literal.ts";
@@ -162,8 +163,8 @@ const embeddedPrograms = (
 					language: "tsx",
 				});
 				programs.push({
-					program: parsed.program as unknown as OxcNode,
-					hostUses: collectHostUses(parsed.program as unknown as OxcNode),
+					program: toOxcNode(parsed.program),
+					hostUses: collectHostUses(toOxcNode(parsed.program)),
 				});
 			} catch {
 				// A malformed script island remains unindexed and therefore unrewritten.
@@ -193,7 +194,7 @@ const embeddedPrograms = (
 				language: "tsx",
 			});
 			const prefixLength = prefix.length;
-			const hostUses = collectHostUses(parsed.program as unknown as OxcNode).map((use) => ({
+			const hostUses = collectHostUses(toOxcNode(parsed.program)).map((use) => ({
 				...use,
 				start: use.start - prefixLength,
 				end: use.end - prefixLength,
@@ -207,7 +208,7 @@ const embeddedPrograms = (
 						}),
 			}));
 			programs.push({
-				program: parsed.program as unknown as OxcNode,
+				program: toOxcNode(parsed.program),
 				hostUses,
 			});
 		} catch {
@@ -259,11 +260,7 @@ const recoverableParse = (document: SourceDocument): ParseResult => {
 		...document,
 		language: document.language ?? SOURCE_SCANNER_SERVICE.languageForFile(document.file),
 	});
-	const errors = (
-		parsed as unknown as {
-			errors?: readonly { labels?: readonly { start?: number }[] }[];
-		}
-	).errors;
+	const errors = parsed.errors;
 	if (errors === undefined || errors.length === 0 || parsed.program.body.length > 0) return parsed;
 	const recoveryEnd = Math.min(
 		...errors.flatMap((error) =>
@@ -280,7 +277,7 @@ const recoverableParse = (document: SourceDocument): ParseResult => {
 			source: document.source.slice(0, candidateEnd),
 			language: document.language ?? SOURCE_SCANNER_SERVICE.languageForFile(document.file),
 		});
-		const recoveredErrors = (recovered as unknown as { errors?: readonly unknown[] }).errors;
+		const recoveredErrors = recovered.errors;
 		if (recovered.program.body.length > 0 && (recoveredErrors?.length ?? 0) === 0) return recovered;
 		candidateEnd = document.source.lastIndexOf("\n", candidateEnd - 1);
 	}
@@ -628,7 +625,7 @@ export class SourceBindings {
 	}
 
 	static fromParseResult(result: ParseResult): SourceBindingIndex {
-		return SourceBindings.fromProgram(result.program as unknown as OxcNode);
+		return SourceBindings.fromProgram(toOxcNode(result.program));
 	}
 
 	static fromDocument(document: SourceDocument): SourceBindingIndex {
@@ -652,7 +649,7 @@ export class SourceBindings {
 					templates.length === 0
 						? SourceBindings.fromParseResult(parsed)
 						: SourceBindings.fromPrograms(
-								[parsed.program as unknown as OxcNode, ...templates.map(({ program }) => program)],
+								[toOxcNode(parsed.program), ...templates.map(({ program }) => program)],
 								templates.flatMap(({ hostUses }) => hostUses),
 							);
 			}

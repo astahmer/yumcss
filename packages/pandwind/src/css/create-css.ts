@@ -57,6 +57,7 @@ export type { CreateCssOptions } from "./runtime-base.ts";
  */
 const createPresetCss = (preset: TypedPreset, options: CreateCssOptions): CssFn<StyleObject> => {
 	const css = createPresetCssRuntime(preset, options, ALL_RUNTIME_METHODS);
+	// SAFETY: ALL_RUNTIME_METHODS installs every CssFn projection before this escapes.
 	return css as unknown as CssFn<StyleObject>;
 };
 
@@ -116,8 +117,10 @@ export function createGeneratedCss(
  * @category factories
  * @since 0.1.0
  */
-export const createUnsafeCss = (options: CreateCssOptions = {}): CssFn<StyleObject> =>
-	createCssRuntime(options, ALL_RUNTIME_METHODS) as unknown as CssFn<StyleObject>;
+export const createUnsafeCss = (options: CreateCssOptions = {}): CssFn<StyleObject> => {
+	// SAFETY: ALL_RUNTIME_METHODS installs every CssFn projection before this escapes.
+	return createCssRuntime(options, ALL_RUNTIME_METHODS) as unknown as CssFn<StyleObject>;
+};
 
 interface PropsReturn {
 	style: Record<string, string> | undefined;

@@ -68,7 +68,7 @@ export async function createEngineMissResolver(
 	}
 	const system = (await __unstable__loadDesignSystem(css, {
 		base: options.base,
-	})) as unknown as EngineSystem;
+	})) as EngineSystem;
 	const resolved = new Map<string, readonly MissDeclaration[] | null>();
 	const cacheLimit = 2048;
 

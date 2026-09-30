@@ -1,3 +1,4 @@
+import { toOxcNode } from "../oxc-node.ts";
 import { SOURCE_SCANNER_SERVICE, type SourceScannerService } from "../source-scanner.ts";
 import { isLiteralKeyframeBody } from "../css/keyframes.ts";
 import { evalLiteral, type OxcNode, walk, walkWithParent } from "../tw/literal.ts";
@@ -182,7 +183,7 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 	const factoryNames = new Set(factoryBindings.map((binding) => binding.local));
 	walk(program, (node) => {
 		if (node.type !== NodeKind.VariableDeclarator) return;
-		const declarator = node as unknown as {
+		const declarator = node as {
 			id?: { type?: string; name?: string };
 			init?: { type?: string; callee?: { type?: string; name?: string } } | null;
 		};
@@ -228,11 +229,11 @@ export const findCssCarrierImportSources = (
 ): readonly string[] => {
 	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssImportCandidate(code, matchers))
 		return [];
-	const program = SOURCE_SCANNER_SERVICE.parse({
+	const program = toOxcNode(SOURCE_SCANNER_SERVICE.parse({
 		file: id,
 		source: code,
 		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-	}).program as unknown as OxcNode;
+	}).program);
 	return collectCssCarrierImportSources(program, matchers);
 };
 
@@ -346,11 +347,11 @@ export class CssSourceScannerService implements CssSourceScanner {
 			return cached.program;
 		}
 		if (cached !== undefined) this.programs.delete(id);
-		const program = this.sourceScanner.parse({
+		const program = toOxcNode(this.sourceScanner.parse({
 			file: id,
 			source: code,
 			language: this.sourceScanner.languageForFile(id),
-		}).program as unknown as OxcNode;
+		}).program);
 		if (this.programs.size >= CssSourceScannerService.PROGRAM_CACHE_LIMIT)
 			this.programs.delete(this.programs.keys().next().value!);
 		this.programs.set(id, { source: code, program });
@@ -466,11 +467,11 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 		]);
 		const parsed =
 			program ??
-			(this.sourceScanner.parse({
+			toOxcNode(this.sourceScanner.parse({
 				file: id,
 				source: code,
 				language: this.sourceScanner.languageForFile(id),
-			}).program as unknown as OxcNode);
+			}).program);
 		const reactStrictDom = findReactStrictDomBindings(parsed);
 		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
 		const resolveLiteralScope = createCssLiteralScopeResolver(parsed, evaluateCall);

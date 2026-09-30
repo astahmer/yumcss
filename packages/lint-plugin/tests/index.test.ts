@@ -56,7 +56,7 @@ type Report = {
 	fixes?: readonly FixEdit[];
 };
 
-const typedPlugin = plugin as unknown as Plugin;
+const typedPlugin: Plugin = plugin;
 
 const inlineCx = (source: string) =>
 	inlineCxCalls(source, "fixture.tsx", { variants: {} }, new Set(["cx"]));

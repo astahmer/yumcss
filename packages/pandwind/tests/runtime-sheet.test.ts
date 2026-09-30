@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { createCss, type CssFn } from "../src/css/create-css.ts";
+import { typeValue } from "./type-fixtures.ts";
+import { createCss } from "../src/css/create-css.ts";
 import {
 	createRuntimeCss,
 	createRuntimeDesignCss,
@@ -19,7 +20,6 @@ import type {
 	RuntimeStyleElement,
 	RuntimeStyleElementSink,
 } from "../src/css/runtime-sheet.ts";
-import type { StyleObject } from "../src/types/typings.ts";
 
 type RuntimeContractSurface = {
 	document: RuntimeDocument;
@@ -32,7 +32,7 @@ type RuntimeContractSurface = {
 };
 
 test("runtime contract surface remains type-addressable", () => {
-	const surface = undefined as unknown as RuntimeContractSurface;
+	const surface = typeValue<RuntimeContractSurface>();
 	expect(surface).toBeUndefined();
 });
 
@@ -362,7 +362,7 @@ describe("runtime CSS-in-JS sheet", () => {
 	test("runtime function groups register their var rules", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		const css = createRuntimeCss(examplePreset, { sheet });
-		const groups = (css as unknown as CssFn<StyleObject>).group({
+		const groups = css.group({
 			item: (padding: number) => ({ padding }),
 		});
 

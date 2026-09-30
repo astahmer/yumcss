@@ -1,3 +1,4 @@
+import { toOxcNode } from "../oxc-node.ts";
 import { NodeKind } from "../ast-node-kind.ts";
 /**
  * Tailwind source collection — extracts the classes used by `tw()` calls and
@@ -17,7 +18,7 @@ import { collectCxClassCandidates, pushVerifiedCandidate } from "../vite/cx-call
 import { collectModuleConstants } from "../vite/cx-static-evaluator.ts";
 import { tokenHasExactCss, type UnresolvedToken, createLineIndex } from "../vite/unresolved.ts";
 import { extractTwConfigFromSources } from "../vite/inline.ts";
-import { evalLiteral, evalLiteralValues, isTwCall, walk, type OxcNode } from "./literal.ts";
+import { evalLiteral, evalLiteralValues, isTwCall, walk } from "./literal.ts";
 
 export interface TwScanOptions {
 	readonly twEntry: string;
@@ -76,7 +77,7 @@ class DefaultTwClassCollector implements TwClassCollector {
 			});
 			const lines = config !== undefined ? createLineIndex(source) : undefined;
 
-			walk(result.program as unknown as OxcNode, (node) => {
+			walk(toOxcNode(result.program), (node) => {
 				if (!isTwCall(node)) return;
 				for (const argument of node.arguments) {
 					const styles = evalLiteral(argument);
@@ -136,16 +137,16 @@ class DefaultTwClassCollector implements TwClassCollector {
 						if (importSource === entryBase) return true;
 						return importSource.endsWith("/" + entryBase);
 					},
-					result.program as unknown as OxcNode,
+					toOxcNode(result.program),
 				).localNames;
 				if (cxNames.size > 0) {
 					const consts = new Map(
-						[...collectModuleConstants(result.program as unknown as OxcNode)].map(
+						[...collectModuleConstants(toOxcNode(result.program))].map(
 							([name, known]) => [name, known.value] as const,
 						),
 					);
 					const verified = new Set<string>();
-					walk(result.program as unknown as OxcNode, (node) => {
+					walk(toOxcNode(result.program), (node) => {
 						if (
 							node.type !== NodeKind.CallExpression ||
 							node.callee === null ||
@@ -154,7 +155,9 @@ class DefaultTwClassCollector implements TwClassCollector {
 							!cxNames.has((node.callee as { name?: string }).name ?? "")
 						)
 							return;
-						for (const argument of (node as unknown as { arguments: [] }).arguments) {
+						const argumentsValue = node["arguments"];
+						if (!Array.isArray(argumentsValue)) return;
+						for (const argument of argumentsValue) {
 							for (const candidate of collectCxClassCandidates(argument, consts)) {
 								if (verified.has(candidate)) continue;
 								const pending: string[] = [];

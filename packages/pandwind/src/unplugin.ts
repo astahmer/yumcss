@@ -205,7 +205,7 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 	// unplugin virtual file that its load loader understands.
 	plugin.webpack = function (compiler: unknown) {
 		type WebpackCallback = (error?: unknown, result?: unknown) => void;
-		const state = this as unknown as {
+		const state = this as {
 			__virtualModulePrefix?: string;
 			__vfs?: { writeModule(path: string, source: string): void };
 			__vfsModules?: Set<string>;

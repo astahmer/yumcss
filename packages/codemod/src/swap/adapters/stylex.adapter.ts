@@ -736,7 +736,7 @@ function importedStyleReferences(
 			source: context.source,
 			language: SOURCE_SCANNER_SERVICE.languageForFile(context.file),
 		});
-		const scope = resolver.importedScope(context.file, parsed.program as unknown as OxcNode);
+		const scope = resolver.importedScope(context.file, parsed.program as OxcNode);
 		const references: Record<string, string> = {};
 		for (const [binding, value] of scope) {
 			if (typeof value !== "object" || value === null || Array.isArray(value)) continue;

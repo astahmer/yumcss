@@ -154,7 +154,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 
 	const presetTokens = isDogfoodApp
 		? ((
-				examplePreset as unknown as {
+				examplePreset as {
 					tokens?: Record<string, Record<string, unknown>>;
 				}
 			).tokens ?? {})
@@ -235,13 +235,13 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		flatVars: mergedThemeVars,
 		themes: {
 			...(isDogfoodApp
-				? ((examplePreset as unknown as { themes?: Record<string, Record<string, string>> })
+				? ((examplePreset as { themes?: Record<string, Record<string, string>> })
 						.themes ?? {})
 				: {}),
 			...Object.fromEntries(crawledThemes),
 		},
 		components: isDogfoodApp
-			? (examplePreset as unknown as { components?: never }).components
+			? (examplePreset as { components?: never }).components
 			: undefined,
 	});
 

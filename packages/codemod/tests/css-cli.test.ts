@@ -60,7 +60,7 @@ describe("pandwind-codemod css", () => {
 		const cli = createCssCli(
 			{
 				moduleLoader: {
-					importPackage: async <T>() => ({ preset: examplePreset }) as unknown as T,
+					importPackage: async <T>() => ({ preset: examplePreset }) as T,
 					importFile: async () => undefined,
 				},
 			},
@@ -127,7 +127,7 @@ describe("pandwind-codemod css", () => {
 			{
 				moduleLoader: {
 					importPackage: async () => undefined,
-					importFile: async <T>() => ({ preset: examplePreset }) as unknown as T,
+					importFile: async <T>() => ({ preset: examplePreset }) as T,
 				},
 			},
 			root,

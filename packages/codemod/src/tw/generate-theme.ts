@@ -323,6 +323,9 @@ export function buildThemeBlock(
  */
 export type ThemeScopeMap = Record<string, Record<string, string>>;
 
+const isThemeScopeRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
 /**
  * Render declared theme scopes as deterministic `[data-theme="…"]` override
  * blocks. Scopes and bindings are sorted; entries that are not
@@ -331,14 +334,14 @@ export type ThemeScopeMap = Record<string, Record<string, string>>;
  * stays byte-stable for presets without declared themes.
  */
 export function buildThemeScopes(
-	themes: ThemeScopeMap | undefined,
+	themes: unknown,
 	warn: (message: string) => void = () => {},
 ): string {
-	if (themes === undefined || typeof themes !== "object") return "";
+	if (!isThemeScopeRecord(themes)) return "";
 	const blocks: string[] = [];
 	for (const scope of Object.keys(themes).toSorted()) {
 		const vars = themes[scope];
-		if (vars === null || typeof vars !== "object" || Array.isArray(vars)) {
+		if (!isThemeScopeRecord(vars)) {
 			warn(`pandwind: theme scope "${scope}" is not an object — skipped`);
 			continue;
 		}

@@ -41,7 +41,7 @@ export function createDesignCss<TPreset extends DesignPreset>(
 	options: RnBackendOptions = {},
 ): RnCssFn<TPreset> {
 	const backend = createRnBackend(options);
-	return createDesignObjectCss(preset, backend) as unknown as RnCssFn<TPreset>;
+	return createDesignObjectCss(preset, backend) as RnCssFn<TPreset>;
 }
 
 /** Last-wins merge of RN style objects (registered, stable identity). */

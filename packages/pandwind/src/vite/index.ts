@@ -1,3 +1,4 @@
+import { toOxcNode } from "../oxc-node.ts";
 import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 /**
  * pandwind vite plugin — statically inlines `tw()` calls at build time.
@@ -130,10 +131,10 @@ function findTwImports(
 		return {
 			localNames: new Set(),
 			sources: [],
-			program: { type: NodeKind.Program, body: [] } as unknown as OxcNode,
+			program: { type: NodeKind.Program, body: [] } as OxcNode,
 		};
 	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
-	const program = result.program as unknown as OxcNode;
+	const program = toOxcNode(result.program);
 	const info = { localNames: new Set<string>(), sources: [] as string[] };
 
 	walk(program, (node) => {

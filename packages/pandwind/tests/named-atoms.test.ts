@@ -16,7 +16,7 @@
 import { resolve } from "node:path";
 import { parse, type Rule, type Root } from "postcss";
 import { describe, expect, test } from "vitest";
-import { ATOM_REGISTRY } from "../src/css/atoms.ts";
+import { atomRegistryOf } from "./atom-registry.ts";
 import { createUnsafeCss } from "../src/unsafe/css.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
@@ -125,7 +125,7 @@ describe("cx() merging survives the mode switch", () => {
 	});
 
 	test("named atoms join the registry", () => {
-		const registry = (dss as never as { [ATOM_REGISTRY]?: Map<string, string> })[ATOM_REGISTRY]!;
+		const registry = atomRegistryOf(dss);
 		const out = dss({ $text: { color: "$red-500" } }) as Record<string, string>;
 		const atom = Object.values(out)[0]!;
 		expect(registry.get(atom)).toBe("color");
