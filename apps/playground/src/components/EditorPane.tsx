@@ -190,12 +190,12 @@ export function EditorPane(props: {
 					language={language}
 					theme={mode === "light" ? "pandwind-light" : "pandwind"}
 					path={filePath}
-					beforeMount={(monaco) => {
+					beforeMount={(monaco: Monaco) => {
 						defineTheme(monaco);
 						configureTypeScript(monaco, props.fileLibraries ?? []);
 					}}
 					value={props.code}
-					onChange={(value) => props.onChange(value ?? "")}
+					onChange={(value: string | undefined) => props.onChange(value ?? "")}
 					options={{
 						minimap: { enabled: false },
 						fontSize: 13,

@@ -8,7 +8,12 @@ import {
 	useNavigate,
 	useRouterState,
 } from "@tanstack/react-router";
-import { Combobox, createListCollection } from "@ark-ui/react";
+import {
+	Combobox,
+	createListCollection,
+	type ComboboxInputValueChangeDetails,
+	type ComboboxValueChangeDetails,
+} from "@ark-ui/react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { EXAMPLES } from "./lib/examples.ts";
 import { PlaygroundPage } from "./components/PlaygroundPage.tsx";
@@ -39,8 +44,6 @@ const NAV_GROUPS = (Object.keys(GROUP_LABEL) as Array<keyof typeof GROUP_LABEL>)
 		label: example.title,
 	})),
 }));
-
-type PlaygroundRoute = "/migrate" | (typeof EXAMPLES)[number]["path"];
 
 interface ScenarioItem {
 	readonly value: (typeof EXAMPLES)[number]["path"];
@@ -242,9 +245,11 @@ function ScenarioPicker() {
 				inputValue={inputValue}
 				openOnClick
 				positioning={{ sameWidth: true }}
-				onInputValueChange={({ inputValue: next }) => setInputValue(next)}
-				onValueChange={({ value }) => {
-					const nextPath = value[0] as PlaygroundRoute | undefined;
+				onInputValueChange={({ inputValue }: ComboboxInputValueChangeDetails) =>
+					setInputValue(inputValue)
+				}
+				onValueChange={({ value }: ComboboxValueChangeDetails<ScenarioItem>) => {
+					const nextPath = SCENARIO_ITEMS.find((item) => item.value === value[0])?.value;
 					if (nextPath !== undefined) void navigate({ to: nextPath });
 				}}
 			>
