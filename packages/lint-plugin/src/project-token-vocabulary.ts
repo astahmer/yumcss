@@ -414,6 +414,7 @@ class ProjectPresetGraph {
 			const builder = Reflect.get(define, defineMethod);
 			if (typeof builder !== "function") return UNRESOLVED;
 			try {
+				// oxlint-disable-next-line antislop/no-reflect-apply -- The source interpreter selects from the audited builder set and must preserve the namespace receiver.
 				return Reflect.apply(builder, define, args);
 			} catch {
 				return UNRESOLVED;
@@ -454,6 +455,7 @@ class ProjectPresetGraph {
 		const builder = Reflect.get(receiver, method);
 		if (typeof builder !== "function") return UNRESOLVED;
 		try {
+			// oxlint-disable-next-line antislop/no-reflect-apply -- The source interpreter selects from the audited builder set and must preserve the token catalog receiver.
 			return Reflect.apply(builder, receiver, args);
 		} catch {
 			return UNRESOLVED;

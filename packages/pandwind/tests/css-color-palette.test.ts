@@ -154,24 +154,28 @@ test("preset-bound CSS rejects undeclared palette assignments before atom regist
 	const css = createCss(noPalettePreset);
 	const invalidStyle: StyleObject = { colorPalette: "brand" };
 
-	for (const method of [css, css.class, css.vars, css.raw]) {
-		expect(() => Reflect.apply(method, css, [invalidStyle])).toThrow(/colorPalette.*colorPalettes/);
-	}
-	expect(() => Reflect.apply(css.group, css, [{ card: invalidStyle }])).toThrow(
-		/colorPalette.*colorPalettes/,
-	);
+	expect(() => {
+		// @ts-expect-error Exercise the runtime guard with an invalid authored style.
+		css(invalidStyle);
+	}).toThrow(/colorPalette.*colorPalettes/);
+	expect(() => {
+		// @ts-expect-error Exercise the runtime guard with an invalid authored style.
+		css.class(invalidStyle);
+	}).toThrow(/colorPalette.*colorPalettes/);
+	expect(() => css.vars(invalidStyle)).toThrow(/colorPalette.*colorPalettes/);
+	expect(() => css.raw(invalidStyle)).toThrow(/colorPalette.*colorPalettes/);
+	expect(() => {
+		// @ts-expect-error Exercise the runtime guard with an invalid authored style.
+		css.group({ card: invalidStyle });
+	}).toThrow(/colorPalette.*colorPalettes/);
 
 	const designCss = createDesignCss(noPalettePreset);
 	const designStyle = { $raw: invalidStyle };
-	expect(() => Reflect.apply(designCss.class, designCss, [designStyle])).toThrow(
-		/colorPalette.*colorPalettes/,
-	);
+	expect(() => designCss.class(designStyle)).toThrow(/colorPalette.*colorPalettes/);
 	const runtimeDesignCss = createRuntimeDesignCss(noPalettePreset, {
 		sheetOptions: { autoMount: false },
 	});
-	expect(() => Reflect.apply(runtimeDesignCss.class, runtimeDesignCss, [designStyle])).toThrow(
-		/colorPalette.*colorPalettes/,
-	);
+	expect(() => runtimeDesignCss.class(designStyle)).toThrow(/colorPalette.*colorPalettes/);
 
 	const unsafeCss = createUnsafeCss();
 	expect(unsafeCss.class(invalidStyle)).toMatch(/\S/);
@@ -189,9 +193,10 @@ test("static stylesheet extraction reports an unresolved palette instead of drop
 test("runtime stylesheet extraction reports an unresolved palette", () => {
 	const css = createRuntimeCss(noPalettePreset, { sheetOptions: { autoMount: false } });
 
-	expect(() => Reflect.apply(css.class, css, [{ colorPalette: "brand" }])).toThrow(
-		/colorPalette.*colorPalettes/,
-	);
+	expect(() => {
+		// @ts-expect-error Exercise the runtime guard with an undeclared palette.
+		css.class({ colorPalette: "brand" });
+	}).toThrow(/colorPalette.*colorPalettes/);
 	const stylesheet = createRuntimeStylesheet(noPalettePreset);
 	expect(() => stylesheet.processPrepared([{ key: "colorPalette", value: "brand" }])).toThrow(
 		/colorPalette.*colorPalettes/,

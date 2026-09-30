@@ -13,10 +13,16 @@ test("preset-bound createCss keeps the same runtime class contract", () => {
 });
 
 test("createCss rejects unbound runtime calls with the unsafe entrypoint", () => {
-	expect(() => Reflect.apply(createCss, undefined, [])).toThrow(
+	expect(() => {
+		// @ts-expect-error Verify the runtime guard for callers that bypass TypeScript.
+		createCss();
+	}).toThrow(
 		"pandwind/css: createCss requires a preset",
 	);
-	expect(() => Reflect.apply(createCss, undefined, [{ debug: true }])).toThrow(
+	expect(() => {
+		// @ts-expect-error Verify invalid runtime options from untyped JavaScript callers.
+		createCss({ debug: true });
+	}).toThrow(
 		"pandwind/unsafe/css",
 	);
 });
