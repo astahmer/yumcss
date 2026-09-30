@@ -48,6 +48,7 @@
 				"allowWhenStaticallyTyped": true
 			}
 		],
+		// Dynamic token/config/AST trees stay unknown until their owning parser validates each value.
 		"antislop/no-unsafe-dictionary-type": "off",
 		"antislop/no-unknown-parameters": "off",
 		"antislop/no-unknown-returns": "off",
