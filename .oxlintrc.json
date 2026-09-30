@@ -56,9 +56,9 @@
 		"antislop/no-unknown-returns": "off",
 		// State non-obvious assertion invariants; comments on every assertion add noise.
 		"antislop/require-safety-comment-for-type-assertion": "off",
-		// These Oxc perf rules were absent from the pre-Emilint plugin set.
 		// Adapter maps preserve input immutability; Oxc's suggested fix mutates spread values.
 		"oxc/no-map-spread": "off",
+		// Stage contexts keep immutable completed-stage snapshots; the built-in pipeline has seven stages.
 		"oxc/no-accumulating-spread": "off"
 	},
 	"ignorePatterns": [

@@ -51,7 +51,13 @@ describe("Panda style traversal", () => {
 			order: depth,
 		};
 		for (let index = depth - 1; index >= 0; index--) {
-			child = { ...child, children: [child], order: index };
+			child = {
+				kind: StyleRuleKindTag.Style,
+				conditions: [],
+				declarations: [],
+				children: [child],
+				order: index,
+			};
 		}
 
 		const ordered = orderStyleRules([child]);
