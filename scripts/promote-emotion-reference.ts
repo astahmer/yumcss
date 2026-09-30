@@ -91,7 +91,7 @@ function renderEmotion(project: string): { readonly html: string; readonly css: 
 	const emotion = requireFromProject("@emotion/react") as {
 		readonly jsx: (type: string, props: Record<string, unknown>) => unknown;
 		readonly CacheProvider: (props: Record<string, unknown>) => unknown;
-		readonly css: (style: object) => unknown;
+		readonly css: (style: typeof sourceStyle) => unknown;
 	};
 	const createCache = requireFromProject("@emotion/cache").default as (options: {
 		readonly key: string;
@@ -183,7 +183,7 @@ export async function runEmotionInstalledProof(): Promise<EmotionProofReport> {
 	try {
 		const rendered = renderEmotion(project);
 		const css = createCss(preset as never) as ReturnType<typeof createCss> & {
-			readonly class: (value: object) => string;
+			readonly class: (value: typeof sourceStyle) => string;
 		};
 		const targetClass = css.class(sourceStyle);
 		const targetMarkup = `<div class="${targetClass}">Proof</div>`;

@@ -69,7 +69,7 @@ interface GooberProofReport {
 }
 
 function installedGoober(): {
-	readonly css: (value: object) => string;
+	readonly css: (value: typeof style) => string;
 	readonly extractCss: () => string;
 } {
 	const root = mkdtempSync(join(tmpdir(), "pandwind-goober-proof-"));
@@ -82,7 +82,7 @@ function installedGoober(): {
 		stdio: "inherit",
 	});
 	const api = createRequire(join(root, "package.json"))("goober") as {
-		readonly css: (value: object) => string;
+		readonly css: (value: typeof style) => string;
 		readonly extractCss: () => string;
 	};
 	rmSync(root, { recursive: true, force: true });
@@ -185,7 +185,7 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 	const baselineClass = installed.css(style);
 	const baselineCss = installed.extractCss();
 	const targetCssFn = createCss(preset as never) as ReturnType<typeof createCss> & {
-		class: (value: object) => string;
+		class: (value: typeof style) => string;
 	};
 	const targetClass = targetCssFn.class(style);
 	const targetCss = createStylesheet(preset as never)
