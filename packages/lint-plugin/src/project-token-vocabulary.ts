@@ -27,12 +27,20 @@ type ParsedModule = {
 };
 
 const MODULE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"];
-const DEFINE_BUILDERS = new Set(["conditions", "properties", "preset", "theme", "tokens"]);
+const DEFINE_BUILDERS = {
+	conditions: define.conditions,
+	properties: define.properties,
+	preset: define.preset,
+	theme: define.theme,
+	tokens: define.tokens,
+} as const;
 const TOKEN_CATALOG_BUILDERS = new Set(["defineColorPalettes", "defineSemanticTokens"]);
 const CSS_FACTORY_SOURCES = new Set(["pandwind", "pandwind/css"]);
 const CSS_FACTORY_NAMES = new Set(["createCss", "createGeneratedCss"]);
 const MODULE_CACHE_LIMIT = 256;
 const UNRESOLVED = Symbol("unresolved project value");
+const isDefineBuilderName = (name: string): name is keyof typeof DEFINE_BUILDERS =>
+	Object.hasOwn(DEFINE_BUILDERS, name);
 const moduleCache = new Map<
 	string,
 	{ readonly mtimeMs: number; readonly size: number; readonly module: ParsedModule | null }
@@ -264,7 +272,7 @@ class ProjectPresetGraph {
 	}
 
 	#isCompilerBuilderImport(module: ParsedModule, binding: ModuleImport): boolean {
-		if (!DEFINE_BUILDERS.has(binding.imported)) return false;
+		if (!isDefineBuilderName(binding.imported)) return false;
 		const importedFilename = resolveModuleFile(module.filename, binding.source);
 		return (
 			importedFilename !== undefined &&
@@ -279,7 +287,9 @@ class ProjectPresetGraph {
 			return UNRESOLVED;
 		const importedFilename = resolveModuleFile(module.filename, binding.source);
 		if (this.#isCompilerBuilderImport(module, binding))
-			return Reflect.get(define, binding.imported);
+			return isDefineBuilderName(binding.imported)
+				? DEFINE_BUILDERS[binding.imported]
+				: undefined;
 		if (
 			binding.imported === "define" &&
 			importedFilename !== undefined &&
@@ -410,9 +420,8 @@ class ProjectPresetGraph {
 		if (args.some((argument: unknown) => argument === UNRESOLVED)) return UNRESOLVED;
 
 		const defineMethod = this.#defineMethodFor(module, callee);
-		if (defineMethod !== undefined && DEFINE_BUILDERS.has(defineMethod)) {
-			const builder = Reflect.get(define, defineMethod);
-			if (typeof builder !== "function") return UNRESOLVED;
+		if (defineMethod !== undefined && isDefineBuilderName(defineMethod)) {
+			const builder = DEFINE_BUILDERS[defineMethod];
 			try {
 				// oxlint-disable-next-line antislop/no-reflect-apply -- The source interpreter selects from the audited builder set and must preserve the namespace receiver.
 				return Reflect.apply(builder, define, args);
@@ -452,6 +461,7 @@ class ProjectPresetGraph {
 		const receiver = this.#evaluateNode(module, callee.object, scope, stack);
 		if (receiver === UNRESOLVED || typeof receiver !== "object" || receiver === null)
 			return UNRESOLVED;
+		// oxlint-disable-next-line antislop/no-reflect-get -- The parsed method is limited to the token catalog builder allowlist.
 		const builder = Reflect.get(receiver, method);
 		if (typeof builder !== "function") return UNRESOLVED;
 		try {

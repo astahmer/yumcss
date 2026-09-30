@@ -39,7 +39,7 @@
 		"antislop/no-conditional-empty-object-spread": "off",
 		"antislop/no-known-value-widening": "off",
 		"antislop/no-reflect-apply": "error",
-		"antislop/no-reflect-get": "off",
+		"antislop/no-reflect-get": "error",
 		"antislop/no-runtime-typeof": "off",
 		"antislop/no-unsafe-dictionary-type": "off",
 		"antislop/no-unknown-parameters": "off",

@@ -223,7 +223,9 @@ export function evalLiteral(
 					: undefined;
 			if (typeof property !== "string" && typeof property !== "number") return undefined;
 			const key = String(property);
-			return Object.hasOwn(object, key) ? Reflect.get(object, key) : undefined;
+			const descriptor = Object.getOwnPropertyDescriptor(object, key);
+			if (descriptor === undefined || !("value" in descriptor)) return undefined;
+			return descriptor.value;
 		}
 		case NodeKind.CallExpression:
 			return evaluateCall?.(node, consts);
