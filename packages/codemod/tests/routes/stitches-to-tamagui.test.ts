@@ -90,9 +90,10 @@ test("stitches -> tamagui: carries a documented secondary stitches API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
-		export const reset = styled(View, { "body": { margin: 0 } });",
-		  "converted": 1,
+		  "code": "import { globalCss } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -107,19 +108,24 @@ test("stitches -> tamagui: carries a documented secondary stitches API explicitl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Tamagui styled components cannot preserve global stylesheet side effects",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

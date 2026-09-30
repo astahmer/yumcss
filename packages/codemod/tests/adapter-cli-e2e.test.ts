@@ -274,6 +274,8 @@ describe("adapter migration e2e matrix", () => {
 
 	test("--force regenerates conflicting project support files", () => {
 		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-force-"));
+		writeFileSync(join(directory, "vite.config.ts"), "export default { plugins: [] };\n");
+
 		const sourceFile = join(directory, "App.tsx");
 		writeFileSync(
 			join(directory, "package.json"),
@@ -285,8 +287,10 @@ describe("adapter migration e2e matrix", () => {
 		);
 		writeFileSync(
 			sourceFile,
-			'import { css } from "styled-system/css";\nexport const title = css({ base: { fontSize: "3xl" } });\n',
+			'import "./styled-system/styles.css";\nimport { css } from "styled-system/css";\nexport const title = css({ base: { fontSize: "3xl" } });\n',
 		);
+		mkdirSync(join(directory, "styled-system"), { recursive: true });
+		writeFileSync(join(directory, "styled-system/styles.css"), "@layer utilities;\n");
 		mkdirSync(join(directory, "pandwind"), { recursive: true });
 		const presetFile = join(directory, "pandwind/preset.ts");
 		writeFileSync(presetFile, "export const preset = { conditions: {} };\n");

@@ -94,7 +94,7 @@ test("unocss -> style9: carries a documented secondary unocss API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -415,7 +415,9 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			},
 		},
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-		preserveNamedRules: (context) => context.sourceModules?.includes("pandwind/recipe") === true,
+		preserveNamedRules: ({ program }) =>
+			program.source?.pattern === CodemodPatternId.PandwindRecipe ||
+			program.source?.pattern === CodemodPatternId.PandwindSlotRecipe,
 		tokenPolicy: PANDA_TOKEN_POLICY,
 		sourceObjectOptions: (_source, context) => ({
 			...pandaSourceConditions(context.config.values.pandaTheme as PandaTheme | undefined),
@@ -436,20 +438,20 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 				return {
 					text: `cva(${recipeDefinitionObject(outputProgram, renderers.declarationsObject)})`,
 					imports: ['import { cva } from "styled-system/recipes";'],
-					semantic: outputProgram,
+					semantic: program,
 				};
 			}
 			if (program.source?.pattern === CodemodPatternId.PandwindSlotRecipe) {
 				return {
 					text: `sva(${pandaSlotRecipeDefinitionObject(outputProgram, renderers.declarationsObject)})`,
 					imports: ['import { sva } from "styled-system/recipes";'],
-					semantic: outputProgram,
+					semantic: program,
 				};
 			}
 			return {
 				text: `css(${renderers.programObject(outputProgram)})`,
 				imports: ['import { css } from "styled-system/css";'],
-				semantic: outputProgram,
+				semantic: program,
 			};
 		},
 	});

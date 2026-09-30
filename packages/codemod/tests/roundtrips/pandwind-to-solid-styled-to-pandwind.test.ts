@@ -157,14 +157,14 @@ test("pandwind -> solid-styled -> pandwind: retains the documented secondary API
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [

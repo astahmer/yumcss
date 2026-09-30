@@ -129,7 +129,7 @@ test("unocss -> solid-styled -> unocss: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
+		export const App = () => css({ "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("unocss -> solid-styled -> unocss: retains the documented secondary API wit
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
 		import { css } from "solid-styled-components";
-		export const App = () => css({ "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
+		export const App = () => css({ "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

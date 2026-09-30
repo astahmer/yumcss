@@ -163,7 +163,7 @@ export interface AdapterTokenCatalog {
 	readonly groups: Readonly<Record<string, Readonly<Record<string, string>>>>;
 }
 
-export interface AdapterTokenDefinitions {
+interface AdapterTokenDefinitions {
 	readonly schema: typeof ADAPTER_TOKEN_DEFINITIONS_SCHEMA;
 	/** Authored raw token tree, before flattening or semantic resolution. */
 	readonly raw: Readonly<Record<string, unknown>>;
@@ -172,9 +172,9 @@ export interface AdapterTokenDefinitions {
 }
 
 /** Static color-palette roots and named token maps discovered by a source adapter. */
-export type AdapterColorPaletteSource = string | Readonly<Record<string, string>>;
+type AdapterColorPaletteSource = string | Readonly<Record<string, string>>;
 
-export type AdapterColorPaletteDefinitions = Readonly<Record<string, AdapterColorPaletteSource>>;
+type AdapterColorPaletteDefinitions = Readonly<Record<string, AdapterColorPaletteSource>>;
 
 export interface AdapterConfigContext extends AdapterDetectionContext {
 	readonly readFile?: (file: string) => string | undefined;
@@ -414,7 +414,7 @@ export interface AdapterNamedStyleUseContext {
 	readonly selfClosing: boolean;
 }
 
-export interface AdapterNamedStyleUseResult {
+interface AdapterNamedStyleUseResult {
 	readonly hostTag?: string;
 	readonly attributes?: readonly string[];
 	readonly imports?: readonly string[];

@@ -117,7 +117,7 @@ const declarationPrefixExists = (source: string, file: string, program: StylePro
 	const prefix = source.slice(lineStart, start);
 	const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	return new RegExp(
-		`^\\s*(?:export\\s+)?(?:const|let|var)\\s+${escapedBinding}\\s*=\\s*$`,
+		`(?:^|;)\\s*(?:export\\s+)?(?:const|let|var)\\s+${escapedBinding}\\s*=\\s*$`,
 		"u",
 	).test(prefix);
 };

@@ -14,6 +14,7 @@ import {
 	styleProgramFromRules,
 	styleProgramFromSourceObject,
 	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
@@ -386,6 +387,17 @@ export function createTamaguiAdapter(
 			},
 		},
 		emit(program, { programObject }, context) {
+			if (program.rules.some((rule) => rule.kind !== StyleRuleKindTag.Style))
+				return {
+					text: "",
+					residuals: [
+						{
+							kind: StyleProgramResidualKindTag.Capability,
+							text: program.rules.map((rule) => rule.kind).join(", "),
+							hint: "Tamagui styled components cannot preserve global stylesheet side effects",
+						},
+					],
+				};
 			const subject = program.source?.subject;
 			const component = tamaguiComponentEmission(program, programObject, context);
 			if (component !== undefined)

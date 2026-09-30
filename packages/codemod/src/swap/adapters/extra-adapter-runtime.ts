@@ -165,7 +165,9 @@ const valueText = (
 const objectConditionKey = (
 	condition: StyleProgram["declarations"][number]["conditions"][number],
 ): string => {
-	const value = condition.raw ?? condition.value ?? condition.name;
+	if (condition.kind === SemanticConditionKindTag.Pseudo)
+		return condition.name.startsWith(":") ? `&${condition.name}` : `&:${condition.name}`;
+	const value = condition.value ?? condition.raw ?? condition.name;
 	const atRule =
 		condition.kind === SemanticConditionKindTag.Media
 			? "@media"

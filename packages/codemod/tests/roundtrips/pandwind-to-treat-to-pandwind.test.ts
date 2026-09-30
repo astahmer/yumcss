@@ -157,14 +157,14 @@ test("pandwind -> treat -> pandwind: retains the documented secondary API withou
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [

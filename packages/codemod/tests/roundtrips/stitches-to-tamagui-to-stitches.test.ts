@@ -138,9 +138,10 @@ test("stitches -> tamagui -> stitches: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		export const reset = styled(View, { "body": { margin: 0 } });",
-		    "converted": 1,
+		    "code": "import { globalCss } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -155,56 +156,37 @@ test("stitches -> tamagui -> stitches: retains the documented secondary API with
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Tamagui styled components cannot preserve global stylesheet side effects",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
-		import { styled } from "@stitches/react";
-		export const reset = styled(View, { body: { margin: 0 } });",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { globalCss } from "@stitches/react";
+		// pandwind:migrate-skip (route: stitches -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		export const reset = globalCss({ body: { margin: 0 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "target-native",
-		          "residual",
-		        ],
-		        "representation": "target-native",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverseArtifacts": [],
 		}

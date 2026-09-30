@@ -129,7 +129,7 @@ test("unocss -> aphrodite -> unocss: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("unocss -> aphrodite -> unocss: retains the documented secondary API withou
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

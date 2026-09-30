@@ -18,6 +18,7 @@ import {
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 import {
 	createAdapterRouteProject,
+	fixtureAdapterRegistry,
 	createAdapterRouteSpec,
 	routeEvidence,
 } from "./route-spec-support.ts";
@@ -1460,7 +1461,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 		(target) => {
 			const result = runAdapterMigration(
 				'import styled from "styled-components"; styled.div({ color: "red" });',
-				{ from: "styled-components", to: target, file: "styles.tsx", mode: "safe" },
+				{
+					from: "styled-components",
+					to: target,
+					file: "styles.tsx",
+					mode: "safe",
+					adapterRegistry: fixtureAdapterRegistry,
+				},
 			);
 			expect(result.converted).toBe(1);
 			expect(result.skipped).toBe(0);
@@ -1743,6 +1750,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		}[sourceAdapter];
 		const result = runAdapterMigration(fixture, {
 			from: sourceAdapter,
+			adapterRegistry: fixtureAdapterRegistry,
 			to: CodemodAdapterId.ReactNative,
 			file: "App.tsx",
 			mode: "safe",
@@ -2306,7 +2314,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const result = runAdapterMigration(
 			'import { createUseStyles } from "react-jss";\n' +
 				'const styles = createUseStyles({ button: { color: "red", padding: "1rem" } });',
-			{ from: "jss", to: "unocss", file: "styles.ts", mode: "safe" },
+			{
+				from: "jss",
+				to: "unocss",
+				file: "styles.ts",
+				mode: "safe",
+				adapterRegistry: fixtureAdapterRegistry,
+			},
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);

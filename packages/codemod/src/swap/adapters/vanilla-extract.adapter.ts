@@ -23,6 +23,41 @@ import {
 	rewriteReactStyledComponent,
 } from "./react-styled-component.ts";
 import type { AdapterParseContext } from "../adapter-contract.ts";
+import {
+	SemanticConditionKindTag,
+	type StyleCondition,
+	type StyleProgram,
+} from "../semantic-ir.ts";
+
+const vanillaExtractConditions = (
+	conditions: readonly StyleCondition[],
+): readonly StyleCondition[] =>
+	conditions.flatMap((condition) =>
+		condition.kind === SemanticConditionKindTag.Pseudo ||
+		condition.kind === SemanticConditionKindTag.Selector
+			? [{ kind: SemanticConditionKindTag.Named, name: "selectors" }, condition]
+			: [condition],
+	);
+
+const vanillaExtractStyleProgram = (program: StyleProgram): StyleProgram => {
+	const rule = (value: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...value,
+		conditions: vanillaExtractConditions(value.conditions),
+		declarations: value.declarations.map((declaration) => ({
+			...declaration,
+			conditions: vanillaExtractConditions(declaration.conditions),
+		})),
+		children: value.children.map(rule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map((declaration) => ({
+			...declaration,
+			conditions: vanillaExtractConditions(declaration.conditions),
+		})),
+		rules: program.rules.map(rule),
+	};
+};
 
 const runtimeFallbackVar =
 	"const __pandwindFallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
@@ -336,7 +371,7 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 				binding,
 				".css.ts",
 				".css.ts",
-				`import { style } from "@vanilla-extract/css";\nexport const __pandwind${binding}Styles = style(${programObject(program)});\n`,
+				`import { style } from "@vanilla-extract/css";\nexport const __pandwind${binding}Styles = style(${programObject(vanillaExtractStyleProgram(program))});\n`,
 				"Vanilla Extract styles for a migrated React component",
 			);
 			if (artifact === undefined)
@@ -380,7 +415,7 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 				imports: ['import { fontFace } from "@vanilla-extract/css";'],
 			};
 		return {
-			text: `style(${programObject(program)})`,
+			text: `style(${programObject(vanillaExtractStyleProgram(program))})`,
 			imports: ['import { style } from "@vanilla-extract/css";'],
 		};
 	},

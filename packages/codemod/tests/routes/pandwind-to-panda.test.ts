@@ -94,7 +94,7 @@ test("pandwind -> panda: carries a documented secondary pandwind API explicitly"
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
 
-		export const styles = css({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -105,14 +105,14 @@ test("pandwind -> panda: carries a documented secondary pandwind API explicitly"
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
-		      "representation": "static",
+		      "outcome": "target-native",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [],

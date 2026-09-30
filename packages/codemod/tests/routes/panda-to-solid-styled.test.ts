@@ -49,7 +49,7 @@ test("panda -> solid-styled: migrates concrete panda syntax to solid-styled", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "red", "_hover": { "color": "blue" } });",
+		export const card = css({ "color": "red", "&:hover": { "color": "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -153,7 +153,7 @@ test("panda -> solid-styled: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
+		export const card = css({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +190,7 @@ test("panda -> solid-styled: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		export const card = css({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("panda -> solid-styled: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		export const card = css({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -285,7 +285,7 @@ test("panda -> solid-styled: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-		export const card = css({ "color": "red", "_hover": { "color": "blue" } });
+		export const card = css({ "color": "red", "&:hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],

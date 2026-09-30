@@ -2759,9 +2759,7 @@ const pandwindCssPatternsForReceiver = (receiver: string): readonly CallPattern[
 				namedRuleObjects: true,
 				emissionHints: [StyleProgramEmissionHint.NamedClassMap],
 			};
-		return context.targetId === CodemodAdapterId.StyleX
-			? { namedRuleObjects: true }
-			: { nestedObjectKind: "named" };
+		return { namedRuleObjects: true };
 	};
 	return [
 		{
@@ -2867,7 +2865,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			components: "exact",
 		}),
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-		preserveNamedRules: (context) =>
+		preserveNamedRules: ({ context }) =>
 			context.sourceModules?.includes("style9") === true ||
 			context.sourceModules?.includes("styled-system/css") === true,
 		detectPatterns: [

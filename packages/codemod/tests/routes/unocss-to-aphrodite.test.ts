@@ -94,7 +94,7 @@ test("unocss -> aphrodite: carries a documented secondary unocss API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, css } from "aphrodite";
-		export const App = () => <div className={css(StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
+		export const App = () => <div className={css(StyleSheet.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

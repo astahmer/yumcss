@@ -49,7 +49,7 @@ test("panda -> aphrodite: migrates concrete panda syntax to aphrodite", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "color": "red", "_hover": { "color": "blue" } });",
+		export const card = StyleSheet.create({ "color": "red", "&:hover": { "color": "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -153,7 +153,7 @@ test("panda -> aphrodite: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
+		export const card = StyleSheet.create({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +190,7 @@ test("panda -> aphrodite: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("panda -> aphrodite: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		export const card = StyleSheet.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -285,7 +285,7 @@ test("panda -> aphrodite: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		export const card = StyleSheet.create({ "color": "red", "_hover": { "color": "blue" } });
+		export const card = StyleSheet.create({ "color": "red", "&:hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],

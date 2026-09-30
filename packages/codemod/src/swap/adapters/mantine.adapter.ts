@@ -722,22 +722,57 @@ export function createMantineAdapter(
 		tokenPolicy: MANTINE_TOKEN_POLICY,
 		sourceObjectOptions: (source, context) => ({
 			propertyAliases,
-			valueTransforms: Object.fromEntries(
-				styleProps.map((property) => [
-					property,
-					(value: StyleValue) =>
-						recoverSourceToken(
-							mantineValue(
+			valueTransforms: {
+				"*": (value, property) => {
+					if (
+						value.kind !== StyleValueKindTag.Literal ||
+						typeof value.value !== "string" ||
+						property === undefined
+					)
+						return value;
+					const group = mantineTokenGroup(property);
+					if (group === undefined) return value;
+					const namespace =
+						group === "colors"
+							? "color"
+							: group === "fontSizes"
+								? "font-size"
+								: group === "lineHeights"
+									? "line-height"
+									: group === "radii"
+										? "radius"
+										: group === "shadows"
+											? "shadow"
+											: "spacing";
+					const matches = Object.entries(context.config.tokenCatalog?.groups[group] ?? {}).filter(
+						([reference]) =>
+							value.value === `var(--mantine-${namespace}-${reference.replaceAll(".", "-")})`,
+					);
+					if (matches.length !== 1) return value;
+					return {
+						kind: StyleValueKindTag.Token,
+						ref: matches[0]![0],
+						authored: value.value,
+						resolved: matches[0]![1],
+					};
+				},
+				...Object.fromEntries(
+					styleProps.map((property) => [
+						property,
+						(value: StyleValue) =>
+							recoverSourceToken(
+								mantineValue(
+									property,
+									value,
+									context.config.values.mantineTheme as MantineThemeLike | undefined,
+								),
 								property,
-								value,
-								context.config.values.mantineTheme as MantineThemeLike | undefined,
+								mantineTokenGroup,
+								TokenCatalog.fromContract(context.config.tokenCatalog),
 							),
-							property,
-							mantineTokenGroup,
-							TokenCatalog.fromContract(context.config.tokenCatalog),
-						),
-				]),
-			),
+					]),
+				),
+			},
 		}),
 		emit(program, { programObject }, context) {
 			if (program.rules.some((rule) => rule.kind !== StyleRuleKindTag.Style))

@@ -750,11 +750,27 @@ test("styled-components attrs are preserved by every target or remain a typed so
 		  {
 		    "attrsPreserved": true,
 		    "callerPropsPreserved": true,
-		    "converted": 1,
-		    "residualDetails": [],
-		    "residualKinds": [],
-		    "skipped": 0,
-		    "sourcePreserved": false,
+		    "converted": 0,
+		    "residualDetails": [
+		      {
+		        "detail": "the official UnoCSS generator did not prove this emitted utility",
+		        "kind": "configuration",
+		      },
+		      {
+		        "detail": "UnoCSS output requires the target project's official config and generator",
+		        "kind": "configuration",
+		      },
+		      {
+		        "detail": "canonical CSS differs or has residuals",
+		        "kind": "validation",
+		      },
+		    ],
+		    "residualKinds": [
+		      "configuration",
+		      "validation",
+		    ],
+		    "skipped": 1,
+		    "sourcePreserved": true,
 		    "target": "unocss",
 		  },
 		  {

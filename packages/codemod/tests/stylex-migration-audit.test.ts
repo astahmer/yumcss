@@ -478,11 +478,18 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "tokenami",
 			  },
 			  {
-			    "code": "const styles = { "card": "[color:red]" };
-			export const Card = () => <div className={styles.card} />;",
-			    "converted": 1,
-			    "residuals": [],
-			    "skipped": 0,
+			    "code": "// pandwind:migrate-skip (route: stylex -> unocss | lowering-residual: configuration, validation, host-framework)
+			import * as stylex from "@stylexjs/stylex";
+			const styles = stylex.create({ card: { color: "red" } });
+			export const Card = () => <div {...stylex.props(styles.card)} />;",
+			    "converted": 0,
+			    "residuals": [
+			      "the official UnoCSS generator did not prove this emitted utility",
+			      "UnoCSS output requires the target project's official config and generator",
+			      "canonical CSS differs or has residuals",
+			      "StyleX props use require one converted style reference and a target-native host projection",
+			    ],
+			    "skipped": 1,
 			    "target": "unocss",
 			  },
 			  {
@@ -492,7 +499,6 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
 			    "converted": 0,
 			    "residuals": [
-			      "named-rules: named style rule: card",
 			      "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 			      "StyleX props use require one converted style reference and a target-native host projection",
 			    ],
@@ -506,7 +512,6 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
 			    "converted": 0,
 			    "residuals": [
-			      "named-rules: named style rule: card",
 			      "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 			      "StyleX props use require one converted style reference and a target-native host projection",
 			    ],
@@ -520,7 +525,6 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
 			    "converted": 0,
 			    "residuals": [
-			      "named-rules: named style rule: card",
 			      "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 			      "StyleX props use require one converted style reference and a target-native host projection",
 			    ],
@@ -534,7 +538,6 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
 			    "converted": 0,
 			    "residuals": [
-			      "named-rules: named style rule: card",
 			      "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 			      "StyleX props use require one converted style reference and a target-native host projection",
 			    ],

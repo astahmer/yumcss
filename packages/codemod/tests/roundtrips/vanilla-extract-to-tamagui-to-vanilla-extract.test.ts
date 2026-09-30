@@ -143,9 +143,10 @@ test("vanilla-extract -> tamagui -> vanilla-extract: retains the documented seco
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		styled(View, { "body": { margin: 0 } });",
-		    "converted": 1,
+		    "code": "import { globalStyle } from "@vanilla-extract/css";
+		// pandwind:migrate-skip (route: vanilla-extract -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		globalStyle("body", { margin: 0 });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -160,61 +161,36 @@ test("vanilla-extract -> tamagui -> vanilla-extract: retains the documented seco
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | available: named-map, custom-property, residual, portable-artifact)
-		styled(View, { "body": { margin: 0 } });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "custom-property",
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "custom-property",
-		        "residuals": [
-		          {
-		            "hint": "bind --pandwind-dynamic-1jrxdfh at runtime for target vanilla-extract",
-		            "kind": "dynamic-custom-property",
-		          },
-		        ],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "portable-artifact",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Vanilla Extract style modules cannot contain a migrated component wrapper; preserve the component until a separate .css.ts style artifact and host wrapper can be emitted",
-		        "kind": "component",
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Tamagui styled components cannot preserve global stylesheet side effects",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { globalStyle } from "@vanilla-extract/css";
+		// pandwind:migrate-skip (route: vanilla-extract -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		globalStyle("body", { margin: 0 });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		  "reverseArtifacts": [],

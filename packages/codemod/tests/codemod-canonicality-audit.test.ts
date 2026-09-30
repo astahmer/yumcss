@@ -130,13 +130,13 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 			'export const App = () => <Box c="brand.0" mx="auto" maw={400} />;',
 		expectedOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)\n" +
+			"// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)\n" +
 			'export const App = () => <Box c="brand.0" mx="auto" maw={400} />;',
 	};
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "expectedOutput": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
@@ -163,7 +163,7 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -189,6 +189,11 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "the official UnoCSS generator did not prove this emitted utility",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "canonical CSS differs or has residuals",
 		      "kind": "validation",

@@ -92,7 +92,7 @@ test("unocss -> fela: carries a documented secondary unocss API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => renderer.renderRule({ "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
+		  "code": "export const App = () => renderer.renderRule({ "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

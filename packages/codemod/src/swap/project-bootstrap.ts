@@ -20,6 +20,7 @@ import type {
 import type { PandwindMeta } from "../meta.ts";
 import { loadMetaFromSources } from "../meta.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+import type { ProjectModuleLoader } from "./project-module-loader.ts";
 import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
 import {
 	PANDWIND_NEXT_CSS_ID,
@@ -34,6 +35,7 @@ import { canonicalizePandwindConditions } from "./pandwind-conditions.ts";
 import { presetConditions } from "pandwind/preset";
 
 export interface ProjectBootstrapRequest {
+	readonly moduleLoader?: ProjectModuleLoader;
 	readonly root: string;
 	readonly sourceAdapter: string;
 	readonly targetAdapter: string;
@@ -854,7 +856,7 @@ function generatedFile(path: string, content: string, purpose: string): AdapterG
 }
 
 async function loadSourceConfig(request: ProjectBootstrapRequest): Promise<AdapterProjectConfig> {
-	const catalog = createBuiltinCodemodCatalog();
+	const catalog = createBuiltinCodemodCatalog(request.moduleLoader);
 	const adapter = catalog.registry.get(request.sourceAdapter);
 	if (adapter === undefined)
 		return {

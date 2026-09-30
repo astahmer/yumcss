@@ -157,14 +157,14 @@ test("pandwind -> goober -> pandwind: retains the documented secondary API witho
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [

@@ -172,7 +172,7 @@ export const resolvePandaSourceModuleOwnership = ({
 	};
 };
 
-export const packageImportsFromJson = (
+const packageImportsFromJson = (
 	packageJson: Readonly<Record<string, unknown>> | undefined,
 ): readonly PandaPackageImport[] => {
 	const imports = packageJson?.imports;

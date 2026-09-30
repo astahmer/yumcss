@@ -188,7 +188,7 @@ test("unocss -> chakra-ui -> unocss: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> unocss | capability-blocked: selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> unocss | capability-blocked: media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
 		export const App = () => <chakra.div  css={{ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } }}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -215,7 +215,7 @@ test("unocss -> chakra-ui -> unocss: retains the documented secondary API withou
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem)",
+		        "hint": "media-conditions: media: @media (min-width: 48rem)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

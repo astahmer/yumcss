@@ -79,6 +79,7 @@ describe("Pandwind project bootstrap", () => {
 					"\t\t\t\t},",
 					'\t\t\t\tbutton: { light: { value: "#ffffff" } },',
 					"\t\t\t},",
+					"\t\t},",
 					"\t},",
 					"};",
 				].join("\n"),
@@ -86,6 +87,7 @@ describe("Pandwind project bootstrap", () => {
 		]);
 		const support = await createPandwindProjectSupport({
 			root,
+			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
@@ -115,6 +117,7 @@ describe("Pandwind project bootstrap", () => {
 		]);
 		const support = await createPandwindProjectSupport({
 			root,
+			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
@@ -144,6 +147,7 @@ describe("Pandwind project bootstrap", () => {
 		]);
 		const support = await createPandwindProjectSupport({
 			root,
+			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
@@ -370,6 +374,7 @@ describe("Pandwind project bootstrap", () => {
 		]);
 		const support = await createPandwindProjectSupport({
 			root,
+			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: CodemodAdapterId.Pandwind,
 			outputDirectory: "pandwind",
@@ -434,6 +439,7 @@ describe("Pandwind project bootstrap", () => {
 		]);
 		const support = await createPandwindProjectSupport({
 			root,
+			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: SwapTargetId.CssClass,
 			outputDirectory: "pandwind",
@@ -489,6 +495,7 @@ describe("Pandwind project bootstrap", () => {
 		]);
 		const support = await createPandwindProjectSupport({
 			root,
+			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: SwapTargetId.CssClass,
 			outputDirectory: "pandwind",
@@ -516,6 +523,7 @@ describe("Pandwind project bootstrap", () => {
 		]);
 		const support = await createPandwindProjectSupport({
 			root,
+			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: SwapTargetId.CssClass,
 			outputDirectory: "pandwind",

@@ -139,11 +139,48 @@ test("pandwind -> tokenami -> pandwind: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> tokenami | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		    "converted": 0,
+		    "code": "import { css } from "@tokenami/css";
+
+		export const styles = { "card": css({ "--color": "red" }), "muted": css({ "--opacity": 0.5 }) };",
+		    "converted": 1,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css as sourceCss } from "@tokenami/css";
+		import { createUnsafeCss } from "pandwind/unsafe/css";
+		const targetCss = createUnsafeCss();
+
+		// pandwind:migrate-skip (route: tokenami -> pandwind | parse-residual: configuration | available: named-map, residual)
+		export const styles = { "card": targetCss.class({ color: "red" }), "muted": sourceCss({ "--opacity": 0.5 }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -156,36 +193,41 @@ test("pandwind -> tokenami -> pandwind: retains the documented secondary API wit
 		        "representation": "static",
 		        "residuals": [],
 		      },
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "residual",
+		        "residuals": [],
+		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
+		      },
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: card",
-		        "kind": "capability",
+		        "hint": "Tokenami numeric values need the official property mapping to distinguish grid units from CSS numbers",
+		        "kind": "configuration",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> tokenami | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		  "reverseArtifacts": [],
 		}

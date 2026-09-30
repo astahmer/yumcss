@@ -95,7 +95,7 @@ test("pandwind -> mui: carries a documented secondary pandwind API explicitly", 
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -107,22 +107,17 @@ test("pandwind -> mui: carries a documented secondary pandwind API explicitly", 
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-conditions: named: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx",
 		      "kind": "host-framework",

@@ -331,7 +331,7 @@ describe("codemod output file boundaries", () => {
 			{
 			  "changed": true,
 			  "code": "import { css } from "@emotion/css";
-			// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, residual)
+			// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 			export const card = css({ color: "red", padding: "1rem" });",
 			  "converted": 0,
 			  "fileChanges": [],

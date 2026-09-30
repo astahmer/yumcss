@@ -140,10 +140,10 @@ test("bamboo -> chakra-ui -> bamboo: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
-		export const card = defaultSystem.css({ display: "flex", gap: "4" });",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: bamboo -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const card = css({ display: "flex", gap: "4" });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -159,54 +159,37 @@ test("bamboo -> chakra-ui -> bamboo: retains the documented secondary API withou
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-
-		export const card = css({ display: "flex", gap: "1rem" });",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: bamboo -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const card = css({ display: "flex", gap: "4" });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverseArtifacts": [],
 		}

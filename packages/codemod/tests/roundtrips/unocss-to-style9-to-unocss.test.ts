@@ -129,7 +129,7 @@ test("unocss -> style9 -> unocss: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -166,7 +166,7 @@ test("unocss -> style9 -> unocss: retains the documented secondary API without s
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
 		import style9 from "style9";
-		export const App = () => <div className={style9(style9.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
+		export const App = () => <div className={style9(style9.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

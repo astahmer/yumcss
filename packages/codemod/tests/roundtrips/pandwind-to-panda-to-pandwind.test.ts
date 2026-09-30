@@ -141,7 +141,7 @@ test("pandwind -> panda -> pandwind: retains the documented secondary API withou
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 
-		export const styles = css({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -152,14 +152,14 @@ test("pandwind -> panda -> pandwind: retains the documented secondary API withou
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [],
@@ -177,30 +177,49 @@ test("pandwind -> panda -> pandwind: retains the documented secondary API withou
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
 
-		export const styles = css.vars({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		    "converted": 1,
+		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
+		    "converted": 2,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
-		          "target-native",
 		          "residual",
 		        ],
-		        "representation": "target-native",
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		      {
+		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		      {
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
 		      {
 		        "differences": [],
 		        "lossiness": "lossless",

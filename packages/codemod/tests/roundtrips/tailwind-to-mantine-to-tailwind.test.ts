@@ -246,12 +246,13 @@ test("tailwind -> mantine -> tailwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -317,12 +318,13 @@ test("tailwind -> mantine -> tailwind: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -403,12 +405,13 @@ test("tailwind -> mantine -> tailwind: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [

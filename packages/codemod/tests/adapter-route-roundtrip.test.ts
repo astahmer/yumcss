@@ -1,3 +1,4 @@
+import { fixtureAdapterRegistry } from "./route-spec-support.ts";
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
@@ -26,7 +27,7 @@ function migrate(
 		file,
 		mode: "safe",
 		readFile: () => undefined,
-		adapterRegistry: catalog.registry,
+		adapterRegistry: fixtureAdapterRegistry,
 		...(semantic === undefined ? {} : { semantic }),
 	});
 }
@@ -101,7 +102,7 @@ describe("adapter route round-trip contract", () => {
 	);
 
 	test("does not treat a commented arbitrary class as executable source", () => {
-		const adapter = catalog.registry.get(CodemodAdapterId.Tailwind)!;
+		const adapter = fixtureAdapterRegistry.get(CodemodAdapterId.Tailwind)!;
 		const source = '// "[color:red]"\nconst value = "plain";';
 		const parsed = adapter.parse(source, {
 			file: "comment.ts",
@@ -112,7 +113,6 @@ describe("adapter route round-trip contract", () => {
 	});
 
 	test("preserves a single named rule through a Tailwind class map", () => {
-		const catalog = createBuiltinCodemodCatalog();
 		const forward = migrate(
 			'import { createUseStyles } from "react-jss";\n' +
 				"createUseStyles({ button: { color: 'red' } })",
@@ -127,7 +127,7 @@ describe("adapter route round-trip contract", () => {
 			file: "styles.ts",
 			mode: "safe",
 			readFile: () => undefined,
-			adapterRegistry: catalog.registry,
+			adapterRegistry: fixtureAdapterRegistry,
 		});
 
 		expect(forward.residuals).toEqual([]);

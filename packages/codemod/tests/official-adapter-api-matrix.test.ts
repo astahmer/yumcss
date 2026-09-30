@@ -8,6 +8,7 @@ import {
 } from "../src/swap/index.ts";
 import {
 	createAdapterRouteProject,
+	fixtureAdapterRegistry,
 	createAdapterRouteSpec,
 	routeEvidence,
 } from "./route-spec-support.ts";
@@ -39,6 +40,7 @@ const migrate = async (api: OfficialApiCase): Promise<AdapterMigrationResult> =>
 			? { root: "/project", readFile: () => undefined, listFiles: () => [] }
 			: {}),
 		mode: "safe",
+		adapterRegistry: fixtureAdapterRegistry,
 		semantic: {
 			source: {
 				framework: api.file.endsWith("x") ? BuiltinHostFramework.React : undefined,
@@ -1220,6 +1222,7 @@ describe("official primary API forms", () => {
 				to: CodemodAdapterId.ReactStrictDom,
 				file: "App.tsx",
 				mode: "safe",
+				adapterRegistry: fixtureAdapterRegistry,
 				semantic: { source: { framework: BuiltinHostFramework.React } },
 			});
 			expect(result.converted).toBe(1);

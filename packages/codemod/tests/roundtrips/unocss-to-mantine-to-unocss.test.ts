@@ -244,12 +244,13 @@ test("unocss -> mantine -> unocss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -315,12 +316,13 @@ test("unocss -> mantine -> unocss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
 		          "applied": [
+		            "token-fallback",
 		            "dynamic-and-theme",
 		          ],
 		          "availableRepresentations": [
@@ -401,12 +403,13 @@ test("unocss -> mantine -> unocss: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[color:var(--mantine-color-brand-0)] [padding:var(--mantine-spacing-card)]"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [
+		          "token-fallback",
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [

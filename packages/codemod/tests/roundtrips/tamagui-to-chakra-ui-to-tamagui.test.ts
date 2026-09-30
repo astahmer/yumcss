@@ -54,11 +54,11 @@ test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "red", padding: "$4" }} />;
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -74,55 +74,38 @@ test("tamagui -> chakra-ui -> tamagui: preserves an actionable concrete round tr
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		const __componentTamagui = styled(View, { color: "red", padding: "1rem" });
-		export const Card = (props) => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
+		    "changed": false,
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverseArtifacts": [],
 		}
@@ -226,11 +209,11 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "#2a57c8", padding: "$4" }} />;
+		      "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -246,66 +229,49 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "target adapter produced no representable output",
+		          "kind": "emission-empty",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		          "kind": "configuration",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		const __componentTamagui = styled(View, { color: "#2a57c8", padding: "1rem" });
-		export const Card = (props) => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
+		      "changed": false,
+		      "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		    "reverseArtifacts": [],
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "brand.500", padding: "$4" }} />;
+		      "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -321,55 +287,38 @@ test("tamagui -> chakra-ui -> tamagui: preserves concrete theme and project cont
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "target adapter produced no representable output",
+		          "kind": "emission-empty",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		          "kind": "configuration",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		const __componentTamagui = styled(View, { color: "#2a57c8", padding: "1rem" });
-		export const Card = (props) => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
+		      "changed": false,
+		      "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "generatedFiles": [],
-		      "loweringPlans": [
-		        {
-		          "applied": [],
-		          "availableRepresentations": [
-		            "static",
-		            "residual",
-		          ],
-		          "representation": "static",
-		          "residuals": [],
-		        },
-		      ],
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "loweringPlans": [],
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		    "reverseArtifacts": [],
 		  },
@@ -391,11 +340,11 @@ test("tamagui -> chakra-ui -> tamagui: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "brand.500", padding: "$4" }} />;
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -411,55 +360,38 @@ test("tamagui -> chakra-ui -> tamagui: resolves token values across both concret
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { View, styled } from "@tamagui/core";
-		const __componentTamagui = styled(View, { color: "#2a57c8", padding: "1rem" });
-		export const Card = (props) => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
+		    "changed": false,
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverseArtifacts": [],
 		}

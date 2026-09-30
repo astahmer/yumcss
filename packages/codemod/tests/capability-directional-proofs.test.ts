@@ -1,12 +1,11 @@
+import { fixtureAdapterRegistry } from "./route-spec-support.ts";
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
-	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 	StyleProgramResidualKindTag,
 } from "../src/swap/index.ts";
 
-const catalog = createBuiltinCodemodCatalog();
 const pandwind = CodemodAdapterId.Pandwind;
 
 function migrate(
@@ -22,7 +21,7 @@ function migrate(
 		file,
 		mode: "safe",
 		readFile: () => undefined,
-		adapterRegistry: catalog.registry,
+		adapterRegistry: fixtureAdapterRegistry,
 		...(semantic === undefined ? {} : { semantic }),
 	});
 }

@@ -50,11 +50,11 @@ test("tamagui -> chakra-ui: migrates concrete tamagui syntax to chakra-ui", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "red", padding: "$4" }} />;
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -70,19 +70,24 @@ test("tamagui -> chakra-ui: migrates concrete tamagui syntax to chakra-ui", asyn
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -152,11 +157,11 @@ test("tamagui -> chakra-ui: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "#2a57c8", padding: "$4" }} />;
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -172,27 +177,32 @@ test("tamagui -> chakra-ui: loads concrete theme and project context variants", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "brand.500", padding: "$4" }} />;
+		    "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -208,19 +218,24 @@ test("tamagui -> chakra-ui: loads concrete theme and project context variants", 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`)
@@ -236,11 +251,11 @@ test("tamagui -> chakra-ui: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "brand.500", padding: "$4" }} />;
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -256,19 +271,24 @@ test("tamagui -> chakra-ui: resolves concrete token values with project context"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });
@@ -281,12 +301,12 @@ test("tamagui -> chakra-ui: preserves malformed concrete tamagui input", async (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View } from "tamagui";
-		import { chakra } from "@chakra-ui/react";
-		export const Card = (props) => <chakra.View {...props} css={{ color: "red", padding: "$4" }} />;
+		  "code": "import { styled, View } from "tamagui";
+		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",
-		  "converted": 1,
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -302,19 +322,24 @@ test("tamagui -> chakra-ui: preserves malformed concrete tamagui input", async (
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

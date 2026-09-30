@@ -48,10 +48,8 @@ test("panda -> unocss: migrates concrete panda syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: configuration, validation)
-		export const card = css({ color: "red", _hover: { color: "blue" } });",
-		  "converted": 0,
+		  "code": "export const card = "[color:red] hover:[color:blue]";",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -69,30 +67,17 @@ test("panda -> unocss: migrates concrete panda syntax to unocss", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "the official UnoCSS generator did not prove this emitted utility",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "canonical CSS differs or has residuals",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs or has residuals",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -171,10 +156,8 @@ test("panda -> unocss: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: configuration, validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
-		    "converted": 0,
+		    "code": "export const card = "text-brand hover:[color:#f97316]";",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -193,39 +176,24 @@ test("panda -> unocss: loads concrete theme and project context variants", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "the official UnoCSS generator did not prove this emitted utility",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: configuration, validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
-		    "converted": 0,
+		    "code": "export const card = "text-brand hover:[color:#2563eb]";",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -244,30 +212,17 @@ test("panda -> unocss: loads concrete theme and project context variants", async
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "the official UnoCSS generator did not prove this emitted utility",
-		        "kind": "configuration",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "canonical CSS differs or has residuals",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs or has residuals",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -285,10 +240,8 @@ test("panda -> unocss: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: configuration, validation)
-		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
-		  "converted": 0,
+		  "code": "export const card = "text-brand hover:[color:#2563eb]";",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -307,30 +260,17 @@ test("panda -> unocss: resolves concrete token values with project context", asy
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "the official UnoCSS generator did not prove this emitted utility",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "canonical CSS differs or has residuals",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs or has residuals",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -345,11 +285,9 @@ test("panda -> unocss: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: configuration, validation)
-		export const card = css({ color: "red", _hover: { color: "blue" } });
+		  "code": "export const card = "[color:red] hover:[color:blue]";
 		const unfinished = { /* unfinished panda */",
-		  "converted": 0,
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -367,30 +305,17 @@ test("panda -> unocss: preserves malformed concrete panda input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "the official UnoCSS generator did not prove this emitted utility",
-		      "kind": "configuration",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "canonical CSS differs or has residuals",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs or has residuals",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

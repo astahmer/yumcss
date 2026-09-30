@@ -140,9 +140,10 @@ test("aphrodite -> chakra-ui -> aphrodite: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		export const styles = { "fonts": defaultSystem.css({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
-		    "converted": 1,
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> chakra-ui | lowering-residual: rule-level, validation)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -158,62 +159,45 @@ test("aphrodite -> chakra-ui -> aphrodite: retains the documented secondary API 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
+		        "outcome": "residual",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Chakra standalone css projection supports style rules only",
+		        "kind": "rule-level",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		export const styles = { "fonts": css.vars({ "font-face": { fontFamily: "Inter", src: "url(inter.woff2)" } }) };",
-		    "converted": 1,
+		    "changed": false,
+		    "code": "import { StyleSheet } from "aphrodite";
+		// pandwind:migrate-skip (route: aphrodite -> chakra-ui | lowering-residual: rule-level, validation)
+		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "custom-property",
-		          "residual",
-		          "portable-artifact",
-		        ],
-		        "representation": "custom-property",
-		        "residuals": [
-		          {
-		            "hint": "bind --pandwind-dynamic-gc0q6c at runtime for target aphrodite",
-		            "kind": "dynamic-custom-property",
-		          },
-		        ],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		  "reverseArtifacts": [],
 		}

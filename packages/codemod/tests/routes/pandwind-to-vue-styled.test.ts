@@ -95,7 +95,7 @@ test("pandwind -> vue-styled: carries a documented secondary pandwind API explic
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> vue-styled | lowering-residual: validation)
+		// pandwind:migrate-skip (route: pandwind -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -120,21 +120,13 @@ test("pandwind -> vue-styled: carries a documented secondary pandwind API explic
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
+		      "hint": "named-rules: named style rule: card",
+		      "kind": "capability",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
-		    },
-		  ],
+		  "validations": [],
 		}
 	`)
 });

@@ -108,7 +108,7 @@ test("pandwind -> mantine: carries a documented secondary pandwind API explicitl
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> mantine | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: pandwind -> mantine | lowering-residual: host-framework, validation)
 		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -120,25 +120,38 @@ test("pandwind -> mantine: carries a documented secondary pandwind API explicitl
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-conditions: named: card",
-		      "kind": "capability",
+		      "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`)
 });

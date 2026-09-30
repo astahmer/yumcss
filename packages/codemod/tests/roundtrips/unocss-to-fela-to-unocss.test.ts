@@ -126,7 +126,7 @@ test("unocss -> fela -> unocss: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const App = () => renderer.renderRule({ "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
+		    "code": "export const App = () => renderer.renderRule({ "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -162,7 +162,7 @@ test("unocss -> fela -> unocss: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
-		export const App = () => renderer.renderRule({ "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
+		export const App = () => renderer.renderRule({ "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

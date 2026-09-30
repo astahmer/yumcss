@@ -130,7 +130,7 @@ test("unocss -> react-native -> unocss: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -168,7 +168,7 @@ test("unocss -> react-native -> unocss: retains the documented secondary API wit
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
 		import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],

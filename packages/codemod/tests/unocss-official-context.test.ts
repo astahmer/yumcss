@@ -5,6 +5,7 @@ import {
 	createPandwindAdapter,
 	createStyleAdapterRegistry,
 	createUnoCssAdapter,
+	createUnoCssResolverFromCss,
 	runAdapterMigration,
 	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
@@ -85,6 +86,23 @@ async function migrate(
 }
 
 describe("UnoCSS official extraction context", () => {
+	test("separates grouped generator selectors and retains functional pseudo arguments", () => {
+		const resolver = createUnoCssResolverFromCss(
+			".hover\\:red:hover,.red{color:red}.nested:is(.a,.b){color:blue}",
+		);
+		const context = {
+			source: "",
+			file,
+			config: { adapter: CodemodAdapterId.UnoCSS, files: [], values: {} },
+		};
+		expect(resolver.resolve("hover:red", context)?.[0]?.conditions).toEqual([
+			{ kind: "pseudo", name: "hover" },
+		]);
+		expect(resolver.resolve("red", context)?.[0]?.conditions).toEqual([]);
+		expect(resolver.resolve("nested", context)?.[0]?.conditions).toEqual([
+			{ kind: "selector", name: "&:is(.a,.b)", value: "&:is(.a,.b)" },
+		]);
+	});
 	test("preserves utility syntax when the source project config is unavailable", () => {
 		const source = '<div className="[display:flex]" />';
 		const result = runAdapterMigration(source, {

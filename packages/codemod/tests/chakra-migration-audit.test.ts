@@ -1149,7 +1149,9 @@ describe("Chakra migration audit", () => {
 			expect.arrayContaining([
 				expect.objectContaining({
 					kind: "configuration",
-					hint: expect.stringContaining("official @chakra-ui/react package is unavailable"),
+					hint: expect.stringContaining(
+						"official Chakra loader could not evaluate a discovered theme module",
+					),
 				}),
 			]),
 		);
@@ -1171,7 +1173,7 @@ describe("Chakra migration audit", () => {
 			  ],
 			  "residuals": [
 			    {
-			      "hint": "the official @chakra-ui/react package is unavailable for a discovered theme module",
+			      "hint": "the official Chakra loader could not evaluate a discovered theme module",
 			      "kind": "configuration",
 			      "preserved": undefined,
 			    },

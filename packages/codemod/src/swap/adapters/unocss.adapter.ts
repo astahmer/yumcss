@@ -84,6 +84,35 @@ function generatedAtRuleCondition(rule: GeneratedCssAtRule): StyleCondition | un
 	return undefined;
 }
 
+const generatedSelectorList = (selector: string): readonly string[] => {
+	const selectors: string[] = [];
+	let start = 0;
+	let depth = 0;
+	let quote = "";
+	for (let index = 0; index < selector.length; index++) {
+		const character = selector[index];
+		if (character === "\\") {
+			index++;
+			continue;
+		}
+		if (quote !== "") {
+			if (character === quote) quote = "";
+			continue;
+		}
+		if (character === '"' || character === "'") {
+			quote = character;
+			continue;
+		}
+		if (character === "(" || character === "[") depth++;
+		if (character === ")" || character === "]") depth--;
+		if (character !== "," || depth !== 0) continue;
+		selectors.push(selector.slice(start, index).trim());
+		start = index + 1;
+	}
+	selectors.push(selector.slice(start).trim());
+	return selectors;
+};
+
 function generatedSelectorConditions(selector: string, token: string): readonly StyleCondition[] {
 	const normalized = selector.trim();
 	const classMatch = [...normalized.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)].find(
@@ -97,6 +126,7 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 	if (targetMarker < 0) return [{ kind: "selector", name: relative, value: relative }];
 	const parent = relative.slice(0, targetMarker + 1).trim();
 	const targetSuffix = relative.slice(targetMarker + 1).trim();
+	if (targetSuffix.includes("(")) return [{ kind: "selector", name: relative, value: relative }];
 	const conditions: StyleCondition[] = [];
 	for (const match of targetSuffix.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
 		const name = match[1];
@@ -105,10 +135,7 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 	const recognizedTargetSuffix = targetSuffix.replace(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu, "");
 	if (recognizedTargetSuffix.trim() !== "") {
 		const selectorWithSuffix = `${parent}${targetSuffix}`;
-		return [
-			{ kind: "selector", name: selectorWithSuffix, value: selectorWithSuffix },
-			...conditions,
-		];
+		return [{ kind: "selector", name: selectorWithSuffix, value: selectorWithSuffix }];
 	}
 	if (parent !== "&") conditions.unshift({ kind: "selector", name: parent, value: parent });
 	return conditions;
@@ -158,17 +185,19 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 			continue;
 		}
 
-		const rules = [...node.selector.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)].flatMap((match) => {
-			const raw = match[1];
-			if (raw === undefined) return [];
-			const token = unescapeUnoCssSelector(raw);
-			return [
-				{
-					token,
-					conditions: [...current.conditions, ...generatedSelectorConditions(node.selector, token)],
-				},
-			];
-		});
+		const rules = generatedSelectorList(node.selector).flatMap((selector) =>
+			[...selector.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)].flatMap((match) => {
+				const raw = match[1];
+				if (raw === undefined) return [];
+				const token = unescapeUnoCssSelector(raw);
+				return [
+					{
+						token,
+						conditions: [...current.conditions, ...generatedSelectorConditions(selector, token)],
+					},
+				];
+			}),
+		);
 		for (let index = children.length - 1; index >= 0; index--)
 			work.push({
 				node: children[index]!,
@@ -191,11 +220,27 @@ const generatedPseudoCondition = (name: string): StyleCondition => ({
 	name,
 });
 
+const canonicalConditions = (conditions: readonly StyleCondition[]): string =>
+	styleProgramToCanonicalCss(
+		styleProgramFromRules([
+			{
+				kind: StyleRuleKindTag.Style,
+				conditions: [],
+				declarations: [{ ...literal("color", "red"), conditions }],
+			},
+		]),
+	);
+
+const sameConditions = (
+	left: readonly StyleCondition[],
+	right: readonly StyleCondition[],
+): boolean => canonicalConditions(left) === canonicalConditions(right);
+
 function sameStyleDeclaration(left: StyleDeclaration, right: StyleDeclaration): boolean {
 	return (
 		left.property === right.property &&
 		JSON.stringify(left.value) === JSON.stringify(right.value) &&
-		JSON.stringify(left.conditions) === JSON.stringify(right.conditions)
+		sameConditions(left.conditions, right.conditions)
 	);
 }
 
@@ -334,7 +379,7 @@ function emitUnoClassTokens(
 							(candidate) =>
 								candidate.property === declaration.property &&
 								resolvedStyleValue(candidate.value) === resolvedStyleValue(declaration.value) &&
-								JSON.stringify(candidate.conditions) === JSON.stringify(declaration.conditions),
+								sameConditions(candidate.conditions, declaration.conditions),
 						) === true
 				: false;
 		if (named !== undefined && verifiedNamed) {
@@ -359,7 +404,7 @@ function emitUnoClassTokens(
 					(candidate) =>
 						candidate.property === declaration.property &&
 						resolvedStyleValue(candidate.value) === resolvedStyleValue(declaration.value) &&
-						JSON.stringify(candidate.conditions) === JSON.stringify(declaration.conditions),
+						sameConditions(candidate.conditions, declaration.conditions),
 				) === true;
 		if (!verifiedArbitrary) {
 			residuals.push({
@@ -1063,6 +1108,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				"framework-semantics": "exact",
 				"named-conditions": "partial",
 				"pseudo-conditions": "exact",
+				"selector-conditions": "exact",
 				"dynamic-values": "unsupported",
 				"custom-properties": "exact",
 			},

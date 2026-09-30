@@ -94,10 +94,10 @@ test("bamboo -> chakra-ui: carries a documented secondary bamboo API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
-		export const card = defaultSystem.css({ display: "flex", gap: "4" });",
-		  "converted": 1,
+		  "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: bamboo -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		export const card = css({ display: "flex", gap: "4" });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -113,19 +113,24 @@ test("bamboo -> chakra-ui: carries a documented secondary bamboo API explicitly"
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "static",
+		      "outcome": "residual",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+		      "kind": "configuration",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`)
 });

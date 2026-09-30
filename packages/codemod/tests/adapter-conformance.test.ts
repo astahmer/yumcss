@@ -1,3 +1,4 @@
+import { fixtureAdapterRegistry } from "./route-spec-support.ts";
 import { describe, expect, test } from "vitest";
 import {
 	ADAPTER_CONFORMANCE_SCHEMA,
@@ -15,7 +16,7 @@ const catalog = createBuiltinCodemodCatalog();
 
 describe("registered adapter conformance", () => {
 	test("proves every adapter-owned phase and every ordered route", () => {
-		const report = createAdapterConformanceSuite(catalog.registry, {
+		const report = createAdapterConformanceSuite(fixtureAdapterRegistry, {
 			readFile: () => undefined,
 		}).run(completeAdapterMatrixFixtures);
 
@@ -40,7 +41,7 @@ describe("registered adapter conformance", () => {
 	}, 300_000);
 
 	test("does not weaken the gate for a registered substitute", () => {
-		const emotion = catalog.registry.get(CodemodAdapterId.Emotion)!;
+		const emotion = fixtureAdapterRegistry.get(CodemodAdapterId.Emotion)!;
 		const report = createAdapterConformanceSuite(createStyleAdapterRegistry([emotion])).run(
 			completeAdapterMatrixFixtures.filter(
 				(fixture) => fixture.sourceAdapter === CodemodAdapterId.Emotion,

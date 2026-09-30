@@ -53,7 +53,7 @@ test("panda -> vanilla-extract -> panda: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ color: "red", "&:hover": { color: "blue" } });",
+		export const card = style({ color: "red", selectors: { "&:hover": { color: "blue" } } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -230,7 +230,7 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ color: "#f97316", "&:hover": { color: "#f97316" } });",
+		export const card = style({ color: "#f97316", selectors: { "&:hover": { color: "#f97316" } } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -303,7 +303,7 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
+		export const card = style({ color: "#2563eb", selectors: { "&:hover": { color: "#2563eb" } } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -391,7 +391,7 @@ test("panda -> vanilla-extract -> panda: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = style({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
+		export const card = style({ color: "#2563eb", selectors: { "&:hover": { color: "#2563eb" } } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -141,7 +141,7 @@ test("pandwind -> tamagui -> pandwind: retains the documented secondary API with
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-conditions: named: card | available: static, residual)
+		// pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -164,7 +164,7 @@ test("pandwind -> tamagui -> pandwind: retains the documented secondary API with
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: card",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -176,7 +176,7 @@ test("pandwind -> tamagui -> pandwind: retains the documented secondary API with
 		    "changed": false,
 		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-conditions: named: card | available: static, residual)
+		// pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

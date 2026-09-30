@@ -2009,8 +2009,30 @@ export function createChakraAdapter(
 			};
 		},
 		emit(program, { programObject }, context) {
+			if (
+				program.declarations.some(
+					(declaration) =>
+						isSpacingProperty(declaration.property) &&
+						declaration.value.kind === StyleValueKindTag.Literal &&
+						typeof declaration.value.value === "string" &&
+						/^\$?-?\d+(?:\.\d+)?$/u.test(declaration.value.value) &&
+						declaration.value.value !== "0",
+				)
+			)
+				return {
+					text: "",
+					residuals: [
+						{
+							kind: StyleProgramResidualKindTag.Configuration,
+							text: "numeric spacing string",
+							hint: "Chakra interprets numeric spacing strings as theme tokens; the source literal has no verified equivalent",
+						},
+					],
+				};
 			const outputProgram = normalizeChakraEmissionProgram(program);
-			const unsupportedRule = program.rules.some((rule) => rule.kind !== StyleRuleKindTag.Style);
+			const supportedRule = (rule: StyleProgram["rules"][number]): boolean =>
+				rule.kind === StyleRuleKindTag.Style && rule.children.every(supportedRule);
+			const unsupportedRule = !program.rules.every(supportedRule);
 			const unsupportedKeyframesCondition = program.rules.some((rule) =>
 				rule.declarations.some((declaration) =>
 					declaration.conditions.some((condition) => /^@keyframes\b/u.test(condition.name)),

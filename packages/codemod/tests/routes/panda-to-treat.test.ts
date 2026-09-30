@@ -49,7 +49,7 @@ test("panda -> treat: migrates concrete panda syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "color": "red", "_hover": { "color": "blue" } });",
+		export const card = style({ "color": "red", "&:hover": { "color": "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -153,7 +153,7 @@ test("panda -> treat: loads concrete theme and project context variants", async 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
+		export const card = style({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,7 +190,7 @@ test("panda -> treat: loads concrete theme and project context variants", async 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		export const card = style({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -239,7 +239,7 @@ test("panda -> treat: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
+		export const card = style({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -285,7 +285,7 @@ test("panda -> treat: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		export const card = style({ "color": "red", "_hover": { "color": "blue" } });
+		export const card = style({ "color": "red", "&:hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],

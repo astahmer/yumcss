@@ -94,7 +94,7 @@ test("unocss -> goober: carries a documented secondary unocss API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const App = () => css({ "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
+		export const App = () => css({ "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

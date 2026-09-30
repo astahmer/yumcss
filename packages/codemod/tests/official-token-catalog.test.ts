@@ -686,10 +686,10 @@ describe("official custom-token loaders", () => {
 			}),
 		);
 		expect(tailwind).toBe('"text-brand-500"');
-		expect(unoLiteral).toBe('"[color:#123456]"');
+		expect(unoLiteral).toBe('""');
 		expect(unoVerified).toBe('"text-brand-500"');
 		expect(JSON.parse(tailwind)).toMatchInlineSnapshot(`"text-brand-500"`);
-		expect(JSON.parse(unoLiteral)).toMatchInlineSnapshot(`"[color:#123456]"`);
+		expect(JSON.parse(unoLiteral)).toMatchInlineSnapshot(`""`);
 		expect(JSON.parse(unoVerified)).toMatchInlineSnapshot(`"text-brand-500"`);
 	});
 

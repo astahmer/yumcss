@@ -3810,7 +3810,7 @@ describe("official adapter API families", () => {
 			  },
 			  "unocss/variant utility": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: unocss -> pandwind | lowering-residual: capability, validation)
+			    "code": "// pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
 			export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3818,42 +3818,33 @@ describe("official adapter API families", () => {
 			      {
 			        "applied": [],
 			        "availableRepresentations": [
-			          "static",
 			          "named-map",
 			          "residual",
 			        ],
-			        "representation": "static",
+			        "representation": "residual",
 			        "residuals": [],
 			      },
 			    ],
 			    "outcomes": [
 			      {
 			        "outcome": "residual",
-			        "representation": "static",
+			        "representation": "residual",
 			      },
 			    ],
 			    "residuals": [
 			      {
-			        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
-			        "kind": "capability",
+			        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+			        "kind": "unknown-utility",
 			        "preserved": undefined,
 			      },
 			      {
-			        "hint": "1 residual conversion(s)",
-			        "kind": "validation",
+			        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+			        "kind": "unknown-utility",
 			        "preserved": undefined,
 			      },
 			    ],
 			    "skipped": 1,
-			    "validations": [
-			      {
-			        "differences": [
-			          "1 residual conversion(s)",
-			        ],
-			        "lossiness": "lossy",
-			        "valid": false,
-			      },
-			    ],
+			    "validations": [],
 			  },
 			  "vanilla-extract/createTheme": {
 			    "changed": true,

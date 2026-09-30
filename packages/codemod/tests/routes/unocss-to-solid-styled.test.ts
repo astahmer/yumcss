@@ -94,7 +94,7 @@ test("unocss -> solid-styled: carries a documented secondary unocss API explicit
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-		export const App = () => css({ "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
+		export const App = () => css({ "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

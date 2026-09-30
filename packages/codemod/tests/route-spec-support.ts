@@ -1,5 +1,7 @@
 import { extname, resolve } from "node:path";
 import { expect } from "vitest";
+import { parse as parseCss } from "postcss";
+import unitlessProperties from "@emotion/unitless";
 import {
 	BUILTIN_CODEMOD_ADAPTER_IDS,
 	CodemodAdapterId,
@@ -72,7 +74,7 @@ const routeUnoAdapter = {
 	},
 };
 
-const routeUnoRegistry = createStyleAdapterRegistry([
+export const fixtureAdapterRegistry = createStyleAdapterRegistry([
 	...catalog.adapters.filter((adapter) => adapter.id !== CodemodAdapterId.UnoCSS),
 	routeUnoAdapter,
 ]);
@@ -481,10 +483,13 @@ export const expectArtifactProjectRoundTrip = (
 		return;
 	}
 	if (reverse.converted + reverse.skipped + reverse.residuals.length > 0) return;
-	expect(reverse.code, "artifact-only reverse projection must preserve its component consumers").toBe(
-		forward.code,
+	expect(
+		reverse.code,
+		"artifact-only reverse projection must preserve its component consumers",
+	).toBe(forward.code);
+	expect(artifacts.length, "reverse projection omitted generated style documents").toBeGreaterThan(
+		0,
 	);
-	expect(artifacts.length, "reverse projection omitted generated style documents").toBeGreaterThan(0);
 	expect(
 		artifacts.some(({ result }) => result.converted + result.skipped + result.residuals.length > 0),
 		"reverse projection did not recognize any generated style document",
@@ -508,7 +513,7 @@ export function createAdapterRouteSpec(
 			const project = input.project;
 			const adapterRegistry =
 				source === CodemodAdapterId.UnoCSS || target === CodemodAdapterId.UnoCSS
-					? routeUnoRegistry
+					? fixtureAdapterRegistry
 					: catalog.registry;
 			return runAdapterMigration(input.source, {
 				from: source,
@@ -780,6 +785,7 @@ export function expectActionableRoundTrip(
 	forward: AdapterMigrationResult,
 	reverse: AdapterMigrationResult,
 ): void {
+	expectReverseSemanticContinuity(forward, reverse);
 	const reverseActionable =
 		reverse.converted > 0 || reverse.skipped > 0 || reverse.residuals.length > 0;
 	const forwardHasResidual =
@@ -791,10 +797,9 @@ export function expectActionableRoundTrip(
 			(outcome) => outcome.representation === StyleRepresentationKind.PortableArtifact,
 		) && forward.code.includes("pandwind/");
 	if (forward.converted > 0 && !forwardHasResidual) {
-		expect(
-			reverseActionable ||
-				(forwardHasPortableArtifact && reverse.code === forward.code),
-		).toBe(true);
+		expect(reverseActionable || (forwardHasPortableArtifact && reverse.code === forward.code)).toBe(
+			true,
+		);
 		return;
 	}
 	if (forwardHasResidual) {
@@ -803,6 +808,61 @@ export function expectActionableRoundTrip(
 	}
 	expect(reverseActionable).toBe(true);
 }
+
+export const expectReverseSemanticContinuity = (
+	forward: AdapterMigrationResult,
+	reverse: AdapterMigrationResult,
+) => {
+	if (
+		forward.converted === 0 ||
+		reverse.converted === 0 ||
+		forward.residuals.length > 0 ||
+		reverse.residuals.length > 0
+	)
+		return;
+	const semanticRecords = (styles: readonly string[]) =>
+		styles
+			.flatMap((css) => {
+				const records: string[] = [];
+				parseCss(css).walkRules((rule) => {
+					const conditions: string[] = [rule.selector];
+					let parent = rule.parent;
+					while (parent?.type === "atrule") {
+						conditions.unshift(`@${parent.name} ${parent.params}`);
+						parent = parent.parent;
+					}
+					const declarations: string[] = [];
+					rule.each((node) => {
+						if (node.type !== "decl") return;
+						const property = node.prop.replace(/-([a-z])/gu, (_match, letter: string) =>
+							letter.toUpperCase(),
+						);
+						const dimension = /^(-?\d+(?:\.\d+)?)(px|rem)?$/u.exec(node.value);
+						const value =
+							dimension !== null &&
+							!node.prop.startsWith("--") &&
+							unitlessProperties[property] !== 1
+								? `${Number(dimension[1]) * (dimension[2] === "rem" ? 16 : 1)}px`
+								: node.value;
+						declarations.push(`${node.prop}:${value}${node.important ? "!important" : ""}`);
+					});
+					records.push(`${conditions.join("|")}{${declarations.join(";")}}`);
+				});
+				return records;
+			})
+			.toSorted();
+	const emitted = semanticRecords(
+		forward.validations.map((validation) => validation.canonicalTarget),
+	);
+	const parsed = semanticRecords(
+		reverse.validations.map((validation) => validation.canonicalSource),
+	);
+	expect(emitted.length, "forward migration has no canonical semantic evidence").toBeGreaterThan(0);
+	expect(
+		parsed,
+		`reverse parser lost emitted style semantics: ${JSON.stringify({ emitted, parsed })}`,
+	).toEqual(emitted);
+};
 
 /**
  * Tailwind and UnoCSS can receive a valid class string without enough host

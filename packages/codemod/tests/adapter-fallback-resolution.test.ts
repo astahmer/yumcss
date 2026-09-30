@@ -56,39 +56,16 @@ describe("adapter fallback resolution", () => {
 		`);
 	});
 
-	test("UnoCSS preserves unknown presets and only resolves arbitrary utilities locally", () => {
+	test("UnoCSS preserves arbitrary utilities without generator evidence", () => {
 		const source = '<div class="midnight:[color:var(--brand)] project-shortcut" />';
 		const result = parseFallback(createUnoCssAdapter({ moduleLoader: null }), source);
 		const program = result.matches[0]?.program;
-
 		expect(result.matches).toHaveLength(1);
 		expect(program?.residuals).toEqual([
+			expect.objectContaining({ kind: "unknown-utility", text: "midnight:[color:var(--brand)]" }),
 			expect.objectContaining({ kind: "unknown-utility", text: "project-shortcut" }),
 		]);
-		expect(program?.declarations).toEqual([
-			expect.objectContaining({
-				property: "color",
-				value: { kind: "literal", value: "var(--brand)" },
-				conditions: [{ kind: "named", name: "midnight" }],
-			}),
-		]);
-		expect(program?.declarations).toMatchInlineSnapshot(`
-			[
-			  {
-			    "conditions": [
-			      {
-			        "kind": "named",
-			        "name": "midnight",
-			      },
-			    ],
-			    "property": "color",
-			    "value": {
-			      "kind": "literal",
-			      "value": "var(--brand)",
-			    },
-			  },
-			]
-		`);
+		expect(program?.declarations).toEqual([]);
 	});
 
 	test("official Tailwind loading requires the shared file-discovery port", async () => {

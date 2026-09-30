@@ -1,8 +1,8 @@
+import { fixtureAdapterRegistry } from "./route-spec-support.ts";
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
 	createAdapterContractSuite,
-	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
 	StyleProgramResidualKindTag,
 	type AdapterContractFixture,
@@ -17,7 +17,7 @@ const fixture = (adapter: string, source: string): AdapterContractFixture => ({
 
 describe("adapter contract suite", () => {
 	test("derives the capability matrix from registered adapters", () => {
-		const registry = createBuiltinCodemodCatalog().registry;
+		const registry = fixtureAdapterRegistry;
 		const matrix = registry.capabilityMatrix();
 		expect(matrix.entries).toHaveLength(registry.adapters.length);
 		expect(matrix.get(CodemodAdapterId.Emotion)).toMatchObject({
@@ -29,8 +29,7 @@ describe("adapter contract suite", () => {
 	});
 
 	test("accepts a minimal substitute registry without changing orchestration", () => {
-		const catalog = createBuiltinCodemodCatalog();
-		const emotion = catalog.registry.get(CodemodAdapterId.Emotion)!;
+		const emotion = fixtureAdapterRegistry.get(CodemodAdapterId.Emotion)!;
 		const registry = createStyleAdapterRegistry([emotion]);
 		const report = createAdapterContractSuite().run(registry, [
 			fixture(
@@ -44,8 +43,7 @@ describe("adapter contract suite", () => {
 	});
 
 	test("accepts an adapter with a substituted configuration port", () => {
-		const catalog = createBuiltinCodemodCatalog();
-		const emotion = catalog.registry.get(CodemodAdapterId.Emotion)!;
+		const emotion = fixtureAdapterRegistry.get(CodemodAdapterId.Emotion)!;
 		const adapter = {
 			...emotion,
 			loadConfig: (context: Parameters<typeof emotion.loadConfig>[0]) => ({
@@ -71,14 +69,14 @@ describe("adapter contract suite", () => {
 	});
 
 	test("requires every built-in adapter to pass a representative parse contract", () => {
-		const registry = createBuiltinCodemodCatalog().registry;
+		const registry = fixtureAdapterRegistry;
 		const report = createAdapterContractSuite().run(registry, adapterContractFixtures);
 		expect(report.failed, JSON.stringify(report.failures, null, 2)).toBe(0);
 		expect(report.passed).toBe(registry.adapters.length);
 	});
 
 	test("requires every adapter to expose normalized project-config provenance", () => {
-		const registry = createBuiltinCodemodCatalog().registry;
+		const registry = fixtureAdapterRegistry;
 		const fixtures = new Map(adapterContractFixtures.map((fixture) => [fixture.adapter, fixture]));
 		const summaries = registry.adapters.map((adapter) => {
 			const fixture = fixtures.get(adapter.id);
@@ -139,8 +137,9 @@ describe("adapter contract suite", () => {
 	});
 
 	test("fails explicitly when a registered adapter has no fixture", () => {
-		const catalog = createBuiltinCodemodCatalog();
-		const registry = createStyleAdapterRegistry([catalog.registry.get(CodemodAdapterId.Emotion)!]);
+		const registry = createStyleAdapterRegistry([
+			fixtureAdapterRegistry.get(CodemodAdapterId.Emotion)!,
+		]);
 		const report = createAdapterContractSuite().run(registry, []);
 		expect(report.failed).toBe(1);
 		expect(report.failures[0]).toMatchObject({

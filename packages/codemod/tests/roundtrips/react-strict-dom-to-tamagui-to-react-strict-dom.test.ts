@@ -117,9 +117,10 @@ test("react-strict-dom -> tamagui -> react-strict-dom: retains the documented se
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		export const pulse = styled(View, { "from": { opacity: 0 }, "to": { opacity: 1 } });",
-		    "converted": 1,
+		    "code": "import { css } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -134,60 +135,36 @@ test("react-strict-dom -> tamagui -> react-strict-dom: retains the documented se
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled(View) | available: named-map, target-native, residual)
-		export const pulse = styled(View, { "from": { opacity: 0 }, "to": { opacity: 1 } });",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "named-map",
-		          "target-native",
-		          "residual",
-		        ],
-		        "representation": "target-native",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
 		        "outcome": "residual",
-		        "representation": "target-native",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
+		        "hint": "target adapter produced no representable output",
+		        "kind": "emission-empty",
 		        "preserved": undefined,
 		      },
 		      {
-		        "hint": "React Strict DOM uses fixed html.* hosts and cannot preserve styled-components' polymorphic as contract",
-		        "kind": "host-framework",
+		        "hint": "Tamagui styled components cannot preserve global stylesheet side effects",
+		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { css } from "react-strict-dom";
+		// pandwind:migrate-skip (route: react-strict-dom -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [],
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		  "reverseArtifacts": [],

@@ -170,7 +170,10 @@ export interface CodemodAdapterSpec {
 	/** Target-owned policy for preserving named style maps without source branches. */
 	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
 	/** Target-owned opt-in for preserving a complete named map in one emission. */
-	readonly preserveNamedRules?: (context: AdapterEmitContext) => boolean;
+	readonly preserveNamedRules?: (input: {
+		readonly context: AdapterEmitContext;
+		readonly program: StyleProgram;
+	}) => boolean;
 	emit(
 		program: StyleProgram,
 		renderers: AdapterRenderers,
@@ -301,7 +304,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 			const rendered: CodemodAdapterEmission =
 				namedRules.length > 0 &&
 				spec.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap &&
-				spec.preserveNamedRules?.(context) !== true
+				spec.preserveNamedRules?.({ context, program }) !== true
 					? (() => {
 							const imports = new Set<string>();
 							const generatedStatements = new Set<string>();

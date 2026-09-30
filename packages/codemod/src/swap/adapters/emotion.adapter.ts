@@ -148,13 +148,7 @@ function rewriteEmotionHost({
 		return {
 			code,
 			imports: [],
-			residuals: [
-				{
-					kind: StyleProgramResidualKindTag.HostFramework,
-					text: emittedExpression,
-					hint: "Emotion class projection requires a source JSX host",
-				},
-			],
+			residuals: [],
 		};
 	if (hostStyleAttributes.some((attribute) => /^style\s*=/u.test(attribute)))
 		return {

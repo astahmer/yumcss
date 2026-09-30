@@ -95,7 +95,7 @@ test("pandwind -> unocss: carries a documented secondary pandwind API explicitly
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> unocss | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: pandwind -> unocss | lowering-residual: configuration, validation)
 		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -109,25 +109,38 @@ test("pandwind -> unocss: carries a documented secondary pandwind API explicitly
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-conditions: named: card",
-		      "kind": "capability",
+		      "hint": "the official UnoCSS generator did not prove this emitted utility",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "canonical CSS differs or has residuals",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "canonical CSS differs or has residuals",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`)
 });

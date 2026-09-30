@@ -25,7 +25,7 @@ describe("adapter evidence contracts", () => {
 		expect(summaries).toMatchInlineSnapshot(`
 			[
 			  {
-			    "apiCount": 3,
+			    "apiCount": 7,
 			    "configCount": 4,
 			    "id": "pandwind",
 			  },
@@ -35,7 +35,7 @@ describe("adapter evidence contracts", () => {
 			    "id": "bamboo",
 			  },
 			  {
-			    "apiCount": 12,
+			    "apiCount": 13,
 			    "configCount": 3,
 			    "id": "chakra-ui",
 			  },

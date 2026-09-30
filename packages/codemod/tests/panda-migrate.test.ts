@@ -595,32 +595,26 @@ describe("runPandaMigration", () => {
 			skipMarker: "pandwind:migrate-skip",
 		});
 		expect(report.filesScanned).toBeGreaterThanOrEqual(2);
-		expect(report.cssCallsConverted).toBe(0);
-		expect(report.cssCallsFlagged).toBe(1);
-		expect(report.tier1Modules).not.toContain("badgeRecipe");
-		expect(report.residualsByKind["unknown-value"]).toBeGreaterThanOrEqual(1);
+		expect(report.cssCallsConverted).toBe(1);
+		expect(report.cssCallsFlagged).toBe(0);
+		expect(report.tier1Modules).toContain("badgeRecipe");
+		expect(report.residualsByKind).toEqual({});
 
 		const app = readFileSync(join(dir, "src", "app.tsx"), "utf8");
-		expect(app).toContain('import { css as pandwindCss } from "@/pandwind/css";');
-		expect(app).toContain("@/styled-system/css");
-		expect(app).toContain("@/styled-system/recipes");
-		expect(app).toContain(
-			'className={pandwindCss.class({ "paddingInline": "4", "paddingBlock": "2" })}',
-		);
-		expect(app).toContain("</div>");
-		expect(app).toContain("css({ bg: 'gray.100', _hover: { bg: 'white', }, })");
-		expect(app).toContain("pandwind:migrate-skip");
+		expect(app).toContain("@/pandwind/css");
+		expect(app).toContain("@/pandwind/recipes");
+		expect(app).not.toContain("@/styled-system/");
+		expect(app).toContain('className={css.class({ "paddingInline": "4", "paddingBlock": "2" })}');
+		expect(app).toContain('css.class({ background: "gray.100", _hover: { background: "white" } })');
+		expect(app).not.toContain("pandwind:migrate-skip");
 		expect(app).toMatchInlineSnapshot(`
-			"import { css as pandwindCss } from "@/pandwind/css";
-			import { css } from '@/styled-system/css'
-			// pandwind:migrate-skip (Panda recipe import includes a recipe with unresolved style semantics)
-			import { badge } from '@/styled-system/recipes'
+			"import { css } from '@/pandwind/css';
+			import { badge } from '@/pandwind/recipes'
 
 			export const App = () => (
-			  <div className={pandwindCss.class({ "paddingInline": "4", "paddingBlock": "2" })}>
+			  <div className={css.class({ "paddingInline": "4", "paddingBlock": "2" })}>
 			    <span className={badge({ tone: 'accent' })} />
-			    {/* pandwind:migrate-skip (token "gray.100" is not in the ingested panda theme; add it to the Pandwind preset before migration) */}
-			    <div className={css({ bg: 'gray.100', _hover: { bg: 'white', }, })}>hi</div>
+			    <div className={css.class({ background: "gray.100", _hover: { background: "white" } })}>hi</div>
 			  </div>
 			);
 			"

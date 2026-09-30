@@ -92,11 +92,10 @@ test("pandwind -> emotion: carries a documented secondary pandwind API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> emotion | capability-blocked: named-conditions: named: card | available: static, named-map, residual)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		  "converted": 0,
+		  "code": "import { css } from "@emotion/css";
+
+		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -106,25 +105,25 @@ test("pandwind -> emotion: carries a documented secondary pandwind API explicitl
 		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
-		      "representation": "static",
+		      "outcome": "target-native",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "named-conditions: named: card",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

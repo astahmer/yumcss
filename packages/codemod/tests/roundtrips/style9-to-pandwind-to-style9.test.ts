@@ -89,13 +89,12 @@ test("style9 -> pandwind -> style9: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "
 		import { createCx } from "pandwind/cx";
+		import style9 from "style9";
 		const cx = createCx();
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		export const styles = css.group({ card: { color: "red" } });",
-		    "converted": 0,
+		export const styles = { "card": style9.create({ "color": "red" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -107,31 +106,23 @@ test("style9 -> pandwind -> style9: preserves an actionable concrete round trip"
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -190,13 +181,12 @@ test("style9 -> pandwind -> style9: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "
 		import { createCx } from "pandwind/cx";
+		import style9 from "style9";
 		const cx = createCx();
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-		    "converted": 0,
+		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -208,31 +198,23 @@ test("style9 -> pandwind -> style9: retains the documented secondary API without
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -307,13 +289,12 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		      "code": "
 		import { createCx } from "pandwind/cx";
+		import style9 from "style9";
 		const cx = createCx();
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		export const styles = css.group({ card: { color: "#2563eb" } });",
-		      "converted": 0,
+		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -325,31 +306,23 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "target-native",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -395,13 +368,12 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		      "code": "
 		import { createCx } from "pandwind/cx";
+		import style9 from "style9";
 		const cx = createCx();
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		export const styles = css.group({ card: { color: "brand" } });",
-		      "converted": 0,
+		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
+		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
 		        {
@@ -414,31 +386,23 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "target-native",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "canonical CSS differs",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "canonical CSS differs",
-		          ],
-		          "lossiness": "unsupported",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -499,13 +463,12 @@ test("style9 -> pandwind -> style9: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+		    "code": "
 		import { createCx } from "pandwind/cx";
+		import style9 from "style9";
 		const cx = createCx();
-		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
-		export const styles = css.group({ card: { color: "brand" } });",
-		    "converted": 0,
+		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -518,31 +481,23 @@ test("style9 -> pandwind -> style9: resolves token values across both concrete l
 		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
