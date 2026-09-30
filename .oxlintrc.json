@@ -30,7 +30,21 @@
 		"pandwind-extraction/no-conflicting-style-props": "error",
 		"pandwind-extraction/no-dynamic-carrier-fallback": "error",
 		"pandwind-extraction/no-dynamic-keyframes": "error",
-		"pandwind-extraction/no-raw-ast-identities": "error"
+		"pandwind-extraction/no-raw-ast-identities": "error",
+		// Enable shared checks as their existing repository findings are resolved.
+		"antislop/no-unknown-type-aliases": "error",
+		"antislop/no-widen-then-assert": "error",
+		"antislop/no-chained-type-assertions": "off",
+		"antislop/no-broad-object-parameters": "off",
+		"antislop/no-conditional-empty-object-spread": "off",
+		"antislop/no-known-value-widening": "off",
+		"antislop/no-reflect-apply": "off",
+		"antislop/no-reflect-get": "off",
+		"antislop/no-runtime-typeof": "off",
+		"antislop/no-unsafe-dictionary-type": "off",
+		"antislop/no-unknown-parameters": "off",
+		"antislop/no-unknown-returns": "off",
+		"antislop/require-safety-comment-for-type-assertion": "off"
 	},
 	"ignorePatterns": [
 		"**/examples/example/src/types.d.ts",
