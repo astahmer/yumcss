@@ -50,6 +50,7 @@
 		],
 		// Dynamic token/config/AST trees stay unknown until their owning parser validates each value.
 		"antislop/no-unsafe-dictionary-type": "off",
+		// The generic rule cannot express required MCP and bundler-hook boundary inputs.
 		"antislop/no-unknown-parameters": "off",
 		"antislop/no-unknown-returns": "off",
 		"antislop/require-safety-comment-for-type-assertion": "off",
