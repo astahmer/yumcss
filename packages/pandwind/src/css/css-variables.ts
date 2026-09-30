@@ -1,4 +1,8 @@
-import type { CssVariableDescriptor, CssVariables } from "../types/typings.ts";
+import type {
+	CssVariableDescriptor,
+	CssVariableValue,
+	CssVariables,
+} from "../types/typings.ts";
 
 interface CssVariableValueEntry {
 	readonly name: string;
@@ -28,8 +32,12 @@ export const serializeCssPropertySyntax = (syntax: string): string => {
 	return JSON.stringify(syntax);
 };
 
-const isDescriptor = (value: object): value is CssVariableDescriptor =>
-	"syntax" in value && "inherits" in value && "initialValue" in value;
+const isDescriptor = (value: CssVariableValue): value is CssVariableDescriptor =>
+	typeof value === "object" &&
+	value !== null &&
+	"syntax" in value &&
+	"inherits" in value &&
+	"initialValue" in value;
 
 /** Normalize flat preset variables without interpreting condition names. */
 export const normalizeCssVariables = (

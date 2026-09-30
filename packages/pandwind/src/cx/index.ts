@@ -785,16 +785,12 @@ export function createCx(options: CxOptions = {}): CxFn {
 		}
 	};
 
-	const isVarsCarrier = (input: object): input is VarsOutput => {
+	type CxObjectInput = Record<string, string> | VarsOutput;
+	const isVarsCarrier = (input: CxObjectInput): input is VarsOutput => {
 		if (Object.hasOwn(input, VARS_ATOMS)) return true;
-		const candidate = input as { class?: unknown; style?: unknown };
-		return (
-			typeof candidate.class === "string" &&
-			Object.hasOwn(input, "class") &&
-			Object.hasOwn(input, "style") &&
-			typeof candidate.style === "object" &&
-			candidate.style !== null
-		);
+		const classValue: unknown = Object.getOwnPropertyDescriptor(input, "class")?.value;
+		const styleValue: unknown = Object.getOwnPropertyDescriptor(input, "style")?.value;
+		return typeof classValue === "string" && typeof styleValue === "object" && styleValue !== null;
 	};
 
 	const pushScalar = (input: Exclude<CxInput, readonly CxInput[]>): void => {
@@ -804,7 +800,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 		}
 		if (typeof input !== "object" || input === null) return;
 		if (isVarsCarrier(input)) {
-			pushVarCarrier(input as VarsOutput);
+			pushVarCarrier(input);
 			return;
 		}
 		for (const [key, atom] of Object.entries(input)) {

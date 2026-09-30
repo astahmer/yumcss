@@ -59,6 +59,8 @@ export interface CxFoldContext {
 	readonly engine: PandwindEngineContext;
 }
 
+type AstExpressionInput = Expression | OxcNode;
+
 const isTruthy = (value: StaticEval): boolean =>
 	value !== false && value !== null && value !== undefined && value !== "";
 
@@ -393,12 +395,11 @@ export interface StaticClassMapMember {
 }
 
 export const classMapMember = (
-	input: object,
+	input: AstExpressionInput,
 	consts: ConstantScope,
 ): StaticClassMapMember | undefined => {
-	const node = input as OxcNode;
-	if (node.type !== NodeKind.MemberExpression) return undefined;
-	const member = node as {
+	if (input.type !== NodeKind.MemberExpression) return undefined;
+	const member = input as {
 		object?: Expression;
 		property?: Expression;
 		computed?: boolean;
@@ -474,14 +475,14 @@ const evalLiteralForCx = (
 	return result;
 };
 
-const isLateObjectMemberRead = (input: object, consts: ConstantScope): boolean => {
-	const node = input as OxcNode;
-	const member = classMapMember(node, consts);
-	return member !== undefined && typeof node.start === "number" && node.start < member.declStart;
+const isLateObjectMemberRead = (input: AstExpressionInput, consts: ConstantScope): boolean => {
+	const member = classMapMember(input, consts);
+	const start = input["start"];
+	return member !== undefined && typeof start === "number" && start < member.declStart;
 };
 
-export const containsLateObjectMemberRead = (node: object, consts: ConstantScope): boolean => {
-	const start = (node as { start?: number }).start;
+export const containsLateObjectMemberRead = (node: AstExpressionInput, consts: ConstantScope): boolean => {
+	const start = node["start"];
 	if (typeof start !== "number") return false;
 	const possibleNames = classMapConstants(consts);
 	if (!possibleNames.some(([, declStart]) => start < declStart)) return false;

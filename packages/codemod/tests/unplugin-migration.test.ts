@@ -13,6 +13,7 @@ import {
 	pandwindMigrateWebpack,
 } from "../src/swap/unplugin.ts";
 import { CodemodAdapterId } from "../src/swap/index.ts";
+import { createVirtualMigrationPlugin } from "../src/swap/virtual-migration-core.ts";
 
 const options = {
 	from: CodemodAdapterId.StyledComponents,
@@ -76,10 +77,10 @@ describe("codemod unplugin factory", () => {
 						framework,
 						versions: {},
 					});
-					if (typeof plugin.transform !== "function") {
-						throw new Error(`${framework} plugin has no transform hook`);
-					}
-					const result = await plugin.transform(styledCard, "/virtual/project/Card.tsx");
+					const result = await createVirtualMigrationPlugin(options).transform(
+						styledCard,
+						"/virtual/project/Card.tsx",
+					);
 					return [framework, { name: plugin.name, result }];
 				}),
 			),
@@ -201,24 +202,14 @@ describe("codemod unplugin factory", () => {
 			'export const unchanged = "preserved";';
 		const files = new Map([[sourceFile, source]]);
 		const residuals: unknown[] = [];
-		const plugin = pandwindMigrateUnplugin.raw(
-			{
-				from: CodemodAdapterId.StyledComponents,
-				to: CodemodAdapterId.CssModules,
-				root: "/virtual/project",
-					readFile: (file) => files.get(file),
-					listFiles: () => [...files.keys()],
-					onResidual: (event) => residuals.push(event),
-				},
-				{ framework: "vite", versions: {} },
-		);
-		if (
-			typeof plugin.transform !== "function" ||
-			typeof plugin.resolveId !== "function" ||
-			typeof plugin.load !== "function"
-		) {
-			throw new Error("Vite migration plugin is missing a virtual module hook");
-		}
+		const plugin = createVirtualMigrationPlugin({
+			from: CodemodAdapterId.StyledComponents,
+			to: CodemodAdapterId.CssModules,
+			root: "/virtual/project",
+			readFile: (file) => files.get(file),
+			listFiles: () => [...files.keys()],
+			onResidual: (event) => residuals.push(event),
+		});
 		const transformed = await plugin.transform(source, sourceFile);
 		const stylesheetId = plugin.resolveId("./Card.module.css", sourceFile);
 		const stylesheet = stylesheetId === null ? null : plugin.load(stylesheetId);

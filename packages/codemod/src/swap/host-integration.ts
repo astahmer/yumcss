@@ -276,6 +276,13 @@ type ConfigAstNode = {
 	readonly [key: string]: unknown;
 };
 
+const isConfigAstNode = (value: unknown): value is ConfigAstNode =>
+	typeof value === "object" &&
+	value !== null &&
+	!Array.isArray(value) &&
+	"type" in value &&
+	typeof value.type === "string";
+
 const nodeRange = (node: ConfigAstNode | undefined): { start: number; end: number } | undefined =>
 	typeof node?.start === "number" && typeof node.end === "number"
 		? { start: node.start, end: node.end }
@@ -302,17 +309,18 @@ const configPropertyName = (property: ConfigAstNode): string | undefined => {
 
 /** Resolve a Next config object through top-level bindings without evaluating it. */
 function findNextConfigObject(source: string, file: string): ConfigAstNode | undefined {
-	let parsed: ConfigAstNode;
+	let parsed: unknown;
 	try {
 		parsed = SOURCE_SCANNER_SERVICE.parse({
 			file,
 			source,
 			language: file.endsWith(".ts") ? "typescript" : "javascript",
-		}).program as ConfigAstNode;
+		}).program;
 	} catch {
 		return undefined;
 	}
-	const body = Array.isArray(parsed.body) ? (parsed.body as ConfigAstNode[]) : [];
+	if (!isConfigAstNode(parsed)) return undefined;
+	const body = Array.isArray(parsed.body) ? parsed.body.filter(isConfigAstNode) : [];
 	const initializers = new Map<string, ConfigAstNode>();
 	for (const statement of body) {
 		if (statement.type !== NodeKind.VariableDeclaration) continue;

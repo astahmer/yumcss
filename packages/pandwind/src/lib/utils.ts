@@ -50,6 +50,10 @@ export const isSafePathPart = (part: string): boolean =>
 	part.length > 0 && !part.includes(separator) && !part.includes(identitySeparator);
 
 export type FlatStyles = Record<string, string>;
+type Flattenable = StyleObject | readonly unknown[];
+
+const isFlattenable = (value: unknown): value is Flattenable =>
+	Array.isArray(value) || isMergeable(value);
 
 const nullResetValue = (property: string): string | number => {
 	const cssProperty = dashCase(property);
@@ -96,7 +100,7 @@ const flattenInto = (
 	active.delete(value);
 };
 
-const flattenObject = (value: object, resetNulls: boolean): FlatStyles => {
+const flattenObject = (value: Flattenable, resetNulls: boolean): FlatStyles => {
 	const output = Object.create(null) as Record<string, unknown>;
 	flattenInto(output, value, "", "", resetNulls, new WeakSet<object>());
 	return output as FlatStyles;
@@ -119,9 +123,7 @@ export const flattenStyle = (style: StyleObject, resetNulls = false) => {
 };
 
 export const flatten = <T>(obj: T) =>
-	typeof obj === "object" && obj !== null
-		? flattenObject(obj, false)
-		: (Object.create(null) as FlatStyles);
+	isFlattenable(obj) ? flattenObject(obj, false) : (Object.create(null) as FlatStyles);
 
 export const concatPair = (key: string, value: string) =>
 	value.includes(separator) ? `${key}${identitySeparator}${value}` : `${key}${separator}${value}`;

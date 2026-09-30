@@ -35,7 +35,7 @@
 		"antislop/no-unknown-type-aliases": "error",
 		"antislop/no-widen-then-assert": "error",
 		"antislop/no-chained-type-assertions": "error",
-		"antislop/no-broad-object-parameters": "off",
+		"antislop/no-broad-object-parameters": "error",
 		"antislop/no-conditional-empty-object-spread": "off",
 		"antislop/no-known-value-widening": "off",
 		"antislop/no-reflect-apply": "off",

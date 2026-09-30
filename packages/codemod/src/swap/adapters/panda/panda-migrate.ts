@@ -41,7 +41,7 @@ import { discoverPandaMigration, type PandaMigrationFile } from "./migration-dis
 import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { walk, type OxcNode } from "pandwind/tw/literal";
+import { walk } from "pandwind/tw/literal";
 import { NodeKind } from "pandwind/tw/literal";
 import { createPandaProjectFileSystem, type PandaProjectFileSystem } from "./panda-file-system.ts";
 import {
@@ -537,10 +537,9 @@ const scanJsxElements = (
 	matchTag: JsxTagMatcher,
 ): Array<FactoryElement> => {
 	const out: Array<FactoryElement> = [];
-	let program: OxcNode;
+	let program: unknown;
 	try {
-		program = SOURCE_SCANNER_SERVICE.parse({ file: "panda-factory.tsx", source })
-			.program as OxcNode;
+		program = SOURCE_SCANNER_SERVICE.parse({ file: "panda-factory.tsx", source }).program;
 	} catch {
 		return out;
 	}

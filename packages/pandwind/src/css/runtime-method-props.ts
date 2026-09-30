@@ -24,15 +24,11 @@ interface PropsReturn {
 	[key: string]: unknown;
 }
 
-const isVarsOutput = (value: object): value is VarsOutput => {
-	const candidate = value as { class?: unknown; style?: unknown };
-	return (
-		Object.hasOwn(value, "class") &&
-		typeof candidate.class === "string" &&
-		Object.hasOwn(value, "style") &&
-		typeof candidate.style === "object" &&
-		candidate.style !== null
-	);
+const isVarsOutput = (value: PropsInput): value is VarsOutput => {
+	if (typeof value !== "object" || value === null) return false;
+	const classValue: unknown = Object.getOwnPropertyDescriptor(value, "class")?.value;
+	const styleValue: unknown = Object.getOwnPropertyDescriptor(value, "style")?.value;
+	return typeof classValue === "string" && typeof styleValue === "object" && styleValue !== null;
 };
 
 const mergeFlatCssStyles = (styles: Array<CssStyle>): CssStyle | undefined => {

@@ -237,7 +237,9 @@ describe("condition-bound tokens compile through real Tailwind", () => {
 		if (hoverMedia === undefined) throw new Error("hover media query was not emitted");
 
 		const selectors: string[] = [];
-		hoverMedia.walkRules((rule) => selectors.push(rule.selector));
+		hoverMedia.walkRules((rule) => {
+			selectors.push(rule.selector);
+		});
 		expect(selectors).toContain(":root:hover");
 		const decls = declsInRule(root, ":root:hover", "--color-cta");
 		expect(decls["--color-cta"]).toBe("#6b46c1");

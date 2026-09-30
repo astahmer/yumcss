@@ -306,7 +306,7 @@ const TokenDocumentEnvelopeSchema = z.strictObject({
 	resolver: JsonValueSchema.optional(),
 });
 
-const own = (value: object, key: string): boolean => Object.hasOwn(value, key);
+const own = (value: Record<string, unknown>, key: string): boolean => Object.hasOwn(value, key);
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 const jsonRecord = (value: unknown): value is Record<string, TokenJsonValue> =>

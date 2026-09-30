@@ -5,7 +5,7 @@ import {
 	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
 } from "../src/swap/index.ts";
-import { pandwindMigrateVite as createVitePlugin } from "../src/swap/unplugin.ts";
+import { createVirtualMigrationPlugin as createVitePlugin } from "../src/swap/virtual-migration-core.ts";
 
 const pandwindMigrateVite = (
 	options: Parameters<typeof createVitePlugin>[0],
@@ -310,7 +310,7 @@ export function App() {
 		const source = 'import { css } from "@emotion/css";\nconst card = css({ color: "red" });\n';
 		await plugin.transform(source, "/old-project/src/Card.tsx");
 
-		plugin.configResolved?.({ root: "/new-project" });
+		plugin.vite.configResolved({ root: "/new-project" });
 		expect(plugin.resolveId("./styles/migration-theme.ts", "/new-project/src/Card.tsx")).toBeNull();
 	});
 
