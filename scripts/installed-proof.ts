@@ -245,7 +245,10 @@ export async function browserProof(options: {
 						),
 					);
 				}
-				if (state === "hover") await page.hover("[data-proof]");
+				if (state === "hover") {
+					await page.hover("[data-proof]");
+					await page.waitForTimeout(200);
+				}
 				computed[label][state] = await page.$eval(
 					"[data-proof]",
 					(element, properties) => {

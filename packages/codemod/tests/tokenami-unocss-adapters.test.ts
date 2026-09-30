@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+	AdapterCapabilityTag,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
@@ -18,6 +19,32 @@ import {
 } from "../src/swap/adapters/unocss.adapter.ts";
 
 describe("Tokenami and UnoCSS semantic adapters", () => {
+	const tokenamiTargetRegistry = (tokenamiConfig: Readonly<Record<string, unknown>>) => {
+		const adapter = createTokenamiAdapter({
+			moduleLoader: {
+				async importPackage<T>(packageName: string) {
+					return packageName === "@tokenami/css"
+						? ({
+								createConfig: (config: Readonly<Record<string, unknown>>) => ({
+									...tokenamiConfig,
+									...config,
+								}),
+							} as T)
+						: undefined;
+				},
+				async importFile<T>() {
+					return { default: tokenamiConfig } as T;
+				},
+			},
+		});
+		const builtin = createBuiltinCodemodCatalog();
+		const registry = createStyleAdapterRegistry(
+			builtin.adapters.filter((candidate) => candidate.id !== CodemodAdapterId.Tokenami),
+		);
+		registry.register(adapter);
+		return registry;
+	};
+
 	test("normalizes Tokenami encoded properties and conditions", () => {
 		const adapter = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Tokenami)!;
 		const source =
@@ -104,14 +131,14 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			{
 				kind: "media",
 				name: "parent-hover",
-				value: "@media (hover: hover) and (pointer: fine)",
-				raw: "parent-hover",
+				value: "(hover: hover) and (pointer: fine)",
+				raw: "@media (hover: hover) and (pointer: fine)",
 			},
 			{
 				kind: "selector",
 				name: "parent-hover",
 				value: ".parent:hover > &",
-				raw: "parent-hover",
+				raw: ".parent:hover > &",
 			},
 		]);
 		expect(
@@ -120,8 +147,8 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			{
 				kind: "container",
 				name: "md",
-				value: "@container (min-width: 400px)",
-				raw: "md",
+				value: "(min-width: 400px)",
+				raw: "@container (min-width: 400px)",
 			},
 		]);
 		expect(
@@ -168,13 +195,13 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			      {
 			        "kind": "media",
 			        "name": "parent-hover",
-			        "raw": "parent-hover",
-			        "value": "@media (hover: hover) and (pointer: fine)",
+			        "raw": "@media (hover: hover) and (pointer: fine)",
+			        "value": "(hover: hover) and (pointer: fine)",
 			      },
 			      {
 			        "kind": "selector",
 			        "name": "parent-hover",
-			        "raw": "parent-hover",
+			        "raw": ".parent:hover > &",
 			        "value": ".parent:hover > &",
 			      },
 			    ],
@@ -189,8 +216,8 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			      {
 			        "kind": "container",
 			        "name": "md",
-			        "raw": "md",
-			        "value": "@container (min-width: 400px)",
+			        "raw": "@container (min-width: 400px)",
+			        "value": "(min-width: 400px)",
 			      },
 			    ],
 			    "property": "padding",
@@ -609,6 +636,238 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		`);
 	});
 
+	test("maps a configured parent selector to its Tokenami alias", async () => {
+		const source =
+			'import { css } from "@emotion/css"; const card = css({ ".parent:hover > &": { color: "blue" } }); export const App = () => <div className={card} />;';
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Emotion,
+			to: CodemodAdapterId.Tokenami,
+			file: "src/App.tsx",
+			root: "/project",
+			readFile: (file) =>
+				file.endsWith("/.tokenami/tokenami.config.ts") ? "export default {}" : undefined,
+			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
+			adapterRegistry: tokenamiTargetRegistry({
+				properties: { color: ["color"] },
+				selectors: { "parent-hover": ".parent:hover > &" },
+				theme: {},
+			}),
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"--parent-hover_color": "blue"');
+		expect(result.code).toContain("<div style={card} />");
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css } from "@tokenami/css";
+			 const card = css({ "--parent-hover_color": "blue" }); export const App = () => <div style={card} />;"
+		`);
+	});
+
+	test("maps a configured responsive selector sequence to one Tokenami alias", async () => {
+		const source =
+			'import { css } from "@emotion/css"; const card = css({ "@media (hover: hover) and (pointer: fine)": { "&:hover": { color: "blue" } } }); export const App = () => <div className={card} />;';
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Emotion,
+			to: CodemodAdapterId.Tokenami,
+			file: "src/App.tsx",
+			root: "/project",
+			readFile: (file) =>
+				file.endsWith("/.tokenami/tokenami.config.ts") ? "export default {}" : undefined,
+			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
+			adapterRegistry: tokenamiTargetRegistry({
+				properties: { color: ["color"] },
+				selectors: {
+					hover: ["@media (hover: hover) and (pointer: fine)", "&:hover"],
+				},
+				theme: {},
+			}),
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"--hover_color": "blue"');
+		expect(result.code).toContain("<div style={card} />");
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css } from "@tokenami/css";
+			 const card = css({ "--hover_color": "blue" }); export const App = () => <div style={card} />;"
+		`);
+	});
+
+	test("lowers a used static Tokenami compose helper to a Pandwind class", async () => {
+		const tokenami = createTokenamiAdapter({
+			moduleLoader: {
+				async importPackage(packageName) {
+					return packageName === "@tokenami/css"
+						? ({ createConfig: (value: unknown) => value } as never)
+						: undefined;
+				},
+				async importFile(path) {
+					return path.endsWith("tokenami.config.ts")
+						? ({
+								default: {
+									properties: { color: ["color"] },
+									selectors: {
+										hover: ["@media (hover: hover) and (pointer: fine)", "&:not(:disabled):hover"],
+									},
+									theme: {},
+								},
+							} as never)
+						: undefined;
+				},
+			},
+		});
+		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const source = `import { css } from "@tokenami/css";
+const button = css.compose({ "--color": "red", "--hover_color": "blue" });
+export const App = () => {
+	const [className, style] = button();
+	return <button data-proof type="button" className={className()} style={style()} />;
+};`;
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Tokenami,
+			to: CodemodAdapterId.Pandwind,
+			file: "src/App.tsx",
+			root: "/project",
+			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
+			adapterRegistry: createStyleAdapterRegistry([tokenami, pandwind]),
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('css.class({ color: "red",');
+		expect(result.code).toContain('"@media (hover: hover) and (pointer: fine)"');
+		expect(result.code).toContain('"&:not(:disabled):hover"');
+		expect(result.code).toContain("className={className()}");
+		expect(result.code).toContain("style={style()}");
+		expect(result.code).not.toContain("@tokenami/css");
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createCx } from "pandwind/cx";
+			const pandwindCx = createCx();
+			const css = createUnsafeCss();
+			const button = () => { const className = css.class({ color: "red", "@media (hover: hover) and (pointer: fine)": { "&:not(:disabled):hover": { color: "blue" } } }); return [(value?: string) => pandwindCx(className, value), (style?: Record<string, unknown>) => style ?? {}] as const; };
+			export const App = () => {
+				const [className, style] = button();
+				return <button data-proof type="button" className={className()} style={style()} />;
+			};"
+		`);
+	});
+
+	test("preserves mode-dependent Tokenami tokens as target residuals", async () => {
+		const tokenami = createTokenamiAdapter({
+			moduleLoader: {
+				async importPackage(packageName) {
+					return packageName === "@tokenami/css"
+						? ({ createConfig: (value: unknown) => value } as never)
+						: undefined;
+				},
+				async importFile(path) {
+					return path.endsWith("tokenami.config.ts")
+						? ({
+								default: {
+									properties: { color: ["color"] },
+									theme: {
+										modes: {
+											root: { color: { gray5: "#e0e0e0" } },
+											dark: { color: { gray5: "#222222" } },
+										},
+									},
+								},
+							} as never)
+						: undefined;
+				},
+			},
+		});
+		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const source =
+			'import { css } from "@tokenami/css";\nexport const card = css({ "--color": "var(--color_gray5)" });';
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Tokenami,
+			to: CodemodAdapterId.Pandwind,
+			file: "src/card.ts",
+			root: "/project",
+			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
+			adapterRegistry: createStyleAdapterRegistry([tokenami, pandwind]),
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: AdapterCapabilityTag.TokenValues,
+					text: "var(--color_gray5)",
+				}),
+			]),
+		);
+		expect(result.code).toContain("var(--color_gray5)");
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css } from "@tokenami/css";
+			// pandwind:migrate-skip (route: tokenami -> pandwind | lowering-residual: emission-empty, token-values | available: static, named-map, residual)
+			export const card = css({ "--color": "var(--color_gray5)" });"
+		`);
+	});
+
+	test("preserves Tokenami compose variants for Pandwind", async () => {
+		const tokenami = createTokenamiAdapter({
+			moduleLoader: {
+				async importPackage(packageName) {
+					return packageName === "@tokenami/css"
+						? ({ createConfig: (value: unknown) => value } as never)
+						: undefined;
+				},
+				async importFile(path) {
+					return path.endsWith("tokenami.config.ts")
+						? ({ default: { properties: { color: ["color"] }, theme: {} } } as never)
+						: undefined;
+				},
+			},
+		});
+		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const source = `import { css } from "@tokenami/css";
+const button = css.compose({ "--color": "red", variants: { size: { small: { "--color": "blue" } } } });
+export const App = () => {
+	const [className, style] = button({ size: "small" });
+	return <button data-proof className={className()} style={style()} />;
+};`;
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Tokenami,
+			to: CodemodAdapterId.Pandwind,
+			file: "src/App.tsx",
+			root: "/project",
+			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
+			adapterRegistry: createStyleAdapterRegistry([tokenami, pandwind]),
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain('button({ size: "small" })');
+		expect(result.code).toContain('variants: { size: { small: { "--color": "blue" } } }');
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: "composition", text: "css.compose" }),
+			]),
+		);
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css } from "@tokenami/css";
+			// pandwind:migrate-skip (route: tokenami -> pandwind | parse-residual: composition | available: named-map, residual)
+			const button = css.compose({ "--color": "red", variants: { size: { small: { "--color": "blue" } } } });
+			export const App = () => {
+				const [className, style] = button({ size: "small" });
+				return <button data-proof className={className()} style={style()} />;
+			};"
+		`);
+	});
+
 	test("moves a converted class binding to Tokenami's style-object host", () => {
 		const source =
 			'import { css } from "@emotion/css";\n' +
@@ -914,6 +1173,41 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		});
 		expect(config?.values.officialConfigPackage).toBe("@tokenami/css");
 	});
+	test("uses Tokenami's official JavaScript config priority", async () => {
+		const loadedFiles: string[] = [];
+		const adapter = createTokenamiAdapter({
+			moduleLoader: {
+				async importPackage(packageName) {
+					return packageName === "@tokenami/css"
+						? ({ createConfig: (value: unknown) => value } as never)
+						: undefined;
+				},
+				async importFile(path) {
+					loadedFiles.push(path);
+					return path.endsWith("tokenami.config.js")
+						? ({ default: { responsive: { selected: "@media (min-width: 700px)" } } } as never)
+						: path.endsWith("tokenami.config.ts")
+							? ({ default: { responsive: { selected: "@media (min-width: 900px)" } } } as never)
+							: undefined;
+				},
+			},
+		});
+		const config = await adapter.loadConfigAsync?.({
+			file: "src/App.tsx",
+			source: "",
+			root: "/project",
+			listFiles: () => [
+				"/project/.tokenami/tokenami.config.ts",
+				"/project/.tokenami/tokenami.config.js",
+			],
+		});
+
+		expect(loadedFiles[0]).toBe("/project/.tokenami/tokenami.config.js");
+		expect(config?.files).toContain("/project/.tokenami/tokenami.config.js");
+		expect(config?.values.tokenamiConfig).toMatchObject({
+			responsive: { selected: "@media (min-width: 700px)" },
+		});
+	});
 
 	test("rejects malformed Tokenami property metadata as a configuration residual", async () => {
 		const adapter = createTokenamiAdapter({
@@ -1069,6 +1363,49 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 				expect.objectContaining({ kind: "configuration", text: "UnoCSS project configuration" }),
 			]),
 		);
+	});
+	test("preserves source when official Tokenami config loading fails", async () => {
+		const tokenami = createTokenamiAdapter({
+			moduleLoader: {
+				async importPackage(packageName) {
+					return packageName === "@tokenami/css"
+						? ({ createConfig: (value: unknown) => value } as never)
+						: undefined;
+				},
+				async importFile(path) {
+					if (path.endsWith("tokenami.config.ts")) throw new Error("config execution failed");
+					return undefined;
+				},
+			},
+		});
+		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const source =
+			'import { css } from "@tokenami/css"; export const card = css({ "--color": "red" });';
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Tokenami,
+			to: CodemodAdapterId.Pandwind,
+			file: "src/card.ts",
+			root: "/project",
+			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
+			adapterRegistry: createStyleAdapterRegistry([tokenami, pandwind]),
+		});
+
+		expect(result.changed).toBe(true);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain(source);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "configuration",
+					text: "Tokenami project configuration",
+				}),
+			]),
+		);
+		expect(result.code).toMatchInlineSnapshot(`
+			"// pandwind:migrate-skip (configuration-residual: configuration)
+			import { css } from "@tokenami/css"; export const card = css({ "--color": "red" });"
+		`);
 	});
 
 	test("stops a project migration when official config carries a residual", async () => {

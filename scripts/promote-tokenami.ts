@@ -57,11 +57,11 @@ const button = css.compose({
   '--py': 1,
   '--px': 3,
   '--border-radius': 'var(--radii_full)',
-  '--background-color': 'var(--color_gray5)',
-  '--color': 'var(--color_gray12)',
+	'--background-color': 'var(--color_white)',
+	'--color': 'var(--color_black)',
   '--transition': 'var(--morph_colors)',
-  '--hover_background-color': 'var(--color_gray6)',
-  '--hover_color': 'var(--color_gray12)',
+	'--hover_background-color': 'var(--color_black)',
+	'--hover_color': 'var(--color_white)',
   '--font': 'var(--text_sm)',
 });
 

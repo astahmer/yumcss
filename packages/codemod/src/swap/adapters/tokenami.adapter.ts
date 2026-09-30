@@ -39,6 +39,8 @@ import { joinDocumentPath } from "../../path-utils.ts";
 import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { componentAttrsValueExpression } from "../host-component-rewriter.ts";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { NodeKind, walkWithParent, type OxcNode } from "pandwind/tw/literal";
 import { z } from "zod";
 
 function camelCase(property: string): string {
@@ -47,12 +49,12 @@ function camelCase(property: string): string {
 
 function tokenamiConfig(context: AdapterConfigContext): AdapterProjectConfig {
 	const candidates = [
-		".tokenami/tokenami.config.ts",
 		".tokenami/tokenami.config.js",
+		".tokenami/tokenami.config.ts",
 		".tokenami/tokenami.config.cjs",
 		".tokenami/tokenami.config.mjs",
-		"tokenami.config.ts",
 		"tokenami.config.js",
+		"tokenami.config.ts",
 		"tokenami.config.cjs",
 		"tokenami.config.mjs",
 	];
@@ -134,6 +136,31 @@ function tokenamiTokenCatalog(config: TokenamiConfigShape): AdapterProjectConfig
 	return TokenCatalog.fromNested(groups)?.contract;
 }
 
+function tokenamiModeToken(
+	config: TokenamiConfigShape,
+	group: string,
+	reference: string,
+): { readonly ref: string; readonly resolved?: string } | undefined {
+	const modes = recordValue(recordValue(config.theme)?.modes);
+	if (modes === undefined) return undefined;
+	const matches = Object.values(modes).flatMap((mode) => {
+		const catalog = TokenCatalog.fromNested(recordValue(mode));
+		const match = catalog?.findByReference([group], reference);
+		return match === undefined ? [] : [match];
+	});
+	const first = matches[0];
+	if (first === undefined) return undefined;
+	const resolvedValues = new Set(matches.map((match) => match.resolved));
+	const resolved =
+		matches.length === Object.keys(modes).length && resolvedValues.size === 1
+			? first.resolved
+			: undefined;
+	return {
+		ref: first.ref,
+		...(resolved === undefined ? {} : { resolved }),
+	};
+}
+
 function tokenamiPropertyName(property: string): string {
 	return property.startsWith("--")
 		? property.slice(2)
@@ -203,91 +230,105 @@ async function officialTokenamiConfig(
 			),
 		),
 	];
-	const packageModule = await loader.importPackage<
-		Record<string, unknown> & {
-			createConfig?: (config: TokenamiConfigShape) => unknown;
+	try {
+		const packageModule = await loader.importPackage<
+			Record<string, unknown> & {
+				createConfig?: (config: TokenamiConfigShape) => unknown;
+			}
+		>("@tokenami/css", context.root);
+		if (packageModule === undefined)
+			return configFiles.length > 0
+				? AdapterEvidence.configurationFailure(
+						fallback,
+						"Tokenami project configuration",
+						"the official @tokenami/css config utility is unavailable for a discovered config",
+					)
+				: fallback;
+		const discovered = context
+			.listFiles?.(context.root)
+			.filter((candidate) =>
+				/(?:^|[\\/])(?:\.tokenami[\\/])?tokenami\.config\.(?:ts|js|cjs|mjs)$/u.test(candidate),
+			);
+		const candidates = [
+			".tokenami/tokenami.config.js",
+			".tokenami/tokenami.config.ts",
+			".tokenami/tokenami.config.cjs",
+			".tokenami/tokenami.config.mjs",
+			"tokenami.config.js",
+			"tokenami.config.ts",
+			"tokenami.config.cjs",
+			"tokenami.config.mjs",
+			...(discovered ?? []),
+		];
+		for (const candidate of new Set(candidates)) {
+			const path = candidate.startsWith(context.root)
+				? candidate
+				: joinDocumentPath(context.root, candidate);
+			// Preserve candidate priority: the first project config wins.
+			const module = await loader.importFile<Record<string, unknown>>(path);
+			if (module === undefined) continue;
+			const rawValues = [module.default, ...Object.values(module)]
+				.map(configModuleValue)
+				.find((value): value is TokenamiConfigShape => value !== undefined);
+			if (rawValues === undefined) continue;
+			const values = packageModule.createConfig?.(rawValues) ?? rawValues;
+			const normalized = configModuleValue(values) ?? rawValues;
+			return {
+				...fallback,
+				files: [...new Set([...fallback.files, path])],
+				tokenCatalog: tokenamiTokenCatalog(normalized),
+				values: {
+					...fallback.values,
+					tokenamiConfig: normalized,
+					officialConfigPackage: "@tokenami/css",
+				},
+			};
 		}
-	>("@tokenami/css", context.root);
-	if (packageModule === undefined)
+		if (configFiles.length > 0) {
+			return {
+				...fallback,
+				residuals: [
+					{
+						kind: StyleProgramResidualKindTag.Configuration,
+						text: "Tokenami project configuration",
+						hint: "Tokenami configuration was not found or could not be loaded",
+					},
+				],
+			};
+		}
+		const defaults = configModuleValue(packageModule.createConfig?.({}));
+		if (defaults !== undefined)
+			return {
+				...fallback,
+				tokenCatalog: tokenamiTokenCatalog(defaults),
+				values: {
+					...fallback.values,
+					tokenamiConfig: defaults,
+					officialConfigPackage: "@tokenami/css",
+				},
+			};
+		return fallback;
+	} catch {
 		return configFiles.length > 0
 			? AdapterEvidence.configurationFailure(
 					fallback,
 					"Tokenami project configuration",
-					"the official @tokenami/css config utility is unavailable for a discovered config",
+					"official Tokenami configuration loading failed; source semantics were preserved",
 				)
 			: fallback;
-	const discovered = context
-		.listFiles?.(context.root)
-		.filter((candidate) =>
-			/(?:^|[\\/])(?:\.tokenami[\\/])?tokenami\.config\.(?:ts|js|cjs|mjs)$/u.test(candidate),
-		);
-	const candidates = [
-		".tokenami/tokenami.config.ts",
-		".tokenami/tokenami.config.js",
-		".tokenami/tokenami.config.cjs",
-		"tokenami.config.ts",
-		"tokenami.config.js",
-		"tokenami.config.cjs",
-		"tokenami.config.mjs",
-		...(discovered ?? []),
-	];
-	for (const candidate of new Set(candidates)) {
-		const path = candidate.startsWith(context.root)
-			? candidate
-			: joinDocumentPath(context.root, candidate);
-		// Preserve candidate priority: the first project config wins.
-		const module = await loader.importFile<Record<string, unknown>>(path);
-		if (module === undefined) continue;
-		const rawValues = [module.default, ...Object.values(module)]
-			.map(configModuleValue)
-			.find((value): value is TokenamiConfigShape => value !== undefined);
-		if (rawValues === undefined) continue;
-		const values = packageModule.createConfig?.(rawValues) ?? rawValues;
-		const normalized = configModuleValue(values) ?? rawValues;
-		return {
-			...fallback,
-			files: [...new Set([...fallback.files, path])],
-			tokenCatalog: tokenamiTokenCatalog(normalized),
-			values: {
-				...fallback.values,
-				tokenamiConfig: normalized,
-				officialConfigPackage: "@tokenami/css",
-			},
-		};
 	}
-	if (configFiles.length > 0) {
-		return {
-			...fallback,
-			residuals: [
-				{
-					kind: StyleProgramResidualKindTag.Configuration,
-					text: "Tokenami project configuration",
-					hint: "Tokenami configuration was not found or could not be loaded",
-				},
-			],
-		};
-	}
-	const defaults = configModuleValue(packageModule.createConfig?.({}));
-	if (defaults !== undefined)
-		return {
-			...fallback,
-			tokenCatalog: tokenamiTokenCatalog(defaults),
-			values: {
-				...fallback.values,
-				tokenamiConfig: defaults,
-				officialConfigPackage: "@tokenami/css",
-			},
-		};
-	return fallback;
 }
 
 function conditionValue(name: string, value: string, raw: string): StyleCondition {
-	if (/^@media(?:\s|$)/u.test(value))
-		return { kind: SemanticConditionKindTag.Media, name, value, raw };
-	if (/^@container(?:\s|$)/u.test(value))
-		return { kind: SemanticConditionKindTag.Container, name, value, raw };
-	if (/^@supports(?:\s|$)/u.test(value))
-		return { kind: SemanticConditionKindTag.Supports, name, value, raw };
+	const media = /^@media(?:\s+([\s\S]*))?$/u.exec(value);
+	if (media !== null)
+		return { kind: SemanticConditionKindTag.Media, name, value: media[1] ?? "", raw };
+	const container = /^@container(?:\s+([\s\S]*))?$/u.exec(value);
+	if (container !== null)
+		return { kind: SemanticConditionKindTag.Container, name, value: container[1] ?? "", raw };
+	const supports = /^@supports(?:\s+([\s\S]*))?$/u.exec(value);
+	if (supports !== null)
+		return { kind: SemanticConditionKindTag.Supports, name, value: supports[1] ?? "", raw };
 	const pseudo = /^&(?::|::)([A-Za-z-]+)$/u.exec(value)?.[1];
 	if (pseudo !== undefined)
 		return { kind: SemanticConditionKindTag.Pseudo, name: pseudo, value, raw };
@@ -305,10 +346,10 @@ function condition(
 	const selector = config?.selectors?.[prefix];
 	if (responsive !== undefined && selector !== undefined)
 		return [{ kind: SemanticConditionKindTag.Named, name: prefix, raw: prefix }];
-	if (responsive !== undefined) return [conditionValue(prefix, responsive, prefix)];
+	if (responsive !== undefined) return [conditionValue(prefix, responsive, responsive)];
 	if (selector !== undefined) {
 		const values = typeof selector === "string" ? [selector] : selector;
-		return values.map((value) => conditionValue(prefix, value, prefix));
+		return values.map((value) => conditionValue(prefix, value, value));
 	}
 	if (
 		/^(?:hover|active|focus|focus-visible|focus-within|disabled|checked|before|after)$/u.test(
@@ -467,6 +508,17 @@ function normalizeTokenamiComposeProgram(
 	context: AdapterParseContext,
 ): StyleProgram {
 	const normalized = normalizeProgram(program, context);
+	const residualsWithoutComposeApi = normalized.residuals.filter(
+		(residual) =>
+			residual.kind !== StyleProgramResidualKindTag.Composition || residual.text !== "css.compose",
+	);
+	if (
+		context.targetId === CodemodAdapterId.Pandwind &&
+		tokenamiStaticComposeProgram({ ...normalized, residuals: residualsWithoutComposeApi }) &&
+		tokenamiStaticComposeCallsite(context.source, context.file, normalized.source?.start) !==
+			undefined
+	)
+		return { ...normalized, residuals: residualsWithoutComposeApi };
 	if (
 		normalized.residuals.some(
 			(residual) => residual.kind === StyleProgramResidualKindTag.Composition,
@@ -485,6 +537,165 @@ function normalizeTokenamiComposeProgram(
 		],
 	};
 }
+
+interface TokenamiStaticComposeCallsite {
+	readonly binding: string;
+}
+
+const tokenamiEscapeRegExp = (value: string): string =>
+	value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+
+interface TokenamiIdentifierNode extends OxcNode {
+	readonly name?: string;
+}
+
+interface TokenamiMemberNode extends OxcNode {
+	readonly property?: OxcNode | null;
+	readonly computed?: boolean;
+}
+
+interface TokenamiPropertyNode extends OxcNode {
+	readonly key?: OxcNode | null;
+	readonly computed?: boolean;
+	readonly shorthand?: boolean;
+}
+
+const tokenamiIdentifierCount = (source: string, file: string, name: string): number => {
+	try {
+		const parsed = SOURCE_SCANNER_SERVICE.parse({
+			file,
+			source,
+			language: SOURCE_SCANNER_SERVICE.languageForFile(file),
+		});
+		if (parsed.errors.length > 0) return Number.MAX_SAFE_INTEGER;
+		let count = 0;
+		walkWithParent(parsed.program, (node, parent) => {
+			if (node.type !== NodeKind.Identifier || (node as TokenamiIdentifierNode).name !== name)
+				return;
+			if (parent?.type === NodeKind.MemberExpression) {
+				const member = parent as TokenamiMemberNode;
+				if (member.property === node && member.computed !== true) return;
+			}
+			if (parent?.type === NodeKind.Property) {
+				const property = parent as TokenamiPropertyNode;
+				if (property.key === node && property.computed !== true && property.shorthand !== true)
+					return;
+			}
+			count++;
+		});
+		return count;
+	} catch {
+		return Number.MAX_SAFE_INTEGER;
+	}
+};
+
+const tokenamiStaticComposeCallsite = (
+	source: string,
+	file: string,
+	start: number | undefined,
+): TokenamiStaticComposeCallsite | undefined => {
+	if (start === undefined) return undefined;
+	const prefix = source.slice(Math.max(0, start - 160), start);
+	const binding = /\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*$/u.exec(prefix)?.[1];
+	if (binding === undefined) return undefined;
+	const escapedBinding = tokenamiEscapeRegExp(binding);
+	const composeDeclaration = new RegExp(
+		`\\bconst\\s+${escapedBinding}\\s*=\\s*css\\.compose\\s*\\(\\s*\\{`,
+		"gu",
+	);
+	const composeDeclarationMatches = [...source.matchAll(composeDeclaration)];
+	if (composeDeclarationMatches.length !== 1) {
+		return undefined;
+	}
+	const composeCall = new RegExp(`\\b${escapedBinding}\\s*\\(\\s*\\)`, "gu");
+	const composeCalls = [...source.matchAll(composeCall)];
+	const bindingReferences = tokenamiIdentifierCount(source, file, binding);
+	if (composeCalls.length !== 1 || bindingReferences !== 2) {
+		return undefined;
+	}
+	const destructure = new RegExp(
+		`\\bconst\\s*\\[\\s*([A-Za-z_$][\\w$]*)\\s*,\\s*([A-Za-z_$][\\w$]*)\\s*\\]\\s*=\\s*${escapedBinding}\\s*\\(\\s*\\)\\s*;`,
+		"gu",
+	);
+	const destructures = [...source.matchAll(destructure)];
+	const classBinding = destructures[0]?.[1];
+	const styleBinding = destructures[0]?.[2];
+	if (destructures.length !== 1 || classBinding === undefined || styleBinding === undefined)
+		return undefined;
+	if (classBinding === styleBinding) return undefined;
+	const escapedClassBinding = tokenamiEscapeRegExp(classBinding);
+	const escapedStyleBinding = tokenamiEscapeRegExp(styleBinding);
+	const invocation = "\\(\\s*(?:[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)?\\s*\\)";
+	const classCall = new RegExp(`\\b${escapedClassBinding}\\s*${invocation}`, "gu");
+	const classCalls = [...source.matchAll(classCall)];
+	const classAttribute = new RegExp(
+		`(?:^|\\s)className\\s*=\\s*\\{\\s*${escapedClassBinding}\\s*${invocation}\\s*\\}`,
+		"gu",
+	);
+	const classAttributes = [...source.matchAll(classAttribute)];
+	const allClassCalls = new RegExp(`\\b${escapedClassBinding}\\s*\\(`, "gu");
+	const styleCall = new RegExp(`\\b${escapedStyleBinding}\\s*${invocation}`, "gu");
+	const styleCalls = [...source.matchAll(styleCall)];
+	const styleAttribute = new RegExp(
+		`(?:^|\\s)style\\s*=\\s*\\{\\s*${escapedStyleBinding}\\s*${invocation}\\s*\\}`,
+		"gu",
+	);
+	const styleAttributes = [...source.matchAll(styleAttribute)];
+	const allStyleCalls = new RegExp(`\\b${escapedStyleBinding}\\s*\\(`, "gu");
+	if (
+		classCalls.length === 0 ||
+		classCalls.length !== classAttributes.length ||
+		classCalls.length !== [...source.matchAll(allClassCalls)].length ||
+		styleCalls.length !== styleAttributes.length ||
+		styleCalls.length !== [...source.matchAll(allStyleCalls)].length
+	) {
+		return undefined;
+	}
+	return {
+		binding,
+	};
+};
+
+const tokenamiStaticComposeProgram = (program: StyleProgram): boolean => {
+	if (
+		program.residuals.length > 0 ||
+		(program.compositions?.length ?? 0) > 0 ||
+		(program.themes?.length ?? 0) > 0 ||
+		(program.plugins?.length ?? 0) > 0 ||
+		program.runtime !== undefined
+	)
+		return false;
+	const declarations: StyleDeclaration[] = [];
+	const conditionIsStatic = (condition: StyleCondition): boolean =>
+		(condition.kind === SemanticConditionKindTag.Media ||
+			condition.kind === SemanticConditionKindTag.Container ||
+			condition.kind === SemanticConditionKindTag.Pseudo ||
+			condition.kind === SemanticConditionKindTag.Selector) &&
+		(condition.operator === undefined || condition.operator === StyleConditionOperatorTag.And) &&
+		!condition.name.includes("${") &&
+		condition.value?.includes("${") !== true;
+	const visit = (rule: StyleProgram["rules"][number]): boolean => {
+		if (
+			rule.kind !== StyleRuleKindTag.Style ||
+			rule.name !== undefined ||
+			(rule.selector?.includes("${") ?? false) ||
+			!rule.conditions.every(conditionIsStatic)
+		)
+			return false;
+		declarations.push(...rule.declarations);
+		return rule.children.every(visit);
+	};
+	if (!program.rules.every(visit)) return false;
+	if (program.rules.length === 0) declarations.push(...program.declarations);
+	return (
+		declarations.length > 0 &&
+		declarations.every(
+			(declaration) =>
+				declaration.conditions.every(conditionIsStatic) &&
+				declaration.value.kind !== StyleValueKindTag.Dynamic,
+		)
+	);
+};
 
 const sourceOptions: AdapterSourceObjectOptions = {
 	variantContainerKeys: ["variants"],
@@ -508,13 +719,21 @@ function tokenamiSourceValue(
 	if (!tokenamiSourceTokenGroups(decoded.properties, config).includes(group)) return value;
 	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 	const match = catalog?.findByReference([group], reference);
-	return match === undefined
+	if (match !== undefined)
+		return {
+			kind: StyleValueKindTag.Token,
+			ref: match.ref,
+			authored: value.value,
+			resolved: match.resolved,
+		};
+	const modeToken = config === undefined ? undefined : tokenamiModeToken(config, group, reference);
+	return modeToken === undefined
 		? value
 		: {
 				kind: StyleValueKindTag.Token,
-				ref: match.ref,
+				ref: modeToken.ref,
 				authored: value.value,
-				resolved: match.resolved,
+				...(modeToken.resolved === undefined ? {} : { resolved: modeToken.resolved }),
 			};
 }
 
@@ -566,12 +785,12 @@ function tokenamiSelectorPrefix(
 	selector: string,
 	config: TokenamiConfigShape | undefined,
 ): string | undefined {
-	if (!selector.startsWith("&") || selector.includes("_") || selector.includes(","))
-		return undefined;
 	const configured = Object.entries(config?.selectors ?? {}).find(([, value]) =>
 		typeof value === "string" ? value === selector : value.length === 1 && value[0] === selector,
 	)?.[0];
 	if (configured !== undefined && !configured.includes("_")) return configured;
+	if (!selector.startsWith("&") || selector.includes("_") || selector.includes(","))
+		return undefined;
 	const defaults: Readonly<Record<string, string>> = {
 		"&:hover": "hover",
 		"&:active": "active",
@@ -587,6 +806,62 @@ function tokenamiSelectorPrefix(
 	if (defaultName !== undefined && config?.selectors?.[defaultName] === undefined)
 		return defaultName;
 	return "{" + selector.replace(/\s+/gu, "_") + "}";
+}
+
+function tokenamiConditionText(condition: StyleCondition): string {
+	const value = condition.value ?? condition.name;
+	if (condition.kind === SemanticConditionKindTag.Media)
+		return "@media " + tokenamiResponsiveQuery(value);
+	if (condition.kind === SemanticConditionKindTag.Container)
+		return "@container " + tokenamiResponsiveQuery(value);
+	if (condition.kind === SemanticConditionKindTag.Supports)
+		return "@supports " + value.replace(/^@supports\s+/u, "").trim();
+	if (condition.value !== undefined) return condition.value.trim();
+	if (condition.kind === SemanticConditionKindTag.Pseudo)
+		return `&${condition.name === "before" || condition.name === "after" ? "::" : ":"}${condition.name.replace(/^:+/u, "")}`;
+	return condition.name.trim();
+}
+
+function tokenamiConditionPrefixes(
+	conditions: readonly StyleCondition[],
+	config: TokenamiConfigShape | undefined,
+): readonly string[] | undefined {
+	const selectors = Object.entries(config?.selectors ?? {}).filter(([name]) => !name.includes("_"));
+	const prefixes: string[] = [];
+	for (let index = 0; index < conditions.length;) {
+		const matches = selectors.flatMap(([name, configured]) => {
+			const sequence = typeof configured === "string" ? [configured] : configured;
+			if (
+				sequence.length === 0 ||
+				sequence.some((_value, offset) => {
+					const current = conditions[index + offset];
+					return (
+						current === undefined ||
+						(current.operator !== undefined &&
+							current.operator !== StyleConditionOperatorTag.And) ||
+						tokenamiConditionText(current) !== sequence[offset]
+					);
+				})
+			)
+				return [];
+			return [{ name, length: sequence.length }];
+		});
+		const longest = Math.max(0, ...matches.map((match) => match.length));
+		if (longest > 0) {
+			const best = matches.filter((match) => match.length === longest);
+			if (best.length !== 1) return undefined;
+			prefixes.push(best[0]!.name);
+			index += longest;
+			continue;
+		}
+		const condition = conditions[index];
+		if (condition === undefined) return undefined;
+		const prefix = tokenamiConditionPrefix(condition, config);
+		if (prefix === undefined) return undefined;
+		prefixes.push(prefix);
+		index += 1;
+	}
+	return prefixes;
 }
 
 function tokenamiTargetProgram(
@@ -611,19 +886,14 @@ function tokenamiTargetProgram(
 			return;
 		}
 		const conditions = [...inherited, ...rule.conditions];
-		if (rule.selector !== undefined) {
-			const selector = tokenamiSelectorPrefix(rule.selector, config);
-			if (selector === undefined) {
-				residual(rule.selector, "Tokenami arbitrary selectors must target the current element");
-				return;
-			}
+		if (rule.selector !== undefined)
 			conditions.push({ kind: "selector", name: rule.selector, value: rule.selector });
-		}
 		for (const declaration of rule.declarations) {
-			const prefixes = [...conditions, ...declaration.conditions].map((condition) =>
-				tokenamiConditionPrefix(condition, config),
+			const prefixes = tokenamiConditionPrefixes(
+				[...conditions, ...declaration.conditions],
+				config,
 			);
-			if (prefixes.some((prefix) => prefix === undefined)) {
+			if (prefixes === undefined) {
 				residual(
 					declaration.property,
 					"Tokenami needs a matching responsive alias or a representable current-element selector",
@@ -642,10 +912,8 @@ function tokenamiTargetProgram(
 	for (const rule of program.rules) visit(rule, []);
 	if (program.rules.length === 0)
 		for (const declaration of program.declarations) {
-			const prefixes = declaration.conditions.map((condition) =>
-				tokenamiConditionPrefix(condition, config),
-			);
-			if (prefixes.some((prefix) => prefix === undefined)) {
+			const prefixes = tokenamiConditionPrefixes(declaration.conditions, config);
+			if (prefixes === undefined) {
 				residual(
 					declaration.property,
 					"Tokenami needs a matching responsive alias or a representable current-element selector",
