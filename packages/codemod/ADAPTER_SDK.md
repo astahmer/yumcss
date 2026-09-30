@@ -64,12 +64,8 @@ The package may advertise the same entry points in `package.json`:
 
 The manifest is `pandwind.style-adapter-manifest/1` and records each adapter's
 ID, implementation version, contract version, capabilities, and dependencies.
-It also carries a `pandwind.style-program-core-compatibility/1` requirement,
-for example `{ schema: "pandwind.style-program-core-compatibility/1",
-versionRange: "^1" }`. Hosts can inspect it before loading code and the
-registry verifies the core range and capability declarations again at
-registration time. A plugin built for an incompatible core is rejected before
-its adapter participates in a migration.
+Its `coreVersion` field must exactly match the StyleProgram core version. The
+registry checks that value and the adapter declarations before registration.
 
 Each adapter manifest also includes a versioned official-API evidence profile:
 
@@ -111,7 +107,10 @@ the SDK.
 
 ## Versioning and fixtures
 
-- A schema change creates a new contract version and a migration note.
+- Before release, edit the current `/1` contract in place and update its
+  producers, consumers, fixtures, and documentation together. Do not keep old
+  schema readers or emit a second format.
+- Revisit schema versioning policy before the first production release.
 - Adding an optional capability or adapter is non-breaking.
 - Changing parsing or emission semantics requires a corpus fixture and a
   differential result showing canonical CSS, residuals, browser states, SSR,
@@ -130,10 +129,11 @@ adapters and builders enter through its normalization contract; differential
 proofs record its core version and fingerprint. Portable artifact encoding is
 available to proof/cache tooling, while target emitters remain adapter-owned.
 
-The `/6` program schema represents `!important` as optional declaration
-priority metadata, and the `/3` capability schema adds `important-priority`.
-Target adapters must preserve that priority or report it unsupported. Strict
-validation rejects `/5` portable artifacts; regenerate them from source.
+The `/1` StyleProgram schema carries optional declaration priority metadata,
+and the `/1` capability schema includes `important-priority`. Target adapters
+must preserve that priority or report it unsupported. Portable artifacts with
+any other schema or core version are rejected and must be regenerated from
+source.
 
 When an adapter needs to construct a rich program rather than parse directly
 into low-level object literals, use `StyleProgramBuilder` from the `swap`

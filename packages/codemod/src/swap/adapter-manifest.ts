@@ -4,10 +4,7 @@ import {
 	type AdapterDependencies,
 	type StyleAdapter,
 } from "./adapter-contract.ts";
-import {
-	StyleProgramCompatibility,
-	type StyleProgramCoreRequirement,
-} from "./style-program-core.ts";
+import { STYLE_PROGRAM_CORE_VERSION } from "./style-program-core.ts";
 import type { AdapterOfficialApiManifest } from "./adapter-evidence.ts";
 
 /** Package metadata convention consumed before an adapter is registered. */
@@ -27,7 +24,7 @@ export interface StyleAdapterManifest {
 	readonly schema: typeof ADAPTER_MANIFEST_SCHEMA;
 	readonly packageName: string;
 	readonly packageVersion: string;
-	readonly core: StyleProgramCoreRequirement;
+	readonly coreVersion: string;
 	readonly adapters: readonly StyleAdapterManifestEntry[];
 }
 
@@ -45,7 +42,7 @@ export function createStyleAdapterManifest(
 		schema: ADAPTER_MANIFEST_SCHEMA,
 		packageName,
 		packageVersion,
-		core: StyleProgramCompatibility.current(),
+		coreVersion: STYLE_PROGRAM_CORE_VERSION,
 		adapters: adapters.map((adapter) => ({
 			id: adapter.id,
 			version: adapter.version,
@@ -75,8 +72,8 @@ export function validateStyleAdapterManifest(
 ): void {
 	if (manifest.schema !== ADAPTER_MANIFEST_SCHEMA)
 		throw new Error(`unsupported adapter manifest schema: ${manifest.schema}`);
-	const core = StyleProgramCompatibility.negotiate(manifest.core);
-	if (!core.supported) throw new Error(core.reason ?? "adapter core compatibility check failed");
+	if (manifest.coreVersion !== STYLE_PROGRAM_CORE_VERSION)
+		throw new Error(`unsupported StyleProgram core version: ${manifest.coreVersion}`);
 	if (manifest.adapters.length !== adapters.length)
 		throw new Error(`adapter manifest count does not match package ${manifest.packageName}`);
 	for (const adapter of adapters) {
