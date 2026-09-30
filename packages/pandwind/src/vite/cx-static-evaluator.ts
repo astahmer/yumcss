@@ -64,23 +64,30 @@ type AstExpressionInput = Expression | OxcNode;
 const isTruthy = (value: StaticEval): boolean =>
 	value !== false && value !== null && value !== undefined && value !== "";
 
+const isTraversalRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isOxcNode = (value: unknown): value is OxcNode =>
+	isTraversalRecord(value) && typeof value.type === "string";
+
 const nodes = function* (root: unknown): Generator<OxcNode> {
 	const stack: unknown[] = [root];
 	const seen = new WeakSet<object>();
 	while (stack.length > 0) {
 		const current = stack.pop();
-		if (current === null || typeof current !== "object" || seen.has(current)) continue;
-		seen.add(current);
 		if (Array.isArray(current)) {
+			if (seen.has(current)) continue;
+			seen.add(current);
 			for (let index = current.length - 1; index >= 0; index -= 1) stack.push(current[index]);
 			continue;
 		}
-		const node = current as OxcNode;
-		if (typeof node.type === "string") yield node;
-		const keys = Object.keys(node);
+		if (!isTraversalRecord(current) || seen.has(current)) continue;
+		seen.add(current);
+		if (isOxcNode(current)) yield current;
+		const keys = Object.keys(current);
 		for (let index = keys.length - 1; index >= 0; index -= 1) {
 			const key = keys[index];
-			if (key !== undefined && key !== "parent" && key !== "type") stack.push(node[key]);
+			if (key !== undefined && key !== "parent" && key !== "type") stack.push(current[key]);
 		}
 	}
 };

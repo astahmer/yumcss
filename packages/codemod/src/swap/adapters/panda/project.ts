@@ -28,6 +28,11 @@ const enum PandaDefinitionKindTag {
 
 const sourceWorkspace = createSourceWorkspace();
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isMappingTarget = (value: unknown): value is string => typeof value === "string";
+
 /* ------------------------------------------------------------------ */
 /* alias resolution                                                    */
 /* ------------------------------------------------------------------ */
@@ -45,7 +50,8 @@ function readJson(path: string): Record<string, unknown> | null {
 	const source = sourceWorkspace.read([path])[0]?.source;
 	if (source === undefined) return null;
 	try {
-		return JSON.parse(source) as Record<string, unknown>;
+		const parsed: unknown = JSON.parse(source);
+		return isRecord(parsed) ? parsed : null;
 	} catch {
 		return null;
 	}
@@ -53,9 +59,9 @@ function readJson(path: string): Record<string, unknown> | null {
 
 /** Resolve a wildcard mapping to its output directory. */
 function mappingTarget(value: unknown): string {
-	if (typeof value === "string") return value;
-	if (value !== null && typeof value === "object") {
-		for (const nested of Object.values(value as Record<string, unknown>)) {
+	if (isMappingTarget(value)) return value;
+	if (isRecord(value)) {
+		for (const nested of Object.values(value)) {
 			const target = mappingTarget(nested);
 			if (target !== "") return target;
 		}

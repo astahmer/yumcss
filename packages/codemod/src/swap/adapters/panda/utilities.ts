@@ -31,16 +31,16 @@ export class PandaUtilityCatalog {
 			// property and describes its authored aliases separately. Project-defined
 			// utilities may expose an explicit `property`; accept both shapes while
 			// keeping the official loader as the source of truth.
-			const property = typeof definition.property === "string" ? definition.property : name;
+			const property = isUtilityProperty(definition.property) ? definition.property : name;
 			names.add(name);
 			names.add(property);
 			const shorthand = definition.shorthand;
-			if (typeof shorthand === "string") {
+			if (isUtilityProperty(shorthand)) {
 				aliases.set(shorthand, property);
 				names.add(shorthand);
 			} else if (Array.isArray(shorthand)) {
 				for (const value of shorthand) {
-					if (typeof value !== "string") continue;
+					if (!isUtilityProperty(value)) continue;
 					aliases.set(value, property);
 					names.add(value);
 				}
@@ -60,3 +60,5 @@ export class PandaUtilityCatalog {
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isUtilityProperty = (value: unknown): value is string => typeof value === "string";

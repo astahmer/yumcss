@@ -8,6 +8,8 @@ export const GENERATED_CSS_TYPES_HEADER =
 const isRecord = (value: unknown): value is RecordValue =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
+const isPaletteTokenValue = (value: unknown): value is string => typeof value === "string";
+
 const asRecord = (value: unknown): RecordValue => (isRecord(value) ? value : {});
 
 const sortedKeys = (value: unknown): string[] => Object.keys(asRecord(value)).toSorted();
@@ -61,7 +63,7 @@ const tokenNames = (tokens: RecordValue, group: string): string[] =>
 	sortedKeys(tokens[group]).flatMap(authoredKey);
 
 const paletteRoles = (source: unknown, prefix = ""): string[] => {
-	if (typeof source === "string")
+	if (isPaletteTokenValue(source))
 		return [prefix === "" ? "colorPalette" : `colorPalette.${prefix}`];
 	if (!isRecord(source)) return [];
 	return Object.entries(source).flatMap(([name, value]) =>
@@ -72,7 +74,7 @@ const paletteRoles = (source: unknown, prefix = ""): string[] => {
 const paletteNames = (preset: CssConfigReturn): string[] => sortedKeys(preset.colorPalettes);
 
 const paletteSourceValues = (tokens: RecordValue, source: unknown): string[] => {
-	if (typeof source !== "string") return paletteRoles(source);
+	if (!isPaletteTokenValue(source)) return paletteRoles(source);
 	if (!source.startsWith("colors.")) return [];
 	const prefix = source.slice("colors.".length);
 	return sortedKeys(tokens.colors).flatMap((tokenName) => {

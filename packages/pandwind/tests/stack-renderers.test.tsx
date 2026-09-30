@@ -37,6 +37,8 @@ const vueSetupContext = (
 	expose: () => undefined,
 });
 
+const isRenderFunction = (value: unknown): value is () => VNode => typeof value === "function";
+
 describe("Stack renderer family", () => {
 	test("React preserves the shared class contract and forwards HTML attributes", () => {
 		const output = renderToStaticMarkup(
@@ -79,7 +81,7 @@ describe("Stack renderer family", () => {
 			stackInput,
 			vueSetupContext({ class: "custom", id: "vue-stack" }, child),
 		);
-		if (typeof render !== "function") throw new Error("Vue Stack setup did not return a render function");
+		if (!isRenderFunction(render)) throw new Error("Vue Stack setup did not return a render function");
 		const rendered = render();
 		if (!isVNode(rendered)) throw new Error("Vue Stack render did not return a VNode");
 
@@ -124,7 +126,7 @@ describe("Stack renderer family", () => {
 			configuredInput,
 			vueSetupContext({ class: "custom", id: "vue-configured" }, configuredChild),
 		);
-		if (typeof vueRender !== "function") {
+		if (!isRenderFunction(vueRender)) {
 			throw new Error("Configured Vue Stack setup did not return a render function");
 		}
 		const rendered = vueRender();

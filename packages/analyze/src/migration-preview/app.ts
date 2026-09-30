@@ -24,10 +24,13 @@ export interface MigrationPreviewAppHandle {
 	dispose(): void;
 }
 
+const isRequestBody = (value: unknown): value is Record<string, unknown> =>
+	value !== null && typeof value === "object" && !Array.isArray(value);
+
 const bodyObject = (value: unknown): Record<string, unknown> => {
-	if (value === null || typeof value !== "object" || Array.isArray(value))
+	if (!isRequestBody(value))
 		throw new Error("Migration Preview request body must be an object");
-	return value as Record<string, unknown>;
+	return value;
 };
 
 const stringField = (body: Record<string, unknown>, name: string): string => {

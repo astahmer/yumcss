@@ -56,8 +56,10 @@ export const isPandaGeneratedSourceModule = (
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
+const isModuleSpecifier = (value: unknown): value is string => typeof value === "string";
+
 const stringValues = (value: unknown): readonly string[] => {
-	if (typeof value === "string") return [value];
+	if (isModuleSpecifier(value)) return [value];
 	if (!Array.isArray(value)) return [];
 	return value.filter((item): item is string => typeof item === "string");
 };
@@ -83,7 +85,7 @@ const modulesFromImportMap = (importMap: unknown): readonly string[] => {
 };
 
 const collectImportTargets = (value: unknown): readonly string[] => {
-	if (typeof value === "string") return [value];
+	if (isModuleSpecifier(value)) return [value];
 	if (Array.isArray(value)) return value.flatMap(collectImportTargets);
 	if (!isRecord(value)) return [];
 	return Object.values(value).flatMap(collectImportTargets);

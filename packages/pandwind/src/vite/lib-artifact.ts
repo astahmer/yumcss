@@ -85,11 +85,13 @@ type StableValue =
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
+const isStableScalar = (value: unknown): value is string | boolean | number =>
+	typeof value === "string" || typeof value === "boolean" || typeof value === "number";
+
 const stableValue = (value: unknown): StableValue | undefined => {
 	if (value === undefined) return;
 	if (value === null) return null;
-	if (typeof value === "string" || typeof value === "boolean" || typeof value === "number")
-		return value;
+	if (isStableScalar(value)) return value;
 	if (Array.isArray(value)) return value.map((entry) => stableValue(entry) ?? null);
 	if (isRecord(value)) {
 		return Object.fromEntries(

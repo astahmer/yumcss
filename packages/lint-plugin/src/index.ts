@@ -1135,36 +1135,35 @@ const markerForAnyCall = (
 };
 
 type CssModuleExports = ReadonlyMap<string, ReadonlySet<string>>;
+type CssModuleConfiguration = { readonly cssModules?: unknown };
+type CssModuleEntry = { readonly source: string; readonly exports: readonly unknown[] };
 type RawTypedCssValueFixPlan = {
 	readonly insertions: readonly { readonly node: AstNode; readonly text: string }[];
 	readonly removals: readonly (readonly [number, number])[];
 };
 
+const isCssModuleConfiguration = (value: unknown): value is CssModuleConfiguration =>
+	value !== null && typeof value === "object" && !Array.isArray(value) && "cssModules" in value;
+
+const isCssModuleEntry = (value: unknown): value is CssModuleEntry =>
+	value !== null &&
+	typeof value === "object" &&
+	!Array.isArray(value) &&
+	"source" in value &&
+	typeof value.source === "string" &&
+	"exports" in value &&
+	Array.isArray(value.exports);
+
+const isStringValue = (value: unknown): value is string => typeof value === "string";
+
 const configuredCssModuleExports = (option: unknown): CssModuleExports => {
 	const configured = new Map<string, ReadonlySet<string>>();
-	if (
-		typeof option !== "object" ||
-		option === null ||
-		Array.isArray(option) ||
-		!("cssModules" in option)
-	)
-		return configured;
+	if (!isCssModuleConfiguration(option)) return configured;
 	const cssModules = option.cssModules;
 	if (!Array.isArray(cssModules)) return configured;
 	for (const cssModule of cssModules) {
-		if (
-			typeof cssModule !== "object" ||
-			cssModule === null ||
-			Array.isArray(cssModule) ||
-			!("source" in cssModule) ||
-			typeof cssModule.source !== "string" ||
-			!("exports" in cssModule) ||
-			!Array.isArray(cssModule.exports)
-		)
-			continue;
-		const exports = new Set<string>(
-			cssModule.exports.filter((name: unknown): name is string => typeof name === "string"),
-		);
+		if (!isCssModuleEntry(cssModule)) continue;
+		const exports = new Set(cssModule.exports.filter(isStringValue));
 		if (exports.size > 0) configured.set(cssModule.source, exports);
 	}
 	return configured;

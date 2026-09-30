@@ -107,13 +107,17 @@ function pandwindTokenGroups(
 	);
 }
 
+const isStaticTokenScalar = (value: unknown): value is string | number =>
+	typeof value === "string" || typeof value === "number";
+
 const scalarToken = (value: unknown): string | undefined =>
-	typeof value === "string" || typeof value === "number" ? String(value) : undefined;
+	isStaticTokenScalar(value) ? String(value) : undefined;
+
+const isTokenTreeRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
 
 const tokenTreeRecord = (value: unknown): Record<string, unknown> | undefined =>
-	typeof value === "object" && value !== null && !Array.isArray(value)
-		? (value as Record<string, unknown>)
-		: undefined;
+	isTokenTreeRecord(value) ? value : undefined;
 
 const flattenRawTokenGroups = (
 	groups: Readonly<Record<string, unknown>>,

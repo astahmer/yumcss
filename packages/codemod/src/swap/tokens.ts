@@ -232,8 +232,11 @@ export function formatTokenReference(
 	return formatTokenPath(match.ref, format, existingAuthored);
 }
 
+const isStaticTokenScalar = (value: unknown): value is string | number =>
+	typeof value === "string" || typeof value === "number";
+
 function normalizedTokenValue(value: unknown): string | undefined {
-	return typeof value === "string" || typeof value === "number" ? String(value) : undefined;
+	return isStaticTokenScalar(value) ? String(value) : undefined;
 }
 
 const HEX_COLOR = /^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/iu;

@@ -676,9 +676,12 @@ const scanImportedJsxElements = (
 			: undefined,
 	);
 
+const isStyleRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
 function renderStyleValue(v: unknown): string {
 	if (Array.isArray(v)) return `[${v.map(renderStyleValue).join(", ")}]`;
-	if (typeof v === "object" && v !== null) {
+	if (isStyleRecord(v)) {
 		return `{ ${Object.entries(v)
 			.map(([k, val]) => `${JSON.stringify(k)}: ${renderStyleValue(val)}`)
 			.join(", ")} }`;

@@ -801,10 +801,11 @@ interface ChakraPackage {
 	readonly isValidSystem?: (value: unknown) => value is ChakraSystemLike;
 }
 
-const recordValue = (value: unknown): Record<string, unknown> | undefined => {
-	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
-	return value as Record<string, unknown>;
-};
+const isRecordValue = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const recordValue = (value: unknown): Record<string, unknown> | undefined =>
+	isRecordValue(value) ? value : undefined;
 
 const mergeTokenTrees = (
 	left: Record<string, unknown>,
@@ -920,8 +921,7 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 }
 
 function chakraConfigCandidate(value: unknown): Record<string, unknown> | undefined {
-	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
-	const candidate = value as Record<string, unknown>;
+	if (!isRecordValue(value)) return undefined;
 	return [
 		"theme",
 		"conditions",
@@ -930,8 +930,8 @@ function chakraConfigCandidate(value: unknown): Record<string, unknown> | undefi
 		"cssVarsPrefix",
 		"cssVarsRoot",
 		"strictTokens",
-	].some((key) => candidate[key] !== undefined)
-		? candidate
+	].some((key) => value[key] !== undefined)
+		? value
 		: undefined;
 }
 

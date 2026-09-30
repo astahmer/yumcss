@@ -350,8 +350,8 @@ function themeCollection(value: unknown): unknown {
 }
 
 function muiThemeShape(shape: unknown): unknown {
-	if (shape === null || typeof shape !== "object") return undefined;
-	const borderRadius = (shape as Record<string, unknown>).borderRadius;
+	if (!isRecord(shape)) return undefined;
+	const borderRadius = shape.borderRadius;
 	return borderRadius === undefined ? undefined : { base: borderRadius };
 }
 

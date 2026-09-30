@@ -14,10 +14,7 @@ describe("project-aware migration metadata", () => {
 	test("async loading discovers tokens from the generated bridge preset", async () => {
 		const meta = await loadMetaFromSourcesAsync(sourceOptions);
 
-		const colors = meta.tokens?.colors;
-		expect(
-			colors !== undefined && typeof colors !== "function" ? colors["$blue-500"] : undefined,
-		).toBe("#3182ce");
+		expect(meta.tokens?.colors).toHaveProperty("$blue-500", "#3182ce");
 		expect(meta.conditions._hover).toBe("&:hover");
 		expect(meta.conditions._dark).toBe(".dark &");
 	});

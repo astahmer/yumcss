@@ -2,6 +2,9 @@ import { presetConditions } from "pandwind/preset";
 
 type PandwindConditionValue = string | readonly string[];
 
+const isConditionSelector = (value: PandwindConditionValue): value is string =>
+	typeof value === "string";
+
 const builtInConditionAliases = new Set(
 	Object.keys(presetConditions)
 		.filter((name) => name.startsWith("_"))
@@ -10,7 +13,7 @@ const builtInConditionAliases = new Set(
 
 const selectorConditionAliases = new Map<string, string>();
 for (const [name, selector] of Object.entries(presetConditions)) {
-	if (typeof selector !== "string") continue;
+	if (!isConditionSelector(selector)) continue;
 	for (const match of selector.matchAll(/(::?)([a-z][a-z-]*)/gu)) {
 		const pseudo = match[2]!;
 		if (pseudo === "is" || pseudo === "not" || pseudo === "where" || pseudo === "has") continue;

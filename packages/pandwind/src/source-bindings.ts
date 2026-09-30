@@ -116,9 +116,12 @@ interface ShadowedScope {
 	readonly range: SourceRange;
 }
 
+const isNodeRecord = (node: unknown): node is Record<string, unknown> =>
+	typeof node === "object" && node !== null && !Array.isArray(node);
+
 const nodeName = (node: unknown): string | undefined => {
-	if (node === null || typeof node !== "object") return undefined;
-	const value = node as { name?: unknown; value?: unknown };
+	if (!isNodeRecord(node)) return undefined;
+	const value = node;
 	if (typeof value.name === "string") return value.name;
 	return typeof value.value === "string" ? value.value : undefined;
 };
@@ -132,9 +135,10 @@ const rangeOf = (node: unknown, fallback: SourceRange): SourceRange => {
 };
 
 const sourceOf = (node: unknown): string | undefined => {
-	if (node === null || typeof node !== "object") return undefined;
-	const value = node as { source?: { value?: unknown } };
-	return typeof value.source?.value === "string" ? value.source.value : undefined;
+	if (!isNodeRecord(node)) return undefined;
+	const source = node.source;
+	if (!isNodeRecord(source)) return undefined;
+	return typeof source.value === "string" ? source.value : undefined;
 };
 
 interface EmbeddedProgram {

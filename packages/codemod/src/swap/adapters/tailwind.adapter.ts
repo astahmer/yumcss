@@ -1148,18 +1148,22 @@ function escapeGeneratedClassName(value: string): string {
 	return escaped;
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const hasDefaultExport = (value: unknown): value is { readonly default?: unknown } =>
+	isRecord(value) && "default" in value;
+
 function defaultExport<T>(value: unknown): T | undefined {
-	if (typeof value === "object" && value !== null && "default" in value) {
-		const defaultValue = (value as { readonly default?: unknown }).default;
+	if (hasDefaultExport(value)) {
+		const defaultValue = value.default;
 		return defaultValue === undefined ? undefined : (defaultValue as T);
 	}
 	return value as T;
 }
 
 function record(value: unknown): Record<string, unknown> {
-	return typeof value === "object" && value !== null && !Array.isArray(value)
-		? (value as Record<string, unknown>)
-		: {};
+	return isRecord(value) ? value : {};
 }
 
 function classicConfigFiles(context: AdapterConfigContext): readonly string[] {
