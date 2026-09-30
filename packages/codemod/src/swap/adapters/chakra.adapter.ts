@@ -787,6 +787,7 @@ interface ChakraSystemLike {
 	readonly $$chakra?: true;
 	readonly _config?: Record<string, unknown>;
 	readonly properties?: ReadonlySet<string>;
+	readonly isValidProperty?: (property: string) => boolean;
 	readonly utility?: {
 		readonly shorthands?: ReadonlyMap<string, string>;
 		readonly resolveShorthand?: (property: string) => string;
@@ -900,6 +901,8 @@ function chakraSourceVocabulary(context: AdapterParseContext): {
 			(property === "size" && sourceHostTag(openingTag ?? "") === "Heading") ||
 			property === "css" ||
 			knownProperties.has(property) ||
+			(!nativeConditionAttributeCollisions.has(property) &&
+				system?.isValidProperty?.(property) === true) ||
 			Object.hasOwn(
 				CHAKRA_COMPONENT_PROPERTY_ALIASES[
 					chakraSourceComponentNameFromTag(sourceHostTag(openingTag ?? ""), context) ?? ""

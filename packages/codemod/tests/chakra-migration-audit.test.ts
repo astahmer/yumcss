@@ -33,6 +33,24 @@ const migrate = (
 	});
 
 describe("Chakra migration audit", () => {
+	test("transfers ordinary CSS properties through the official system predicate", async () => {
+		const result = await migrate(
+			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box flex="1" alignSelf="stretch" order={2} disabled data-label="Action" />;',
+			CodemodAdapterId.ChakraUi,
+			CodemodAdapterId.Pandwind,
+		);
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('css.class({ flex: "1", alignSelf: "stretch", order: 2 })');
+		expect(result.code).toContain('disabled data-label="Action"');
+		expect(result.code).not.toContain("<div flex=");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			export const App = () => <div disabled data-label="Action" className={css.class({ flex: "1", alignSelf: "stretch", order: 2 })} />;"
+		`);
+	});
+
 	test("lowers Chakra layout component props for foreign style targets", async () => {
 		const route = createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Tailwind);
 		const project = createAdapterRouteProject(
