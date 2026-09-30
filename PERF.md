@@ -297,10 +297,10 @@ These rows are separate from the native CSS runtime: static generated calls eras
 |    1 | generated tw+cx (static)                |          0.05 |      0.07 |
 |    2 | generated tw (dynamic)                  |          6.02 |      2.16 |
 |    3 | generated conflict metadata (opt-in)    |         23.17 |      7.36 |
-|    4 | generated conflict cx (dynamic, no css) |         30.49 |     10.45 |
-|    5 | example dss+cx (no tw metadata)         |         35.20 |     12.87 |
+|    4 | generated conflict cx (dynamic, no css) |         30.47 |     10.45 |
+|    5 | example dss+cx (no tw metadata)         |         35.17 |     12.87 |
 |    6 | generated tw runtime metadata (opt-in)  |        177.82 |     19.56 |
-|    7 | explicit conflict cx (dynamic)          |         58.28 |     20.17 |
+|    7 | explicit conflict cx (dynamic)          |         58.25 |     20.16 |
 
 ## Generated Tailwind project metadata
 
