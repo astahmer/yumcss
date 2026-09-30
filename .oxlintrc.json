@@ -52,6 +52,7 @@
 		"antislop/no-unsafe-dictionary-type": "off",
 		// The generic rule cannot express required MCP and bundler-hook boundary inputs.
 		"antislop/no-unknown-parameters": "off",
+		// Static evaluators and host adapters intentionally return open-ended values for caller-side narrowing.
 		"antislop/no-unknown-returns": "off",
 		"antislop/require-safety-comment-for-type-assertion": "off",
 		// These Oxc perf rules were absent from the pre-Emilint plugin set.
