@@ -25,6 +25,13 @@
 		"skipped": 0,
 		"residuals": 0,
 		"residualsByKind": {},
+		"canonical": {
+			"checked": true,
+			"equal": true,
+			"sourceBytes": 119,
+			"targetBytes": 119,
+			"differences": []
+		},
 		"targetUsesPandwind": true,
 		"customTokenPreserved": true,
 		"sourceStylesheetImportRemoved": true,

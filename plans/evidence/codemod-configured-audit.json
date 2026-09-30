@@ -1,0 +1,1192 @@
+{
+  "schema": "pandwind.codemod-configured-audit/1",
+  "sourceFingerprint": "e3c65e6e790ea8fbe8f386599fd86fff4c76827cdab952141b641038c40c7d60",
+  "sourceRevision": "460f0875ab6fb42f5f2519e57d57ffc8a55d63f5",
+  "scope": "48 primary route scenarios across eight foreign audited families and Pandwind. Configured cases use injected fixture configuration ports; target installation is proved separately. Identity routes excluded.",
+  "scenarios": [
+    {
+      "route": {
+        "from": "chakra-ui",
+        "to": "pandwind"
+      },
+      "configuration": "missing",
+      "disposition": "source-preserved-without-recognition",
+      "inputFile": "App.tsx",
+      "input": "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;",
+      "converted": 0,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "chakra-ui",
+        "to": "pandwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{background:#fecaca;padding:1rem}",
+          "canonicalTarget": "&{background:#fecaca;padding:1rem}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "chakra-ui",
+        "to": "pandwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "import { Box } from \"@chakra-ui/react\";\nexport const App = () => <Box bg=\"red.200\" p=\"4\" />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{background:#fecaca;padding:1rem}",
+          "canonicalTarget": "&{background:#fecaca;padding:1rem}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "chakra-ui"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "chakra-ui"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "chakra-ui"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "tailwind",
+        "to": "pandwind"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{gap:1rem;alignItems:center;display:flex}",
+          "canonicalTarget": "&{gap:1rem;alignItems:center;display:flex}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "tailwind",
+        "to": "pandwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{gap:1rem;alignItems:center;display:flex}",
+          "canonicalTarget": "&{gap:1rem;alignItems:center;display:flex}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "tailwind",
+        "to": "pandwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{gap:1rem;alignItems:center;display:flex}",
+          "canonicalTarget": "&{gap:1rem;alignItems:center;display:flex}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "tailwind"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "tailwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "tailwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "stylex",
+        "to": "pandwind"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:8px;color:red}",
+          "canonicalTarget": "&{padding:8px;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "stylex",
+        "to": "pandwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:8px;color:red}",
+          "canonicalTarget": "&{padding:8px;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "stylex",
+        "to": "pandwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import * as stylex from \"@stylexjs/stylex\";\nexport const styles = stylex.create({ card: { color: \"red\", padding: 8 } });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:8px;color:red}",
+          "canonicalTarget": "&{padding:8px;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "stylex"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "stylex"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "stylex"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "tokenami",
+        "to": "pandwind"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{gap:1rem;color:red}",
+          "canonicalTarget": "&{gap:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "tokenami",
+        "to": "pandwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{gap:1rem;color:red}",
+          "canonicalTarget": "&{gap:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "tokenami",
+        "to": "pandwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { css } from \"@tokenami/css\";\nexport const card = css({ \"--color\": \"red\", \"--gap\": \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{gap:1rem;color:red}",
+          "canonicalTarget": "&{gap:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "tokenami"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "tokenami"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "tokenami"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "unocss",
+        "to": "pandwind"
+      },
+      "configuration": "missing",
+      "disposition": "residual",
+      "inputFile": "App.tsx",
+      "input": "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;",
+      "converted": 0,
+      "skipped": 1,
+      "residuals": [
+        {
+          "kind": "unknown-utility",
+          "text": "[display:flex]",
+          "hint": "UnoCSS utility requires the project resolver/preset to be loaded"
+        },
+        {
+          "kind": "unknown-utility",
+          "text": "[align-items:center]",
+          "hint": "UnoCSS utility requires the project resolver/preset to be loaded"
+        },
+        {
+          "kind": "unknown-utility",
+          "text": "[gap:1rem]",
+          "hint": "UnoCSS utility requires the project resolver/preset to be loaded"
+        }
+      ],
+      "canonical": [],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "unocss",
+        "to": "pandwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{gap:1rem;alignItems:center;display:flex}",
+          "canonicalTarget": "&{gap:1rem;alignItems:center;display:flex}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "unocss",
+        "to": "pandwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "export const App = () => <div className=\"[display:flex] [align-items:center] [gap:1rem]\" />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{gap:1rem;alignItems:center;display:flex}",
+          "canonicalTarget": "&{gap:1rem;alignItems:center;display:flex}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "unocss"
+      },
+      "configuration": "missing",
+      "disposition": "residual",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 0,
+      "skipped": 1,
+      "residuals": [
+        {
+          "kind": "configuration",
+          "text": "[color:red]",
+          "hint": "the official UnoCSS generator did not prove this emitted utility"
+        },
+        {
+          "kind": "configuration",
+          "text": "[padding:1rem]",
+          "hint": "the official UnoCSS generator did not prove this emitted utility"
+        },
+        {
+          "kind": "configuration",
+          "text": "styles.ts",
+          "hint": "UnoCSS output requires the target project's official config and generator"
+        },
+        {
+          "kind": "validation",
+          "text": "\"\"",
+          "hint": "canonical CSS differs or has residuals"
+        }
+      ],
+      "canonical": [
+        {
+          "valid": false,
+          "lossiness": "lossy",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [
+            "canonical CSS differs or has residuals"
+          ],
+          "residuals": [
+            {
+              "kind": "configuration",
+              "text": "[color:red]",
+              "hint": "the official UnoCSS generator did not prove this emitted utility"
+            },
+            {
+              "kind": "configuration",
+              "text": "[padding:1rem]",
+              "hint": "the official UnoCSS generator did not prove this emitted utility"
+            },
+            {
+              "kind": "configuration",
+              "text": "styles.ts",
+              "hint": "UnoCSS output requires the target project's official config and generator"
+            }
+          ]
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "unocss"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "unocss"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "styled-components",
+        "to": "pandwind"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "Card.tsx",
+      "input": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "styled-components",
+        "to": "pandwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "Card.tsx",
+      "input": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": [
+        "__pandwind/slot.tsx"
+      ]
+    },
+    {
+      "route": {
+        "from": "styled-components",
+        "to": "pandwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "Card.tsx",
+      "input": "import styled from \"styled-components\";\nexport const Card = styled.div({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": [
+        "__pandwind/slot.tsx"
+      ]
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "styled-components"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "styled-components"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "styled-components"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "mui",
+        "to": "pandwind"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:16px;color:red}",
+          "canonicalTarget": "&{padding:16px;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "mui",
+        "to": "pandwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:16px;color:red}",
+          "canonicalTarget": "&{padding:16px;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "mui",
+        "to": "pandwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "App.tsx",
+      "input": "import { Box } from \"@mui/material\";\nexport const App = () => <Box sx={{ color: \"red\", p: 2 }} />;",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:16px;color:red}",
+          "canonicalTarget": "&{padding:16px;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "mui"
+      },
+      "configuration": "missing",
+      "disposition": "residual",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 0,
+      "skipped": 1,
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css.class({ color: \"red\", padding: \"1rem\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx"
+        }
+      ],
+      "canonical": [],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "mui"
+      },
+      "configuration": "configured-blue",
+      "disposition": "residual",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 0,
+      "skipped": 1,
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css.class({ color: \"red\", padding: \"1rem\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx"
+        }
+      ],
+      "canonical": [],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "mui"
+      },
+      "configuration": "configured-amber",
+      "disposition": "residual",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 0,
+      "skipped": 1,
+      "residuals": [
+        {
+          "kind": "host-framework",
+          "text": "css.class({ color: \"red\", padding: \"1rem\" })",
+          "hint": "MUI sx output requires a MUI-owned component or an intrinsic host that can accept sx"
+        }
+      ],
+      "canonical": [],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "panda",
+        "to": "pandwind"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{color:red}&:is(:hover, [data-hover]){color:blue}",
+          "canonicalTarget": "&{color:red}&:is(:hover, [data-hover]){color:blue}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "panda",
+        "to": "pandwind"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{color:red}&:is(:hover, [data-hover]){color:blue}",
+          "canonicalTarget": "&{color:red}&:is(:hover, [data-hover]){color:blue}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "panda",
+        "to": "pandwind"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { css } from \"styled-system/css\";\nexport const card = css({ color: \"red\", _hover: { color: \"blue\" } });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{color:red}&:is(:hover, [data-hover]){color:blue}",
+          "canonicalTarget": "&{color:red}&:is(:hover, [data-hover]){color:blue}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "panda"
+      },
+      "configuration": "missing",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "panda"
+      },
+      "configuration": "configured-blue",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    },
+    {
+      "route": {
+        "from": "pandwind",
+        "to": "panda"
+      },
+      "configuration": "configured-amber",
+      "disposition": "converted",
+      "inputFile": "styles.ts",
+      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "converted": 1,
+      "skipped": 0,
+      "residuals": [],
+      "canonical": [
+        {
+          "valid": true,
+          "lossiness": "lossless",
+          "canonicalSource": "&{padding:1rem;color:red}",
+          "canonicalTarget": "&{padding:1rem;color:red}",
+          "differences": [],
+          "residuals": []
+        }
+      ],
+      "generatedFiles": []
+    }
+  ]
+}

@@ -158,7 +158,7 @@
 		"@oxc-parser/binding-wasm32-wasi",
 		"playwright-core"
 	],
-	"ignoreBinaries": ["rg"],
+	"ignoreBinaries": ["rg", "jj"],
 	"ignore": [
 		"**/dist/**",
 		"**/tests/fixtures/**",

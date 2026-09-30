@@ -5,9 +5,9 @@
  * source/target build boundary, SSR, hydration, and browser base/hover
  * behavior.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId, runAdapterMigrationAsync } from "pandwind-codemod/swap";
 import { z } from "zod";
 import {
 	browserProof,
@@ -20,6 +20,7 @@ import {
 	writeIndex,
 	writeJson,
 	type InstalledProofBrowserEvidence,
+	type InstalledProofCanonicalEvidence,
 } from "./installed-proof.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
@@ -139,6 +140,7 @@ interface PandaInstalledProof {
 		readonly targetNodeModule: boolean;
 	};
 	readonly migration: {
+		readonly canonical: InstalledProofCanonicalEvidence;
 		readonly filesScanned: number;
 		readonly filesChanged: number;
 		readonly converted: number;
@@ -174,6 +176,8 @@ function proofIsComplete(report: PandaInstalledProof): boolean {
 		report.migration.filesScanned > 0 &&
 		report.migration.filesChanged > 0 &&
 		report.migration.converted > 0 &&
+		report.migration.canonical.checked &&
+		report.migration.canonical.equal &&
 		report.migration.skipped === 0 &&
 		report.migration.residuals === 0 &&
 		report.migration.targetUsesPandwind &&
@@ -251,6 +255,30 @@ async function main(): Promise<void> {
 			run("pnpm", ["exec", "panda", "cssgen", "--silent"], sourceRoot);
 			run("pnpm", ["run", "typecheck"], sourceRoot);
 			run("pnpm", ["run", "build"], sourceRoot);
+			const adapterProof = await runAdapterMigrationAsync(sourceApp, {
+				from: CodemodAdapterId.Panda,
+				to: CodemodAdapterId.Pandwind,
+				root: sourceRoot,
+				file: "src/App.tsx",
+				mode: "safe",
+				readFile: (file) => (existsSync(file) ? readFileSync(file, "utf8") : undefined),
+				listFiles: () => [join(sourceRoot, "panda.config.ts"), join(sourceRoot, "src/App.tsx")],
+			});
+			const canonical: InstalledProofCanonicalEvidence = {
+				checked: adapterProof.validations.length > 0,
+				equal:
+					adapterProof.validations.length > 0 &&
+					adapterProof.validations.every((validation) => validation.valid),
+				sourceBytes: adapterProof.validations.reduce(
+					(total, validation) => total + Buffer.byteLength(validation.canonicalSource),
+					0,
+				),
+				targetBytes: adapterProof.validations.reduce(
+					(total, validation) => total + Buffer.byteLength(validation.canonicalTarget),
+					0,
+				),
+				differences: adapterProof.validations.flatMap((validation) => validation.differences),
+			};
 			createTargetFixture(sourceRoot, targetRoot);
 			run("pnpm", ["install", "--ignore-scripts"], targetRoot);
 			const migration = parsePandaProjectMigration(
@@ -314,6 +342,7 @@ async function main(): Promise<void> {
 				},
 				migration: {
 					...migration,
+					canonical,
 					targetUsesPandwind: migratedApp.includes("pandwind"),
 					customTokenPreserved:
 						preset.includes("123456") &&

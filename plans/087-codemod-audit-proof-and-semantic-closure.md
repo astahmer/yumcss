@@ -242,18 +242,18 @@ for explicit approval after preparing its design; continue independent work.
 
 ## Acceptance criteria
 
-- [ ] Chakra responsive fixture passes; `flex` reaches CSS and is absent as a stray DOM prop.
-- [ ] Official-property coverage and unavailable metadata paths prevent silent style loss.
-- [ ] Reversible expectations reject inert reverse legs and changed-forward-only evidence.
-- [ ] Reverse migrations read generated artifacts, correct file identities, and rewritten consumers.
-- [ ] Semantic comparisons catch lost declarations, conditions, priority, named styles, and component behavior.
-- [ ] Every opportunity above is implemented with proof or has a reproducible, justified limitation.
-- [ ] Clean configured cases assert zero unexpected residuals; conservative cases assert typed reasons and preservation.
-- [ ] Wrappers preserve supported exports, props, refs, attrs, filtering, and polymorphic behavior across files.
-- [ ] Installed proof includes outbound and foreign routes; evidence states exact route/version/scenario scope.
-- [ ] Ledger/report reflect the tested revision; identity no-ops cannot inflate cross-adapter canonicality claims.
-- [ ] No frozen API expansion, guessed vocabulary, hidden framework branch, or forced rich-IR overhead.
-- [ ] Focused JJ history, architecture documentation, required checks, and unresolved limitations are complete.
+- [x] Chakra responsive fixture passes; `flex` reaches CSS and is absent as a stray DOM prop.
+- [x] Official-property coverage and unavailable metadata paths prevent silent style loss.
+- [x] Reversible expectations reject inert reverse legs and changed-forward-only evidence.
+- [x] Reverse migrations read generated artifacts, correct file identities, and rewritten consumers.
+- [x] Semantic comparisons catch lost declarations, conditions, priority, named styles, and component behavior.
+- [x] Every opportunity above is implemented with proof or has a reproducible, justified limitation.
+- [x] Clean configured cases assert zero unexpected residuals; conservative cases assert typed reasons and preservation.
+- [x] Wrappers preserve supported exports, props, refs, attrs, filtering, and polymorphic behavior across files.
+- [x] Installed proof includes outbound and foreign routes; evidence states exact route/version/scenario scope.
+- [x] Ledger/report reflect the tested revision; identity no-ops cannot inflate cross-adapter canonicality claims.
+- [x] No frozen API expansion, guessed vocabulary, hidden framework branch, or forced rich-IR overhead.
+- [x] Focused JJ history, architecture documentation, required checks, and unresolved limitations are complete.
 
 ## Decisions log
 
@@ -262,3 +262,80 @@ for explicit approval after preparing its design; continue independent work.
 | 2026-09-30 | Follow up Plan 086 rather than reopen or duplicate it.                | Wrappers and artifact infrastructure shipped; current gaps concern completeness and proof. |
 | 2026-09-30 | Fix silent loss and proof assertions before reducing residual counts. | Existing zero-residual output demonstrably loses styling.                                  |
 | 2026-09-30 | Keep implementation separate from this revision.                      | User authorized investigation and planning only.                                           |
+
+## Implementation reconciliation — 2026-09-30
+
+The nine source-session audit conclusions are represented by the registered
+primary API fixtures and the family audit tests. The new configured capture
+runs 48 inbound/outbound scenarios between Pandwind and the eight foreign
+families, in missing, blue, and amber contexts. These are injected configuration
+ports, not 48 installed projects. A missing-context no-op records exact source
+stability and lack of recognition; it is not counted as conversion proof.
+
+| Inventory item                     | Result and executable evidence                                                                                                                                                                                                                                                 | Deliberate limit                                                                                                                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chakra property transfer           | `chakra-migration-audit.test.ts` checks the official system predicate for flex, alignSelf, order, disabled metadata, and unrelated attributes. The installed target runner includes Chakra-to-Emotion flex.                                                                    | Unknown configuration remains source-owned.                                                                                                                                                     |
+| Honest roundtrips                  | `route-proof-contract.test.ts` rejects inert reverse legs, missing declarations/rules, altered conditions, and dropped priority.                                                                                                                                               | Canonical CSS cannot prove two identically styled exported bindings are interchangeable; consumer/type checks remain separate.                                                                  |
+| Artifact-aware projects            | `createReverseRouteInput` applies entrypoint extensions, expected-content file changes, artifacts and preserved loader metadata. Contract tests reject stale/conflicting content and retain reexports. Generated roundtrip suites reverse generated files at their real paths. | An artifact-only route proves reverse stylesheet recognition and stable consumer code, not reconstruction of an original component API from CSS alone.                                          |
+| Named rules/static maps            | Pandwind groups use named-rule objects across targets; Panda preserves actual recipes without mistaking groups for recipes. Child emission residuals propagate instead of producing empty entries.                                                                             | Unsupported font-face children retain a typed residual (`route-proof-contract.test.ts`).                                                                                                        |
+| Sidecars                           | Vanilla Extract pseudo/selector styles use its documented selectors carrier. Installed styled-to-Vanilla-Extract and CSS Modules routes compile sidecars and their consumers.                                                                                                  | Missing module/consumer inventories preserve source (`stylesheet-source-adapters.test.ts`).                                                                                                     |
+| Reusable wrappers                  | Same-line declarations are recognized by AST-verified bindings. `styled-components-css-modules-wrapper.test.ts` verifies reusable exports, polymorphism, typed refs, attrs precedence, transient props, source units and declaration order.                                    | Callback attrs, attrs-selected unknown hosts, dynamic component styles and malformed modules are explicit preservation tests in that file.                                                      |
+| Host projections                   | Installed Pandwind-to-MUI covers a target object prop; class, wrapper and compile-time carriers have separate installed scenarios. Family matrices cover intrinsic/custom/hostless inputs.                                                                                     | Unknown hosts and incompatible framework semantics stay residual; no invented generic sx function.                                                                                              |
+| Conditions/tokens/priority         | Semantic continuity normalizes equivalent CSS units, retaining ordered declarations and wrappers. Mantine variables recover only uniquely verified property-aware tokens. UnoCSS checks generated candidate semantics.                                                         | Chakra numeric spacing strings without token evidence are residual; priority and unproven generator output stay source-preserving. Official context tests cover missing/failed loaders.         |
+| Composition/recipes                | Existing `tokenami-unocss-adapters.test.ts` proves the bounded static compose and Panda recipe subsets; named maps no longer accidentally collapse into recipes.                                                                                                               | The test “preserves Tokenami compose variants instead of flattening them into declarations” records the unsupported callable contract. No recipe API expansion.                                 |
+| Bounded dynamics/callbacks         | `semantic-metadata.test.ts` verifies dynamic provenance and native function carriers; `styled-components-audit.test.ts` proves documented prop callbacks.                                                                                                                      | Function values never become strings; non-function dynamic values and callback attrs remain typed residuals. Arbitrary callbacks are not executed.                                              |
+| Themes/defaults                    | `semantic-metadata.test.ts`, `theme-scopes.test.ts`, and official token catalogs retain theme context and variables.                                                                                                                                                           | Conditional token objects are not flattened into static catalogs; resolved theme selection is required. Provider/theme transitions are outside the nine static installed scenarios.             |
+| Global CSS/keyframes/preprocessors | `stylesheet-source-adapters.test.ts` covers layers, supports, nesting, keyframes/font faces, transitive imports, official Sass/Less ports and extension rewrites. Tamagui rejects global rules instead of emitting inert nested props.                                         | CSS Modules composition, global Sass needing unproven consumer rewrites, and unavailable compilers are explicit preservation tests. Animation scoping is not inferred across missing consumers. |
+| Import cleanup                     | Shared source/target css bindings retain target ownership; static rewrite tests assert required imports survive.                                                                                                                                                               | Flat-lane source imports remain when side effects are not proven absent. Removing them is not authorized by an unused styling call alone.                                                       |
+| Source-map precision               | Existing semantic source-map metadata remains intact; generated artifact maps retain the component source span. Preprocessor tests carry compiler maps.                                                                                                                        | Declaration spans cannot be invented from component spans. Exact declaration-level artifact mapping remains unsupported and documented rather than claimed.                                     |
+| Remaining adapters                 | All generated directional/roundtrip cases use the strengthened harness and family API matrix.                                                                                                                                                                                  | Fixture safety does not promote installed maturity or imply arbitrary ecosystem API support.                                                                                                    |
+
+No runtime public API was added. The bootstrap loader port is internal and
+injectable; the default remains project-root official resolution. Source-only
+bootstrap tests explicitly substitute an unavailable-package loader and exercise
+the deterministic fallback. The malformed static Panda fixture was repaired.
+The end-to-end Panda test now checks official default tokens instead of expecting
+them to be unknown.
+
+Evidence ownership: `codemod-configured-audit.json` captures injected scenarios;
+`codemod-installed-targets.json` captures exact installed route inputs, outputs,
+versions, typechecks, builds, SSR/hydration, base/hover browser comparison and CSS
+sizes; `panda-installed-proof.json` adds canonical source/target checks. The
+primary ledger stays an empty-project capture and separately counts identity
+routes. None of these reports promotes route maturity automatically.
+
+## Completion evidence — 2026-09-30
+
+All ten implementation steps are reconciled above. Unsupported richer behavior
+has executable preservation cases and explicit limits; completion does not mean
+all routes can convert or reconstruct original APIs.
+
+- Full codemod: 10,555 tests, zero failures. Generated directional/roundtrip
+  subset: 8,928 tests, zero failures. Configured capture: 48 cases with exact
+  conversion or residual-kind expectations and source preservation assertions.
+- Installed target proof: nine exact routes, all typecheck/build/SSR/hydration
+  and base/hover comparisons pass with zero changed pixels. Chakra flex is
+  `1 1 0%`, align-self is `stretch`, order is `2`, and target SSR markup has no
+  stray flex attribute. UnoCSS's grouped selectors and functional pseudos have
+  an explicit resolver regression test.
+- Root: 1,050 runtime tests plus both benchmark suites pass; the type-performance
+  test passes isolated. A concurrently loaded run exceeded the check-time band
+  (0.141s versus 0.129s limit); the baseline was not raised. TSTyche: 168 tests,
+  380 assertions, all pass.
+- Codemod typecheck, lint, format, package surface (107 exports), generated
+  freshness, generated budgets, proof documentation and 19 installed inbound
+  route evidence gates pass. The current API and default runtime source remain
+  unchanged by this work; emitted asset/SSR and browser inline style-text sizes
+  are reported per installed scenario. Zero asset bytes do not mean a runtime
+  CSS-in-JS target emits no CSS. Browser inline text includes shared reset styles
+  and does not count CSSOM-only insertion.
+- Broader baseline: root typecheck reports implicit-any parameters in playground
+  `EditorPane.tsx` and `router.tsx` (four errors). Knip reports existing app,
+  benchmark and unrelated library findings; task-owned unused exports were
+  removed rather than suppressed. No sibling workspace was moved.
+
+The primary ledger has 1,024 captures: 32 identity canonical, 336 safe residual,
+656 unverified, 645 typed residuals across 420 pairs, with no ambiguous/unlocated
+residual span. Cross-adapter primary canonical count is zero. Higher residual
+counts reflect honest missing configuration and stronger checks, not degraded
+conversion success. Configured and installed captures remain separately scoped.

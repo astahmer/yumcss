@@ -1,3 +1,5 @@
+import { proofSourceFingerprint } from "../../../scripts/proof-source-fingerprint.ts";
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFile, rename, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -399,6 +401,22 @@ const renderAuditReport = (source: string, ledger: z.infer<typeof ledgerSchema>)
 		return text.replace(pattern, `${replacement}\n`);
 	};
 	let report = source.replace(/^Date: .* UTC\s*$/mu, `Date: ${ledger.refreshedOn} UTC`);
+	report = report.replace(
+		/(?:## Captured implementation\n[\s\S]*?\n)?## Method and evidence limits\n/u,
+		[
+			"## Captured implementation",
+			"",
+			`Captured JJ revision: \`${ledger.sourceRevision}\`.`,
+			`Codemod and Pandwind source SHA-256: \`${ledger.sourceFingerprint}\`.`,
+			"",
+			"All 32 Canonical primary captures are identity no-ops. The 992 cross-adapter primary captures have zero Canonical verdicts; configured and installed evidence are separate dimensions, not promotions of this empty-project capture.",
+			"",
+			"[Configured scenarios](./codemod-configured-audit.json) cover 48 injected configuration-port cases. [Installed targets](./codemod-installed-targets.json) cover nine exact React routes with typechecks, builds, SSR/hydration and base/hover browser comparisons.",
+			"",
+			"## Method and evidence limits",
+			"",
+		].join("\n"),
+	);
 	report = replaceSection(
 		report,
 		/## Result\n[\s\S]*?(?=\n## Method and evidence limits\n)/u,
@@ -512,6 +530,22 @@ const refresh = async () => {
 	const result = {
 		...ledger,
 		schema: "pandwind.codemod-canonicality-route-ledger/2",
+		sourceRevision: execFileSync("jj", ["log", "-r", "@", "--no-graph", "-T", "commit_id"], {
+			encoding: "utf8",
+		}).trim(),
+		configuredEvidence: {
+			path: "plans/evidence/codemod-configured-audit.json",
+			sha256: createHash("sha256")
+				.update(
+					await readFile(
+						resolve(import.meta.dirname, "../../../plans/evidence/codemod-configured-audit.json"),
+					),
+				)
+				.digest("hex"),
+			scope:
+				"48 injected configuration-port scenarios; separate from primary ledger and installed evidence",
+		},
+		sourceFingerprint: proofSourceFingerprint(resolve(import.meta.dirname, "../../..")),
 		refreshedOn: new Date().toISOString().slice(0, 10),
 		method:
 			"Direct in-process runAdapterMigration capture using each registered route's primary input, source framework, safe mode, empty read-only project index, generated artifacts, typed residuals, outcomes, and semantic validations. Route maturity is copied unchanged from the proof catalog. Configured and missing-config secondary cases remain linked to route fixtures.",
@@ -524,6 +558,15 @@ const refresh = async () => {
 		},
 		summary: {
 			routeCount: refreshedRoutes.length,
+			identityRouteCount: refreshedRoutes.filter((route) => route.from === route.to).length,
+			crossAdapterCanonicalityCounts: Object.fromEntries(
+				Object.keys(canonicalityCounts).map((verdict) => [
+					verdict,
+					refreshedRoutes.filter(
+						(route) => route.from !== route.to && route.canonicality.verdict === verdict,
+					).length,
+				]),
+			),
 			canonicalityCounts,
 			residualCount: refreshedRoutes.reduce((count, route) => count + route.residuals.length, 0),
 			routesWithResiduals: refreshedRoutes.filter((route) => route.residuals.length > 0).length,

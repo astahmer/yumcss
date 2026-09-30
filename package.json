@@ -88,7 +88,8 @@
 		"test:e2e:migration-preview": "pnpm exec bddgen -c playwright.migration-preview.config.ts test && pnpm exec playwright test -c playwright.migration-preview.config.ts",
 		"test:e2e:authored-tokens": "nub scripts/verify-authored-token-browser.ts",
 		"release:check": "node scripts/release/check-publish-ready.mjs",
-		"release:publish": "bash scripts/release/publish-all.sh"
+		"release:publish": "bash scripts/release/publish-all.sh",
+		"pivot:proof:installed:targets": "nub --conditions pandwind scripts/verify-codemod-installed-targets.ts"
 	},
 	"devDependencies": {
 		"@chakra-ui/react": "3.37.0",

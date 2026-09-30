@@ -466,3 +466,30 @@ Evidence SHA-256: route ledger
 report `e99fca12a487e99bc61f9956371c15dda51d20b3eefb0b7f966b567e15fba08f`.
 The standalone `postcss-modules` package is not installed, so runtime claims
 are scoped to the installed Vite CSS Modules integration.
+
+## Revalidation — 2026-09-30
+
+The original implementation steps and acceptance criteria remain complete for
+their stated scope. Current wrapper, generated-file, CLI, virtual-plugin,
+official-config and source-map cases are included in the passing 10,555-test
+codemod suite. The installed styled-components-to-CSS-Modules scenario now also
+proves target typechecking, production build, SSR/hydration and base/hover browser
+behavior. Plan 087 tightened the roundtrip harness and corrected additional
+adapter defects; the original completion record did not prove universal reverse
+recognition or every target API.
+
+The 2026-09-29 counts and hashes above are historical capture evidence, not the
+current ledger. The current empty-project ledger has 32 canonical identity
+no-ops, 336 safe residual and 656 unverified captures. It is separate from 48
+configured fixture-port scenarios and nine installed static React routes. The
+current source fingerprints match across all three reports. Component-level
+artifact map precision and conservative unsupported runtime semantics remain
+intentional; no exact declaration locations are claimed.
+
+Current broader checks: 1,050 root runtime tests and both benchmark suites pass;
+the type-performance guard passes in isolation after a loaded run exceeded its
+timing band. TSTyche passes 168 tests / 380 assertions. Codemod typechecking,
+repository lint, generated/surface/proof-doc checks and artifact budgets pass.
+Root typechecking still reports four unrelated playground implicit-any errors;
+Knip still reports unrelated application/benchmark findings. Task-owned unused
+exports were removed. These baseline failures are not reported as green.

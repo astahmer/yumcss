@@ -1367,3 +1367,33 @@ compares the result with the checked-in files. A failure names the source CSS
 entry, every stale file, and the exact app command that refreshes it. The same
 gate checks the Playground's generated Monaco declarations through
 `editor:types:check`.
+
+## Migration evidence contracts (plan 087)
+
+Generated reverse-route tests rebuild an immutable target project through
+`createReverseRouteInput`: actual output file identities, expected-content
+consumer edits, generated artifacts, project metadata and injected module loaders
+travel together. Conflicting artifacts and stale edits fail rather than overwrite.
+Artifact-only scenarios state their one-way component boundary explicitly.
+
+The roundtrip contract requires reverse recognition and compares the forward
+emitter's canonical styles with the reverse parser's styles. Ordered declarations,
+conditions, priority and rule multiplicity survive that comparison; equivalent
+absolute CSS lengths are normalized. Export identity, reusable component behavior,
+and target compilation remain separate consumer and installed-host proofs.
+Negative contract tests demonstrate that an inert parser or lost style cannot pass.
+
+Project bootstrap accepts the existing internal module-loader port, enabling
+source-only configuration substitution without changing the default official
+loader. The UnoCSS adapter compares conditions by rendered semantics and still
+requires its configured official generator to prove every emitted candidate.
+Chakra source vocabulary delegates ordinary CSS properties to the official system
+predicate. Target token recovery remains exact, unique and property-aware.
+
+The installed-target runner records exact routes and versions, source/output
+hashes, generated modules, typechecks, production/SSR builds, hydration, base/hover
+computed styles and pixel differences. These static React scenarios do not imply
+provider transitions or all framework support. The configured audit is separate
+fixture-port evidence. Identity captures do not count as cross-adapter canonicality.
+Knip's `jj` binary allowance belongs to these proof scripts' source revision capture;
+it does not suppress unused application code or dependency findings.
